@@ -1,0 +1,9 @@
+Framework:
+* Allow Messenger to read mesg thresholds from XMl file
+* Figure out where to calculate the chisq penalty term (in implementations of FitModelABC whick are the objects that should know about systematic tweaks, but think it through f irst)
+* Rename a couple of poorly named enumerations (just a global find&replace)
+* kDeltaCP param already renamed to kPhypCPV (need to do the same in T2K) as it could be both delta or sindelta (just a global find&replace)
+* For similar reasons as above, rename kPhypDm23sq and kPhypDm12sq to kPhypLargeDm2 and kPhypSmallDm2 (just a global find&replace)
+* t2kana namespace -> valor namespace (just a global find&replace) in Conventions, Utilities and Examples packages (experiment-agnostic code)
+* t2kana namespace -> valor::lbnx namespace (just a global find&replace) in NDFit and FDFit (LBNx-specific code) [perhaps, in future, T2K fits can fit in the same structure]
+
