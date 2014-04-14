@@ -9,6 +9,6 @@
 #pragma link C++ namespace t2kana::util;
 
 #pragma link C++ class t2kana::NDData;
-//#pragma link C++ class t2kana::NDModel;
+#pragma link C++ class t2kana::NDModel;
 
 #endif
