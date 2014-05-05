@@ -23,8 +23,8 @@ CC event samples can be normalised using the scale factor
 
 where 
 
-2.20471e-12 is number of true CC interactions / POT / kt in near detector - this is "NuMuCCEventRate" in 
-/lbne/data/users/lblpwg_tools/FastMC_Data/flux_files/v3r0p10/nominal/g4lbne_v3r0p10_FHC_ND.root
+2.20471e-12 is number of true CC interactions / POT / kt in near detector - this is NuMuCCEventRate / POTperYear 
+in /lbne/data/users/lblpwg_tools/FastMC_Data/flux_files/v3r0p10/nominal/g4lbne_v3r0p10_FHC_ND.root. 
 
 nCCEvents is the number of true CC events in event sample before selection - this is in the gst tree.
 
@@ -34,8 +34,8 @@ NC event samples can be normalised in a similar way using the scale factor
 
 where 
 
-7.44098e-13 is the number of true NC interactions / POT / kt in near detector - this is "NuMuNCEventRate" in
-/lbne/data/users/lblpwg_tools/FastMC_Data/flux_files/v3r0p10/nominal/g4lbne_v3r0p10_FHC_ND.root
+7.44098e-13 is the number of true NC interactions / POT / kt in near detector - this is NuMuNCEventRate / POTperYear 
+in /lbne/data/users/lblpwg_tools/FastMC_Data/flux_files/v3r0p10/nominal/g4lbne_v3r0p10_FHC_ND.root. 
 
 nNCEvents is the number of true NC events in event sample before selection - this is in the gst tree.
 
@@ -52,14 +52,16 @@ void make_event_sample_from_truth
 {
 
   TChain *fastMCchain = new TChain("gst");
-  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/NDMay2014/fastMC_ND_FHC_numuflux_numu_1.root");
-  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/NDMay2014/fastMC_ND_FHC_numuflux_numu_2.root");
-  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/NDMay2014/fastMC_ND_FHC_numuflux_numu_3.root");
-  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/NDMay2014/fastMC_ND_FHC_numuflux_numu_4.root");
-  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/NDMay2014/fastMC_ND_FHC_numuflux_numu_5.root");
-  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/NDMay2014/fastMC_ND_FHC_numuflux_numu_6.root");
-  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/NDMay2014/fastMC_ND_FHC_numuflux_numu_7.root");
-  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/NDMay2014/fastMC_ND_FHC_numuflux_numu_8.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_1.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_2.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_3.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_4.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_5.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_6.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_7.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_8.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_9.root");
+  fastMCchain->Add("/lbne/data/users/lblpwg_tools/FastMC_Data/outputs/nigrant/fastMC_ND_FHC_numuflux_numu_10.root");
   
   bool cc;
   bool nc;
@@ -97,9 +99,10 @@ void make_event_sample_from_truth
   //clone tree from input fast MC file but don't write any events yet
   TTree *sampleTree = gst->CloneTree(0);
 
-  int nCCEvents, nNCEvents, br_nCCEvents, br_nNCEvents;
+  int nEvents, nCCEvents, nNCEvents, br_nEvents, br_nCCEvents, br_nNCEvents;
 
   //add some braches to tree containing selected events
+  sampleTree->Branch("nEvents", &br_nEvents, "nEvents/I");
   sampleTree->Branch("nCCEvents", &br_nCCEvents, "nCCEvents/I");
   sampleTree->Branch("nNCEvents", &br_nNCEvents, "nNCEvents/I");
 
@@ -108,6 +111,7 @@ void make_event_sample_from_truth
 
   int nEntries = gst->GetEntries();
 
+  nEvents = 0;
   nCCEvents = 0;
   nNCEvents = 0;
 
@@ -119,6 +123,8 @@ void make_event_sample_from_truth
       gst->GetEntry(i);
       if(i%10000 == 0)
         cout<<"Doing event "<<i<<endl;
+
+      nEvents++;
 
       if(cc)
 	nCCEvents++;
@@ -176,6 +182,7 @@ void make_event_sample_from_truth
 
     }//end of loop over events
 
+  br_nEvents = nEvents;
   br_nCCEvents = nCCEvents;
   br_nNCEvents = nNCEvents;
 
