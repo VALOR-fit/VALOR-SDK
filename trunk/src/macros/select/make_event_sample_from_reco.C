@@ -10,7 +10,6 @@ The following samples can be made:
 "CC1Pi0": reconstructed as CC with >= 2 tracks in hadronic system and exactly 2 EM objects; longest track has 
           length > trackLengthCut, second longest track has length < trackLengthCut, and shortest track has 
           length < trackLengthCut
-"CC2ChPi": reconstructed as CC with exactly 3 tracks in hadronic system with length > trackLengthCut
 "CCOther": other CC
 "NC1Pi0": reconstructed as NC with >= 1 track in hadronic system and exactly 2 EM objects; both longest and 
           shortest tracks have length < trackLengthCut
@@ -44,7 +43,7 @@ Nick Grant 5 May 2014
 
 void make_event_sample_from_reco
 (
- TString sample = "NCOther",
+ TString sample = "CCOther",
  double trackLengthCut = 0.05
 )
 {
@@ -288,28 +287,15 @@ void make_event_sample_from_reco
           }
 	}
 
-      if(sample == "CC2ChPi")
-        {
-	if(cc && (nfpip + nfpim == 2) && nfpi0 == 0)
-	  nTrueEvents++;
-	if(EvClass_reco == 0 && nf == 3 && Trkf_reco[0] > trackLengthCut && Trkf_reco[1] > trackLengthCut && Trkf_reco[2] > trackLengthCut)
-	  {
-	  nEventsPassSel++;
-	  sampleTree->Fill();
-	  if(cc && (nfpip + nfpim == 2) && nfpi0 == 0)
-	    nTrueEventsPassSel++;
-	  }
-        }
-
       if(sample == "CCOther")
         {
-        if(cc && ((nfpip + nfpim > 2) || nfpi0 > 1))
+        if(cc && ((nfpip + nfpim > 1) || nfpi0 > 1))
 	  nTrueEvents++;
-	if(EvClass_reco == 0 && nf > 3 && nEMf != 2)
+	if(EvClass_reco == 0 && nf > 2 && nEMf != 2)
 	  {
 	  nEventsPassSel++;
 	  sampleTree->Fill();
-	if(cc && ((nfpip + nfpim > 2) || nfpi0 > 1))
+	if(cc && ((nfpip + nfpim > 1) || nfpi0 > 1))
 	    nTrueEventsPassSel++;
 	  }
         }
