@@ -62,81 +62,11 @@ bool NDModel::Generate(const PhysHypothesis & ph)
      << "Generating model predictions for the input hypothesis: " 
      << fPhysHypothesis;
 
-  //
-  // Set parameters for calculation of 3-flavour oscillation probabilities
-  //
-  if(hyp == kHypOsc3F) 
-  {
-    // set oscillation parameters to the oscillation probability calculation code
-    double mixing12 = fPhysHypothesis.CurrValue(kPhypMixing12);
-    double mixing13 = fPhysHypothesis.CurrValue(kPhypMixing13);
-    double mixing23 = fPhysHypothesis.CurrValue(kPhypMixing23);
-    double dmsq     = fPhysHypothesis.CurrValue(kPhypDm12sq);
-    double Dmsq     = fPhysHypothesis.CurrValue(kPhypDm23sq);
-    double cpv      = fPhysHypothesis.CurrValue(kPhypCPV);
-
-    NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
-    NuOscDmsqScheme_t  dmsqscheme = Opt::Instance()->gOscDmsqScheme;
-
-    // mixing params are: sin^2(2*theta)
-    // independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |Dm^2_{23}|                                                                                             
-    if(dmsqscheme == kNuDmsq12andAbs23 && omp == kNuMixSinsq2Theta)
-    {
-        fNuOsc3Flavour.SetOscParameters(mixing12,mixing13,mixing23,dmsq,Dmsq,cpv);
-    }
-    // mixing params are: sin^2(theta)                                                                                                                                         
-    // independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |Dm^2_{23}|                                                                                              
-    else if(dmsqscheme == kNuDmsq12andAbs23 && omp == kNuMixSinsqTheta)
-    {
-        fNuOsc3Flavour.SetOscParametersSinSqTAll(mixing12,mixing13,mixing23,dmsq,Dmsq,cpv);
-    }
-    // mixing params are: sin^2(2*theta)                                                                                                                                        
-    // independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |m^2_{3} - (m^2_{1} + m^2_{1})/2|                                                                        
-    else if(dmsqscheme == kNuDmsqFogliLisi && omp == kNuMixSinsq2Theta)
-    {
-        fNuOsc3Flavour.SetOscParametersSSq2TDmAtmSol(mixing12,mixing13,mixing23,dmsq,Dmsq,cpv);
-    }
-    // mixing params are: sin^2(theta)                                                                                                                                             
-    // independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |m^2_{3} - (m^2_{1} + m^2_{1})/2|                                                                         
-    else if(dmsqscheme == kNuDmsqFogliLisi && omp == kNuMixSinsqTheta)
-    {
-        fNuOsc3Flavour.SetOscParametersDmsqAtmSol(mixing12,mixing13,mixing23,dmsq,Dmsq,cpv);
-    }
-    // mixing paras are: sin^2(2*theta)
-    // independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |Dm^2_{31}|
-    else if(dmsqscheme == kNuDmsq12andAbs31 && omp == kNuMixSinsq2Theta)
-    {
-        fNuOsc3Flavour.SetOscParametersSSq2TDmsq13(mixing12,mixing13,mixing23,dmsq,Dmsq,cpv);
-    }
-    // mixing paras are: sin^2(theta)
-    // independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |Dm^2_{31}|
-    else if(dmsqscheme == kNuDmsq12andAbs31 && omp == kNuMixSinsqTheta)
-    {
-        fNuOsc3Flavour.SetOscParametersDmsq13(mixing12,mixing13,mixing23,dmsq,Dmsq,cpv);
-    }
-    //unknown
-    else {
-       LOG("NDModel",pFATAL) << "Can't handle choice of "
-           << "\n oscillation mixing params: " << util::AsString(omp)
-           << "\n and independent squared mass-splittings: " << util::AsString(dmsqscheme)
-           << "\n in the context of 3-flavour oscillations";
-      exit(1);
-    }
-
-    //
-    // Calculate and apply 3-flavour oscillation probabilities
-    //
-
-    // ...
 
 
-  } else {
-    //
-    // in this example handle only 3-flavour oscillations
-    //
-    LOG("NDModel",pERROR) << "Can not handle hypothesis: " << fPhysHypothesis;
-    return false;
-  }
+
+
+
 
   LOG("NDModel",pDEBUG) << "Done generating predictions";
 
@@ -211,4 +141,13 @@ bool NDModel::Write(
   return true;
 }
 //________________________________________________________________________________________
-
+void NDModel::Book(void)
+{
+  for(int isample = 0; isample < kNNDSamples; isample++) {
+    for(int imode = 0; imode < kNNDModes; imode++) {
+      for(int izone = 0; izone < kNMaxBinZones; izone++) {
+      fMCTemplNom[isample][imode][izone] = ?
+    }
+  }
+}
+//________________________________________________________________________________________
