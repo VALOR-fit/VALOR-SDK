@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_utils_h_
-#define _t2kana_utils_h_
+#ifndef _valor_utils_h_
+#define _valor_utils_h_
 
 #include <string>
 #include <vector>

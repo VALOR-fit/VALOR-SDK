@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_style_utils_h_
-#define _t2kana_style_utils_h_
+#ifndef _valor_style_utils_h_
+#define _valor_style_utils_h_
 
 #include <iostream>
 #include <string>

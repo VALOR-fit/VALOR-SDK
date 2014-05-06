@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
    
-#ifndef _t2kana_phys_param_list_h_
-#define _t2kana_phys_param_list_h_
+#ifndef _valor_phys_param_list_h_
+#define _valor_phys_param_list_h_
 
 #include <iostream>
 #include <string>

@@ -17,8 +17,8 @@
 */
 //____________________________________________________________________________
    
-#ifndef _t2kana_phys_hypothesis_h_
-#define _t2kana_phys_hypothesis_h_
+#ifndef _valor_phys_hypothesis_h_
+#define _valor_phys_hypothesis_h_
 
 #include <iostream>
 #include <string>

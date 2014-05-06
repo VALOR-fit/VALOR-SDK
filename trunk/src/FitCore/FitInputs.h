@@ -17,8 +17,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_fit_inputs_h_
-#define _t2kana_fit_inputs_h_
+#ifndef _valor_fit_inputs_h_
+#define _valor_fit_inputs_h_
 
 #include <Minuit2/FCNBase.h>
 #include <Math/IFunction.h>

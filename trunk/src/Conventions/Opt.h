@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef __t2kana_opt__
-#define __t2kana_opt__
+#ifndef __valor_opt__
+#define __valor_opt__
 
 #include <iostream>
 #include <TNamed.h>
@@ -130,4 +130,4 @@ ostream & operator<< (ostream & stream, const Opt & plst);
 
 
 }      // valor namespace
-#endif // __t2kana_opt__
+#endif // __valor_opt__

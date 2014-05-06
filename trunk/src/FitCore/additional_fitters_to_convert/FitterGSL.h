@@ -27,8 +27,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_fitter_gsl_h_
-#define _t2kana_fitter_gsl_h_
+#ifndef _valor_fitter_gsl_h_
+#define _valor_fitter_gsl_h_
 
 //#include "Build.h"
 #define __GSL_ENABLED__

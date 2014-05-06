@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_fit_model_abc_h_
-#define _t2kana_fit_model_abc_h_
+#ifndef _valor_fit_model_abc_h_
+#define _valor_fit_model_abc_h_
 
 #include <string>
 
