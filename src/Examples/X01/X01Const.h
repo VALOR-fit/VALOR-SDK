@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_const_example01_h_
-#define _t2kana_const_example01_h_
+#ifndef _valor_const_example01_h_
+#define _valor_const_example01_h_
 
 namespace valor    {
 namespace conv      {

@@ -21,8 +21,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_fitter_minuit_h_
-#define _t2kana_fitter_minuit_h_
+#ifndef _valor_fitter_minuit_h_
+#define _valor_fitter_minuit_h_
 
 #include <TMinuit.h>
 #include <TString.h>

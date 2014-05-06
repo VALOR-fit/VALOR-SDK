@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_example_01_model_h_
-#define _t2kana_example_01_model_h_
+#ifndef _valor_example_01_model_h_
+#define _valor_example_01_model_h_
 
 #include <string>
 #include <TObjArray.h>

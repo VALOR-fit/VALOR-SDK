@@ -13,8 +13,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_array_h_
-#define _t2kana_array_h_
+#ifndef _valor_array_h_
+#define _valor_array_h_
 
 #include <TObject.h>
 #include <vector>

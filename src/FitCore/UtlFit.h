@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_fitter_utilities_h_
-#define _t2kana_fitter_utilities_h_
+#ifndef _valor_fitter_utilities_h_
+#define _valor_fitter_utilities_h_
 
 #include "FitCore/FitterABC.h"
 #include "FitCore/FitInputs.h"

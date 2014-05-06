@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_utils_examples_ex01_h_
-#define _t2kana_utils_examples_ex01_h_
+#ifndef _valor_utils_examples_ex01_h_
+#define _valor_utils_examples_ex01_h_
 
 namespace valor {
 namespace util {

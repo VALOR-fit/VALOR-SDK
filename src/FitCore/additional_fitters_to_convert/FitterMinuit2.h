@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_fitter_minuit2_h_
-#define _t2kana_fitter_minuit2_h_
+#ifndef _valor_fitter_minuit2_h_
+#define _valor_fitter_minuit2_h_
 
 #include <TString.h>
 #include <TObject.h>

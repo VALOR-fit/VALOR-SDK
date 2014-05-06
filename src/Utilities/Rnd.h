@@ -23,8 +23,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef __t2kana_rnd__
-#define __t2kana_rnd__
+#ifndef __valor_rnd__
+#define __valor_rnd__
 
 #include <iostream>
 
@@ -86,4 +86,4 @@ private:
 ostream & operator<< (ostream & stream, const Rnd & plst);
 
 }      // valor namespace
-#endif // __t2kana_rnd__
+#endif // __valor_rnd__
