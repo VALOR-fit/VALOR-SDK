@@ -17,8 +17,6 @@
 
 #pragma link C++ class valor::FitInputs;
 
-#pragma link C++ class valor::VALORArray;
-
 #pragma link C++ class valor::FitterABC;
 #pragma link C++ class valor::FitterMinuit;
 //#pragma link C++ class valor::FitterMinuit2;
