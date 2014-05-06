@@ -8,6 +8,8 @@
 #pragma link C++ namespace valor::conv;
 #pragma link C++ namespace valor::util;
 
+#pragma link C++ class valor::VALORArray;
+
 //#pragma link C++ class valor::util::ArrIdx;
 #pragma link C++ class valor::Rnd;
 //#pragma link C++ class valor::PhysHypothesis;
