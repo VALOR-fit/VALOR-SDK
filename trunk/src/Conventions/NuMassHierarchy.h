@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\enum      t2kana::conv::NuMassHierarchy_t
+\enum      valor::conv::NuMassHierarchy_t
 
 \brief     Neutrino mass hierarchy enumeration
 
@@ -22,7 +22,7 @@
 
 using std::string;
 
-namespace t2kana {
+namespace valor {
 
 namespace conv {
 
@@ -44,7 +44,7 @@ namespace util {
 
 } // util
 
-} // t2kana
+} // valor
   
 #endif 
 

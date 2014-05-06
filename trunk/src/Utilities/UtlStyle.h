@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::utils
+\class     valor::utils
 
 \brief     Utilities for formatting and style
 
@@ -33,7 +33,7 @@ using std::string;
 using std::vector;
 using std::cout;
 
-namespace t2kana {
+namespace valor {
 namespace util {
 
   void SetDefaultStyle(bool black_n_white=false);
@@ -52,7 +52,7 @@ namespace util {
 //  void PrintCompactTex (const TMatrixD & m, int w=20, int prec=9, ostream & stream = cout, TString opt = "");
 
 } // util
-} // t2kana
+} // valor
   
 #endif
 

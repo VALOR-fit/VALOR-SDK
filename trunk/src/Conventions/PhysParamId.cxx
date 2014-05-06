@@ -14,8 +14,8 @@ ChangeLog:
 #include "Conventions/NuOscMixParam.h"
 #include "Conventions/Opt.h"
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 string util::AsString(PhysParamId_t p)

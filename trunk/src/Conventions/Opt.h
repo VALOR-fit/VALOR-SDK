@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::Opt
+\class     valor::Opt
 
 \brief     Singleton to keep global analysis options
 
@@ -29,7 +29,7 @@
 
 using std::ostream;
 
-namespace t2kana {
+namespace valor {
 
 class Opt {
 
@@ -129,5 +129,5 @@ private:
 ostream & operator<< (ostream & stream, const Opt & plst);
 
 
-}      // t2kana namespace
+}      // valor namespace
 #endif // __t2kana_opt__

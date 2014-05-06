@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::conv::example01
+\class     valor::conv::example01
 
 \brief     Constants for example fit 01
 
@@ -18,7 +18,7 @@
 #ifndef _t2kana_const_example01_h_
 #define _t2kana_const_example01_h_
 
-namespace t2kana    {
+namespace valor    {
 namespace conv      {
 namespace example01 {
 
@@ -34,7 +34,7 @@ static const double kBkgSlope  = 0.02; // parameterizes a simple bkg, A 20% bkg 
 
 } // example01
 } // conv
-} // t2kana
+} // valor
   
 #endif 
 

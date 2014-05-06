@@ -13,10 +13,10 @@ ChangeLog:
 
 using std::endl;
 
-using namespace t2kana;
+using namespace valor;
 
 //____________________________________________________________________________
-namespace t2kana {
+namespace valor {
   ostream & operator<<(ostream & stream, const Rnd & rnd)
   {
     rnd.Print(stream);

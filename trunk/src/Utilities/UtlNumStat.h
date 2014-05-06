@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::utils
+\class     valor::utils
 
 \brief     Numerical and statistics utilities
 
@@ -42,7 +42,7 @@ class TAxis;
 using std::string;
 using std::vector;
 
-namespace t2kana {
+namespace valor {
 namespace util {
 
   //
@@ -93,7 +93,7 @@ namespace util {
   int Sign(double x);
   
 } // util
-} // t2kana
+} // valor
   
 #endif
 

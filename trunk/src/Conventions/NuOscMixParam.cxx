@@ -8,8 +8,8 @@
 
 #include "Conventions/NuOscMixParam.h"
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //____________________________________________________________________________
 string util::AsString(conv::NuOscMixParam_t p)

@@ -13,7 +13,7 @@ ChangeLog:
 #include <algorithm>
 
 //___________________________________________________________________________
-string t2kana::util::TrimSpaces(string input)
+string valor::util::TrimSpaces(string input)
 {
   if( input.find_first_not_of(" \n") != 0)
     input.erase( 0,  input.find_first_not_of(" \n")  );
@@ -24,7 +24,7 @@ string t2kana::util::TrimSpaces(string input)
   return input;
 }
 //____________________________________________________________________________
-vector<string> t2kana::util::Tokens (string input, string delimiter)
+vector<string> valor::util::Tokens (string input, string delimiter)
 {
 // split a string of 'delimiter' separated values and return each string
 // part as a vector<string> element.
@@ -41,7 +41,7 @@ vector<string> t2kana::util::Tokens (string input, string delimiter)
 }
 //___________________________________________________________________________
 
-string t2kana::util::ToLowerCase(string data)
+string valor::util::ToLowerCase(string data)
 {
   std::transform(data.begin(), data.end(), data.begin(), ::tolower);
   return data;

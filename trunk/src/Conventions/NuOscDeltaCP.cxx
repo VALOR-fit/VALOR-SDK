@@ -10,8 +10,8 @@ ChangeLog:
 
 #include "Conventions/NuOscDeltaCP.h"
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 string util::AsString(NuOscDeltaCP_t d)

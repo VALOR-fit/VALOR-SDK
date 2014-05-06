@@ -30,7 +30,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-using namespace t2kana;
+using namespace valor;
 
 //____________________________________________________________________________
 Messenger * Messenger::fInstance = 0;

@@ -36,8 +36,8 @@ void run_osc_fit
 
 {
   using namespace std;
-  using namespace t2kana;
-  using namespace t2kana::conv;
+  using namespace valor;
+  using namespace valor::conv;
 
 //Messenger * msg = Messenger::Instance();
 
@@ -114,8 +114,8 @@ void run_osc_fit
 
   // Create tree to store outputs
   TTree * fitnt = new TTree("fitnt","Results of VALOR data and/or toy-MC experiment fits");
-  fitnt->Branch("input_params",           "t2kana::PhysParamList", &iparm,         1280000,0);
-  fitnt->Branch("global_best_fit_params", "t2kana::FitParamList",  &gfparm,        1280000,0);
+  fitnt->Branch("input_params",           "valor::PhysParamList", &iparm,         1280000,0);
+  fitnt->Branch("global_best_fit_params", "valor::FitParamList",  &gfparm,        1280000,0);
   fitnt->Branch("best_fit_params",        "TObjArray",             &bfp_array,     1280000,0);
   fitnt->Branch("spectra",                "TObjArray",             &spectra_array, 1280000,0);
 

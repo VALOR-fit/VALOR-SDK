@@ -61,11 +61,11 @@ using std::setprecision;
 using std::ofstream;
 using std::ostringstream;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //____________________________________________________________________________
-double t2kana::util::DeltaChisquare(
+double valor::util::DeltaChisquare(
   ConfLevel_t cl, int nfitparams) 
 {
   switch(cl) {
@@ -112,7 +112,7 @@ double t2kana::util::DeltaChisquare(
   return -99999;
 } 
 //____________________________________________________________________________
-double t2kana::util::ChisqGauss(
+double valor::util::ChisqGauss(
   double ndata, double nmc)
 {
   double chisq = 0.;
@@ -122,7 +122,7 @@ double t2kana::util::ChisqGauss(
   return chisq;
 }
 //____________________________________________________________________________
-double t2kana::util::ChisqPoisson(
+double valor::util::ChisqPoisson(
   double ndata, double nmc)
 {
   if(nmc <= 0.)
@@ -132,7 +132,7 @@ double t2kana::util::ChisqPoisson(
   return 2. * (nmc-ndata) + 2. * ndata * TMath::Log(ndata/nmc);
 }
 //____________________________________________________________________________
-TMatrixD t2kana::util::CholeskyDecomposition(TMatrixD& cov_matrix)
+TMatrixD valor::util::CholeskyDecomposition(TMatrixD& cov_matrix)
 {
 // Perform a Cholesky decomposition of the input covariance matrix and
 // return the lower triangular matrix
@@ -185,7 +185,7 @@ TMatrixD t2kana::util::CholeskyDecomposition(TMatrixD& cov_matrix)
   return LT;
 }
 //____________________________________________________________________________
-TVectorD t2kana::util::CholeskyGenerateCorrelatedParams (
+TVectorD valor::util::CholeskyGenerateCorrelatedParams (
     TMatrixD& cholesky_triangular, TVectorD& mean_params) 
 {
 // Generate a vector of correlated params
@@ -242,7 +242,7 @@ TVectorD t2kana::util::CholeskyGenerateCorrelatedParams (
   return correlated_params;
 }
 //____________________________________________________________________________
-TVectorD t2kana::util::CholeskyGenerateCorrelatedParams (
+TVectorD valor::util::CholeskyGenerateCorrelatedParams (
  TMatrixD& cholesky_triangular, TVectorD& mean_params, TVectorD& g_uncorrelated) 
 {
 // Generate a vector of correlated params
@@ -300,7 +300,7 @@ TVectorD t2kana::util::CholeskyGenerateCorrelatedParams (
   return correlated_params;
 }
 //____________________________________________________________________________
-TVectorD t2kana::util::CholeskyGenerateCorrelatedParamVariations (
+TVectorD valor::util::CholeskyGenerateCorrelatedParamVariations (
     TMatrixD& cholesky_triangular) 
 {
 // Generate a vector of correlated params
@@ -327,7 +327,7 @@ TVectorD t2kana::util::CholeskyGenerateCorrelatedParamVariations (
   return g;
 }
 //____________________________________________________________________________
-TVectorD t2kana::util::CholeskyCalculateCorrelatedParamVariations (
+TVectorD valor::util::CholeskyCalculateCorrelatedParamVariations (
     TMatrixD& cholesky_triangular, TVectorD & g_uncorrelated) 
 {
 // Generate a vector of correlated params
@@ -351,7 +351,7 @@ TVectorD t2kana::util::CholeskyCalculateCorrelatedParamVariations (
   return g;
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeMixing12(void)
+double valor::util::RandomizeMixing12(void)
 {
   double mix = 0;
 
@@ -386,7 +386,7 @@ double t2kana::util::RandomizeMixing12(void)
   return util::RandomizeMixing12();
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeMixing23(void)
+double valor::util::RandomizeMixing23(void)
 {
 
   double mix = 0;
@@ -422,7 +422,7 @@ double t2kana::util::RandomizeMixing23(void)
   return util::RandomizeMixing23();
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeMixing13(void)
+double valor::util::RandomizeMixing13(void)
 {
 
   double mix = 0;
@@ -458,7 +458,7 @@ double t2kana::util::RandomizeMixing13(void)
   return util::RandomizeMixing13();
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeCPV(void)
+double valor::util::RandomizeCPV(void)
 {
   NuOscDeltaCP_t cpv = Opt::Instance()->gOscDeltaCP;
   switch(cpv) {
@@ -485,7 +485,7 @@ double t2kana::util::RandomizeCPV(void)
   return -99999;
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeDm12sq(void)
+double valor::util::RandomizeDm12sq(void)
 {
   double mean  = conv::kGlobFitDm12sq; 
   double sigma = conv::kGlobFitDm12sq * conv::kGlobFitErrDm12sq;
@@ -498,7 +498,7 @@ double t2kana::util::RandomizeDm12sq(void)
   return util::RandomizeDm12sq();
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeDm23sq(void)
+double valor::util::RandomizeDm23sq(void)
 {
   double mean  = 0.0;
   NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
@@ -529,14 +529,14 @@ double t2kana::util::RandomizeDm23sq(void)
   return util::RandomizeDm12sq();
 }
 //____________________________________________________________________________
-int t2kana::util::Sign(double tweaking_dial)
+int valor::util::Sign(double tweaking_dial)
 {
   if(fabs(tweaking_dial) < kASmallNum) return 0;
   if (tweaking_dial < 0) return -1;
   return +1;
 }
 //____________________________________________________________________________
-int t2kana::util::DiagonaliseJacobi(
+int valor::util::DiagonaliseJacobi(
      std::complex<double> A[3][3],  std::complex<double> Q[3][3], double w[3])
 // ----------------------------------------------------------------------------
 // Calculates the eigenvalues and normalized eigenvectors of a hermitian 3x3
@@ -667,7 +667,7 @@ int t2kana::util::DiagonaliseJacobi(
   return -1;
 }
 //____________________________________________________________________________
-int t2kana::util::DiagonaliseGSL(
+int valor::util::DiagonaliseGSL(
 #ifdef __GSL_ENABLED__ 
 int ndim, double * matrix_in, double * eigenvectors_out, double * eigenvalues_out
 #else

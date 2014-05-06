@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::conv::PhysParamId_t;
+\class     valor::conv::PhysParamId_t;
 
 \brief     Conventions
 
@@ -22,7 +22,7 @@
 
 using std::string;
 
-namespace t2kana {
+namespace valor {
 
 namespace conv {
 
@@ -101,7 +101,7 @@ namespace util {
 
 } // util
 
-} // t2kana
+} // valor
   
 #endif // _phys_param_id_h_
 

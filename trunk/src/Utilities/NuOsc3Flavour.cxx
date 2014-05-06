@@ -27,8 +27,8 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 NuOsc3Flavour::NuOsc3Flavour()

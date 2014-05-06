@@ -5,8 +5,8 @@
 #pragma link off all functions;
 
 #pragma link C++ namespace log4cpp;
-#pragma link C++ namespace t2kana;
+#pragma link C++ namespace valor;
 
-#pragma link C++ class t2kana::Messenger;
+#pragma link C++ class valor::Messenger;
 
 #endif

@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::utils::example01
+\class     valor::utils::example01
 
 \brief     Utilities for examples
 
@@ -18,7 +18,7 @@
 #ifndef _t2kana_utils_examples_ex01_h_
 #define _t2kana_utils_examples_ex01_h_
 
-namespace t2kana {
+namespace valor {
 namespace util {
 namespace example01 {
 
@@ -27,7 +27,7 @@ namespace example01 {
   
 } // example01
 } // util
-} // t2kana
+} // valor
   
 #endif
 

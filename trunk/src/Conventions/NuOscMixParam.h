@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class    t2kana::conv::NuOscMixParam_t
+\class    valor::conv::NuOscMixParam_t
 
 \brief    Choices of oscillation mixing parameter
 
@@ -20,7 +20,7 @@
 
 using std::string;
 
-namespace t2kana {
+namespace valor {
 
 namespace conv {
 
@@ -42,7 +42,7 @@ namespace util {
 
 } // util
 
-} // t2kana
+} // valor
   
 #endif 
 

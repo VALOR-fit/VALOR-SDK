@@ -16,13 +16,13 @@ ChangeLog:
 using std::endl;
 using std::string;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 ClassImp(Opt::Persistable);
 
 //________________________________________________________________________________________
-namespace t2kana {
+namespace valor {
   ostream & operator<<(ostream & stream, const Opt & opt)
   {
     opt.Print(stream);

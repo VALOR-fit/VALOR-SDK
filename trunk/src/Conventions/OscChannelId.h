@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::conv::OscChannelId_t
+\class     valor::conv::OscChannelId_t
 
 \brief     Enumeration of oscillation channels
 
@@ -22,7 +22,7 @@
 
 using std::string;
 
-namespace t2kana {
+namespace valor {
 
 namespace conv {
 
@@ -85,7 +85,7 @@ namespace util {
 
 } // util
 
-} // t2kana
+} // valor
   
 #endif 
 

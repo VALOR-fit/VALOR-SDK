@@ -11,8 +11,8 @@ ChangeLog:
 #include "Conventions/OscChannelId.h" 
 #include "Conventions/PDG.h"
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 string util::AsString(OscChannelId_t osch)

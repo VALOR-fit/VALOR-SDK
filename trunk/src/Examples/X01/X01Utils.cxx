@@ -13,7 +13,7 @@ ChangeLog:
 #include "Examples/X01/X01Utils.h"
 #include "Examples/X01/X01Const.h"
 
-using namespace t2kana;
+using namespace valor;
 
 //____________________________________________________________________________
 double util::example01::SigSpectrumUnosc(double E)

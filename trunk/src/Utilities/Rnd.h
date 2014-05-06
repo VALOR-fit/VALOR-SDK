@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::Rnd
+\class     valor::Rnd
 
 \brief     Singleton to keep instances of random number generators used in the
            analysis and control their seed numbers.
@@ -32,7 +32,7 @@
 
 using std::ostream;
 
-namespace t2kana {
+namespace valor {
 
 class Rnd {
 
@@ -85,5 +85,5 @@ private:
 
 ostream & operator<< (ostream & stream, const Rnd & plst);
 
-}      // t2kana namespace
+}      // valor namespace
 #endif // __t2kana_rnd__

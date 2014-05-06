@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::conv::NuOscDmsqScheme_t
+\class     valor::conv::NuOscDmsqScheme_t
 
 \brief     Choice of squared mass splitting parameter
 
@@ -21,7 +21,7 @@
 
 using std::string;
 
-namespace t2kana {
+namespace valor {
 
 namespace conv {
 
@@ -44,7 +44,7 @@ namespace util {
 
 } // util
 
-} // t2kana
+} // valor
   
 #endif 
 

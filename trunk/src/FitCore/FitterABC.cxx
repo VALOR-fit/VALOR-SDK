@@ -10,7 +10,7 @@ ChangeLog:
 
 #include "FitterABC.h"
 
-using namespace t2kana;
+using namespace valor;
 
 //________________________________________________________________________________________
 FitterABC::FitterABC() 

@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::Ex01Model
+\class     valor::Ex01Model
 
 \brief     Example 01 - Class deriving from FitModelABC
 
@@ -28,7 +28,7 @@
 
 class TH1D;
 
-namespace t2kana {
+namespace valor {
 
 class X01Model: public FitModelABC
 {
@@ -64,7 +64,7 @@ private:
   NuOsc3Flavour  fNuOsc3Flavour;
 };
 
-} // t2kana
+} // valor
 
 #endif
 

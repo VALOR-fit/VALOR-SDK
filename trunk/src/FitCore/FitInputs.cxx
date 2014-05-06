@@ -32,8 +32,8 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 ClassImp(FitInputs)
 
@@ -614,7 +614,7 @@ double FitInputs::operator() (const std::vector<double>& x) const
   return 0;
 }
 //____________________________________________________________________________ 
-void t2kana::FitFunc (
+void valor::FitFunc (
   Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t /*iflag*/) 
 {
 // To be used with a TVirtualFitter

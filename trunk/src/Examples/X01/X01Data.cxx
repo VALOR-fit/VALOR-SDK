@@ -24,8 +24,8 @@ ChangeLog:
 #include "Utilities/UtlNumStat.h"
 #include "Messenger/Messenger.h"
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 X01Data::X01Data() :

@@ -11,8 +11,8 @@ ChangeLog:
 #include "Conventions/NuMassHierarchy.h"
 #include "Utilities/UtlStr.h"
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 string util::AsString(NuMassHierarchy_t m)

@@ -33,13 +33,13 @@ using std::endl;
 using std::setw;
 using std::setprecision;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 ClassImp(FitParamList)
 
 //________________________________________________________________________________________
-namespace t2kana {
+namespace valor {
   ostream & operator << (ostream & stream, const FitParamList & plst)
   {
     plst.Print(stream);
@@ -291,7 +291,7 @@ void FitParamList::SetTo(TVirtualFitter * fitter)
 {
   if(!fitter) return;
   fitter->Clear();
-  map<t2kana::conv::PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
+  map<valor::conv::PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
   for ( ; iter != fIdMap.end(); ++iter) {
     PhysParamId_t p = iter->first;
     int iparam = iter->second;
@@ -314,7 +314,7 @@ void FitParamList::SetTo(ROOT::Minuit2::MnUserParameters & params)
   //if(!params) return;
   //params.Clear();
   for(int ip = 0; ip < fNParams; ip++) {
-    t2kana::conv::PhysParamId_t p = WhichParam(ip);
+    valor::conv::PhysParamId_t p = WhichParam(ip);
     //keep mixing angles in physical region
     if(util::IsMixingAngle(p)) {
       params.Add(this->Name(p).c_str(), this->InitValue(p), this->StepSize(p), 0, 1);
@@ -352,7 +352,7 @@ void FitParamList::SetTo(ROOT::Math::Minimizer * fitter)
 {
   if(!fitter) return;
   fitter->Clear();
-  // map<t2kana::conv::PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
+  // map<valor::conv::PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
   // for ( ; iter != fIdMap.end(); ++iter) {
   for(int ip = 0; ip < fNParams; ip++) {  
     //    PhysParamId_t p = iter->first;
@@ -381,7 +381,7 @@ void FitParamList::SetTo(ROOT::Math::Minimizer * fitter)
 void FitParamList::SetTo(ROOT::Fit::Fitter * fitter)
 {
   if(!fitter) return;
-  // map<t2kana::conv::PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
+  // map<valor::conv::PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
   // for ( ; iter != fIdMap.end(); ++iter) {
   double par0[fNParams];
   for(int ip = 0; ip < fNParams; ip++) {
@@ -439,7 +439,7 @@ PhysParamList FitParamList::AsPhysParamList(Option_t * option) const
   return pl;
 }
 //________________________________________________________________________________________
-void FitParamList::FromPhysParamList(t2kana::PhysParamList pl, Option_t * option, bool skip_osc_params)
+void FitParamList::FromPhysParamList(valor::PhysParamList pl, Option_t * option, bool skip_osc_params)
 {
   TString opt(option);
   map<PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
@@ -1344,7 +1344,7 @@ int FitParamList::Id(PhysParamId_t p) const
    return id;
 }
 //________________________________________________________________________________________
-t2kana::conv::PhysParamId_t FitParamList::WhichParam(int id) const
+valor::conv::PhysParamId_t FitParamList::WhichParam(int id) const
 {
    map<PhysParamId_t, int>::const_iterator it = fIdMap.begin();
    for( ; it != fIdMap.end(); ++it) {

@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class    t2kana::Messenger
+\class    valor::Messenger
 
 \brief    A more convenient interface to the log4cpp Message Service
           Adappted from GENIE with permission from the authors.
@@ -191,7 +191,7 @@ using std::string;
 #define BLOG(stream, priority) \
 	  (*Messenger::Instance())(stream) << priority
 
-namespace t2kana {
+namespace valor {
 
 class Messenger
 {
@@ -226,5 +226,5 @@ private:
   friend struct Cleaner;
 };
 
-}      // t2kana namespace
+}      // valor namespace
 #endif // _MESSENGER_H_

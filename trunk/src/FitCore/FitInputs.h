@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::FitInputs
+\class     valor::FitInputs
 
 \brief     Bundles fitter inputs into a single TObject-derived class so that 
            they can be passed to the minuit fitting function via 
@@ -27,7 +27,7 @@
 
 #include "FitCore/FitParamList.h"
 
-namespace t2kana {
+namespace valor {
   
 class FitDataABC;
 class FitModelABC; 
@@ -134,7 +134,7 @@ private:
 
 void FitFunc (Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t iflag);
 
-} // t2kana
+} // valor
 
 #endif
 

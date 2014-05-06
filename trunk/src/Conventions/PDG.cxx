@@ -10,8 +10,8 @@ ChangeLog:
 
 #include "Conventions/PDG.h"
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 bool util::IsNeutrino(int pdg_code)

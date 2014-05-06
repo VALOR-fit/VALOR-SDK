@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class    t2kana::VALORArray
+\class    valor::VALORArray
 
 \brief    N-dimensional array (for N<=6)
 
@@ -19,7 +19,7 @@
 #include <TObject.h>
 #include <vector>
 
-namespace t2kana {
+namespace valor {
 
 class VALORArray: public TObject
 {
@@ -69,6 +69,6 @@ private:
 ClassDef(VALORArray, 1)
 };
 
-} //t2kana
+} //valor
 
 #endif

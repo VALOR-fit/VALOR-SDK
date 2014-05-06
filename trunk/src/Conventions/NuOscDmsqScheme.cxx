@@ -10,8 +10,8 @@ ChangeLog:
 
 #include "Conventions/NuOscDmsqScheme.h"
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 string util::AsString(conv::NuOscDmsqScheme_t dmsqs)

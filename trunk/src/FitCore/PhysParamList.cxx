@@ -20,13 +20,13 @@ using std::endl;
 using std::setw;
 using std::setprecision;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 ClassImp(PhysParamList)
 
 //________________________________________________________________________________________
-namespace t2kana {
+namespace valor {
   ostream & operator << (ostream & stream, const PhysParamList & pl)
   {
     pl.Print(stream);

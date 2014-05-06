@@ -28,8 +28,8 @@ ChangeLog:
 
 using std::endl;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 X01Model::X01Model() :
