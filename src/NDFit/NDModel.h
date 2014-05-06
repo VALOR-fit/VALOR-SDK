@@ -24,11 +24,14 @@
 
 #include <string>
 #include <TObjArray.h>
+#include <TH1D.h>
 
 #include "FitCore/FitModelABC.h"
 #include "FitCore/PhysHypothesis.h"
 #include "FitCore/PhysParamList.h"
-#include "Utilities/NuOsc3Flavour.h"
+#include "NDFit/NDSample.h"
+#include "NDFit/NDSampleBinning.h"
+#include "NDFit/NDSampleModes.h"
 
 namespace t2kana {
 
@@ -58,9 +61,12 @@ public:
 
 private:
 
+  void Book(void);
 
   PhysHypothesis fPhysHypothesis;
-  NuOsc3Flavour  fNuOsc3Flavour;
+
+  TH1D * fMCTemplNom[conv::kNNDSamples][conv::kNNDModes][conv::kNMaxBinZones];
+
 };
 
 } // t2kana
