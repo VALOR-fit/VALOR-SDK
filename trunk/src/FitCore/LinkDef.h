@@ -17,6 +17,8 @@
 
 #pragma link C++ class t2kana::FitInputs;
 
+#pragma link C++ class t2kana::VALORArray;
+
 #pragma link C++ class t2kana::FitterABC;
 #pragma link C++ class t2kana::FitterMinuit;
 //#pragma link C++ class t2kana::FitterMinuit2;

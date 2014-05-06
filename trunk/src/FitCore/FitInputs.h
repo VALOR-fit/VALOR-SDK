@@ -81,6 +81,8 @@ public :
   FitParamList &  FitParams   (void);
 
   void UpdateParamList(FitParamList * fpar);
+  
+  double Statistic(Option_t * stat_opt = "likelihood-ratio") const;
 
   // set the chisq definition 5 bins vs 73 bins
   void SetChisqDefinition (bool goodnessoffit) { fGoodnessOfFit = goodnessoffit; }

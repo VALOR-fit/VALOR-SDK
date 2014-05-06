@@ -9,6 +9,7 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include "Conventions/NuMassHierarchy.h"
+#include "Utilities/UtlStr.h"
 
 using namespace t2kana;
 using namespace t2kana::conv;
@@ -32,8 +33,9 @@ string util::AsString(NuMassHierarchy_t m)
 //________________________________________________________________________________________
 NuMassHierarchy_t util::HierarchyFromString(string h)
 {
-  if(h == "normal"   ) return kNmhNormal;
-  if(h == "inverted" ) return kNmhInverted;
+  string lh = util::ToLowerCase(h);
+  if(lh == "normal"   ) return kNmhNormal;
+  if(lh == "inverted" ) return kNmhInverted;
 
   return kNmhUndefined;
 }
