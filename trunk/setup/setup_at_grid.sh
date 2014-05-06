@@ -1,13 +1,13 @@
 #!/bin/bash 
 
 #
-# VALOR_LBNX oscillation analysis code setup script for RAL/PPD Tier2
+# VALOR framework code setup script for Grid
 #
-# Input argument: oscillation analysis code top-level directory
+# Input argument: top-level directory
 #
 
-export VALOR_LBNX=$PWD/trunk_GRID/
-echo ${VALOR_LBNX}
+export VALOR_FMWK=$PWD/trunk_GRID/
+echo ${VALOR_FMWK}
 
 #export ROOTSYS=$VO_T2K_ORG_SW_DIR/nd280v10r11p17/ROOT/v5r30p02n01/amd64_linux26/
 #export ROOTSYS=$VO_T2K_ORG_SW_DIR/nd280v9r9p1/ROOT/v5r28p00n01/
@@ -42,6 +42,6 @@ fi
 
 echo ${ROOTSYS}
 
-export LD_LIBRARY_PATH=${VALOR_LBNX}/lib:${ROOTSYS}/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${VALOR_FMWK}/lib:${ROOTSYS}/lib:${LD_LIBRARY_PATH}
 
-export PATH=${VALOR_LBNX}/root:${VALOR_LBNX}/production:${ROOTSYS}/bin:${PATH}
+export PATH=${VALOR_FMWK}/root:${ROOTSYS}/bin:${PATH}

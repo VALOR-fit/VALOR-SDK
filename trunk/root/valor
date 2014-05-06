@@ -1,3 +1,3 @@
 #!/bin/sh
 
-root $VALOR_LBNX/root/valor.C $*
+root $VALOR_FMWK/root/valor.C $*
