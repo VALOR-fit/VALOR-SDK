@@ -10,6 +10,8 @@ ChangeLog:
 
 #include "Utilities/UtlStr.h"
 
+#include <algorithm>
+
 //___________________________________________________________________________
 string t2kana::util::TrimSpaces(string input)
 {
@@ -36,5 +38,12 @@ vector<string> t2kana::util::Tokens (string input, string delimiter)
   }
   tokens.push_back(input);
   return tokens;
+}
+//___________________________________________________________________________
+
+string t2kana::util::ToLowerCase(string data)
+{
+  std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+  return data;
 }
 //___________________________________________________________________________

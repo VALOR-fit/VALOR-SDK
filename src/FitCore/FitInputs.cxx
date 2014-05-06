@@ -75,7 +75,18 @@ FitParamList & FitInputs::FitParams(void)
   return *fFitParams; 
 }
 //________________________________________________________________________________________
+double FitInputs::Statistic(Option_t * option) const
+{
+  if (option || fGoodnessOfFit) {
+    const char * s = fGoodnessOfFit ? "%s gof" : "%s";
+    Option_t * newopt( Form(s,option) );
+    return fObs->Statistic(fExp,*fFitParams, newopt);
+  }
+  return fObs->Statistic(fExp,*fFitParams, NULL);
+}
 /*
+//________________________________________________________________________________________
+// DEPRECATED
 double FitInputs::Chisquare(Option_t * option, conv::SuperkSample_t s0, int point) const
 {
   TString opt = option;

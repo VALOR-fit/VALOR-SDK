@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _t2kana_utils_h_
-#define _t2kana_utils_h_
+#ifndef _t2kana_utils_numstat_h_
+#define _t2kana_utils_numstat_h_
 
 #include <string>
 #include <vector>
