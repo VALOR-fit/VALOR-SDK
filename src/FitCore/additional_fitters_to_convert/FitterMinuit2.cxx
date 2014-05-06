@@ -59,8 +59,8 @@ using std::cout;
 using std::endl; 
 using std::ostringstream;
 
-using namespace t2kana; 
-using namespace t2kana::conv;
+using namespace valor; 
+using namespace valor::conv;
    
 //____________________________________________________________________________ 
 FitterMinuit2::FitterMinuit2() :

@@ -2,7 +2,7 @@
 //____________________________________________________________________________
 /*!
 
-\class    t2kana::NuOscSterile
+\class    valor::NuOscSterile
 
 \brief    Neutrino-oscillation probabilities (incl. matter effects) for 
           1 or 2 sterile neutrinos in addition to the 3 active neutrinos.
@@ -24,7 +24,7 @@
 #include "Conventions/OscChannelId.h"
 #include "Conventions/NuMassHierarchy.h"
 
-namespace t2kana {
+namespace valor {
 
 class NuOscSterile
 {
@@ -41,7 +41,7 @@ class NuOscSterile
 
   void SetBaseline      (double length);
   void SetDensity       (double density);
-  void SetMassHierarchy (t2kana::conv::NuMassHierarchy_t h);
+  void SetMassHierarchy (valor::conv::NuMassHierarchy_t h);
   void SetSterileMassHierarchy(int h);
 
   void SetMixingAngles  (double sinsqtheta12, 
@@ -140,7 +140,7 @@ class NuOscSterile
 
   void Init(void);
 
-  t2kana::conv::NuMassHierarchy_t fMassHierarchy; ///< mass hierarchy
+  valor::conv::NuMassHierarchy_t fMassHierarchy; ///< mass hierarchy
   //set fSterileMassHierarchy to 32 for 3+2 model, i.e. m4^2 and m5^2 both > m1^2, m2^2 and m3^2
   //set it to 131 for 1+3+1 model, i.e. m4^2 < m1^2, m2^2 and m3^2, m5^2 > m1^2, m2^2 and m3^2
   //default is 32 which is set in Init()
@@ -161,6 +161,6 @@ class NuOscSterile
 
 };
 
-}//end of namespace t2kana
+}//end of namespace valor
 
 #endif

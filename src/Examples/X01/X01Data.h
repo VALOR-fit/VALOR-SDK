@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::X01Data
+\class     valor::X01Data
 
 \brief     Example 01 - Class deriving from FitDataABC
 
@@ -25,7 +25,7 @@
 class TObjArray;
 class TH1D;
 
-namespace t2kana {
+namespace valor {
 
 class X01Data: public FitDataABC
 {
@@ -55,7 +55,7 @@ private:
   TH1D * fTotSpectrumData;
 };
 
-} // t2kana
+} // valor
 
 #endif
 

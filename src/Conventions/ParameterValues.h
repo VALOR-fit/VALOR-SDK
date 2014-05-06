@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::conv
+\class     valor::conv
 
 \brief     Conventions
 
@@ -15,7 +15,7 @@
 Changes since 2011_v0.9.0:
 
 17-12-2013  Nick  
-Split t2kana::conv namespace into several smaller files
+Split valor::conv namespace into several smaller files
 
 */
 //____________________________________________________________________________
@@ -23,7 +23,7 @@ Split t2kana::conv namespace into several smaller files
 #ifndef parameter_values_h
 #define parameter_values_h
 
-namespace t2kana {
+namespace valor {
 namespace conv   {
 
 //
@@ -215,7 +215,7 @@ static const double kGF_SI          = kGF*khbarc3_SI*1.0e-18;        // Fermi co
 static const double kNA             = 6.022142e23;                   // Avogadro number (mol^-1)
 
 } // conv
-} // t2kana
+} // valor
   
 #endif 
 

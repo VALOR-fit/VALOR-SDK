@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
    
-\class     t2kana::PhysParamList
+\class     valor::PhysParamList
       
 \brief     A set of physics parameter values.
    
@@ -31,7 +31,7 @@ using std::ostream;
 using std::string;
 using std::map;
 
-namespace t2kana {
+namespace valor {
 
 class PhysParamList: public TNamed
 {
@@ -61,6 +61,6 @@ ClassDef(PhysParamList,1)
 
 ostream & operator<< (ostream & stream, const PhysParamList & plst);
 
-} // t2kana
+} // valor
 
 #endif

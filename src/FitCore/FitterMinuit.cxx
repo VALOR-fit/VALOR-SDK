@@ -30,8 +30,8 @@ ChangeLog:
 #include "FitCore/FitParamList.h" 
 #include "FitCore/FitDataABC.h" 
 
-using namespace t2kana; 
-using namespace t2kana::conv;
+using namespace valor; 
+using namespace valor::conv;
    
 //____________________________________________________________________________ 
 FitterMinuit::FitterMinuit() :

@@ -18,13 +18,13 @@ ChangeLog:
 //#include "FitCore/FitterMinuit2.h"
 #include "FitCore/UtlFit.h"
 
-using namespace t2kana;
+using namespace valor;
 
 using std::cerr;
 using std::cout;
 using std::endl;
 
-FitterABC * t2kana::util::GetFitter (FitInputs * inputs, Option_t * option)
+FitterABC * valor::util::GetFitter (FitInputs * inputs, Option_t * option)
 {
   if(!inputs) return 0;
   if(!option) return 0;

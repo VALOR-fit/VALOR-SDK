@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::FitterABC
+\class     valor::FitterABC
 
 \brief     Pure abstract base class (pABC) for VALOR fitters.
 
@@ -20,7 +20,7 @@
 
 #include <TString.h>
 
-namespace t2kana {
+namespace valor {
 
 class FitterABC
 {
@@ -41,7 +41,7 @@ protected:
    FitterABC();
 };
 
-} // t2kana
+} // valor
 
 #endif
 

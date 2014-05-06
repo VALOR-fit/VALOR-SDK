@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
    
-\class     t2kana::PhysHypothesis
+\class     valor::PhysHypothesis
       
 \brief     This class describes a physics hypothesis (eg. effective 2-flavour
            oscillation, 3-flavour oscillation, 3+N sterile flavour oscillation,
@@ -32,7 +32,7 @@ using std::ostream;
 using std::string;
 using std::map;
 
-namespace t2kana {
+namespace valor {
 
 class PhysHypothesis
 {
@@ -56,7 +56,7 @@ public:
    friend ostream & operator << (ostream & stream, const PhysHypothesis & ph);
 
    // Copy values to a PhysParamList 
-   t2kana::PhysParamList AsPhysParamList(void) const;
+   valor::PhysParamList AsPhysParamList(void) const;
 
 private:
 
@@ -66,6 +66,6 @@ private:
 
 ostream & operator<< (ostream & stream, const PhysHypothesis & plst);
 
-} // t2kana
+} // valor
 
 #endif

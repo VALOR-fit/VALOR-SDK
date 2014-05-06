@@ -10,7 +10,7 @@ ChangeLog:
 
 #include "FitCore/FitDataABC.h"
 
-using namespace t2kana;
+using namespace valor;
 
 //________________________________________________________________________________________
 FitDataABC::FitDataABC() 

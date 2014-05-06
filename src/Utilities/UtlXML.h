@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::utils
+\class     valor::utils
 
 \brief     XML utilities
 
@@ -40,7 +40,7 @@ class TAxis;
 using std::string;
 using std::vector;
 
-namespace t2kana {
+namespace valor {
 namespace util {
 
   XMLNodePointer_t FindNode          (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
@@ -67,7 +67,7 @@ namespace util {
   TAxis *          XML2BinInfo       (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
   
 } // util
-} // t2kana
+} // valor
   
 #endif
 

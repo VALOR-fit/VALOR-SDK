@@ -16,8 +16,8 @@ ChangeLog:
 
 using std::ostringstream;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //________________________________________________________________________________________
 string util::AsString(PhysHypothesis_t h)
@@ -53,7 +53,7 @@ string util::AsString (
   double deltacp, double dm12sq, double dm23sq)
 {
 // The code builds strings which are typically used in building names of
-// files containing t2kana results
+// files containing valor results
 //
 
   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
@@ -89,7 +89,7 @@ string util::AsString (
   // Params with value of -999 (randomized during toy-MC generation) will not be
   // included in the output string
   //
-  if( hyp == t2kana::conv::kHypOsc3F )
+  if( hyp == valor::conv::kHypOsc3F )
   {
     double rndmz = -900;
     bool show_mix12   = (mix12   > rndmz);
@@ -155,10 +155,10 @@ string util::AsString (
   }//3f
 
   // Placeholder for steriles
-  if (hyp == t2kana::conv::kHypOscSterile4F) {
+  if (hyp == valor::conv::kHypOscSterile4F) {
     out<<"sterile_3+1";
   }
-  if (hyp == t2kana::conv::kHypOscSterile5F) {
+  if (hyp == valor::conv::kHypOscSterile5F) {
     out<<"sterile_3+2";
   }
 
@@ -168,7 +168,7 @@ string util::AsString (
   // where mix is either sinsqtheta or sinsq2theta and nnn is the parameter
   // value with the specified numerical accuracy.
   //
-  if( hyp == t2kana::conv::kHypNuMuDisapp2F)
+  if( hyp == valor::conv::kHypNuMuDisapp2F)
   {
     out << mixparam << "23_" << Form("%.3f",mix23) << ",dm23sq_" << Form("%.5f",dm23sq) << "eV2";
   }

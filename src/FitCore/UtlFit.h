@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::utils
+\class     valor::utils
 
 \brief     Fitter utilities
 
@@ -21,7 +21,7 @@
 #include "FitCore/FitterABC.h"
 #include "FitCore/FitInputs.h"
 
-namespace t2kana {
+namespace valor {
 namespace util {
 
 // Method to return a VALOR fitter.
@@ -38,7 +38,7 @@ namespace util {
 FitterABC * GetFitter (FitInputs * inputs, Option_t * option);
 
 } // util
-} // t2kana
+} // valor
 
 #endif
 

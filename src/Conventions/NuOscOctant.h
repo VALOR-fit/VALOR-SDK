@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::conv::NuOscOctant_t
+\class     valor::conv::NuOscOctant_t
 
 \brief     Choice of theta_{23} octant
 
@@ -22,7 +22,7 @@
 
 using std::string;
 
-namespace t2kana {
+namespace valor {
 
 namespace conv {
 
@@ -44,7 +44,7 @@ namespace util {
 
 } // util
 
-} // t2kana
+} // valor
   
 #endif 
 

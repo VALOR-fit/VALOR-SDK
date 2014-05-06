@@ -4,10 +4,10 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ namespace t2kana;
-#pragma link C++ namespace t2kana::util::example01;
+#pragma link C++ namespace valor;
+#pragma link C++ namespace valor::util::example01;
 
-#pragma link C++ class t2kana::X01Data;
-#pragma link C++ class t2kana::X01Model;
+#pragma link C++ class valor::X01Data;
+#pragma link C++ class valor::X01Model;
 
 #endif

@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::FitParamList
+\class     valor::FitParamList
 
 \brief     List of parameters included in the fit
 
@@ -36,7 +36,7 @@
 using std::string;
 using std::map;
 
-namespace t2kana {
+namespace valor {
 
 class PhysParamList;
 
@@ -50,38 +50,38 @@ public:
 
    // Get information for the fit parameters
    int    Size           (void)                          const { return fNParams;  }
-   string Name           (t2kana::conv::PhysParamId_t p) const { return fName[this->Id(p)].GetString().Data();   }
-   double BestFitValue   (t2kana::conv::PhysParamId_t p) const { return fBestFitValue[this->Id(p)]; }
+   string Name           (valor::conv::PhysParamId_t p) const { return fName[this->Id(p)].GetString().Data();   }
+   double BestFitValue   (valor::conv::PhysParamId_t p) const { return fBestFitValue[this->Id(p)]; }
    double BestFitValue   (int i                        ) const { return fBestFitValue[i];           }
-   double CurrValue      (t2kana::conv::PhysParamId_t p) const { return fCurrValue   [this->Id(p)]; }
+   double CurrValue      (valor::conv::PhysParamId_t p) const { return fCurrValue   [this->Id(p)]; }
    double CurrValue      (int i                        ) const { return fCurrValue   [i];           }
-   double InitValue      (t2kana::conv::PhysParamId_t p) const { return fInitValue   [this->Id(p)]; }
-   double MinValue       (t2kana::conv::PhysParamId_t p) const { return fMinValue    [this->Id(p)]; }
-   double MaxValue       (t2kana::conv::PhysParamId_t p) const { return fMaxValue    [this->Id(p)]; }
-   double StepSize       (t2kana::conv::PhysParamId_t p) const { return fStepSize    [this->Id(p)]; }
-   bool   IsFixed        (t2kana::conv::PhysParamId_t p) const { return fIsFixed     [this->Id(p)]; }
-   bool   IsNuisance     (t2kana::conv::PhysParamId_t p) const { return fIsNuisance  [this->Id(p)]; }
-   double MigradError    (t2kana::conv::PhysParamId_t p) const { return fMigradError [this->Id(p)]; }
-   double HesseError     (t2kana::conv::PhysParamId_t p) const { return fHesseError  [this->Id(p)]; }
-   double PlusError      (t2kana::conv::PhysParamId_t p) const { return fPlusError   [this->Id(p)]; }
-   double MinusError     (t2kana::conv::PhysParamId_t p) const { return fMinusError  [this->Id(p)]; }
+   double InitValue      (valor::conv::PhysParamId_t p) const { return fInitValue   [this->Id(p)]; }
+   double MinValue       (valor::conv::PhysParamId_t p) const { return fMinValue    [this->Id(p)]; }
+   double MaxValue       (valor::conv::PhysParamId_t p) const { return fMaxValue    [this->Id(p)]; }
+   double StepSize       (valor::conv::PhysParamId_t p) const { return fStepSize    [this->Id(p)]; }
+   bool   IsFixed        (valor::conv::PhysParamId_t p) const { return fIsFixed     [this->Id(p)]; }
+   bool   IsNuisance     (valor::conv::PhysParamId_t p) const { return fIsNuisance  [this->Id(p)]; }
+   double MigradError    (valor::conv::PhysParamId_t p) const { return fMigradError [this->Id(p)]; }
+   double HesseError     (valor::conv::PhysParamId_t p) const { return fHesseError  [this->Id(p)]; }
+   double PlusError      (valor::conv::PhysParamId_t p) const { return fPlusError   [this->Id(p)]; }
+   double MinusError     (valor::conv::PhysParamId_t p) const { return fMinusError  [this->Id(p)]; }
 
-   void SetMinValue (t2kana::conv::PhysParamId_t p, double min) { fMinValue [this->Id(p)] = min; }
-   void SetMaxValue (t2kana::conv::PhysParamId_t p, double max) { fMaxValue [this->Id(p)] = max; }
+   void SetMinValue (valor::conv::PhysParamId_t p, double min) { fMinValue [this->Id(p)] = min; }
+   void SetMaxValue (valor::conv::PhysParamId_t p, double max) { fMaxValue [this->Id(p)] = max; }
 
    // Add a parameter
    bool AddParam (
-     int ip, t2kana::conv::PhysParamId_t p, double init, 
+     int ip, valor::conv::PhysParamId_t p, double init, 
      double min, double max, double step, bool fix=false, bool nuisance=false, string name="");
       
    // Check whether the input parameter was included in the physics param list
-   bool Exists (t2kana::conv::PhysParamId_t p) const;
+   bool Exists (valor::conv::PhysParamId_t p) const;
 
    // Update current/running value for the given parameter
-   void Update(t2kana::conv::PhysParamId_t p, double v);
+   void Update(valor::conv::PhysParamId_t p, double v);
 
    // Allow modifying the initial value (minimization may be sensitive to this choice)
-   void SetInitValue(t2kana::conv::PhysParamId_t p, double v);
+   void SetInitValue(valor::conv::PhysParamId_t p, double v);
 
    // Reset all current param values to their specified initial values
    void ResetCurrToInitValues (void);
@@ -104,15 +104,15 @@ public:
    void SetMinosErrors (std::vector<double> plus, std::vector<double> minus);
 
    // Fix a parameter
-   void FixParameter (t2kana::conv::PhysParamId_t p); 
+   void FixParameter (valor::conv::PhysParamId_t p); 
    void FixParameter (int ip); 
 
    // Free a parameter
-   void FreeParameter (t2kana::conv::PhysParamId_t p); 
+   void FreeParameter (valor::conv::PhysParamId_t p); 
    void FreeParameter (int ip); 
 
    // Set as nuisance parameter (contributes to \chi^{2}_{penalty})
-   void SetNuisance (t2kana::conv::PhysParamId_t p, bool tf);
+   void SetNuisance (valor::conv::PhysParamId_t p, bool tf);
 
    // Set parameter list to input TVirtualFitter 
    void SetTo (TVirtualFitter * fitter);
@@ -125,8 +125,8 @@ public:
    void Sync (std::vector<double> par);
 
    // copy initial, current or best-fit values to a PhysParamList 
-   t2kana::PhysParamList AsPhysParamList(Option_t * option = "current") const;
-   void FromPhysParamList(t2kana::PhysParamList pl, Option_t * option, bool skip_osc_params);
+   valor::PhysParamList AsPhysParamList(Option_t * option = "current") const;
+   void FromPhysParamList(valor::PhysParamList pl, Option_t * option, bool skip_osc_params);
 
    // Get number of free (not fixed) parameters
    int GetNumberFreeParameters(void);
@@ -188,8 +188,8 @@ public:
    bool HesseErrorsSet  (void) const { return fHesseErrorsSet;  }
    bool MinosErrorsSet  (void) const { return fMinosErrorsSet;  }
 
-   int  Id      (t2kana::conv::PhysParamId_t p) const; // PhysParamId_t --> array slot
-   t2kana::conv::PhysParamId_t WhichParam(int id) const; // array slot --> PhysParamId_t
+   int  Id      (valor::conv::PhysParamId_t p) const; // PhysParamId_t --> array slot
+   valor::conv::PhysParamId_t WhichParam(int id) const; // array slot --> PhysParamId_t
    
 private:
 
@@ -220,7 +220,7 @@ private:
    //
 
 
-   map<t2kana::conv::PhysParamId_t, int> fIdMap;
+   map<valor::conv::PhysParamId_t, int> fIdMap;
 
    string       fParListName;
    int          fSystMode; // used in FitInputs to make deciding on what to include in the chisq penalty faster. 0 no syst, 1 all syst, 2 selected syst, ...
@@ -258,7 +258,7 @@ ClassDef(FitParamList,1)
 
 ostream & operator<< (ostream & stream, const FitParamList & plst);
 
-} // t2kana
+} // valor
   
 #endif
 

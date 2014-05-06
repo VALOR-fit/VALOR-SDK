@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class    t2kana::conv
+\class    valor::conv
 
 \brief    PDG Codes
 
@@ -19,7 +19,7 @@
 
 using std::string;
 
-namespace t2kana {
+namespace valor {
 namespace conv   {
 
 static const int kPdgNuE      =   12;
@@ -47,7 +47,7 @@ namespace util {
 
 } // util
 
-} // t2kana
+} // valor
   
 #endif 
 

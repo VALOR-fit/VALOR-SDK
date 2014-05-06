@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::utils
+\class     valor::utils
 
 \brief     Utilities for string manipulation
 
@@ -24,7 +24,7 @@
 using std::string;
 using std::vector;
 
-namespace t2kana {
+namespace valor {
 namespace util {
 
   string         TrimSpaces      (string input);
@@ -32,7 +32,7 @@ namespace util {
   string         ToLowerCase     (string data);
   
 } // util
-} // t2kana
+} // valor
   
 #endif
 

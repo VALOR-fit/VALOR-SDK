@@ -47,10 +47,10 @@ using std::setprecision;
 using std::ofstream;
 using std::ostringstream;
 
-using namespace t2kana;
+using namespace valor;
 
 //___________________________________________________________________________
-XMLNodePointer_t t2kana::util::FindNode(
+XMLNodePointer_t valor::util::FindNode(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Find & return the XMLNodePointer_t at the specified path
@@ -77,7 +77,7 @@ XMLNodePointer_t t2kana::util::FindNode(
   return 0;
 }
 //___________________________________________________________________________
-bool t2kana::util::NodeExists(
+bool valor::util::NodeExists(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Find & return the XMLNodePointer_t at the specified path
@@ -104,7 +104,7 @@ bool t2kana::util::NodeExists(
   return false;
 }
 //___________________________________________________________________________
-double t2kana::util::XML2Dbl(
+double valor::util::XML2Dbl(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get the specified node content as a floating-point number
@@ -125,7 +125,7 @@ double t2kana::util::XML2Dbl(
   return value;
 }
 //___________________________________________________________________________
-vector<double> t2kana::util::XML2DblArray(
+vector<double> valor::util::XML2DblArray(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get the specified node content as a vector floating-point number
@@ -153,7 +153,7 @@ vector<double> t2kana::util::XML2DblArray(
   return array;
 }
 //___________________________________________________________________________
-string t2kana::util::XML2String(
+string valor::util::XML2String(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get the specified node content as a floating-point number
@@ -173,7 +173,7 @@ string t2kana::util::XML2String(
   return TrimSpaces(content);
 }
 //___________________________________________________________________________
-string t2kana::util::XML2RootFileName(
+string valor::util::XML2RootFileName(
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
   string filename = XML2String(xmleng,topnode,path+"/filename");
@@ -183,7 +183,7 @@ string t2kana::util::XML2RootFileName(
   return filename;
 }
 //___________________________________________________________________________
-string t2kana::util::XML2RootObjName (
+string valor::util::XML2RootObjName (
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
   string objname = XML2String(xmleng,topnode,path+"/objname");
@@ -193,7 +193,7 @@ string t2kana::util::XML2RootObjName (
   return objname;
 }
 //___________________________________________________________________________
-string t2kana::util::XML2RootObjType (
+string valor::util::XML2RootObjType (
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
   string objtype = XML2String(xmleng,topnode,path+"/objtype");
@@ -203,7 +203,7 @@ string t2kana::util::XML2RootObjType (
   return objtype;
 }
 //___________________________________________________________________________
-TFile * t2kana::util::XML2TFile(
+TFile * valor::util::XML2TFile(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 #ifdef __show_xml_mesg_info__
@@ -226,7 +226,7 @@ TFile * t2kana::util::XML2TFile(
   return file;
 }
 //___________________________________________________________________________
-TH1F * t2kana::util::XML2TH1F(
+TH1F * valor::util::XML2TH1F(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get a TH1F instance from the info in the input XML config file
@@ -256,7 +256,7 @@ TH1F * t2kana::util::XML2TH1F(
   return hcopy;
 }
 //___________________________________________________________________________
-TH1D * t2kana::util::XML2TH1D(
+TH1D * valor::util::XML2TH1D(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get a TH1D instance from the info in the input XML config file
@@ -286,7 +286,7 @@ TH1D * t2kana::util::XML2TH1D(
   return hcopy;
 }
 //___________________________________________________________________________
-TH2D * t2kana::util::XML2TH2D(
+TH2D * valor::util::XML2TH2D(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get a TH2D instance from the info in the input XML config file
@@ -316,7 +316,7 @@ TH2D * t2kana::util::XML2TH2D(
   return h2copy;
 }
 //___________________________________________________________________________
-TTree * t2kana::util::XML2TTree(
+TTree * valor::util::XML2TTree(
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get a TH2D instance from the info in the input XML config file
@@ -347,7 +347,7 @@ TTree * t2kana::util::XML2TTree(
 //  return treecopy;
 }
 //___________________________________________________________________________
-TVectorD * t2kana::util::XML2TVectorD(
+TVectorD * valor::util::XML2TVectorD(
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get a TVectorD instance from the info in the input XML config file
@@ -378,7 +378,7 @@ TVectorD * t2kana::util::XML2TVectorD(
   return vec_copy;
 }
 //___________________________________________________________________________
-TMatrixDSym * t2kana::util::XML2TMatrixDSym(
+TMatrixDSym * valor::util::XML2TMatrixDSym(
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get a TMatrixDSym instance from the info in the input XML config file
@@ -404,7 +404,7 @@ TMatrixDSym * t2kana::util::XML2TMatrixDSym(
   return matrix_copy;
 }
 //___________________________________________________________________________
-TMatrixD * t2kana::util::XML2TMatrixD(
+TMatrixD * valor::util::XML2TMatrixD(
     TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get a TMatrixD instance from the info in the input XML config file
@@ -433,7 +433,7 @@ TMatrixD * t2kana::util::XML2TMatrixD(
   return matrix_copy;
 }
 //___________________________________________________________________________
-TMatrixD * t2kana::util::XML2TH2D2TMatrixD(
+TMatrixD * valor::util::XML2TH2D2TMatrixD(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get a TH2D instance from the info in the input XML config file
@@ -481,7 +481,7 @@ TMatrixD * t2kana::util::XML2TH2D2TMatrixD(
   return matrix_copy;
 }
 //___________________________________________________________________________
-TSpline3 * t2kana::util::XML2TSpline3(
+TSpline3 * valor::util::XML2TSpline3(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
   string filename = XML2RootFileName(xmleng,topnode,path);
@@ -504,7 +504,7 @@ TSpline3 * t2kana::util::XML2TSpline3(
   return spl_copy;
 }
 //___________________________________________________________________________
-TAxis *  t2kana::util::XML2BinInfo(
+TAxis *  valor::util::XML2BinInfo(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 //

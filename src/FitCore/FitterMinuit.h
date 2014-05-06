@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::FitterMinuit
+\class     valor::FitterMinuit
 
 \brief     Minuit-based VALOR fitter.
 
@@ -29,7 +29,7 @@
 
 #include "FitCore/FitterABC.h"
 
-namespace t2kana {
+namespace valor {
 
 class FitInputs;
 
@@ -72,7 +72,7 @@ protected:
    int         fStr;
 };
 
-} // t2kana
+} // valor
 
 #endif
 

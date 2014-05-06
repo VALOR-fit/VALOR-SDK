@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::FitModelABC
+\class     valor::FitModelABC
 
 \brief     Pure abstract base class (pABC) for fit models.
 
@@ -26,7 +26,7 @@
 
 class TObjArray;
 
-namespace t2kana {
+namespace valor {
 
 class FitModelABC
 {
@@ -69,7 +69,7 @@ protected:
    FitModelABC();
 };
 
-} // t2kana
+} // valor
 
 #endif
 

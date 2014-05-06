@@ -24,7 +24,7 @@ using std::endl;
 using std::ios;
 using std::ifstream;
 
-using namespace t2kana;
+using namespace valor;
 
 //___________________________________________________________________________
 void util::SetDefaultStyle(bool black_n_white)

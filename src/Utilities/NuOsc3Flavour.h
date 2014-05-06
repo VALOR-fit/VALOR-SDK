@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class    t2kana::NuOsc3Flavour
+\class    valor::NuOsc3Flavour
 
 \brief    Neutrino-oscillation probabilities (incl. matter effects) in 
           computed in a 3-flavour framework.
@@ -23,7 +23,7 @@
 #include "Conventions/OscChannelId.h"
 #include "Conventions/NuMassHierarchy.h"
 
-namespace t2kana {
+namespace valor {
 
 class NuOsc3Flavour
 {
@@ -38,7 +38,7 @@ public:
 
   void SetBaseline      (double length);
   void SetDensity       (double density);
-  void SetMassHierarchy (t2kana::conv::NuMassHierarchy_t h); 
+  void SetMassHierarchy (valor::conv::NuMassHierarchy_t h); 
   void SetOscParameters (double sinsq2theta12, /* sin^2(2*theta_{12}) */
                          double sinsq2theta13, /* sin^2(2*theta_{13}) */
                          double sinsq2theta23, /* sin^2(2*theta_{23}) */
@@ -120,7 +120,7 @@ private:
 
  void Init(void);
 
- t2kana::conv::NuMassHierarchy_t fMassHierarchy; ///< mass hierarchy
+ valor::conv::NuMassHierarchy_t fMassHierarchy; ///< mass hierarchy
  double fBaseline; ///< baseline (km)
  double fNe;       ///< number density of electrons in Earth's crust (cm^-3)
 
@@ -161,7 +161,7 @@ private:
  int nFlavourIndex;
 };
 
-}//end of namespace t2kana
+}//end of namespace valor
 
 #endif
 

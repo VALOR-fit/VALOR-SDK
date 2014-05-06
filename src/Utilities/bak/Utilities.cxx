@@ -60,12 +60,12 @@ using std::setprecision;
 using std::ofstream;
 using std::ostringstream;
 
-using namespace t2kana;
-using namespace t2kana::conv;
+using namespace valor;
+using namespace valor::conv;
 
 //____________________________________________________________________________
 /*
-double t2kana::util::DeltaChisquare(
+double valor::util::DeltaChisquare(
   ConfLevel_t cl, int nfitparams) 
 {
   switch(cl) {
@@ -112,7 +112,7 @@ double t2kana::util::DeltaChisquare(
   return -99999;
 } */
 //____________________________________________________________________________
-double t2kana::util::ChisqGauss(
+double valor::util::ChisqGauss(
   double ndata, double nmc)
 {
   double chisq = 0.;
@@ -122,7 +122,7 @@ double t2kana::util::ChisqGauss(
   return chisq;
 }
 //____________________________________________________________________________
-double t2kana::util::ChisqPoisson(
+double valor::util::ChisqPoisson(
   double ndata, double nmc)
 {
   if(nmc <= 0.)
@@ -132,7 +132,7 @@ double t2kana::util::ChisqPoisson(
   return 2. * (nmc-ndata) + 2. * ndata * TMath::Log(ndata/nmc);
 }
 //____________________________________________________________________________
-TMatrixD t2kana::util::CholeskyDecomposition(TMatrixD& cov_matrix)
+TMatrixD valor::util::CholeskyDecomposition(TMatrixD& cov_matrix)
 {
 // Perform a Cholesky decomposition of the input covariance matrix and
 // return the lower triangular matrix
@@ -185,7 +185,7 @@ TMatrixD t2kana::util::CholeskyDecomposition(TMatrixD& cov_matrix)
   return LT;
 }
 //____________________________________________________________________________
-TVectorD t2kana::util::CholeskyGenerateCorrelatedParams (
+TVectorD valor::util::CholeskyGenerateCorrelatedParams (
     TMatrixD& cholesky_triangular, TVectorD& mean_params) 
 {
 // Generate a vector of correlated params
@@ -242,7 +242,7 @@ TVectorD t2kana::util::CholeskyGenerateCorrelatedParams (
   return correlated_params;
 }
 //____________________________________________________________________________
-TVectorD t2kana::util::CholeskyGenerateCorrelatedParams (
+TVectorD valor::util::CholeskyGenerateCorrelatedParams (
  TMatrixD& cholesky_triangular, TVectorD& mean_params, TVectorD& g_uncorrelated) 
 {
 // Generate a vector of correlated params
@@ -300,7 +300,7 @@ TVectorD t2kana::util::CholeskyGenerateCorrelatedParams (
   return correlated_params;
 }
 //____________________________________________________________________________
-TVectorD t2kana::util::CholeskyGenerateCorrelatedParamVariations (
+TVectorD valor::util::CholeskyGenerateCorrelatedParamVariations (
     TMatrixD& cholesky_triangular) 
 {
 // Generate a vector of correlated params
@@ -327,7 +327,7 @@ TVectorD t2kana::util::CholeskyGenerateCorrelatedParamVariations (
   return g;
 }
 //____________________________________________________________________________
-TVectorD t2kana::util::CholeskyCalculateCorrelatedParamVariations (
+TVectorD valor::util::CholeskyCalculateCorrelatedParamVariations (
     TMatrixD& cholesky_triangular, TVectorD & g_uncorrelated) 
 {
 // Generate a vector of correlated params
@@ -351,7 +351,7 @@ TVectorD t2kana::util::CholeskyCalculateCorrelatedParamVariations (
   return g;
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeMixing12(void)
+double valor::util::RandomizeMixing12(void)
 {
   double mix = 0;
 
@@ -386,7 +386,7 @@ double t2kana::util::RandomizeMixing12(void)
   return util::RandomizeMixing12();
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeMixing23(void)
+double valor::util::RandomizeMixing23(void)
 {
 
   double mix = 0;
@@ -422,7 +422,7 @@ double t2kana::util::RandomizeMixing23(void)
   return util::RandomizeMixing23();
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeMixing13(void)
+double valor::util::RandomizeMixing13(void)
 {
 
   double mix = 0;
@@ -458,14 +458,14 @@ double t2kana::util::RandomizeMixing13(void)
   return util::RandomizeMixing13();
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeDeltaCP(void)
+double valor::util::RandomizeDeltaCP(void)
 {
   double min = -conv::kpi;
   double max =  conv::kpi;
   return Rnd::Instance()->RndToyMCosc().Uniform(min,max);
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeDm12sq(void)
+double valor::util::RandomizeDm12sq(void)
 {
   double mean  = conv::kGlobFitDm12sq; 
   double sigma = conv::kGlobFitDm12sq * conv::kGlobFitErrDm12sq;
@@ -478,7 +478,7 @@ double t2kana::util::RandomizeDm12sq(void)
   return util::RandomizeDm12sq();
 }
 //____________________________________________________________________________
-double t2kana::util::RandomizeDm23sq(void)
+double valor::util::RandomizeDm23sq(void)
 {
   double mean  = 0.0;
   NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
@@ -509,8 +509,8 @@ double t2kana::util::RandomizeDm23sq(void)
   return util::RandomizeDm12sq();
 }
 //____________________________________________________________________________
-void t2kana::util::SetDefaultSKSpectrumStyle (
-   t2kana::conv::SuperkSample_t s, t2kana::conv::SuperkMode_t m, TH1D * hist)
+void valor::util::SetDefaultSKSpectrumStyle (
+   valor::conv::SuperkSample_t s, valor::conv::SuperkMode_t m, TH1D * hist)
 {
   if(!hist) return;
 
@@ -545,13 +545,13 @@ void t2kana::util::SetDefaultSKSpectrumStyle (
   }
 }
 //____________________________________________________________________________
-string t2kana::util::AsString (
-  t2kana::conv::PhysHypothesis_t hyp, 
+string valor::util::AsString (
+  valor::conv::PhysHypothesis_t hyp, 
   double mix12, double mix13, double mix23, 
   double deltacp, double dm12sq, double dm23sq)
 {
 // The code builds strings which are typically used in building names of
-// files containing t2kana results
+// files containing valor results
 //
 
   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
@@ -587,7 +587,7 @@ string t2kana::util::AsString (
   // Params with value of -999 (randomized during toy-MC generation) will not be 
   // included in the output string
   //
-  if( hyp == t2kana::conv::kHypOsc3F )
+  if( hyp == valor::conv::kHypOsc3F )
   {
     double rndmz = -900;
     bool show_mix12   = (mix12   > rndmz);
@@ -653,10 +653,10 @@ string t2kana::util::AsString (
   }//3f
   
   // Placeholder for steriles
-  if (hyp == t2kana::conv::kHypOscSterile4F) {
+  if (hyp == valor::conv::kHypOscSterile4F) {
     out<<"sterile_3+1";
   }
-  if (hyp == t2kana::conv::kHypOscSterile5F) {
+  if (hyp == valor::conv::kHypOscSterile5F) {
     out<<"sterile_3+2";
   }
 
@@ -666,7 +666,7 @@ string t2kana::util::AsString (
   // where mix is either sinsqtheta or sinsq2theta and nnn is the parameter
   // value with the specified numerical accuracy.
   //
-  if( hyp == t2kana::conv::kHypNuMuDisapp2F)
+  if( hyp == valor::conv::kHypNuMuDisapp2F)
   {
     out << mixparam << "23_" << Form("%.3f",mix23) << ",dm23sq_" << Form("%.5f",dm23sq) << "eV2";
   } 
@@ -674,7 +674,7 @@ string t2kana::util::AsString (
   return out.str();
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::OscAnaType_t a)
+string valor::util::AsString(valor::conv::OscAnaType_t a)
 {
   switch(a) {
    case (kAnaCombined) :
@@ -693,7 +693,7 @@ string t2kana::util::AsString(t2kana::conv::OscAnaType_t a)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::NuMassHierarchy_t m)
+string valor::util::AsString(valor::conv::NuMassHierarchy_t m)
 {
   switch(m) {
    case (kNmhNormal) :
@@ -709,7 +709,7 @@ string t2kana::util::AsString(t2kana::conv::NuMassHierarchy_t m)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::NuOscMixParam_t p)
+string valor::util::AsString(valor::conv::NuOscMixParam_t p)
 {
   switch(p) {   
    case (kNuMixSinsq2Theta) :
@@ -725,7 +725,7 @@ string t2kana::util::AsString(t2kana::conv::NuOscMixParam_t p)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::NuOscOctant_t o)
+string valor::util::AsString(valor::conv::NuOscOctant_t o)
 {
   switch(o) {   
    case (kNuOctantOne) :
@@ -741,7 +741,7 @@ string t2kana::util::AsString(t2kana::conv::NuOscOctant_t o)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::NuOscDmsqScheme_t dmsqs)
+string valor::util::AsString(valor::conv::NuOscDmsqScheme_t dmsqs)
 {
   switch(dmsqs) {
   case(kNuDmsq12andAbs23) :
@@ -759,7 +759,7 @@ string t2kana::util::AsString(t2kana::conv::NuOscDmsqScheme_t dmsqs)
   }
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::NuOscDeltaCP_t deltaCP)
+string valor::util::AsString(valor::conv::NuOscDeltaCP_t deltaCP)
 {
   switch(deltaCP) {
   case(kNuDeltaCPPhase) :
@@ -774,7 +774,7 @@ string t2kana::util::AsString(t2kana::conv::NuOscDeltaCP_t deltaCP)
   }
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::PhysHypothesis_t h)
+string valor::util::AsString(valor::conv::PhysHypothesis_t h)
 {
   switch(h) {
     case (kHypDecay) : 
@@ -802,7 +802,7 @@ string t2kana::util::AsString(t2kana::conv::PhysHypothesis_t h)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(PhysParamId_t p)
+string valor::util::AsString(PhysParamId_t p)
 {
   switch(p) {
 
@@ -1579,7 +1579,7 @@ string t2kana::util::AsString(PhysParamId_t p)
   return "--";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringTex(PhysParamId_t p)
+string valor::util::AsStringTex(PhysParamId_t p)
 {
   switch(p) {
 
@@ -2080,7 +2080,7 @@ string t2kana::util::AsStringTex(PhysParamId_t p)
   return "--";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringPresentTex(PhysParamId_t p)
+string valor::util::AsStringPresentTex(PhysParamId_t p)
 {
   
   switch(p) {
@@ -2585,7 +2585,7 @@ string t2kana::util::AsStringPresentTex(PhysParamId_t p)
   return "--";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringPaperTex(PhysParamId_t p)
+string valor::util::AsStringPaperTex(PhysParamId_t p)
 {
   switch(p) {
     
@@ -3017,7 +3017,7 @@ string t2kana::util::AsStringPaperTex(PhysParamId_t p)
   return "--";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringPaperTexNoDollar(PhysParamId_t p)
+string valor::util::AsStringPaperTexNoDollar(PhysParamId_t p)
 {
   /* // This function should probably be:
   string s = AsStringPaperTex(p);
@@ -3365,7 +3365,7 @@ string t2kana::util::AsStringPaperTexNoDollar(PhysParamId_t p)
   return "--";
  }
 //____________________________________________________________________________                    
-string t2kana::util::AsStringPaperRooTex(PhysParamId_t p)
+string valor::util::AsStringPaperRooTex(PhysParamId_t p)
 {
   switch(p) {
 
@@ -3637,7 +3637,7 @@ string t2kana::util::AsStringPaperRooTex(PhysParamId_t p)
   return "--";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact(PhysParamId_t p)
+string valor::util::AsStringCompact(PhysParamId_t p)
 {
   switch(p) {
 
@@ -4072,7 +4072,7 @@ string t2kana::util::AsStringCompact(PhysParamId_t p)
   return "--";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact_splinehack(PhysParamId_t p)
+string valor::util::AsStringCompact_splinehack(PhysParamId_t p)
 {
   switch(p) {
 
@@ -4199,7 +4199,7 @@ string t2kana::util::AsStringCompact_splinehack(PhysParamId_t p)
   return AsStringCompact(p);
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact_KDI(PhysParamId_t p)
+string valor::util::AsStringCompact_KDI(PhysParamId_t p)
 {
   //Uses the KDI conventions (where different)
 
@@ -4223,7 +4223,7 @@ string t2kana::util::AsStringCompact_KDI(PhysParamId_t p)
   return "--";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::SuperkSample_t s)
+string valor::util::AsString(valor::conv::SuperkSample_t s)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return "FCFV 1-ring mu-like"; break;
@@ -4236,7 +4236,7 @@ string t2kana::util::AsString(t2kana::conv::SuperkSample_t s)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::SuperkMode_t m)
+string valor::util::AsString(valor::conv::SuperkMode_t m)
 {
   switch(m) {
      case ( kSKmNuMuCCQE        ) : return "numu CC QE";                        break;
@@ -4298,7 +4298,7 @@ string t2kana::util::AsString(t2kana::conv::SuperkMode_t m)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(conv::SKMCTemplateType_t t)
+string valor::util::AsString(conv::SKMCTemplateType_t t)
 {
   switch(t) {
     case ( kSKMCtNom ) : 
@@ -4320,7 +4320,7 @@ string t2kana::util::AsString(conv::SKMCTemplateType_t t)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::FluxType_t f)
+string valor::util::AsString(valor::conv::FluxType_t f)
 {
   switch(f) {
     case ( kFlxNominal        ) : return "nominal";          break;
@@ -4336,7 +4336,7 @@ string t2kana::util::AsString(t2kana::conv::FluxType_t f)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsString(t2kana::conv::OscChannelId_t osch)
+string valor::util::AsString(valor::conv::OscChannelId_t osch)
 {
   switch(osch) {
      case ( kOscNuE2NuE           ) : return "nue -> nue";            break;
@@ -4362,7 +4362,7 @@ string t2kana::util::AsString(t2kana::conv::OscChannelId_t osch)
   return "--";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringTex(t2kana::conv::SuperkSample_t s)
+string valor::util::AsStringTex(valor::conv::SuperkSample_t s)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return "1 $\\mu$-like ring"; break;
@@ -4375,7 +4375,7 @@ string t2kana::util::AsStringTex(t2kana::conv::SuperkSample_t s)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringTex(t2kana::conv::SuperkMode_t m)
+string valor::util::AsStringTex(valor::conv::SuperkMode_t m)
 {
   switch(m) {
 
@@ -4438,7 +4438,7 @@ string t2kana::util::AsStringTex(t2kana::conv::SuperkMode_t m)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringRooTex(t2kana::conv::SuperkSample_t s)
+string valor::util::AsStringRooTex(valor::conv::SuperkSample_t s)
 {
 // As AsStringTex(SuperkSample_t) but taking into account ROOT TeX
 // idiosyncracies (this method can be used for building TLegends etc).
@@ -4454,7 +4454,7 @@ string t2kana::util::AsStringRooTex(t2kana::conv::SuperkSample_t s)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringRooTex(t2kana::conv::SuperkMode_t m)
+string valor::util::AsStringRooTex(valor::conv::SuperkMode_t m)
 {
   switch(m) {
 
@@ -4517,8 +4517,8 @@ string t2kana::util::AsStringRooTex(t2kana::conv::SuperkMode_t m)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringRooTex (
-  t2kana::conv::SuperkSample_t s, t2kana::conv::SuperkMode_t m, 
+string valor::util::AsStringRooTex (
+  valor::conv::SuperkSample_t s, valor::conv::SuperkMode_t m, 
   string append_begin, string append_end)
 {
   ostringstream out;
@@ -4527,11 +4527,11 @@ string t2kana::util::AsStringRooTex (
     out << append_begin;
   }
 
-  out << t2kana::util::AsStringRooTex(s);
+  out << valor::util::AsStringRooTex(s);
 
   if(m != kSKmUndefined) {
     out << " (";
-    out << t2kana::util::AsStringRooTex(m);
+    out << valor::util::AsStringRooTex(m);
     out << ")";
   }
 
@@ -4542,8 +4542,8 @@ string t2kana::util::AsStringRooTex (
   return out.str();
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact (
-  t2kana::conv::SuperkSample_t s, t2kana::conv::SuperkMode_t m, 
+string valor::util::AsStringCompact (
+  valor::conv::SuperkSample_t s, valor::conv::SuperkMode_t m, 
   string append_begin, string append_end)
 {
 // Compact string used for naming output histograms stored ROOT files
@@ -4554,11 +4554,11 @@ string t2kana::util::AsStringCompact (
     out << append_begin;
   }
 
-  out << t2kana::util::AsStringCompact(s);
+  out << valor::util::AsStringCompact(s);
 
   if(m != kSKmUndefined) {
     out << "_";
-    out << t2kana::util::AsStringCompact(m);
+    out << valor::util::AsStringCompact(m);
   }
 
   if(append_end.size() > 0) {
@@ -4568,7 +4568,7 @@ string t2kana::util::AsStringCompact (
   return out.str();
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact (t2kana::conv::SuperkSample_t s)
+string valor::util::AsStringCompact (valor::conv::SuperkSample_t s)
 {
 // Compact string used for naming output histograms stored ROOT files
 //
@@ -4583,7 +4583,7 @@ string t2kana::util::AsStringCompact (t2kana::conv::SuperkSample_t s)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact_splinehack (t2kana::conv::SuperkSample_t s)
+string valor::util::AsStringCompact_splinehack (valor::conv::SuperkSample_t s)
 {
 // Compact string used for naming output histograms stored ROOT files
 //
@@ -4596,7 +4596,7 @@ string t2kana::util::AsStringCompact_splinehack (t2kana::conv::SuperkSample_t s)
   return AsStringCompact(s);
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact (t2kana::conv::SuperkMode_t m)
+string valor::util::AsStringCompact (valor::conv::SuperkMode_t m)
 {
 // Compact string used for naming output histograms stored ROOT files
 //
@@ -4660,7 +4660,7 @@ string t2kana::util::AsStringCompact (t2kana::conv::SuperkMode_t m)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact_splinehack (t2kana::conv::SuperkMode_t m)
+string valor::util::AsStringCompact_splinehack (valor::conv::SuperkMode_t m)
 {
 // TEMPORARY HACK using the old naming scheme for osc nue
 //
@@ -4675,7 +4675,7 @@ string t2kana::util::AsStringCompact_splinehack (t2kana::conv::SuperkMode_t m)
   return AsStringCompact(m);
 }
 //____________________________________________________________________________
-string t2kana::util::AsStringCompact_KDI (t2kana::conv::SuperkMode_t m)
+string valor::util::AsStringCompact_KDI (valor::conv::SuperkMode_t m)
 {
 // Compact string used for naming output histograms stored ROOT files
 // using the Japanese analysis naming convention
@@ -4731,7 +4731,7 @@ string t2kana::util::AsStringCompact_KDI (t2kana::conv::SuperkMode_t m)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::Pdg2String(int pdg_code)
+string valor::util::Pdg2String(int pdg_code)
 {
   switch(pdg_code) {
      case ( kPdgNuE      ) : return "nue";      break; 
@@ -4745,7 +4745,7 @@ string t2kana::util::Pdg2String(int pdg_code)
   return "";
 }
 //____________________________________________________________________________
-string t2kana::util::Pdg2StringTex(int pdg_code)
+string valor::util::Pdg2StringTex(int pdg_code)
 {
   switch(pdg_code) {
      case ( kPdgNuE      ) : return "$\\nu_e$";      break; 
@@ -4759,7 +4759,7 @@ string t2kana::util::Pdg2StringTex(int pdg_code)
   return "";
 }
 //____________________________________________________________________________
-t2kana::conv::SuperkMode_t t2kana::util::SuperkModeFromString(string sh)
+valor::conv::SuperkMode_t valor::util::SuperkModeFromString(string sh)
 {
   // WARNING: "NC oth" returns the disappearance mode if there is no disapp/app information given
   if(sh == "numu CC QE"  ) return kSKmNuMuCCQE;
@@ -4823,7 +4823,7 @@ t2kana::conv::SuperkMode_t t2kana::util::SuperkModeFromString(string sh)
   return kSKmUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::PhysHypothesis_t t2kana::util::PhysHypFromString(string sh)
+valor::conv::PhysHypothesis_t valor::util::PhysHypFromString(string sh)
 {
   if(sh == "decay"         ) return kHypDecay;
   if(sh == "decoh"         ) return kHypDecoh;
@@ -4835,7 +4835,7 @@ t2kana::conv::PhysHypothesis_t t2kana::util::PhysHypFromString(string sh)
   return kHypUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::SuperkSample_t t2kana::util::SKSampleFromString(string sh)
+valor::conv::SuperkSample_t valor::util::SKSampleFromString(string sh)
 {
   if(sh == "1Rmu") return kSKsFCFV1RingMuLike;
   if(sh == "1Re" ) return kSKsFCFV1RingELike;
@@ -4845,8 +4845,8 @@ t2kana::conv::SuperkSample_t t2kana::util::SKSampleFromString(string sh)
   return kSKsUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::OscAnaType_t  
-   t2kana::util::OscAnaFromString(string sh) 
+valor::conv::OscAnaType_t  
+   valor::util::OscAnaFromString(string sh) 
 {
   if(sh == "combined"   ) return kAnaCombined;
   if(sh == "numu_disap" ) return kAnaNuMuDisappOnly;
@@ -4855,8 +4855,8 @@ t2kana::conv::OscAnaType_t
   return kAnaUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::NuOscDmsqScheme_t  
-  t2kana::util::DmsqSchemeFromString(string sh) 
+valor::conv::NuOscDmsqScheme_t  
+  valor::util::DmsqSchemeFromString(string sh) 
 {
   if(sh == "abs23"    ) return kNuDmsq12andAbs23;
   if(sh == "abs31"    ) return kNuDmsq12andAbs31;
@@ -4865,8 +4865,8 @@ t2kana::conv::NuOscDmsqScheme_t
   return kNuDmsqUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::NuMassHierarchy_t  
-  t2kana::util::HierarchyFromString(string sh) 
+valor::conv::NuMassHierarchy_t  
+  valor::util::HierarchyFromString(string sh) 
 {
   if(sh == "normal"   ) return kNmhNormal;
   if(sh == "inverted" ) return kNmhInverted;
@@ -4874,8 +4874,8 @@ t2kana::conv::NuMassHierarchy_t
   return kNmhUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::NuOscOctant_t   
-  t2kana::util::OctantFromString(string sh) 
+valor::conv::NuOscOctant_t   
+  valor::util::OctantFromString(string sh) 
 {
   if(sh == "one") return kNuOctantOne;
   if(sh == "two") return kNuOctantTwo;
@@ -4883,8 +4883,8 @@ t2kana::conv::NuOscOctant_t
   return kNuOctantUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::NuOscMixParam_t   
-  t2kana::util::MixingTypeFromString(string sh) 
+valor::conv::NuOscMixParam_t   
+  valor::util::MixingTypeFromString(string sh) 
 {
   if(sh == "sinsq2theta") return kNuMixSinsq2Theta;
   if(sh == "sinsqtheta" ) return kNuMixSinsqTheta;
@@ -4892,8 +4892,8 @@ t2kana::conv::NuOscMixParam_t
   return kNuMixUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::PhysParamId_t
-  t2kana::util::PhysParamIdFromString(string sh) 
+valor::conv::PhysParamId_t
+  valor::util::PhysParamIdFromString(string sh) 
 {
 
   //************************* FORWARD HORN CURRENT ***************************
@@ -5218,7 +5218,7 @@ t2kana::conv::PhysParamId_t
   return kPhypUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::PhysParamId_t t2kana::util::PhysParamIdFromLongString(string sh)
+valor::conv::PhysParamId_t valor::util::PhysParamIdFromLongString(string sh)
 {
 
   //************************ FORWARD HORN CURRENT ****************************
@@ -5544,8 +5544,8 @@ t2kana::conv::PhysParamId_t t2kana::util::PhysParamIdFromLongString(string sh)
   return kPhypUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::SKMCTemplateType_t   
-  t2kana::util::SKMCTemplateTypeFromString(string sh) 
+valor::conv::SKMCTemplateType_t   
+  valor::util::SKMCTemplateTypeFromString(string sh) 
 {
   if(sh == "ori")        return kSKMCtOri;
   if(sh == "nom")        return kSKMCtNom;
@@ -5556,8 +5556,8 @@ t2kana::conv::SKMCTemplateType_t
   return kSKMCtUndefined;
 }
 //____________________________________________________________________________
-t2kana::conv::OscChannelId_t
-  t2kana::util::GetOscChannel(int nu_start, int nu_end)
+valor::conv::OscChannelId_t
+  valor::util::GetOscChannel(int nu_start, int nu_end)
 {
   if ( nu_start == kPdgNuE      && nu_end == kPdgNuE      ) return kOscNuE2NuE;
   if ( nu_start == kPdgNuE      && nu_end == kPdgNuMu     ) return kOscNuE2NuMu;
@@ -5611,7 +5611,7 @@ t2kana::conv::OscChannelId_t
   return kOscUndefined;
 }
 //____________________________________________________________________________
-int t2kana::util::SuperkMode2FluxNuPdg(t2kana::conv::SuperkMode_t m)
+int valor::util::SuperkMode2FluxNuPdg(valor::conv::SuperkMode_t m)
 {
   if ( util::IsNuMu      (m) ) return kPdgNuMu;
   if ( util::IsOscNuMu   (m) ) return kPdgNuE; /// nue -> numu
@@ -5627,7 +5627,7 @@ int t2kana::util::SuperkMode2FluxNuPdg(t2kana::conv::SuperkMode_t m)
   return 0;
 }
 //____________________________________________________________________________
-int t2kana::util::SuperkMode2SKMCPdg(t2kana::conv::SuperkMode_t m)
+int valor::util::SuperkMode2SKMCPdg(valor::conv::SuperkMode_t m)
 {
   if ( util::IsNuMu      (m) ) return kPdgNuMu;
   if ( util::IsOscNuMu   (m) ) return kPdgNuMu;
@@ -5643,7 +5643,7 @@ int t2kana::util::SuperkMode2SKMCPdg(t2kana::conv::SuperkMode_t m)
   return 0;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsNuMu(t2kana::conv::SuperkMode_t  m)
+bool valor::util::IsNuMu(valor::conv::SuperkMode_t  m)
 {
 
   if(m >= kSKmNuMuCCQE && m <= kSKmNuMuNCoth_e)
@@ -5671,7 +5671,7 @@ bool t2kana::util::IsNuMu(t2kana::conv::SuperkMode_t  m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsOscNuMu(t2kana::conv::SuperkMode_t  m)
+bool valor::util::IsOscNuMu(valor::conv::SuperkMode_t  m)
 {
 #ifdef __USE_OSC_NUMU_MC_TEMPLATES__
   if(m >= kSKmOscNuMuCCQE && m <= kSKmOscNuMuCCoth)
@@ -5694,7 +5694,7 @@ bool t2kana::util::IsOscNuMu(t2kana::conv::SuperkMode_t  m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsOscNuMuBar(t2kana::conv::SuperkMode_t  m)
+bool valor::util::IsOscNuMuBar(valor::conv::SuperkMode_t  m)
 {
 #ifdef __USE_OSC_NUMUBAR_MC_TEMPLATES__
   if(m >= kSKmOscNuMuBarCCQE && m <= kSKmOscNuMuBarCCoth)
@@ -5716,7 +5716,7 @@ bool t2kana::util::IsOscNuMuBar(t2kana::conv::SuperkMode_t  m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsOscNuEBar(t2kana::conv::SuperkMode_t  m)
+bool valor::util::IsOscNuEBar(valor::conv::SuperkMode_t  m)
 {
 #ifdef __USE_OSC_NUEBAR_MC_TEMPLATES__
   if(m >= kSKmOscNuEBarCCQE && m <= kSKmOscNuEBarCCoth)
@@ -5737,7 +5737,7 @@ bool t2kana::util::IsOscNuEBar(t2kana::conv::SuperkMode_t  m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsNuMuBar(t2kana::conv::SuperkMode_t m)
+bool valor::util::IsNuMuBar(valor::conv::SuperkMode_t m)
 {
   if(m >= kSKmNuMuBarCCQE && m <= kSKmNuMuBarNCoth_e)
     return true;
@@ -5763,7 +5763,7 @@ bool t2kana::util::IsNuMuBar(t2kana::conv::SuperkMode_t m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsNuE(t2kana::conv::SuperkMode_t m)
+bool valor::util::IsNuE(valor::conv::SuperkMode_t m)
 {
   if(m >= kSKmNuECCQE && m <= kSKmNuENCoth_e)
     return true;
@@ -5789,7 +5789,7 @@ bool t2kana::util::IsNuE(t2kana::conv::SuperkMode_t m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsNuEBar(t2kana::conv::SuperkMode_t m)
+bool valor::util::IsNuEBar(valor::conv::SuperkMode_t m)
 {
   if(m >= kSKmNuEBarCCQE && m <= kSKmNuEBarNCoth_e)
     return true;
@@ -5815,7 +5815,7 @@ bool t2kana::util::IsNuEBar(t2kana::conv::SuperkMode_t m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsOscNuE(t2kana::conv::SuperkMode_t m)
+bool valor::util::IsOscNuE(valor::conv::SuperkMode_t m)
 {
   if(m >= kSKmOscNuECCQE && m <= kSKmOscNuECCoth)
     return true;
@@ -5836,12 +5836,12 @@ bool t2kana::util::IsOscNuE(t2kana::conv::SuperkMode_t m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsCC(t2kana::conv::SuperkMode_t m)
+bool valor::util::IsCC(valor::conv::SuperkMode_t m)
 {
   return !(IsNC(m));
 }
 //____________________________________________________________________________
-bool t2kana::util::IsNC(t2kana::conv::SuperkMode_t m)
+bool valor::util::IsNC(valor::conv::SuperkMode_t m)
 {
   switch(m) {
      case ( kSKmNuMuNC1piC      ) : 
@@ -5873,7 +5873,7 @@ bool t2kana::util::IsNC(t2kana::conv::SuperkMode_t m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsMEC(t2kana::conv::SuperkMode_t m)
+bool valor::util::IsMEC(valor::conv::SuperkMode_t m)
 {
   switch(m) {
      case ( kSKmMEC      ) :
@@ -5886,7 +5886,7 @@ bool t2kana::util::IsMEC(t2kana::conv::SuperkMode_t m)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsBANFF(PhysParamId_t p)
+bool valor::util::IsBANFF(PhysParamId_t p)
 {
   if(p >= kNuisBANFF00
 #if ((BANFF_BINS != 2)&&(BANFF_BINS != 4))
@@ -5956,7 +5956,7 @@ bool t2kana::util::IsBANFF(PhysParamId_t p)
   
 }
 //____________________________________________________________________________
-bool t2kana::util::IsXSec(PhysParamId_t p)
+bool valor::util::IsXSec(PhysParamId_t p)
 {
   if(p >= kNuisXSecFermiMom && p <= kNuisXSecNormAntiNuToNu)
     return true;
@@ -5989,7 +5989,7 @@ bool t2kana::util::IsXSec(PhysParamId_t p)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsUsingSplines(PhysParamId_t p)
+bool valor::util::IsUsingSplines(PhysParamId_t p)
 {
   if(p >= kNuisXSecFermiMom && p <= kNuisXSecBindE)
     return true;
@@ -6021,7 +6021,7 @@ bool t2kana::util::IsUsingSplines(PhysParamId_t p)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsEff1Rmu(PhysParamId_t p)
+bool valor::util::IsEff1Rmu(PhysParamId_t p)
 {
   switch(p) {
 #ifndef SKFSITOGETHER
@@ -6042,7 +6042,7 @@ bool t2kana::util::IsEff1Rmu(PhysParamId_t p)
   return false; 
 }
 //____________________________________________________________________________  
-bool t2kana::util::IsEff1Re(PhysParamId_t p)
+bool valor::util::IsEff1Re(PhysParamId_t p)
 {
   switch(p) {
 #if FSI_BINS != 2
@@ -6068,7 +6068,7 @@ bool t2kana::util::IsEff1Re(PhysParamId_t p)
   return false;
 }
 //____________________________________________________________________________ 
-bool t2kana::util::IsEff(PhysParamId_t p)
+bool valor::util::IsEff(PhysParamId_t p)
 {
   switch(p) {
   case ( kNuisSuperkEnergyScale     ) : return true;  break;
@@ -6103,7 +6103,7 @@ bool t2kana::util::IsEff(PhysParamId_t p)
   return false;
 }
 //____________________________________________________________________________   
-bool t2kana::util::IsFSI(PhysParamId_t p)
+bool valor::util::IsFSI(PhysParamId_t p)
 {
   switch(p) {
 #ifndef SKFSITOGETHER
@@ -6136,7 +6136,7 @@ bool t2kana::util::IsFSI(PhysParamId_t p)
   return false;
 }
 //____________________________________________________________________________   
-bool t2kana::util::IsSKDetFSI(PhysParamId_t p)
+bool valor::util::IsSKDetFSI(PhysParamId_t p)
 {
 #ifdef SKCORRELATIONS
   if(p >= kNuisSKDetFSI000 && p <= kNuisSKDetFSI031)
@@ -6157,19 +6157,19 @@ bool t2kana::util::IsSKDetFSI(PhysParamId_t p)
   return false;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsSystematic(PhysParamId_t p)
+bool valor::util::IsSystematic(PhysParamId_t p)
 {
   if(p <= kPhypSinsq2ThetaDecoh)
     return false;
   return true;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsFHCSystematic(PhysParamId_t p)
+bool valor::util::IsFHCSystematic(PhysParamId_t p)
 {
   return !IsRHCSystematic(p);
 }
 //____________________________________________________________________________
-bool t2kana::util::IsRHCSystematic(PhysParamId_t p)
+bool valor::util::IsRHCSystematic(PhysParamId_t p)
 {
   if(!IsSystematic(p))
     return false;
@@ -6178,7 +6178,7 @@ bool t2kana::util::IsRHCSystematic(PhysParamId_t p)
   return true;
 }
 //____________________________________________________________________________
-bool t2kana::util::IsMixingAngle(PhysParamId_t p)
+bool valor::util::IsMixingAngle(PhysParamId_t p)
 {
   switch(p) {
     case ( kPhypMixing23              ) : return true; break;
@@ -6200,7 +6200,7 @@ bool t2kana::util::IsMixingAngle(PhysParamId_t p)
 }
 
 //____________________________________________________________________________
-bool t2kana::util::IsNeutrino(int pdg_code)
+bool valor::util::IsNeutrino(int pdg_code)
 {
   if ( pdg_code == kPdgNuE    ||
        pdg_code == kPdgNuMu   ||
@@ -6213,7 +6213,7 @@ bool t2kana::util::IsNeutrino(int pdg_code)
   return false;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsAntiNeutrino(int pdg_code)
+bool valor::util::IsAntiNeutrino(int pdg_code)
 {
   if ( pdg_code == kPdgNuEBar    ||
        pdg_code == kPdgNuMuBar   ||
@@ -6226,35 +6226,35 @@ bool t2kana::util::IsAntiNeutrino(int pdg_code)
   return false;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsFHCSample(conv::SuperkSample_t s)
+bool valor::util::IsFHCSample(conv::SuperkSample_t s)
 {
   if(s == kSKsRHCFCFV1RingMuLike || s == kSKsRHCFCFV1RingELike)
     return false;
   return true;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsRHCSample(conv::SuperkSample_t s)
+bool valor::util::IsRHCSample(conv::SuperkSample_t s)
 {
   if(s == kSKsRHCFCFV1RingMuLike || s == kSKsRHCFCFV1RingELike)
     return true;
   return false;
 }
 //___________________________________________________________________________
-bool t2kana::util::Is1RMuSample(conv::SuperkSample_t s)
+bool valor::util::Is1RMuSample(conv::SuperkSample_t s)
 {
   if(s == kSKsRHCFCFV1RingMuLike || s == kSKsFCFV1RingMuLike)
     return true;
   return false;
 }
 //___________________________________________________________________________
-bool t2kana::util::Is1RESample(conv::SuperkSample_t s)
+bool valor::util::Is1RESample(conv::SuperkSample_t s)
 {
   if(s == kSKsRHCFCFV1RingELike || s == kSKsFCFV1RingELike)
     return true;
   return false;
 }
 //___________________________________________________________________________
-int t2kana::util::NumErecoBins(t2kana::conv::SuperkSample_t s)
+int valor::util::NumErecoBins(valor::conv::SuperkSample_t s)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kNErecoBins1Rmu; break;
@@ -6267,7 +6267,7 @@ int t2kana::util::NumErecoBins(t2kana::conv::SuperkSample_t s)
   return 0;
 }
 //___________________________________________________________________________
-const double * t2kana::util::ErecoBinEdges(t2kana::conv::SuperkSample_t s)
+const double * valor::util::ErecoBinEdges(valor::conv::SuperkSample_t s)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kErecoBinEdges1Rmu; break;
@@ -6280,7 +6280,7 @@ const double * t2kana::util::ErecoBinEdges(t2kana::conv::SuperkSample_t s)
   return 0;
 }
 //___________________________________________________________________________
-double t2kana::util::ErecoBinEdges(t2kana::conv::SuperkSample_t s, int i)
+double valor::util::ErecoBinEdges(valor::conv::SuperkSample_t s, int i)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kErecoBinEdges1Rmu[i]; break;
@@ -6293,7 +6293,7 @@ double t2kana::util::ErecoBinEdges(t2kana::conv::SuperkSample_t s, int i)
   return 0;
 }
 //___________________________________________________________________________
-int t2kana::util::NumXsecErecoBins(t2kana::conv::SuperkSample_t s)
+int valor::util::NumXsecErecoBins(valor::conv::SuperkSample_t s)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kXsNErecoBins1Rmu; break;
@@ -6306,7 +6306,7 @@ int t2kana::util::NumXsecErecoBins(t2kana::conv::SuperkSample_t s)
   return 0;
 }
 //___________________________________________________________________________
-const double * t2kana::util::XsecErecoBinEdges(t2kana::conv::SuperkSample_t s)
+const double * valor::util::XsecErecoBinEdges(valor::conv::SuperkSample_t s)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kXsErecoBinEdges1Rmu; break;
@@ -6319,7 +6319,7 @@ const double * t2kana::util::XsecErecoBinEdges(t2kana::conv::SuperkSample_t s)
   return 0;
 }
 //___________________________________________________________________________
-double t2kana::util::XsecErecoBinEdges(t2kana::conv::SuperkSample_t s, int i)
+double valor::util::XsecErecoBinEdges(valor::conv::SuperkSample_t s, int i)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kXsErecoBinEdges1Rmu[i]; break;
@@ -6332,7 +6332,7 @@ double t2kana::util::XsecErecoBinEdges(t2kana::conv::SuperkSample_t s, int i)
   return 0;
 }
 //___________________________________________________________________________
-int t2kana::util::NumEtrueBins(t2kana::conv::SuperkSample_t s)
+int valor::util::NumEtrueBins(valor::conv::SuperkSample_t s)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kNEtrueBins1Rmu; break;
@@ -6345,7 +6345,7 @@ int t2kana::util::NumEtrueBins(t2kana::conv::SuperkSample_t s)
   return 0;
 }
 //___________________________________________________________________________
-const double * t2kana::util::EtrueBinEdges(t2kana::conv::SuperkSample_t s)
+const double * valor::util::EtrueBinEdges(valor::conv::SuperkSample_t s)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kEtrueBinEdges1Rmu; break;
@@ -6358,7 +6358,7 @@ const double * t2kana::util::EtrueBinEdges(t2kana::conv::SuperkSample_t s)
   return 0;
 }
 //___________________________________________________________________________
-double  t2kana::util::EtrueBinEdges(t2kana::conv::SuperkSample_t s, int i)
+double  valor::util::EtrueBinEdges(valor::conv::SuperkSample_t s, int i)
 {
   switch(s) {
      case ( kSKsFCFV1RingMuLike ) : return kEtrueBinEdges1Rmu[i]; break;
@@ -6371,8 +6371,8 @@ double  t2kana::util::EtrueBinEdges(t2kana::conv::SuperkSample_t s, int i)
   return 0;
 }
 //___________________________________________________________________________
-int t2kana::util::NumVariableXsEtrueBins(t2kana::conv::SuperkSample_t s,
-                                         t2kana::conv::SuperkMode_t m)
+int valor::util::NumVariableXsEtrueBins(valor::conv::SuperkSample_t s,
+                                         valor::conv::SuperkMode_t m)
 {
   int is = util::ArrIdx::Instance()->SuperkSampleIdx(s);
   if(is == -1)
@@ -6384,8 +6384,8 @@ int t2kana::util::NumVariableXsEtrueBins(t2kana::conv::SuperkSample_t s,
   //need to start counter at zero. Want nbins. Looping over bin edges.
   int nbins = -1;
 
-  for(int it = 0; it <= t2kana::conv::kXsNEtrueBins; it++) {
-    if(t2kana::conv::kXsEtrueBinEdges[is][im][it] < 0)
+  for(int it = 0; it <= valor::conv::kXsNEtrueBins; it++) {
+    if(valor::conv::kXsEtrueBinEdges[is][im][it] < 0)
       break;
     nbins++;
     }
@@ -6393,8 +6393,8 @@ int t2kana::util::NumVariableXsEtrueBins(t2kana::conv::SuperkSample_t s,
   return nbins;
 }
 //___________________________________________________________________________
-const double * t2kana::util::VariableXsEtrueBinEdges(t2kana::conv::SuperkSample_t s,
-                                                     t2kana::conv::SuperkMode_t m)
+const double * valor::util::VariableXsEtrueBinEdges(valor::conv::SuperkSample_t s,
+                                                     valor::conv::SuperkMode_t m)
 {
   int is = util::ArrIdx::Instance()->SuperkSampleIdx(s);
   if(is == -1)
@@ -6403,11 +6403,11 @@ const double * t2kana::util::VariableXsEtrueBinEdges(t2kana::conv::SuperkSample_
   if(im == -1)
     return 0;
 
-  return t2kana::conv::kXsEtrueBinEdges[is][im];
+  return valor::conv::kXsEtrueBinEdges[is][im];
 }
 //___________________________________________________________________________
-int t2kana::util::NumVariableMCEtrueBins(t2kana::conv::SuperkSample_t s,
-                                         t2kana::conv::SuperkMode_t m)
+int valor::util::NumVariableMCEtrueBins(valor::conv::SuperkSample_t s,
+                                         valor::conv::SuperkMode_t m)
 {
   int is = util::ArrIdx::Instance()->SuperkSampleIdx(s);
   if(is == -1)
@@ -6419,8 +6419,8 @@ int t2kana::util::NumVariableMCEtrueBins(t2kana::conv::SuperkSample_t s,
   //need to start counter at zero. Want nbins. Looping over bin edges.
   int nbins = -1;
 
-  for(int it = 0; it <= t2kana::conv::kMCNEtrueBins; it++) {
-    if(t2kana::conv::kMCEtrueBinEdges[is][im][it] < 0)
+  for(int it = 0; it <= valor::conv::kMCNEtrueBins; it++) {
+    if(valor::conv::kMCEtrueBinEdges[is][im][it] < 0)
       break;
     nbins++;
     }
@@ -6428,8 +6428,8 @@ int t2kana::util::NumVariableMCEtrueBins(t2kana::conv::SuperkSample_t s,
   return nbins;
 }
 //___________________________________________________________________________
-const double * t2kana::util::VariableMCEtrueBinEdges(t2kana::conv::SuperkSample_t s,
-                                                     t2kana::conv::SuperkMode_t m)
+const double * valor::util::VariableMCEtrueBinEdges(valor::conv::SuperkSample_t s,
+                                                     valor::conv::SuperkMode_t m)
 {
   int is = util::ArrIdx::Instance()->SuperkSampleIdx(s);
   if(is == -1)
@@ -6438,10 +6438,10 @@ const double * t2kana::util::VariableMCEtrueBinEdges(t2kana::conv::SuperkSample_
   if(im == -1)
     return 0;
 
-  return t2kana::conv::kMCEtrueBinEdges[is][im];
+  return valor::conv::kMCEtrueBinEdges[is][im];
 }
 //___________________________________________________________________________
-void t2kana::util::SetDefaultStyle(bool black_n_white)
+void valor::util::SetDefaultStyle(bool black_n_white)
 {
   gROOT->SetStyle("Plain");
 
@@ -6574,7 +6574,7 @@ void t2kana::util::SetDefaultStyle(bool black_n_white)
   gROOT->ForceStyle();
 }
 //___________________________________________________________________________
-void t2kana::util::Format(
+void valor::util::Format(
    TGraph* gr, int lcol, int lsty, int lwid, int mcol, int msty, double msiz)
 {
   if(!gr) return;
@@ -6589,7 +6589,7 @@ void t2kana::util::Format(
   if (msiz >= 0) gr -> SetMarkerSize  (msiz);
 }
 //___________________________________________________________________________
-void t2kana::util::Format(
+void valor::util::Format(
   TH1* hst, int lcol, int lsty, int lwid, int mcol, int msty, double msiz)
 {
   if(!hst) return;
@@ -6603,7 +6603,7 @@ void t2kana::util::Format(
   if (msiz >= 0) hst -> SetMarkerSize  (msiz);
 }
 //___________________________________________________________________________
-string t2kana::util::TrimSpaces(string input)
+string valor::util::TrimSpaces(string input)
 {
   if( input.find_first_not_of(" \n") != 0)
     input.erase( 0,  input.find_first_not_of(" \n")  );
@@ -6614,7 +6614,7 @@ string t2kana::util::TrimSpaces(string input)
   return input;
 }
 //____________________________________________________________________________
-vector<string> t2kana::util::Tokens (string input, string delimiter)
+vector<string> valor::util::Tokens (string input, string delimiter)
 {
 // split a string of 'delimiter' separated values and return each string
 // part as a vector<string> element.
@@ -6630,7 +6630,7 @@ vector<string> t2kana::util::Tokens (string input, string delimiter)
   return tokens;
 }
 //___________________________________________________________________________
-void t2kana::util::PrintCompact(
+void valor::util::PrintCompact(
         const TVectorD & v, int w, int prec, Option_t * option, ostream & stream)
 {
   TString opt = option;
@@ -6677,7 +6677,7 @@ void t2kana::util::PrintCompact(
   stream << scientific;
 }
 //___________________________________________________________________________
-void t2kana::util::PrintCompact(
+void valor::util::PrintCompact(
    const TVectorD & current, const TVectorD & nominal, 
    int w, int prec, Option_t * option, ostream & stream)
 {
@@ -6720,7 +6720,7 @@ void t2kana::util::PrintCompact(
   stream << scientific;
 }
 //___________________________________________________________________________
-void t2kana::util::PrintCompact(
+void valor::util::PrintCompact(
   const TMatrixD & m, int w, int prec, ostream & stream)
 {
   int nc = m.GetNcols();
@@ -6744,7 +6744,7 @@ void t2kana::util::PrintCompact(
   stream << scientific;
 }
 //___________________________________________________________________________
-void t2kana::util::PrintCompactTex(
+void valor::util::PrintCompactTex(
 				   const TMatrixD & m, int w, int prec, ostream & stream, TString opt)
 {
   int nc = m.GetNcols();
@@ -6837,7 +6837,7 @@ void t2kana::util::PrintCompactTex(
   stream << scientific;
 }
 //___________________________________________________________________________
-int t2kana::util::Sign(double tweaking_dial)
+int valor::util::Sign(double tweaking_dial)
 {
   if(fabs(tweaking_dial) < kASmallNum) return 0;
   if (tweaking_dial < 0) return -1;
@@ -6848,12 +6848,12 @@ int t2kana::util::Sign(double tweaking_dial)
 // A few helper functions for use in UseEventToFillInTemplate
 // that make swapping mode definitions a little easier
 
-bool t2kana::util::IsCCQE(int neut_reaction_mode) 
+bool valor::util::IsCCQE(int neut_reaction_mode) 
 {
   return neut_reaction_mode ==  1;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsCC1pi(int neut_reaction_mode) 
+bool valor::util::IsCC1pi(int neut_reaction_mode) 
 {
   bool is_cc1pi = (neut_reaction_mode == 11 || 
 		   neut_reaction_mode == 12 || 
@@ -6861,12 +6861,12 @@ bool t2kana::util::IsCC1pi(int neut_reaction_mode)
   return is_cc1pi;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsCCcoh(int neut_reaction_mode) 
+bool valor::util::IsCCcoh(int neut_reaction_mode) 
 {
   return neut_reaction_mode ==  16;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsCCoth(int neut_reaction_mode) 
+bool valor::util::IsCCoth(int neut_reaction_mode) 
 //this is a catch all for everything CC that is not QE, 1pi, or coh
 // needs to be updated if another subcategory is added
 {
@@ -6878,36 +6878,36 @@ bool t2kana::util::IsCCoth(int neut_reaction_mode)
   return is_ccoth;
 }
 //___________________________________________________________________________
-//bool t2kana::util::IsCCoth(int neut_reaction_mode) 
+//bool valor::util::IsCCoth(int neut_reaction_mode) 
 //{
 //return IsCCoth(neut_reaction_mode);
 //}
 //___________________________________________________________________________
-//bool t2kana::util::IsCCoth(int neut_reaction_mode) 
+//bool valor::util::IsCCoth(int neut_reaction_mode) 
 //{
 //return IsCCoth(neut_reaction_mode);
 //}
 //___________________________________________________________________________
-bool t2kana::util::IsNC1pi0(int neut_reaction_mode) 
+bool valor::util::IsNC1pi0(int neut_reaction_mode) 
 {
   bool is_cc1pi0 = (neut_reaction_mode == 31 ||
 		    neut_reaction_mode == 32);
   return is_cc1pi0;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsNC1piC(int neut_reaction_mode) 
+bool valor::util::IsNC1piC(int neut_reaction_mode) 
 {
   bool is_cc1pi0 = (neut_reaction_mode == 33 ||
 		    neut_reaction_mode == 34);
   return is_cc1pi0;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsNCcoh(int neut_reaction_mode) 
+bool valor::util::IsNCcoh(int neut_reaction_mode) 
 {
   return neut_reaction_mode == 36;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsNCoth(int neut_reaction_mode) 
+bool valor::util::IsNCoth(int neut_reaction_mode) 
 //this is a catch all for everything NC that is not 1pi0, 1piC or coh
 // needs to be updated if another subcategory is added
 {
@@ -6924,7 +6924,7 @@ bool t2kana::util::IsNCoth(int neut_reaction_mode)
   return is_ncoth;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsNCoth_mu(int neut_reaction_mode) 
+bool valor::util::IsNCoth_mu(int neut_reaction_mode) 
 {
   bool is_ncoth_mu = ( IsNCoth (neut_reaction_mode) ||
 		       IsNCcoh (neut_reaction_mode) ||
@@ -6932,14 +6932,14 @@ bool t2kana::util::IsNCoth_mu(int neut_reaction_mode)
   return is_ncoth_mu;
 }
 //___________________________________________________________________________
-bool t2kana::util::IsNCoth_e(int neut_reaction_mode) 
+bool valor::util::IsNCoth_e(int neut_reaction_mode) 
 {
   bool is_ncoth_e = ( IsNCoth (neut_reaction_mode) ||
 		      IsNC1piC(neut_reaction_mode) );
   return is_ncoth_e;
 }
 //___________________________________________________________________________
-bool t2kana::util::UseEventToFillInTemplate(
+bool valor::util::UseEventToFillInTemplate(
   SuperkMode_t m, int nu_pdg_code, int neut_reaction_mode)
 {
 
@@ -7241,7 +7241,7 @@ bool t2kana::util::UseEventToFillInTemplate(
   return use_it;
 }
 //___________________________________________________________________________
-double t2kana::util::NuMuSurvProbOsc2Flavour(
+double valor::util::NuMuSurvProbOsc2Flavour(
   double mixing23, double dm23sq, double Et, bool unphysical_osc_prob = false)
 {
   if(Et <= 0.) return 0.;
@@ -7275,8 +7275,8 @@ double t2kana::util::NuMuSurvProbOsc2Flavour(
   return psurv;
 }
 //____________________________________________________________________________
-double t2kana::util::NuMuSurvProbOsc2Flavour(
-  double mixing23, double dm23sq, double Et, t2kana::conv::SuperkMode_t m,
+double valor::util::NuMuSurvProbOsc2Flavour(
+  double mixing23, double dm23sq, double Et, valor::conv::SuperkMode_t m,
   bool unphysical_osc_prob = false)
 {
 // Note: Using only the numu disappearance analysis modes
@@ -7356,7 +7356,7 @@ double t2kana::util::NuMuSurvProbOsc2Flavour(
   }
 }
 //____________________________________________________________________________
-double t2kana::util::NuMuSurvProbDecay (
+double valor::util::NuMuSurvProbDecay (
    double sinsq2theta, double alpha, double Et)
 {
 // Note: In oscillation formula (Dm^2 * L / 4E) in natural units becomes 
@@ -7377,9 +7377,9 @@ double t2kana::util::NuMuSurvProbDecay (
   return psurv;
 }
 //____________________________________________________________________________
-double t2kana::util::NuMuSurvProbDecay (
+double valor::util::NuMuSurvProbDecay (
   double sinsq2theta, double alpha, double Et, 
-  t2kana::conv::SuperkMode_t m)
+  valor::conv::SuperkMode_t m)
 {
 // Note: Using only the numu disappearance analysis modes
 //
@@ -7442,7 +7442,7 @@ m == kSKmOscNuMuCCQE     ||
   }
 }
 //____________________________________________________________________________
-double t2kana::util::NuMuSurvProbDecoh (
+double valor::util::NuMuSurvProbDecoh (
    double sinsq2theta, double musq, double Et)
 {
 //
@@ -7459,9 +7459,9 @@ double t2kana::util::NuMuSurvProbDecoh (
   return psurv;
 }
 //____________________________________________________________________________
-double t2kana::util::NuMuSurvProbDecoh (
+double valor::util::NuMuSurvProbDecoh (
   double sinsq2theta, double musq, double Et, 
-  t2kana::conv::SuperkMode_t m)
+  valor::conv::SuperkMode_t m)
 {
 // Note: Using only the numu disappearance analysis modes
 //
@@ -7524,25 +7524,25 @@ double t2kana::util::NuMuSurvProbDecoh (
   }
 }
 //____________________________________________________________________________
-t2kana::util::ArrIdx * t2kana::util::ArrIdx::fInstance = 0;
+valor::util::ArrIdx * valor::util::ArrIdx::fInstance = 0;
 //____________________________________________________________________________
-t2kana::util::ArrIdx::ArrIdx()
+valor::util::ArrIdx::ArrIdx()
 {
   this->Init();
   fInstance = 0;
 }
 //____________________________________________________________________________
-t2kana::util::ArrIdx * t2kana::util::ArrIdx::Instance()
+valor::util::ArrIdx * valor::util::ArrIdx::Instance()
 {
   if(fInstance == 0) {
-    static t2kana::util::ArrIdx::Cleaner cleaner;
+    static valor::util::ArrIdx::Cleaner cleaner;
     cleaner.DummyMethodAndSilentCompiler();
-    fInstance = new t2kana::util::ArrIdx;
+    fInstance = new valor::util::ArrIdx;
   }
   return fInstance;
 }
 //____________________________________________________________________________
-void t2kana::util::ArrIdx::Init(void)
+void valor::util::ArrIdx::Init(void)
 {
   //
   // sample/mode arrays
@@ -7728,7 +7728,7 @@ void t2kana::util::ArrIdx::Init(void)
   }
 }
 //____________________________________________________________________________
-int t2kana::util::DiagonaliseJacobi(std::complex<double> A[3][3],  std::complex<double> Q[3][3], double w[3])
+int valor::util::DiagonaliseJacobi(std::complex<double> A[3][3],  std::complex<double> Q[3][3], double w[3])
 // ----------------------------------------------------------------------------
 // Calculates the eigenvalues and normalized eigenvectors of a hermitian 3x3
 // matrix A using the Jacobi algorithm.
@@ -7858,7 +7858,7 @@ int t2kana::util::DiagonaliseJacobi(std::complex<double> A[3][3],  std::complex<
   return -1;
 }
 //____________________________________________________________________________
-int t2kana::util::DiagonaliseGSL(
+int valor::util::DiagonaliseGSL(
 #ifdef __GSL_ENABLED__ 
 int ndim, double * matrix_in, double * eigenvectors_out, double * eigenvalues_out
 #else

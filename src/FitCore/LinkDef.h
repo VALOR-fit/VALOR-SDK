@@ -4,25 +4,25 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ namespace t2kana;
-#pragma link C++ namespace t2kana::util;
+#pragma link C++ namespace valor;
+#pragma link C++ namespace valor::util;
 
-#pragma link C++ class t2kana::PhysHypothesis;
+#pragma link C++ class valor::PhysHypothesis;
 
-#pragma link C++ class t2kana::FitParamList+;
-#pragma link C++ class t2kana::PhysParamList+;
+#pragma link C++ class valor::FitParamList+;
+#pragma link C++ class valor::PhysParamList+;
 
-#pragma link C++ class t2kana::FitDataABC;
-#pragma link C++ class t2kana::FitModelABC;
+#pragma link C++ class valor::FitDataABC;
+#pragma link C++ class valor::FitModelABC;
 
-#pragma link C++ class t2kana::FitInputs;
+#pragma link C++ class valor::FitInputs;
 
-#pragma link C++ class t2kana::VALORArray;
+#pragma link C++ class valor::VALORArray;
 
-#pragma link C++ class t2kana::FitterABC;
-#pragma link C++ class t2kana::FitterMinuit;
-//#pragma link C++ class t2kana::FitterMinuit2;
-//#pragma link C++ class t2kana::FitterGSL;
+#pragma link C++ class valor::FitterABC;
+#pragma link C++ class valor::FitterMinuit;
+//#pragma link C++ class valor::FitterMinuit2;
+//#pragma link C++ class valor::FitterGSL;
 
 
 #endif

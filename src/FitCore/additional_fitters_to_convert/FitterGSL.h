@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class    t2kana::FitterGSL
+\class    valor::FitterGSL
 
 \brief    T2KAna fitter based on GSL implementation of the following algoritms:
 
@@ -46,7 +46,7 @@
 #include "FitCore/FitterABC.h"
 #include "FitCore/FitInputs.h"
 
-namespace t2kana {
+namespace valor {
 
 class FitterGSL: public FitterABC
 {
@@ -86,7 +86,7 @@ protected:
 };
 
 
-} // t2kana
+} // valor
 
 #endif
 

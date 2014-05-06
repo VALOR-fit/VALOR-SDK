@@ -9,7 +9,7 @@
 
 void read_osc_fit_results(const char * filename)
 {
-  using namespace t2kana;
+  using namespace valor;
 
   // Open input file
   TFile f(filename, "read");

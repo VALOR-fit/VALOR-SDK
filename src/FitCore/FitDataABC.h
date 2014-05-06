@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     t2kana::FitDataABC
+\class     valor::FitDataABC
 
 \brief     Pure abstract base class (pABC) for fit data.
 
@@ -25,7 +25,7 @@ class TObjArray;
 
 using std::string;
 
-namespace t2kana {
+namespace valor {
 
 class FitModelABC;
 class FitParamList;
@@ -85,7 +85,7 @@ protected:
    FitDataABC();
 };
 
-} // t2kana
+} // valor
 
 #endif
 

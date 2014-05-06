@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class    t2kana::utils
+\class    valor::utils
 
 \brief    Utilities
 
@@ -42,7 +42,7 @@ class TAxis;
 using std::string;
 using std::vector;
 
-namespace t2kana {
+namespace valor {
 namespace util {
 
   //
@@ -85,8 +85,8 @@ namespace util {
   string AsString           (conv::NuMassHierarchy_t  m);
   string AsString           (conv::NuOscMixParam_t    o);
   string AsString           (conv::NuOscOctant_t      p);
-  string AsString           (t2kana::conv::NuOscDmsqScheme_t dmsqs);
-  string AsString           (t2kana::conv::NuOscDeltaCP_t deltaCP);
+  string AsString           (valor::conv::NuOscDmsqScheme_t dmsqs);
+  string AsString           (valor::conv::NuOscDeltaCP_t deltaCP);
   string AsString           (conv::PhysHypothesis_t   h);
   string AsString           (conv::PhysParamId_t      p);
   string AsString           (conv::SuperkSample_t     s);
@@ -296,7 +296,7 @@ namespace util {
   };
 */
 } // util
-} // t2kana
+} // valor
   
 #endif
 

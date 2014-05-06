@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\enum      t2kana::conv::ConfLevel_t
+\enum      valor::conv::ConfLevel_t
 
 \brief     Confidence level
 
@@ -18,7 +18,7 @@
 #ifndef conf_level_h
 #define conf_level_h
 
-namespace t2kana {
+namespace valor {
 
 namespace conv {
 
@@ -38,7 +38,7 @@ namespace util {
 
 } // util
 
-} // t2kana
+} // valor
   
 #endif 
 

@@ -16,7 +16,7 @@ ChangeLog:
 
 #include "VALORArray.h"
 
-using namespace t2kana;
+using namespace valor;
 using std::vector;
 using std::cout;
 using std::cerr;
