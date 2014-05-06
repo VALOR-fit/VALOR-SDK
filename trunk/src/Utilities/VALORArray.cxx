@@ -14,7 +14,7 @@ ChangeLog:
 #include <cassert>
 #include <iostream>
 
-#include "VALORArray.h"
+#include "Utilities/VALORArray.h"
 
 using namespace valor;
 using std::vector;
