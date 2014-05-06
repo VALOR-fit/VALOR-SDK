@@ -62,6 +62,9 @@ purge: FORCE
 #
 #
 clean: FORCE   
+ifeq ($(strip $(DICTIONARY)),undefined)
+	$(RM) *.o *~ core a.out $(PACKAGE_LIB) $(PACKAGE_LIBMACLINK) $(PACKAGE_LIBNOVRS) Makefile.temp
+else
 	$(RM) *.o *~ core a.out $(PACKAGE_LIB) $(PACKAGE_LIBMACLINK) $(PACKAGE_LIBNOVRS) $(DICTIONARY).* Makefile.temp
-
+endif
 

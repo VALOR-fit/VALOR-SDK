@@ -11,7 +11,7 @@ MAKEFILE = Makefile
 include $(VALOR_FMWK)/src/make/Make.include
 
 PACKAGE           = ValorMesg
-DICTIONARY        =
+DICTIONARY        = undefined
 LIBNAME           = lib$(PACKAGE)
 
 all : lib lib-link
