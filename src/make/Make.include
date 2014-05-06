@@ -21,11 +21,11 @@ IS_MACOSX =
 
 # VALOR release info
 #
-VALOR_VERSION  = $(shell awk '{print $0}' $(VALOR_LBNX)/VERSION)
+VALOR_VERSION  = $(shell awk '{print $0}' $(VALOR_FMWK)/VERSION)
 
 # VALOR paths
 #
-VALOR_INCLUDES := -I$(VALOR_LBNX)/src/
+VALOR_INCLUDES := -I$(VALOR_FMWK)/src/
 
 #-------------------------------------------------------------------
 #                              ROOT

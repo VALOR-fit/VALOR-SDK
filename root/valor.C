@@ -3,7 +3,7 @@ void change_prompt()
     TRint* rint = dynamic_cast<TRint*>(gApplication);
     if (!rint) return;
 
-    rint->SetPrompt("VALOR/LBNx: [%d] ");
+    rint->SetPrompt("VALOR: [%d] ");
 }
 
 void valor_style()
@@ -110,15 +110,15 @@ void valor_style()
 
 void valor()
 {   
-    TString script_dir = gSystem->Getenv("VALOR_LBNX");
+    TString script_dir = gSystem->Getenv("VALOR_FMWK");
     script_dir += "./";
 
     TString curr_dir = gSystem->pwd();
 
     gSystem->cd(script_dir.Data());
 
-    gROOT->ProcessLine(".x $VALOR_LBNX/root/loadincs.C");    
-    gROOT->ProcessLine(".x $VALOR_LBNX/root/loadlibs.C");    
+    gROOT->ProcessLine(".x $VALOR_FMWK/root/loadincs.C");    
+    gROOT->ProcessLine(".x $VALOR_FMWK/root/loadlibs.C");    
 
     gSystem->cd(curr_dir.Data());
 

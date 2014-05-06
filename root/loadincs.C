@@ -1,5 +1,5 @@
 {
-  TString topdir = gSystem->Getenv("VALOR_LBNX");
+  TString topdir = gSystem->Getenv("VALOR_FMWK");
 
   TString mp = gROOT->GetMacroPath();
   TString ip;
