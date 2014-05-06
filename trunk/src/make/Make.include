@@ -2,10 +2,11 @@
 # Costas Andreopoulos (Rutherford Lab.) <costas.andreopoulos \at stfc.ac.uk>
 #
 
-GOPT_WITH_CXX_DEBUG_FLAG    = -g
-#GOPT_WITH_CXX_OPTIMIZ_FLAG = -O3
-GOPT_WITH_CXX_OPTIMIZ_FLAG  =
-GOPT_WITH_CXX_USERDEF_FLAGS =
+include $(VALOR_FMWK)/src/make/Make.config
+
+ifndef OPT_WITH_CXX_USERDEF_FLAGS
+ OPT_WITH_CXX_USERDEF_FLAGS=
+endif
 
 #-------------------------------------------------------------------
 #                           ARCHITECTURE 
@@ -40,17 +41,15 @@ ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore
 
 # log4cpp lib & include directory
 
-ifdef GOPT_WITH_LOG4CPP_INC
-LOG_INC_DIR = $(VALOR_WITH_LOG4CPP_INC)
+ifdef OPT_WITH_LOG4CPP_INC
+LOG_INC_DIR = $(OPT_WITH_LOG4CPP_INC)
 else
-#LOG_INC_DIR = /usr/local/src/log4cpp/include
 LOG_INC_DIR = /opt/local/include
 endif
 
-ifdef GOPT_WITH_LOG4CPP_LIB
-LOG_LIB_DIR = $(VALOR_WITH_LOG4CPP_LIB)
+ifdef OPT_WITH_LOG4CPP_LIB
+LOG_LIB_DIR = $(OPT_WITH_LOG4CPP_LIB)
 else
-#LOG_LIB_DIR = /usr/local/lib
 LOG_LIB_DIR = /opt/local/lib
 endif
 
@@ -65,9 +64,9 @@ LOG_LIBRARIES := -L$(LOG_LIB_DIR) -llog4cpp
 # Linking in the Google Profiling Tool library
 #
 #GPROF_LIBRARIES = 
-#ifeq ($(strip $(GOPT_ENABLE_PROFILER)),YES)
-#  ifdef GOPT_WITH_PROFILER_LIB
-#    GPROF_LIBRARIES += -L$(GOPT_WITH_PROFILER_LIB) -lprofiler
+#ifeq ($(strip $(OPT_ENABLE_PROFILER)),YES)
+#  ifdef OPT_WITH_PROFILER_LIB
+#    GPROF_LIBRARIES += -L$(OPT_WITH_PROFILER_LIB) -lprofiler
 #  else
 #    GPROF_LIBRARIES += -L/usr/local/lib -lprofiler
 #  endif
@@ -119,9 +118,9 @@ ARCH_OK       = YES
 IS_MACOSX     = YES
 CXXFLAGS      = -pipe -W -Wall -Wno-long-double \
 		-fsigned-char -fno-common -flat_namespace \
-		$(GOPT_WITH_CXX_DEBUG_FLAG) \
-		$(GOPT_WITH_CXX_OPTIMIZ_FLAG) \
-		$(GOPT_WITH_CXX_USERDEF_FLAGS) 
+		$(OPT_WITH_CXX_DEBUG_FLAG) \
+		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
+		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing -ffriend-injection
 endif
@@ -149,9 +148,9 @@ ARCH_OK       = YES
 IS_MACOSX     = YES
 CXXFLAGS      = -m64 -pipe -W -Wall \
 		-fsigned-char -fno-common -flat_namespace \
-		$(GOPT_WITH_CXX_DEBUG_FLAG) \
-		$(GOPT_WITH_CXX_OPTIMIZ_FLAG) \
-		$(GOPT_WITH_CXX_USERDEF_FLAGS) 
+		$(OPT_WITH_CXX_DEBUG_FLAG) \
+		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
+		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing -ffriend-injection
 endif
@@ -177,9 +176,9 @@ endif
 ifeq ($(strip $(ARCH)),linux) 
 ARCH_OK       = YES
 CXXFLAGS      = -Wall -fPIC \
-		$(GOPT_WITH_CXX_DEBUG_FLAG) \
-		$(GOPT_WITH_CXX_OPTIMIZ_FLAG) \
-		$(GOPT_WITH_CXX_USERDEF_FLAGS) 
+		$(OPT_WITH_CXX_DEBUG_FLAG) \
+		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
+		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing -ffriend-injection
 endif
@@ -204,9 +203,9 @@ endif
 ifeq ($(strip $(ARCH)),linuxx8664gcc) 
 ARCH_OK       = YES
 CXXFLAGS      = -Wall -fPIC \
-		$(GOPT_WITH_CXX_DEBUG_FLAG) \
-		$(GOPT_WITH_CXX_OPTIMIZ_FLAG) \
-		$(GOPT_WITH_CXX_USERDEF_FLAGS) 
+		$(OPT_WITH_CXX_DEBUG_FLAG) \
+		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
+		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing -ffriend-injection
 endif
