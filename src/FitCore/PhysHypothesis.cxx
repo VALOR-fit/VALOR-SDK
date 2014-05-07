@@ -8,7 +8,7 @@ ChangeLog:
 */
 //________________________________________________________________________________________
 
-#define __show_init_mesg_info__
+//#define __show_init_mesg_info__
 
 #include <iomanip>
 #include <cstdlib>

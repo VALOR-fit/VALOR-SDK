@@ -192,7 +192,7 @@ void util::Format(
 //___________________________________________________________________________
 void util::PrintBanner(void)
 {
-  string base_dir = string(gSystem->Getenv("VALOR_LBNX"));
+  string base_dir = string(gSystem->Getenv("VALOR_FMWK"));
   string banner = base_dir + string("/data/banner/banner.dat");
   util::PrintBanner(banner, 500);
 }

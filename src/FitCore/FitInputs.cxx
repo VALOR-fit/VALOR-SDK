@@ -633,7 +633,6 @@ void valor::FitFunc (
 
   f = data_abc.Statistic(&model_abc,fpar,"likelihood-ratio");
   fpar.SetCurrStatistic(f);
-  cout << f << endl;
 }
 //____________________________________________________________________________
 FitFunctor::FitFunctor(FitInputs * inputs) 
