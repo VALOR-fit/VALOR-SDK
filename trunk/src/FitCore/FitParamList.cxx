@@ -80,7 +80,7 @@ bool FitParamList::AddParam (int ip, PhysParamId_t p,
   fIdMap.insert(map<PhysParamId_t, int>::value_type(p,ip));
 
   if(name.size()==0) {
-    name = util::AsString(p);
+    name = util::RawParamAsString(p);
   }
 
   fName         [ip].SetString(name.c_str());
@@ -1336,7 +1336,7 @@ int FitParamList::Id(PhysParamId_t p) const
 {
    map<PhysParamId_t, int>::const_iterator it = fIdMap.find(p);
    if(it == fIdMap.end()) {
-     cerr << "FitParamList::Id() >> Parameter: " << util::AsString(p) << " PhysParamId_t p = " << p 
+     cerr << "FitParamList::Id() >> Parameter: " << util::RawParamAsString(p) << " PhysParamId_t p = " << p 
           << " was not included in current fit parameter list" << endl;
      exit(1);
    }

@@ -191,29 +191,34 @@ public:
    int  Id      (valor::conv::PhysParamId_t p) const; // PhysParamId_t --> array slot
    valor::conv::PhysParamId_t WhichParam(int id) const; // array slot --> PhysParamId_t
    
-private:
-
-   void CleanUp        (void);
-   void Init           (int nparams);
-   void SetParListName (string s)   { fParListName = s; }
-   void SetSystMode    (int m)      { fSystMode    = m; }
-
-   // Various functions called by NamedParameterList(name)
    static FitParamList * NuOsc3FlavourFit                          (void);
-   static FitParamList * NuOsc3FlavourFitWithAllSyst               (void);
    static FitParamList * NumuDisapFit                              (void);
-   static FitParamList * NumuDisapFitWithAllSyst                   (void);
    static FitParamList * NumuDecayFit                              (void);
    static FitParamList * NumuDecohFit                              (void);
    static FitParamList * NuOscSterile4FlavourFit                   (void);
-   static FitParamList * NuOscSterile4FlavourFitWithAllSyst        (void);
    static FitParamList * NuOscSterile5FlavourFit                   (void);
-   static FitParamList * NuOscSterile5FlavourFitWithAllSyst        (void);
+   
    static void           Append3FlavourOscillation                 (FitParamList * fp, int start);
    static void           Append2FlavourOscillation                 (FitParamList * fp, int start);
    static void           Append4FlavourSterileOscillation          (FitParamList * fp, int start);
    static void           Append5FlavourSterileOscillation          (FitParamList * fp, int start);
    static void           AppendAllSystematics                      (FitParamList * fp, int start);
+   
+   void SetParListName (string s)   { fParListName = s; }
+   void SetSystMode    (int m)      { fSystMode    = m; }
+   
+private:
+
+   void CleanUp        (void);
+   void Init           (int nparams);
+
+   // Various functions called by NamedParameterList(name)
+   
+   static FitParamList * NuOsc3FlavourFitWithAllSyst               (void);
+   static FitParamList * NumuDisapFitWithAllSyst                   (void);
+   static FitParamList * NuOscSterile4FlavourFitWithAllSyst        (void);
+   static FitParamList * NuOscSterile5FlavourFitWithAllSyst        (void);
+   
 
    //
    // Private data members
