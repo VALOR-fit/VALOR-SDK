@@ -808,9 +808,9 @@ FitParamList * FitParamList::NamedParameterList(string name)
   return 0;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NuOsc3FlavourFit(void)
+FitParamList * FitParamList::NuOsc3FlavourFit(int nuisance)
 {
-  FitParamList * fparm = new FitParamList(6);
+  FitParamList * fparm = new FitParamList(6+nuisance);
   FitParamList::Append3FlavourOscillation(fparm, 0);
   return fparm;
 }
@@ -824,9 +824,9 @@ FitParamList * FitParamList::NuOsc3FlavourFitWithAllSyst(void)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NuOscSterile4FlavourFit(void)
+FitParamList * FitParamList::NuOscSterile4FlavourFit(int nuisance)
 {
-  FitParamList * fparm = new FitParamList(12);
+  FitParamList * fparm = new FitParamList(12+nuisance);
   FitParamList::Append4FlavourSterileOscillation(fparm, 0);
 
   return fparm;
@@ -841,9 +841,9 @@ FitParamList * FitParamList::NuOscSterile4FlavourFitWithAllSyst(void)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NuOscSterile5FlavourFit(void)
+FitParamList * FitParamList::NuOscSterile5FlavourFit(int nuisance)
 {
-  FitParamList * fparm = new FitParamList(18);
+  FitParamList * fparm = new FitParamList(18+nuisance);
   FitParamList::Append4FlavourSterileOscillation(fparm, 0);
   return fparm;
 }
@@ -857,9 +857,9 @@ FitParamList * FitParamList::NuOscSterile5FlavourFitWithAllSyst(void)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NumuDisapFit(void)
+FitParamList * FitParamList::NumuDisapFit(int nuisance)
 {
-  FitParamList * fparm = new FitParamList(2);
+  FitParamList * fparm = new FitParamList(2+nuisance);
   FitParamList::Append2FlavourOscillation(fparm, 0);
 
   return fparm;
@@ -873,9 +873,9 @@ FitParamList * FitParamList::NumuDisapFitWithAllSyst(void)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NumuDecayFit(void)
+FitParamList * FitParamList::NumuDecayFit(int nuisance)
 {
-  FitParamList * fparm = new FitParamList(2);
+  FitParamList * fparm = new FitParamList(2+nuisance);
 
   //                                         init    min      max    step   fix?   nuis?
   fparm->AddParam(0, kPhypSinsq2ThetaDecay,  1.0,    0.0,     1.0,   0.02,  false, false);
@@ -884,9 +884,9 @@ FitParamList * FitParamList::NumuDecayFit(void)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NumuDecohFit(void)
+FitParamList * FitParamList::NumuDecohFit(int nuisance)
 {
-  FitParamList * fparm = new FitParamList(2);
+  FitParamList * fparm = new FitParamList(2+nuisance);
 
   //                                          init    min     max     step    fix?   nuis?  
   fparm->AddParam(0, kPhypSinsq2ThetaDecoh,   1.0,    0.0,    1.0,    0.02,   false, false);

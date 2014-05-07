@@ -194,12 +194,13 @@ public:
    int  Id      (valor::conv::PhysParamId_t p) const; // PhysParamId_t --> array slot
    valor::conv::PhysParamId_t WhichParam(int id) const; // array slot --> PhysParamId_t
    
-   static FitParamList * NuOsc3FlavourFit                          (void);
-   static FitParamList * NumuDisapFit                              (void);
-   static FitParamList * NumuDecayFit                              (void);
-   static FitParamList * NumuDecohFit                              (void);
-   static FitParamList * NuOscSterile4FlavourFit                   (void);
-   static FitParamList * NuOscSterile5FlavourFit                   (void);
+   // Returns a fit param list with a physics hypothesis, and 'nuisance' empty parameters.
+   static FitParamList * NuOsc3FlavourFit                          (int nuisance = 0);
+   static FitParamList * NumuDisapFit                              (int nuisance = 0);
+   static FitParamList * NumuDecayFit                              (int nuisance = 0);
+   static FitParamList * NumuDecohFit                              (int nuisance = 0);
+   static FitParamList * NuOscSterile4FlavourFit                   (int nuisance = 0);
+   static FitParamList * NuOscSterile5FlavourFit                   (int nuisance = 0);
    
    static void           Append3FlavourOscillation                 (FitParamList * fp, int start);
    static void           Append2FlavourOscillation                 (FitParamList * fp, int start);
