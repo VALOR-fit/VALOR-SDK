@@ -21,6 +21,8 @@
 #include <iostream>
 #include <TNamed.h>
 
+#include "Conventions/PhysParamId.h"
+
 #include "Conventions/NuMassHierarchy.h"
 #include "Conventions/NuOscMixParam.h"
 #include "Conventions/NuOscDmsqScheme.h"
@@ -58,14 +60,18 @@ public:
 
   // Choice of deltaCP, use it as purely phase or its sin
   conv::NuOscDeltaCP_t gOscDeltaCP;
-
-/*
-  // Choice of oscillation analysis type (combined, numu disapp only, nue app only)
-  conv::OscAnaType_t gOscAnaTypeChoice;
-*/
+  
+  void SetDefaultParameterValues(void);
 
   void Print(ostream & stream) const;
   friend ostream & operator << (ostream & stream, const Opt & opt);
+  
+  // Storage for parameters to throw around
+  double GetGlobalBestFit     (conv::PhysParamId_t p) const;
+  double GetGlobalFitError    (conv::PhysParamId_t p) const;
+  
+  void SetGlobalBestFit     (conv::PhysParamId_t p, double value);
+  void SetGlobalFitError    (conv::PhysParamId_t p, double value);
 
   // Check for any parameters being undefined
   bool Undefined(void);
@@ -113,6 +119,11 @@ private:
   static Opt * fInstance;
 
   void SetDefaults(void);
+  
+  static const double kBadResult = -999;
+  
+  double fGlobalBestFit       [conv::knppmax];
+  double fGlobalFitError      [conv::knppmax];
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }

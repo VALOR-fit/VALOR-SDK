@@ -1351,4 +1351,28 @@ valor::conv::PhysParamId_t FitParamList::WhichParam(int id) const
    return kPhypUndefined;
 }
 //________________________________________________________________________________________
-
+double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
+{
+  double chisq = 0;
+  double center, error, current, tweak;
+  for (int ip = kPhypMixing23 ; ip < kNuis000 ; ip++) {
+    PhysParamId_t p = (PhysParamId_t) ip;
+    if (not (this->Exists(p) && this->IsNuisance(p))) continue;
+    current = this->CurrValue(p);
+    
+    center = Opt::Instance()->GetGlobalBestFit(p);
+    error  = Opt::Instance()->GetGlobalFitError(p)*center;
+    
+    if (center == -999) {
+      std::cerr<<"FitParamList/HypothesisFitStatisticPenalty >> Using zero penalty for parameter "
+               << util::RawParamAsString(p) << std::endl;
+      continue;
+    }
+    
+    tweak = (current-center)/error;
+    
+    chisq += tweak*tweak;
+  }
+  
+  return chisq;
+}

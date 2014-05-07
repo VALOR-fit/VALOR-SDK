@@ -10,8 +10,10 @@ ChangeLog:
 
 #include <string>
 #include <cstdlib>
+#include <cassert>
 
 #include "Conventions/Opt.h"
+#include "Conventions/Constants.h"
 
 using std::endl;
 using std::string;
@@ -137,6 +139,83 @@ void Opt::SetDefaults(void)
   else
     gOscAnaTypeChoice = kAnaUndefined;
 */
+
+  this->SetDefaultParameterValues();
+}
+//____________________________________________________________________________
+void Opt::SetDefaultParameterValues()
+{
+  // Set default global parameter values
+  // set empty values
+  for (int ip = 0 ; ip < knppmax ; ip++ ) {
+    fGlobalBestFit [ip] = kBadResult;
+    fGlobalFitError[ip] = kBadResult;
+    //fInitialValue  [ip] = 0.;
+  }
+  
+  double mean = kBadResult;
+  
+  //dm12
+  fGlobalBestFit  [kPhypDm12sq] = kGlobFitDm12sq;
+  fGlobalFitError [kPhypDm12sq] = kGlobFitErrDm12sq;
+  //fInitialValue   [kPhypDm12sq] = kInitFitDm12sq;
+ 
+  //dm23
+  switch (gOscDmsqScheme) {
+    case(kNuDmsqFogliLisi):
+      mean  =  kGlobFitDmsqFL;
+      break;
+    case(kNuDmsq12andAbs23):
+      mean  = kGlobFitDm23sq; 
+      break;
+    case(kNuDmsq12andAbs31):
+      if(Opt::Instance()->gMassHierarchyAssumed == kNmhNormal)
+        mean  = kGlobFitDm23sq + kGlobFitDm12sq; 
+      else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
+        mean  = kGlobFitDm23sq - kGlobFitDm12sq; 
+      else assert(!"Should never happen");
+      break;
+    default:
+      mean  = kGlobFitDm23sq;  
+  }
+  fGlobalBestFit  [kPhypDm23sq] = mean;
+  fGlobalFitError [kPhypDm23sq] = kGlobFitErrDm23sq;
+  //fInitialValue   [kPhypDm23sq] = fGlobalBestFit[kPhypDm23sq];
+  
+  // mixing angles
+  switch(gOscMixingParamChoice) {
+    case(kNuMixSinsq2Theta):
+    {
+      fGlobalBestFit  [kPhypMixing12] = kGlobFitSinsq2Theta12;
+      fGlobalFitError [kPhypMixing12] = kGlobFitErrSinsq2Theta12;
+      //fInitialValue   [kPhypMixing12] = fGlobalBestFit[kPhypMixing12];
+      
+      fGlobalBestFit  [kPhypMixing23] = kGlobFitSinsq2Theta23;
+      fGlobalFitError [kPhypMixing23] = kGlobFitErrSinsq2Theta23;
+      //fInitialValue   [kPhypMixing23] = fGlobalBestFit[kPhypMixing23];
+      
+      fGlobalBestFit  [kPhypMixing13] = kGlobFitSinsq2Theta13;
+      fGlobalFitError [kPhypMixing13] = kGlobFitErrSinsq2Theta13;
+      //fInitialValue   [kPhypMixing13] = fGlobalBestFit[kPhypMixing13];
+      break;
+    }
+    case(kNuMixSinsqTheta):
+    {
+      fGlobalBestFit  [kPhypMixing12] = kGlobFitSinsqTheta12;
+      fGlobalFitError [kPhypMixing12] = kGlobFitErrSinsqTheta12;
+      //fInitialValue   [kPhypMixing12] = fGlobalBestFit[kPhypMixing12];
+      
+      fGlobalBestFit  [kPhypMixing23] = kGlobFitSinsqTheta23;
+      fGlobalFitError [kPhypMixing23] = kGlobFitErrSinsqTheta23;
+      //fInitialValue   [kPhypMixing23] = fGlobalBestFit[kPhypMixing23];
+      
+      fGlobalBestFit  [kPhypMixing13] = kGlobFitSinsqTheta13;
+      fGlobalFitError [kPhypMixing13] = kGlobFitErrSinsqTheta13;
+      //fInitialValue   [kPhypMixing13] = fGlobalBestFit[kPhypMixing13];
+      break;
+    }
+    default: exit(-1);
+  }
 }
 //________________________________________________________________________________________
 bool Opt::Undefined(void)
@@ -199,5 +278,27 @@ void Opt::ReadFrom (Opt::Persistable & optp)
   gOscDeltaCP           = optp.dcp;
 }
 //________________________________________________________________________________________
-
-
+void Opt::SetGlobalBestFit(PhysParamId_t p, double value)
+{
+  assert(p!=kPhypUndefined);
+  fGlobalBestFit[p] = value;
+}
+//________________________________________________________________________________________
+void Opt::SetGlobalFitError(PhysParamId_t p, double value)
+{
+  assert(p!=kPhypUndefined);
+  fGlobalFitError[p] = value;
+}
+//________________________________________________________________________________________
+double Opt::GetGlobalBestFit(PhysParamId_t p) const
+{
+  assert(p!=kPhypUndefined);
+  return fGlobalBestFit[p];
+}
+//________________________________________________________________________________________
+double Opt::GetGlobalFitError(PhysParamId_t p) const
+{
+  assert(p!=kPhypUndefined);
+  return fGlobalFitError[p];
+}
+//________________________________________________________________________________________
