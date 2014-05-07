@@ -218,10 +218,10 @@ private:
 
    // Various functions called by NamedParameterList(name)
    
-   static FitParamList * NuOsc3FlavourFitWithAllSyst               (void);
-   static FitParamList * NumuDisapFitWithAllSyst                   (void);
-   static FitParamList * NuOscSterile4FlavourFitWithAllSyst        (void);
-   static FitParamList * NuOscSterile5FlavourFitWithAllSyst        (void);
+   //~ static FitParamList * NuOsc3FlavourFitWithAllSyst               (void);
+   //~ static FitParamList * NumuDisapFitWithAllSyst                   (void);
+   //~ static FitParamList * NuOscSterile4FlavourFitWithAllSyst        (void);
+   //~ static FitParamList * NuOscSterile5FlavourFitWithAllSyst        (void);
    
 
    //

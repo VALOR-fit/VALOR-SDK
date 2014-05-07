@@ -26,8 +26,6 @@ namespace valor {
 
 namespace conv {
 
-static const int kNumOfNuisanceParams = 0; 
-
 // Max number of fit  parameters listed below (for booking large enough param arrays)
 static const int knppmax = 250; 
 

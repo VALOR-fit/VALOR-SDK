@@ -586,12 +586,12 @@ FitParamList * FitParamList::NamedParameterList(string name)
     fp -> SetSystMode(0);
     return fp;
   }
-  if(name == "nuosc3f+nuisance") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-    fp -> SetParListName(name);
-    fp -> SetSystMode(1);
-    return fp;
-  }
+  //~ if(name == "nuosc3f+nuisance") {
+    //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
+    //~ fp -> SetParListName(name);
+    //~ fp -> SetSystMode(1);
+    //~ return fp;
+  //~ }
 
   //
   // 3-flavour oscillation fit with various oscillation param subsets either fixed or
@@ -606,14 +606,14 @@ FitParamList * FitParamList::NamedParameterList(string name)
     fp -> SetSystMode(0);
     return fp;
   }
-  if(name == "nuosc3f_12constrain+nuisance") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-    fp -> SetNuisance (kPhypMixing12, true);
-    fp -> SetNuisance (kPhypDm12sq,   true);
-    fp -> SetParListName(name);
-    fp -> SetSystMode(1);
-    return fp;
-  }
+  //~ if(name == "nuosc3f_12constrain+nuisance") {
+    //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
+    //~ fp -> SetNuisance (kPhypMixing12, true);
+    //~ fp -> SetNuisance (kPhypDm12sq,   true);
+    //~ fp -> SetParListName(name);
+    //~ fp -> SetSystMode(1);
+    //~ return fp;
+  //~ }
   if(name == "nuosc3f_12fix") {
     FitParamList * fp = FitParamList::NuOsc3FlavourFit();
     fp -> FixParameter (kPhypMixing12);
@@ -622,14 +622,14 @@ FitParamList * FitParamList::NamedParameterList(string name)
     fp -> SetSystMode(0);
     return fp;
   }
-  if(name == "nuosc3f_12fix+nuisance") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-    fp -> FixParameter (kPhypMixing12);
-    fp -> FixParameter (kPhypDm12sq  );
-    fp -> SetParListName(name);
-    fp -> SetSystMode(1);
-    return fp;
-  }
+  //~ if(name == "nuosc3f_12fix+nuisance") {
+    //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
+    //~ fp -> FixParameter (kPhypMixing12);
+    //~ fp -> FixParameter (kPhypDm12sq  );
+    //~ fp -> SetParListName(name);
+    //~ fp -> SetSystMode(1);
+    //~ return fp;
+  //~ }
 
 /*
   if(name == "nuosc3f_numudisapp_fix4") {
@@ -711,29 +711,29 @@ FitParamList * FitParamList::NamedParameterList(string name)
     return fp;
   }
 
-  if(name == "nuosc3f_dcpsensitivity_fix3+nuisance") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-    fp -> SetNuisance  (kPhypMixing23, true);
-    fp -> SetNuisance  (kPhypDm23sq,   true);
-    fp -> FixParameter (kPhypMixing13);
-    fp -> FixParameter (kPhypMixing12);
-    fp -> FixParameter (kPhypDm12sq);
-    fp -> SetParListName(name);
-    fp -> SetSystMode(5);//use future osc errors
-    return fp;
-  }
+  //~ if(name == "nuosc3f_dcpsensitivity_fix3+nuisance") {
+    //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
+    //~ fp -> SetNuisance  (kPhypMixing23, true);
+    //~ fp -> SetNuisance  (kPhypDm23sq,   true);
+    //~ fp -> FixParameter (kPhypMixing13);
+    //~ fp -> FixParameter (kPhypMixing12);
+    //~ fp -> FixParameter (kPhypDm12sq);
+    //~ fp -> SetParListName(name);
+    //~ fp -> SetSystMode(5);//use future osc errors
+    //~ return fp;
+  //~ }
 
-  if(name == "nuosc3f_dcpsensitivity+nuisance") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-    fp -> SetNuisance  (kPhypMixing23, true);
-    fp -> SetNuisance  (kPhypDm23sq,   true);
-    fp -> SetNuisance  (kPhypMixing13, true);
-    fp -> SetNuisance  (kPhypMixing12, true);
-    fp -> SetNuisance  (kPhypDm12sq,   true);
-    fp -> SetParListName(name);
-    fp -> SetSystMode(6);//use current osc errors
-    return fp;
-  }
+  //~ if(name == "nuosc3f_dcpsensitivity+nuisance") {
+    //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
+    //~ fp -> SetNuisance  (kPhypMixing23, true);
+    //~ fp -> SetNuisance  (kPhypDm23sq,   true);
+    //~ fp -> SetNuisance  (kPhypMixing13, true);
+    //~ fp -> SetNuisance  (kPhypMixing12, true);
+    //~ fp -> SetNuisance  (kPhypDm12sq,   true);
+    //~ fp -> SetParListName(name);
+    //~ fp -> SetSystMode(6);//use current osc errors
+    //~ return fp;
+  //~ }
 
 
 /*
@@ -815,14 +815,14 @@ FitParamList * FitParamList::NuOsc3FlavourFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NuOsc3FlavourFitWithAllSyst(void)
-{
-  FitParamList * fparm = new FitParamList(6+kNumOfNuisanceParams); 
-  FitParamList::Append3FlavourOscillation(fparm, 0);
-  // add nuisance params
-
-  return fparm;
-}
+//~ FitParamList * FitParamList::NuOsc3FlavourFitWithAllSyst(void)
+//~ {
+  //~ FitParamList * fparm = new FitParamList(6+kNumOfNuisanceParams); 
+  //~ FitParamList::Append3FlavourOscillation(fparm, 0);
+  //~ // add nuisance params
+//~ 
+  //~ return fparm;
+//~ }
 //________________________________________________________________________________________
 FitParamList * FitParamList::NuOscSterile4FlavourFit(int nuisance)
 {
@@ -832,14 +832,14 @@ FitParamList * FitParamList::NuOscSterile4FlavourFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NuOscSterile4FlavourFitWithAllSyst(void)
-{
-  FitParamList * fparm = new FitParamList(12+kNumOfNuisanceParams); 
-  FitParamList::Append4FlavourSterileOscillation(fparm, 0);
-  // add nuisance params
-
-  return fparm;
-}
+//~ FitParamList * FitParamList::NuOscSterile4FlavourFitWithAllSyst(void)
+//~ {
+  //~ FitParamList * fparm = new FitParamList(12+kNumOfNuisanceParams); 
+  //~ FitParamList::Append4FlavourSterileOscillation(fparm, 0);
+  //~ // add nuisance params
+//~ 
+  //~ return fparm;
+//~ }
 //________________________________________________________________________________________
 FitParamList * FitParamList::NuOscSterile5FlavourFit(int nuisance)
 {
@@ -848,14 +848,14 @@ FitParamList * FitParamList::NuOscSterile5FlavourFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NuOscSterile5FlavourFitWithAllSyst(void)
-{
-  FitParamList * fparm = new FitParamList(18+kNumOfNuisanceParams); 
-  FitParamList::Append4FlavourSterileOscillation(fparm, 0);
-  // add nuisance params
-
-  return fparm;
-}
+//~ FitParamList * FitParamList::NuOscSterile5FlavourFitWithAllSyst(void)
+//~ {
+  //~ FitParamList * fparm = new FitParamList(18+kNumOfNuisanceParams); 
+  //~ FitParamList::Append4FlavourSterileOscillation(fparm, 0);
+  //~ // add nuisance params
+//~ 
+  //~ return fparm;
+//~ }
 //________________________________________________________________________________________
 FitParamList * FitParamList::NumuDisapFit(int nuisance)
 {
@@ -865,13 +865,13 @@ FitParamList * FitParamList::NumuDisapFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NumuDisapFitWithAllSyst(void)
-{
-  FitParamList * fparm = new FitParamList(2+kNumOfNuisanceParams);
-  // add nuisance params
-
-  return fparm;
-}
+//~ FitParamList * FitParamList::NumuDisapFitWithAllSyst(void)
+//~ {
+  //~ FitParamList * fparm = new FitParamList(2+kNumOfNuisanceParams);
+  //~ // add nuisance params
+//~ 
+  //~ return fparm;
+//~ }
 //________________________________________________________________________________________
 FitParamList * FitParamList::NumuDecayFit(int nuisance)
 {
