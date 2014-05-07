@@ -29,7 +29,7 @@ namespace conv {
 static const int kNumOfNuisanceParams = 0; 
 
 // Max number of fit  parameters listed below (for booking large enough param arrays)
-static const int knppmax = 100; 
+static const int knppmax = 250; 
 
 typedef enum EPhysParamId 
 {   
@@ -65,25 +65,210 @@ typedef enum EPhysParamId
    kPhypDelta35,               // Sterile phase
    kPhypNSIepsMuTau,           // Nonstandard matter interactions
 
-   /*
-    * List of nuisance parameters 
-    * -----------------------------------------
-   */
 
-   /*
-    * (flux and cross-section) correlated parameters used in the BANFF fit
-   */   
-   kNuisBANFF00,               // 
-   kNuisBANFF01,               // 
-   kNuisBANFF02,               // 
-   kNuisBANFF03,               // 
-   kNuisBANFF04,               // 
-   kNuisBANFF05,               // 
-   kNuisBANFF06,               // 
-   kNuisBANFF07,               // 
-   kNuisBANFF08,               // 
-   kNuisBANFF09,               // 
-   kNuisBANFF10                // 
+   // Generic nuisance parameters
+  kNuis000 ,
+  kNuis001 ,
+  kNuis002 ,
+  kNuis003 ,
+  kNuis004 ,
+  kNuis005 ,
+  kNuis006 ,
+  kNuis007 ,
+  kNuis008 ,
+  kNuis009 ,
+  kNuis010 ,
+  kNuis011 ,
+  kNuis012 ,
+  kNuis013 ,
+  kNuis014 ,
+  kNuis015 ,
+  kNuis016 ,
+  kNuis017 ,
+  kNuis018 ,
+  kNuis019 ,
+  kNuis020 ,
+  kNuis021 ,
+  kNuis022 ,
+  kNuis023 ,
+  kNuis024 ,
+  kNuis025 ,
+  kNuis026 ,
+  kNuis027 ,
+  kNuis028 ,
+  kNuis029 ,
+  kNuis030 ,
+  kNuis031 ,
+  kNuis032 ,
+  kNuis033 ,
+  kNuis034 ,
+  kNuis035 ,
+  kNuis036 ,
+  kNuis037 ,
+  kNuis038 ,
+  kNuis039 ,
+  kNuis040 ,
+  kNuis041 ,
+  kNuis042 ,
+  kNuis043 ,
+  kNuis044 ,
+  kNuis045 ,
+  kNuis046 ,
+  kNuis047 ,
+  kNuis048 ,
+  kNuis049 ,
+  kNuis050 ,
+  kNuis051 ,
+  kNuis052 ,
+  kNuis053 ,
+  kNuis054 ,
+  kNuis055 ,
+  kNuis056 ,
+  kNuis057 ,
+  kNuis058 ,
+  kNuis059 ,
+  kNuis060 ,
+  kNuis061 ,
+  kNuis062 ,
+  kNuis063 ,
+  kNuis064 ,
+  kNuis065 ,
+  kNuis066 ,
+  kNuis067 ,
+  kNuis068 ,
+  kNuis069 ,
+  kNuis070 ,
+  kNuis071 ,
+  kNuis072 ,
+  kNuis073 ,
+  kNuis074 ,
+  kNuis075 ,
+  kNuis076 ,
+  kNuis077 ,
+  kNuis078 ,
+  kNuis079 ,
+  kNuis080 ,
+  kNuis081 ,
+  kNuis082 ,
+  kNuis083 ,
+  kNuis084 ,
+  kNuis085 ,
+  kNuis086 ,
+  kNuis087 ,
+  kNuis088 ,
+  kNuis089 ,
+  kNuis090 ,
+  kNuis091 ,
+  kNuis092 ,
+  kNuis093 ,
+  kNuis094 ,
+  kNuis095 ,
+  kNuis096 ,
+  kNuis097 ,
+  kNuis098 ,
+  kNuis099 ,
+  kNuis100 ,
+  kNuis101 ,
+  kNuis102 ,
+  kNuis103 ,
+  kNuis104 ,
+  kNuis105 ,
+  kNuis106 ,
+  kNuis107 ,
+  kNuis108 ,
+  kNuis109 ,
+  kNuis110 ,
+  kNuis111 ,
+  kNuis112 ,
+  kNuis113 ,
+  kNuis114 ,
+  kNuis115 ,
+  kNuis116 ,
+  kNuis117 ,
+  kNuis118 ,
+  kNuis119 ,
+  kNuis120 ,
+  kNuis121 ,
+  kNuis122 ,
+  kNuis123 ,
+  kNuis124 ,
+  kNuis125 ,
+  kNuis126 ,
+  kNuis127 ,
+  kNuis128 ,
+  kNuis129 ,
+  kNuis130 ,
+  kNuis131 ,
+  kNuis132 ,
+  kNuis133 ,
+  kNuis134 ,
+  kNuis135 ,
+  kNuis136 ,
+  kNuis137 ,
+  kNuis138 ,
+  kNuis139 ,
+  kNuis140 ,
+  kNuis141 ,
+  kNuis142 ,
+  kNuis143 ,
+  kNuis144 ,
+  kNuis145 ,
+  kNuis146 ,
+  kNuis147 ,
+  kNuis148 ,
+  kNuis149 ,
+  kNuis150 ,
+  kNuis151 ,
+  kNuis152 ,
+  kNuis153 ,
+  kNuis154 ,
+  kNuis155 ,
+  kNuis156 ,
+  kNuis157 ,
+  kNuis158 ,
+  kNuis159 ,
+  kNuis160 ,
+  kNuis161 ,
+  kNuis162 ,
+  kNuis163 ,
+  kNuis164 ,
+  kNuis165 ,
+  kNuis166 ,
+  kNuis167 ,
+  kNuis168 ,
+  kNuis169 ,
+  kNuis170 ,
+  kNuis171 ,
+  kNuis172 ,
+  kNuis173 ,
+  kNuis174 ,
+  kNuis175 ,
+  kNuis176 ,
+  kNuis177 ,
+  kNuis178 ,
+  kNuis179 ,
+  kNuis180 ,
+  kNuis181 ,
+  kNuis182 ,
+  kNuis183 ,
+  kNuis184 ,
+  kNuis185 ,
+  kNuis186 ,
+  kNuis187 ,
+  kNuis188 ,
+  kNuis189 ,
+  kNuis190 ,
+  kNuis191 ,
+  kNuis192 ,
+  kNuis193 ,
+  kNuis194 ,
+  kNuis195 ,
+  kNuis196 ,
+  kNuis197 ,
+  kNuis198 ,
+  kNuis199 ,
+  kNuis200
+
 }
 PhysParamId_t;
 
@@ -91,9 +276,9 @@ PhysParamId_t;
 
 namespace util {
 
-  string AsString       (conv::PhysParamId_t p);
-  string AsStringTex    (conv::PhysParamId_t p);
-  string AsStringRooTex (conv::PhysParamId_t p);
+  string RawParamAsString       (conv::PhysParamId_t p);
+  string RawParamAsStringTex    (conv::PhysParamId_t p);
+  string RawParamAsStringRooTex (conv::PhysParamId_t p);
 
   bool IsSystematic  (conv::PhysParamId_t p);
   bool IsMixingAngle (conv::PhysParamId_t p);

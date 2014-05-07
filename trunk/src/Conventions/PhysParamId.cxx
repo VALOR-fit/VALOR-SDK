@@ -18,7 +18,7 @@ using namespace valor;
 using namespace valor::conv;
 
 //________________________________________________________________________________________
-string util::AsString(PhysParamId_t p)
+string util::RawParamAsString(PhysParamId_t p)
 {
   switch(p) {
 
@@ -167,27 +167,6 @@ string util::AsString(PhysParamId_t p)
     // Nonstandard matter interaction
     case ( kPhypNSIepsMuTau           ) : return "nsi_epsilonMuTau";    break;
 
-    //
-    // BANFF flux and cross-section params
-    //
-
-    case ( kNuisBANFF00 ) :
-    case ( kNuisBANFF01 ) :
-    case ( kNuisBANFF02 ) :
-    case ( kNuisBANFF03 ) :
-    case ( kNuisBANFF04 ) :
-    case ( kNuisBANFF05 ) :
-    case ( kNuisBANFF06 ) :
-    case ( kNuisBANFF07 ) :
-    case ( kNuisBANFF08 ) :
-    case ( kNuisBANFF09 ) :
-    case ( kNuisBANFF10 ) :
-    {
-      int ip = (int)p - (int)kNuisBANFF00;
-      return Form("BANFF %2d", ip);
-      break;
-    }
-
     default:
     {
     }
@@ -197,7 +176,7 @@ string util::AsString(PhysParamId_t p)
   return "?";
 }
 //________________________________________________________________________________________
-string util::AsStringTex(PhysParamId_t p)
+string util::RawParamAsStringTex(PhysParamId_t p)
 {
   switch(p) {
 
@@ -352,27 +331,13 @@ string util::AsStringTex(PhysParamId_t p)
     // Nonstandard matter interaction
     case ( kPhypNSIepsMuTau           ) : return "$nsi_\\epsilon_{\\mu\\tau}$";      break;
 
-    case ( kNuisBANFF00 ) :
-    case ( kNuisBANFF01 ) :
-    case ( kNuisBANFF02 ) :
-    case ( kNuisBANFF03 ) :
-    case ( kNuisBANFF04 ) :
-    case ( kNuisBANFF05 ) :
-    case ( kNuisBANFF06 ) :
-    case ( kNuisBANFF07 ) :
-    case ( kNuisBANFF08 ) :
-    case ( kNuisBANFF09 ) :
-    case ( kNuisBANFF10 ) :
-	return "??";
-        break;
-
     default :
       return "--";
   }
   return "--";
 }
 //________________________________________________________________________________________
-string util::AsStringRooTex(PhysParamId_t p)
+string util::RawParamAsStringRooTex(PhysParamId_t p)
 {
   switch(p) {
 
@@ -454,20 +419,6 @@ string util::AsStringRooTex(PhysParamId_t p)
     case ( kPhypMusqDecoh             ) : return "#mu^{2}_{decoh}";                break;
     case ( kPhypSinsq2ThetaDecoh      ) : return "sin^{2}(2#theta_{decoh})";       break;
 
-    case ( kNuisBANFF00 ) :
-    case ( kNuisBANFF01 ) :
-    case ( kNuisBANFF02 ) :
-    case ( kNuisBANFF03 ) :
-    case ( kNuisBANFF04 ) :
-    case ( kNuisBANFF05 ) :
-    case ( kNuisBANFF06 ) :
-    case ( kNuisBANFF07 ) :
-    case ( kNuisBANFF08 ) :
-    case ( kNuisBANFF09 ) :
-    case ( kNuisBANFF10 ) :
-	return "??";
-        break;
-
     default :
       return "--";
   }
@@ -497,8 +448,8 @@ bool util::IsMixingAngle(PhysParamId_t p)
 //________________________________________________________________________________________
 bool util::IsSystematic(PhysParamId_t p)
 {
-  if(p <= kPhypNSIepsMuTau) return false;
-  return true;
+  if(p >= kNuis000) return true;
+  return false;
 }
 //________________________________________________________________________________________
 
