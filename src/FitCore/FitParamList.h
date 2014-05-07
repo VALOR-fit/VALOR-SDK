@@ -33,6 +33,9 @@
 #include "Conventions/PhysParamId.h"
 #include "Conventions/PhysHypothesisId.h"
 
+#define SYST_NSIGMA   5   // number of sigma away from nominal nuisance parameters are allowed to be
+#define SYST_STEP     0.1 // step size (in units of sigma)
+
 using std::string;
 using std::map;
 
