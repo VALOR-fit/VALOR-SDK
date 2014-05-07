@@ -68,7 +68,7 @@ double PhysParamList::Value(PhysParamId_t p) const
   map<int,double>::const_iterator it = fParams.find(p);
   if(it == fParams.end()) {
      cerr << "PhysParamList >> Parameter [" 
-          << util::AsString(p) << "] was not set!" << endl;
+          << util::RawParamAsString(p) << "] was not set!" << endl;
      return -99999;
   } 
   return it->second;
@@ -104,7 +104,7 @@ void PhysParamList::Print(ostream & stream) const
      PhysParamId_t p = (PhysParamId_t) it->first;
      double        v = it->second;
      stream << setw(5) << i++
-            << setw(30) << util::AsString(p) << " = "
+            << setw(30) << util::RawParamAsString(p) << " = "
             << setprecision(8) << setw(12) << v
             << endl;      
   }

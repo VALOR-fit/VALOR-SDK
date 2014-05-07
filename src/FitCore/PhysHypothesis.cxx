@@ -191,7 +191,7 @@ void PhysHypothesis::Print(ostream & stream) const
      PhysParamId_t p = (PhysParamId_t) it->first;
      double        v = it->second;
      stream << " - "
-            << setw(15)  << util::AsString(p) << " = "
+            << setw(15)  << util::RawParamAsString(p) << " = "
             << setprecision(8) << setw(12) << v
             << endl;
   }
