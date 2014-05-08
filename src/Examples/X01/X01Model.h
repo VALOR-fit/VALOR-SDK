@@ -41,18 +41,19 @@ public:
   // See FitModelABC for method decription
   //
 
-  string        Name                 (void);
-  bool          Read                 (string file, Option_t * opt = 0);
-  bool          Generate             (const PhysHypothesis & ph);
-  void          RandomizeSystematics (void);
-  void          TweakSystematic      (string syst_name, double twkdial=0., Option_t * opt = 0); 
-  void          TweakSystematic      (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
-  void          ResetSystematics     (void);  
-  void          PrintSystematics     (ostream & stream = std::cout) const;
-  PhysParamList Tweaks               (void);
-  bool          Generate             (const FitParamList & fp);
-  bool          Write                (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
-  bool          Write                (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
+  string        Name                   (void);
+  bool          Read                   (string file, Option_t * opt = 0);
+  bool          Generate               (const PhysHypothesis & ph);
+  void          RandomizeSystematics   (void);
+  void          TweakSystematic        (string syst_name, double twkdial=0., Option_t * opt = 0); 
+  void          TweakSystematic        (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
+  void          ResetSystematics       (void);  
+  void          PrintSystematics       (ostream & stream = std::cout) const;
+  PhysParamList Tweaks                 (void);
+  bool          Generate               (const FitParamList & fp);
+  bool          Write                  (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
+  bool          Write                  (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
+  double        GetFitStatisticPenalty (Option_t * opt = 0) const;
 
 private:
 
