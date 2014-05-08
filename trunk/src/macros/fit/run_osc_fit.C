@@ -72,12 +72,12 @@ void run_osc_fit
   cout << "   - Randomize systematics : "      << ((tweak_systematics) ?      "YES " : "NO") << endl;
   cout << "   - Statistical fluctuations: "    << ((stat_fluctuations) ?      "YES " : "NO") << endl;
   cout << "   - True oscillation parameters: " << endl;
-  cout << "       > " << util::AsString(kPhypMixing12) << " = " << ((randomize_mixing12) ? "* randomized *" : input_mixing12) << endl;
-  cout << "       > " << util::AsString(kPhypMixing13) << " = " << ((randomize_mixing13) ? "* randomized *" : input_mixing13) << endl;
-  cout << "       > " << util::AsString(kPhypMixing23) << " = " << input_mixing23 << endl;
-  cout << "       > " << util::AsString(kPhypCPV)      << " = " << ((randomize_cpv)     ? "* randomized *"  : input_cpv) << endl;
-  cout << "       > " << util::AsString(kPhypDm12sq)   << " = " << ((randomize_dm12sq)  ? "* randomized *"  : input_dm12sq ) << " eV^2/c^4" << endl;
-  cout << "       > " << util::AsString(kPhypDm23sq)   << " = " << input_dm23sq << " eV^2/c^4" << endl;
+  cout << "       > " << util::RawParamAsString(kPhypMixing12) << " = " << ((randomize_mixing12) ? "* randomized *" : input_mixing12) << endl;
+  cout << "       > " << util::RawParamAsString(kPhypMixing13) << " = " << ((randomize_mixing13) ? "* randomized *" : input_mixing13) << endl;
+  cout << "       > " << util::RawParamAsString(kPhypMixing23) << " = " << input_mixing23 << endl;
+  cout << "       > " << util::RawParamAsString(kPhypCPV)      << " = " << ((randomize_cpv)     ? "* randomized *"  : input_cpv) << endl;
+  cout << "       > " << util::RawParamAsString(kPhypDm12sq)   << " = " << ((randomize_dm12sq)  ? "* randomized *"  : input_dm12sq ) << " eV^2/c^4" << endl;
+  cout << "       > " << util::RawParamAsString(kPhypDm23sq)   << " = " << input_dm23sq << " eV^2/c^4" << endl;
   cout << "- Fit" << endl;
   cout << "   - Fit Parameter List: " << fit_param_list << endl;
   cout << "   - Fitter option: " << fit_option << endl;
@@ -274,7 +274,7 @@ void run_osc_fit
 
      // Name global best fit params
      gfparm->SetName("global_best_fit_params");
-     cout << "Global best-fit params: " << gfparm;
+     cout << "Global best-fit params: " << *gfparm;
     
      // Add all results in the tree
      fitnt->Fill();

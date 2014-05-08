@@ -242,4 +242,11 @@ bool X01Model::Write(
   return true;
 }
 //________________________________________________________________________________________
+double X01Model::GetFitStatisticPenalty (Option_t * /*opt*/) const
+{
+  // No systematics in this example
+
+  return 0;
+}
+//________________________________________________________________________________________
 
