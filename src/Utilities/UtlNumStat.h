@@ -74,13 +74,7 @@ namespace util {
   double RandomizeDm12sq   (void); ///< pull from gaussian with mean & sigma from global fit
   double RandomizeDm23sq   (void); ///< pull from gaussian with mean & sigma from global fit
   
-  //
-  // 3x3 matrix diagonalisation
-  //
-
-  int DiagonaliseJacobi(std::complex<double> A[3][3],  std::complex<double> Q[3][3], double w[3]);
-
-  // Full diagonalisation using GSL
+  // Full matrix diagonalisation using GSL
   // matrix_in is a pointer to a block representing a n*n complex matrix, equivalent to a double[n][n][2]
   // eigenvectors_out is pointer to (assigned) memory in same format
   // eigenvalues_out is pointer to double[n]
