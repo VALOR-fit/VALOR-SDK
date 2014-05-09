@@ -40,6 +40,11 @@ public:
   class Persistable; // a lightweight class to extract state in a persistable named object
 
   static Opt * Instance();
+  
+  // This should be called after you edit any of the other options.
+  // It sets the global best-fit values and errors for the chosen parameterisation
+  // These are used for penalty terms and parameter randomisation (and can be set manually for future sensitivity)
+  void SetDefaultParameterValues(void);
 
   // Mass hierarchy 
   conv::NuMassHierarchy_t gMassHierarchyAssumed;
@@ -60,8 +65,6 @@ public:
 
   // Choice of deltaCP, use it as purely phase or its sin
   conv::NuOscDeltaCP_t gOscDeltaCP;
-  
-  void SetDefaultParameterValues(void);
 
   void Print(ostream & stream) const;
   friend ostream & operator << (ostream & stream, const Opt & opt);

@@ -353,6 +353,10 @@ TVectorD valor::util::CholeskyCalculateCorrelatedParamVariations (
 //____________________________________________________________________________
 double valor::util::RandomizeMixing12(void)
 {
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypMixing12); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypMixing12);
+  double mix   = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+  /*
   double mix = 0;
 
   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
@@ -376,6 +380,7 @@ double valor::util::RandomizeMixing12(void)
    default:
      exit(1);
   }
+  * */
 
   // return if a physical value was generated
   if(mix >=0. && mix <= 1.) {
@@ -388,7 +393,10 @@ double valor::util::RandomizeMixing12(void)
 //____________________________________________________________________________
 double valor::util::RandomizeMixing23(void)
 {
-
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypMixing23); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypMixing23);
+  double mix   = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+  /*
   double mix = 0;
 
   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
@@ -411,7 +419,7 @@ double valor::util::RandomizeMixing23(void)
    }
    default:
      exit(1);
-  }
+  }*/
 
   // return if a physical value was generated
   if(mix >=0. && mix <= 1.) {
@@ -424,7 +432,10 @@ double valor::util::RandomizeMixing23(void)
 //____________________________________________________________________________
 double valor::util::RandomizeMixing13(void)
 {
-
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypMixing13); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypMixing13);
+  double mix   = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+  /*
   double mix = 0;
 
   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
@@ -447,7 +458,7 @@ double valor::util::RandomizeMixing13(void)
     }
   default:
     exit(1);
-  }
+  }*/
 
   // return if a physical value was generated
   if(mix >=0. && mix <= 1.) {
@@ -487,8 +498,8 @@ double valor::util::RandomizeCPV(void)
 //____________________________________________________________________________
 double valor::util::RandomizeDm12sq(void)
 {
-  double mean  = conv::kGlobFitDm12sq; 
-  double sigma = conv::kGlobFitDm12sq * conv::kGlobFitErrDm12sq;
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypDm12sq); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypDm12sq);
   double dm    = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
   // return if a physical value was generated
   if(dm >= 0.) {
@@ -500,6 +511,7 @@ double valor::util::RandomizeDm12sq(void)
 //____________________________________________________________________________
 double valor::util::RandomizeDm23sq(void)
 {
+  /*
   double mean  = 0.0;
   NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
   switch (odmsq) {
@@ -520,6 +532,9 @@ double valor::util::RandomizeDm23sq(void)
     mean  = kGlobFitDm23sq;  
   }       
   double sigma = mean * kGlobFitErrDm23sq;
+  */
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypDm23sq); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypDm23sq);
   double dm    = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
   // return if a physical value was generated
   if(dm >= 0.) {
@@ -534,137 +549,6 @@ int valor::util::Sign(double tweaking_dial)
   if(fabs(tweaking_dial) < kASmallNum) return 0;
   if (tweaking_dial < 0) return -1;
   return +1;
-}
-//____________________________________________________________________________
-int valor::util::DiagonaliseJacobi(
-     std::complex<double> A[3][3],  std::complex<double> Q[3][3], double w[3])
-// ----------------------------------------------------------------------------
-// Calculates the eigenvalues and normalized eigenvectors of a hermitian 3x3
-// matrix A using the Jacobi algorithm.
-// The upper triangular part of A is destroyed during the calculation,
-// the diagonal elements are read but not destroyed, and the lower
-// triangular elements are not referenced at all.
-// ----------------------------------------------------------------------------
-// Parameters:
-//   A: The hermitian input matrix
-//   Q: Storage buffer for eigenvectors
-//   w: Storage buffer for eigenvalues
-// ----------------------------------------------------------------------------
-// Return value:
-//   0: Success
-//  -1: Error (no convergence)
-// ----------------------------------------------------------------------------
-// Adapted from zheevj3 by J.Kopp for C++ by Steve Dennis, 2013 under LGPL.
-// ----------------------------------------------------------------------------
-// Numerical diagonalization of 3x3 matrcies
-// Copyright (C) 2006  Joachim Kopp
-// ----------------------------------------------------------------------------
-{
-  const int n = 3;
-  double sd, so;                  // Sums of diagonal resp. off-diagonal elements
-  std::complex<double> s, t;      // sin(phi), tan(phi) and temporary storage
-  double c;                       // cos(phi)
-  double g, h, z;                 // Temporary storage
-  double thresh;
-  
-  // Initialize Q to the identitity matrix
-  for (int i=0; i < n; i++)
-  {
-    Q[i][i] = 1.0;
-    for (int j=0; j < i; j++)
-      Q[i][j] = Q[j][i] = 0.0;
-  }
-
-  // Initialize w to diag(A)
-  for (int i=0; i < n; i++)
-    w[i] = real(A[i][i]);
-
-  // Calculate tr(A) squared  
-  sd = 0.0;
-  for (int i=0; i < n; i++)
-    sd += fabs(w[i]);
-  sd = sd*sd;
- 
-  // Main iteration loop
-  for (int nIter=0; nIter < 50; nIter++)
-  {
-    // Test for convergence 
-    so = 0.0;
-    for (int p=0; p < n; p++)
-      for (int q=p+1; q < n; q++)
-        so += fabs(real(A[p][q])) + fabs(imag(A[p][q]));
-    if (so == 0.0)
-      return 0;
-
-    if (nIter < 4)
-      thresh = 0.2 * so / (n*n);
-    else
-      thresh = 0.0;
-
-    // Do sweep
-    for (int p=0; p < n; p++)
-      for (int q=p+1; q < n; q++)
-      {
-        g = 100.0 * (fabs(real(A[p][q])) + fabs(imag(A[p][q])));
-        if (nIter > 4  &&  fabs(w[p]) + g == fabs(w[p])
-                       &&  fabs(w[q]) + g == fabs(w[q]))
-        {
-          A[p][q] = 0.0;
-        }
-        else if (fabs(real(A[p][q])) + fabs(imag(A[p][q])) > thresh)
-        {
-          // Calculate Jacobi transformation
-          h = w[q] - w[p];
-          if (fabs(h) + g == fabs(h))
-            t = A[p][q] / h;
-          else
-          {
-            if (h < 0.0)
-              t = -2.0 * A[p][q] / (sqrt(h*h + 4.0*norm(A[p][q])) - h);
-            else if (h == 0.0)
-              t = A[p][q] * (1.0 / abs(A[p][q]));  // A[p][q]/fabs(A[p][q]) could cause overflows
-            else
-              t = 2.0 * A[p][q] / (sqrt(h*h + 4.0*norm(A[p][q])) + h);
-          }
-          c = 1.0/sqrt(1.0 + norm(t));
-          s = t * c;
-          z = real(t * conj(A[p][q]));
-
-          // Apply Jacobi transformation
-          A[p][q] = 0.0;
-          w[p] -= z;
-          w[q] += z;
-          for (int r=0; r < p; r++)
-          {
-            t = A[r][p];
-            A[r][p] = c*t - conj(s)*A[r][q];
-            A[r][q] = s*t + c*A[r][q];
-          }
-          for (int r=p+1; r < q; r++)
-          {
-            t = A[p][r];
-            A[p][r] = c*t - s*conj(A[r][q]);
-            A[r][q] = s*conj(t) + c*A[r][q];
-          }
-          for (int r=q+1; r < n; r++)
-          {
-            t = A[p][r];
-            A[p][r] = c*t - s*A[q][r];
-            A[q][r] = conj(s)*t + c*A[q][r];
-          }
-
-          // Update eigenvectors      
-          for (int r=0; r < n; r++)
-          {
-            t = Q[r][p];
-            Q[r][p] = c*t - conj(s)*Q[r][q];
-            Q[r][q] = s*t + c*Q[r][q];
-          }
-        }
-      }
-  }
-
-  return -1;
 }
 //____________________________________________________________________________
 int valor::util::DiagonaliseGSL(

@@ -503,7 +503,7 @@ void FitParamList::Print(ostream & stream) const
      fShowBestFitValuesOnly = false; // has one-off effect
      stream << endl
             << setw(6)  << "id"
-            << setw(35) << "name"
+            << setw(80) << "name"
             << setw(15) << "best-fit"
             << endl;
      for(int ip=0; ip<fNParams;  ip++) {
@@ -519,12 +519,12 @@ void FitParamList::Print(ostream & stream) const
      fShowCurrValuesOnly = false; // has one-off effect
      stream << endl
             << setw(6)  << "id"
-            << setw(35) << "name"
+            << setw(80) << "name"
             << setw(15) << "curr"
             << endl;
      for(int ip=0; ip<fNParams;  ip++) {
        stream << setw(6)  << ip 
-              << setw(35) << fName[ip].GetString().Data()
+              << setw(80) << fName[ip].GetString().Data()
               << setprecision(6)
               << setw(15) << fCurrValue[ip]
               << endl;
