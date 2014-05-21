@@ -150,7 +150,7 @@ void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
     exit(1);
   }
   for(int ip = 0; ip < fNParams; ip++) {
-    fInitValue[ip] = plst.BestFitValue(ip);
+    fInitValue[ip] = plst.BestFitValueByIndex(ip);
   }
 }
 //________________________________________________________________________________________
@@ -264,7 +264,7 @@ void FitParamList::FixParameter(PhysParamId_t p)
   fIsFixed [this->Id(p)] = true;
 }
 //________________________________________________________________________________________
-void FitParamList::FixParameter(int ip)
+void FitParamList::FixParameterByIndex(int ip)
 {
   fIsFixed [ip] = true;
 }
@@ -274,7 +274,7 @@ void FitParamList::FreeParameter(PhysParamId_t p)
   fIsFixed [this->Id(p)] = false;
 }
 //________________________________________________________________________________________
-void FitParamList::FreeParameter(int ip)
+void FitParamList::FreeParameterByIndex(int ip)
 {
   fIsFixed [ip] = false;
 }

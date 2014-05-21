@@ -52,22 +52,22 @@ public:
   ~FitParamList();
 
    // Get information for the fit parameters
-   int    Size           (void)                          const { return fNParams;  }
-   string Name           (valor::conv::PhysParamId_t p) const { return fName[this->Id(p)].GetString().Data();   }
-   double BestFitValue   (valor::conv::PhysParamId_t p) const { return fBestFitValue[this->Id(p)]; }
-   double BestFitValue   (int i                        ) const { return fBestFitValue[i];           }
-   double CurrValue      (valor::conv::PhysParamId_t p) const { return fCurrValue   [this->Id(p)]; }
-   double CurrValue      (int i                        ) const { return fCurrValue   [i];           }
-   double InitValue      (valor::conv::PhysParamId_t p) const { return fInitValue   [this->Id(p)]; }
-   double MinValue       (valor::conv::PhysParamId_t p) const { return fMinValue    [this->Id(p)]; }
-   double MaxValue       (valor::conv::PhysParamId_t p) const { return fMaxValue    [this->Id(p)]; }
-   double StepSize       (valor::conv::PhysParamId_t p) const { return fStepSize    [this->Id(p)]; }
-   bool   IsFixed        (valor::conv::PhysParamId_t p) const { return fIsFixed     [this->Id(p)]; }
-   bool   IsNuisance     (valor::conv::PhysParamId_t p) const { return fIsNuisance  [this->Id(p)]; }
-   double MigradError    (valor::conv::PhysParamId_t p) const { return fMigradError [this->Id(p)]; }
-   double HesseError     (valor::conv::PhysParamId_t p) const { return fHesseError  [this->Id(p)]; }
-   double PlusError      (valor::conv::PhysParamId_t p) const { return fPlusError   [this->Id(p)]; }
-   double MinusError     (valor::conv::PhysParamId_t p) const { return fMinusError  [this->Id(p)]; }
+   int    Size               (void)                         const { return fNParams;  }
+   string Name               (valor::conv::PhysParamId_t p) const { return fName[this->Id(p)].GetString().Data();   }
+   double BestFitValue       (valor::conv::PhysParamId_t p) const { return fBestFitValue[this->Id(p)]; }
+   double BestFitValueByIndex(int i                       ) const { return fBestFitValue[i];           }
+   double CurrValue          (valor::conv::PhysParamId_t p) const { return fCurrValue   [this->Id(p)]; }
+   double CurrValueByIndex   (int i                       ) const { return fCurrValue   [i];           }
+   double InitValue          (valor::conv::PhysParamId_t p) const { return fInitValue   [this->Id(p)]; }
+   double MinValue           (valor::conv::PhysParamId_t p) const { return fMinValue    [this->Id(p)]; }
+   double MaxValue           (valor::conv::PhysParamId_t p) const { return fMaxValue    [this->Id(p)]; }
+   double StepSize           (valor::conv::PhysParamId_t p) const { return fStepSize    [this->Id(p)]; }
+   bool   IsFixed            (valor::conv::PhysParamId_t p) const { return fIsFixed     [this->Id(p)]; }
+   bool   IsNuisance         (valor::conv::PhysParamId_t p) const { return fIsNuisance  [this->Id(p)]; }
+   double MigradError        (valor::conv::PhysParamId_t p) const { return fMigradError [this->Id(p)]; }
+   double HesseError         (valor::conv::PhysParamId_t p) const { return fHesseError  [this->Id(p)]; }
+   double PlusError          (valor::conv::PhysParamId_t p) const { return fPlusError   [this->Id(p)]; }
+   double MinusError         (valor::conv::PhysParamId_t p) const { return fMinusError  [this->Id(p)]; }
 
    void SetMinValue (valor::conv::PhysParamId_t p, double min) { fMinValue [this->Id(p)] = min; }
    void SetMaxValue (valor::conv::PhysParamId_t p, double max) { fMaxValue [this->Id(p)] = max; }
@@ -107,12 +107,12 @@ public:
    void SetMinosErrors (std::vector<double> plus, std::vector<double> minus);
 
    // Fix a parameter
-   void FixParameter (valor::conv::PhysParamId_t p); 
-   void FixParameter (int ip); 
+   void FixParameter        (valor::conv::PhysParamId_t p); 
+   void FixParameterByIndex (int ip); 
 
    // Free a parameter
-   void FreeParameter (valor::conv::PhysParamId_t p); 
-   void FreeParameter (int ip); 
+   void FreeParameter        (valor::conv::PhysParamId_t p); 
+   void FreeParameterByIndex (int ip); 
 
    // Set as nuisance parameter (contributes to \chi^{2}_{penalty})
    void SetNuisance (valor::conv::PhysParamId_t p, bool tf);
@@ -180,7 +180,7 @@ public:
    static FitParamList * NamedParameterList (string name);
 
    // Get the name used in NamedParameterList
-   string GetParListName (void) const { return fParListName; }
+   string GetParListName  (void) const { return fParListName; }
    int    GetSystMode     (void) const { return fSystMode;     }
 
    // Work-out the physics hypothesis
