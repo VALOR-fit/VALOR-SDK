@@ -99,9 +99,9 @@ public:
    void Copy (const FitParamList & plst);
 
    // Set the errors
-   // used with FitterKernel
    void SetErrors(double * errplus, double * errminus, double * errmigrad);
-   // used with FitterKernelMinuit2
+   
+   // used with FitterMinuit, vector must be same size as FitParamList->Size()
    void SetMigradErrors(std::vector<double> err);
    void SetHesseErrors (std::vector<double> err);
    void SetMinosErrors (std::vector<double> plus, std::vector<double> minus);

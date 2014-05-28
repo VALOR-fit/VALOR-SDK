@@ -13,6 +13,7 @@ ChangeLog:
 
 #include <cassert> 
 #include <cstdlib> 
+#include <vector> 
 
 #include <TMath.h> 
 #include <TRandom3.h> 
@@ -32,6 +33,8 @@ ChangeLog:
 
 using namespace valor; 
 using namespace valor::conv;
+
+using std::vector;
    
 //____________________________________________________________________________ 
 FitterMinuit::FitterMinuit() :
@@ -373,9 +376,11 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     fFitInputs->FitParams().CopyCurrToBestFitValues();
     return false;
   }
-
+  
+  int num_of_params = fFitInputs->FitParams().Size();
+  
   // Found best fit! Copy current --> best-fit values
-  for(int ip = 0; ip < fFitInputs->FitParams().Size(); ip++) {
+  for(int ip = 0; ip < num_of_params; ip++) {
     double value, error;
     gMinuit->GetParameter(ip, value, error);
     PhysParamId_t p = fFitInputs->FitParams().WhichParam(ip);
@@ -393,6 +398,20 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   fitter->PrintResults(3,aminn);
 #endif
 
+  double unfilled = -999;
+
+  // Error vectors
+  vector<double> migrad_err     (num_of_params, unfilled);
+  vector<double> hesse_err      (num_of_params, unfilled);
+  vector<double> minos_err_minus(num_of_params, unfilled);
+  vector<double> minos_err_plus (num_of_params, unfilled);
+  
+  // Fill the MIGRAD errors
+  for (int ip = 0 ; ip < num_of_params ; ip++) {
+    migrad_err[ip] = fitter->GetParError(ip);
+  }
+  fFitInputs->FitParams().SetMigradErrors(migrad_err);
+
   // Get the error matrix status
   double ha(0.0);     // dummy vars
   double edm, errdef; // dummy vars
@@ -406,7 +425,14 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     LOG("Minuit", pINFO) << "Running HESSE...";
 #endif
     fHesseErrStatusCode = fitter->ExecuteCommand("HESSE",arglist, 1);
+    
+    // Fill the HESSE errors
+    for (int ip = 0 ; ip < num_of_params ; ip++) {
+      hesse_err[ip] = fitter->GetParError(ip);
+    }
+    fFitInputs->FitParams().SetHesseErrors (hesse_err);
   }
+  
   //else 
   if(fCalcMinosErrors) {
 #ifdef __show_fit_steps__
@@ -425,19 +451,15 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 #ifdef __show_fit_steps__
   LOG("Minuit", pINFO) << "Getting errors...";
 #endif
-  const int nparamsmax = knppmax;
-  double errplus [nparamsmax] = {0.};
-  double errminus[nparamsmax] = {0.};
-  double errpara [nparamsmax] = {0.};
-  for(int ip = 0; ip < nparamsmax; ip++) {
-    double glob_corr; // dummy vars
-    if(fCalcMinosErrors)
-      fitter->GetErrors(ip,errplus[ip],errminus[ip],errpara[ip],glob_corr);
-    else
-      errpara[ip] = fitter->GetParError(ip);
-  }
-  fFitInputs->FitParams().SetErrors(errplus, errminus, errpara);
 
+  if(fCalcMinosErrors) {
+    for(int ip = 0; ip < num_of_params; ip++) {
+      double glob_corr, parerr; // dummy vars
+        fitter->GetErrors(ip, minos_err_plus[ip], minos_err_minus[ip],parerr,glob_corr);
+    }
+    fFitInputs->FitParams().SetMinosErrors (minos_err_plus, minos_err_minus);
+  }
+  
   // Print fit result
   if(fCalcHesseErrors) {
 #ifdef __show_fit_result__

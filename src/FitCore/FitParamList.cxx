@@ -174,20 +174,7 @@ void FitParamList::SetMigradErrors(vector<double> err)
 	 << this->GetNumberFreeParameters() << endl;
     exit(1);
   }
-  // vector only contains free parameters, so need to make sure we handle the
-  // fixed parameters in the parameter list correctly
-  /*
-  int ifree = 0;
-  for(int ip = 0; ip < fNParams; ip++) {
-    if(fIsFixed[ip]) {
-      fMigradError [ip] = 0;
-    }
-    else {
-      fMigradError[ip] = err[ifree];
-      ifree++;
-    }
-  }
-  */
+  
   for(int ip = 0; ip < fNParams; ip++) {
     fMigradError [ip] = err[ip];
   }
@@ -202,20 +189,7 @@ void FitParamList::SetHesseErrors(vector<double> err)
 	 << this->GetNumberFreeParameters() << endl;
     exit(1);
   }
-  /*
-  // vector only contains free parameters, so need to make sure we handle the
-  // fixed parameters in the parameter list correctly
-  int ifree = 0;
-  for(int ip = 0; ip < fNParams; ip++) {
-    if(fIsFixed[ip]) {
-      fHesseError [ip] = 0;
-    }
-    else {
-      fHesseError[ip] = err[ifree];
-      ifree++;
-    }
-  }
-  */
+  
   for(int ip = 0; ip < fNParams; ip++) {
     fHesseError [ip] = err[ip];
   }
@@ -224,9 +198,9 @@ void FitParamList::SetHesseErrors(vector<double> err)
 //________________________________________________________________________________________
 void FitParamList::SetMinosErrors(vector<double> plus, vector<double> minus)
 {
-  if((int)plus.size() != this->GetNumberFreeParameters()) {
+  if((int)plus.size() != this->Size()) {
     cerr << "FitterKernelMinuit2/SetMinosErrors >> Error vector size: " << plus.size()
-	 << " is not the same size as the number of free parameters: "
+	 << " is not the same size as the number of parameters: "
 	 << this->GetNumberFreeParameters() << endl;
     exit(1);
   }
@@ -236,26 +210,11 @@ void FitParamList::SetMinosErrors(vector<double> plus, vector<double> minus)
     exit(1);
   }
 
-  // vector only contains free parameters, so need to make sure we handle the
-  // fixed parameters in the parameter list correctly
-  int ifree = 0;
-  for(int ip = 0; ip < fNParams; ip++) {
-    if(fIsFixed[ip]) {
-      fPlusError   [ip] = 0;
-      fMinusError  [ip] = 0;
-    }
-    else {
-      fPlusError [ip] = plus [ifree];
-      fMinusError[ip] = minus[ifree];
-      ifree++;
-    }
-  }
-  /*
   for(int ip = 0; ip < fNParams; ip++) {
     fPlusError [ip] = plus [ip];
     fMinusError[ip] = minus[ip];
   }
-  */
+  
   fMinosErrorsSet = true;
 }
 //________________________________________________________________________________________
