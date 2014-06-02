@@ -46,6 +46,7 @@ namespace util {
   XMLNodePointer_t FindNode          (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
   bool             NodeExists        (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
 
+  bool             XML2Bool          (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
   double           XML2Dbl           (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
   vector<double>   XML2DblArray      (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
   string           XML2String        (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
