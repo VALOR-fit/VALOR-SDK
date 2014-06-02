@@ -8,13 +8,9 @@ ChangeLog:
 */
 //____________________________________________________________________________
 
-//#define __show_xml_mesg_info__
-//#define __show_xml_mesg_debug__
-
 #include <cassert>
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <iomanip>
 
@@ -32,13 +28,11 @@ ChangeLog:
 #include <TFile.h>
 #include <TSystem.h>
 
+#include "Messenger/Messenger.h"
 #include "Utilities/UtlXML.h"
 #include "Utilities/UtlStr.h"
 #include "Utilities/Rnd.h"
 
-using std::cout;
-using std::cerr;
-using std::endl;
 using std::setw;
 using std::setfill;
 using std::fixed;
@@ -104,20 +98,52 @@ bool valor::util::NodeExists(
   return false;
 }
 //___________________________________________________________________________
+bool valor::util::XML2Bool(
+  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+{
+// Get the specified node content as a boolean
+//
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+
+  XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
+  if(!found_node) {
+    LOG("XML", pFATAL) 
+       << "No node was found at input XML node path: " << path;
+    exit(1);
+  }
+  string content = TrimSpaces(xmleng->GetNodeContent(found_node));
+
+  if(content == "true" || 
+     content == "TRUE" || 
+     content == "True" || 
+     content == "1"    || 
+     content == "I") return true;
+
+  if(content == "false" || 
+     content == "FALSE" || 
+     content == "False" || 
+     content == "0"    || 
+     content == "O") return false;
+
+   LOG("XML", pFATAL) 
+       << "Could not interpret content (" << content 
+       << ") found at path: " << path << " as a boolean!";
+    exit(1);
+
+  return false;
+}
+//___________________________________________________________________________
 double valor::util::XML2Dbl(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
 // Get the specified node content as a floating-point number
 //
-
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2Dbl >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
   if(!found_node) {
-    cerr << "utils/XML2Dbl >> No node was found at input XML node path: "
-         << path << endl;
+    LOG("XML", pFATAL) 
+       << "No node was found at input XML node path: " << path;
     exit(1);
   }
   string content = xmleng->GetNodeContent(found_node);
@@ -131,14 +157,12 @@ vector<double> valor::util::XML2DblArray(
 // Get the specified node content as a vector floating-point number
 // The node content should be a comma-separed list of numbers
 
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2Dbl >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
   if(!found_node) {
-    cerr << "utils/XML2Dbl >> No node was found at input XML node path: "
-         << path << endl;
+    LOG("XML",pFATAL) 
+       << "No node was found at input XML node path: " << path;
     exit(1);
   }
   string content = TrimSpaces(xmleng->GetNodeContent(found_node));
@@ -158,15 +182,12 @@ string valor::util::XML2String(
 {
 // Get the specified node content as a floating-point number
 //
-
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2Str >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
   if(!found_node) {
-    cerr << "utils/XML2Str >> No node was found at input XML node path: "
-         << path << endl;
+    LOG("XML",pFATAL)
+       << "No node was found at input XML node path: " << path;
     exit(1);
   }
   string content = xmleng->GetNodeContent(found_node);
@@ -177,9 +198,7 @@ string valor::util::XML2RootFileName(
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
   string filename = XML2String(xmleng,topnode,path+"/filename");
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2RootFileName >> filename : " << filename << endl;
-#endif
+  LOG("XML", pINFO) << "Filename: " << filename;
   return filename;
 }
 //___________________________________________________________________________
@@ -187,9 +206,7 @@ string valor::util::XML2RootObjName (
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
   string objname = XML2String(xmleng,topnode,path+"/objname");
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2RootObjName >> objname  : " << objname  << endl;
-#endif
+  LOG("XML", pINFO) << "Object name: " << objname;
   return objname;
 }
 //___________________________________________________________________________
@@ -197,29 +214,27 @@ string valor::util::XML2RootObjType (
    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
   string objtype = XML2String(xmleng,topnode,path+"/objtype");
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2RootObjType >> objtype  : " << objtype  << endl;
-#endif
+  LOG("XML", pINFO) << "Object type: " << objtype;
   return objtype;
 }
 //___________________________________________________________________________
 TFile * valor::util::XML2TFile(
   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
 {
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2TFile >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pWARN) << "Note that this method uses the $T2KOSCANA path and would cause problems if called by the LBNE VALOR code ** Fix it ** ";
+
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   string filename = XML2RootFileName(xmleng,topnode,path);
 
   TFile * file = new TFile(
     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
   if(!file) {
-    cerr << "utils/XML2TFile >> No file: " << filename << " found" << endl;
+    LOG("XML",pFATAL) << "No file: " << filename << " found";
     exit(1);
   }
   if(file->IsZombie()) {
-    cerr << "utils/XML2TFile >> File is a zombie: " << filename << endl;
+    LOG("XML",pFATAL) << "File is a zombie: " << filename;
     exit(1);
   }
 
@@ -231,9 +246,7 @@ TH1F * valor::util::XML2TH1F(
 {
 // Get a TH1F instance from the info in the input XML config file
 //
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2TH1F >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   string filename = XML2RootFileName(xmleng,topnode,path);
   string objname  = XML2RootObjName (xmleng,topnode,path);
@@ -242,9 +255,8 @@ TH1F * valor::util::XML2TH1F(
     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
   TH1F * h = (TH1F*)file.Get(objname.c_str());
   if(!h) {
-    cerr << "utils/XML2TH1F >> No " << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    //return 0;
     exit(1);
   }
 
@@ -261,9 +273,7 @@ TH1D * valor::util::XML2TH1D(
 {
 // Get a TH1D instance from the info in the input XML config file
 //
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2TH1D >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   string filename = XML2RootFileName(xmleng,topnode,path);
   string objname  = XML2RootObjName (xmleng,topnode,path);
@@ -272,9 +282,8 @@ TH1D * valor::util::XML2TH1D(
     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
   TH1D * h = (TH1D*)file.Get(objname.c_str());
   if(!h) {
-    cerr << "utils/XML2TH1D >> No " << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    //return 0;
     exit(1);
   }
 
@@ -291,9 +300,7 @@ TH2D * valor::util::XML2TH2D(
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2TH2D >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   string filename = XML2RootFileName(xmleng,topnode,path);
   string objname  = XML2RootObjName (xmleng,topnode,path);
@@ -302,9 +309,8 @@ TH2D * valor::util::XML2TH2D(
      Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");    
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
-    cerr << "utils/XML2TH2D >> No " << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    //return 0;
     exit(1);
   }
 
@@ -321,9 +327,7 @@ TTree * valor::util::XML2TTree(
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2TTree >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   string filename = XML2RootFileName(xmleng,topnode,path);
   string objname  = XML2RootObjName (xmleng,topnode,path);
@@ -335,9 +339,8 @@ TTree * valor::util::XML2TTree(
      Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
   TTree * tree = (TTree*)file->Get(objname.c_str());
   if(!tree) {
-    cerr << "utils/XML2TTree >> No " << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
 //    file.Close();
-    //return 0;
     exit(1);
   }
 
@@ -352,10 +355,7 @@ TVectorD * valor::util::XML2TVectorD(
 {
 // Get a TVectorD instance from the info in the input XML config file
 //
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2TVectorD >> "
-       << "Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   string filename = XML2RootFileName(xmleng,topnode,path);
   string objname  = XML2RootObjName (xmleng,topnode,path);
@@ -364,8 +364,7 @@ TVectorD * valor::util::XML2TVectorD(
     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
   TVectorD * vec = (TVectorD*)file.Get(objname.c_str());
   if(!vec) {
-    cerr << "utils/XML2TVectorD >> No " 
-         << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
     //return 0;
     exit(1);
@@ -390,15 +389,12 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
   TMatrixDSym * matrix = (TMatrixDSym*)file.Get(objname.c_str());
   if(!matrix) {
-    cerr << "utils/XML2TMatrixDSym >> No " 
-         << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    //return 0;
     exit(1);
   }
 
   TMatrixDSym * matrix_copy = new TMatrixDSym(*matrix);
-
   file.Close();
 
   return matrix_copy;
@@ -420,10 +416,8 @@ TMatrixD * valor::util::XML2TMatrixD(
     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
   TMatrixD * matrix = (TMatrixD*) file->Get(objname.c_str());
   if(!matrix) {
-    cerr << "utils/XML2TMatrixD >> No " 
-         << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file->Close();
-    //return 0;
     exit(1);
   }
 
@@ -438,9 +432,7 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2TH2D2TMatrixD >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   string filename = XML2RootFileName(xmleng,topnode,path);
   string objname  = XML2RootObjName (xmleng,topnode,path);
@@ -449,9 +441,8 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
      Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");    
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
-    cerr << "utils/XML2TH2D2TMatrixD >> No " << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    //return 0;
     exit(1);
   }
 
@@ -467,9 +458,7 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
   for(int i = 1; i <= nrows; i++) {
     for(int j = 1; j <= ncols; j++) {
       matrix(i-1,j-1)=h2copy->GetBinContent(i,j);
-#ifdef __show_xml_mesg_debug__
-      cout << i << "\t" << j << "\t" << h2copy->GetBinContent(i,j) << endl;
-#endif
+      LOG("XML",pDEBUG) << i << "\t" << j << "\t" << h2copy->GetBinContent(i,j);
     }
   }
 
@@ -491,10 +480,8 @@ TSpline3 * valor::util::XML2TSpline3(
     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
   TSpline3 * spl = (TSpline3*) file->Get(objname.c_str());
   if(!spl) {
-    cerr << "utils/XML2TSpline3 >> No " 
-         << objname << " in " << filename << endl;
+    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file->Close();
-    //return 0;
     exit(1);
   }
 
@@ -509,14 +496,11 @@ TAxis *  valor::util::XML2BinInfo(
 {
 //
 //
-#ifdef __show_xml_mesg_info__
-  cout << "utils/XML2BinInfo >> Reading info at XML node path: " << path << endl;
-#endif
+  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
 
   XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
   if(!found_node) {
-    cerr << "utils/XML2BinInfo >> No node was found at input XML node path: "
-         << path << endl;
+    LOG("XML",pFATAL) << "No node was found at input XML node path: " << path;
     //return 0;
     exit(1);
   }
@@ -535,10 +519,8 @@ TAxis *  valor::util::XML2BinInfo(
       if(child_node_name == "max"  ) { max   = atof(TrimSpaces(content).c_str()); }
       child_node = xmleng->GetNext(child_node);    
     }
-#ifdef __show_xml_mesg_info__
-    cout << "utils/XML2BinInfo >> nbins = " << nbins 
-         << ", range = (" << min << ", " << max << ")" << endl;
-#endif
+    LOG("XML",pINFO) 
+       << "nbins = " << nbins << ", range = (" << min << ", " << max << ")";
     assert(nbins>0 && min<max);
 
     TAxis * axis = new TAxis(nbins,min,max);
@@ -546,11 +528,11 @@ TAxis *  valor::util::XML2BinInfo(
   } 
   else   
   if(binsz == "variable") {
-    cerr << "utils/XML2BinInfo >> Not handling variable size bins yet" << endl;
+    LOG("XML",pFATAL) << "Not handling variable size bins yet";
     exit(1);
   }
   else {
-    cerr << "utils/XML2BinInfo >> Invalid bin_size attribute" << endl;
+    LOG("XML",pFATAL) << "Invalid bin_size attribute";
     exit(1);
   }
 
