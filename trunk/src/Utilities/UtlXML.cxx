@@ -1,4 +1,4 @@
-//____________________________________________________________________________
+//_____________________________________________________________________________________________________
 /*
 
 Copyright (c) 2010-2014, The VALOR group. All rights reserved.
@@ -6,7 +6,7 @@ Copyright (c) 2010-2014, The VALOR group. All rights reserved.
 ChangeLog:
 
 */
-//____________________________________________________________________________
+//_____________________________________________________________________________________________________
 
 #include <cassert>
 #include <cstdlib>
@@ -32,6 +32,7 @@ ChangeLog:
 #include "Utilities/UtlXML.h"
 #include "Utilities/UtlStr.h"
 #include "Utilities/Rnd.h"
+#include "Utilities/Env.h"
 
 using std::setw;
 using std::setfill;
@@ -43,75 +44,75 @@ using std::ostringstream;
 
 using namespace valor;
 
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 XMLNodePointer_t valor::util::FindNode(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-// Find & return the XMLNodePointer_t at the specified path
+// Find & return the XMLNodePointer_t at the specified node_path
 //
-  vector<string> node_path = Tokens(path,"/");
+  vector<string> node_path_vec = Tokens(node_path,"/");
 
-  unsigned int ndepth = node_path.size();
+  unsigned int ndepth = node_path_vec.size();
   unsigned int idepth = 0;
 
-  XMLNodePointer_t curr_node = xmleng->GetChild(topnode);
+  XMLNodePointer_t curr_node = xml_eng->GetChild(top_node);
   while(curr_node) {
-    string curr_node_name = xmleng->GetNodeName(curr_node);
-    if(node_path[idepth] == curr_node_name) {
+    string curr_node_name = xml_eng->GetNodeName(curr_node);
+    if(node_path_vec[idepth] == curr_node_name) {
         idepth++;
         if(idepth == ndepth) {
           return curr_node;
         } else {
-          curr_node = xmleng->GetChild(curr_node);
+          curr_node = xml_eng->GetChild(curr_node);
         }
     } else {
-       curr_node = xmleng->GetNext(curr_node);
+       curr_node = xml_eng->GetNext(curr_node);
     }
   }
   return 0;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 bool valor::util::NodeExists(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-// Find & return the XMLNodePointer_t at the specified path
+// Find & return the XMLNodePointer_t at the specified node_path
 //
-  vector<string> node_path = Tokens(path,"/");
+  vector<string> node_path_vec = Tokens(node_path,"/");
 
-  unsigned int ndepth = node_path.size();
+  unsigned int ndepth = node_path_vec.size();
   unsigned int idepth = 0;
 
-  XMLNodePointer_t curr_node = xmleng->GetChild(topnode);
+  XMLNodePointer_t curr_node = xml_eng->GetChild(top_node);
   while(curr_node) {
-    string curr_node_name = xmleng->GetNodeName(curr_node);
-    if(node_path[idepth] == curr_node_name) {
+    string curr_node_name = xml_eng->GetNodeName(curr_node);
+    if(node_path_vec[idepth] == curr_node_name) {
         idepth++;
         if(idepth == ndepth) {
           return true;
         } else {
-          curr_node = xmleng->GetChild(curr_node);
+          curr_node = xml_eng->GetChild(curr_node);
         }
     } else {
-       curr_node = xmleng->GetNext(curr_node);
+       curr_node = xml_eng->GetNext(curr_node);
     }
   }
   return false;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 bool valor::util::XML2Bool(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
 // Get the specified node content as a boolean
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
     LOG("XML", pFATAL) 
-       << "No node was found at input XML node path: " << path;
+       << "No node was found at input XML node node_path: " << node_path;
     exit(1);
   }
-  string content = TrimSpaces(xmleng->GetNodeContent(found_node));
+  string content = TrimSpaces(xml_eng->GetNodeContent(found_node));
 
   if(content == "true" || 
      content == "TRUE" || 
@@ -127,45 +128,45 @@ bool valor::util::XML2Bool(
 
    LOG("XML", pFATAL) 
        << "Could not interpret content (" << content 
-       << ") found at path: " << path << " as a boolean!";
+       << ") found at node_path: " << node_path << " as a boolean!";
     exit(1);
 
   return false;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 double valor::util::XML2Dbl(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
 // Get the specified node content as a floating-point number
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
     LOG("XML", pFATAL) 
-       << "No node was found at input XML node path: " << path;
+       << "No node was found at input XML node node_path: " << node_path;
     exit(1);
   }
-  string content = xmleng->GetNodeContent(found_node);
+  string content = xml_eng->GetNodeContent(found_node);
   double value = atof(content.c_str());
   return value;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 vector<double> valor::util::XML2DblArray(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
 // Get the specified node content as a vector floating-point number
 // The node content should be a comma-separed list of numbers
 
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
     LOG("XML",pFATAL) 
-       << "No node was found at input XML node path: " << path;
+       << "No node was found at input XML node node_path: " << node_path;
     exit(1);
   }
-  string content = TrimSpaces(xmleng->GetNodeContent(found_node));
+  string content = TrimSpaces(xml_eng->GetNodeContent(found_node));
 
   vector<double> array;
   vector<string> str_tokens = Tokens(content, ",");
@@ -176,86 +177,131 @@ vector<double> valor::util::XML2DblArray(
   }
   return array;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 string valor::util::XML2String(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
 // Get the specified node content as a floating-point number
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
     LOG("XML",pFATAL)
-       << "No node was found at input XML node path: " << path;
+       << "No node was found at input XML node node_path: " << node_path;
     exit(1);
   }
-  string content = xmleng->GetNodeContent(found_node);
+  string content = xml_eng->GetNodeContent(found_node);
   return TrimSpaces(content);
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
+//
+// When we specify a ROOT object to be obtained from within a file,
+// the XML schema for specifying the ROOT filename, the object name and the 
+// object type is:
+//
+// <some_node>
+//    ...
+//      <another_node>
+//            <filename> blah </filename>
+//            <objname>  blah </objname>
+//            <objtype>  blah </objtype>
+//      </another_node>
+//    ...
+// </some_node>
+//
+// The following three methods return the filename, the object name and the
+// object type for the specified node path (<another_node> in above example).
+//
+//.....................................................................................................
 string valor::util::XML2RootFileName(
-   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-  string filename = XML2String(xmleng,topnode,path+"/filename");
+  string filename = XML2String(xml_eng,top_node,node_path+"/filename");
   LOG("XML", pINFO) << "Filename: " << filename;
   return filename;
 }
-//___________________________________________________________________________
+//.....................................................................................................
 string valor::util::XML2RootObjName (
-   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-  string objname = XML2String(xmleng,topnode,path+"/objname");
+  string objname = XML2String(xml_eng,top_node,node_path+"/objname");
   LOG("XML", pINFO) << "Object name: " << objname;
   return objname;
 }
-//___________________________________________________________________________
+//.....................................................................................................
 string valor::util::XML2RootObjType (
-   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-  string objtype = XML2String(xmleng,topnode,path+"/objtype");
+  string objtype = XML2String(xml_eng,top_node,node_path+"/objtype");
   LOG("XML", pINFO) << "Object type: " << objtype;
   return objtype;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
+//
+// The following set of methods return a ROOT object from a file.
+// The path specified in the XML file file
+//  eg 
+//    <mc_sample>
+//          <filename> data/t2k/run1_4/nue.root <filename>
+//          ...
+//    </mc_sample>
+// does not need to be the absolute path.
+// The following methods shall append path specified in the XML file to
+// the input base_dir.
+// If the default value of base_dir is unchanged, it will be set to the
+// value of Env::TopLevelConfDir()
+//
+//.....................................................................................................
+
 TFile * valor::util::XML2TFile(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
-  LOG("XML", pWARN) << "Note that this method uses the $T2KOSCANA path and would cause problems if called by the LBNE VALOR code ** Fix it ** ";
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
 
-  string filename = XML2RootFileName(xmleng,topnode,path);
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
 
-  TFile * file = new TFile(
-    Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile * file = new TFile(full_filename,"read");
   if(!file) {
-    LOG("XML",pFATAL) << "No file: " << filename << " found";
+    LOG("XML",pFATAL) << "No file: " << full_filename << " found";
     exit(1);
   }
   if(file->IsZombie()) {
-    LOG("XML",pFATAL) << "File is a zombie: " << filename;
+    LOG("XML",pFATAL) << "File is a zombie: " << full_filename;
     exit(1);
   }
 
   return file;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TH1F * valor::util::XML2TH1F(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
 // Get a TH1F instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-  TFile file(
-    Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
+
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile file(full_filename,"read");
   TH1F * h = (TH1F*)file.Get(objname.c_str());
   if(!h) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    LOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
     file.Close();
     exit(1);
   }
@@ -267,19 +313,25 @@ TH1F * valor::util::XML2TH1F(
 
   return hcopy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TH1D * valor::util::XML2TH1D(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
 // Get a TH1D instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-  TFile file(
-    Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
+
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile file(full_filename,"read");
   TH1D * h = (TH1D*)file.Get(objname.c_str());
   if(!h) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -294,19 +346,25 @@ TH1D * valor::util::XML2TH1D(
 
   return hcopy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TH2D * valor::util::XML2TH2D(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-  TFile file(
-     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");    
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
+
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile file(full_filename,"read");
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -321,47 +379,56 @@ TH2D * valor::util::XML2TH2D(
 
   return h2copy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TTree * valor::util::XML2TTree(
-   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-/////  TFile file(filename.c_str(), "read");
-/////  TTree * tree = (TTree*)file.Get(objname.c_str());
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
 
-  TFile * file = new TFile(
-     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile * file = new TFile(full_filename,"read");
   TTree * tree = (TTree*)file->Get(objname.c_str());
   if(!tree) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
-//    file.Close();
+//  file.Close();
     exit(1);
   }
 
   return tree;
-//  TTree * treecopy = tree->CloneTree();
-//  file.Close();
-//  return treecopy;
+//TTree * treecopy = tree->CloneTree();
+//file.Close();
+//return treecopy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TVectorD * valor::util::XML2TVectorD(
-   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
 // Get a TVectorD instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-  TFile file(
-    Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
+
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile file(full_filename,"read");
   TVectorD * vec = (TVectorD*)file.Get(objname.c_str());
   if(!vec) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -376,17 +443,23 @@ TVectorD * valor::util::XML2TVectorD(
 
   return vec_copy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TMatrixDSym * valor::util::XML2TMatrixDSym(
-   TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
 // Get a TMatrixDSym instance from the info in the input XML config file
 //
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-  TFile file(
-    Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
+
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile file(full_filename,"read");
   TMatrixDSym * matrix = (TMatrixDSym*)file.Get(objname.c_str());
   if(!matrix) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -399,21 +472,27 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
 
   return matrix_copy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TMatrixD * valor::util::XML2TMatrixD(
-    TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+    TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
 // Get a TMatrixD instance from the info in the input XML config file
 //
-  string objtype  = XML2RootObjType (xmleng,topnode,path);
+  string objtype  = XML2RootObjType (xml_eng,top_node,node_path);
   if(objtype == "TH2D")
-    return XML2TH2D2TMatrixD(xmleng,topnode,path);
+    return XML2TH2D2TMatrixD(xml_eng,top_node,node_path);
 
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-  TFile * file = new TFile( 
-    Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
+
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile * file = new TFile(full_filename,"read"); 
   TMatrixD * matrix = (TMatrixD*) file->Get(objname.c_str());
   if(!matrix) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -426,19 +505,25 @@ TMatrixD * valor::util::XML2TMatrixD(
 
   return matrix_copy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TMatrixD * valor::util::XML2TH2D2TMatrixD(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-  TFile file(
-     Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");    
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
+
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile file(full_filename,"read");
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -469,15 +554,21 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
 
   return matrix_copy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TSpline3 * valor::util::XML2TSpline3(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
-  string filename = XML2RootFileName(xmleng,topnode,path);
-  string objname  = XML2RootObjName (xmleng,topnode,path);
+  string filename = XML2RootFileName(xml_eng,top_node,node_path);
+  string objname  = XML2RootObjName (xml_eng,top_node,node_path);
 
-  TFile * file = new TFile( 
-    Form("%s/%s", gSystem->Getenv("T2KOSCANA"), filename.c_str()), "read");
+  string used_base_dir = base_dir;
+  if(base_dir.find("<env>") != string::npos) {
+    used_base_dir = Env::Instance()->TopLevelConfDir();
+  }
+
+  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  TFile * file = new TFile(full_filename,"read"); 
   TSpline3 * spl = (TSpline3*) file->Get(objname.c_str());
   if(!spl) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -490,34 +581,34 @@ TSpline3 * valor::util::XML2TSpline3(
 
   return spl_copy;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 TAxis *  valor::util::XML2BinInfo(
-  TXMLEngine * xmleng, XMLNodePointer_t topnode, string path)
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
 //
 //
-  LOG("XML", pINFO) << "Reading info at XML node path: " << path;
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
-  XMLNodePointer_t found_node = FindNode(xmleng,topnode,path);
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
-    LOG("XML",pFATAL) << "No node was found at input XML node path: " << path;
+    LOG("XML",pFATAL) << "No node was found at input XML node node_path: " << node_path;
     //return 0;
     exit(1);
   }
 
-  string binsz = xmleng->GetAttr(found_node,"bin_size");
+  string binsz = xml_eng->GetAttr(found_node,"bin_size");
   if(binsz == "fixed") {
     int    nbins = 0;
     double min   = 0;
     double max   = 0;
-    XMLNodePointer_t child_node = xmleng->GetChild(found_node);
+    XMLNodePointer_t child_node = xml_eng->GetChild(found_node);
     while(child_node) {
-      string child_node_name = xmleng->GetNodeName(child_node);
-      string content = xmleng->GetNodeContent(child_node);
+      string child_node_name = xml_eng->GetNodeName(child_node);
+      string content = xml_eng->GetNodeContent(child_node);
       if(child_node_name == "nbins") { nbins = atoi(TrimSpaces(content).c_str()); }
       if(child_node_name == "min"  ) { min   = atof(TrimSpaces(content).c_str()); }
       if(child_node_name == "max"  ) { max   = atof(TrimSpaces(content).c_str()); }
-      child_node = xmleng->GetNext(child_node);    
+      child_node = xml_eng->GetNext(child_node);    
     }
     LOG("XML",pINFO) 
        << "nbins = " << nbins << ", range = (" << min << ", " << max << ")";
@@ -538,5 +629,5 @@ TAxis *  valor::util::XML2BinInfo(
 
   return 0;
 }
-//___________________________________________________________________________
+//____________________________________________________________________________________________________
 
