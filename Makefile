@@ -10,7 +10,7 @@ MAKEFILE = Makefile
 
 # Include machine specific flags and locations (inc. files & libs)
 #
-include $(VALOR_FMWK)/src/make/Make.include
+include $(VALOR_FMWK)/make/Make.include
 
 # define composite targets
 #

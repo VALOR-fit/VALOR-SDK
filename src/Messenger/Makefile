@@ -8,7 +8,7 @@ MAKEFILE = Makefile
 
 # Include machine specific flags and locations (inc. files & libs)
 #
-include $(VALOR_FMWK)/src/make/Make.include
+include $(VALOR_FMWK)/make/Make.include
 
 PACKAGE           = ValorMesg
 DICTIONARY        = undefined
@@ -18,7 +18,7 @@ all : lib lib-link
 
 # Include standard package makefile targets
 #
-include $(VALOR_FMWK)/src/make/Make.template
+include $(VALOR_FMWK)/make/Make.template
 
 FORCE:
 
