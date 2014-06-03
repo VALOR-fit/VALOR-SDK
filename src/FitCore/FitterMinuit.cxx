@@ -180,7 +180,6 @@ bool FitterMinuit::DoTheFit(void)
   bool ok = this->RunOnce(false);
 
   // 4: migrad not converged
-  int maxntries = 10;
   fFitTries = 1;
 
 /* 
@@ -188,6 +187,7 @@ bool FitterMinuit::DoTheFit(void)
   although perhaps it contains some wisdom of how to resolve pathological fit cases.
   Comment-out but keep so as to review later
 
+  int maxntries = 10;
   OscAnaType_t ana = Opt::Instance()->gOscAnaTypeChoice;
   if(ana != kAnaNuMuDisappOnly)
     maxntries = 25;

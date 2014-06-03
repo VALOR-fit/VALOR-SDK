@@ -96,6 +96,7 @@ public:
    void CopyBestFitToInitValues (const FitParamList & plst);
 
    // Copy from input
+   using TNamed::Copy; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
    void Copy (const FitParamList & plst);
 
    // Set the errors
@@ -152,8 +153,9 @@ public:
    double HypothesisFitStatisticPenalty(Option_t * opt = 0) const;
 
    // Print
+   //using TNamed::Print; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
    void Print (ostream & stream) const;
-   void Print () const;
+   void Print (Option_t * option = "") const;
    friend ostream & operator << (ostream & stream, const FitParamList & plst);
 
    // Methods with an one-off effect in Print()

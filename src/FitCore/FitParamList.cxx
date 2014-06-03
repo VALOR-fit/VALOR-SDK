@@ -528,7 +528,7 @@ void FitParamList::Print(ostream & stream) const
   stream << "Best-fit statistic: " << fBestFitStatistic << endl;  
 }
 //________________________________________________________________________________________
-void FitParamList::Print() const
+void FitParamList::Print(Option_t *) const
 {
   this->Print(cout);
 }
@@ -1093,7 +1093,7 @@ void FitParamList::Append2FlavourOscillation(FitParamList * fparm, int start)
 
 }
 //________________________________________________________________________________________
-void FitParamList::AppendAllSystematics(FitParamList * fparm, int start)
+void FitParamList::AppendAllSystematics(FitParamList * /*fparm*/, int /*start*/) // '/* */' use to supress unused parameter warnings
 {
 // Add nuisance params
 //
