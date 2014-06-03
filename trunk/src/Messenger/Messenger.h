@@ -201,7 +201,7 @@ public:
   log4cpp::Category & operator () (const char * stream);
   void SetPriorityLevel(const char * stream, log4cpp::Priority::Value p);
 
-  bool SetPrioritiesFromXmlFile(string filename);
+  bool Configure(string filename);
 
 private:
   Messenger();
@@ -209,8 +209,6 @@ private:
   virtual ~Messenger();
 
   static Messenger * fInstance;
-
-  void Configure(void);
 
   log4cpp::Priority::Value PriorityFromString(string priority);
 
