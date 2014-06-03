@@ -44,6 +44,7 @@ PhysHypothesis_t;
 namespace util {
 
   string AsString (conv::PhysHypothesis_t h);
+  string PhysHypAsString (conv::PhysHypothesis_t h); //alias
   string AsString (conv::PhysHypothesis_t hyp, double mix12, double mix13, double mix23, double deltacp, double dm12sq, double dm23sq);
 
   conv::PhysHypothesis_t PhysHypFromString (string h);

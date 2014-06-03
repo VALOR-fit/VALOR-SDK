@@ -39,6 +39,7 @@ NuOscOctant_t;
 namespace util {
 
   string AsString(conv::NuOscOctant_t p);
+  string OctantAsString(conv::NuOscOctant_t p); //alias for python
 
   conv::NuOscOctant_t OctantFromString(string h);
 

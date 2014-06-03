@@ -41,12 +41,17 @@ string util::AsString(PhysHypothesis_t h)
     case (kHypOscSterile5F) :
        return "<3+2 Sterile Neutrino Oscillations>";
        break;
+    case (kHypNSI3F) :
+       return "<3-flavour Neutrino Oscillations plus mu-tau NSI>";
+       break;
     default:
       return "undefined";
       break;
   }
   return "";
 }
+//________________________________________________________________________________________
+string util::PhysHypAsString(PhysHypothesis_t h) { return AsString(h); }
 //________________________________________________________________________________________
 string util::AsString (
   PhysHypothesis_t hyp, double mix12, double mix13, double mix23, 

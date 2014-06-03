@@ -360,7 +360,9 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     }//disapp & free dcp
     else
     */
-      fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
+    
+    fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
+    
   }//!_use_simples
   //SIMPLEX
   else {
@@ -445,7 +447,6 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   LOG("Minuit", pINFO) << "Getting error matrix status...";
 #endif
   errMatrixStatus = fitter->GetStats(ha, edm, errdef, nvpar, nparx);
-  fMigradErrStatusCode = errMatrixStatus;
 
   // Get errors
 #ifdef __show_fit_steps__

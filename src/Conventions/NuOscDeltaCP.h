@@ -39,6 +39,7 @@ NuOscDeltaCP_t;
 namespace util {
 
   string AsString (conv::NuOscDeltaCP_t d);
+  string CPVChoiceAsString (conv::NuOscDeltaCP_t d); //alias
 
   conv::NuOscDeltaCP_t CPVChoiceFromString (string d);
 

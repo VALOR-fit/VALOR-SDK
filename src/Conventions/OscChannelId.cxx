@@ -36,10 +36,38 @@ string util::AsString(OscChannelId_t osch)
      case ( kOscNuTauBar2NuEBar   ) : return "nutaubar -> nuebar";    break;
      case ( kOscNuTauBar2NuMuBar  ) : return "nutaubar -> numubar";   break;
      case ( kOscNuTauBar2NuTauBar ) : return "nutaubar -> nutaubar";  break;
+     
+     case ( kOscNuE2NuS4          ) : return "nue -> nus4";         break;
+     case ( kOscNuE2NuS5          ) : return "nue -> nus5";         break;
+     case ( kOscNuMu2NuS4         ) : return "numu -> nus4";        break;
+     case ( kOscNuMu2NuS5         ) : return "numu -> nus5";        break;
+     case ( kOscNuTau2NuS4        ) : return "nutau -> nus4";       break;
+     case ( kOscNuTau2NuS5        ) : return "nutau -> nus5";       break;
+     case ( kOscNuS42NuE          ) : return "nus4 -> nue";         break;
+     case ( kOscNuS52NuE          ) : return "nus5 -> nue";         break;
+     case ( kOscNuS42NuMu         ) : return "nus4 -> numu";        break;
+     case ( kOscNuS52NuMu         ) : return "nus5 -> numu";        break;
+     case ( kOscNuS42NuTau        ) : return "nus4 -> nutau";       break;
+     case ( kOscNuS52NuTau        ) : return "nus5 -> nutau";       break;
+     case ( kOscNuEBar2NuS4Bar    ) : return "nuebar -> nus4bar";   break;
+     case ( kOscNuEBar2NuS5Bar    ) : return "nuebar -> nus5bar";   break;
+     case ( kOscNuMuBar2NuS4Bar   ) : return "numubar -> nus4bar";  break;
+     case ( kOscNuMuBar2NuS5Bar   ) : return "numubar -> nus5bar";  break;
+     case ( kOscNuTauBar2NuS4Bar  ) : return "nutaubar -> nus4bar"; break;
+     case ( kOscNuTauBar2NuS5Bar  ) : return "nutaubar -> nus5bar"; break;
+     case ( kOscNuS4Bar2NuEBar    ) : return "nus4bar -> nuebar";   break;
+     case ( kOscNuS5Bar2NuEBar    ) : return "nus5bar -> nuebar";   break;
+     case ( kOscNuS4Bar2NuMuBar   ) : return "nus4bar -> numubar";  break;
+     case ( kOscNuS5Bar2NuMuBar   ) : return "nus5bar -> numubar";  break;
+     case ( kOscNuS4Bar2NuTauBar  ) : return "nus4bar -> nutaubar"; break;
+     case ( kOscNuS5Bar2NuTauBar  ) : return "nus5bar -> nutaubar"; break;
+     
      default                        : return "--";
   }
   return "--";
 }
+//________________________________________________________________________________________
+string util::OscChannelAsString(OscChannelId_t osch) { return AsString(osch); }
 //________________________________________________________________________________________
 OscChannelId_t util::GetOscChannel(int nu_start, int nu_end)
 {
