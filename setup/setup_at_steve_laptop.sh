@@ -21,3 +21,5 @@ export PATH=${VALOR_FMWK}/root:${VALOR_FMWK}/production:${PATH}
 alias root2k="root2k -l"
 
 export T2KCOMPILE="-Wextra -Wshadow"
+export OPT_WITH_CXX_USERDEF_FLAGS="-Wextra -Wshadow"
+
