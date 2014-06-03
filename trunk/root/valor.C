@@ -6,7 +6,7 @@ void change_prompt()
     rint->SetPrompt("VALOR: [%d] ");
 }
 
-void valor_style()
+void define_valor_style()
 {
   // VALOR style definition
   // Adopted from BaBar collaboration
@@ -106,26 +106,45 @@ void valor_style()
   TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
   valorStyle->SetNumberContours(NCont); 
 
-}//End of definition of valorStyle
+}//End of definition of VALOR style
+
+void print_banner()
+{
+  TString data_dir = valor::Env::Instance()->TopLevelDataDir();
+  TString banner   = data_dir + "/banner/banner.dat";
+
+  valor::util::PrintBanner(banner.Data(),500);
+}
+
+void config_mesg()
+{
+  TString conf_dir  = valor::Env::Instance()->TopLevelConfDir();
+  TString verbosity = conf_dir + "/verbosity.xml";
+
+  valor::util::Verbosity(verbosity.Data());
+}
 
 void valor()
 {   
-    gROOT->ProcessLine(".x $VALOR_FMWK/root/loadincs.C");    
-    gROOT->ProcessLine(".x $VALOR_FMWK/root/loadlibs.C");    
-
     TString curr_dir = gSystem->pwd();
     gSystem->cd(curr_dir.Data());
 
-    change_prompt();
-
-    valor_style();
-    gROOT->SetStyle("VALOR");
-
     TString top_dir = gSystem->Getenv("VALOR_FMWK");
 
-    TString banner    = top_dir + "/data/banner/banner.dat";
-    TString verbosity = top_dir + "/data/mesg/verbosity.xml";
+    TString loadincs = ".x " + top_dir + "/root/loadincs.C";
+    TString loadlibs = ".x " + top_dir + "/root/loadlibs.C";
+ 
+    gROOT->ProcessLine(loadincs.Data());    
+    gROOT->ProcessLine(loadlibs.Data());    
 
-    valor::util::PrintBanner(banner.Data(),500);
-    valor::util::Verbosity(verbosity.Data());
+    change_prompt();
+
+    define_valor_style();
+    gROOT->SetStyle("VALOR");
+
+    valor::Env * env = valor::Env::Instance();
+    env->AutoSet("fmwk");
+
+    print_banner();
+    config_mesg();
 }
