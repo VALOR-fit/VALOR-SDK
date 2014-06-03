@@ -250,7 +250,7 @@ string valor::util::XML2RootObjType (
 // The following methods shall append path specified in the XML file to
 // the input base_dir.
 // If the default value of base_dir is unchanged, it will be set to the
-// value of Env::TopLevelConfDir()
+// value of Env::TopLevelDataDir()
 //
 //.....................................................................................................
 
@@ -263,7 +263,7 @@ TFile * valor::util::XML2TFile(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -293,7 +293,7 @@ TH1F * valor::util::XML2TH1F(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -326,7 +326,7 @@ TH1D * valor::util::XML2TH1D(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -359,7 +359,7 @@ TH2D * valor::util::XML2TH2D(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -392,7 +392,7 @@ TTree * valor::util::XML2TTree(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -423,7 +423,7 @@ TVectorD * valor::util::XML2TVectorD(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -454,7 +454,7 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -487,7 +487,7 @@ TMatrixD * valor::util::XML2TMatrixD(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -518,7 +518,7 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
@@ -563,7 +563,7 @@ TSpline3 * valor::util::XML2TSpline3(
 
   string used_base_dir = base_dir;
   if(base_dir.find("<env>") != string::npos) {
-    used_base_dir = Env::Instance()->TopLevelConfDir();
+    used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
