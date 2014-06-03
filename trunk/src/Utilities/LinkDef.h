@@ -10,9 +10,8 @@
 
 #pragma link C++ class valor::VALORArray;
 
-//#pragma link C++ class valor::util::ArrIdx;
+#pragma link C++ class valor::Env;
 #pragma link C++ class valor::Rnd;
-//#pragma link C++ class valor::PhysHypothesis;
 #pragma link C++ class valor::NuOsc3Flavour;
 #pragma link C++ class valor::NuOscSterile;
 
