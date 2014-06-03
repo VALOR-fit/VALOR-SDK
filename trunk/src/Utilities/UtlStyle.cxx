@@ -18,6 +18,7 @@ ChangeLog:
 #include <TH1.h>
 
 #include "Utilities/UtlStyle.h"
+#include "Messenger/Messenger.h"
 
 using std::cout;
 using std::endl;
@@ -190,13 +191,6 @@ void util::Format(
   if (msiz >= 0) hst -> SetMarkerSize  (msiz);
 }
 //___________________________________________________________________________
-void util::PrintBanner(void)
-{
-  string base_dir = string(gSystem->Getenv("VALOR_FMWK"));
-  string banner = base_dir + string("/data/banner/banner.dat");
-  util::PrintBanner(banner, 500);
-}
-//___________________________________________________________________________
 void util::PrintBanner(string filename, UInt_t wait_msec)
 {
   ifstream banner(filename.c_str(), ios::in);
@@ -221,3 +215,13 @@ void util::PrintBanner(string filename, UInt_t wait_msec)
   }
 }
 //___________________________________________________________________________
+void util::Verbosity(string filename)
+{
+  Messenger * msg = Messenger::Instance();
+  bool ok = msg->Configure(filename);
+  if(!ok) {
+    LOG("Style",pWARN) << "Couldn't set verbosity levels from: " << filename;
+  }
+}
+//___________________________________________________________________________
+
