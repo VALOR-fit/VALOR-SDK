@@ -43,29 +43,30 @@ using std::vector;
 namespace valor {
 namespace util {
 
-  XMLNodePointer_t FindNode          (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  bool             NodeExists        (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
+  XMLNodePointer_t FindNode          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  bool             NodeExists        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
-  bool             XML2Bool          (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  double           XML2Dbl           (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  vector<double>   XML2DblArray      (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  string           XML2String        (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
+  bool             XML2Bool          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  double           XML2Dbl           (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  vector<double>   XML2DblArray      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  string           XML2String        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
-  string           XML2RootFileName  (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  string           XML2RootObjName   (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  string           XML2RootObjType   (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
+  string           XML2RootFileName  (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  string           XML2RootObjName   (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  string           XML2RootObjType   (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
-  TFile *          XML2TFile         (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TH1F *           XML2TH1F          (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TH1D *           XML2TH1D          (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TH2D *           XML2TH2D          (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TTree *          XML2TTree         (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TVectorD *       XML2TVectorD      (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TMatrixDSym *    XML2TMatrixDSym   (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TMatrixD *       XML2TMatrixD      (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TMatrixD *       XML2TH2D2TMatrixD (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TSpline3 *       XML2TSpline3      (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
-  TAxis *          XML2BinInfo       (TXMLEngine * xmleng, XMLNodePointer_t topnode, string path);
+  TFile *          XML2TFile         (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TH1F *           XML2TH1F          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TH1D *           XML2TH1D          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TH2D *           XML2TH2D          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TTree *          XML2TTree         (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TVectorD *       XML2TVectorD      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TMatrixDSym *    XML2TMatrixDSym   (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TMatrixD *       XML2TMatrixD      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TMatrixD *       XML2TH2D2TMatrixD (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TSpline3 *       XML2TSpline3      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+
+  TAxis *          XML2BinInfo       (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   
 } // util
 } // valor
