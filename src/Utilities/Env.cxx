@@ -77,6 +77,15 @@ void Env::AutoSet(Option_t * app)
        fTopLevelConfDir = fTopLevelDataDir + "/config/";
     }//topdir
   }
+
+  if(valor_app.find("fmwk") != string::npos) {
+    const char * topdir = gSystem->Getenv("VALOR_FMWK");
+    if(topdir) {
+       fTopLevelDir     = topdir;
+       fTopLevelDataDir = fTopLevelDataDir + "/data/";
+       fTopLevelConfDir = fTopLevelDataDir + "/config/";
+    }//topdir
+  }
 }
 //________________________________________________________________________________________
 void Env::Print(ostream & stream) const
