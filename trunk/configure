@@ -267,7 +267,7 @@ if(-e $MKCONF_FILENAME) {
 
 sub auto_detect {
 
-  @search_dir  = ("/usr/lib","/usr/include","/opt","/lib");           # std search paths
+  @search_dir  = ("/usr","/opt","/lib");           # std search paths
   push (@search_dir,"$ENV{'HOME'}") 
                  if defined $ENV{'HOME'};          # add $HOME
   push (@search_dir,"/hep");                       # add where I add ext apps in my mac book air
