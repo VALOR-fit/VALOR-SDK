@@ -231,7 +231,7 @@ close(BLD_HEADER_FILE);
 #
 # Open Make.config to write configuration options
 #
-$MKCONF_FILENAME = "$VALOR_FMWK/src/make/Make.config";
+$MKCONF_FILENAME = "$VALOR_FMWK/make/Make.config";
 print "Automatically generating file: $MKCONF_FILENAME \n";
 open(MKCONF, ">$MKCONF_FILENAME") or die("Can not write out the Make.config file!");
 print MKCONF "# \n";
