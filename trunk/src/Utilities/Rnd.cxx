@@ -8,9 +8,13 @@ ChangeLog:
 */
 //________________________________________________________________________________________
 
+#include <iostream>
+#include <cassert>
+
 #include "Utilities/Rnd.h"
 //#include "Build.h"
 
+using std::cerr;
 using std::endl;
 
 using namespace valor;
@@ -62,7 +66,8 @@ void Rnd::SetSeeds(
   // /dev/random might be slow on batch machines
   if (! (toymcstat && toymcsyst && toymcosc && fitter && other) ) {
     FILE * devrandom = fopen("/dev/urandom","r");
-    fread(randseeds, sizeof(unsigned int), 5, devrandom);
+    size_t ints_read = fread(randseeds, sizeof(unsigned int), 5, devrandom);
+    assert(ints_read == 5);
     fclose(devrandom);
   }
     
