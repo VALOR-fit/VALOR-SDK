@@ -43,8 +43,10 @@ public:
    int    NParams  (void) const;
    double Value    (conv::PhysParamId_t p) const;
    void   SetValue (conv::PhysParamId_t p, double v);
-   void   Clear    (void);
+   //using TNamed::Clear; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
+   void   Clear    (Option_t * option = "");
    void   Append   (const PhysParamList & pl);
+   using TNamed::Print; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
    void   Print    (ostream & stream) const;
 
    double           operator () (conv::PhysParamId_t p) const;

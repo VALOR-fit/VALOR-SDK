@@ -148,12 +148,12 @@ void Opt::SetDefaultParameterValues()
   // Set default global parameter values
   // set empty values
   for (int ip = 0 ; ip < knppmax ; ip++ ) {
-    fGlobalBestFit [ip] = kBadResult;
-    fGlobalFitError[ip] = kBadResult;
+    fGlobalBestFit [ip] = conv::kBadResult;
+    fGlobalFitError[ip] = conv::kBadResult;
     //fInitialValue  [ip] = 0.;
   }
   
-  double mean = kBadResult;
+  double mean = conv::kBadResult;
   
   //dm12
   fGlobalBestFit  [kPhypDm12sq] = kGlobFitDm12sq;

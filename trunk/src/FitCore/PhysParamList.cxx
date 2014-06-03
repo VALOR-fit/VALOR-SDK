@@ -79,7 +79,7 @@ void PhysParamList::SetValue(PhysParamId_t p, double v)
   fParams[p] = v;
 }
 //________________________________________________________________________________________
-void PhysParamList::Clear(void)
+void PhysParamList::Clear(Option_t *)
 {
   this->fParams.clear();
 }

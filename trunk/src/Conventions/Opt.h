@@ -122,9 +122,7 @@ private:
   static Opt * fInstance;
 
   void SetDefaults(void);
-  
-  static const double kBadResult = -999;
-  
+    
   double fGlobalBestFit       [conv::knppmax];
   double fGlobalFitError      [conv::knppmax];
 

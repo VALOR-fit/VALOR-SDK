@@ -602,7 +602,7 @@ double FitInputs::BestFitChisquare(Option_t * opt)
 // MINUIT fit functions 
 // 
 //____________________________________________________________________________ 
-double FitInputs::operator() (const std::vector<double>& x) const
+double FitInputs::operator() (const std::vector<double>& /*x*/) const // '/* */' use to supress unused parameter warnings
 {
 // To be used with Minuit2
 /* HACK
@@ -615,7 +615,7 @@ double FitInputs::operator() (const std::vector<double>& x) const
 }
 //____________________________________________________________________________ 
 void valor::FitFunc (
-  Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t /*iflag*/) 
+  Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t /*iflag*/) // '/* */' use to supress unused parameter warnings
 {
 // To be used with a TVirtualFitter
 
