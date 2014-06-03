@@ -63,7 +63,7 @@ Opt * Opt::Instance()
 void Opt::SetDefaults(void) 
 {
   gMassHierarchyAssumed = kNmhNormal;
-  gOscMixingParamChoice = kNuMixSinsq2Theta;
+  gOscMixingParamChoice = kNuMixSinsqTheta;
   gOscDmsqScheme        = kNuDmsq12andAbs23;
   gOscDeltaCP           = kNuDeltaCPPhase;
   gOscOctantChoice      = kNuOctantOne;
