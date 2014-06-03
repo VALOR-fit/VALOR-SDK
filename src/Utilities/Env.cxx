@@ -64,8 +64,8 @@ void Env::AutoSet(Option_t * app)
     const char * topdir = gSystem->Getenv("T2KOSCANA");
     if(topdir) {
        fTopLevelDir     = topdir;
-       fTopLevelDataDir = fTopLevelDataDir + "/inputs/";
-       fTopLevelConfDir = fTopLevelDataDir + "/config/";
+       fTopLevelDataDir = fTopLevelDir + "/inputs/";
+       fTopLevelConfDir = fTopLevelDir + "/config/";
     }//topdir
   }
 
@@ -73,8 +73,8 @@ void Env::AutoSet(Option_t * app)
     const char * topdir = gSystem->Getenv("VALOR_LBNX");
     if(topdir) {
        fTopLevelDir     = topdir;
-       fTopLevelDataDir = fTopLevelDataDir + "/data/";
-       fTopLevelConfDir = fTopLevelDataDir + "/config/";
+       fTopLevelDataDir = fTopLevelDir + "/data/";
+       fTopLevelConfDir = fTopLevelDir + "/config/";
     }//topdir
   }
 
@@ -82,8 +82,8 @@ void Env::AutoSet(Option_t * app)
     const char * topdir = gSystem->Getenv("VALOR_FMWK");
     if(topdir) {
        fTopLevelDir     = topdir;
-       fTopLevelDataDir = fTopLevelDataDir + "/data/";
-       fTopLevelConfDir = fTopLevelDataDir + "/config/";
+       fTopLevelDataDir = fTopLevelDir + "/data/";
+       fTopLevelConfDir = fTopLevelDir + "/config/";
     }//topdir
   }
 }
