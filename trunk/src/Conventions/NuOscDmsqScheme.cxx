@@ -32,6 +32,8 @@ string util::AsString(conv::NuOscDmsqScheme_t dmsqs)
   }
 }
 //________________________________________________________________________________________
+string util::DmsqSchemeAsString(conv::NuOscDmsqScheme_t dmsqs) { return AsString(dmsqs); }
+//________________________________________________________________________________________
 NuOscDmsqScheme_t util::DmsqSchemeFromString(string h)
 {
   if(h == "abs23"    ) return kNuDmsq12andAbs23;

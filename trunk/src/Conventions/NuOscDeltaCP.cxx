@@ -29,6 +29,8 @@ string util::AsString(NuOscDeltaCP_t d)
   }
 }
 //________________________________________________________________________________________
+string util::CPVChoiceAsString(NuOscDeltaCP_t d) { return AsString(d); }
+//________________________________________________________________________________________
 NuOscDeltaCP_t util::CPVChoiceFromString (string d)
 {
   if(d == "sindelta" ) return kNuDeltaCPSin;

@@ -30,6 +30,8 @@ string util::AsString(NuOscOctant_t o)
   return "";
 }
 //________________________________________________________________________________________
+string util::OctantAsString(NuOscOctant_t o) { return AsString(o);}
+//________________________________________________________________________________________
 NuOscOctant_t util::OctantFromString(string h)
 {
   if(h == "one") return kNuOctantOne;

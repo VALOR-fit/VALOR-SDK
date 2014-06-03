@@ -31,6 +31,8 @@ string util::AsString(NuMassHierarchy_t m)
   return "";
 }
 //________________________________________________________________________________________
+string util::HierarchyAsString(NuMassHierarchy_t m) { return AsString(m); }
+//________________________________________________________________________________________
 NuMassHierarchy_t util::HierarchyFromString(string h)
 {
   string lh = util::ToLowerCase(h);

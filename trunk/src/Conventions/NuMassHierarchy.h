@@ -39,6 +39,7 @@ NuMassHierarchy_t;
 namespace util {
 
   string AsString (conv::NuMassHierarchy_t  m);
+  string HierarchyAsString (conv::NuMassHierarchy_t  m); // alias of above for python
 
   conv::NuMassHierarchy_t HierarchyFromString (string h);
 

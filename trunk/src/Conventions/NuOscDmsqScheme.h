@@ -39,6 +39,7 @@ NuOscDmsqScheme_t;
 namespace util {
 
   string AsString(conv::NuOscDmsqScheme_t dmsqs);
+  string DmsqSchemeAsString(conv::NuOscDmsqScheme_t dmsqs); //alias of above
 
   conv::NuOscDmsqScheme_t DmsqSchemeFromString (string h);
 

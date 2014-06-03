@@ -80,6 +80,7 @@ OscChannelId_t;
 namespace util {
 
   string AsString (conv::OscChannelId_t o);
+  string OscChannelAsString (conv::OscChannelId_t o);
 
   conv::OscChannelId_t GetOscChannel(int nu_start, int nu_end);
 
