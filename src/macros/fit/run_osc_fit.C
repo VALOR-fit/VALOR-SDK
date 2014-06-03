@@ -39,8 +39,6 @@ void run_osc_fit
   using namespace valor;
   using namespace valor::conv;
 
-//Messenger * msg = Messenger::Instance();
-
   // Analysis configuration
 //TString config = Form("%s/config/%s", gSystem->Getenv("VALOR_LBNX"), config_file);
 
@@ -116,8 +114,8 @@ void run_osc_fit
   TTree * fitnt = new TTree("fitnt","Results of VALOR data and/or toy-MC experiment fits");
   fitnt->Branch("input_params",           "valor::PhysParamList", &iparm,         1280000,0);
   fitnt->Branch("global_best_fit_params", "valor::FitParamList",  &gfparm,        1280000,0);
-  fitnt->Branch("best_fit_params",        "TObjArray",             &bfp_array,     1280000,0);
-  fitnt->Branch("spectra",                "TObjArray",             &spectra_array, 1280000,0);
+  fitnt->Branch("best_fit_params",        "TObjArray",            &bfp_array,     1280000,0);
+  fitnt->Branch("spectra",                "TObjArray",            &spectra_array, 1280000,0);
 
   // Loop over toy-MC experiments
   for(int iexperiment = 0; iexperiment < nexperiments; iexperiment++) {
@@ -147,7 +145,7 @@ void run_osc_fit
 
      // Reset all output spectra and best-fit params array
      spectra_array->Clear();    
-     bfp_array->Clear()
+     bfp_array->Clear();
 
      // Reset input true params and add true oscillation params
      iparm->Clear();
