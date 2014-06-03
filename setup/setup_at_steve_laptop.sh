@@ -13,7 +13,7 @@ if [ -z $VALOR_FMWK ]; then
   export VALOR_FMWK="$( dirname `cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd `)/" # Directory above the one containing this file
 fi
 
-source /home/steve/packages/root/root-v5-34/bin/thisroot.sh
+mlr
 
 export LD_LIBRARY_PATH=${VALOR_FMWK}/lib:${LD_LIBRARY_PATH}
 export PATH=${VALOR_FMWK}/root:${VALOR_FMWK}/production:${PATH}

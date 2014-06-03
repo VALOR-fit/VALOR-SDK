@@ -17,6 +17,8 @@
 //#define __show_debug_mesg__
 //#define __show_warning__
 
+#include <cassert>
+
 #include <TMath.h>
 
 #include "Conventions/Opt.h"
@@ -1265,6 +1267,9 @@ double NuOsc3Flavour::CalcVacuumOscProbPDG(int nu_start, int nu_end, double ener
     cosDelta12 = cos(((2 * kOscDimensFactor * dmsq12 * fBaseline) / energy) + arg12);
     cosDelta13 = cos(((2 * kOscDimensFactor * dmsq13 * fBaseline) / energy) + arg13);
     cosDelta23 = cos(((2 * kOscDimensFactor * dmsq23 * fBaseline) / energy) + arg23);
+  }
+  else {
+    assert(!"Failed to calculate cosDelta");
   }
 
   if( osch == kOscNuE2NuE ||
