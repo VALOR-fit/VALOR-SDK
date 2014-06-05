@@ -16,12 +16,12 @@
 #ifndef _valor_array_h_
 #define _valor_array_h_
 
-#include <TObject.h>
+#include <TNamed.h>
 #include <vector>
 
 namespace valor {
 
-class VALORArray: public TObject
+class VALORArray: public TNamed
 {
 public:
   // Constructors
