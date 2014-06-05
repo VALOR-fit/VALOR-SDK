@@ -26,7 +26,7 @@ ClassImp(VALORArray);
 
 //________________________________________________________________________________________
 VALORArray::VALORArray() :
-  TObject(),
+  TNamed(),
   fNDim(0),
   fDimensions(NULL),
   fIncrement(NULL),
@@ -36,19 +36,19 @@ VALORArray::VALORArray() :
 //________________________________________________________________________________________
 
 VALORArray::VALORArray(const vector<int> dimensions) :
-  TObject()
+  TNamed()
 {
   this->Construct(dimensions.size(), &dimensions[0]);
 }
 //________________________________________________________________________________________
 VALORArray::VALORArray(int nd, const int * dimensions) :
-  TObject()
+  TNamed()
 {
   this->Construct(nd,dimensions);
 }
 //________________________________________________________________________________________
 VALORArray::VALORArray(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) :
-  TObject()
+  TNamed()
 {
   int dimensions[6] = {dim1,dim2,dim3,dim4,dim5,dim6};
   int ndim=0;
@@ -77,7 +77,7 @@ void VALORArray::Construct(int nd, const int * dimensions)
 }
 //________________________________________________________________________________________
 VALORArray::VALORArray(const VALORArray & arr) :
-TObject(),
+TNamed(),
 fNDim(arr.fNDim),
 fSize(arr.fSize)
 {
