@@ -44,6 +44,9 @@ string util::AsString(PhysHypothesis_t h)
     case (kHypNSI3F) :
        return "<3-flavour Neutrino Oscillations plus mu-tau NSI>";
        break;
+    case (kHypVoid) :
+       return "<Systematics Constraint>";
+       break;
     default:
       return "undefined";
       break;
@@ -190,6 +193,7 @@ PhysHypothesis_t util::PhysHypFromString (string sh)
   if(sh == "3f_nsi"        ) return kHypNSI3F;
   if(sh == "4f_sterile_osc") return kHypOscSterile4F;
   if(sh == "5f_sterile_osc") return kHypOscSterile5F;
+  if(sh == "void"          ) return kHypVoid;
 
   return kHypUndefined;
 }

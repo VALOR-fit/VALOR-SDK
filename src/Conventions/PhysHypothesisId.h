@@ -35,7 +35,8 @@ typedef enum EPhysHypothesis
    kHypOsc3F,             // neutrino oscillations, 3-flavour framework
    kHypOscSterile4F,      // neutrino oscillations with steriles, 3+1
    kHypOscSterile5F,      // neutrino oscillations with steriles, 3+2
-   kHypNSI3F              // Nonstandard matter interactions
+   kHypNSI3F,             // non-standard matter interactions
+   kHypVoid               // nothing - used for ND systematic constraint fits
 } 
 PhysHypothesis_t;
    
