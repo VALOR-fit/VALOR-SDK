@@ -67,7 +67,7 @@ bool X01Model::Read(string /*file*/, Option_t * /*opt*/)
   return true;
 }
 //________________________________________________________________________________________
-bool X01Model::Generate(const PhysHypothesis & ph)
+bool X01Model::Generate(const PhysHypothesis & ph, Option_t * /*opt*/)
 {
   fPhysHypothesis.Copy(ph);
   PhysHypothesis_t hyp = fPhysHypothesis.Hypothesis();
@@ -198,13 +198,13 @@ void X01Model::PrintSystematics(ostream & stream) const
   stream << endl;
 }
 //________________________________________________________________________________________
-bool X01Model::Generate (const FitParamList & fp)
+bool X01Model::Generate (const FitParamList & fp, Option_t * opt)
 {
   // extract the values of params driving the oscillation, decoherence or decay model
   PhysHypothesis ph(fp);
 
   // call the main Generate() method
-  return this->Generate(ph);
+  return this->Generate(ph,opt);
 }
 //________________________________________________________________________________________
 bool X01Model::Write(TObjArray * array, const char * tag, Option_t * /*write_opt*/)
