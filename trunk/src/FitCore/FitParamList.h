@@ -28,6 +28,7 @@
 #include <TVirtualFitter.h>
 #include <Minuit2/MnUserParameters.h>
 #include <Math/Minimizer.h>
+#include <TMatrixDSym.h>
 #include <Fit/Fitter.h>
 
 #include "Conventions/PhysParamId.h"
@@ -99,6 +100,9 @@ public:
    using TNamed::Copy; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
    void Copy (const FitParamList & plst);
 
+   // Set the covariance matrix
+   void SetCovMatrix(TMatrixDSym & covmatrix);
+
    // Set the errors
    void SetErrors(double * errplus, double * errminus, double * errmigrad);
    
@@ -149,6 +153,8 @@ public:
    void   SetFitTries         (int   fit_tries)  { fFitTries = fit_tries;       }
    int    GetFitTries         (void) const       { return fFitTries;            }
    
+   TMatrixDSym * GetCovMatrix(void) { return fCovMatrix; }
+
    // Calculate the fit statistic penalty
    double HypothesisFitStatisticPenalty(Option_t * opt = 0) const;
 
@@ -250,6 +256,7 @@ private:
    double *     fHesseError;   //[fNParams]
    double *     fPlusError;    //[fNParams]
    double *     fMinusError;   //[fNParams]
+   TMatrixDSym* fCovMatrix;  
    double       fBestFitStatistic; 
    double       fCurrStatistic; 
    double       fFitTime;
