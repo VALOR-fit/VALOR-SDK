@@ -42,8 +42,7 @@ public:
   
   // Set value at specific point
   void SetEntry(double value, int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1);
-  //double GetEntry(int dummy,...) const;
-  //void SetEntry(double value, ...);
+  void AddToEntry(double value, int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1);
   
   int GetNDim() const;
   const double * GetArray(void) const;
@@ -63,7 +62,6 @@ private:
   double * fArray;    //[fSize] Stores actual contents of array
   
   int Address(int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1) const;
-  //int ArgsToAddress(va_list args) const;
   void Construct(int nd, const int * dimensions);
   
 ClassDef(VALORArray, 1)
