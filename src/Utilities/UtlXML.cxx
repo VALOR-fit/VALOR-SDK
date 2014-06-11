@@ -157,6 +157,8 @@ vector<double> valor::util::XML2DblArray(
 {
 // Get the specified node content as a vector floating-point number
 // The node content should be a comma-separed list of numbers
+  bool skip_comments = xml_eng->GetSkipComments();
+  xml_eng->SetSkipComments(true);
 
   LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
@@ -166,15 +168,19 @@ vector<double> valor::util::XML2DblArray(
        << "No node was found at input XML node node_path: " << node_path;
     exit(1);
   }
-  string content = TrimSpaces(xml_eng->GetNodeContent(found_node));
-
   vector<double> array;
+  const char * nc = xml_eng->GetNodeContent(found_node);
+  if (not nc) return array;
+  
+  string content = TrimSpaces(nc);
+  
   vector<string> str_tokens = Tokens(content, ",");
   vector<string>::const_iterator str_tokens_iter = str_tokens.begin();
   for( ; str_tokens_iter != str_tokens.end(); ++str_tokens_iter) {
      string token = *str_tokens_iter;
      array.push_back( atof(token.c_str()) );
   }
+  xml_eng->SetSkipComments(skip_comments);
   return array;
 }
 //____________________________________________________________________________________________________

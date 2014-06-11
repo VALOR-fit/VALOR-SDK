@@ -139,37 +139,12 @@ void VALORArray::SetEntry(double value, int ind1, int ind2, int ind3, int ind4, 
   return;
 }
 //________________________________________________________________________________________
-/*
-double VALORArray::GetEntry(int dummy, ...) const
+void VALORArray::AddToEntry(double value, int ind1, int ind2, int ind3, int ind4, int ind5, int ind6)
 {
-  va_list args;
-  va_start(args,dummy);
-  int address = ArgsToAddress(args);
-  va_end(args);
-  return fArray[address];
+  int address = this->Address(ind1, ind2, ind3, ind4, ind5, ind6);
+  fArray[address] += value;
+  return;
 }
-//________________________________________________________________________________________
-void VALORArray::SetEntry(double value, ...)
-{
-  va_list args;
-  va_start(args, value);
-  int address = ArgsToAddress(args);
-  va_end(args);
-  
-  fArray[address] = value;
-}
-//________________________________________________________________________________________
-int VALORArray::ArgsToAddress(va_list arg) const
-{
-  int address = 0;
-  for (int i = 0 ; i < fNDim; i++) {
-    int entry = va_arg(arg,int);
-    address += entry * fIncrement[i];
-  }
-  
-  return address;
-}
-*/
 //________________________________________________________________________________________
 int VALORArray::GetNDim() const
 {
