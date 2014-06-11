@@ -100,6 +100,14 @@ PhysHypothesis::PhysHypothesis(const FitParamList & fp)
     }
   }
 
+  else if(hyp == kHypVoid) {
+    this->Init(hyp);
+    for (int i = 0 ; i < fp.Size() ; i++) {
+      PhysParamId_t p = fp.WhichParam(i);
+      this->SetCurrValue(p, fp.CurrValue(p));
+    }
+  }
+
   // undefined
   else {  
     this->Init(kHypUndefined);

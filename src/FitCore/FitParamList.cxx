@@ -1144,6 +1144,22 @@ PhysHypothesis_t FitParamList::PhysicsHypothesis(void) const
     return kHypDecoh;
   }
 
+  // there are fit params, but they are all systematics
+  else {
+    if(this->Size() > 0) {
+      bool all_systematics = true;
+      map<PhysParamId_t, int>::const_iterator it = fIdMap.begin();
+      for( ; it != fIdMap.begin(); ++it) {
+        PhysParamId_t p = it->first;
+        if(p < kNuis000) {
+          all_systematics = false;
+          break;
+        }
+      }
+      if(all_systematics) return kHypVoid;
+    }
+  }
+
   // undefined
   return kHypUndefined;
 }
