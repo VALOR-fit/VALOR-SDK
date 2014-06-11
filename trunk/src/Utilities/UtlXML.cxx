@@ -195,7 +195,9 @@ string valor::util::XML2String(
        << "No node was found at input XML node node_path: " << node_path;
     exit(1);
   }
-  string content = xml_eng->GetNodeContent(found_node);
+  const char * nc = xml_eng->GetNodeContent(found_node);
+  if (not nc) return string("");
+  string content(nc);
   return TrimSpaces(content);
 }
 //____________________________________________________________________________________________________
