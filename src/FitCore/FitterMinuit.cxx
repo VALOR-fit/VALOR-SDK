@@ -22,6 +22,7 @@ ChangeLog:
 #include <TFile.h>
 #include <TSystem.h>
 #include <TStopwatch.h>
+#include <TMatrixDSym.h>
 
 #include "Conventions/Opt.h"
 #include "Utilities/Rnd.h"
@@ -268,6 +269,7 @@ bool FitterMinuit::DoTheFit(void)
   fFitInputs->FitParams().SetStatusCode("migrad_min", fMigradMinStatusCode);
   fFitInputs->FitParams().SetStatusCode("migrad_err", fMigradErrStatusCode);
 
+
   if(fCalcHesseErrors) {
     fFitInputs->FitParams().SetStatusCode("hesse_err", fHesseErrStatusCode);
   }
@@ -399,6 +401,14 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   Double_t aminn = 0;
   fitter->PrintResults(3,aminn);
 #endif
+
+  TMatrixDSym cov(num_of_params);
+  for(int i=0; i<num_of_params; i++) {
+    for(int j=0; j<num_of_params; j++) {
+        cov[i][j] = fitter->GetCovarianceMatrixElement(i,j);
+    }
+  }
+  fFitInputs->FitParams().SetCovMatrix(cov);
 
   double unfilled = -999;
 

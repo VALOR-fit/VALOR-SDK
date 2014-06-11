@@ -154,6 +154,16 @@ void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
   }
 }
 //________________________________________________________________________________________
+void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix)
+{
+  TMatrixDSym & m = *fCovMatrix;
+  for(int ip = 0; ip < fNParams; ip++) {
+    for(int jp = 0; jp < fNParams; jp++) {
+       m[ip][jp] = covmatrix[ip][jp];
+    }
+  }
+}
+//________________________________________________________________________________________
 void FitParamList::SetErrors(double * errplus, double * errminus, double * errmigrad)
 {
   for(int ip = 0; ip < fNParams; ip++) {
@@ -1191,7 +1201,13 @@ void FitParamList::Copy(const FitParamList & plst)
      this->fHesseError[i]   = plst.fHesseError[i];
      this->fPlusError[i]    = plst.fPlusError[i];
      this->fMinusError[i]   = plst.fMinusError[i];
-   } 
+  } 
+
+  for(int i = 0; i < plst.fNParams; i++) {
+    for(int j = 0; j < plst.fNParams; j++) {
+      (*this->fCovMatrix)[i][j] =  (*plst.fCovMatrix)[i][j];
+    }
+  }
 
    this->fBestFitStatistic = plst.fBestFitStatistic;
    this->fCurrStatistic    = plst.fCurrStatistic;
@@ -1231,6 +1247,7 @@ void FitParamList::Init(int nparams)
      fHesseError   = new double[fNParams];
      fPlusError    = new double[fNParams];
      fMinusError   = new double[fNParams];
+     fCovMatrix    = new TMatrixDSym(fNParams);
    } else {
      fName         = 0;
      fBestFitValue = 0;
@@ -1245,6 +1262,7 @@ void FitParamList::Init(int nparams)
      fHesseError   = 0;
      fPlusError    = 0;
      fMinusError   = 0;
+     fCovMatrix    = 0;
    }
 
    fShowCurrValuesOnly    = false;
@@ -1280,6 +1298,7 @@ void FitParamList::CleanUp(void)
    delete [] fHesseError;
    delete [] fPlusError;
    delete [] fMinusError;
+   delete fCovMatrix;
 
    fName         = 0;
    fBestFitValue = 0;
@@ -1294,6 +1313,7 @@ void FitParamList::CleanUp(void)
    fHesseError   = 0;
    fPlusError    = 0;
    fMinusError   = 0;
+   fCovMatrix    = 0;
 
    fBestFitStatistic = 0.;
    fCurrStatistic    = 0.;
