@@ -157,8 +157,6 @@ vector<double> valor::util::XML2DblArray(
 {
 // Get the specified node content as a vector floating-point number
 // The node content should be a comma-separed list of numbers
-  bool skip_comments = xml_eng->GetSkipComments();
-  xml_eng->SetSkipComments(true);
 
   LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
@@ -180,7 +178,7 @@ vector<double> valor::util::XML2DblArray(
      string token = *str_tokens_iter;
      array.push_back( atof(token.c_str()) );
   }
-  xml_eng->SetSkipComments(skip_comments);
+  
   return array;
 }
 //____________________________________________________________________________________________________
