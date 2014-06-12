@@ -175,7 +175,8 @@ vector<double> valor::util::XML2DblArray(
   vector<string> str_tokens = Tokens(content, ",");
   vector<string>::const_iterator str_tokens_iter = str_tokens.begin();
   for( ; str_tokens_iter != str_tokens.end(); ++str_tokens_iter) {
-     string token = *str_tokens_iter;
+     string token = TrimSpaces(*str_tokens_iter);
+     if (not token.size() ) continue;
      array.push_back( atof(token.c_str()) );
   }
   
