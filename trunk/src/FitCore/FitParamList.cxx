@@ -1357,13 +1357,21 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
     
     center = Opt::Instance()->GetGlobalBestFit(p);
     error  = Opt::Instance()->GetGlobalFitError(p)*center;
-    
+
+    NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+    if(p==conv::kPhypMixing13 && omp==conv::kNuMixSinsqTheta){ // Use the reactor constrain with sinsq2theta13 (not sinsqtheta13)
+      double current_sinsq2th = 1 - (1-2*current)*(1-2*current);   
+      current = current_sinsq2th;
+      center = conv::kGlobFitSinsq2Theta13;
+      error = conv::kGlobFitErrSinsq2Theta13 * center;
+     }
+
     if (center == -999) {
       std::cerr<<"FitParamList/HypothesisFitStatisticPenalty >> Using zero penalty for parameter "
                << util::RawParamAsString(p) << std::endl;
       continue;
     }
-    
+  
     tweak = (current-center)/error;
     
     chisq += tweak*tweak;
