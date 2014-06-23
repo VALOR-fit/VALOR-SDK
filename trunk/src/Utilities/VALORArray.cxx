@@ -73,6 +73,10 @@ void VALORArray::Construct(int nd, const int * dimensions)
   }
   fArray = new double[fSize];
   
+  for (int i = 0 ; i < 6 ; i++) {
+    fNames[i] = "";
+  }
+  
   this->SetAll(0.);
 }
 //________________________________________________________________________________________
@@ -171,5 +175,17 @@ void VALORArray::SetAll(double value)
   for (int ii = 0 ; ii < fSize ; ii++) {
     fArray[ii] = value;
   }
+}
+//________________________________________________________________________________________
+void VALORArray::SetDimensionName(int dimension, const std::string & name)
+{
+  assert(dimension<fNDim && dimension >= 0);
+  fNames[dimension] = name;
+}
+//________________________________________________________________________________________
+std::string VALORArray::GetDimensionName(int dimension) const
+{
+  assert(dimension<fNDim && dimension >= 0);
+  return fNames[dimension];
 }
 //________________________________________________________________________________________
