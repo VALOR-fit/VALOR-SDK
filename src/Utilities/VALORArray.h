@@ -52,6 +52,9 @@ public:
   
   void SetAll(double value);
   
+  void SetDimensionName(int dimension, const std::string & name);
+  std::string GetDimensionName(int dimension) const;
+  
 private:
   int fNDim;
   int fSize;
@@ -60,11 +63,12 @@ private:
   int * fIncrement;   //[fNDim] Stores number to increment in main array to get +1 in this dimension
   
   double * fArray;    //[fSize] Stores actual contents of array
+  std::string fNames[6]; //Store the dimension names if we need them.
   
   int Address(int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1) const;
   void Construct(int nd, const int * dimensions);
   
-ClassDef(VALORArray, 1)
+ClassDef(VALORArray, 2)
 };
 
 } //valor
