@@ -24,6 +24,8 @@ using std::endl;
 
 ClassImp(VALORArray);
 
+//#define DEBUG_VA_ADDRESS
+
 //________________________________________________________________________________________
 VALORArray::VALORArray() :
   TNamed(),
@@ -111,6 +113,14 @@ int VALORArray::GetSize(int dim) const
 int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
 {
   int indices[6] = {ind1,ind2,ind3,ind4,ind5,ind6};
+
+#ifdef DEBUG_VA_ADDRESS
+  cerr<<this->GetName()<<"\t"<<fNDim<<endl;
+  for (int i = 0 ; i < fNDim; i++) {
+    cerr<<indices[i]<<"\t"<<fDimensions[i]<<endl;
+  }
+#endif
+  
   int address = 0;
   for (int i = 0 ; i < fNDim; i++) {
     assert(indices[i]>=0);
@@ -133,7 +143,8 @@ const double & VALORArray::GetEntryRef(int ind1, int ind2, int ind3, int ind4, i
 //________________________________________________________________________________________
 double VALORArray::GetEntry(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
 {
-  return this->GetEntryRef(ind1, ind2, ind3, ind4, ind5, ind6);
+  int address = this->Address(ind1, ind2, ind3, ind4, ind5, ind6);
+  return fArray[address];
 }
 //________________________________________________________________________________________
 void VALORArray::SetEntry(double value, int ind1, int ind2, int ind3, int ind4, int ind5, int ind6)
