@@ -26,7 +26,10 @@
 namespace valor {
 namespace util {
   // Returns a 1D histogram representing the VALORArray. If array is not 1D, integrates out other dimensions.
-  TH1D Make1DHistogramFromArray(const VALORArray & va, double * bin_edges, int dimension = 0);
+  TH1D Make1DHistogramFromArray(const VALORArray & va, const double * bin_edges, int dimension = 0);
+  
+  // Returns a 1D histogram representing the VALORArray. If array is not 1D, integrates out other dimensions.
+  TH2D Make2DHistogramFromArray(const VALORArray & va, double * const bin_edges_x, const double * bin_edges_y, int dimension_x=0, int dimension_y=1);
 
 } // util
 } // valor
