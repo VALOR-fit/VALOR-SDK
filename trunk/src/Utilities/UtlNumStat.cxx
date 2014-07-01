@@ -42,7 +42,7 @@ ChangeLog:
 #include "Utilities/UtlNumStat.h"
 #include "Utilities/Rnd.h"
 
-#ifdef __GSL_ENABLED__ 
+#ifdef __VALOR_FMWK_GSL_ENABLED__
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_matrix.h>
@@ -552,14 +552,14 @@ int valor::util::Sign(double tweaking_dial)
 }
 //____________________________________________________________________________
 int valor::util::DiagonaliseGSL(
-#ifdef __GSL_ENABLED__ 
+#ifdef __VALOR_FMWK_GSL_ENABLED__
 int ndim, double * matrix_in, double * eigenvectors_out, double * eigenvalues_out
 #else
 int, double *, double *, double *
 #endif
 )
 {
-#ifdef __GSL_ENABLED__ 
+#ifdef __VALOR_FMWK_GSL_ENABLED__
   // Initialise GSL memory structures
   gsl_matrix_complex * matr = gsl_matrix_complex_alloc(ndim,ndim);
   gsl_matrix_complex * eigenvectors = gsl_matrix_complex_alloc(ndim,ndim);

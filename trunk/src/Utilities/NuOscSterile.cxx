@@ -16,14 +16,6 @@
 #include "Conventions/PDG.h"
 #include "Utilities/NuOscSterile.h"
 
-#ifdef __GSL_ENABLED__ 
-#include <gsl/gsl_complex.h>
-#include <gsl/gsl_complex_math.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_eigen.h>
-#endif
-
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -1157,7 +1149,7 @@ double NuOscSterile::CalcMatterOscProb(int nu_start, int nu_end, double energy)
   //Diagonalise UMassUdagger, put eigenvalues into array with same name and enter eigenvectors as  
   //columns of UMatter. 
   //Use complex form of symmetric bidiagonalisation and QR reduction method in GSL.
-#ifdef __GSL_ENABLED__ 
+#ifdef __VALOR_FMWK_GSL_ENABLED__
   util::DiagonaliseGSL(nFlav, &UMassUdagger[0][0][0], &UMatter[0][0][0], &eigenvalues[0]);
 #else
   std::cerr<<"Need GSL"<<std::endl;
@@ -1471,7 +1463,7 @@ void NuOscSterile::CalcMatterOscProbAll(bool isAntineutrino, double energy, doub
   //Diagonalise UMassUdagger, put eigenvalues into array with same name and enter eigenvectors as  
   //columns of UMatter. 
   //Use complex form of symmetric bidiagonalisation and QR reduction method in GSL.
-#ifdef __GSL_ENABLED__ 
+#ifdef __VALOR_FMWK_GSL_ENABLED__
   util::DiagonaliseGSL(nFlav, &UMassUdagger[0][0][0], &UMatter[0][0][0], &eigenvalues[0]);
 #else
   std::cerr<<"Need GSL"<<std::endl;
