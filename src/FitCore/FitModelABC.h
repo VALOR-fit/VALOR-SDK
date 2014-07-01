@@ -19,6 +19,7 @@
 #define _valor_fit_model_abc_h_
 
 #include <string>
+#include <iostream>
 
 #include "Conventions/PhysParamId.h"
 #include "FitCore/PhysHypothesis.h"
@@ -50,7 +51,7 @@ public:
   virtual void TweakSystematic      (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0) = 0; 
   // Additional related methods to reset the systematics and enquire their values.
   virtual void ResetSystematics (void) = 0;  
-  virtual void PrintSystematics (ostream & stream = std::cout) const = 0;
+  virtual void PrintSystematics (std::ostream & stream = std::cout) const = 0;
   virtual PhysParamList Tweaks(void) = 0;
 
   // This is a second interface for generating predictions for a given physics hypothesis and systematics.

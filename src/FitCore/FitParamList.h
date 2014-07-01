@@ -160,9 +160,9 @@ public:
 
    // Print
    //using TNamed::Print; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
-   void Print (ostream & stream) const;
+   void Print (std::ostream & stream) const;
    void Print (Option_t * option = "") const;
-   friend ostream & operator << (ostream & stream, const FitParamList & plst);
+   friend std::ostream & operator << (std::ostream & stream, const FitParamList & plst);
 
    // Methods with an one-off effect in Print()
    void ShowOnlyCurrValuesInNextPrint   (void) const { fShowCurrValuesOnly    = true; }
@@ -274,7 +274,7 @@ private:
 ClassDef(FitParamList,1)
 };
 
-ostream & operator<< (ostream & stream, const FitParamList & plst);
+std::ostream & operator<< (std::ostream & stream, const FitParamList & plst);
 
 } // valor
   
