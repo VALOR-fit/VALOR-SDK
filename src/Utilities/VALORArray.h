@@ -55,17 +55,29 @@ public:
   void SetDimensionName(int dimension, const std::string & name);
   std::string GetDimensionName(int dimension) const;
   
+  // Makes a new array of one fewer dimensions.
+  // By default integrates over the full range in the removed dimension
+  // Can specify min and max bins to get a smaller integrated range or a single bin.
+  VALORArray GetSlice(int dimension, int min_bin = -1, int max_bin = -1) const;
+  
+  int Address(int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1) const;
+  void InverseAddress(int address, int * return_indices) const;
+  
+  double Integral() const;
+  double Integral(int min_dim1     , int max_dim1=-1, int min_dim2=-1, int max_dim2=-1, 
+                  int min_dim3 = -1, int max_dim3=-1, int min_dim4=-1, int max_dim4=-1, 
+                  int min_dim5 = -1, int max_dim5=-1, int min_dim6=-1, int max_dim6=-1 ) const;
+  
 private:
   int fNDim;
   int fSize;
   
-  int * fDimensions ; //[fNDim] Stores size of each dimension
+  int fDimensions[6]; // Stores size of each dimension
   int * fIncrement;   //[fNDim] Stores number to increment in main array to get +1 in this dimension
   
   double * fArray;    //[fSize] Stores actual contents of array
   std::string fNames[6]; //Store the dimension names if we need them.
   
-  int Address(int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1) const;
   void Construct(int nd, const int * dimensions);
   
 ClassDef(VALORArray, 2)
