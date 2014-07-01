@@ -82,7 +82,7 @@ void VALORArray::Construct(int nd, const int * dimensions)
 }
 //________________________________________________________________________________________
 VALORArray::VALORArray(const VALORArray & arr) :
-TNamed(),
+TNamed(arr),
 fNDim(arr.fNDim),
 fSize(arr.fSize)
 {
