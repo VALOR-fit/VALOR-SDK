@@ -17,6 +17,11 @@ ChangeLog:
 
 #include "Utilities/VALORArray.h"
 
+#ifdef __VALOR_FMWK_GSL_ENABLED__
+#include "gsl/gsl_vector.h"
+#include "gsl/gsl_blas.h"
+#endif
+
 using namespace valor;
 using std::vector;
 using std::cout;
@@ -114,6 +119,12 @@ int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int in
   cerr<<this->GetName()<<"\t"<<fNDim<<endl;
   for (int i = 0 ; i < fNDim; i++) {
     cerr<<indices[i]<<"\t"<<fDimensions[i]<<endl;
+  }
+  for (int i = 0 ; i < fNDim; i++) {
+    assert(indices[i]>=0);
+  }
+  for (int i = fNDim ; i < 6 ; i++) {
+    assert(indices[i]==-1);
   }
 #endif
   
@@ -296,5 +307,80 @@ double VALORArray::Integral(int min_dim1 , int max_dim1, int min_dim2, int max_d
   }
   
   return integral;
+}
+//________________________________________________________________________________________
+void VALORArray::Scale(double factor) {
+#ifdef __VALOR_FMWK_GSL_ENABLED__
+  gsl_vector_view v = gsl_vector_view_array(fArray,fSize);
+  gsl_blas_dscal(factor, (&v.vector));
+#else
+  for (int i = 0 ; i < fSize; i++) {
+    fArray[i] *= factor;
+  }
+#endif
+}
+//________________________________________________________________________________________
+void VALORArray::ScaleBins(double factor, int ibin1, int ibin2, int ibin3,
+                                          int ibin4, int ibin5, int ibin6)
+{
+  for (int i1 = 0 ; i1 < fDimensions[0] ; i1++) {
+    if (ibin1>=0 && ibin1 !=i1 ) continue;
+    for (int i2 = 0 ; i2 < fDimensions[1] ; i2++) {
+      if (ibin2>=0 && ibin2 !=i2 ) continue;
+      for (int i3 = 0 ; i3 < fDimensions[2] ; i3++) {
+        if (ibin3>=0 && ibin3 !=i3 ) continue;
+        for (int i4 = 0 ; i4 < fDimensions[3] ; i4++) {
+          if (ibin4>=0 && ibin4 !=i4 ) continue;
+          for (int i5 = 0 ; i5 < fDimensions[4] ; i5++) {
+            if (ibin5>=0 && ibin5 !=i5 ) continue;
+            for (int i6 = 0 ; i6 < fDimensions[5] ; i6++) {
+              if (ibin6>=0 && ibin6 !=i6 ) continue;
+              int address = fIncrement[0]*i1+
+                            fIncrement[1]*i2+
+                            fIncrement[2]*i3+
+                            fIncrement[3]*i4+
+                            fIncrement[4]*i5+
+                            fIncrement[5]*i6 ;
+              fArray[address]*=factor;
+            }
+          }
+        }
+      }
+    }
+  }
+  return;
+}
+//________________________________________________________________________________________
+void VALORArray::ScaleBinRange(double factor,
+                               int min_dim1 , int max_dim1, int min_dim2, int max_dim2, 
+                               int min_dim3 , int max_dim3, int min_dim4, int max_dim4, 
+                               int min_dim5 , int max_dim5, int min_dim6, int max_dim6 )
+{
+  min_dim1 = (min_dim1<0 ? 0 : min_dim1) ; max_dim1 = (max_dim1<0 ? fDimensions[0]-1 : max_dim1) ;
+  min_dim2 = (min_dim2<0 ? 0 : min_dim2) ; max_dim2 = (max_dim2<0 ? fDimensions[1]-1 : max_dim2) ;
+  min_dim3 = (min_dim3<0 ? 0 : min_dim3) ; max_dim3 = (max_dim3<0 ? fDimensions[2]-1 : max_dim3) ;
+  min_dim4 = (min_dim4<0 ? 0 : min_dim4) ; max_dim4 = (max_dim4<0 ? fDimensions[3]-1 : max_dim4) ;
+  min_dim5 = (min_dim5<0 ? 0 : min_dim5) ; max_dim5 = (max_dim5<0 ? fDimensions[4]-1 : max_dim5) ;
+  min_dim6 = (min_dim6<0 ? 0 : min_dim6) ; max_dim6 = (max_dim6<0 ? fDimensions[5]-1 : max_dim6) ;
+  
+  for (int i1 = min_dim1 ; i1 <= max_dim1 ; i1++) {
+    for (int i2 = min_dim2 ; i2 <= max_dim2 ; i2++) {
+      for (int i3 = min_dim3 ; i3 <= max_dim3 ; i3++) {
+        for (int i4 = min_dim4 ; i4 <= max_dim4 ; i4++) {
+          for (int i5 = min_dim5 ; i5 <= max_dim5 ; i5++) {
+            for (int i6 = min_dim6 ; i6 <= max_dim6 ; i6++) {
+              int address = fIncrement[0]*i1+
+                            fIncrement[1]*i2+
+                            fIncrement[2]*i3+
+                            fIncrement[3]*i4+
+                            fIncrement[4]*i5+
+                            fIncrement[5]*i6 ;
+              fArray[address]*=factor;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 //________________________________________________________________________________________
