@@ -271,7 +271,7 @@ VALORArray VALORArray::GetSlice(int dimension, int min_bin, int max_bin) const
 //________________________________________________________________________________________
 double VALORArray::Integral() const
 {
-  return std::accumulate(fArray,fArray+fSize, 0);
+  return std::accumulate(fArray,fArray+fSize, 0.);
 }
 //________________________________________________________________________________________
 double VALORArray::Integral(int min_dim1 , int max_dim1, int min_dim2, int max_dim2, 
