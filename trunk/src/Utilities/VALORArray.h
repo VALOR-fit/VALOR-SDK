@@ -19,6 +19,8 @@
 #include <TNamed.h>
 #include <vector>
 
+#include "Conventions/Build.h"
+
 namespace valor {
 
 class VALORArray: public TNamed
@@ -67,6 +69,15 @@ public:
   double Integral(int min_dim1     , int max_dim1=-1, int min_dim2=-1, int max_dim2=-1, 
                   int min_dim3 = -1, int max_dim3=-1, int min_dim4=-1, int max_dim4=-1, 
                   int min_dim5 = -1, int max_dim5=-1, int min_dim6=-1, int max_dim6=-1 ) const;
+                  
+  void Scale(double factor); // Scales every bin by factor.
+  void ScaleBins(double factor,                              // Scales specific bin given. If -1 is given for a dimension, scale all bins in that dimension.
+                 int bin1 = -1, int bin2 =-1, int bin3 =-1, 
+                 int bin4 = -1, int bin5 =-1, int bin6 =-1);
+  void ScaleBinRange (double factor, // Scales bins in range. If -1 given for min, work from 0. If -1 given for max, work from max.
+                      int min_dim1     , int max_dim1=-1, int min_dim2=-1, int max_dim2=-1, 
+                      int min_dim3 = -1, int max_dim3=-1, int min_dim4=-1, int max_dim4=-1, 
+                      int min_dim5 = -1, int max_dim5=-1, int min_dim6=-1, int max_dim6=-1 );
   
 private:
   int fNDim;
