@@ -12,6 +12,7 @@ ChangeLog:
 #include <cassert>
 
 #include "Utilities/Rnd.h"
+#include "Messenger/Messenger.h"
 //#include "Build.h"
 
 using std::cerr;
@@ -77,6 +78,14 @@ void Rnd::SetSeeds(
   fSeedFitter    = ( fitter    ? fitter    : randseeds[3] );
   fSeedOther     = ( other     ? other     : randseeds[4] );
 #endif
+
+  LOG("Rnd", pDEBUG)
+    << "** Setting seeds to random number generators:"
+    << "\n   Generator [toyMC stat] --> " << fSeedToyMCstat
+    << "\n   Generator [toyMC syst] --> " << fSeedToyMCsyst
+    << "\n   Generator [toyMC osc ] --> " << fSeedToyMCosc
+    << "\n   Generator [fitter    ] --> " << fSeedFitter
+    << "\n   Generator [other     ] --> " << fSeedOther;
 
   fRndToyMCstat . SetSeed(fSeedToyMCstat);
   fRndToyMCsyst . SetSeed(fSeedToyMCsyst);
