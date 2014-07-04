@@ -31,6 +31,7 @@ using std::endl;
 ClassImp(VALORArray);
 
 //#define DEBUG_VA_ADDRESS
+//#define VALORARRAY_USE_GSL
 
 //________________________________________________________________________________________
 VALORArray::VALORArray() :
@@ -130,7 +131,7 @@ int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int in
   
   int address = 0;
   for (int i = 0 ; i < fNDim; i++) {
-    assert(indices[i]>=0);
+    assert(indices[i]>=0 && indices[i] < fDimensions[i]);
     address += indices[i] * fIncrement[i];
   }
   return address;
@@ -310,7 +311,7 @@ double VALORArray::Integral(int min_dim1 , int max_dim1, int min_dim2, int max_d
 }
 //________________________________________________________________________________________
 void VALORArray::Scale(double factor) {
-#ifdef __VALOR_FMWK_GSL_ENABLED__
+#if defined(__VALOR_FMWK_GSL_ENABLED__) && defined(VALORARRAY_USE_GSL)
   gsl_vector_view v = gsl_vector_view_array(fArray,fSize);
   gsl_blas_dscal(factor, (&v.vector));
 #else
