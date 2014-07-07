@@ -26,32 +26,56 @@ namespace conv   {
 
 // Dm^2 global fit results
 // Updated to 2012 PDG + reactors
-static const double kGlobFitDm23sq           = 2.4E-3;
+
+static const double kGlobFitDm23sq           = 2.4E-3; // old
+//static const double kGlobFitDm23sq           = 2.32E-3; 
+
 static const double kGlobFitDmsqFL           = 2.36E-3;
-static const double kGlobFitDm12sq           = 7.5E-5;
+
+static const double kGlobFitDm12sq           = 7.5E-5; // old
+//static const double kGlobFitDm12sq           = 7.58E-5;
+
 static const double kGlobFitErrDm23sq        = 0.04; // ~4%
 static const double kGlobFitErrDm12sq        = 0.027; // ~2.7%
 // deltacp global fit results
 static const double kGlobFitDeltaCP          = 0.0;
 static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
+
 // sinsq2theta global fit results
 static const double kGlobFitSinsq2Theta23    = 1.00;
- static const double kGlobFitSinsq2Theta13    = 0.084;  // Daya Bay Neutrino 2014 //0.098;
+
+static const double kGlobFitSinsq2Theta13    = 0.084;  // Daya Bay Neutrino 2014 //0.098;
+//static const double kGlobFitSinsq2Theta13    = 0.098;  // old (PDG 2012)   
+//static const double kGlobFitSinsq2Theta13    = 0.095;  // old (PDG 2013)
+
 static const double kGlobFitSinsq2Theta12    = 0.8495; //fogli2011
 //static const double kGlobFitSinsq2Theta12    = 0.857; //pdg2012
 static const double kGlobFitErrSinsq2Theta23 = 0.05;  // ~5%
 static const double kGlobFitErrSinsq2Theta12 = 0.031; // ~3.1% fogli2011
 //static const double kGlobFitErrSinsq2Theta12 = 0.028; // ~2.8% pdg2012
- static const double kGlobFitErrSinsq2Theta13 = 0.059;  // Daya Bay Neutrino 2014 // 0.133; // ~13.3%
+
+static const double kGlobFitErrSinsq2Theta13 = 0.059;  // Daya Bay Neutrino 2014 
+//static const double kGlobFitErrSinsq2Theta13 = 0.133;  // ~13.3%    // old (PDG 2012)
+// static const double kGlobFitErrSinsq2Theta13 = 0.105; // ~10.5% (PDG 2013)
+
 // sinsqtheta global fit results
-static const double kGlobFitSinsqTheta23    = 0.50;
- static const double kGlobFitSinsqTheta13   = 0.02146; // Daya Bay Neutrino 2014  //0.0251;
+static const double kGlobFitSinsqTheta23    = 0.50; // old
+//static const double kGlobFitSinsqTheta23    = 0.513;
+
+static const double kGlobFitSinsqTheta13   = 0.02146; // Daya Bay Neutrino 2014  //0.0251;
+//static const double kGlobFitSinsqTheta13   = 0.0251; // old (PDG 2012)
+// static const double kGlobFitSinsqTheta13   = 0.0243; // (PDG 2013)
+
 static const double kGlobFitSinsqTheta12    = 0.306; //fogli2011
 //static const double kGlobFitSinsqTheta12    = 0.311; //pdg2012
+
 static const double kGlobFitErrSinsqTheta23 = 0.06;  // ~26% (1 sigma range)
 static const double kGlobFitErrSinsqTheta12 = 0.059;  // ~5.9% fogli2011
 //static const double kGlobFitErrSinsqTheta12 = 0.053;  // ~5.3% pdg2012
- static const double kGlobFitErrSinsqTheta13 = 0.059; // Daya Bay Neutrino 2014 //0.139;  // ~13.9%
+
+static const double kGlobFitErrSinsqTheta13 = 0.059; // Daya Bay Neutrino 2014 //0.139;  // ~13.9%
+// static const double kGlobFitErrSinsqTheta13 = 0.139; // ~13.9% // old (PDG 2012)
+// static const double kGlobFitErrSinsqTheta13 = 0.105; // ~10.5% (PDG 2013)
 
 // projected future errors
 //atmos params unknown
@@ -103,6 +127,13 @@ static const double kInitFitSinsqTheta12     = kGlobFitSinsqTheta12;
 static const double kMinFitSinsqTheta12      = 0.00;
 static const double kMaxFitSinsqTheta12      = 1.00;
 static const double kStepSinsqTheta12        = 1.0E-2;
+/* ////////////////////////////////////////////////////////////////////// */
+/* // DeltaCP fitter init values and range and step */
+/* static const double kInitFitDeltaCP           = 0; */
+/* static const double kMinFitDeltaCP            = - 4.71238898038468967; */
+/* static const double kMaxFitDeltaCP            = + 4.71238898038468967; */
+/* static const double kStepDeltaCP              = 1.0E-2; */
+/* ////////////////////////////////////////////////////////////////////// */
 
 // Sterile fitter init values and range.
 static const double kInitFitSinsqTheta14     = 0.00;
