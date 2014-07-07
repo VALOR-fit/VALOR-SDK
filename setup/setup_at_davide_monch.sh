@@ -10,7 +10,7 @@ export VALOR_FMWK=$1
 #export ROOTSYS=/hep/root/v5.32.01/
 #export ROOTSYS=/Users/davidesgalaberna/root/
 
-ROOTwork
+ROOTwork_nd280
 
 export LIBLOG4CPP=/users/davides/mylib/lib
 
