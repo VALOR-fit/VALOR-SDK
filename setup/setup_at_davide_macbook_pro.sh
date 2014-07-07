@@ -7,7 +7,8 @@
 # If no argument given, just use the directory containing the script
 #
 
-ROOTwork_nd280
+#ROOTwork_nd280
+ROOTwork_mac
 
 export VALOR_FMWK=$1
 
