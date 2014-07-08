@@ -122,6 +122,9 @@ public:
    // Set as nuisance parameter (contributes to \chi^{2}_{penalty})
    void SetNuisance (valor::conv::PhysParamId_t p, bool tf);
 
+   // Create a new fit parameter list that includes only the free parameters of the original list
+   FitParamList * FreeParameterSubset(void);
+
    // Set parameter list to input TVirtualFitter 
    void SetTo (TVirtualFitter * fitter);
    void SetTo (ROOT::Minuit2::MnUserParameters & params);

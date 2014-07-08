@@ -253,6 +253,28 @@ void FitParamList::SetNuisance(PhysParamId_t p, bool tf)
   fIsNuisance [this->Id(p)] = tf;
 }
 //________________________________________________________________________________________
+FitParamList * FitParamList::FreeParameterSubset(void)
+{
+  int nfree = this->GetNumberFreeParameters();
+
+  FitParamList * fparm = new FitParamList(nfree);
+
+  int ipc = 0;
+  for(int ip = 0; ip < fNParams; ip++) {
+    if(fIsFixed[ip]) continue;
+    PhysParamId_t p = this->WhichParam(ip);
+    double init = fInitValue[ip];
+    double min  = fMinValue[ip];
+    double max  = fMaxValue[ip];
+    double step = fStepSize[ip];
+    bool   nuis = fIsNuisance[ip];
+    fparm->AddParam(ipc, p, init, min, max, step, false, nuis);
+    ipc++;
+  }
+
+  return fparm;
+}
+//________________________________________________________________________________________
 void FitParamList::SetTo(TVirtualFitter * fitter)
 {
   if(!fitter) return;
