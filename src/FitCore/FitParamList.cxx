@@ -1286,6 +1286,23 @@ void FitParamList::Init(int nparams)
      fMinusError   = 0;
      fCovMatrix    = 0;
    }
+   
+   for (int i = 0 ; i < fNParams ; i++) {
+     fName         [i].SetString("Uninitialised");
+     fBestFitValue [i] = 0;
+     fCurrValue    [i] = 0;
+     fInitValue    [i] = 0;
+     fMinValue     [i] = 0;
+     fMaxValue     [i] = 0;
+     fStepSize     [i] = 0;
+     fIsFixed      [i] = 0;
+     fIsNuisance   [i] = 0;
+     fMigradError  [i] = 0;
+     fHesseError   [i] = 0;
+     fPlusError    [i] = 0;
+     fMinusError   [i] = 0;
+   }
+     
 
    fShowCurrValuesOnly    = false;
    fShowBestFitValuesOnly = false;
