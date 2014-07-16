@@ -687,21 +687,16 @@ ROOT::Math::BasicFitMethodFunction<ROOT::Math::IBaseFunctionMultiDim>::Type_t Fi
 }
 
 
-double  FitMethodFunc::DataElement(const double *par, unsigned int ipoint, double * /* g */) const 
+double  FitMethodFunc::DataElement(const double *par, unsigned int /*ipoint*/, double * /* g */) const 
 {
   fFitInputs->FitParams().Sync(par);
   double chisqbin = 0;
-  //Todo: make this work when both __FHC_RUNNING__ and __RHC_RUNNING__ are defined.
-#ifdef __FHC_RUNNING__
-  if (ipoint < (unsigned int) conv::kNErecoBins1Rmu) chisqbin = fFitInputs->Chisquare("poisson",conv::kSKsFCFV1RingMuLike,ipoint); 
-  else chisqbin = fFitInputs->Chisquare("poisson",conv::kSKsFCFV1RingELike,ipoint-conv::kNErecoBins1Rmu); 
-#endif
-#ifdef __RHC_RUNNING__
-  if (ipoint < (unsigned int) conv::kRHCNErecoBins1Rmu) chisqbin = fFitInputs->Chisquare("poisson",conv::kSKsRHCFCFV1RingMuLike,ipoint);
-  else chisqbin = fFitInputs->Chisquare("poisson",conv::kSKsRHCFCFV1RingELike,ipoint-conv::kRHCNErecoBins1Rmu);
-#endif
-  //  if (g!=0) ;
-  //  cout << "DataElement: chisqbin = " << chisqbin << " for point = " << ipoint << endl;
+  assert(!"FitMethodFunc::DataElement not implemented yet");
+  //Todo: Implement
+//#ifdef __FHC_RUNNING__
+//  if (ipoint < (unsigned int) conv::kNErecoBins1Rmu) chisqbin = fFitInputs->Chisquare("poisson",conv::kSKsFCFV1RingMuLike,ipoint); 
+//  else chisqbin = fFitInputs->Chisquare("poisson",conv::kSKsFCFV1RingELike,ipoint-conv::kNErecoBins1Rmu); 
+//#endif
   return chisqbin;
 }
 //____________________________________________________________________________
