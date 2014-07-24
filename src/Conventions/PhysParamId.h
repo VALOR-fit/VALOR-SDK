@@ -287,7 +287,11 @@ typedef enum EPhysParamId
   kNuis217 ,
   kNuis218 ,
   kNuis219 ,
-  kNuis220 
+  kNuis220 ,
+  
+  
+  
+  kLastNuisParam
 
 }
 PhysParamId_t;

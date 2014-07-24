@@ -173,7 +173,7 @@ string util::RawParamAsString(PhysParamId_t p)
 
   }//switch
   
-  if (p >= kNuis000 && p<= kNuis200) {
+  if (p >= kNuis000 && p< kLastNuisParam) {
     string out(Form("nuis%03d",p-kNuis000));
     return out;
   }
