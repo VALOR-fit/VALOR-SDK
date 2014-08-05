@@ -72,7 +72,12 @@ FitParamList::~FitParamList()
 bool FitParamList::AddParam (int ip, PhysParamId_t p, 
   double init, double min, double max, double step, bool fix, bool nuis, string name)
 {
-  if(ip < 0 || ip >= fNParams) return false;
+  if (ip < 0 || ip >= fNParams) {
+    this->Print();
+    cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::RawParamAsString(p) <<" ("<<name
+             <<") to slot "<<ip<<" (max params "<<fNParams<<") "<<endl;
+    exit(-1);
+  }
 
   fIdMap.insert(map<PhysParamId_t, int>::value_type(p,ip));
 
@@ -806,15 +811,6 @@ FitParamList * FitParamList::NuOsc3FlavourFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
-//~ FitParamList * FitParamList::NuOsc3FlavourFitWithAllSyst(void)
-//~ {
-  //~ FitParamList * fparm = new FitParamList(6+kNumOfNuisanceParams); 
-  //~ FitParamList::Append3FlavourOscillation(fparm, 0);
-  //~ // add nuisance params
-//~ 
-  //~ return fparm;
-//~ }
-//________________________________________________________________________________________
 FitParamList * FitParamList::NuOscSterile4FlavourFit(int nuisance)
 {
   FitParamList * fparm = new FitParamList(12+nuisance);
@@ -823,30 +819,12 @@ FitParamList * FitParamList::NuOscSterile4FlavourFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
-//~ FitParamList * FitParamList::NuOscSterile4FlavourFitWithAllSyst(void)
-//~ {
-  //~ FitParamList * fparm = new FitParamList(12+kNumOfNuisanceParams); 
-  //~ FitParamList::Append4FlavourSterileOscillation(fparm, 0);
-  //~ // add nuisance params
-//~ 
-  //~ return fparm;
-//~ }
-//________________________________________________________________________________________
 FitParamList * FitParamList::NuOscSterile5FlavourFit(int nuisance)
 {
   FitParamList * fparm = new FitParamList(18+nuisance);
   FitParamList::Append4FlavourSterileOscillation(fparm, 0);
   return fparm;
 }
-//________________________________________________________________________________________
-//~ FitParamList * FitParamList::NuOscSterile5FlavourFitWithAllSyst(void)
-//~ {
-  //~ FitParamList * fparm = new FitParamList(18+kNumOfNuisanceParams); 
-  //~ FitParamList::Append4FlavourSterileOscillation(fparm, 0);
-  //~ // add nuisance params
-//~ 
-  //~ return fparm;
-//~ }
 //________________________________________________________________________________________
 FitParamList * FitParamList::NumuDisapFit(int nuisance)
 {
@@ -855,14 +833,6 @@ FitParamList * FitParamList::NumuDisapFit(int nuisance)
 
   return fparm;
 }
-//________________________________________________________________________________________
-//~ FitParamList * FitParamList::NumuDisapFitWithAllSyst(void)
-//~ {
-  //~ FitParamList * fparm = new FitParamList(2+kNumOfNuisanceParams);
-  //~ // add nuisance params
-//~ 
-  //~ return fparm;
-//~ }
 //________________________________________________________________________________________
 FitParamList * FitParamList::NumuDecayFit(int nuisance)
 {
@@ -1407,7 +1377,7 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
 
     if (center == -999) {
       std::cerr<<"FitParamList/HypothesisFitStatisticPenalty >> Using zero penalty for parameter "
-               << util::RawParamAsString(p) << std::endl;
+               << fName[ip].GetString() << std::endl;
       continue;
     }
   
