@@ -2175,3 +2175,443 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
   return oscProb;
 }
 //________________________________________________________________________________________
+ void NuOsc3Flavour::CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs[3][3])
+{
+// This method calculates the 3-flavour oscillation probabilities in constant 
+// density matter.
+// The neutrino codes are the PDG ones and the neutrino energy is in GeV.
+//
+
+  // The mass squared matrix has diagonal elements 0, dmsq12, dmsq13; 
+  // all off-diagonal elements are zero.
+  // UMassUdagger is the product of the PMNS matrix, the mass squared matrix, 
+  // and the dagger of the PMNS matrix.
+  double UMassUdagger[3][3][2];
+  for(int i=0; i<3; i++)
+  {
+    for(int j=0; j<3; j++)
+    {    
+      UMassUdagger[i][j][re] = UMassUdaggerVacuum[i][j][re];
+      if( !isAntineutrino )
+      {
+        UMassUdagger[i][j][im] = UMassUdaggerVacuum[i][j][im]; 
+      }
+      else 
+      {
+        UMassUdagger[i][j][im] = -UMassUdaggerVacuum[i][j][im];
+      }
+    }//j
+  }//i
+
+  // Add potential due to constant density matter to first diagonal element of UMassUdagger.
+  // The factor of 1.0e9 is to convert the energy from GeV to eV.
+  if( !isAntineutrino )
+  {
+    UMassUdagger[0][0][re] = UMassUdaggerVacuum[0][0][re] + 2.0*1.0e9*energy*sqrt(2.0)*kGF_SI*fNe;
+  }
+  else 
+  {
+    UMassUdagger[0][0][re] = UMassUdaggerVacuum[0][0][re] - 2.0*1.0e9*energy*sqrt(2.0)*kGF_SI*fNe;
+  }
+
+  // Calculate the eigenvalues of UMassUdagger by solving the characteristic equation, which is a cubic.
+  // Use the method of del Ferro, Tartaglia and Cardano as described in Kopp (arXiv:physics/0610206, section 3.1).
+  double modUMassUdaggersq[3][3];
+  for(int i=0; i<3; i++)
+    {
+      for(int j=0; j<3; j++)
+        {
+            modUMassUdaggersq[i][j] = UMassUdagger[i][j][re] * UMassUdagger[i][j][re]
+                                    + UMassUdagger[i][j][im] * UMassUdagger[i][j][im];
+        }
+    }
+
+  // Equations 22-24 in Kopp
+  double c0[2];
+  c0[re] = UMassUdagger[0][0][re] * modUMassUdaggersq[1][2] + UMassUdagger[1][1][re] * modUMassUdaggersq[0][2]
+         + UMassUdagger[2][2][re] * modUMassUdaggersq[0][1] 
+         - (UMassUdagger[0][0][re] * UMassUdagger[1][1][re] * UMassUdagger[2][2][re]
+         - UMassUdagger[0][0][im] * UMassUdagger[1][1][im] * UMassUdagger[2][2][re]
+         - UMassUdagger[0][0][re] * UMassUdagger[1][1][im] * UMassUdagger[2][2][im]
+         - UMassUdagger[0][0][im] * UMassUdagger[1][1][re] * UMassUdagger[2][2][im])
+         - 2.0 * (UMassUdagger[0][2][re] * UMassUdagger[0][1][re] * UMassUdagger[1][2][re]
+         + UMassUdagger[0][2][im] * UMassUdagger[0][1][im] * UMassUdagger[1][2][re]
+         - UMassUdagger[0][2][re] * UMassUdagger[0][1][im] * UMassUdagger[1][2][im]
+         + UMassUdagger[0][2][im] * UMassUdagger[0][1][re] * UMassUdagger[1][2][im]);
+  c0[im] = UMassUdagger[0][0][im] * modUMassUdaggersq[1][2] + UMassUdagger[1][1][im] * modUMassUdaggersq[0][2]
+         + UMassUdagger[2][2][im] * modUMassUdaggersq[0][1] 
+         - (UMassUdagger[0][0][re] * UMassUdagger[1][1][re] * UMassUdagger[2][2][im]
+         - UMassUdagger[0][0][im] * UMassUdagger[1][1][im] * UMassUdagger[2][2][im]
+         + UMassUdagger[0][0][re] * UMassUdagger[1][1][im] * UMassUdagger[2][2][re]
+         + UMassUdagger[0][0][im] * UMassUdagger[1][1][re] * UMassUdagger[2][2][re]);
+
+  double c1[2];
+  c1[re] = UMassUdagger[0][0][re] * UMassUdagger[1][1][re] - UMassUdagger[0][0][im] * UMassUdagger[1][1][im]
+         + UMassUdagger[0][0][re] * UMassUdagger[2][2][re] - UMassUdagger[0][0][im] * UMassUdagger[2][2][im]
+         + UMassUdagger[1][1][re] * UMassUdagger[2][2][re] - UMassUdagger[1][1][im] * UMassUdagger[2][2][im]
+         - modUMassUdaggersq[0][1] - modUMassUdaggersq[0][2] - modUMassUdaggersq[1][2]; 
+  c1[im] = UMassUdagger[0][0][re] * UMassUdagger[1][1][im] + UMassUdagger[0][0][im] * UMassUdagger[1][1][re]
+         + UMassUdagger[0][0][re] * UMassUdagger[2][2][im] + UMassUdagger[0][0][im] * UMassUdagger[2][2][re]
+         + UMassUdagger[1][1][re] * UMassUdagger[2][2][im] + UMassUdagger[1][1][im] * UMassUdagger[2][2][re];
+
+  double c2[2];
+  c2[re] = -UMassUdagger[0][0][re] - UMassUdagger[1][1][re] - UMassUdagger[2][2][re];
+  c2[im] = -UMassUdagger[0][0][im] - UMassUdagger[1][1][im] - UMassUdagger[2][2][im];
+
+  // c0, c1 and c2 are always real, and their values are unaffected by the value of deltaCP.
+  // Equations 26-27 in Kopp.
+  double p = c2[re]*c2[re] - 3.0*c1[re];
+  double q = -0.5*27.0*c0[re] - c2[re]*c2[re]*c2[re] + 0.5*9.0*c2[re]*c1[re];
+  
+  // Equation 32 in Kopp.
+  double phi = atan2(sqrt(27.0 * (0.25*c1[re]*c1[re]*(p - c1[re]) + c0[re]*(q + (27.0/4.0)*c0[re]))), q) / 3.0;
+
+  double eigenvalues[3];
+
+  // Equations 33-34 in Kopp.
+  // The eigenvalues of a Hermitian matrix are always real.
+  if(dmsq23 > 0)
+  {
+      eigenvalues[0] = (sqrt(p) * 2.0 * cos(phi + 2.0*3.1415927/3.0)) / 3.0 - c2[re] / 3.0;
+      eigenvalues[1] = (sqrt(p) * 2.0 * cos(phi - 2.0*3.1415927/3.0)) / 3.0 - c2[re] / 3.0;
+      eigenvalues[2] = (sqrt(p) * 2.0 * cos(phi)) / 3.0 - c2[re] / 3.0;
+  }
+  else
+  {
+      eigenvalues[0] = (sqrt(p) * 2.0 * cos(phi - 2.0*3.1415927/3.0)) / 3.0 - c2[re] / 3.0;
+      eigenvalues[1] = (sqrt(p) * 2.0 * cos(phi)) / 3.0 - c2[re] / 3.0;
+      eigenvalues[2] = (sqrt(p) * 2.0 * cos(phi + 2.0*3.1415927/3.0)) / 3.0 - c2[re] / 3.0;
+  }
+
+#ifdef __show_warning__
+  // Check that the sum of the eigenvalues is equal to the trace of the matrix
+  double eigenvalueSum = eigenvalues[0] + eigenvalues[1] + eigenvalues[2];
+  double trace = UMassUdagger[0][0][re] + UMassUdagger[1][1][re] + UMassUdagger[2][2][re];
+
+  if(fabs((eigenvalueSum - trace) / trace) > 1.0e-4) 
+  {
+    cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : fractional difference between sum of eigenvalues and trace of matrix = "
+         << fabs((eigenvalueSum - trace) / trace) << "." << endl;
+  }
+#endif //__show_warning__
+
+
+  double UMassUdaggerMinusEv[3][3][2];
+  for(int i=0; i<3; i++)
+  {
+    for(int j=0; j<3; j++)
+    {
+      for(int k=0; k<2; k++)
+      {
+         UMassUdaggerMinusEv[i][j][k] = UMassUdagger[i][j][k];
+      }//k
+    }//j
+  }//i
+
+  double UMatter[3][3][2];
+  double normalisation;
+#ifdef __show_warning__
+  double eigenvectorCheck[3][2];
+  for(int i=0; i<3; i++)
+  {
+    for(int j=0; j<2; j++)
+    {
+      eigenvectorCheck[i][j] = 0.0;
+    }//j     
+  }//i
+#endif //__show_warning__
+
+  double numerator1[2];
+  double numerator3[2];
+  double denominator[2];
+
+  for(int i=0; i<3; i++)
+  {
+    // UMassUdaggerMinusEv is UMassUdagger with the eigenvalue subtracted from all diagonal real elements
+    for(int j=0; j<3; j++) {
+      UMassUdaggerMinusEv[j][j][re] = UMassUdagger[j][j][re] - eigenvalues[i];
+    }
+
+    // Calculate the complex eigenvectors of UMassUdagger using an algebraic method.
+    // Take the second component of each eigenvector to be 1.0 (real).
+    // Calculate the first and third components in terms of the second component.
+    // This calculation uses the Hermitian nature of UMassUdagger 
+    if(useEquations12)
+      {  
+      //this version calculates the eigenvectors using the first and second simultaneous equations 
+      numerator1[re] = UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[0][2][re]
+                     - UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[0][2][im]
+                     - (UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[0][1][re]
+                     - UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[0][1][im]);
+      numerator1[im] = UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[0][2][im]
+                     + UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[0][2][re]
+                     - (UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[0][1][im]
+                     + UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[0][1][re]);
+      numerator3[re] = UMassUdaggerMinusEv[0][1][re] * UMassUdaggerMinusEv[0][1][re]
+                     + UMassUdaggerMinusEv[0][1][im] * UMassUdaggerMinusEv[0][1][im]
+                     - (UMassUdaggerMinusEv[0][0][re] * UMassUdaggerMinusEv[1][1][re]
+                     - UMassUdaggerMinusEv[0][0][im] * UMassUdaggerMinusEv[1][1][im]);
+      numerator3[im] = -(UMassUdaggerMinusEv[0][0][re] * UMassUdaggerMinusEv[1][1][im]
+                     + UMassUdaggerMinusEv[0][0][im] * UMassUdaggerMinusEv[1][1][re]);
+      denominator[re] = UMassUdaggerMinusEv[0][0][re] * UMassUdaggerMinusEv[1][2][re]
+                      - UMassUdaggerMinusEv[0][0][im] * UMassUdaggerMinusEv[1][2][im]
+                      - (UMassUdaggerMinusEv[0][2][re] * UMassUdaggerMinusEv[0][1][re]
+                      + UMassUdaggerMinusEv[0][2][im] * UMassUdaggerMinusEv[0][1][im]);
+      denominator[im] = UMassUdaggerMinusEv[0][0][re] * UMassUdaggerMinusEv[1][2][im]
+                      + UMassUdaggerMinusEv[0][0][im] * UMassUdaggerMinusEv[1][2][re]
+                      - (-UMassUdaggerMinusEv[0][2][re] * UMassUdaggerMinusEv[0][1][im]
+                      + UMassUdaggerMinusEv[0][2][im] * UMassUdaggerMinusEv[0][1][re]);
+      }
+    else
+      {
+      //this version calculates the eigenvectors using the second and third simultaneous equations
+      numerator1[re] = UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[2][2][re]
+                     - UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[2][2][im]
+                     - (UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[1][2][re]
+                     + UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[1][2][im]);
+      numerator1[im] = UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[2][2][im]
+                     + UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[2][2][re];
+      numerator3[re] = UMassUdaggerMinusEv[0][1][re] * UMassUdaggerMinusEv[1][2][re]
+                     - UMassUdaggerMinusEv[0][1][im] * UMassUdaggerMinusEv[1][2][im]
+                     - (UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[0][2][re]
+                     + UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[0][2][im]);
+      numerator3[im] = -UMassUdaggerMinusEv[0][1][re] * UMassUdaggerMinusEv[1][2][im]               
+                     - UMassUdaggerMinusEv[0][1][im] * UMassUdaggerMinusEv[1][2][re]
+                     - (-UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[0][2][im]
+                     + UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[0][2][re]);
+      denominator[re] = UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[0][2][re]
+                      + UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[0][2][im]
+                      - (UMassUdaggerMinusEv[2][2][re] * UMassUdaggerMinusEv[0][1][re]
+                      + UMassUdaggerMinusEv[2][2][im] * UMassUdaggerMinusEv[0][1][im]);
+      denominator[im] = -UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[0][2][im]
+                      + UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[0][2][re]
+                      - (-UMassUdaggerMinusEv[2][2][re] * UMassUdaggerMinusEv[0][1][im]
+                      + UMassUdaggerMinusEv[2][2][im] * UMassUdaggerMinusEv[0][1][re]);
+      }
+
+    // The columns of UMatter are the eigenvectors of UMassUdagger
+    UMatter[0][i][re] = (numerator1[re]  * denominator[re] + numerator1[im]  * denominator[im])
+                      / (denominator[re] * denominator[re] + denominator[im] * denominator[im]); 
+    UMatter[0][i][im] = (-numerator1[re] * denominator[im] + numerator1[im]  * denominator[re])
+                      / (denominator[re] * denominator[re] + denominator[im] * denominator[im]);
+    UMatter[1][i][re] = 1.0;
+    UMatter[1][i][im] = 0.0;
+    UMatter[2][i][re] = (numerator3[re]  * denominator[re] + numerator3[im]  * denominator[im])
+                      / (denominator[re] * denominator[re] + denominator[im] * denominator[im]);
+    UMatter[2][i][im] = (-numerator3[re] * denominator[im] + numerator3[im]  * denominator[re])
+                      / (denominator[re] * denominator[re] + denominator[im] * denominator[im]);
+
+    // Now normalise the eigenvector to unit length 
+    normalisation = sqrt(UMatter[0][i][re] * UMatter[0][i][re] + UMatter[0][i][im] * UMatter[0][i][im]
+                       + UMatter[1][i][re] * UMatter[1][i][re] + UMatter[1][i][im] * UMatter[1][i][im]  
+                       + UMatter[2][i][re] * UMatter[2][i][re] + UMatter[2][i][im] * UMatter[2][i][im]);
+    for(int k=0; k<3; k++)
+    {
+       UMatter[k][i][re] = UMatter[k][i][re] / normalisation;
+       UMatter[k][i][im] = UMatter[k][i][im] / normalisation;
+    }
+  
+#ifdef __show_warning__
+    // Check the eigenvector is correct.
+    // Multiplying any row of UMassUdaggerMinusEv by the column eigenvector should give zero   
+    for(int m=0; m<3; m++)
+    {
+      eigenvectorCheck[i][re] += UMassUdaggerMinusEv[i][m][re] * UMatter[m][i][re]
+                              - UMassUdaggerMinusEv[i][m][im] * UMatter[m][i][im];
+      eigenvectorCheck[i][im] += UMassUdaggerMinusEv[i][m][re] * UMatter[m][i][im]
+                              + UMassUdaggerMinusEv[i][m][im] * UMatter[m][i][re];
+    }
+#endif //__show_warning__
+
+ }//end of for(int i=0; i<3; i++)
+
+
+#ifdef __show_warning__
+ for(int i=0; i<3; i++) 
+ {
+   if(fabs(eigenvectorCheck[i][re]) > 1.0e-8) 
+   {
+     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : real part of eigenvector check = "
+          << eigenvectorCheck[i][re] <<"." << endl;
+   }
+   if(fabs(eigenvectorCheck[i][im]) > 1.0e-8) 
+   {
+     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : imaginary part of eigenvector check = "
+          << eigenvectorCheck[i][im] << "." << endl;
+   }
+ }//end of for(int i=0; i<3; i++)
+#endif //__show_warning__
+
+
+#ifdef __show_warning__
+ // Check that the complex eigenvectors are orthogonal  
+ double scalarProduct[3][2];
+ for(int i=0; i<3; i++)
+   {
+     for(int j=0; j<2; j++)
+       {
+       scalarProduct[i][j] = 0.0;
+       }      
+   }
+
+ // For complex vectors, the scalar product is defined as the complex product 
+ // of the first vector and the complex conjugate of the second vector
+ for(int i=0; i<2; i++)
+ {
+    for(int j=0; j<3; j++)
+    {
+      scalarProduct[i][re] +=  UMatter[j][i][re] * UMatter[j][i+1][re]
+                           +   UMatter[j][i][im] * UMatter[j][i+1][im];
+      scalarProduct[i][im] += -UMatter[j][i][re] * UMatter[j][i+1][im]
+                           +   UMatter[j][i][im] * UMatter[j][i+1][re];
+    }
+ }
+  
+ for(int j=0; j<3; j++)
+ {
+    scalarProduct[2][re] +=  UMatter[j][0][re] * UMatter[j][2][re]
+                          +  UMatter[j][0][im] * UMatter[j][2][im];
+    scalarProduct[2][im] += -UMatter[j][0][re] * UMatter[j][2][im]
+                           + UMatter[j][0][im] * UMatter[j][2][re];
+ }
+
+ for(int i=0; i<3; i++)
+ {
+   if(fabs(scalarProduct[i][re]) > 1.0e-4)
+   {
+     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in eigenvector orthogonality check, real part of scalar product = "
+          << scalarProduct[i][re] << "." << endl;
+   }        
+   if(fabs(scalarProduct[i][im]) > 1.0e-4)
+   {
+     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in eigenvector orthogonality check, imaginary part of scalar product = "
+          << scalarProduct[i][im] << "." << endl;
+   }
+ }//end of for(int i=0; i<3; i++)
+#endif //__show_warning__
+
+ double UMatterDagger[3][3][2];
+
+ for(int i=0; i<3; i++)
+ {
+    for(int j=0; j<3; j++)
+    {
+      UMatterDagger[i][j][re] = UMatter[j][i][re];
+      UMatterDagger[i][j][im] = -UMatter[j][i][im];
+    }
+ }
+
+#ifdef __show_warning__
+ //check that the Hermitian conjugate of UMatter is equal to its inverse
+ double inverseCheck[3][3][2];
+ for(int i=0; i<3; i++)
+   {
+   for(int j=0; j<3; j++)
+     {
+     inverseCheck[i][j][re] = 0.0;
+     inverseCheck[i][j][im] = 0.0;
+     }
+   }
+
+ for(int i=0; i<3; i++)
+   {
+   for(int j=0; j<3; j++)
+     {
+     for(int k=0; k<3; k++)
+       {
+       inverseCheck[i][j][re] += UMatter[i][k][re] * UMatterDagger[k][j][re]
+                               - UMatter[i][k][im] * UMatterDagger[k][j][im];
+       inverseCheck[i][j][im] += UMatter[i][k][re] * UMatterDagger[k][j][im]
+                               + UMatter[i][k][im] * UMatterDagger[k][j][re];
+       }
+     }
+   }
+
+ for(int i=0; i<3; i++)
+ {
+   for(int j=0; j<3; j++)
+   {
+     if(i == j)
+       {
+       if(fabs(inverseCheck[i][j][re] - 1.0) > 1.0e-4)
+       {
+         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, real part of diagonal element - 1.0 = "
+              << fabs(inverseCheck[i][j][re] - 1.0) << "." << endl;
+       }
+       if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
+       {
+         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, imaginary part of diagonal element = "
+              << inverseCheck[i][j][im] << "." << endl;
+       }      
+     }
+     else
+     {
+       if(fabs(inverseCheck[i][j][re]) > 1.0e-4)
+       {
+         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, real part of off-diagonal element = "
+              << inverseCheck[i][j][re] << "." << endl;
+       }
+       if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
+       {
+         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, imaginary part of off-diagonal element = "
+              << inverseCheck[i][j][im] << "." << endl;
+       }              
+     }  
+   }//end of for(int j=0; j<3; j++)
+ }//end of for(int i=0; i<3; i++)
+#endif //__show_warning__
+ 
+  for (int i_initflav = 0 ; i_initflav < nFlav ; i_initflav++) {
+    double initialFlavourState[nFlav][2] = {};
+    double initialMassState   [nFlav][2] = {};
+    double finalMassState     [nFlav][2] = {};
+    double finalFlavourState  [nFlav][2] = {};
+    
+    initialFlavourState[i_initflav][re] = 1.0;
+
+    // Convert the initial flavour state to initial mass states by multiplying by UMatterDagger
+    for(int i=0; i<nFlav; i++) {
+      for(int j=0; j<nFlav; j++) {
+        initialMassState[i][re] += UMatterDagger[i][j][re] * initialFlavourState[j][re]
+                                 - UMatterDagger[i][j][im] * initialFlavourState[j][im];
+        initialMassState[i][im] += UMatterDagger[i][j][re] * initialFlavourState[j][im]
+                                 + UMatterDagger[i][j][im] * initialFlavourState[j][re];
+      }
+    }
+    
+    // Now propagate the mass eigenstates to the far detector
+    // For the first mass eigenstate, the difference in the squared masses is zero.
+    // Therefore only retain terms multiplied by cos(0), and drop those multiplied by sin(0).
+    finalMassState[0][re] = initialMassState[0][re];
+    finalMassState[0][im] = initialMassState[0][im];
+
+    for(int i=1; i<nFlav; i++) {
+      finalMassState[i][re] = initialMassState[i][re] *  cos((2.0 * kOscDimensFactor * (eigenvalues[i] - eigenvalues[0]) * fBaseline) / energy)
+                            - initialMassState[i][im] * -sin((2.0 * kOscDimensFactor * (eigenvalues[i] - eigenvalues[0]) * fBaseline) / energy);  
+      finalMassState[i][im] = initialMassState[i][re] * -sin((2.0 * kOscDimensFactor * (eigenvalues[i] - eigenvalues[0]) * fBaseline) / energy)
+                            + initialMassState[i][im] *  cos((2.0 * kOscDimensFactor * (eigenvalues[i] - eigenvalues[0]) * fBaseline) / energy);
+    }
+
+    // Convert final mass states to flavour states by multiplying by UMatter 
+    for(int i=0; i<nFlav; i++) {
+      for(int j=0; j<nFlav; j++) {
+        finalFlavourState[i][re] += UMatter[i][j][re] * finalMassState[j][re]
+                                  - UMatter[i][j][im] * finalMassState[j][im];
+        finalFlavourState[i][im] += UMatter[i][j][re] * finalMassState[j][im]
+                                  + UMatter[i][j][im] * finalMassState[j][re];
+      }
+    }
+
+    //Each component of finalFlavourState is the amplitude for the neutrino to interact 
+    //in the far detector as that flavour.
+    //The oscillation probabilities are the moduli squared of the amplitudes
+    for (int i_finalflav = 0 ; i_finalflav < nFlav ; i_finalflav++ ) {
+      osc_probs[i_initflav][i_finalflav] = finalFlavourState[i_finalflav][re]*finalFlavourState[i_finalflav][re] 
+                                         + finalFlavourState[i_finalflav][im]*finalFlavourState[i_finalflav][im];
+    }
+    
+  } //i_initflav
+
+  return;
+}
+//_________________________________________________________

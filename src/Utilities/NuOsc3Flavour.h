@@ -31,6 +31,8 @@ public:
   NuOsc3Flavour();
  ~NuOsc3Flavour();
  
+  static int const nFlav = 3;
+ 
   //
   // Set baseline, earth density, mass hierarchy, squared mass-splittings and
   // mixing angles / phases.
@@ -111,6 +113,11 @@ public:
  double CalcMatterOscProb      (int nu_start, int nu_end, double energy);
  double Calc2FlavMatterOscProb (int nu_start, int nu_end, double energy, int index);
  
+ // Calculate all matter probabilities at once.
+ // Osc_probs_out should point to a block of memory nflav*nflav
+ // It fills this with an array[i][j] of P(nu_i)->P(nu_j)
+ void CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs_out[3][3]);
+ 
 private:
 
   enum {
@@ -155,10 +162,11 @@ private:
  // and all off-diagonal elements are zero
  // UMassUdaggerVacuum is the product of the PMNS matrix, the mass 
  // squared matrix and the dagger of the PMNS matrix in vacuum.
- double UMassUdaggerVacuum[3][3][2];		
+ double UMassUdaggerVacuum[3][3][2];
 
  bool useEquations12;
  int nFlavourIndex;
+ 
 };
 
 }//end of namespace valor
