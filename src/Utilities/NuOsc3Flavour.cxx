@@ -2182,6 +2182,17 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
 // The neutrino codes are the PDG ones and the neutrino energy is in GeV.
 //
 
+  //if all 3 mixing angles are small, take it that there are no oscillations
+  if(nFlavourIndex == 0)
+  {
+    for (int i = 0 ; i < nFlav ; i++){
+      for (int j = 0 ; j < nFlav ; j++){
+        osc_probs[i][j] = (i==j);
+      }
+    }
+    return;
+  }
+
   // The mass squared matrix has diagonal elements 0, dmsq12, dmsq13; 
   // all off-diagonal elements are zero.
   // UMassUdagger is the product of the PMNS matrix, the mass squared matrix, 
