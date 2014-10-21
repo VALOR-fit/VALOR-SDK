@@ -86,6 +86,72 @@ string util::RawParamAsString(PhysParamId_t p)
         }
     }
     break;
+    
+    // Nubar parameters
+    case ( kPhypMixing23Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sin^2(2*theta_23 bar)"; break;
+           case(kNuMixSinsqTheta ) : return "sin^2(theta_23 bar)";   break;
+           default                 : return "--";                    break;
+         }
+    }
+    break;
+    case ( kPhypMixing13Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sin^2(2*theta_13 bar)";  break;
+           case(kNuMixSinsqTheta ) : return "sin^2(theta_13 bar)";    break;
+           default                 : return "--";                     break;
+         }
+    }
+    break;
+    case ( kPhypMixing12Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sin^2(2*theta_12 bar)";  break;
+           case(kNuMixSinsqTheta ) : return "sin^2(theta_12 bar)";    break;
+           default                 : return "--";                     break;
+         }
+    }
+    break;
+    case ( kPhypCPVBar ) : 
+    {
+        conv::NuOscDeltaCP_t cpv = Opt::Instance()->gOscDeltaCP;
+        switch(cpv) {
+           case(kNuDeltaCPPhase) : return "delta_cp bar";      break;
+           case(kNuDeltaCPSin  ) : return "sin(delta_cp bar)"; break;
+           default               : return "--";                break;
+        }
+    }
+    break;
+
+    case ( kPhypDm23sqBar  ) :
+    {
+        NuOscDmsqScheme_t dmscheme = Opt::Instance()->gOscDmsqScheme;
+        switch(dmscheme) {
+          case(kNuDmsq12andAbs23) : return "|Dm^2_32| bar";                  break;
+          case(kNuDmsq12andAbs31) : return "|Dm^2_31| bar";                  break;
+          case(kNuDmsqFogliLisi ) : return "|Dm^2_FL| bar";                  break;
+          default                 : return "--";                             break;
+        }
+    }
+    break;
+
+    case ( kPhypDm12sqBar ) : 
+    {
+        NuOscDmsqScheme_t dmscheme = Opt::Instance()->gOscDmsqScheme;
+        switch(dmscheme) {
+          case(kNuDmsq12andAbs23) : return "Dm^2_12 bar";                  break;
+          case(kNuDmsq12andAbs31) : return "Dm^2_12 bar";                  break;
+          case(kNuDmsqFogliLisi ) : return "dm^2_FL bar";                  break;
+          default                 : return "--";                           break;
+        }
+    }
+    break;
 
     // 
     case ( kPhypAlphaDecay            ) : return "alpha_decay";                break;
@@ -177,6 +243,10 @@ string util::RawParamAsString(PhysParamId_t p)
     string out(Form("nuis%03d",p-kNuis000));
     return out;
   }
+  
+  if (p == kLastNuisParam) {
+    return "LastNuisanceParam";
+  }
 
   return "?";
 }
@@ -248,6 +318,74 @@ string util::RawParamAsStringTex(PhysParamId_t p)
           case(kNuDmsq12andAbs23) : return "|\\Delta m^2_{32}|";                  break;
           case(kNuDmsq12andAbs31) : return "|\\Delta m^2_{31}|";                  break;
           case(kNuDmsqFogliLisi ) : return "|\\Delta m^2|";                       break;
+          default                 : return "--";                                  break;
+        }
+    }
+    break;
+    
+    case ( kPhypMixing23Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "$\\sin^2(2\\bar{\\theta_{23}})$"; break;
+           case(kNuMixSinsqTheta ) : return "$\\sin^2(\\bar{\\theta_{23}})$";  break;
+           default                 : return "--";                              break;
+         }
+    }
+    break;
+
+    case ( kPhypMixing13Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "$\\sin^2(2\\bar{\\theta_{13}})$"; break;
+           case(kNuMixSinsqTheta ) : return "$\\sin^2(\\bar{\\theta_{13}})$";  break;
+           default                 : return "--";                              break;
+         }
+    }
+    break;
+
+    case ( kPhypMixing12Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "$\\sin^2(2\\bar{\\theta_{12}})$"; break;
+           case(kNuMixSinsqTheta ) : return "$\\sin^2(\\bar{\\theta_{12}})$";  break;
+           default                 : return "--";                              break;
+         }
+    }
+    break;
+
+    case ( kPhypCPVBar ) : 
+    {
+        conv::NuOscDeltaCP_t cpv = Opt::Instance()->gOscDeltaCP;
+        switch(cpv) {
+           case(kNuDeltaCPPhase) : return "$\\bar{\\delta_{CP}}$";      break;
+           case(kNuDeltaCPSin  ) : return "$sin(\\bar{\\delta_{CP}})$"; break;
+           default               : return "--";                         break;
+        }
+    }
+    break;
+
+    case ( kPhypDm12sqBar ) : 
+    {
+        NuOscDmsqScheme_t dmscheme = Opt::Instance()->gOscDmsqScheme;
+        switch(dmscheme) {
+          case(kNuDmsq12andAbs23) : return "\\bar{\\Delta m^2_{22}}";             break;
+          case(kNuDmsq12andAbs31) : return "\\bar{\\Delta m^2_{21}}";             break;
+          case(kNuDmsqFogliLisi ) : return "\\bar{\\delta m^2}";                  break;
+          default                 : return "--";                                  break;
+        }
+    }
+    break;
+
+    case ( kPhypDm23sqBar ) :
+    {
+        NuOscDmsqScheme_t dmscheme = Opt::Instance()->gOscDmsqScheme;
+        switch(dmscheme) {
+          case(kNuDmsq12andAbs23) : return "|\\bar{\\Delta m^2_{32}}|";                  break;
+          case(kNuDmsq12andAbs31) : return "|\\bar{\\Delta m^2_{31}}|";                  break;
+          case(kNuDmsqFogliLisi ) : return "|\\bar{\\Delta m^2}|";                       break;
           default                 : return "--";                                  break;
         }
     }
@@ -418,6 +556,79 @@ string util::RawParamAsStringRooTex(PhysParamId_t p)
       }
     }
     break;
+    
+    case ( kPhypMixing23Bar ) :
+    {
+      NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+      switch(omp) {
+      case(kNuMixSinsq2Theta) : return "sin^{2}(#bar{2#theta_{23}})";  break;
+      case(kNuMixSinsqTheta ) : return "sin^{2}(#bar{#theta_{23}})";   break;
+      default                 : return "--";                           break;
+      }
+    }
+    break;
+
+    case ( kPhypMixing13Bar ) :
+    {
+      NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+      switch(omp) {
+      case(kNuMixSinsq2Theta) : return "sin^{2}(2#bar{#theta_{13}})";   break;
+      case(kNuMixSinsqTheta ) : return "sin^{2}(#bar{#theta_{13}})";    break;
+      default                 : return "--";                      break;
+      }
+    }
+    break;
+
+    case ( kPhypMixing12Bar ) :
+    {
+      NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+      switch(omp) {
+      case(kNuMixSinsq2Theta) : return "sin^{2}(2#bar{#theta_{12}})";   break;
+      case(kNuMixSinsqTheta ) : return "sin^{2}(#bar{#theta_{12}})";    break;
+      default                 : return "--";                      break;
+      }
+    }
+    break;
+
+    case ( kPhypCPVBar ) : 
+    {
+        conv::NuOscDeltaCP_t cpv = Opt::Instance()->gOscDeltaCP;
+        switch(cpv) {
+           case(kNuDeltaCPPhase) : return "#bar{#delta_{CP}}";      break;
+           case(kNuDeltaCPSin  ) : return "sin(#bar{#delta_{CP}})"; break;
+           default               : return "--";               break;
+        }
+    }
+    break;
+
+    case ( kPhypDm23sqBar ) :
+    {
+      NuOscDmsqScheme_t omp = Opt::Instance()->gOscDmsqScheme;
+      switch(omp) {
+        case(kNuDmsqFogliLisi ) : return "|#bar{#Deltam^{2}}|";         break;
+//      case(kNuDmsqFogliLisi ) : return "|#bar{#Deltam^{2}}| = |m^{2}_{3} - (m^{2}_{1} + m^{2}_{1})/2|";  break;
+        case(kNuDmsq12andAbs23) : return "|#bar{#Deltam^{2}_{32}}|";    break;
+        case(kNuDmsq12andAbs31) : return "|#bar{#Deltam^{2}_{31}}|";    break;
+        default                 : return "--";                          break;
+      }
+    }
+    break;
+
+    case ( kPhypDm12sqBar ) :
+    {
+      NuOscDmsqScheme_t omp = Opt::Instance()->gOscDmsqScheme;
+      switch(omp) {
+        case(kNuDmsqFogliLisi):
+          return "#bar{#deltam^{2}}";                        break;
+//        return "#bar{#deltam^{2}} = #Deltam^{2}_{21}";     break;
+        case(kNuDmsq12andAbs23):
+        case(kNuDmsq12andAbs31):
+          return "#bar{#Delta m^{2}_{21}}";                  break;
+        default                 :
+          return "--";                                 break;
+      }
+    }
+    break;
 
     case ( kPhypAlphaDecay            ) : return "#alpha_{decay}";                 break;
     case ( kPhypSinsq2ThetaDecay      ) : return "sin^{2}(2#theta_{decay})";       break;
@@ -436,6 +647,9 @@ bool util::IsMixingAngle(PhysParamId_t p)
     case ( kPhypMixing23              ) : return true; break;
     case ( kPhypMixing13              ) : return true; break;
     case ( kPhypMixing12              ) : return true; break;
+    case ( kPhypMixing23Bar           ) : return true; break;
+    case ( kPhypMixing13Bar           ) : return true; break;
+    case ( kPhypMixing12Bar           ) : return true; break;
     case ( kPhypSinsq2ThetaDecay      ) : return true; break;
     case ( kPhypSinsq2ThetaDecoh      ) : return true; break;
     case ( kPhypMixing14              ) : return true; break;

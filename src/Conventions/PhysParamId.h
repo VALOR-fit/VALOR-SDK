@@ -62,8 +62,15 @@ typedef enum EPhysParamId
    kPhypDelta34,               // Sterile phase
    kPhypDelta35,               // Sterile phase
    kPhypNSIepsMuTau,           // Nonstandard matter interactions
-
-
+   
+   // Antineutrino mixing parameters, used only for hypotheses when neutrinos and antineutrinos are given different parameters.
+   kPhypMixing23Bar,           // 23-mixing parameter (either sin^2(2*\theta_{23}) or sin^2(\theta_{23}) depending on config choices)
+   kPhypMixing13Bar,           // 13-mixing parameter (either sin^2(2*\theta_{13}) or sin^2(\theta_{13}) depending on config choices)
+   kPhypMixing12Bar,           // 12-mixing parameter (either sin^2(2*\theta_{12}) or sin^2(\theta_{12}) depending on config choices)
+   kPhypCPVBar,                // CP-invariance violating param (either deltacp, or sin(deltacp) depending on config choices)
+   kPhypDm23sqBar,             // modulus of large squared-mass splitting (Dm^2_32, Dm^2_31 or Fogli-Lisi Dm^2 depending on config choices)
+   kPhypDm12sqBar,             // small squared-mass splitting (Dm^2_21 or Fogli-Lisi dm^2 depending on config choices)                     
+   
    // Generic nuisance parameters
   kNuis000 ,
   kNuis001 ,

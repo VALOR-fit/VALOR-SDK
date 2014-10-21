@@ -9,6 +9,7 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <sstream>
+#include <cassert>
 #include <TROOT.h>
 
 #include "Conventions/PhysHypothesisId.h"
@@ -34,6 +35,9 @@ string util::AsString(PhysHypothesis_t h)
        break;
     case (kHypOsc3F) :
        return "<3-flavour Neutrino Oscillations>";
+       break;
+    case (kHypOsc3FBar) :
+       return "<3-flavour Neutrino Oscillations, split nu and nubar>";
        break;
     case (kHypOscSterile4F) :
        return "<3+1 Sterile Neutrino Oscillations>";
@@ -162,6 +166,10 @@ string util::AsString (
 
   }//3f
 
+  // Placeholder for nubar
+  if (hyp == valor::conv::kHypOsc3FBar) {
+    out<<"3f+3fbar";
+  }
   // Placeholder for steriles
   if (hyp == valor::conv::kHypOscSterile4F) {
     out<<"sterile_3+1";
@@ -190,6 +198,7 @@ PhysHypothesis_t util::PhysHypFromString (string sh)
   if(sh == "decoh"         ) return kHypDecoh;
   if(sh == "2f_numu_disap" ) return kHypNuMuDisapp2F;
   if(sh == "3f_osc"        ) return kHypOsc3F;
+  if(sh == "3f_oscbar"     ) return kHypOsc3FBar;
   if(sh == "3f_nsi"        ) return kHypNSI3F;
   if(sh == "4f_sterile_osc") return kHypOscSterile4F;
   if(sh == "5f_sterile_osc") return kHypOscSterile5F;
