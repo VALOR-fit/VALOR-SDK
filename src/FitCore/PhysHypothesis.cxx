@@ -67,7 +67,7 @@ PhysHypothesis::PhysHypothesis(const FitParamList & fp)
     this->SetCurrValue(kPhypCPV,      fp.CurrValue(kPhypCPV));
   }
   // neutrino oscillations (3-flavour framework)
-  if(hyp == kHypOsc3FBar)
+  else if(hyp == kHypOsc3FBar)
   {
     this->Init(kHypOsc3FBar);
     this->SetCurrValue(kPhypDm12sq,      fp.CurrValue(kPhypDm12sq));
