@@ -75,6 +75,13 @@ namespace util {
   double RandomizeDm12sq   (void); ///< pull from gaussian with mean & sigma from global fit
   double RandomizeDm23sq   (void); ///< pull from gaussian with mean & sigma from global fit
   
+  double RandomizeMixing23Bar (void); //
+  double RandomizeMixing12Bar (void); //
+  double RandomizeMixing13Bar (void); //
+  double RandomizeCPVBar      (void); //
+  double RandomizeDm12sqBar   (void); //
+  double RandomizeDm23sqBar   (void); //
+  
   // Full matrix diagonalisation using GSL
   // matrix_in is a pointer to a block representing a n*n complex matrix, equivalent to a double[n][n][2]
   // eigenvectors_out is pointer to (assigned) memory in same format

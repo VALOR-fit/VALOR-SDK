@@ -541,7 +541,105 @@ double valor::util::RandomizeDm23sq(void)
     return dm;
   }
   //or try again
-  return util::RandomizeDm12sq();
+  return util::RandomizeDm23sq();
+}
+//____________________________________________________________________________
+double valor::util::RandomizeMixing12Bar(void)
+{
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypMixing12Bar); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypMixing12Bar);
+  double mix   = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+  
+  // return if a physical value was generated
+  if(mix >=0. && mix <= 1.) {
+     return mix;
+  }
+
+  // or try again
+  return util::RandomizeMixing12Bar();
+}
+//____________________________________________________________________________
+double valor::util::RandomizeMixing23Bar(void)
+{
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypMixing23Bar); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypMixing23Bar);
+  double mix   = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+
+  // return if a physical value was generated
+  if(mix >=0. && mix <= 1.) {
+     return mix;
+  }
+
+  // or try again
+  return util::RandomizeMixing23Bar();
+}
+//____________________________________________________________________________
+double valor::util::RandomizeMixing13Bar(void)
+{
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypMixing13Bar); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypMixing13Bar);
+  double mix   = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+
+  // return if a physical value was generated
+  if(mix >=0. && mix <= 1.) {
+    return mix;
+  }
+
+  // or try again 
+  return util::RandomizeMixing13Bar();
+}
+//____________________________________________________________________________
+double valor::util::RandomizeCPVBar(void)
+{
+  NuOscDeltaCP_t cpv = Opt::Instance()->gOscDeltaCP;
+  switch(cpv) {
+
+    case (kNuDeltaCPPhase) :
+    {
+       double min = -conv::kpi;
+       double max =  conv::kpi;
+       return Rnd::Instance()->RndToyMCosc().Uniform(min,max);
+    }
+    break;
+
+    case (kNuDeltaCPSin) :
+    {
+       double min = -1.;
+       double max =  1.;
+       return Rnd::Instance()->RndToyMCosc().Uniform(min,max);
+    }
+    break;
+
+    default:
+      return -99999;
+  }
+  return -99999;
+}
+//____________________________________________________________________________
+double valor::util::RandomizeDm12sqBar(void)
+{
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypDm12sqBar); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypDm12sqBar);
+  double dm    = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+  // return if a physical value was generated
+  if(dm >= 0.) {
+    return dm;
+  }
+  //or try again
+  return util::RandomizeDm12sqBar();
+}
+//____________________________________________________________________________
+double valor::util::RandomizeDm23sqBar(void)
+{
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypDm23sqBar); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypDm23sqBar);
+  double dm    = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+  // return if a physical value was generated
+  if(dm >= 0.) {
+    return dm;
+  }
+  //or try again
+  return util::RandomizeDm23sq();
 }
 //____________________________________________________________________________
 int valor::util::Sign(double tweaking_dial)

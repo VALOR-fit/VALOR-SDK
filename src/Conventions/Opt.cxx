@@ -216,6 +216,14 @@ void Opt::SetDefaultParameterValues()
     }
     default: exit(-1);
   }
+  
+  // Copy across to the bar variables - may need changing later to make them bespoke.
+  for (int p = conv::kPhypMixing23Bar ; p < conv::kPhypDm12sqBar; p++){
+    int nonbar = p - conv::kPhypMixing23Bar + conv::kPhypMixing23;
+    fGlobalBestFit  [p] = fGlobalBestFit  [nonbar];
+    fGlobalFitError [p] = fGlobalFitError [nonbar];
+    //fInitialValue   [p] = fGlobalBestFit[nonbar];
+  }
 }
 //________________________________________________________________________________________
 bool Opt::Undefined(void)
