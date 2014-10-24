@@ -303,9 +303,9 @@ string util::RawParamAsStringTex(PhysParamId_t p)
     {
         NuOscDmsqScheme_t dmscheme = Opt::Instance()->gOscDmsqScheme;
         switch(dmscheme) {
-          case(kNuDmsq12andAbs23) : return "\\Delta m^2_{22}";                  break;
-          case(kNuDmsq12andAbs31) : return "\\Delta m^2_{21}";                  break;
-          case(kNuDmsqFogliLisi ) : return "\\delta m^2";                       break;
+          case(kNuDmsq12andAbs23) : return "$\\Delta m^2_{21}$";                  break;
+          case(kNuDmsq12andAbs31) : return "$\\Delta m^2_{21}$";                  break;
+          case(kNuDmsqFogliLisi ) : return "$\\delta m^2$";                       break;
           default                 : return "--";                                  break;
         }
     }
@@ -315,9 +315,9 @@ string util::RawParamAsStringTex(PhysParamId_t p)
     {
         NuOscDmsqScheme_t dmscheme = Opt::Instance()->gOscDmsqScheme;
         switch(dmscheme) {
-          case(kNuDmsq12andAbs23) : return "|\\Delta m^2_{32}|";                  break;
-          case(kNuDmsq12andAbs31) : return "|\\Delta m^2_{31}|";                  break;
-          case(kNuDmsqFogliLisi ) : return "|\\Delta m^2|";                       break;
+          case(kNuDmsq12andAbs23) : return "$|\\Delta m^2_{32}|$";                  break;
+          case(kNuDmsq12andAbs31) : return "$|\\Delta m^2_{31}|$";                  break;
+          case(kNuDmsqFogliLisi ) : return "$|\\Delta m^2|$";                       break;
           default                 : return "--";                                  break;
         }
     }
@@ -371,9 +371,9 @@ string util::RawParamAsStringTex(PhysParamId_t p)
     {
         NuOscDmsqScheme_t dmscheme = Opt::Instance()->gOscDmsqScheme;
         switch(dmscheme) {
-          case(kNuDmsq12andAbs23) : return "\\bar{\\Delta m^2_{22}}";             break;
-          case(kNuDmsq12andAbs31) : return "\\bar{\\Delta m^2_{21}}";             break;
-          case(kNuDmsqFogliLisi ) : return "\\bar{\\delta m^2}";                  break;
+          case(kNuDmsq12andAbs23) : return "$\\bar{\\Delta m^2_{21}}$";             break;
+          case(kNuDmsq12andAbs31) : return "$\\bar{\\Delta m^2_{21}}$";             break;
+          case(kNuDmsqFogliLisi ) : return "$\\bar{\\delta m^2}$";                  break;
           default                 : return "--";                                  break;
         }
     }
@@ -383,9 +383,9 @@ string util::RawParamAsStringTex(PhysParamId_t p)
     {
         NuOscDmsqScheme_t dmscheme = Opt::Instance()->gOscDmsqScheme;
         switch(dmscheme) {
-          case(kNuDmsq12andAbs23) : return "|\\bar{\\Delta m^2_{32}}|";                  break;
-          case(kNuDmsq12andAbs31) : return "|\\bar{\\Delta m^2_{31}}|";                  break;
-          case(kNuDmsqFogliLisi ) : return "|\\bar{\\Delta m^2}|";                       break;
+          case(kNuDmsq12andAbs23) : return "$|\\bar{\\Delta m^2_{32}}|$";                  break;
+          case(kNuDmsq12andAbs31) : return "$|\\bar{\\Delta m^2_{31}}|$";                  break;
+          case(kNuDmsqFogliLisi ) : return "$|\\bar{\\Delta m^2}|$";                       break;
           default                 : return "--";                                  break;
         }
     }
