@@ -639,7 +639,7 @@ double valor::util::RandomizeDm23sqBar(void)
     return dm;
   }
   //or try again
-  return util::RandomizeDm23sq();
+  return util::RandomizeDm23sqBar();
 }
 //____________________________________________________________________________
 int valor::util::Sign(double tweaking_dial)
