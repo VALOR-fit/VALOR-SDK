@@ -102,8 +102,8 @@ fSize(arr.fSize)
 //________________________________________________________________________________________
 VALORArray::~VALORArray()
 {
-  delete fIncrement;
-  delete fArray;
+  delete[] fIncrement;
+  delete[] fArray;
 }
 //________________________________________________________________________________________
 int VALORArray::GetSize(int dim) const
