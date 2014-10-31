@@ -38,7 +38,6 @@ public:
   virtual string Name(void) = 0;
 
   // Read configuration data from file
-  virtual bool Read(Option_t * opt = 0) = 0;
   virtual bool Read(string file, Option_t * opt = 0) = 0;
 
   // Below are a set methods to generate model predictions for a given physics hypothesis and a set of nuisance parameters.
