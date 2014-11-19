@@ -24,6 +24,7 @@
 #include "Conventions/Opt.h"
 #include "Conventions/PDG.h"
 #include "Utilities/NuOsc3Flavour.h"
+#include "Messenger/Messenger.h"
 
 using std::cout;
 using std::cerr;
@@ -73,7 +74,7 @@ void NuOsc3Flavour::SetDensity(double density)
 //________________________________________________________________________________________
 void NuOsc3Flavour::SetMassHierarchy(NuMassHierarchy_t h)
 {
-  cout << "NuOsc3Flavour >> Mass hierarchy assumed: " << util::AsString(h) << endl;
+  //LOG("NuOsc3Flavour",pINFO) << "Mass hierarchy selected: " << util::AsString(h);
 
   fMassHierarchy = h;
 }
