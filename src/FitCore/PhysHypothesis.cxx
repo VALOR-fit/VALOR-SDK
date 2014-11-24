@@ -129,6 +129,12 @@ PhysHypothesis::PhysHypothesis(const FitParamList & fp)
   else {  
     this->Init(kHypUndefined);
   }
+  
+// Set nuisance status:
+  for (int i = 0 ; i < fp.Size() ; i++) {
+    PhysParamId_t p = fp.WhichParam(i);
+    this->SetNuisance(p, fp.IsNuisance(p));
+  }
 
 #ifdef __show_init_mesg_info__
   cout << " PhysHypothesis ctor > "
@@ -162,6 +168,9 @@ void PhysHypothesis::Copy(const PhysHypothesis & ph)
 
   fParams.clear();
   fParams.insert(ph.fParams.begin(), ph.fParams.end());
+  
+  fIsNuisance.clear();
+  fIsNuisance.insert(ph.fIsNuisance.begin(), ph.fIsNuisance.end());
 /*
   this->Init(ph.fHypothesis);
   map<int,double>::const_iterator it = ph.fParams.begin();
@@ -251,4 +260,18 @@ PhysParamList PhysHypothesis::AsPhysParamList(void) const
   return pl;
 }
 //________________________________________________________________________________________
-
+void PhysHypothesis::SetNuisance (conv::PhysParamId_t p, bool isNuisance)
+{
+  fIsNuisance[p] = isNuisance;
+  return;
+}
+//________________________________________________________________________________________
+bool PhysHypothesis::IsNuisance(conv::PhysParamId_t p) const
+{
+  map<int,bool>::const_iterator it = fIsNuisance.find(p);
+  if(it == fIsNuisance.end()) {
+    return false; // not set, assume non-nuisance
+  }
+  return it->second;
+}
+//________________________________________________________________________________________

@@ -50,6 +50,9 @@ public:
 
    double CurrValue    (conv::PhysParamId_t p) const;
    void   SetCurrValue (conv::PhysParamId_t p, double v);
+   
+   void SetNuisance(conv::PhysParamId_t p, bool isNuisance);
+   bool IsNuisance (conv::PhysParamId_t p) const;
 
    // Print
    void Print (ostream & stream) const;
@@ -62,6 +65,7 @@ private:
 
    conv::PhysHypothesis_t fHypothesis;
    map<int,double>        fParams;
+   map<int,bool>          fIsNuisance;
 };
 
 ostream & operator<< (ostream & stream, const PhysHypothesis & plst);
