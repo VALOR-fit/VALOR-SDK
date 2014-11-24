@@ -67,6 +67,8 @@ namespace util {
   //
   // Functions randomizing oscillation params (for use when params are marginalized)
   //
+  
+  double RandomizeParameter(conv::PhysParamId_t p);
 
   double RandomizeMixing23 (void); ///< pull from gaussian with mean & sigma from global fit (mixing param is either sinsq2theta or sinsqtheta depending on config)
   double RandomizeMixing12 (void); ///< pull from gaussian with mean & sigma from global fit ( -//- )

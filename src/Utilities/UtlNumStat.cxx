@@ -13,6 +13,7 @@ ChangeLog:
 //#define __show_xml_mesg_info__
 //#define __show_xml_mesg_debug__
 //#define __show_arr_idx_mesg_debug__
+//#define __show_parameter_randomization_warnings__
 
 #include <cassert>
 #include <cstdlib>
@@ -349,6 +350,56 @@ TVectorD valor::util::CholeskyCalculateCorrelatedParamVariations (
 #endif
 
   return g;
+}
+//____________________________________________________________________________
+double valor::util::RandomizeParameter(conv::PhysParamId_t p)
+{
+  switch (p) {
+    case kPhypMixing23             : return util::RandomizeMixing23   ();
+    case kPhypMixing13             : return util::RandomizeMixing13   ();
+    case kPhypMixing12             : return util::RandomizeMixing12   ();
+    case kPhypCPV                  : return util::RandomizeCPV        ();
+    case kPhypDm23sq               : return util::RandomizeDm23sq     ();
+    case kPhypDm12sq               : return util::RandomizeDm12sq     ();
+    
+    case kPhypMixing23Bar          : return util::RandomizeMixing23Bar();
+    case kPhypMixing13Bar          : return util::RandomizeMixing13Bar();
+    case kPhypMixing12Bar          : return util::RandomizeMixing12Bar();
+    case kPhypCPVBar               : return util::RandomizeCPVBar     ();
+    case kPhypDm23sqBar            : return util::RandomizeDm23sqBar  ();
+    case kPhypDm12sqBar            : return util::RandomizeDm12sqBar  ();
+    
+    case kPhypAlphaDecay            :
+    case kPhypSinsq2ThetaDecay      :
+    case kPhypMusqDecoh             :
+    case kPhypSinsq2ThetaDecoh      :
+    case kPhypMixing14              :
+    case kPhypMixing15              :
+    case kPhypMixing24              :
+    case kPhypMixing25              :
+    case kPhypMixing34              :
+    case kPhypMixing35              :
+    case kPhypDm41sq                :
+    case kPhypDm51sq                :
+    case kPhypDelta12               :
+    case kPhypDelta13               :
+    case kPhypDelta15               :
+    case kPhypDelta34               :
+    case kPhypDelta35               :
+    case kPhypNSIepsMuTau           :
+#ifdef __show_parameter_randomization_warnings__
+      std::cerr<<"util/RandomizeParameter > Not implemented for "<<util::RawParamAsString(p)<<" ("<<p<<")"<<std::endl;
+#endif
+      return -999;
+      
+    default:
+      std::cerr<<"util/RandomizeParameter > Using default for "<<util::RawParamAsString(p)<<" ("<<p<<")"<<std::endl;
+      return -999;
+  }
+#ifdef __show_parameter_randomization_warnings__
+  std::cerr<<"util/RandomizeParameter > Unrecognized parameter "<<util::RawParamAsString(p)<<" ("<<p<<")"<<std::endl;
+#endif
+  return -999;
 }
 //____________________________________________________________________________
 double valor::util::RandomizeMixing12(void)
