@@ -39,6 +39,7 @@ class TAxis;
 
 #include "Conventions/ConfLevel.h"
 #include "Conventions/Build.h"
+#include "Conventions/PhysParamId.h"
 
 using std::string;
 using std::vector;
