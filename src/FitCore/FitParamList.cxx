@@ -978,14 +978,14 @@ void FitParamList::Append3FlavourOscillationBar(FitParamList * fparm, int start)
   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
   switch(omp) {
   case(kNuMixSinsq2Theta):
-     fparm->AddParam( ip++, kPhypMixing23Bar,  kInitFitSinsq2Theta23,  kMinFitSinsq2Theta23,  kMaxFitSinsq2Theta23,  kStepSinsq2Theta23,  false, false);
-     fparm->AddParam( ip++, kPhypMixing13Bar,  kInitFitSinsq2Theta13,  kMinFitSinsq2Theta13,  kMaxFitSinsq2Theta13,  kStepSinsq2Theta13,  false, false);
-     fparm->AddParam( ip++, kPhypMixing12Bar,  kInitFitSinsq2Theta12,  kMinFitSinsq2Theta12,  kMaxFitSinsq2Theta12,  kStepSinsq2Theta12,  false, false);
+     fparm->AddParam( ip++, kPhypMixing23Bar,  kInitFitSinsq2Theta23Bar,  kMinFitSinsq2Theta23Bar,  kMaxFitSinsq2Theta23Bar,  kStepSinsq2Theta23Bar,  false, false);
+     fparm->AddParam( ip++, kPhypMixing13Bar,  kInitFitSinsq2Theta13Bar,  kMinFitSinsq2Theta13Bar,  kMaxFitSinsq2Theta13Bar,  kStepSinsq2Theta13Bar,  false, false);
+     fparm->AddParam( ip++, kPhypMixing12Bar,  kInitFitSinsq2Theta12Bar,  kMinFitSinsq2Theta12Bar,  kMaxFitSinsq2Theta12Bar,  kStepSinsq2Theta12Bar,  false, false);
      break;
   case(kNuMixSinsqTheta):
-     fparm->AddParam( ip++, kPhypMixing23Bar,  kInitFitSinsqTheta23,   kMinFitSinsqTheta23,   kMaxFitSinsqTheta23,   kStepSinsqTheta23,  false, false);
-     fparm->AddParam( ip++, kPhypMixing13Bar,  kInitFitSinsqTheta13,   kMinFitSinsqTheta13,   kMaxFitSinsqTheta13,   kStepSinsqTheta13,  false, false);
-     fparm->AddParam( ip++, kPhypMixing12Bar,  kInitFitSinsqTheta12,   kMinFitSinsqTheta12,   kMaxFitSinsqTheta12,   kStepSinsqTheta12,  false, false);
+     fparm->AddParam( ip++, kPhypMixing23Bar,  kInitFitSinsqTheta23Bar,   kMinFitSinsqTheta23Bar,   kMaxFitSinsqTheta23Bar,   kStepSinsqTheta23Bar,  false, false);
+     fparm->AddParam( ip++, kPhypMixing13Bar,  kInitFitSinsqTheta13Bar,   kMinFitSinsqTheta13Bar,   kMaxFitSinsqTheta13Bar,   kStepSinsqTheta13Bar,  false, false);
+     fparm->AddParam( ip++, kPhypMixing12Bar,  kInitFitSinsqTheta12Bar,   kMinFitSinsqTheta12Bar,   kMaxFitSinsqTheta12Bar,   kStepSinsqTheta12Bar,  false, false);
      break;
   default:
      delete fparm;
@@ -1009,23 +1009,23 @@ void FitParamList::Append3FlavourOscillationBar(FitParamList * fparm, int start)
   NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
   switch (odmsq) {
   case(kNuDmsqFogliLisi):
-    fparm->AddParam( ip++, kPhypDm23sqBar,    kGlobFitDmsqFL,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+    fparm->AddParam( ip++, kPhypDm23sqBar,    kGlobFitDmsqFL,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
     break;
   case(kNuDmsq12andAbs23):
-    fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+    fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
     break;
   case(kNuDmsq12andAbs31):
     if(Opt::Instance()->gMassHierarchyAssumed == kNmhNormal)
-      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sq + kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar + kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
     else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
-      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sq - kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar - kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
     break;
   default:
     delete fparm;
     return;
   }
-  
-  fparm->AddParam( ip++, kPhypDm12sqBar,    kInitFitDm12sq,   kMinFitDm12sq, kMaxFitDm12sq, kStepDm12sq,  false, false);
+   
+  fparm->AddParam( ip++, kPhypDm12sqBar,    kInitFitDm12sqBar,   kMinFitDm12sqBar, kMaxFitDm12sqBar, kStepDm12sqBar,  false, false);
 
 }
 //________________________________________________________________________________________
