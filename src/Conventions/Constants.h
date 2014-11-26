@@ -44,9 +44,9 @@ static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
 // sinsq2theta global fit results
 static const double kGlobFitSinsq2Theta23    = 1.00;
 
-static const double kGlobFitSinsq2Theta13    = 0.084;  // Daya Bay Neutrino 2014 //0.098;
+//static const double kGlobFitSinsq2Theta13    = 0.084;  // Daya Bay Neutrino 2014 //0.098;
 //static const double kGlobFitSinsq2Theta13    = 0.098;  // old (PDG 2012)   
-//static const double kGlobFitSinsq2Theta13    = 0.095;  // old (PDG 2013)
+static const double kGlobFitSinsq2Theta13    = 0.095;  // old (PDG 2013)
 
 static const double kGlobFitSinsq2Theta12    = 0.8495; //fogli2011
 //static const double kGlobFitSinsq2Theta12    = 0.857; //pdg2012
@@ -54,17 +54,17 @@ static const double kGlobFitErrSinsq2Theta23 = 0.05;  // ~5%
 static const double kGlobFitErrSinsq2Theta12 = 0.031; // ~3.1% fogli2011
 //static const double kGlobFitErrSinsq2Theta12 = 0.028; // ~2.8% pdg2012
 
-static const double kGlobFitErrSinsq2Theta13 = 0.059;  // Daya Bay Neutrino 2014 
+//static const double kGlobFitErrSinsq2Theta13 = 0.059;  // Daya Bay Neutrino 2014 
 //static const double kGlobFitErrSinsq2Theta13 = 0.133;  // ~13.3%    // old (PDG 2012)
-// static const double kGlobFitErrSinsq2Theta13 = 0.105; // ~10.5% (PDG 2013)
+static const double kGlobFitErrSinsq2Theta13 = 0.105; // ~10.5% (PDG 2013)
 
 // sinsqtheta global fit results
 static const double kGlobFitSinsqTheta23    = 0.50; // old
 //static const double kGlobFitSinsqTheta23    = 0.513;
 
-static const double kGlobFitSinsqTheta13   = 0.02146; // Daya Bay Neutrino 2014  //0.0251;
+//static const double kGlobFitSinsqTheta13   = 0.02146; // Daya Bay Neutrino 2014  //0.0251;
 //static const double kGlobFitSinsqTheta13   = 0.0251; // old (PDG 2012)
-// static const double kGlobFitSinsqTheta13   = 0.0243; // (PDG 2013)
+static const double kGlobFitSinsqTheta13   = 0.0243; // (PDG 2013)
 
 static const double kGlobFitSinsqTheta12    = 0.306; //fogli2011
 //static const double kGlobFitSinsqTheta12    = 0.311; //pdg2012
@@ -73,9 +73,9 @@ static const double kGlobFitErrSinsqTheta23 = 0.06;  // ~26% (1 sigma range)
 static const double kGlobFitErrSinsqTheta12 = 0.059;  // ~5.9% fogli2011
 //static const double kGlobFitErrSinsqTheta12 = 0.053;  // ~5.3% pdg2012
 
-static const double kGlobFitErrSinsqTheta13 = 0.059; // Daya Bay Neutrino 2014 //0.139;  // ~13.9%
+//static const double kGlobFitErrSinsqTheta13 = 0.059; // Daya Bay Neutrino 2014 //0.139;  // ~13.9%
 // static const double kGlobFitErrSinsqTheta13 = 0.139; // ~13.9% // old (PDG 2012)
-// static const double kGlobFitErrSinsqTheta13 = 0.105; // ~10.5% (PDG 2013)
+ static const double kGlobFitErrSinsqTheta13 = 0.105; // ~10.5% (PDG 2013)
 
 // projected future errors
 //atmos params unknown
@@ -101,6 +101,15 @@ static const double kInitFitDm12sq           = kGlobFitDm12sq;
 static const double kMinFitDm12sq            = 6.0E-5;
 static const double kMaxFitDm12sq            = 9.0E-5;
 static const double kStepDm12sq              = 2.0E-6;
+// Dm^2 fitter init values and range and step (fixnonbar)
+static const double kInitFitDm23sqBar        = kGlobFitDm23sq;
+static const double kMinFitDm23sqBar         = 1.0E-4;
+static const double kMaxFitDm23sqBar         = 4.0E-2;
+static const double kStepDm23sqBar           = 1.0E-4;
+static const double kInitFitDm12sqBar        = kGlobFitDm12sq;
+static const double kMinFitDm12sqBar         = 6.0E-5;
+static const double kMaxFitDm12sqBar         = 9.0E-5;
+static const double kStepDm12sqBar           = 2.0E-6;
 // sinsq2theta fitter init values and range
 static const double kInitFitSinsq2Theta23    = 0.90;
 static const double kMinFitSinsq2Theta23     = 0.00;
@@ -114,6 +123,19 @@ static const double kInitFitSinsq2Theta12    = kGlobFitSinsq2Theta12;
 static const double kMinFitSinsq2Theta12     = 0.00;
 static const double kMaxFitSinsq2Theta12     = 1.00;
 static const double kStepSinsq2Theta12       = 1.0E-2;
+// sinsq2theta fitter init values and range (fixnonbar)
+static const double kInitFitSinsq2Theta23Bar = 0.90;
+static const double kMinFitSinsq2Theta23Bar  = 0.00;
+static const double kMaxFitSinsq2Theta23Bar  = 1.00;
+static const double kStepSinsq2Theta23Bar    = 5.0E-3;
+static const double kInitFitSinsq2Theta13Bar = kGlobFitSinsq2Theta13;
+static const double kMinFitSinsq2Theta13Bar  = 0.00;
+static const double kMaxFitSinsq2Theta13Bar  = 1.00;
+static const double kStepSinsq2Theta13Bar    = 1.0E-3;
+static const double kInitFitSinsq2Theta12Bar = kGlobFitSinsq2Theta12;
+static const double kMinFitSinsq2Theta12Bar  = 0.00;
+static const double kMaxFitSinsq2Theta12Bar  = 1.00;
+static const double kStepSinsq2Theta12Bar    = 1.0E-2;
 // sinsqtheta fitter init values and range
 static const double kInitFitSinsqTheta23     = 0.60;
 static const double kMinFitSinsqTheta23      = 0.00;
@@ -127,6 +149,19 @@ static const double kInitFitSinsqTheta12     = kGlobFitSinsqTheta12;
 static const double kMinFitSinsqTheta12      = 0.00;
 static const double kMaxFitSinsqTheta12      = 1.00;
 static const double kStepSinsqTheta12        = 1.0E-2;
+// sinsqtheta fitter init values and range (NuBar fix Nu)
+static const double kInitFitSinsqTheta23Bar  = 0.60;
+static const double kMinFitSinsqTheta23Bar   = 0.00;
+static const double kMaxFitSinsqTheta23Bar   = 1.00;
+static const double kStepSinsqTheta23Bar     = 5.0E-3;
+static const double kInitFitSinsqTheta13Bar  = kGlobFitSinsqTheta13;
+static const double kMinFitSinsqTheta13Bar   = 0.00;
+static const double kMaxFitSinsqTheta13Bar   = 1.00;
+static const double kStepSinsqTheta13Bar     = 1.0E-3;
+static const double kInitFitSinsqTheta12Bar  = kGlobFitSinsqTheta12;
+static const double kMinFitSinsqTheta12Bar   = 0.00;
+static const double kMaxFitSinsqTheta12Bar   = 1.00;
+static const double kStepSinsqTheta12Bar     = 1.0E-2;
 /* ////////////////////////////////////////////////////////////////////// */
 /* // DeltaCP fitter init values and range and step */
 /* static const double kInitFitDeltaCP           = 0; */
