@@ -131,7 +131,8 @@ int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int in
   
   int address = 0;
   for (int i = 0 ; i < fNDim; i++) {
-    assert(indices[i]>=0 && indices[i] < fDimensions[i]);
+    assert(indices[i]>=0); //Check correct number of dimensions specified
+    assert(indices[i] < fDimensions[i]); //Check array bounds in range.
     address += indices[i] * fIncrement[i];
   }
   return address;
