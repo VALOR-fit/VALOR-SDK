@@ -212,13 +212,13 @@ void NuOsc3Flavour::SetOscParametersSinSqTAll(
   if(dmsq12 > 5.0e-3)
     cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
   if(dmsq23 < 2.0e-4)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq23 > 2.0e-2)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-2 eV^2/c^4"<<endl;
+    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
+  if(dmsq23 > 4.0e-2)
+    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsq23 = TMath::Min(dmsq23, 2.0e-2);
+  dmsq23 = TMath::Min(dmsq23, 4.0e-2);
   dmsq23 = TMath::Max(dmsq23, 2.0e-4);
 
   // Note: The input value of dmsq23 is the absolute one. The sign of dmsq23 depends on  
