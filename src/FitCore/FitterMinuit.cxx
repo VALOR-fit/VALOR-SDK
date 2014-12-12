@@ -169,6 +169,24 @@ bool FitterMinuit::DoTheFit(void)
 
   fFitTime  = 0;
   fFitTries = -1;
+  
+  // Initialise and get ready.
+  // set params
+  FitParamList & fit_params = fFitInputs->FitParams();
+  int param_list_size = fit_params.Size();
+  TVirtualFitter * fitter = TVirtualFitter::Fitter(0,param_list_size);
+  // set print level
+  Double_t arglist[5];
+  arglist[0] = -1;
+  fitter->ExecuteCommand("SET PRINT",arglist,1);
+  
+  // set params
+  fit_params.SetTo(fitter);
+  // set minimization function
+  fitter->SetFCN(FitFunc);         
+  
+  
+  // And we're ready.   
 
   // reset fit time, bestfit statistic and status codes in
   // persistable FitParamList obj
