@@ -27,7 +27,7 @@ namespace valor {
 namespace conv {
 
 // Max number of fit  parameters listed below (for booking large enough param arrays)
-static const int knppmax = 250; 
+static const int knppmax = 290; 
 
 typedef enum EPhysParamId 
 {   
