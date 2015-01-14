@@ -60,6 +60,9 @@ static const double kGlobFitErrDm12sq        = 0.024; // ~2.4% (PDG 2014)
 static const double kGlobFitDeltaCP          = 0.0;
 static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
 
+static const double kT2KBestFitDeltaCP_NH = 1.91;
+static const double kT2KBestFitDeltaCP_IH = 1.01;
+
 
 /////////////////////////////////////
 //                                 //
