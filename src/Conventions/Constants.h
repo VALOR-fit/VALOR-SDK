@@ -63,6 +63,9 @@ static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
 static const double kT2KBestFitDeltaCP_NH = 1.91;
 static const double kT2KBestFitDeltaCP_IH = 1.01;
 
+static const double kT2KBestFitTheta13_NH  = 0.0422; // (T2K Run1-4 NH)
+static const double kT2KBestFitTheta13_IH  = 0.0491; // (T2K Run1-4 NH)
+
 
 /////////////////////////////////////
 //                                 //
