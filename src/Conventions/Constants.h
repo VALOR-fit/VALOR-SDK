@@ -116,7 +116,7 @@ static const double kGlobFitErrSinsq2Theta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
 //static const double kGlobFitSinsqTheta13   = 0.0251; // old (PDG 2012)
 //static const double kGlobFitSinsqTheta13   = 0.0243; // (PDG 2013)
 //static const double kGlobFitSinsqTheta13   = 0.0238; // (PDG 2014)
-static const double kGlobFitSinsqTheta13   = 0.0352; // (T2K Run1-4 NH)
+static const double kGlobFitSinsqTheta13   = 0.0422; // (T2K Run1-4 NH)
 
 //static const double kGlobFitSinsqTheta12    = 0.306; //fogli2011
 //static const double kGlobFitSinsqTheta12    = 0.311; //pdg2012
