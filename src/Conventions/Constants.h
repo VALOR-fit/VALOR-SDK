@@ -57,14 +57,17 @@ static const double kGlobFitErrDm12sq        = 0.024; // ~2.4% (PDG 2014)
 //                                 //
 /////////////////////////////////////
 
-static const double kGlobFitDeltaCP          = 0.0;
-static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
-
 static const double kT2KBestFitDeltaCP_NH = 1.91;
 static const double kT2KBestFitDeltaCP_IH = 1.01;
 
 static const double kT2KBestFitTheta13_NH  = 0.0422; // (T2K Run1-4 NH)
 static const double kT2KBestFitTheta13_IH  = 0.0491; // (T2K Run1-4 NH)
+
+//static const double kGlobFitDeltaCP          = 0.0;
+//static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
+static const double kGlobFitDeltaCP          = kT2KBestFitDeltaCP_NH;
+static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
+
 
 
 /////////////////////////////////////
