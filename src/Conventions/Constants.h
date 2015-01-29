@@ -113,7 +113,7 @@ static const double kGlobFitErrSinsq2Theta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
 /////////////////////////////////////
 
 //static const double kGlobFitSinsqTheta23    = 0.514; // (PDG 2014)
- static const double kGlobFitSinsqTheta23    = 0.514; // (T2K Run1-4 NH)
+ static const double kGlobFitSinsqTheta23    = 0.524; // (T2K Run1-4 NH, not constrained with reactors)
 
 //static const double kGlobFitSinsqTheta13   = 0.02146; // Daya Bay Neutrino 2014  //0.0251;
 //static const double kGlobFitSinsqTheta13   = 0.0251; // old (PDG 2012)
