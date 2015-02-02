@@ -9,6 +9,7 @@
 #pragma link C++ namespace valor::util;
 
 #pragma link C++ class valor::VALORArray;
+#pragma link C++ class valor::VALORArrayI;
 
 #pragma link C++ class valor::Env;
 #pragma link C++ class valor::Rnd;
