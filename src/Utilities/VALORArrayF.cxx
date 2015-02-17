@@ -59,10 +59,9 @@ VALORArrayF::VALORArrayF(int nd, const int * dimensions) :
   this->Construct(nd,dimensions);
 }
 //________________________________________________________________________________________
-VALORArrayF::VALORArrayF(std::string file_to_read, int nd, const int * dimensions) :
+VALORArrayF::VALORArrayF(std::string file_to_read) :
   TNamed()
 {
-  this->Construct(nd,dimensions);
   this->ReadFile(file_to_read);
 }
 //________________________________________________________________________________________
@@ -76,19 +75,6 @@ VALORArrayF::VALORArrayF(int dim1, int dim2, int dim3, int dim4, int dim5, int d
     else break;
   }
   this->Construct(ndim, dimensions);
-}
-//________________________________________________________________________________________
-VALORArrayF::VALORArrayF(std::string file_to_read, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) :
-  TNamed()
-{
-  int dimensions[6] = {dim1,dim2,dim3,dim4,dim5,dim6};
-  int ndim=0;
-  for (int ii = 0 ; ii < 6 ; ii++) {
-    if (dimensions[ii] > 0 ) ndim+=1;
-    else break;
-  }
-  this->Construct(ndim, dimensions);
-  this->ReadFile(file_to_read);
 }
 //________________________________________________________________________________________
 void VALORArrayF::Construct(int nd, const int * dimensions)
@@ -124,10 +110,20 @@ fSize(arr.fSize)
   memcpy(fArray      , arr.fArray      , fSize*sizeof(float));
 }
 //________________________________________________________________________________________
-VALORArrayF::~VALORArrayF()
+void VALORArrayF::Cleanup()
 {
   delete[] fIncrement;
   delete[] fArray;
+  
+  for (int i = 0 ; i < 6 ; i++) {
+    fDimensions[i] = 1;
+    fNames[i] = "";
+  }
+}
+//________________________________________________________________________________________
+VALORArrayF::~VALORArrayF()
+{
+  this->Cleanup();
 }
 //________________________________________________________________________________________
 int VALORArrayF::GetSize(int dim) const
@@ -411,13 +407,24 @@ void VALORArrayF::ScaleBinRange(float factor,
 }
 //________________________________________________________________________________________
 void VALORArrayF::ReadFile(std::string file_to_read) {
+  this->Cleanup();
   ifstream is(file_to_read.c_str(),ios::binary|ios::in);
   assert(is);
+  
+  int ndim = 0;
+  int dims[6] = {};
+  is.read( (char*)&ndim  ,sizeof(int));
+  is.read( (char*)dims   ,sizeof(int)*6);
+  
+  this->Construct(ndim,dims);
+  
 #ifndef NDEBUG
+  unsigned int startn = is.tellg();
   is.seekg(0,is.end);
   unsigned int n = is.tellg();
   is.seekg(0,is.beg);
-  assert(n==fSize*sizeof(float));
+  assert(n==(7*sizeof(int) + fSize*sizeof(float)));
+  is.seekg(startn);
 #endif
   is.read( (char*)fArray,fSize*sizeof(float));
   is.close();
@@ -427,6 +434,8 @@ void VALORArrayF::ReadFile(std::string file_to_read) {
 void VALORArrayF::WriteFile(std::string file_to_write) {
   ofstream os(file_to_write.c_str(),ios::binary|ios::out);
   assert(os);
+  os.write( (char*)&fNDim      ,sizeof(int));
+  os.write( (char*)fDimensions ,sizeof(int)*6);
   os.write( (char*)fArray,fSize*sizeof(float) );
   os.close();
   return;

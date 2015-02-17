@@ -30,9 +30,8 @@ public:
   VALORArrayF();
   VALORArrayF(const std::vector<int> dimensions);   // List of dimension sizes
   VALORArrayF(int nd, const int * dimensions);      // List of dimension sizes
-  VALORArrayF(std::string file_to_read, int nd, const int * dimensions);      // List of dimension sizes
   VALORArrayF(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
-  VALORArrayF(std::string file_to_read, int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
+  VALORArrayF(std::string file_to_read); // Read from a file
   VALORArrayF(const VALORArrayF & arr);
  ~VALORArrayF();
   
@@ -95,6 +94,7 @@ private:
   std::string fNames[6]; //Store the dimension names if we need them.
   
   void Construct(int nd, const int * dimensions);
+  void Cleanup();
   
 ClassDef(VALORArrayF, 2)
 };
