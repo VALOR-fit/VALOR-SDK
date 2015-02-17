@@ -13,6 +13,7 @@ ChangeLog:
 #include <cstdarg>
 #include <cassert>
 #include <iostream>
+#include <fstream>
 #include <numeric>
 
 #include "Utilities/VALORArray.h"
@@ -27,6 +28,9 @@ using std::vector;
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::ifstream;
+using std::ofstream;
+using std::ios;
 
 ClassImp(VALORArray);
 
@@ -55,6 +59,13 @@ VALORArray::VALORArray(int nd, const int * dimensions) :
   this->Construct(nd,dimensions);
 }
 //________________________________________________________________________________________
+VALORArray::VALORArray(std::string file_to_read, int nd, const int * dimensions) :
+  TNamed()
+{
+  this->Construct(nd,dimensions);
+  this->ReadFile(file_to_read);
+}
+//________________________________________________________________________________________
 VALORArray::VALORArray(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) :
   TNamed()
 {
@@ -65,6 +76,19 @@ VALORArray::VALORArray(int dim1, int dim2, int dim3, int dim4, int dim5, int dim
     else break;
   }
   this->Construct(ndim, dimensions);
+}
+//________________________________________________________________________________________
+VALORArray::VALORArray(std::string file_to_read, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) :
+  TNamed()
+{
+  int dimensions[6] = {dim1,dim2,dim3,dim4,dim5,dim6};
+  int ndim=0;
+  for (int ii = 0 ; ii < 6 ; ii++) {
+    if (dimensions[ii] > 0 ) ndim+=1;
+    else break;
+  }
+  this->Construct(ndim, dimensions);
+  this->ReadFile(file_to_read);
 }
 //________________________________________________________________________________________
 void VALORArray::Construct(int nd, const int * dimensions)
@@ -384,5 +408,27 @@ void VALORArray::ScaleBinRange(double factor,
       }
     }
   }
+}
+//________________________________________________________________________________________
+void VALORArray::ReadFile(std::string file_to_read) {
+  ifstream is(file_to_read.c_str(),ios::binary|ios::in);
+  assert(is);
+#ifndef NDEBUG
+  is.seekg(0,is.end);
+  unsigned int n = is.tellg();
+  is.seekg(0,is.beg);
+  assert(n==fSize*sizeof(double));
+#endif
+  is.read( (char*)fArray,fSize*sizeof(double));
+  is.close();
+  return;
+}
+//________________________________________________________________________________________
+void VALORArray::WriteFile(std::string file_to_write) {
+  ofstream os(file_to_write.c_str(),ios::binary|ios::out);
+  assert(os);
+  os.write( (char*)fArray,fSize*sizeof(double) );
+  os.close();
+  return;
 }
 //________________________________________________________________________________________
