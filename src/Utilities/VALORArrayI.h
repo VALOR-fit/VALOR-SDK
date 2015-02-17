@@ -30,7 +30,9 @@ public:
   VALORArrayI();
   VALORArrayI(const std::vector<int> dimensions);   // List of dimension sizes
   VALORArrayI(int nd, const int * dimensions);      // List of dimension sizes
+  VALORArrayI(std::string file_to_read, int nd, const int * dimensions);      // List of dimension sizes
   VALORArrayI(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
+  VALORArrayI(std::string file_to_read, int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
   VALORArrayI(const VALORArrayI & arr);
  ~VALORArrayI();
   
@@ -78,6 +80,9 @@ public:
                       int min_dim1     , int max_dim1=-1, int min_dim2=-1, int max_dim2=-1, 
                       int min_dim3 = -1, int max_dim3=-1, int min_dim4=-1, int max_dim4=-1, 
                       int min_dim5 = -1, int max_dim5=-1, int min_dim6=-1, int max_dim6=-1 );
+                      
+  void ReadFile (std::string file_to_read);
+  void WriteFile(std::string file_to_write);
   
 private:
   int fNDim;
