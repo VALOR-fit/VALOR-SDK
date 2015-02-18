@@ -31,6 +31,8 @@
 #include <TMatrixDSym.h>
 #include <Fit/Fitter.h>
 
+#include "TH1F.h"
+
 #include "Conventions/PhysParamId.h"
 #include "Conventions/PhysHypothesisId.h"
 
@@ -83,6 +85,7 @@ public:
 
    // Allow modifying the initial value (minimization may be sensitive to this choice)
    void SetInitValue(valor::conv::PhysParamId_t p, double v);
+   void SetCurrentValue(valor::conv::PhysParamId_t p, double v);
 
    // Reset all current param values to their specified initial values
    void ResetCurrToInitValues (void);
@@ -202,6 +205,28 @@ public:
    int  Id      (valor::conv::PhysParamId_t p) const; // PhysParamId_t --> array slot
    valor::conv::PhysParamId_t WhichParam(int id) const; // array slot --> PhysParamId_t
    
+
+   // MARGINALIZATION
+   void SetDoMarg(valor::conv::PhysParamId_t p);
+   void SetPriorMode(valor::conv::PhysParamId_t p,int priormode);
+   void SetPriorMode(valor::conv::PhysParamId_t p,string priormodename);
+   void SetMeanMarg(valor::conv::PhysParamId_t p,double mean);
+   void SetSigmaMarg(valor::conv::PhysParamId_t p,double sigma);
+   void SetMinValueMarg(valor::conv::PhysParamId_t p,double minvalmarg);
+   void SetMaxValueMarg(valor::conv::PhysParamId_t p,double maxvalmarg);
+   void SetPriorHisto(valor::conv::PhysParamId_t p,TH1F *hprior);
+
+   bool   IsMarginalized   (valor::conv::PhysParamId_t p) const { return fDoMarg        [this->Id(p)]; }
+   int    GetPriorMode     (valor::conv::PhysParamId_t p) const { return fPriorMode     [this->Id(p)]; }
+   string GetPriorModeName (valor::conv::PhysParamId_t p) const { return fPriorModeName [this->Id(p)]; }
+   double GetMeanMarg      (valor::conv::PhysParamId_t p) const { return fMeanMarg      [this->Id(p)]; }
+   double GetSigmaMarg     (valor::conv::PhysParamId_t p) const { return fSigmaMarg     [this->Id(p)]; }
+   double GetMinValueMarg  (valor::conv::PhysParamId_t p) const { return fMinValueMarg  [this->Id(p)]; }
+   double GetMaxValueMarg  (valor::conv::PhysParamId_t p) const { return fMaxValueMarg  [this->Id(p)]; }
+   TH1F * GetPriorHisto    (valor::conv::PhysParamId_t p) const { return fPriorHisto    [this->Id(p)]; }
+   //
+
+
    // Returns a fit param list with a physics hypothesis, and 'nuisance' empty parameters.
    static FitParamList * NuOsc3FlavourFit                          (int nuisance = 0);
    static FitParamList * NuOsc3FlavourBarFit                       (int nuisance = 0);
@@ -272,6 +297,27 @@ private:
 
    mutable bool fShowCurrValuesOnly;
    mutable bool fShowBestFitValuesOnly;
+
+
+   //////////////////////////////////// 
+   
+   // MARGINALIZATION
+
+   bool   *fDoMarg;         //[fNParams]  flag to marginalize the fit parameter
+   int    *fPriorMode;      //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo) 
+   string *fPriorModeName;  //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo) 
+   
+   double *fMeanMarg;  //[fNParams]  // Mean of marginalization  (gaussian prior)
+   double *fSigmaMarg; //[fNParams]  // Sigma of marginalization (gaussian prior)
+
+   double *fMinValueMarg; //[fNParams]  // Low edge of the marginalization interval (flat prior)
+   double *fMaxValueMarg; //[fNParams]  // Up  edge of the marginalization interval (flat prior)
+
+   TH1F **fPriorHisto;   //[fNParams]  // Prior histgram 
+  
+   ////////////////////////////////////
+
+
 
 ClassDef(FitParamList,1)
 };
