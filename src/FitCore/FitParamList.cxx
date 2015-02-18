@@ -1332,11 +1332,13 @@ void FitParamList::Copy(const FitParamList & plst)
      this->fDoMarg[i]        = plst.fDoMarg[i];
      this->fPriorMode[i]     = plst.fPriorMode[i];
      this->fPriorModeName[i] = plst.fPriorModeName[i];
-     this->fMeanMarg[i]      = plst.fMeanMarg[i];
-     this->fSigmaMarg[i]     = plst.fSigmaMarg[i];
-     this->fMinValueMarg[i]  = plst.fMinValueMarg[i];
-     this->fMaxValueMarg[i]  = plst.fMaxValueMarg[i];
+     this->fMeanGaus[i]      = plst.fMeanGaus[i];
+     this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
+     this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
+     this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
      this->fPriorHisto[i]    = (TH1F*) plst.fPriorHisto[i]->Clone("");
+     //this->fPriorHisto[i]    = new TH1F(plst.fPriorHisto[i]);
+     //this->fPriorHisto[i]->Copy(plst.fPriorHisto[i]);
      //
   } 
 
@@ -1391,10 +1393,10 @@ void FitParamList::Init(int nparams)
      fDoMarg        = new bool  [fNParams];
      fPriorMode     = new int   [fNParams];
      fPriorModeName = new string[fNParams];
-     fMeanMarg      = new double[fNParams];
-     fSigmaMarg     = new double[fNParams];
-     fMinValueMarg  = new double[fNParams];
-     fMaxValueMarg  = new double[fNParams];    
+     fMeanGaus      = new double[fNParams];
+     fSigmaGaus     = new double[fNParams];
+     fMinValueFlat  = new double[fNParams];
+     fMaxValueFlat  = new double[fNParams];    
      fPriorHisto    = new TH1F *[fNParams];
      //
 
@@ -1418,10 +1420,10 @@ void FitParamList::Init(int nparams)
      fDoMarg        = 0;
      fPriorMode     = 0;
      fPriorModeName = 0;
-     fMeanMarg      = 0;
-     fSigmaMarg     = 0;
-     fMinValueMarg  = 0;
-     fMaxValueMarg  = 0;
+     fMeanGaus      = 0;
+     fSigmaGaus     = 0;
+     fMinValueFlat  = 0;
+     fMaxValueFlat  = 0;
      fPriorHisto    = 0;
      //
 
@@ -1446,10 +1448,10 @@ void FitParamList::Init(int nparams)
      fDoMarg       [i] = 0;
      fPriorMode    [i] = 0;
      fPriorModeName[i] = "";
-     fMeanMarg     [i] = 0;
-     fSigmaMarg    [i] = 0;
-     fMinValueMarg [i] = 0;
-     fMaxValueMarg [i] = 0;
+     fMeanGaus     [i] = 0;
+     fSigmaGaus    [i] = 0;
+     fMinValueFlat [i] = 0;
+     fMaxValueFlat [i] = 0;
      fPriorHisto   [i] = 0;
      //
 
@@ -1496,10 +1498,10 @@ void FitParamList::CleanUp(void)
    delete [] fDoMarg;
    delete [] fPriorMode;
    delete [] fPriorModeName;
-   delete [] fMeanMarg;
-   delete [] fSigmaMarg;
-   delete [] fMinValueMarg;
-   delete [] fMaxValueMarg;
+   delete [] fMeanGaus;
+   delete [] fSigmaGaus;
+   delete [] fMinValueFlat;
+   delete [] fMaxValueFlat;
    delete [] fPriorHisto;
    //
 
@@ -1522,10 +1524,10 @@ void FitParamList::CleanUp(void)
    fDoMarg        = 0;
    fPriorMode     = 0;
    fPriorModeName = 0;
-   fMeanMarg      = 0;
-   fSigmaMarg     = 0;
-   fMinValueMarg  = 0;
-   fMaxValueMarg  = 0;
+   fMeanGaus      = 0;
+   fSigmaGaus     = 0;
+   fMinValueFlat  = 0;
+   fMaxValueFlat  = 0;
    fPriorHisto    = 0;
    //
 
@@ -1600,9 +1602,9 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
 
 // MARGINALIZATION
 //________________________________________________________________________________________
-void FitParamList::SetDoMarg(valor::conv::PhysParamId_t p)
+void FitParamList::SetDoMarg(valor::conv::PhysParamId_t p,bool domarg)
 {
-  fDoMarg [this->Id(p)] = true;
+  fDoMarg [this->Id(p)] = domarg;
 }
 //________________________________________________________________________________________
 void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,int priormode)
@@ -1646,29 +1648,29 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,string priormodenam
   }
 }
 //________________________________________________________________________________________
-void FitParamList::SetMeanMarg(valor::conv::PhysParamId_t p,double mean)
+void FitParamList::SetMeanGaus(valor::conv::PhysParamId_t p,double mean)
 {
-  fMeanMarg [this->Id(p)] = mean;
+  fMeanGaus [this->Id(p)] = mean;
 }
 //________________________________________________________________________________________
-void FitParamList::SetSigmaMarg(valor::conv::PhysParamId_t p,double sigma)
+void FitParamList::SetSigmaGaus(valor::conv::PhysParamId_t p,double sigma)
 {
-  fSigmaMarg [this->Id(p)] = sigma;
+  fSigmaGaus [this->Id(p)] = sigma;
 }
 //________________________________________________________________________________________
-void FitParamList::SetMinValueMarg(valor::conv::PhysParamId_t p,double minvalmarg)
+void FitParamList::SetMinValueFlat(valor::conv::PhysParamId_t p,double minvalmarg)
 {
-  fMinValueMarg [this->Id(p)] = minvalmarg;
+  fMinValueFlat [this->Id(p)] = minvalmarg;
 }
 //________________________________________________________________________________________
-void FitParamList::SetMaxValueMarg(valor::conv::PhysParamId_t p,double maxvalmarg)
+void FitParamList::SetMaxValueFlat(valor::conv::PhysParamId_t p,double maxvalmarg)
 {
-  fMaxValueMarg [this->Id(p)] = maxvalmarg;
+  fMaxValueFlat [this->Id(p)] = maxvalmarg;
 }
 //________________________________________________________________________________________
 void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1F *hprior)
 {
-  fPriorHisto [this->Id(p)] = (TH1F*) hprior->Clone("");
+  fPriorHisto [this->Id(p)] = (TH1F*) hprior->Clone(hprior->GetName());
 }
 
 //

@@ -207,22 +207,22 @@ public:
    
 
    // MARGINALIZATION
-   void SetDoMarg(valor::conv::PhysParamId_t p);
+   void SetDoMarg(valor::conv::PhysParamId_t p,bool domarg);
    void SetPriorMode(valor::conv::PhysParamId_t p,int priormode);
    void SetPriorMode(valor::conv::PhysParamId_t p,string priormodename);
-   void SetMeanMarg(valor::conv::PhysParamId_t p,double mean);
-   void SetSigmaMarg(valor::conv::PhysParamId_t p,double sigma);
-   void SetMinValueMarg(valor::conv::PhysParamId_t p,double minvalmarg);
-   void SetMaxValueMarg(valor::conv::PhysParamId_t p,double maxvalmarg);
+   void SetMeanGaus(valor::conv::PhysParamId_t p,double mean);
+   void SetSigmaGaus(valor::conv::PhysParamId_t p,double sigma);
+   void SetMinValueFlat(valor::conv::PhysParamId_t p,double minvalmarg);
+   void SetMaxValueFlat(valor::conv::PhysParamId_t p,double maxvalmarg);
    void SetPriorHisto(valor::conv::PhysParamId_t p,TH1F *hprior);
 
    bool   IsMarginalized   (valor::conv::PhysParamId_t p) const { return fDoMarg        [this->Id(p)]; }
    int    GetPriorMode     (valor::conv::PhysParamId_t p) const { return fPriorMode     [this->Id(p)]; }
    string GetPriorModeName (valor::conv::PhysParamId_t p) const { return fPriorModeName [this->Id(p)]; }
-   double GetMeanMarg      (valor::conv::PhysParamId_t p) const { return fMeanMarg      [this->Id(p)]; }
-   double GetSigmaMarg     (valor::conv::PhysParamId_t p) const { return fSigmaMarg     [this->Id(p)]; }
-   double GetMinValueMarg  (valor::conv::PhysParamId_t p) const { return fMinValueMarg  [this->Id(p)]; }
-   double GetMaxValueMarg  (valor::conv::PhysParamId_t p) const { return fMaxValueMarg  [this->Id(p)]; }
+   double GetMeanGaus      (valor::conv::PhysParamId_t p) const { return fMeanGaus      [this->Id(p)]; }
+   double GetSigmaGaus     (valor::conv::PhysParamId_t p) const { return fSigmaGaus     [this->Id(p)]; }
+   double GetMinValueFlat  (valor::conv::PhysParamId_t p) const { return fMinValueFlat  [this->Id(p)]; }
+   double GetMaxValueFlat  (valor::conv::PhysParamId_t p) const { return fMaxValueFlat  [this->Id(p)]; }
    TH1F * GetPriorHisto    (valor::conv::PhysParamId_t p) const { return fPriorHisto    [this->Id(p)]; }
    //
 
@@ -271,18 +271,18 @@ private:
 
    int          fNParams;   
    TObjString * fName;         //[fNParams]
-   double *     fBestFitValue; //[fNParams]
-   double *     fCurrValue;    //[fNParams]
-   double *     fInitValue;    //[fNParams]
-   double *     fMinValue;     //[fNParams]
-   double *     fMaxValue;     //[fNParams]
-   double *     fStepSize;     //[fNParams]
-   bool *       fIsFixed;      //[fNParams]
-   bool *       fIsNuisance;   //[fNParams]
-   double *     fMigradError;  //[fNParams]
-   double *     fHesseError;   //[fNParams]
-   double *     fPlusError;    //[fNParams]
-   double *     fMinusError;   //[fNParams]
+   double     * fBestFitValue; //[fNParams]
+   double     * fCurrValue;    //[fNParams]
+   double     * fInitValue;    //[fNParams]
+   double     * fMinValue;     //[fNParams]
+   double     * fMaxValue;     //[fNParams]
+   double     * fStepSize;     //[fNParams]
+   bool       * fIsFixed;      //[fNParams]
+   bool       * fIsNuisance;   //[fNParams]
+   double     * fMigradError;  //[fNParams]
+   double     * fHesseError;   //[fNParams]
+   double     * fPlusError;    //[fNParams]
+   double     * fMinusError;   //[fNParams]
    TMatrixDSym* fCovMatrix;  
    double       fBestFitStatistic; 
    double       fCurrStatistic; 
@@ -307,11 +307,11 @@ private:
    int    *fPriorMode;      //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo) 
    string *fPriorModeName;  //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo) 
    
-   double *fMeanMarg;  //[fNParams]  // Mean of marginalization  (gaussian prior)
-   double *fSigmaMarg; //[fNParams]  // Sigma of marginalization (gaussian prior)
+   double *fMeanGaus;  //[fNParams]  // Mean of marginalization  (gaussian prior)
+   double *fSigmaGaus; //[fNParams]  // Sigma of marginalization (gaussian prior)
 
-   double *fMinValueMarg; //[fNParams]  // Low edge of the marginalization interval (flat prior)
-   double *fMaxValueMarg; //[fNParams]  // Up  edge of the marginalization interval (flat prior)
+   double *fMinValueFlat; //[fNParams]  // Low edge of the marginalization interval (flat prior)
+   double *fMaxValueFlat; //[fNParams]  // Up  edge of the marginalization interval (flat prior)
 
    TH1F **fPriorHisto;   //[fNParams]  // Prior histgram 
   
