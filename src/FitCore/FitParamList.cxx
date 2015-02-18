@@ -1327,6 +1327,17 @@ void FitParamList::Copy(const FitParamList & plst)
      this->fHesseError[i]   = plst.fHesseError[i];
      this->fPlusError[i]    = plst.fPlusError[i];
      this->fMinusError[i]   = plst.fMinusError[i];
+
+     // MARGINALIZATION
+     this->fDoMarg[i]        = plst.fDoMarg[i];
+     this->fPriorMode[i]     = plst.fPriorMode[i];
+     this->fPriorModeName[i] = plst.fPriorModeName[i];
+     this->fMeanMarg[i]      = plst.fMeanMarg[i];
+     this->fSigmaMarg[i]     = plst.fSigmaMarg[i];
+     this->fMinValueMarg[i]  = plst.fMinValueMarg[i];
+     this->fMaxValueMarg[i]  = plst.fMaxValueMarg[i];
+     this->fPriorHisto[i]    = (TH1F*) plst.fPriorHisto[i]->Clone("");
+     //
   } 
 
   for(int i = 0; i < plst.fNParams; i++) {
@@ -1481,6 +1492,17 @@ void FitParamList::CleanUp(void)
    delete [] fMinusError;
    delete fCovMatrix;
 
+   // MARGINALIZATION
+   delete [] fDoMarg;
+   delete [] fPriorMode;
+   delete [] fPriorModeName;
+   delete [] fMeanMarg;
+   delete [] fSigmaMarg;
+   delete [] fMinValueMarg;
+   delete [] fMaxValueMarg;
+   delete [] fPriorHisto;
+   //
+
    fName         = 0;
    fBestFitValue = 0;
    fCurrValue    = 0;
@@ -1495,6 +1517,17 @@ void FitParamList::CleanUp(void)
    fPlusError    = 0;
    fMinusError   = 0;
    fCovMatrix    = 0;
+
+   // MARGINALIZATION
+   fDoMarg        = 0;
+   fPriorMode     = 0;
+   fPriorModeName = 0;
+   fMeanMarg      = 0;
+   fSigmaMarg     = 0;
+   fMinValueMarg  = 0;
+   fMaxValueMarg  = 0;
+   fPriorHisto    = 0;
+   //
 
    fBestFitStatistic = 0.;
    fCurrStatistic    = 0.;
