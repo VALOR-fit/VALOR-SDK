@@ -115,4 +115,10 @@ double PhysParamList::operator () (conv::PhysParamId_t p) const
   return this->Value(p);
 }
 //________________________________________________________________________________________
+bool PhysParamList::Contains(conv::PhysParamId_t p) const
+{
+  map<int,double>::const_iterator it = fParams.find(p);
+  return (it != fParams.end());
+}
+//________________________________________________________________________________________
 
