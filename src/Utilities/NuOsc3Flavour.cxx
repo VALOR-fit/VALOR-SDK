@@ -93,12 +93,12 @@ void NuOsc3Flavour::SetOscParameters(
     cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
   if(dmsq23 < 2.0e-4)
     cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq23 > 2.0e-2)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-2 eV^2/c^4"<<endl;
+  if(dmsq23 > 4.0e-2)
+    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsq23 = TMath::Min(dmsq23, 2.0e-2);
+  dmsq23 = TMath::Min(dmsq23, 4.0e-2);
   dmsq23 = TMath::Max(dmsq23, 2.0e-4);
 
   // Note: The input value of dmsq23 is the absolute one. The sign of dmsq23 depends on 
@@ -233,11 +233,14 @@ void NuOsc3Flavour::SetOscParametersSinSqTAll(
 
   // Code returns NaN if sin^2(mixing angle) is unphysical. 
   // Don't let sin^2(mixing angle) be below 0 or above 1. 
-  sinsqtheta12 = TMath::Min(1.,sinsqtheta12);
+  // Oscillation probability can be nan if sinsqtheta13 = 1.0 exactly
+  // This is because UMassUdaggerMinusEv has one row of all zeroes for both real and imaginary parts
+  // To avoid this, restrict sinsq of all mixing angles to be < 0.99999
+  sinsqtheta12 = TMath::Min(0.99999,sinsqtheta12);
   sinsqtheta12 = TMath::Max(0.,sinsqtheta12);
-  sinsqtheta13 = TMath::Min(1.,sinsqtheta13);
+  sinsqtheta13 = TMath::Min(0.99999,sinsqtheta13);
   sinsqtheta13 = TMath::Max(0.,sinsqtheta13);
-  sinsqtheta23 = TMath::Min(1.,sinsqtheta23);
+  sinsqtheta23 = TMath::Min(0.99999,sinsqtheta23);
   sinsqtheta23 = TMath::Max(0.,sinsqtheta23);
 
   // Calculate sin(mixingAngle) from sin^2(mixingAngle) 
@@ -320,6 +323,20 @@ void NuOsc3Flavour::SetOscParametersSinSqTAllSinDeltaCP(
   dmsq12 = dmsq12_in;
   dmsq23 = dmsq23_in;
 
+  if(dmsq12 < 5.0e-6)
+    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-6 eV^2/c^4"<<endl;
+  if(dmsq12 > 5.0e-3)
+    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
+  if(dmsq23 < 2.0e-4)
+    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
+  if(dmsq23 > 4.0e-2)
+    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
+
+  dmsq12 = TMath::Min(dmsq12, 5.0e-3);
+  dmsq12 = TMath::Max(dmsq12, 5.0e-6);
+  dmsq23 = TMath::Min(dmsq23, 4.0e-2);
+  dmsq23 = TMath::Max(dmsq23, 2.0e-4);
+
   // Note: The input value of dmsq23 is the absolute one. The sign of dmsq23 depends on
   // the mass hierarchy. In the normal mass hierarchy, dmsq23 is positive. In the inverted
   // mass hierarchy, dmsq23 is NEGATIVE. Set the appropriate sign. 
@@ -332,11 +349,14 @@ void NuOsc3Flavour::SetOscParametersSinSqTAllSinDeltaCP(
 
   // Code returns NaN if sin^2(mixing angle) is unphysical.
   // Don't let sin^2(mixing angle) be below 0 or above 1. 
-  sinsqtheta12 = TMath::Min(1.,sinsqtheta12);
+  // Oscillation probability can be nan if sinsqtheta13 = 1.0 exactly
+  // This is because UMassUdaggerMinusEv has one row of all zeroes for both real and imaginary parts
+  // To avoid this, restrict sinsq of all mixing angles to be < 0.99999
+  sinsqtheta12 = TMath::Min(0.99999,sinsqtheta12);
   sinsqtheta12 = TMath::Max(0.,sinsqtheta12);
-  sinsqtheta13 = TMath::Min(1.,sinsqtheta13);
+  sinsqtheta13 = TMath::Min(0.99999,sinsqtheta13);
   sinsqtheta13 = TMath::Max(0.,sinsqtheta13);
-  sinsqtheta23 = TMath::Min(1.,sinsqtheta23);
+  sinsqtheta23 = TMath::Min(0.99999,sinsqtheta23);
   sinsqtheta23 = TMath::Max(0.,sinsqtheta23);
 
   // Calculate sin(mixingAngle) from sin^2(mixingAngle) 
@@ -429,12 +449,12 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
     cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
   if(dmsqAtm < 2.0e-4)
     cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsqAtm > 2.0e-2)
-    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-2 eV^2/c^4"<<endl;
+  if(dmsqAtm > 4.0e-2)
+    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsqAtm = TMath::Min(dmsqAtm, 2.0e-2);
+  dmsqAtm = TMath::Min(dmsqAtm, 4.0e-2);
   dmsqAtm = TMath::Max(dmsqAtm, 2.0e-4);
 
   // Note: The input value of dmsqAtm is the absolute one. The sign of dmsqAtm depends on 
@@ -546,12 +566,12 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
     cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
   if(dmsqAtm < 2.0e-4)
     cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsqAtm > 2.0e-2)
-    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-2 eV^2/c^4"<<endl;
+  if(dmsqAtm > 4.0e-2)
+    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsqAtm = TMath::Min(dmsqAtm, 2.0e-2);
+  dmsqAtm = TMath::Min(dmsqAtm, 4.0e-2);
   dmsqAtm = TMath::Max(dmsqAtm, 2.0e-4);
 
   // Note: The input value of dmsqAtm is the absolute one. The sign of dmsqAtm depends on  
@@ -567,11 +587,14 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
 
   // Code returns NaN if sin^2(mixing angle) is unphysical. 
   // Don't let sin^2(mixing angle) be below 0 or above 1. 
-  sinsqtheta12 = TMath::Min(1.,sinsqtheta12);
+  // Oscillation probability can be nan if sinsqtheta13 = 1.0 exactly
+  // This is because UMassUdaggerMinusEv has one row of all zeroes for both real and imaginary parts
+  // To avoid this, restrict sinsq of all mixing angles to be < 0.99999
+  sinsqtheta12 = TMath::Min(0.99999,sinsqtheta12);
   sinsqtheta12 = TMath::Max(0.,sinsqtheta12);
-  sinsqtheta13 = TMath::Min(1.,sinsqtheta13);
+  sinsqtheta13 = TMath::Min(0.99999,sinsqtheta13);
   sinsqtheta13 = TMath::Max(0.,sinsqtheta13);
-  sinsqtheta23 = TMath::Min(1.,sinsqtheta23);
+  sinsqtheta23 = TMath::Min(0.99999,sinsqtheta23);
   sinsqtheta23 = TMath::Max(0.,sinsqtheta23);
 
   // Calculate sin(mixingAngle) from sin^2(mixingAngle) 
@@ -654,15 +677,15 @@ void NuOsc3Flavour::SetOscParametersDmsqAtmSolSinDeltaCP(
   dmsq12 = dmsq12_in;
   dmsqAtm = dmsqAtm_in;
 
-  dmsq12 = TMath::Min(dmsq12, 5.0e-3);
-  dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsqAtm = TMath::Min(dmsqAtm, 2.0e-2);
-  dmsqAtm = TMath::Max(dmsqAtm, 2.0e-4);
-
   if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
     cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsqAtm > 2.0e-2 || dmsqAtm < 2.0e-4)
-    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4"<<endl;
+  if(dmsqAtm > 4.0e-2 || dmsqAtm < 2.0e-4)
+    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4"<<endl;
+
+  dmsq12 = TMath::Min(dmsq12, 5.0e-3);
+  dmsq12 = TMath::Max(dmsq12, 5.0e-6);
+  dmsqAtm = TMath::Min(dmsqAtm, 4.0e-2);
+  dmsqAtm = TMath::Max(dmsqAtm, 2.0e-4);
 
   // Note: The input value of dmsqAtm is the absolute one. The sign of dmsqAtm depends on 
   // the mass hierarchy. In the normal mass hierarchy, dmsqAtm is positive. In the inverted
@@ -677,11 +700,14 @@ void NuOsc3Flavour::SetOscParametersDmsqAtmSolSinDeltaCP(
 
   // Code returns NaN if sin^2(mixing angle) is unphysical. 
   // Don't let sin^2(mixing angle) be below 0 or above 1. 
-  sinsqtheta12 = TMath::Min(1.,sinsqtheta12);
+  // Oscillation probability can be nan if sinsqtheta13 = 1.0 exactly
+  // This is because UMassUdaggerMinusEv has one row of all zeroes for both real and imaginary parts
+  // To avoid this, restrict sinsq of all mixing angles to be < 0.99999
+  sinsqtheta12 = TMath::Min(0.99999,sinsqtheta12);
   sinsqtheta12 = TMath::Max(0.,sinsqtheta12);
-  sinsqtheta13 = TMath::Min(1.,sinsqtheta13);
+  sinsqtheta13 = TMath::Min(0.99999,sinsqtheta13);
   sinsqtheta13 = TMath::Max(0.,sinsqtheta13);
-  sinsqtheta23 = TMath::Min(1.,sinsqtheta23);
+  sinsqtheta23 = TMath::Min(0.99999,sinsqtheta23);
   sinsqtheta23 = TMath::Max(0.,sinsqtheta23);
 
   // Calculate sin(mixingAngle) from sin^2(mixingAngle) 
@@ -774,12 +800,12 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmsq13(
     cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
   if(dmsq13 < 2.0e-4)
     cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq13 > 2.0e-2)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-2 eV^2/c^4"<<endl;
+  if(dmsq13 > 4.0e-2)
+    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsq13 = TMath::Min(dmsq13, 2.0e-2);
+  dmsq13 = TMath::Min(dmsq13, 4.0e-2);
   dmsq13 = TMath::Max(dmsq13, 2.0e-4);
 
   if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
@@ -896,12 +922,12 @@ void NuOsc3Flavour::SetOscParametersDmsq13(
     cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
   if(dmsq13 < 2.0e-4)
     cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq13 > 2.0e-2)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-2 eV^2/c^4"<<endl;
+  if(dmsq13 > 4.0e-2)
+    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsq13 = TMath::Min(dmsq13, 2.0e-2);
+  dmsq13 = TMath::Min(dmsq13, 4.0e-2);
   dmsq13 = TMath::Max(dmsq13, 2.0e-4);
 
   // Note: The input value of dmsq13 is the absolute one. The sign of dmsq13 depends on  
@@ -916,11 +942,14 @@ void NuOsc3Flavour::SetOscParametersDmsq13(
 
   // Code returns NaN if sin^2(mixing angle) is unphysical.  
   // Don't let sin^2(mixing angle) be below 0 or above 1.  
-  sinsqtheta12 = TMath::Min(1.,sinsqtheta12);
+  // Oscillation probability can be nan if sinsqtheta13 = 1.0 exactly
+  // This is because UMassUdaggerMinusEv has one row of all zeroes for both real and imaginary parts
+  // To avoid this, restrict sinsq of all mixing angles to be < 0.99999
+  sinsqtheta12 = TMath::Min(0.99999,sinsqtheta12);
   sinsqtheta12 = TMath::Max(0.,sinsqtheta12);
-  sinsqtheta13 = TMath::Min(1.,sinsqtheta13);
+  sinsqtheta13 = TMath::Min(0.99999,sinsqtheta13);
   sinsqtheta13 = TMath::Max(0.,sinsqtheta13);
-  sinsqtheta23 = TMath::Min(1.,sinsqtheta23);
+  sinsqtheta23 = TMath::Min(0.99999,sinsqtheta23);
   sinsqtheta23 = TMath::Max(0.,sinsqtheta23);
 
   // Calculate sin(mixingAngle) from sin^2(mixingAngle) 
@@ -1003,15 +1032,15 @@ void NuOsc3Flavour::SetOscParametersDmsq13SinDeltaCP(
   dmsq12 = dmsq12_in;
   dmsq13 = dmsq13_in;
 
-  dmsq12 = TMath::Min(dmsq12, 5.0e-3);
-  dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsq13 = TMath::Min(dmsq13, 2.0e-2);
-  dmsq13 = TMath::Max(dmsq13, 2.0e-4);
-
   if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
     cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsq13 > 2.0e-2 || dmsq13 < 2.0e-4)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4"<<endl;
+  if(dmsq13 > 4.0e-2 || dmsq13 < 2.0e-4)
+    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4"<<endl;
+
+  dmsq12 = TMath::Min(dmsq12, 5.0e-3);
+  dmsq12 = TMath::Max(dmsq12, 5.0e-6);
+  dmsq13 = TMath::Min(dmsq13, 4.0e-2);
+  dmsq13 = TMath::Max(dmsq13, 2.0e-4);
 
   // Note: The input value of dmsq13 is the absolute one. The sign of dmsq13 depends on 
   // the mass hierarchy. In the normal mass hierarchy, dmsq13 is positive. In the inverted 
@@ -1025,11 +1054,14 @@ void NuOsc3Flavour::SetOscParametersDmsq13SinDeltaCP(
 
   // Code returns NaN if sin^2(mixing angle) is unphysical. 
   // Don't let sin^2(mixing angle) be below 0 or above 1. 
-  sinsqtheta12 = TMath::Min(1.,sinsqtheta12);
+  // Oscillation probability can be nan if sinsqtheta13 = 1.0 exactly
+  // This is because UMassUdaggerMinusEv has one row of all zeroes for both real and imaginary parts
+  // To avoid this, restrict sinsq of all mixing angles to be < 0.99999
+  sinsqtheta12 = TMath::Min(0.99999,sinsqtheta12);
   sinsqtheta12 = TMath::Max(0.,sinsqtheta12);
-  sinsqtheta13 = TMath::Min(1.,sinsqtheta13);
+  sinsqtheta13 = TMath::Min(0.99999,sinsqtheta13);
   sinsqtheta13 = TMath::Max(0.,sinsqtheta13);
-  sinsqtheta23 = TMath::Min(1.,sinsqtheta23);
+  sinsqtheta23 = TMath::Min(0.99999,sinsqtheta23);
   sinsqtheta23 = TMath::Max(0.,sinsqtheta23);
 
   // Calculate sin(mixingAngle) from sin^2(mixingAngle) 
