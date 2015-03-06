@@ -348,7 +348,8 @@ TH1D * valor::util::XML2TH1D(
 
   TH1D * hcopy = new TH1D(*h);
   hcopy->SetDirectory(0);
-
+  
+  delete h;
   file.Close();
 
   return hcopy;
@@ -381,7 +382,8 @@ TH2D * valor::util::XML2TH2D(
 
   TH2D * h2copy = new TH2D(*h2);
   h2copy->SetDirectory(0);
-
+  
+  delete h2;
   file.Close();
 
   return h2copy;
@@ -443,9 +445,10 @@ TVectorD * valor::util::XML2TVectorD(
     //return 0;
     exit(1);
   }
-
+  
   TVectorD * vec_copy = new TVectorD(*vec);
-
+  
+  delete vec;
   file.Close();
 
   return vec_copy;
@@ -475,6 +478,7 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
   }
 
   TMatrixDSym * matrix_copy = new TMatrixDSym(*matrix);
+  delete matrix;
   file.Close();
 
   return matrix_copy;
@@ -508,6 +512,7 @@ TMatrixD * valor::util::XML2TMatrixD(
   }
 
   TMatrixD * matrix_copy = new TMatrixD(*matrix);
+  delete matrix;
   file->Close();
 
   return matrix_copy;
@@ -537,29 +542,23 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
     file.Close();
     exit(1);
   }
+  
+  const int nrows = h2->GetNbinsX();
+  const int ncols = h2->GetNbinsY();
 
-  TH2D * h2copy = new TH2D(*h2);
-  h2copy->SetDirectory(0);
-
-  file.Close();
-
-  const int nrows = h2copy->GetNbinsX();
-  const int ncols = h2copy->GetNbinsY();
-
-  TMatrixD matrix(nrows,ncols);
+  TMatrixD * matrix = new TMatrixD(nrows,ncols);
   for(int i = 1; i <= nrows; i++) {
     for(int j = 1; j <= ncols; j++) {
-      matrix(i-1,j-1)=h2copy->GetBinContent(i,j);
-      LOG("XML",pDEBUG) << i << "\t" << j << "\t" << h2copy->GetBinContent(i,j);
+      (*matrix)(i-1,j-1) = h2->GetBinContent(i,j);
+      LOG("XML",pDEBUG) << i << "\t" << j << "\t" << h2->GetBinContent(i,j);
     }
   }
-
-  TMatrixD * matrix_copy = new TMatrixD(matrix);
 #ifdef __show_xml_mesg_debug__
-  matrix_copy->Print();
+  matrix->Print();
 #endif
-
-  return matrix_copy;
+  delete h2;
+  file.Close();
+  return matrix;
 }
 //____________________________________________________________________________________________________
 TSpline3 * valor::util::XML2TSpline3(
@@ -575,16 +574,17 @@ TSpline3 * valor::util::XML2TSpline3(
 
   const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile * file = new TFile(full_filename,"read"); 
-  TSpline3 * spl = (TSpline3*) file->Get(objname.c_str());
+  TFile file(full_filename,"read"); 
+  TSpline3 * spl = (TSpline3*) file.Get(objname.c_str());
   if(!spl) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
-    file->Close();
+    file.Close();
     exit(1);
   }
 
   TSpline3 * spl_copy = new TSpline3(*spl);
-  file->Close();
+  delete spl;
+  file.Close();
 
   return spl_copy;
 }

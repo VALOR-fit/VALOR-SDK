@@ -42,7 +42,7 @@ Messenger::~Messenger()
 //____________________________________________________________________________
 Messenger * Messenger::Instance()
 {
-  if(fInstance == 0) {	
+  if(fInstance == 0) {
     static Messenger::Cleaner cleaner;
     cleaner.DummyMethodAndSilentCompiler();
 
@@ -106,6 +106,9 @@ bool Messenger::Configure(string filename)
     }
     curr_node = xml->GetNext(curr_node);
   }
+  
+  xml->FreeDoc(xmldoc);
+  delete xml;
 
   return true;
 }
