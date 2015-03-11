@@ -10,16 +10,19 @@ ChangeLog:
 
 #include <fstream>
 #include <vector>
+#include <string>
+#include <map>
 
 #include <TSystem.h>
 #include <TROOT.h>
 #include <TStyle.h>
 #include <TColor.h>
 #include <TGraph.h>
-#include <string>
+#include <TMath.h>
 
 #include "Utilities/UtlHist.h"
 #include "Messenger/Messenger.h"
+#include "Conventions/PhysParamId.h"
 
 using std::cout;
 using std::cerr;
@@ -28,6 +31,7 @@ using std::ios;
 using std::ifstream;
 using std::string;
 using std::vector;
+using std::map;
 
 using namespace valor;
 
@@ -121,6 +125,68 @@ TH2D util::Make2DHistogramFromArray(const VALORArray & va, double * const bin_ed
   h.SetEntries(h.Integral());
   
   return h;
+}
+//___________________________________________________________________________
+TObjArray * valor::util::MakeHistogramsOfParameterValues(int n_entries, const PhysParamList *const* pparms, int n_bins, const FitParamList * get_limits_from)
+{
+  if (n_entries <= 0) { return 0;}
+  
+  if (n_bins <= 0) {n_bins = TMath::CeilNint(sqrt((double)n_entries)/2);}
+  
+  const PhysParamList & pp = *(pparms[0]);
+  int n_params  = pp.NParams();
+  conv::PhysParamId_t params[n_params];
+  double param_mins[n_params];
+  double param_maxs[n_params];
+  const map<int,double> & m = pp.Map();
+  
+  TObjArray * out_arr = new TObjArray(n_params);
+  out_arr->SetOwner(true);
+  
+  // First loop over first param list to count the params and set the limits
+  int ip=0;
+  for (map<int,double>::const_iterator it=m.begin();it!=m.end();++it) {
+    conv::PhysParamId_t p = (conv::PhysParamId_t)it->first;
+    params[ip] = p;
+    
+    if (get_limits_from and get_limits_from->Exists(p)) { // Get parameter limits from fitparamlist if available
+      param_mins[ip] = get_limits_from->MinValue(p);
+      param_maxs[ip] = get_limits_from->MaxValue(p);
+    }
+    else { // otherwise just use the max and min values we have
+      double min =  1E100;
+      double max = -1E100;
+      for (int il = 0 ; il < n_entries ; il++) {
+        double v = pparms[il]->Value(p);
+        if (v < min) min = v;
+        if (v > max) max = v;
+      }
+      param_mins[ip] = min;
+      param_maxs[ip] = max;
+    }
+    
+    //~ std::cout<<util::RawParamAsString(p)<<" limits "<<param_mins[ip]<<"\t"<<param_maxs[ip]<<endl;
+    ip++;
+  }
+  
+  // Then loop over params again to make histograms
+  for (ip = 0 ; ip < n_params ; ip++) {
+    conv::PhysParamId_t p = params[ip];
+    string hname (Form("param_values_%s",util::RawParamAsString(p).c_str()));
+    string htitle(Form("%s Values",util::RawParamAsString(p).c_str()));
+    
+    out_arr->AddAt(new TH1D(hname.c_str(),htitle.c_str(),n_bins,param_mins[ip],param_maxs[ip]),ip);
+  }
+  
+  // Now loop over the PhysParamLists to fill the histograms
+  for (int il = 0 ; il < n_entries ; il++) {
+    for (ip = 0 ; ip < n_params ; ip++) {
+      conv::PhysParamId_t p = params[ip];
+      ((TH1D*)out_arr->At(ip))->Fill(pparms[il]->Value(p));
+    }
+  }
+  
+  return out_arr;
 }
 //___________________________________________________________________________
 
