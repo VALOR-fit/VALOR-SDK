@@ -30,6 +30,7 @@ namespace util {
   string         TrimSpaces      (string input);
   vector<string> Tokens          (string input, string delimiter);
   string         ToLowerCase     (string data);
+  string         ReplaceAll      (string data,string from, string to);
   
 } // util
 } // valor

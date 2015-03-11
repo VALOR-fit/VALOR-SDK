@@ -40,10 +40,19 @@ vector<string> valor::util::Tokens (string input, string delimiter)
   return tokens;
 }
 //___________________________________________________________________________
-
 string valor::util::ToLowerCase(string data)
 {
   std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+  return data;
+}
+//___________________________________________________________________________
+string valor::util::ReplaceAll(string data,string from, string to)
+{
+  size_t pos = 0;
+  while ((pos = data.find(from, pos)) != std::string::npos) {
+    data.replace(pos, from.length(), to);
+    pos += to.length();
+  }
   return data;
 }
 //___________________________________________________________________________
