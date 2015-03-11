@@ -13,6 +13,7 @@ ChangeLog:
 #include "Conventions/PhysParamId.h"
 #include "Conventions/NuOscMixParam.h"
 #include "Conventions/Opt.h"
+#include "Utilities/UtlStr.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -639,6 +640,19 @@ string util::RawParamAsStringRooTex(PhysParamId_t p)
       return "--";
   }
   return "--";
+}
+//________________________________________________________________________________________
+valor::conv::PhysParamId_t
+  valor::util::PhysParamIdFromRawString(string sh) 
+{
+  string lsh = util::ToLowerCase(sh);
+  for (int i = 0 ; i < knppmax ; i++) {
+    PhysParamId_t k = (PhysParamId_t) i ;
+    string s = util::ToLowerCase(RawParamAsString(k));
+    if (k != kPhypUndefined && (lsh == s) ) return k;
+  }
+  std::cerr<<"util::PhysParamIdFromRawString >> Unmatched string: "<<sh<<std::endl;
+  return kPhypUndefined;
 }
 //________________________________________________________________________________________
 bool util::IsMixingAngle(PhysParamId_t p)
