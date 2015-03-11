@@ -121,4 +121,12 @@ bool PhysParamList::Contains(conv::PhysParamId_t p) const
   return (it != fParams.end());
 }
 //________________________________________________________________________________________
+void PhysParamList::Remove(conv::PhysParamId_t p)
+{
+  map<int,double>::iterator it = fParams.find(p);
+  if (it != fParams.end()) {
+    fParams.erase(it);
+  }
+}
+//________________________________________________________________________________________
 

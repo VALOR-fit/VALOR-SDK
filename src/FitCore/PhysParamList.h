@@ -50,6 +50,7 @@ public:
    void   Print    (ostream & stream) const;
    
    bool Contains (conv::PhysParamId_t p) const;
+   void Remove   (conv::PhysParamId_t p);
 
    double           operator () (conv::PhysParamId_t p) const;
    friend ostream & operator << (ostream & stream, const PhysParamList & pl);
