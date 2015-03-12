@@ -22,6 +22,8 @@
 #include "Conventions/Build.h"
 
 namespace valor {
+  
+class VALORArray;
 
 class VALORArrayF: public TNamed
 {
@@ -33,6 +35,7 @@ public:
   VALORArrayF(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
   VALORArrayF(std::string file_to_read); // Read from a file
   VALORArrayF(const VALORArrayF & arr);
+  VALORArrayF(const VALORArray  & arr); // Copy from VALORArray of doubles
  ~VALORArrayF();
   
   // Retrives size of total array, or size of dimension

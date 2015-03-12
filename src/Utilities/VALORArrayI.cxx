@@ -231,13 +231,11 @@ void VALORArrayI::SetAll(int value)
 //________________________________________________________________________________________
 void VALORArrayI::SetDimensionName(int dimension, const std::string & name)
 {
-  assert(dimension<fNDim && dimension >= 0);
   fNames[dimension] = name;
 }
 //________________________________________________________________________________________
 std::string VALORArrayI::GetDimensionName(int dimension) const
 {
-  assert(dimension<fNDim && dimension >= 0);
   return fNames[dimension];
 }
 //________________________________________________________________________________________

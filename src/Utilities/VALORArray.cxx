@@ -17,6 +17,7 @@ ChangeLog:
 #include <numeric>
 
 #include "Utilities/VALORArray.h"
+#include "Utilities/VALORArrayF.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 #include "gsl/gsl_vector.h"
@@ -108,6 +109,20 @@ fSize(arr.fSize)
   memcpy(fDimensions , arr.fDimensions , 6*sizeof(int));
   memcpy(fIncrement  , arr.fIncrement  , fNDim*sizeof(int));
   memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
+}
+//________________________________________________________________________________________
+VALORArray::VALORArray(const VALORArrayF & arr) :
+TNamed(arr)
+{
+  this->Construct(arr.GetNDim(),arr.GetDimensions());
+  
+  const float * x = arr.GetArray();
+  for (int i = 0 ; i < fSize ; i++) {
+    fArray[i] = (double) x[i];
+  }
+  for (int i = 0 ; i < fNDim; i++) {
+    fNames[i] = arr.GetDimensionName(i);
+  }
 }
 //________________________________________________________________________________________
 void VALORArray::Cleanup()
@@ -231,13 +246,11 @@ void VALORArray::SetAll(double value)
 //________________________________________________________________________________________
 void VALORArray::SetDimensionName(int dimension, const std::string & name)
 {
-  assert(dimension<fNDim && dimension >= 0);
   fNames[dimension] = name;
 }
 //________________________________________________________________________________________
 std::string VALORArray::GetDimensionName(int dimension) const
 {
-  assert(dimension<fNDim && dimension >= 0);
   return fNames[dimension];
 }
 //________________________________________________________________________________________

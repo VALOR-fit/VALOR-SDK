@@ -22,6 +22,8 @@
 #include "Conventions/Build.h"
 
 namespace valor {
+  
+class VALORArrayF;
 
 class VALORArray: public TNamed
 {
@@ -32,7 +34,8 @@ public:
   VALORArray(int nd, const int * dimensions);      // List of dimension sizes
   VALORArray(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
   VALORArray(std::string file_to_read); // Read from a file
-  VALORArray(const VALORArray & arr);
+  VALORArray(const VALORArray  & arr);
+  VALORArray(const VALORArrayF & arr); // Copy from VALORArray of floats
  ~VALORArray();
   
   // Retrives size of total array, or size of dimension
