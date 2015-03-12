@@ -441,3 +441,27 @@ void VALORArray::WriteFile(std::string file_to_write) {
   return;
 }
 //________________________________________________________________________________________
+void VALORArray::Resize(const std::vector<int> dimensions)
+{
+  this->Cleanup();
+  this->Construct(dimensions.size(), &dimensions[0]);
+}
+//________________________________________________________________________________________
+void VALORArray::Resize(int nd, const int * dimensions)
+{
+  this->Cleanup();
+  this->Construct(nd,dimensions);
+}
+//________________________________________________________________________________________
+void VALORArray::Resize(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6)
+{
+  this->Cleanup();
+  int dimensions[6] = {dim1,dim2,dim3,dim4,dim5,dim6};
+  int ndim=0;
+  for (int ii = 0 ; ii < 6 ; ii++) {
+    if (dimensions[ii] > 0 ) ndim+=1;
+    else break;
+  }
+  this->Construct(ndim, dimensions);
+}
+//________________________________________________________________________________________

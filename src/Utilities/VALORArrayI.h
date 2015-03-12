@@ -83,6 +83,11 @@ public:
   void ReadFile (std::string file_to_read);
   void WriteFile(std::string file_to_write);
   
+  // Resize the array, clearing contents
+  void Resize(const std::vector<int> dimensions);   // List of dimension sizes
+  void Resize(int nd, const int * dimensions);      // List of dimension sizes
+  void Resize(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
+  
 private:
   int fNDim;
   int fSize;
