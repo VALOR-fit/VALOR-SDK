@@ -88,6 +88,8 @@ public:
   void Resize(int nd, const int * dimensions);      // List of dimension sizes
   void Resize(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
   
+  void CopyFrom(const VALORArrayI & arr);
+  
 private:
   int fNDim;
   int fSize;

@@ -111,6 +111,21 @@ fSize(arr.fSize)
   memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
 }
 //________________________________________________________________________________________
+void VALORArray::CopyFrom(const VALORArray & arr)
+{
+  this->Cleanup();
+  arr.Copy(*this);
+  this->Construct(arr.GetNDim(),arr.GetDimensions());
+  
+  memcpy(fDimensions , arr.fDimensions , 6*sizeof(int));
+  memcpy(fIncrement  , arr.fIncrement  , fNDim*sizeof(int));
+  memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
+  
+  for (int i = 0 ; i < 6; i++) {
+    fNames[i] = arr.fNames[i];
+  }
+}
+//________________________________________________________________________________________
 VALORArray::VALORArray(const VALORArrayF & arr) :
 TNamed(arr)
 {
@@ -306,7 +321,8 @@ VALORArray VALORArray::GetSlice(int dimension, int min_bin, int max_bin) const
 //________________________________________________________________________________________
 double VALORArray::Integral() const
 {
-  return std::accumulate(fArray,fArray+fSize, 0.);
+  if (fNDim) return std::accumulate(fArray,fArray+fSize, 0.);
+  return 0;
 }
 //________________________________________________________________________________________
 double VALORArray::Integral(int min_dim1 , int max_dim1, int min_dim2, int max_dim2, 
