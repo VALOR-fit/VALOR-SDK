@@ -306,6 +306,7 @@ static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
 static const double kMaxAllowedWght = 2E+3;                          // Complain if any computed weights exceeds this value
 static const double kSetNegEventsTo = 1E-8;                          // Set any bins with nevent < 0 to this value
 static const double kASmallNum      = 1E-10;                         // 
+static const double kALargeNum      = 999999999.;                    // 
 static const double kBadResult      = -999;                          // If a fit fails, give this value to Opt
 static const double kOneMeV         = 0.001;                         // 
 static const double kBaseline       = 295;                           // Tokai->Kamioka (km)
