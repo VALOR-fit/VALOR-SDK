@@ -346,6 +346,7 @@ namespace util {
   bool IsSystematic   (conv::PhysParamId_t p);
   bool IsMixingAngle  (conv::PhysParamId_t p);
   bool IsMassSplitting(conv::PhysParamId_t p);
+  bool IsPhase        (conv::PhysParamId_t p);
 
 
 } // util

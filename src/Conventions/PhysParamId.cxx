@@ -682,12 +682,29 @@ bool util::IsMixingAngle(PhysParamId_t p)
 bool util::IsMassSplitting(PhysParamId_t p)
 {
   switch(p) {
-    case ( kPhypDm23sq           ) : return true; break;
-    case ( kPhypDm12sq           ) : return true; break;
-    case ( kPhypDm23sqBar        ) : return true; break;
-    case ( kPhypDm12sqBar        ) : return true; break;
-    case ( kPhypDm41sq           ) : return true; break;
-    case ( kPhypDm51sq           ) : return true; break;
+    case ( kPhypDm23sq           ) : return true;
+    case ( kPhypDm12sq           ) : return true;
+    case ( kPhypDm23sqBar        ) : return true;
+    case ( kPhypDm12sqBar        ) : return true;
+    case ( kPhypDm41sq           ) : return true;
+    case ( kPhypDm51sq           ) : return true;
+
+    default :
+      return false;
+  }
+  return false;
+}
+//________________________________________________________________________________________
+bool util::IsPhase(PhysParamId_t p)
+{
+  switch(p) {
+    case ( kPhypCPV              ) : return true;
+    case ( kPhypCPVBar           ) : return true;
+    case ( kPhypDelta12          ) : return true;
+    case ( kPhypDelta13          ) : return true;
+    case ( kPhypDelta15          ) : return true;
+    case ( kPhypDelta34          ) : return true;
+    case ( kPhypDelta35          ) : return true;
 
     default :
       return false;
