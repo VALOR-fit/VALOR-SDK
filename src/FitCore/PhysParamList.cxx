@@ -129,4 +129,10 @@ void PhysParamList::Remove(conv::PhysParamId_t p)
   }
 }
 //________________________________________________________________________________________
-
+void PhysParamList::CopyFrom(const PhysParamList & ppl)
+{
+  this->Clear();
+  ppl.Copy(*this);
+  fParams = ppl.Map();
+}
+//________________________________________________________________________________________

@@ -56,6 +56,8 @@ public:
    friend ostream & operator << (ostream & stream, const PhysParamList & pl);
 
    const map<int,double> & Map(void) const { return fParams; }
+   
+   void CopyFrom(const PhysParamList & ppl);
 
 private:
 
