@@ -343,8 +343,9 @@ namespace util {
   
   conv::PhysParamId_t PhysParamIdFromRawString(string sh);
 
-  bool IsSystematic  (conv::PhysParamId_t p);
-  bool IsMixingAngle (conv::PhysParamId_t p);
+  bool IsSystematic   (conv::PhysParamId_t p);
+  bool IsMixingAngle  (conv::PhysParamId_t p);
+  bool IsMassSplitting(conv::PhysParamId_t p);
 
 
 } // util

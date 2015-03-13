@@ -679,6 +679,22 @@ bool util::IsMixingAngle(PhysParamId_t p)
   return false;
 }
 //________________________________________________________________________________________
+bool util::IsMassSplitting(PhysParamId_t p)
+{
+  switch(p) {
+    case ( kPhypDm23sq           ) : return true; break;
+    case ( kPhypDm12sq           ) : return true; break;
+    case ( kPhypDm23sqBar        ) : return true; break;
+    case ( kPhypDm12sqBar        ) : return true; break;
+    case ( kPhypDm41sq           ) : return true; break;
+    case ( kPhypDm51sq           ) : return true; break;
+
+    default :
+      return false;
+  }
+  return false;
+}
+//________________________________________________________________________________________
 bool util::IsSystematic(PhysParamId_t p)
 {
   if(p >= kNuis000) return true;
