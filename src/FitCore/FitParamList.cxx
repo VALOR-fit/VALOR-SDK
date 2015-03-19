@@ -1331,7 +1331,7 @@ void FitParamList::Copy(const FitParamList & plst)
      // MARGINALIZATION
      this->fDoMarg[i]        = plst.fDoMarg[i];
      this->fPriorMode[i]     = plst.fPriorMode[i];
-     this->fPriorModeName[i] = plst.fPriorModeName[i];
+     this->fPriorModeName[i] = TObjString(plst.fPriorModeName[i]);
      this->fMeanGaus[i]      = plst.fMeanGaus[i];
      this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
      this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
@@ -1390,14 +1390,14 @@ void FitParamList::Init(int nparams)
 
 
      // MARGINALIZATION
-     fDoMarg        = new bool  [fNParams];
-     fPriorMode     = new int   [fNParams];
-     fPriorModeName = new string[fNParams];
-     fMeanGaus      = new double[fNParams];
-     fSigmaGaus     = new double[fNParams];
-     fMinValueFlat  = new double[fNParams];
-     fMaxValueFlat  = new double[fNParams];    
-     fPriorHisto    = new TH1F *[fNParams];
+     fDoMarg        = new bool      [fNParams];
+     fPriorMode     = new int       [fNParams];
+     fPriorModeName = new TObjString[fNParams];
+     fMeanGaus      = new double    [fNParams];
+     fSigmaGaus     = new double    [fNParams];
+     fMinValueFlat  = new double    [fNParams];
+     fMaxValueFlat  = new double    [fNParams];    
+     fPriorHisto    = new TH1F *    [fNParams];
      //
 
    } else {
@@ -1447,7 +1447,7 @@ void FitParamList::Init(int nparams)
      // MARGINALIZATION
      fDoMarg       [i] = 0;
      fPriorMode    [i] = 0;
-     fPriorModeName[i] = "";
+     fPriorModeName[i].SetString("");
      fMeanGaus     [i] = 0;
      fSigmaGaus    [i] = 0;
      fMinValueFlat [i] = 0;
@@ -1479,58 +1479,32 @@ void FitParamList::CleanUp(void)
    fIdMap.clear();
    fStatusCodes.clear();
 
-   delete [] fName;
-   delete [] fBestFitValue;
-   delete [] fCurrValue;
-   delete [] fInitValue;
-   delete [] fMinValue;
-   delete [] fMaxValue;
-   delete [] fStepSize;
-   delete [] fIsFixed;
-   delete [] fIsNuisance;
-   delete [] fMigradError;
-   delete [] fHesseError;
-   delete [] fPlusError;
-   delete [] fMinusError;
-   delete fCovMatrix;
+   if( fName        ) { delete [] fName        ; fName         = 0; }
+   if( fBestFitValue) { delete [] fBestFitValue; fBestFitValue = 0; }
+   if( fCurrValue   ) { delete [] fCurrValue   ; fCurrValue    = 0; }
+   if( fInitValue   ) { delete [] fInitValue   ; fInitValue    = 0; }
+   if( fMinValue    ) { delete [] fMinValue    ; fMinValue     = 0; }
+   if( fMaxValue    ) { delete [] fMaxValue    ; fMaxValue     = 0; }
+   if( fStepSize    ) { delete [] fStepSize    ; fStepSize     = 0; }
+   if( fIsFixed     ) { delete [] fIsFixed     ; fIsFixed      = 0; }
+   if( fIsNuisance  ) { delete [] fIsNuisance  ; fIsNuisance   = 0; }
+   if( fMigradError ) { delete [] fMigradError ; fMigradError  = 0; }
+   if( fHesseError  ) { delete [] fHesseError  ; fHesseError   = 0; }
+   if( fPlusError   ) { delete [] fPlusError   ; fPlusError    = 0; }
+   if( fMinusError  ) { delete [] fMinusError  ; fMinusError   = 0; }
+   if( fCovMatrix   ) { delete    fCovMatrix   ; fCovMatrix    = 0; }
 
    // MARGINALIZATION
-   delete [] fDoMarg;
-   delete [] fPriorMode;
-   delete [] fPriorModeName;
-   delete [] fMeanGaus;
-   delete [] fSigmaGaus;
-   delete [] fMinValueFlat;
-   delete [] fMaxValueFlat;
-   delete [] fPriorHisto;
+   if (fDoMarg        ) { delete [] fDoMarg       ; fDoMarg        = 0 ; }
+   if (fPriorMode     ) { delete [] fPriorMode    ; fPriorMode     = 0 ; }
+   if (fPriorModeName ) { delete [] fPriorModeName; fPriorModeName = 0 ; }
+   if (fMeanGaus      ) { delete [] fMeanGaus     ; fMeanGaus      = 0 ; }
+   if (fSigmaGaus     ) { delete [] fSigmaGaus    ; fSigmaGaus     = 0 ; }
+   if (fMinValueFlat  ) { delete [] fMinValueFlat ; fMinValueFlat  = 0 ; }
+   if (fMaxValueFlat  ) { delete [] fMaxValueFlat ; fMaxValueFlat  = 0 ; }
+   if (fPriorHisto    ) { delete [] fPriorHisto   ; fPriorHisto    = 0 ; }
    //
-
-   fName         = 0;
-   fBestFitValue = 0;
-   fCurrValue    = 0;
-   fInitValue    = 0;
-   fMinValue     = 0;
-   fMaxValue     = 0;
-   fStepSize     = 0;
-   fIsFixed      = 0;
-   fIsNuisance   = 0;
-   fMigradError  = 0;
-   fHesseError   = 0;
-   fPlusError    = 0;
-   fMinusError   = 0;
-   fCovMatrix    = 0;
-
-   // MARGINALIZATION
-   fDoMarg        = 0;
-   fPriorMode     = 0;
-   fPriorModeName = 0;
-   fMeanGaus      = 0;
-   fSigmaGaus     = 0;
-   fMinValueFlat  = 0;
-   fMaxValueFlat  = 0;
-   fPriorHisto    = 0;
-   //
-
+   
    fBestFitStatistic = 0.;
    fCurrStatistic    = 0.;
    fFitTime          = 0.;
@@ -1611,9 +1585,9 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,int priormode)
 {
   fPriorMode [this->Id(p)] = priormode;
   
-  if      (priormode==0) fPriorModeName [this->Id(p)] = "flat";
-  else if (priormode==1) fPriorModeName [this->Id(p)] = "gaus";
-  else if (priormode==2) fPriorModeName [this->Id(p)] = "user";
+  if      (priormode==0) fPriorModeName [this->Id(p)].SetString("flat");
+  else if (priormode==1) fPriorModeName [this->Id(p)].SetString("gaus");
+  else if (priormode==2) fPriorModeName [this->Id(p)].SetString("user");
   else{
     cerr << "Chosen marginalization prior mode " << priormode << " is not available" << endl;
     cerr << "Possible choices are:" << endl;
@@ -1627,15 +1601,15 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,int priormode)
 void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,string priormodename)
 {
   if(priormodename=="flat"){
-    fPriorModeName [this->Id(p)] = "flat";
+    fPriorModeName [this->Id(p)].SetString("flat");
     fPriorMode [this->Id(p)] = 0;
   }
   else if (priormodename=="gaus"){
-    fPriorModeName [this->Id(p)] = "gaus";
+    fPriorModeName [this->Id(p)].SetString("gaus");
     fPriorMode [this->Id(p)] = 1;
   }
   else if (priormodename=="user"){
-    fPriorModeName [this->Id(p)] = "user";
+    fPriorModeName [this->Id(p)].SetString("user");
     fPriorMode [this->Id(p)] = 2;
   }
   else{
@@ -1672,5 +1646,10 @@ void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1F *hprior)
 {
   fPriorHisto [this->Id(p)] = (TH1F*) hprior->Clone(hprior->GetName());
 }
-
-//
+//________________________________________________________________________________________
+string FitParamList::GetPriorModeName (valor::conv::PhysParamId_t p) const
+{
+  const char * data = fPriorModeName[this->Id(p)].GetString().Data();
+  return string(data);
+}
+//________________________________________________________________________________________

@@ -35,6 +35,7 @@
 
 #include "Conventions/PhysParamId.h"
 #include "Conventions/PhysHypothesisId.h"
+#include "Conventions/Build.h"
 
 using std::string;
 using std::map;
@@ -218,7 +219,7 @@ public:
 
    bool   IsMarginalized   (valor::conv::PhysParamId_t p) const { return fDoMarg        [this->Id(p)]; }
    int    GetPriorMode     (valor::conv::PhysParamId_t p) const { return fPriorMode     [this->Id(p)]; }
-   string GetPriorModeName (valor::conv::PhysParamId_t p) const { return fPriorModeName [this->Id(p)]; }
+   string GetPriorModeName (valor::conv::PhysParamId_t p) const;
    double GetMeanGaus      (valor::conv::PhysParamId_t p) const { return fMeanGaus      [this->Id(p)]; }
    double GetSigmaGaus     (valor::conv::PhysParamId_t p) const { return fSigmaGaus     [this->Id(p)]; }
    double GetMinValueFlat  (valor::conv::PhysParamId_t p) const { return fMinValueFlat  [this->Id(p)]; }
@@ -303,9 +304,9 @@ private:
    
    // MARGINALIZATION
 
-   bool   *fDoMarg;         //[fNParams]  flag to marginalize the fit parameter
-   int    *fPriorMode;      //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo) 
-   string *fPriorModeName;  //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo) 
+   bool       *fDoMarg;         //[fNParams]  flag to marginalize the fit parameter
+   int        *fPriorMode;      //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo) 
+   TObjString *fPriorModeName;  //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo) 
    
    double *fMeanGaus;  //[fNParams]  // Mean of marginalization  (gaussian prior)
    double *fSigmaGaus; //[fNParams]  // Sigma of marginalization (gaussian prior)
@@ -319,7 +320,7 @@ private:
 
 
 
-ClassDef(FitParamList,1)
+ClassDef(FitParamList,2)
 };
 
 std::ostream & operator<< (std::ostream & stream, const FitParamList & plst);
