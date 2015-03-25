@@ -56,3 +56,17 @@ string valor::util::ReplaceAll(string data,string from, string to)
   return data;
 }
 //___________________________________________________________________________
+string valor::util::PadToLengthFromLeft(string data, unsigned int length, char pad_with)
+{
+  if(length > data.size()) {
+    data.insert(0, length - data.size(), pad_with);
+  }
+  return data;
+}
+//___________________________________________________________________________
+string valor::util::PadToLength(string data, unsigned int length, char pad_with)
+{
+  data.append(length-data.length(),pad_with);
+  return data;
+}
+//___________________________________________________________________________

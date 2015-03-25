@@ -27,10 +27,12 @@ using std::vector;
 namespace valor {
 namespace util {
 
-  string         TrimSpaces      (string input);
-  vector<string> Tokens          (string input, string delimiter);
-  string         ToLowerCase     (string data);
-  string         ReplaceAll      (string data,string from, string to);
+  string         TrimSpaces         (string input);
+  vector<string> Tokens             (string input, string delimiter);
+  string         ToLowerCase        (string data);
+  string         ReplaceAll         (string data,string from, string to);
+  string         PadToLength        (string data, unsigned int length, char pad_with = ' ');
+  string         PadToLengthFromLeft(string data, unsigned int length, char pad_with = ' ');
   
 } // util
 } // valor
