@@ -168,7 +168,7 @@ static const double kStepDm12sq              = 2.0E-6;
 // Dm^2 fitter init values and range and step (fixnonbar)
 static const double kInitFitDm23sqBar        = kGlobFitDm23sq;
 static const double kMinFitDm23sqBar         = 1.0E-5;
-static const double kMaxFitDm23sqBar         = 4.0E-2;
+static const double kMaxFitDm23sqBar         = 2.0E-2;
 static const double kStepDm23sqBar           = 1.0E-4;
 static const double kInitFitDm12sqBar        = kGlobFitDm12sq;
 static const double kMinFitDm12sqBar         = 6.0E-5;
