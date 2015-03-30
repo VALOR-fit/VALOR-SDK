@@ -22,6 +22,7 @@ ChangeLog:
 #include <TFile.h>
 #include <TSystem.h>
 #include <TStopwatch.h>
+#include <TTimeStamp.h>
 #include <TMatrixDSym.h>
 
 #include "Conventions/Opt.h"
@@ -321,7 +322,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 
   // Run MINUIT's minimization step
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Running MIGRAD...";
+  LOG("Minuit", pINFO) << "Running MIGRAD... "<<TTimeStamp().AsString();
 #endif
   Double_t arglist[100];
   arglist[0] = 50000; // num of func calls
