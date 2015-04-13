@@ -86,6 +86,7 @@ public :
 
   // set the chisq definition 5 bins vs 73 bins
   void SetChisqDefinition (bool goodnessoffit) { fGoodnessOfFit = goodnessoffit; }
+  bool GetChisqDefinition (void) { return fGoodnessOfFit; }
     
   // get chisquare for the best fit prediction
   //double BestFitChisquare (Option_t * opt = "poisson");

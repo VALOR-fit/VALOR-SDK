@@ -630,8 +630,9 @@ void valor::FitFunc (
   // judge the agreement between the data and the current prediction
   FitDataABC &  data_abc  = inputs->Observation();
   FitModelABC & model_abc = inputs->Expectation();
-
-  f = data_abc.Statistic(&model_abc,fpar,"likelihood-ratio");
+  
+  string fit_opt(Form("likelihood-ratio%s",(inputs->GetChisqDefinition() ? " gof" : "")));
+  f = data_abc.Statistic(&model_abc,fpar,fit_opt.c_str());
   fpar.SetCurrStatistic(f);
 }
 //____________________________________________________________________________
