@@ -310,3 +310,11 @@ double Opt::GetGlobalFitError(PhysParamId_t p) const
   return fGlobalFitError[p];
 }
 //________________________________________________________________________________________
+conv::NuOscDmsqScheme_t Opt::GetEffectiveDmsqScheme(void)
+{
+  if (gOscDmsqScheme==conv::kNuDmsqAuto) {
+    return util::GetAutoDmsqSchemeFromHierarchy();
+  }
+  return gOscDmsqScheme;
+}
+//________________________________________________________________________________________

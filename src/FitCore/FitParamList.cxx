@@ -842,7 +842,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarFit(int nuisance)
   }
   
   fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
-  NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
+  NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
   
   switch (odmsq) {
     case(kNuDmsqFogliLisi):
@@ -951,7 +951,7 @@ void FitParamList::Append3FlavourOscillation(FitParamList * fparm, int start)
   }
 
   //  fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq,   kMinFitDm23sq, kMaxFitDm23sq, 1.0E-4,  false, false);
-  NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
+  NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
   switch (odmsq) {
   case(kNuDmsqFogliLisi):
     fparm->AddParam( ip++, kPhypDm23sq,    kGlobFitDmsqFL,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
@@ -1012,7 +1012,7 @@ void FitParamList::Append3FlavourOscillationBar(FitParamList * fparm, int start)
   }
 
   //  fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq,   kMinFitDm23sq, kMaxFitDm23sq, 1.0E-4,  false, false);
-  NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
+  NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
   switch (odmsq) {
   case(kNuDmsqFogliLisi):
     fparm->AddParam( ip++, kPhypDm23sqBar,    kGlobFitDmsqFL,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
@@ -1084,7 +1084,7 @@ void FitParamList::Append4FlavourSterileOscillation(FitParamList * fparm, int st
 
   fparm->AddParam( ip++, kPhypDm12sq,    kInitFitDm12sq,   kMinFitDm12sq, kMaxFitDm12sq, kStepDm12sq,  false, false);
   //  fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq,   kMinFitDm23sq, kMaxFitDm23sq, 1.0E-4,  false, false);
-  NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
+  NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
   switch (odmsq) {
   case(kNuDmsqFogliLisi):
     fparm->AddParam( ip++, kPhypDm23sq,    kGlobFitDmsqFL,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
@@ -1166,7 +1166,7 @@ void FitParamList::Append5FlavourSterileOscillation(FitParamList * fparm, int st
 
   fparm->AddParam( ip++, kPhypDm12sq,    kInitFitDm12sq,   kMinFitDm12sq, kMaxFitDm12sq, kStepDm12sq,  false, false);
   //  fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq,   kMinFitDm23sq, kMaxFitDm23sq, 1.0E-4,  false, false);
-  NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
+  NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
   switch (odmsq) {
   case(kNuDmsqFogliLisi):
     fparm->AddParam( ip++, kPhypDm23sq,    kGlobFitDmsqFL,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);

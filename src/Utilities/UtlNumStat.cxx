@@ -564,7 +564,7 @@ double valor::util::RandomizeDm23sq(void)
 {
   /*
   double mean  = 0.0;
-  NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
+  NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
   switch (odmsq) {
     
   case(kNuDmsqFogliLisi):

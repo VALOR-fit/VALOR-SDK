@@ -391,7 +391,7 @@ double FitInputs::ChisquarePenaltyTerm(void) const
       {
 	double dmsq = fFitParams->CurrValue(kPhypDm23sq);
 	double nom = 0.;
-	NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
+	NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
 	switch (odmsq) {
 	case(kNuDmsqFogliLisi):
 	  nom  =  kGlobFitDmsqFL;
@@ -484,7 +484,7 @@ double FitInputs::ChisquarePenaltyTerm(void) const
       {
 	double dmsq = fFitParams->CurrValue(kPhypDm23sq);
 	double nom = 0.;
-	NuOscDmsqScheme_t odmsq = Opt::Instance()->gOscDmsqScheme;
+	NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
 	switch (odmsq) {
 	case(kNuDmsqFogliLisi):
 	  nom  =  kGlobFitDmsqFL;

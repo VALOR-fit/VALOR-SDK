@@ -62,6 +62,7 @@ public:
   // - dm^2 = Dm^2_{12} and Dm^2 = |Dm^2_{23}|, or                                                                                                                                 
   // - dm^2 = Dm^2_{12} and Dm^2 = |m^2_{3} - (m^2_{1} + m^2_{1})/2| (Fogli,Lisi)                                                                                                  
   conv::NuOscDmsqScheme_t gOscDmsqScheme;
+  conv::NuOscDmsqScheme_t GetEffectiveDmsqScheme(void); // returns gOscDmsqScheme, unless it is auto, in which case returns the appropriate one for this hierarchy
 
   // Choice of deltaCP, use it as purely phase or its sin
   conv::NuOscDeltaCP_t gOscDeltaCP;
