@@ -2659,3 +2659,8 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
   return;
 }
 //_________________________________________________________
+conv::NuMassHierarchy_t NuOsc3Flavour::GetMassHierarchy(void) const
+{
+  return fMassHierarchy;
+}
+//_________________________________________________________

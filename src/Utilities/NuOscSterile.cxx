@@ -1629,3 +1629,10 @@ void NuOscSterile::CalcMatterOscProbAll(bool isAntineutrino, double energy, doub
   
   return;
 }
+
+//_________________________________________________________
+conv::NuMassHierarchy_t NuOscSterile::GetMassHierarchy(void) const
+{
+  return fMassHierarchy;
+}
+//_________________________________________________________

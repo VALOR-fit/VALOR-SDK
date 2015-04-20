@@ -118,6 +118,8 @@ public:
  // It fills this with an array[i][j] of P(nu_i)->P(nu_j)
  void CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs_out[3][3]);
  
+ valor::conv::NuMassHierarchy_t GetMassHierarchy(void) const;
+ 
 private:
 
   enum {
