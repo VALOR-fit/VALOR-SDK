@@ -60,7 +60,7 @@ string util::Pdg2StringTex(int pdg_code)
      case ( kPdgNuE      ) : return "$\\nu_e$";      break;
      case ( kPdgNuMu     ) : return "$\\nu_\\mu$";     break;
      case ( kPdgNuTau    ) : return "$\\nu_\\tau$";    break;
-     case ( kPdgNuEBar   ) : return "$\\bar{\nu_e}$";   break;
+     case ( kPdgNuEBar   ) : return "$\\bar{\\nu_e}$";   break;
      case ( kPdgNuMuBar  ) : return "$\\bar{\\nu_\\mu}$";  break;
      case ( kPdgNuTauBar ) : return "$\\bar{\\nu_\\tau}$"; break;
      default               : return "";
