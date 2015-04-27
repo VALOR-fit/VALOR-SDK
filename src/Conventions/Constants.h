@@ -24,24 +24,80 @@ namespace conv   {
 // typical initialization and range values for fitter
 //
 
+
+/////////////////////////////////////////////
+//                                         //
+// T2K only joint fit results (VALOR)      //
+//                                         //
+/////////////////////////////////////////////
+
+static const double kT2KBestFitDmsq12  = 7.5E-5; 
+static const double kT2KBestFitSinsqTheta12  = 0.306; 
+static const double kT2KBestFitSinsq2Theta12  = 0.8495; 
+
+static const double kT2KBestFitDeltaCP_NH = 1.91;
+static const double kT2KBestFitDeltaCP_IH = 1.01;
+
+static const double kT2KBestFitDmsq23_NH  = 2.51E-3; 
+static const double kT2KBestFitDmsq23_IH  = 2.49E-3; 
+
+static const double kT2KBestFitSinsqTheta13_NH  = 0.0422; 
+static const double kT2KBestFitSinsqTheta13_IH  = 0.0491; 
+
+static const double kT2KBestFitSinsqTheta23_NH  = 0.524; 
+static const double kT2KBestFitSinsqTheta23_IH  = 0.523; 
+
+static const double kT2KBestFitSinsq2Theta13_NH  = 0.1617; 
+static const double kT2KBestFitSinsq2Theta13_IH  = 0.1868; 
+
+static const double kT2KBestFitSinsq2Theta23_NH  = 0.998; 
+static const double kT2KBestFitSinsq2Theta23_IH  = 0.998; 
+
+/////////////////////////////////////////////
+//                                         //
+// T2K+reactors joint fit results (VALOR)  //
+//                                         //
+/////////////////////////////////////////////
+
+static const double kT2KReacBestFitDmsq12  = 7.5E-5; 
+static const double kT2KReacBestFitSinsqTheta12  = 0.306; 
+ static const double kT2KReacBestFitSinsq2Theta12  = 0.8495; 
+
+static const double kT2KReacBestFitDeltaCP_NH = -1.55;
+static const double kT2KReacBestFitDeltaCP_IH = -1.56;
+
+static const double kT2KReacBestFitDmsq23_NH  = 2.51E-3; 
+static const double kT2KReacBestFitDmsq23_IH  = 2.48E-3; 
+
+static const double kT2KReacBestFitSinsqTheta13_NH  = 0.0248; 
+static const double kT2KReacBestFitSinsqTheta13_IH  = 0.0252; 
+
+static const double kT2KReacBestFitSinsqTheta23_NH  = 0.527; 
+static const double kT2KReacBestFitSinsqTheta23_IH  = 0.533; 
+
+static const double kT2KReacBestFitSinsq2Theta13_NH  = 0.0967; 
+static const double kT2KReacBestFitSinsq2Theta13_IH  = 0.0983; 
+
+static const double kT2KReacBestFitSinsq2Theta23_NH  = 0.997; 
+static const double kT2KReacBestFitSinsq2Theta23_IH  = 0.996; 
+
+
 /////////////////////////////////////
 //                                 //
 // Dm^2 global fit results         //
 //                                 //
 /////////////////////////////////////
 
-// Updated to 2012 PDG + reactors
+// Updated
+
+static const double kGlobFitDm12sq           = 7.53E-5; // (PDG 2014)
 
 //static const double kGlobFitDm23sq           = 2.4E-3; // old
 //static const double kGlobFitDm23sq           = 2.32E-3; 
 //static const double kGlobFitDm23sq           = 2.44E-3; // (PDG 2014)
-static const double kGlobFitDm23sq           = 2.51E-3; // (T2K Run1-4 NH)
+static const double kGlobFitDm23sq           = kT2KReacBestFitDmsq23_NH; 
 
 static const double kGlobFitDmsqFL           = 2.36E-3;
-
-//static const double kGlobFitDm12sq           = 7.5E-5; // old
-//static const double kGlobFitDm12sq           = 7.58E-5;
-static const double kGlobFitDm12sq           = 7.53E-5; // (PDG 2014)
 
 //static const double kGlobFitErrDm23sq        = 0.04; // ~4%
 //static const double kGlobFitErrDm23sq        = 0.025; // ~2.5% (PDG 2014)
@@ -50,25 +106,14 @@ static const double kGlobFitErrDm23sq        = 0.04; // ~4% (T2K Run1-4 NH)
 //static const double kGlobFitErrDm12sq        = 0.027; // ~2.7%
 static const double kGlobFitErrDm12sq        = 0.024; // ~2.4% (PDG 2014)
 
-
 /////////////////////////////////////
 //                                 //
 // deltacp global fit results      //
 //                                 //
 /////////////////////////////////////
 
-static const double kT2KBestFitDeltaCP_NH = 1.91;
-static const double kT2KBestFitDeltaCP_IH = 1.01;
-
-static const double kT2KBestFitTheta13_NH  = 0.0422; // (T2K Run1-4 NH)
-static const double kT2KBestFitTheta13_IH  = 0.0491; // (T2K Run1-4 NH)
-
-//static const double kGlobFitDeltaCP          = 0.0;
-//static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
-static const double kGlobFitDeltaCP          = kT2KBestFitDeltaCP_NH;
+static const double kGlobFitDeltaCP          = kT2KReacBestFitDeltaCP_NH;
 static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
-
-
 
 /////////////////////////////////////
 //                                 //
@@ -78,17 +123,17 @@ static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
 
 //static const double kGlobFitSinsq2Theta23    = 1.00;
 // static const double kGlobFitSinsq2Theta23    = 0.999; // (PDG 2014)
- static const double kGlobFitSinsq2Theta23    = 1.00; // (T2K Run1-4 NH)
+ static const double kGlobFitSinsq2Theta23    = kT2KReacBestFitSinsq2Theta23_NH;
 
 //static const double kGlobFitSinsq2Theta13    = 0.084;  // Daya Bay Neutrino 2014 //0.098;
 //static const double kGlobFitSinsq2Theta13    = 0.098;  // old (PDG 2012)   
 //static const double kGlobFitSinsq2Theta13    = 0.095;  // old (PDG 2013)
 //static const double kGlobFitSinsq2Theta13    = 0.093;  // (PDG 2014)
-static const double kGlobFitSinsq2Theta13    = 0.136;  // (T2K Run1-4 NH)
+static const double kGlobFitSinsq2Theta13    = kT2KReacBestFitSinsq2Theta13_NH;  
 
 //static const double kGlobFitSinsq2Theta12    = 0.8495; //fogli2011
 //static const double kGlobFitSinsq2Theta12    = 0.857; //pdg2012
-static const double kGlobFitSinsq2Theta12    = 0.846; // (PDG 2014)
+static const double kGlobFitSinsq2Theta12    = kT2KReacBestFitSinsq2Theta12; // (PDG 2014)
 
 //static const double kGlobFitErrSinsq2Theta23 = 0.05;  // ~5%
 //static const double kGlobFitErrSinsq2Theta23 = 0.018;  // ~1.8% (PDG 2014)
@@ -113,17 +158,17 @@ static const double kGlobFitErrSinsq2Theta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
 /////////////////////////////////////
 
 //static const double kGlobFitSinsqTheta23    = 0.514; // (PDG 2014)
- static const double kGlobFitSinsqTheta23    = 0.524; // (T2K Run1-4 NH, not constrained with reactors)
+ static const double kGlobFitSinsqTheta23    = kT2KReacBestFitSinsqTheta23_NH; //
 
 //static const double kGlobFitSinsqTheta13   = 0.02146; // Daya Bay Neutrino 2014  //0.0251;
 //static const double kGlobFitSinsqTheta13   = 0.0251; // old (PDG 2012)
 //static const double kGlobFitSinsqTheta13   = 0.0243; // (PDG 2013)
 //static const double kGlobFitSinsqTheta13   = 0.0238; // (PDG 2014)
-static const double kGlobFitSinsqTheta13   = 0.0422; // (T2K Run1-4 NH)
+static const double kGlobFitSinsqTheta13   = kT2KReacBestFitSinsqTheta13_NH; 
 
 //static const double kGlobFitSinsqTheta12    = 0.306; //fogli2011
 //static const double kGlobFitSinsqTheta12    = 0.311; //pdg2012
-static const double kGlobFitSinsqTheta12    = 0.304; // (PDG 2014)
+static const double kGlobFitSinsqTheta12    = kT2KReacBestFitSinsqTheta12; 
 
 //static const double kGlobFitErrSinsqTheta23 = 0.06;  // ~26% (1 sigma range)
 //static const double kGlobFitErrSinsqTheta23 = 0.018;  // ~1.8% (PDG 2014)
