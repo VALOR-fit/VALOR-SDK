@@ -32,7 +32,7 @@ namespace conv   {
 /////////////////////////////////////////////
 
 static const double kT2KBestFitDmsq12  = 7.5E-5; 
-static const double kT2KBestFitSinsqTheta12  = 0.306; 
+static const double kT2KBestFitSinsqTheta12  = 0.304; 
 static const double kT2KBestFitSinsq2Theta12  = 0.8495; 
 
 static const double kT2KBestFitDeltaCP_NH = 1.91;
@@ -133,7 +133,7 @@ static const double kGlobFitSinsq2Theta13    = kT2KReacBestFitSinsq2Theta13_NH;
 
 //static const double kGlobFitSinsq2Theta12    = 0.8495; //fogli2011
 //static const double kGlobFitSinsq2Theta12    = 0.857; //pdg2012
-static const double kGlobFitSinsq2Theta12    = kT2KReacBestFitSinsq2Theta12; // (PDG 2014)
+static const double kGlobFitSinsq2Theta12    = 0.8463; // (PDG 2014)
 
 //static const double kGlobFitErrSinsq2Theta23 = 0.05;  // ~5%
 //static const double kGlobFitErrSinsq2Theta23 = 0.018;  // ~1.8% (PDG 2014)
@@ -168,7 +168,7 @@ static const double kGlobFitSinsqTheta13   = kT2KReacBestFitSinsqTheta13_NH;
 
 //static const double kGlobFitSinsqTheta12    = 0.306; //fogli2011
 //static const double kGlobFitSinsqTheta12    = 0.311; //pdg2012
-static const double kGlobFitSinsqTheta12    = kT2KReacBestFitSinsqTheta12; 
+static const double kGlobFitSinsqTheta12    = 0.304; 
 
 //static const double kGlobFitErrSinsqTheta23 = 0.06;  // ~26% (1 sigma range)
 //static const double kGlobFitErrSinsqTheta23 = 0.018;  // ~1.8% (PDG 2014)
@@ -183,6 +183,17 @@ static const double kGlobFitErrSinsqTheta12 = 0.025;  // ~2.5% (PDG 2014)
 //static const double kGlobFitErrSinsqTheta13 = 0.105; // ~10.5% (PDG 2013)
 // static const double kGlobFitErrSinsqTheta13 = 0.086; // ~8.6% (PDG 2014)
  static const double kGlobFitErrSinsqTheta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
+
+
+/////////////////////////////////////
+//                                 //
+// Normalization parameters        //
+//                                 //
+/////////////////////////////////////
+// NEW BETABAR
+static const double kGlobFitBetaBar = 1.;
+static const double kGlobFitErrBetaBar = 1.;
+//
 
 
 
@@ -278,6 +289,14 @@ static const double kStepSinsqTheta12Bar     = 1.0E-2;
 /* static const double kMaxFitDeltaCP            = + 4.71238898038468967; */
 /* static const double kStepDeltaCP              = 1.0E-2; */
 /* ////////////////////////////////////////////////////////////////////// */
+
+// NEW BETABAR
+// BetaBar: numubar->nuebar normalization  (NuBar fix Nu)
+static const double kInitFitBetaBar  = 1.00;
+static const double kMinFitBetaBar   = 0.00;
+static const double kMaxFitBetaBar   = 10.00;
+static const double kStepBetaBar     = 5.0E-3;
+//
 
 // Sterile fitter init values and range.
 static const double kInitFitSinsqTheta14     = 0.00;
