@@ -293,7 +293,7 @@ static const double kStepSinsqTheta12Bar     = 1.0E-2;
 // BetaBar: numubar->nuebar normalization  (NuBar fix Nu)
 static const double kInitFitBetaBar  = 1.00;
 static const double kMinFitBetaBar   = 0.00;
-static const double kMaxFitBetaBar   = 10.00;
+static const double kMaxFitBetaBar   = 20.00;
 static const double kStepBetaBar     = 5.0E-3;
 //
 
