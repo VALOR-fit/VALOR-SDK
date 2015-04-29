@@ -52,6 +52,10 @@ typedef enum EPhysParamId
    kPhypCPVBar,                // CP-invariance violating param (either deltacp, or sin(deltacp) depending on config choices)
    kPhypDm23sqBar,             // modulus of large squared-mass splitting (Dm^2_32, Dm^2_31 or Fogli-Lisi Dm^2 depending on config choices)
    kPhypDm12sqBar,             // small squared-mass splitting (Dm^2_21 or Fogli-Lisi dm^2 depending on config choices)                     
+   
+   // NEW BETABAR
+   kPhypBetaBar,               // Normalization parameter for oscillated numubar->nuebar events (used in searches for numubar->nuebar appearance) 
+   //
 
    kPhypAlphaDecay,            //
    kPhypSinsq2ThetaDecay,      // 
@@ -347,7 +351,7 @@ namespace util {
   bool IsMixingAngle  (conv::PhysParamId_t p);
   bool IsMassSplitting(conv::PhysParamId_t p);
   bool IsPhase        (conv::PhysParamId_t p);
-
+  bool IsNormalization(conv::PhysParamId_t p);
 
 } // util
 

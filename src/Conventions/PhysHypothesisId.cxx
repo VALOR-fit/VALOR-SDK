@@ -39,6 +39,11 @@ string util::AsString(PhysHypothesis_t h)
     case (kHypOsc3FBar) :
        return "<3-flavour Neutrino Oscillations, split nu and nubar>";
        break;
+       // NEW BETABAR
+    case (kHypOsc3FBarNormBar) :
+       return "<3-flavour Neutrino Oscillations, split nu and nubar, normalization numubar->nuebar>";
+       break;
+       //
     case (kHypOscSterile4F) :
        return "<3+1 Sterile Neutrino Oscillations>";
        break;
@@ -170,6 +175,14 @@ string util::AsString (
   if (hyp == valor::conv::kHypOsc3FBar) {
     out<<"3f+3fbar";
   }
+
+  // NEW BETABAR
+  // Placeholder for nubar+norm
+  if (hyp == valor::conv::kHypOsc3FBarNormBar) {
+    out<<"3f+3fbar+normbar";
+  }
+  // 
+  
   // Placeholder for steriles
   if (hyp == valor::conv::kHypOscSterile4F) {
     out<<"sterile_3+1";
@@ -199,6 +212,11 @@ PhysHypothesis_t util::PhysHypFromString (string sh)
   if(sh == "2f_numu_disap" ) return kHypNuMuDisapp2F;
   if(sh == "3f_osc"        ) return kHypOsc3F;
   if(sh == "3f_oscbar"     ) return kHypOsc3FBar;
+
+  // NEW BETABAR
+  if(sh == "3f_oscbar_normbar") return kHypOsc3FBarNormBar;
+  //
+
   if(sh == "3f_nsi"        ) return kHypNSI3F;
   if(sh == "4f_sterile_osc") return kHypOscSterile4F;
   if(sh == "5f_sterile_osc") return kHypOscSterile5F;

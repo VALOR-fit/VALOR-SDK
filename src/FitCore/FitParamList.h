@@ -231,6 +231,11 @@ public:
    // Returns a fit param list with a physics hypothesis, and 'nuisance' empty parameters.
    static FitParamList * NuOsc3FlavourFit                          (int nuisance = 0);
    static FitParamList * NuOsc3FlavourBarFit                       (int nuisance = 0);
+   
+   // NEW BETABAR
+   static FitParamList * NuOsc3FlavourBarNormBarFit                (int nuisance = 0);
+   //
+
    static FitParamList * NumuDisapFit                              (int nuisance = 0);
    static FitParamList * NumuDecayFit                              (int nuisance = 0);
    static FitParamList * NumuDecohFit                              (int nuisance = 0);
@@ -239,6 +244,11 @@ public:
    
    static void           Append3FlavourOscillation                 (FitParamList * fp, int start);
    static void           Append3FlavourOscillationBar              (FitParamList * fp, int start);
+   
+   // NEW BETABAR
+   static void           AppendNormBar                             (FitParamList * fp, int start);
+   //
+   
    static void           Append2FlavourOscillation                 (FitParamList * fp, int start);
    static void           Append4FlavourSterileOscillation          (FitParamList * fp, int start);
    static void           Append5FlavourSterileOscillation          (FitParamList * fp, int start);

@@ -154,6 +154,11 @@ string util::RawParamAsString(PhysParamId_t p)
     }
     break;
 
+    // NEW BETABAR
+    // Beta: Numubar->Nuebar normalization parameter
+    case ( kPhypBetaBar               ) : return "beta bar";                    break;
+    //
+
     // 
     case ( kPhypAlphaDecay            ) : return "alpha_decay";                break;
     case ( kPhypSinsq2ThetaDecay      ) : return "sin^2(2*theta_decay)";       break;
@@ -391,6 +396,11 @@ string util::RawParamAsStringTex(PhysParamId_t p)
         }
     }
     break;
+
+    // NEW BETABAR
+    // Beta: Numubar->Nuebar normalization parameter
+    case ( kPhypBetaBar   ) : return "$\\bar{\\beta}$";                    break;
+    //
 
     case ( kPhypAlphaDecay            ) : return "$\\alpha_{decay}$";                break;
     case ( kPhypSinsq2ThetaDecay      ) : return "$\\sin^2(2\\theta_{decay})$";      break;
@@ -631,6 +641,11 @@ string util::RawParamAsStringRooTex(PhysParamId_t p)
     }
     break;
 
+    // NEW BETABAR
+    // Beta: Numubar->Nuebar normalization parameter
+    case ( kPhypBetaBar               ) : return "#bar{#beta}";                    break;
+    //
+
     case ( kPhypAlphaDecay            ) : return "#alpha_{decay}";                 break;
     case ( kPhypSinsq2ThetaDecay      ) : return "sin^{2}(2#theta_{decay})";       break;
     case ( kPhypMusqDecoh             ) : return "#mu^{2}_{decoh}";                break;
@@ -705,6 +720,17 @@ bool util::IsPhase(PhysParamId_t p)
     case ( kPhypDelta15          ) : return true;
     case ( kPhypDelta34          ) : return true;
     case ( kPhypDelta35          ) : return true;
+
+    default :
+      return false;
+  }
+  return false;
+}
+//________________________________________________________________________________________
+bool util::IsNormalization(PhysParamId_t p)
+{
+  switch(p) {
+    case ( kPhypBetaBar           ) : return true;
 
     default :
       return false;

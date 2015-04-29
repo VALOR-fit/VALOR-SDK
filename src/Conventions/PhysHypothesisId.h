@@ -34,6 +34,11 @@ typedef enum EPhysHypothesis
    kHypNuMuDisapp2F,      // muon-neutrino disappearance, simple 2-flavour oscillation framework 
    kHypOsc3F,             // neutrino oscillations, 3-flavour framework
    kHypOsc3FBar,          // neutrino oscillations, 3-flavour framework with separate mixing parameters for nu and nubar
+
+   // NEW BETABAR
+   kHypOsc3FBarNormBar,   // neutrino oscillations, 3-flavour framework with separate mixing parameters for nu and nubar and normalization for numubar->nuebar components
+   //
+
    kHypOscSterile4F,      // neutrino oscillations with steriles, 3+1
    kHypOscSterile5F,      // neutrino oscillations with steriles, 3+2
    kHypNSI3F,             // non-standard matter interactions

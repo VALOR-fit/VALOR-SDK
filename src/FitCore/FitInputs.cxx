@@ -616,7 +616,7 @@ double FitInputs::operator() (const std::vector<double>& /*x*/) const // '/* */'
 //____________________________________________________________________________ 
 void valor::FitFunc (
   Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t /*iflag*/) // '/* */' use to supress unused parameter warnings
-{
+{ 
 // To be used with a TVirtualFitter
 
   FitInputs * inputs = (FitInputs *) gMinuit->GetObjectFit();
@@ -634,6 +634,8 @@ void valor::FitFunc (
   string fit_opt(Form("likelihood-ratio%s",(inputs->GetChisqDefinition() ? " gof" : "")));
   f = data_abc.Statistic(&model_abc,fpar,fit_opt.c_str());
   fpar.SetCurrStatistic(f);
+
+  inputs->Statistic(); ///
 }
 //____________________________________________________________________________
 FitFunctor::FitFunctor(FitInputs * inputs) 

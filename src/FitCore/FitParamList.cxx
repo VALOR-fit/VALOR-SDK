@@ -867,6 +867,78 @@ FitParamList * FitParamList::NuOsc3FlavourBarFit(int nuisance)
        
   return fparm;
 }
+
+
+
+
+
+
+
+// NEW BETABAR
+
+//________________________________________________________________________________________
+FitParamList * FitParamList::NuOsc3FlavourBarNormBarFit(int nuisance)
+{
+  FitParamList * fparm = new FitParamList(13+nuisance);  // 13 instead of 12
+  FitParamList::Append3FlavourOscillation(fparm, 0);
+  FitParamList::Append3FlavourOscillationBar(fparm, 6);
+  FitParamList::AppendNormBar(fparm, 1);
+  
+  // Set initial values for the non-barred fit params
+  NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+  switch(omp) {
+    case(kNuMixSinsq2Theta):
+      fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsq2Theta12);
+      fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsq2Theta13);
+      fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsq2Theta23);
+      break;
+    case(kNuMixSinsqTheta):
+      fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsqTheta12);
+      fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsqTheta13);
+      fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsqTheta23);
+      break;
+    default:
+      std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
+      exit(-1);
+  }
+  
+  fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
+  NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
+  
+  switch (odmsq) {
+    case(kNuDmsqFogliLisi):
+      fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDmsqFL);
+      fparm->SetInitValue(kPhypDm12sq,    conv::kGlobFitDm12sq);
+      break;
+    case(kNuDmsq12andAbs23):
+      fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq);
+      fparm->SetInitValue(kPhypDm12sq,    conv::kGlobFitDm12sq);
+      break;
+    case(kNuDmsq12andAbs31):
+      fparm->SetInitValue(kPhypDm12sq,    conv::kGlobFitDm12sq);
+      if(Opt::Instance()->gMassHierarchyAssumed == kNmhNormal)
+        fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
+      else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
+        fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
+      break;
+    default:
+      std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+      exit(-1);
+  }
+       
+  fparm->SetInitValue(kPhypBetaBar, conv::kGlobFitBetaBar); // set init value
+
+  return fparm;
+}
+
+//
+
+
+
+
+
+
+
 //________________________________________________________________________________________
 FitParamList * FitParamList::NuOscSterile4FlavourFit(int nuisance)
 {
@@ -1034,6 +1106,88 @@ void FitParamList::Append3FlavourOscillationBar(FitParamList * fparm, int start)
   fparm->AddParam( ip++, kPhypDm12sqBar,    kInitFitDm12sqBar,   kMinFitDm12sqBar, kMaxFitDm12sqBar, kStepDm12sqBar,  false, false);
 
 }
+
+
+
+
+
+
+
+
+
+// NEW BETABAR
+
+//________________________________________________________________________________________
+void FitParamList::AppendNormBar(FitParamList * fparm, int start)
+{
+  int ip = start; // first unallocated element in the param list
+
+  //
+  // add osc params
+  //
+  NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+  switch(omp) {
+  case(kNuMixSinsq2Theta):
+     fparm->AddParam( ip++, kPhypMixing23Bar,  kInitFitSinsq2Theta23Bar,  kMinFitSinsq2Theta23Bar,  kMaxFitSinsq2Theta23Bar,  kStepSinsq2Theta23Bar,  false, false);
+     fparm->AddParam( ip++, kPhypMixing13Bar,  kInitFitSinsq2Theta13Bar,  kMinFitSinsq2Theta13Bar,  kMaxFitSinsq2Theta13Bar,  kStepSinsq2Theta13Bar,  false, false);
+     fparm->AddParam( ip++, kPhypMixing12Bar,  kInitFitSinsq2Theta12Bar,  kMinFitSinsq2Theta12Bar,  kMaxFitSinsq2Theta12Bar,  kStepSinsq2Theta12Bar,  false, false);
+     break;
+  case(kNuMixSinsqTheta):
+     fparm->AddParam( ip++, kPhypMixing23Bar,  kInitFitSinsqTheta23Bar,   kMinFitSinsqTheta23Bar,   kMaxFitSinsqTheta23Bar,   kStepSinsqTheta23Bar,  false, false);
+     fparm->AddParam( ip++, kPhypMixing13Bar,  kInitFitSinsqTheta13Bar,   kMinFitSinsqTheta13Bar,   kMaxFitSinsqTheta13Bar,   kStepSinsqTheta13Bar,  false, false);
+     fparm->AddParam( ip++, kPhypMixing12Bar,  kInitFitSinsqTheta12Bar,   kMinFitSinsqTheta12Bar,   kMaxFitSinsqTheta12Bar,   kStepSinsqTheta12Bar,  false, false);
+     break;
+  default:
+     delete fparm;
+     return;
+  }
+  
+  NuOscDeltaCP_t dcp = Opt::Instance()->gOscDeltaCP;
+  switch(dcp){
+  case(kNuDeltaCPPhase):
+  fparm->AddParam( ip++, kPhypCPVBar,   0,                -kpi,          kpi,           1.0E-2,  false, false);
+  break;
+  case(kNuDeltaCPSin):
+  fparm->AddParam( ip++, kPhypCPVBar,   0,                  -1,            1,           1.0E-2,  false, false);
+  break;
+  default:
+    delete fparm;
+    return;
+  }
+
+  //  fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq,   kMinFitDm23sq, kMaxFitDm23sq, 1.0E-4,  false, false);
+  NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
+  switch (odmsq) {
+  case(kNuDmsqFogliLisi):
+    fparm->AddParam( ip++, kPhypDm23sqBar,    kGlobFitDmsqFL,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    break;
+  case(kNuDmsq12andAbs23):
+    fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    break;
+  case(kNuDmsq12andAbs31):
+    if(Opt::Instance()->gMassHierarchyAssumed == kNmhNormal)
+      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar + kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
+      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar - kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    break;
+  default:
+    delete fparm;
+    return;
+  }
+   
+  fparm->AddParam( ip++, kPhypDm12sqBar,    kInitFitDm12sqBar,   kMinFitDm12sqBar, kMaxFitDm12sqBar, kStepDm12sqBar,  false, false);
+
+  fparm->AddParam( ip++, kPhypBetaBar,    kInitFitBetaBar,   kMinFitBetaBar, kMaxFitBetaBar, kStepBetaBar,  false, false);  // add parameter
+
+}
+
+//
+
+
+
+
+
+
 //________________________________________________________________________________________
 void FitParamList::Append4FlavourSterileOscillation(FitParamList * fparm, int start)
 {
@@ -1229,6 +1383,30 @@ PhysHypothesis_t FitParamList::PhysicsHypothesis(void) const
   if(this->Exists(kPhypDm41sq) ) {
     return kHypOscSterile4F;
   }
+
+
+  // NEW BETABAR
+
+  // neutrino oscillations (3-flavour framework) with separate nu/nubar parameters and normalization
+  if( this->Exists(kPhypDm12sqBar)   &&
+      this->Exists(kPhypDm23sqBar)   &&
+      this->Exists(kPhypMixing13Bar) &&
+      this->Exists(kPhypMixing12Bar) &&
+      this->Exists(kPhypMixing23Bar) &&
+      this->Exists(kPhypCPVBar)      &&
+      this->Exists(kPhypDm12sq)      &&
+      this->Exists(kPhypDm23sq)      &&
+      this->Exists(kPhypMixing13)    &&
+      this->Exists(kPhypMixing12)    &&
+      this->Exists(kPhypMixing23)    &&
+      this->Exists(kPhypCPV)         &&
+      this->Exists(kPhypBetaBar) )
+  {
+    return kHypOsc3FBarNormBar;
+  }
+  //
+
+  
   // neutrino oscillations (3-flavour framework) with separate nu/nubar parameters
   if( this->Exists(kPhypDm12sqBar)   &&
       this->Exists(kPhypDm23sqBar)   &&
@@ -1245,6 +1423,9 @@ PhysHypothesis_t FitParamList::PhysicsHypothesis(void) const
   {
     return kHypOsc3FBar;
   }
+  //
+
+
   // neutrino oscillations (3-flavour framework)
   if( this->Exists(kPhypDm12sq)   &&
       this->Exists(kPhypDm23sq)   &&

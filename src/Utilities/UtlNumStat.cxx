@@ -369,6 +369,10 @@ double valor::util::RandomizeParameter(conv::PhysParamId_t p)
     case kPhypDm23sqBar            : return util::RandomizeDm23sqBar  ();
     case kPhypDm12sqBar            : return util::RandomizeDm12sqBar  ();
     
+      // NEW BETABAR
+    case kPhypBetaBar              : return util::RandomizeBetaBar    ();
+      //
+
     case kPhypAlphaDecay            :
     case kPhypSinsq2ThetaDecay      :
     case kPhypMusqDecoh             :
@@ -692,6 +696,23 @@ double valor::util::RandomizeDm23sqBar(void)
   //or try again
   return util::RandomizeDm23sqBar();
 }
+
+// NEW BETABAR
+//____________________________________________________________________________
+double valor::util::RandomizeBetaBar(void)
+{
+  double mean  = Opt::Instance()->GetGlobalBestFit(kPhypBetaBar); 
+  double sigma = mean * Opt::Instance()->GetGlobalFitError(kPhypBetaBar);
+  double dm    = Rnd::Instance()->RndToyMCosc().Gaus(mean,sigma);
+  // return if a physical value was generated
+  if(dm >= 0.) {
+    return dm;
+  }
+  //or try again
+  return util::RandomizeBetaBar();
+}
+//
+
 //____________________________________________________________________________
 int valor::util::Sign(double tweaking_dial)
 {

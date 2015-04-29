@@ -24,7 +24,6 @@ namespace conv   {
 // typical initialization and range values for fitter
 //
 
-
 /////////////////////////////////////////////
 //                                         //
 // T2K only joint fit results (VALOR)      //

@@ -224,6 +224,12 @@ void Opt::SetDefaultParameterValues()
     fGlobalFitError [p] = fGlobalFitError [nonbar];
     //fInitialValue   [p] = fGlobalBestFit[nonbar];
   }
+
+  // NEW BETABAR
+  // numubar->nuebar normalization
+  fGlobalBestFit  [kPhypBetaBar] = kGlobFitBetaBar;
+  fGlobalFitError [kPhypBetaBar] = kGlobFitErrBetaBar;
+  //
 }
 //________________________________________________________________________________________
 bool Opt::Undefined(void)
