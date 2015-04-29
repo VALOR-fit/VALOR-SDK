@@ -230,7 +230,7 @@ static const double kMinFitDm12sqBar         = 6.0E-5;
 static const double kMaxFitDm12sqBar         = 9.0E-5;
 static const double kStepDm12sqBar           = 2.0E-6;
 // sinsq2theta fitter init values and range
-static const double kInitFitSinsq2Theta23    = 0.90;
+static const double kInitFitSinsq2Theta23    = kGlobFitSinsq2Theta23;
 static const double kMinFitSinsq2Theta23     = 0.00;
 static const double kMaxFitSinsq2Theta23     = 1.00;
 static const double kStepSinsq2Theta23       = 5.0E-3;
@@ -243,7 +243,7 @@ static const double kMinFitSinsq2Theta12     = 0.00;
 static const double kMaxFitSinsq2Theta12     = 1.00;
 static const double kStepSinsq2Theta12       = 1.0E-2;
 // sinsq2theta fitter init values and range (fixnonbar)
-static const double kInitFitSinsq2Theta23Bar = 0.90;
+static const double kInitFitSinsq2Theta23Bar = kGlobFitSinsq2Theta23;
 static const double kMinFitSinsq2Theta23Bar  = 0.00;
 static const double kMaxFitSinsq2Theta23Bar  = 1.00;
 static const double kStepSinsq2Theta23Bar    = 5.0E-3;
@@ -256,7 +256,7 @@ static const double kMinFitSinsq2Theta12Bar  = 0.00;
 static const double kMaxFitSinsq2Theta12Bar  = 1.00;
 static const double kStepSinsq2Theta12Bar    = 1.0E-2;
 // sinsqtheta fitter init values and range
-static const double kInitFitSinsqTheta23     = 0.60;
+static const double kInitFitSinsqTheta23     = kGlobFitSinsqTheta23;
 static const double kMinFitSinsqTheta23      = 0.00;
 static const double kMaxFitSinsqTheta23      = 1.00;
 static const double kStepSinsqTheta23        = 5.0E-3;
@@ -269,7 +269,7 @@ static const double kMinFitSinsqTheta12      = 0.00;
 static const double kMaxFitSinsqTheta12      = 1.00;
 static const double kStepSinsqTheta12        = 1.0E-2;
 // sinsqtheta fitter init values and range (NuBar fix Nu)
-static const double kInitFitSinsqTheta23Bar  = 0.60;
+static const double kInitFitSinsqTheta23Bar  = kGlobFitSinsqTheta23;
 static const double kMinFitSinsqTheta23Bar   = 0.00;
 static const double kMaxFitSinsqTheta23Bar   = 1.00;
 static const double kStepSinsqTheta23Bar     = 5.0E-3;
