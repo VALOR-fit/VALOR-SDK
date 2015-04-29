@@ -84,6 +84,33 @@ PhysHypothesis::PhysHypothesis(const FitParamList & fp)
     this->SetCurrValue(kPhypCPVBar,      fp.CurrValue(kPhypCPVBar));
   }
 
+
+
+  // NEW BETABAR
+
+  // neutrino oscillations (3-flavour framework), nu/nubar separated + numubar->nuebar osc normalization
+  else if(hyp == kHypOsc3FBarNormBar)
+  {
+    this->Init(kHypOsc3FBarNormBar);
+    this->SetCurrValue(kPhypDm12sq,      fp.CurrValue(kPhypDm12sq));
+    this->SetCurrValue(kPhypDm23sq,      fp.CurrValue(kPhypDm23sq));
+    this->SetCurrValue(kPhypMixing12,    fp.CurrValue(kPhypMixing12));
+    this->SetCurrValue(kPhypMixing13,    fp.CurrValue(kPhypMixing13));
+    this->SetCurrValue(kPhypMixing23,    fp.CurrValue(kPhypMixing23));
+    this->SetCurrValue(kPhypCPV,         fp.CurrValue(kPhypCPV));
+    this->SetCurrValue(kPhypDm12sqBar,   fp.CurrValue(kPhypDm12sqBar));
+    this->SetCurrValue(kPhypDm23sqBar,   fp.CurrValue(kPhypDm23sqBar));
+    this->SetCurrValue(kPhypMixing12Bar, fp.CurrValue(kPhypMixing12Bar));
+    this->SetCurrValue(kPhypMixing13Bar, fp.CurrValue(kPhypMixing13Bar));
+    this->SetCurrValue(kPhypMixing23Bar, fp.CurrValue(kPhypMixing23Bar));
+    this->SetCurrValue(kPhypCPVBar,      fp.CurrValue(kPhypCPVBar));
+    this->SetCurrValue(kPhypBetaBar,     fp.CurrValue(kPhypBetaBar));
+  }
+
+  //
+
+
+
   // numu disappearance, 2-flavour neutrino oscillation framework 
   else if(hyp == kHypNuMuDisapp2F) 
   {
@@ -215,6 +242,30 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
     fParams[kPhypDm23sqBar  ]  = 0;
     fParams[kPhypDm12sqBar  ]  = 0;
   }
+
+
+  // NEW BETABAR
+  
+  // neutrino oscillations (3-flavour framework) - with separate mixings for neutrino and antineutrino + numubar->nuebar osc normalization
+  if(fHypothesis == kHypOsc3FBarNormBar) {
+    fParams[kPhypMixing12   ]  = 0;
+    fParams[kPhypMixing13   ]  = 0;
+    fParams[kPhypMixing23   ]  = 0;
+    fParams[kPhypCPV        ]  = 0;
+    fParams[kPhypDm23sq     ]  = 0;
+    fParams[kPhypDm12sq     ]  = 0;
+    fParams[kPhypMixing12Bar]  = 0;
+    fParams[kPhypMixing13Bar]  = 0;
+    fParams[kPhypMixing23Bar]  = 0;
+    fParams[kPhypCPVBar     ]  = 0;
+    fParams[kPhypDm23sqBar  ]  = 0;
+    fParams[kPhypDm12sqBar  ]  = 0;
+    fParams[kPhypBetaBar    ]  = 0;
+  }
+  //
+  
+
+
   // neutrino decay 
   if(fHypothesis == kHypDecay) {
     fParams[kPhypSinsq2ThetaDecay] = 0;
