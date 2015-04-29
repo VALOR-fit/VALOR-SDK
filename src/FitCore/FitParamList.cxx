@@ -882,7 +882,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarNormBarFit(int nuisance)
   FitParamList * fparm = new FitParamList(13+nuisance);  // 13 instead of 12
   FitParamList::Append3FlavourOscillation(fparm, 0);
   FitParamList::Append3FlavourOscillationBar(fparm, 6);
-  FitParamList::AppendNormBar(fparm, 1);
+  FitParamList::AppendNormBar(fparm, 12);
   
   // Set initial values for the non-barred fit params
   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
