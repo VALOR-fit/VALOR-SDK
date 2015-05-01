@@ -1314,33 +1314,35 @@ void FitParamList::Copy(const FitParamList & plst)
   this->fIdMap.insert(plst.fIdMap.begin(),  plst.fIdMap.end());
 
   for(int i = 0; i < plst.fNParams; i++) {
-     this->fName[i].SetString(plst.fName[i].GetString().Data());
-     this->fBestFitValue[i] = plst.fBestFitValue[i];
-     this->fCurrValue[i]    = plst.fCurrValue[i];
-     this->fInitValue[i]    = plst.fInitValue[i];
-     this->fMinValue[i]     = plst.fMinValue[i];
-     this->fMaxValue[i]     = plst.fMaxValue[i];
-     this->fStepSize[i]     = plst.fStepSize[i];
-     this->fIsFixed[i]      = plst.fIsFixed[i];
-     this->fIsNuisance[i]   = plst.fIsNuisance[i];
-     this->fMigradError[i]  = plst.fMigradError[i];
-     this->fHesseError[i]   = plst.fHesseError[i];
-     this->fPlusError[i]    = plst.fPlusError[i];
-     this->fMinusError[i]   = plst.fMinusError[i];
-
-     // MARGINALIZATION
-     this->fDoMarg[i]        = plst.fDoMarg[i];
-     this->fPriorMode[i]     = plst.fPriorMode[i];
-     this->fPriorModeName[i] = TObjString(plst.fPriorModeName[i]);
-     this->fMeanGaus[i]      = plst.fMeanGaus[i];
-     this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
-     this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
-     this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
-     this->fPriorHisto[i]    = (TH1F*) plst.fPriorHisto[i]->Clone("");
-     //this->fPriorHisto[i]    = new TH1F(plst.fPriorHisto[i]);
-     //this->fPriorHisto[i]->Copy(plst.fPriorHisto[i]);
-     //
-  } 
+    this->fName[i].SetString(plst.fName[i].GetString().Data());
+    this->fBestFitValue[i] = plst.fBestFitValue[i];
+    this->fCurrValue[i]    = plst.fCurrValue[i];
+    this->fInitValue[i]    = plst.fInitValue[i];
+    this->fMinValue[i]     = plst.fMinValue[i];
+    this->fMaxValue[i]     = plst.fMaxValue[i];
+    this->fStepSize[i]     = plst.fStepSize[i];
+    this->fIsFixed[i]      = plst.fIsFixed[i];
+    this->fIsNuisance[i]   = plst.fIsNuisance[i];
+    this->fMigradError[i]  = plst.fMigradError[i];
+    this->fHesseError[i]   = plst.fHesseError[i];
+    this->fPlusError[i]    = plst.fPlusError[i];
+    this->fMinusError[i]   = plst.fMinusError[i];
+    
+    // MARGINALIZATION
+    this->fDoMarg[i]        = plst.fDoMarg[i];
+    this->fPriorMode[i]     = plst.fPriorMode[i];
+    this->fPriorModeName[i].SetString(plst.fPriorModeName[i].GetString().Data());
+    this->fMeanGaus[i]      = plst.fMeanGaus[i];
+    this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
+    this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
+    this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
+    if (plst.fPriorHisto[i]) {
+      this->fPriorHisto[i]    = (TH1F*) plst.fPriorHisto[i]->Clone("");
+    }
+    else{
+      this->fPriorHisto[i]    = 0;
+    }
+  }
 
   for(int i = 0; i < plst.fNParams; i++) {
     for(int j = 0; j < plst.fNParams; j++) {
@@ -1447,7 +1449,7 @@ void FitParamList::Init(int nparams)
      // MARGINALIZATION
      fDoMarg       [i] = 0;
      fPriorMode    [i] = 0;
-     fPriorModeName[i].SetString("");
+     fPriorModeName[i].SetString("Uninitialised");
      fMeanGaus     [i] = 0;
      fSigmaGaus    [i] = 0;
      fMinValueFlat [i] = 0;
