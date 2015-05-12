@@ -1767,7 +1767,7 @@ void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
 //________________________________________________________________________________________
 void FitParamList::SetToyHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
 {
-  fToyHisto [this->Id(p)] = (TH1D*) fPriorHisto [this->Id(p)]->Clone(hprior->GetName());
+  fToyHisto [this->Id(p)] = (TH1D*) fPriorHisto [this->Id(p)]->Clone("hToy");
   fToyHisto [this->Id(p)]->Reset();
 }
 
