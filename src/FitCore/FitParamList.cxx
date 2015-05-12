@@ -1107,14 +1107,6 @@ void FitParamList::Append3FlavourOscillationBar(FitParamList * fparm, int start)
 
 }
 
-
-
-
-
-
-
-
-
 // NEW BETABAR
 
 //________________________________________________________________________________________
@@ -1125,11 +1117,6 @@ void FitParamList::AppendNormBar(FitParamList * fparm, int start)
 }
 
 //
-
-
-
-
-
 
 //________________________________________________________________________________________
 void FitParamList::Append4FlavourSterileOscillation(FitParamList * fparm, int start)
@@ -1460,7 +1447,7 @@ void FitParamList::Copy(const FitParamList & plst)
      this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
      this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
      this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
-     this->fPriorHisto[i]    = (TH1F*) plst.fPriorHisto[i]->Clone("");
+     this->fPriorHisto[i]    = (TH1D*) plst.fPriorHisto[i]->Clone("");
      //this->fPriorHisto[i]    = new TH1F(plst.fPriorHisto[i]);
      //this->fPriorHisto[i]->Copy(plst.fPriorHisto[i]);
      //
@@ -1521,7 +1508,7 @@ void FitParamList::Init(int nparams)
      fSigmaGaus     = new double    [fNParams];
      fMinValueFlat  = new double    [fNParams];
      fMaxValueFlat  = new double    [fNParams];    
-     fPriorHisto    = new TH1F *    [fNParams];
+     fPriorHisto    = new TH1D *    [fNParams];
      //
 
    } else {
@@ -1766,9 +1753,9 @@ void FitParamList::SetMaxValueFlat(valor::conv::PhysParamId_t p,double maxvalmar
   fMaxValueFlat [this->Id(p)] = maxvalmarg;
 }
 //________________________________________________________________________________________
-void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1F *hprior)
+void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
 {
-  fPriorHisto [this->Id(p)] = (TH1F*) hprior->Clone(hprior->GetName());
+  fPriorHisto [this->Id(p)] = (TH1D*) hprior->Clone(hprior->GetName());
 }
 //________________________________________________________________________________________
 string FitParamList::GetPriorModeName (valor::conv::PhysParamId_t p) const

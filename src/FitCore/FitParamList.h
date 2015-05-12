@@ -215,7 +215,7 @@ public:
    void SetSigmaGaus(valor::conv::PhysParamId_t p,double sigma);
    void SetMinValueFlat(valor::conv::PhysParamId_t p,double minvalmarg);
    void SetMaxValueFlat(valor::conv::PhysParamId_t p,double maxvalmarg);
-   void SetPriorHisto(valor::conv::PhysParamId_t p,TH1F *hprior);
+   void SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior);
 
    bool   IsMarginalized   (valor::conv::PhysParamId_t p) const { return fDoMarg        [this->Id(p)]; }
    int    GetPriorMode     (valor::conv::PhysParamId_t p) const { return fPriorMode     [this->Id(p)]; }
@@ -224,7 +224,7 @@ public:
    double GetSigmaGaus     (valor::conv::PhysParamId_t p) const { return fSigmaGaus     [this->Id(p)]; }
    double GetMinValueFlat  (valor::conv::PhysParamId_t p) const { return fMinValueFlat  [this->Id(p)]; }
    double GetMaxValueFlat  (valor::conv::PhysParamId_t p) const { return fMaxValueFlat  [this->Id(p)]; }
-   TH1F * GetPriorHisto    (valor::conv::PhysParamId_t p) const { return fPriorHisto    [this->Id(p)]; }
+   TH1D * GetPriorHisto    (valor::conv::PhysParamId_t p) const { return fPriorHisto    [this->Id(p)]; }
    //
 
 
@@ -324,7 +324,7 @@ private:
    double *fMinValueFlat; //[fNParams]  // Low edge of the marginalization interval (flat prior)
    double *fMaxValueFlat; //[fNParams]  // Up  edge of the marginalization interval (flat prior)
 
-   TH1F **fPriorHisto;   //[fNParams]  // Prior histgram 
+   TH1D **fPriorHisto;   //[fNParams]  // Prior histgram 
   
    ////////////////////////////////////
 
