@@ -1448,6 +1448,7 @@ void FitParamList::Copy(const FitParamList & plst)
      this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
      this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
      this->fPriorHisto[i]    = (TH1D*) plst.fPriorHisto[i]->Clone("");
+     this->fToyHisto[i]      = (TH1D*) plst.fToyHisto[i]->Clone("");
      //this->fPriorHisto[i]    = new TH1F(plst.fPriorHisto[i]);
      //this->fPriorHisto[i]->Copy(plst.fPriorHisto[i]);
      //
@@ -1509,6 +1510,7 @@ void FitParamList::Init(int nparams)
      fMinValueFlat  = new double    [fNParams];
      fMaxValueFlat  = new double    [fNParams];    
      fPriorHisto    = new TH1D *    [fNParams];
+     fToyHisto      = new TH1D *    [fNParams];
      //
 
    } else {
@@ -1536,6 +1538,7 @@ void FitParamList::Init(int nparams)
      fMinValueFlat  = 0;
      fMaxValueFlat  = 0;
      fPriorHisto    = 0;
+     fToyHisto      = 0;
      //
 
    }
@@ -1564,6 +1567,7 @@ void FitParamList::Init(int nparams)
      fMinValueFlat [i] = 0;
      fMaxValueFlat [i] = 0;
      fPriorHisto   [i] = 0;
+     fToyHisto     [i] = 0;
      //
 
 
@@ -1614,6 +1618,7 @@ void FitParamList::CleanUp(void)
    if (fMinValueFlat  ) { delete [] fMinValueFlat ; fMinValueFlat  = 0 ; }
    if (fMaxValueFlat  ) { delete [] fMaxValueFlat ; fMaxValueFlat  = 0 ; }
    if (fPriorHisto    ) { delete [] fPriorHisto   ; fPriorHisto    = 0 ; }
+   if (fToyHisto      ) { delete [] fToyHisto     ; fToyHisto      = 0 ; }
    //
    
    fBestFitStatistic = 0.;
@@ -1757,6 +1762,16 @@ void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
 {
   fPriorHisto [this->Id(p)] = (TH1D*) hprior->Clone(hprior->GetName());
 }
+
+
+//________________________________________________________________________________________
+void FitParamList::SetToyHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
+{
+  fToyHisto [this->Id(p)] = (TH1D*) fPriorHisto [this->Id(p)]->Clone(hprior->GetName());
+  fToyHisto [this->Id(p)]->Reset();
+}
+
+
 //________________________________________________________________________________________
 string FitParamList::GetPriorModeName (valor::conv::PhysParamId_t p) const
 {

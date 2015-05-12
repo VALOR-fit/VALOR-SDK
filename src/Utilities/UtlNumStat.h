@@ -81,9 +81,11 @@ namespace util {
   double RandomizeMixing23Bar (void); //
   double RandomizeMixing12Bar (void); //
   double RandomizeMixing13Bar (void); //
-  double RandomizeCPVBar      (void); //
+  double RandomizeCPVBar      (void); //  
   double RandomizeDm12sqBar   (void); //
   double RandomizeDm23sqBar   (void); //
+
+  double RandomizeUser        (TH1D *hPrior); // Extract random from a prior 
 
   // NEW BETABAR
   double RandomizeBetaBar   (void); //

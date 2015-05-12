@@ -48,6 +48,10 @@ public:
                          double dmsq23,        /* |Dm^2_{23}| (always positive) in eV^2/c^4 */
                          double deltaCP        /* delta_{CP} phase in radians */
                         );
+
+  double GetSinsqthFromSinsq2th(double sinsqth);
+  double GetSinsq2thFromSinsqth(double sinsq2th);
+  
   void SetOscParametersSinSqTAll (double sinsqtheta12, /* sin^2(theta_{12}) */
                                   double sinsqtheta13, /* sin^2(theta_{13}) */
                                   double sinsqtheta23, /* sin^2(theta_{23}) */

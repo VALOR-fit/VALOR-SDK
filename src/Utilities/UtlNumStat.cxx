@@ -123,14 +123,18 @@ double valor::util::ChisqGauss(
   return chisq;
 }
 //____________________________________________________________________________
-double valor::util::ChisqPoisson(
-  double ndata, double nmc)
+double valor::util::ChisqPoisson(double ndata, double nmc)
 {
   if(nmc <= 0.)
     nmc = kSetNegEventsTo;
   if(ndata <= 0.)
     return 2.*(nmc-ndata);
   return 2. * (nmc-ndata) + 2. * ndata * TMath::Log(ndata/nmc);
+
+  // if(nmc > 0. && ndata > 0.)
+  //   return 2. * (nmc-ndata) + 2. * ndata * TMath::Log(ndata/nmc);
+  // else 
+  //   return 2. * (nmc-ndata);
 }
 //____________________________________________________________________________
 TMatrixD valor::util::CholeskyDecomposition(TMatrixD& cov_matrix)
@@ -711,8 +715,11 @@ double valor::util::RandomizeBetaBar(void)
   //or try again
   return util::RandomizeBetaBar();
 }
-//
-
+//____________________________________________________________________________
+double valor::util::RandomizeUser(TH1D *hPrior)
+{
+  return hPrior->GetRandom(); 
+}
 //____________________________________________________________________________
 int valor::util::Sign(double tweaking_dial)
 {

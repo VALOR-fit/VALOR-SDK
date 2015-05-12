@@ -21,7 +21,7 @@
 
 #include "Conventions/Build.h"
 
-namespace valor {
+namespace valor { 
   
 class VALORArrayF;
 

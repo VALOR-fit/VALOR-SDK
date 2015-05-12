@@ -189,7 +189,7 @@ string valor::util::XML2String(
 // Get the specified node content as a floating-point number
 //
   LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
-
+ 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
     LOG("XML",pFATAL)

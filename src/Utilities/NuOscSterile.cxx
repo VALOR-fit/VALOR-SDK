@@ -462,14 +462,14 @@ void NuOscSterile::SetVacuumPMNSElementByIndex(int iflav, int imass, double real
 void NuOscSterile::SetVacuumPMNSElementByType(int nu_pdg, int nmass, double real, double imag)
 {
   int imass = nmass-1;
-  int iflav;
+  int iflav=-999;
   switch (abs(nu_pdg)) {
-    case kPdgNuE  : iflav=0; break;
-    case kPdgNuMu : iflav=1; break;
-    case kPdgNuTau: iflav=2; break;
-    case kPdgNuS4 : iflav=3; break;
-    case kPdgNuS5 : iflav=4; break;
-    default: cerr<<"NuOscSterile/SetVacuumPMNSElementByType >> Unrecognised PDG: "<<nu_pdg<<endl; exit(-1);
+  case kPdgNuE  : iflav=0; break;
+  case kPdgNuMu : iflav=1; break;
+  case kPdgNuTau: iflav=2; break;
+  case kPdgNuS4 : iflav=3; break;
+  case kPdgNuS5 : iflav=4; break;
+  default: cerr<<"NuOscSterile/SetVacuumPMNSElementByType >> Unrecognised PDG: "<<nu_pdg<<endl; exit(-1);
   }
   UVacuum[iflav][imass][re] = real;
   UVacuum[iflav][imass][im] = imag;
