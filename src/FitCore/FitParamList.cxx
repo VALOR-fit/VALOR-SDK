@@ -1760,14 +1760,18 @@ void FitParamList::SetMaxValueFlat(valor::conv::PhysParamId_t p,double maxvalmar
 //________________________________________________________________________________________
 void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
 {
-  fPriorHisto [this->Id(p)] = (TH1D*) hprior->Clone(hprior->GetName());
+  char name[200];
+  sprintf(name,"%s_%s","hPrior_",util::RawParamAsStringRaw(p).c_str());
+  fPriorHisto [this->Id(p)] = (TH1D*) hprior->Clone(name);
 }
 
 
 //________________________________________________________________________________________
 void FitParamList::SetToyHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
 {
-  fToyHisto [this->Id(p)] = (TH1D*) fPriorHisto [this->Id(p)]->Clone("hToy");
+  char name[200];
+  sprintf(name,"%s_%s","hToy_",util::RawParamAsStringRaw(p).c_str());
+  fToyHisto [this->Id(p)] = (TH1D*) hprior->Clone(name);
   fToyHisto [this->Id(p)]->Reset();
 }
 

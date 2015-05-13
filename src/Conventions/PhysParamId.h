@@ -341,6 +341,7 @@ PhysParamId_t;
 
 namespace util {
 
+  string RawParamAsStringRaw    (conv::PhysParamId_t p);
   string RawParamAsString       (conv::PhysParamId_t p);
   string RawParamAsStringTex    (conv::PhysParamId_t p);
   string RawParamAsStringRooTex (conv::PhysParamId_t p);
