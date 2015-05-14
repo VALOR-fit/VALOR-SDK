@@ -931,6 +931,16 @@ FitParamList * FitParamList::NuOsc3FlavourBarNormBarFit(int nuisance)
   return fparm;
 }
 
+// NEW BETABAR 2
+//________________________________________________________________________________________
+FitParamList * FitParamList::NuOsc3FlavourNormBarFit(int nuisance)
+{
+  FitParamList * fparm = new FitParamList(7+nuisance);  // 7 instead of 6
+  FitParamList::Append3FlavourOscillation(fparm, 0);
+  FitParamList::AppendNormBar(fparm, 6);
+  return fparm;
+}
+
 //
 
 
@@ -1333,6 +1343,21 @@ PhysHypothesis_t FitParamList::PhysicsHypothesis(void) const
       this->Exists(kPhypBetaBar) )
   {
     return kHypOsc3FBarNormBar;
+  }
+  //
+
+  // NEW BETABAR 2
+
+  // neutrino oscillations (3-flavour framework) with separate nu/nubar parameters and normalization
+  if( this->Exists(kPhypDm12sq)      &&
+      this->Exists(kPhypDm23sq)      &&
+      this->Exists(kPhypMixing13)    &&
+      this->Exists(kPhypMixing12)    &&
+      this->Exists(kPhypMixing23)    &&
+      this->Exists(kPhypCPV)         &&
+      this->Exists(kPhypBetaBar) )
+  {
+    return kHypOsc3FNormBar;
   }
   //
 
