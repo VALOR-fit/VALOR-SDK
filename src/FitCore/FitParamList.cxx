@@ -1472,8 +1472,14 @@ void FitParamList::Copy(const FitParamList & plst)
      this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
      this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
      this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
+
+     this->fIsPrior2D[i]        = plst.fDoMarg[i];
+
      this->fPriorHisto[i]    = (TH1D*) plst.fPriorHisto[i]->Clone("");
      this->fToyHisto[i]      = (TH1D*) plst.fToyHisto[i]->Clone("");
+     this->fPriorHisto2D[i]  = (TH2D*) plst.fPriorHisto2D[i]->Clone("");
+     this->fToyHisto2D[i]    = (TH2D*) plst.fToyHisto2D[i]->Clone("");
+
      //this->fPriorHisto[i]    = new TH1F(plst.fPriorHisto[i]);
      //this->fPriorHisto[i]->Copy(plst.fPriorHisto[i]);
      //
@@ -1536,6 +1542,11 @@ void FitParamList::Init(int nparams)
      fMaxValueFlat  = new double    [fNParams];    
      fPriorHisto    = new TH1D *    [fNParams];
      fToyHisto      = new TH1D *    [fNParams];
+
+     fIsPrior2D     = new bool      [fNParams];
+
+     fPriorHisto2D  = new TH2D *    [fNParams];
+     fToyHisto2D    = new TH2D *    [fNParams];
      //
 
    } else {
@@ -1562,8 +1573,11 @@ void FitParamList::Init(int nparams)
      fSigmaGaus     = 0;
      fMinValueFlat  = 0;
      fMaxValueFlat  = 0;
+     fIsPrior2D     = 0;
      fPriorHisto    = 0;
      fToyHisto      = 0;
+     fPriorHisto2D  = 0;
+     fToyHisto2D    = 0;
      //
 
    }
@@ -1591,8 +1605,11 @@ void FitParamList::Init(int nparams)
      fSigmaGaus    [i] = 0;
      fMinValueFlat [i] = 0;
      fMaxValueFlat [i] = 0;
+     fIsPrior2D    [i] = 0;
      fPriorHisto   [i] = 0;
      fToyHisto     [i] = 0;
+     fPriorHisto2D [i] = 0;
+     fToyHisto2D   [i] = 0;
      //
 
 
@@ -1642,8 +1659,13 @@ void FitParamList::CleanUp(void)
    if (fSigmaGaus     ) { delete [] fSigmaGaus    ; fSigmaGaus     = 0 ; }
    if (fMinValueFlat  ) { delete [] fMinValueFlat ; fMinValueFlat  = 0 ; }
    if (fMaxValueFlat  ) { delete [] fMaxValueFlat ; fMaxValueFlat  = 0 ; }
+
+   if (fIsPrior2D     ) { delete [] fIsPrior2D    ; fIsPrior2D     = 0 ; }
+
    if (fPriorHisto    ) { delete [] fPriorHisto   ; fPriorHisto    = 0 ; }
    if (fToyHisto      ) { delete [] fToyHisto     ; fToyHisto      = 0 ; }
+   if (fPriorHisto2D  ) { delete [] fPriorHisto2D ; fPriorHisto2D  = 0 ; }
+   if (fToyHisto2D    ) { delete [] fToyHisto2D   ; fToyHisto2D    = 0 ; }
    //
    
    fBestFitStatistic = 0.;
@@ -1788,11 +1810,32 @@ void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
   char name[200];
   sprintf(name,"%s_%s","hPrior",util::RawParamAsStringRaw(p).c_str());
   fPriorHisto [this->Id(p)] = (TH1D*) hprior->Clone(name);
+  
+  this->SetPriorDimension2D(p,false); // The prior is 1D
+}
+
+//________________________________________________________________________________________
+void FitParamList::SetPriorHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior)
+{
+  char name[200];
+  sprintf(name,"%s_%s","hPrior",util::RawParamAsStringRaw(p).c_str());
+  fPriorHisto2D [this->Id(p)] = (TH2D*) hprior->Clone(name);
+
+  this->SetPriorDimension2D(p,true); // The prior is 2D
 }
 
 
 //________________________________________________________________________________________
 void FitParamList::SetToyHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
+{
+  char name[200];
+  sprintf(name,"%s_%s","hToy",util::RawParamAsStringRaw(p).c_str());
+  fToyHisto [this->Id(p)] = (TH1D*) hprior->Clone(name);
+  fToyHisto [this->Id(p)]->Reset();
+}
+
+//________________________________________________________________________________________
+void FitParamList::SetToyHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior)
 {
   char name[200];
   sprintf(name,"%s_%s","hToy",util::RawParamAsStringRaw(p).c_str());
@@ -1808,3 +1851,7 @@ string FitParamList::GetPriorModeName (valor::conv::PhysParamId_t p) const
   return string(data);
 }
 //________________________________________________________________________________________
+
+void FitParamList::SetPriorDimension2D(valor::conv::PhysParamId_t p, bool isprior2d){
+  fIsPrior2D [this->Id(p)] = isprior2d;
+}
