@@ -38,6 +38,9 @@ typedef enum EPhysHypothesis
    // NEW BETABAR
    kHypOsc3FBarNormBar,   // neutrino oscillations, 3-flavour framework with separate mixing parameters for nu and nubar and normalization for numubar->nuebar components
    //
+   // NEW BETABAR 2
+   kHypOsc3FNormBar,   // neutrino oscillations, 3-flavour framework with separate mixing parameters for nu and nubar and normalization for numubar->nuebar components
+   //
 
    kHypOscSterile4F,      // neutrino oscillations with steriles, 3+1
    kHypOscSterile5F,      // neutrino oscillations with steriles, 3+2
