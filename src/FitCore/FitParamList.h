@@ -234,6 +234,8 @@ public:
    static FitParamList * NuOsc3FlavourFit                          (int nuisance = 0);
    static FitParamList * NuOsc3FlavourBarFit                       (int nuisance = 0);
    
+   // NEW BETABAR 2
+   static FitParamList * NuOsc3FlavourNormBarFit                   (int nuisance = 0);
    // NEW BETABAR
    static FitParamList * NuOsc3FlavourBarNormBarFit                (int nuisance = 0);
    //
