@@ -44,6 +44,11 @@ string util::AsString(PhysHypothesis_t h)
        return "<3-flavour Neutrino Oscillations, split nu and nubar, normalization numubar->nuebar>";
        break;
        //
+       // NEW BETABAR 2
+    case (kHypOsc3FNormBar) :
+       return "<3-flavour Neutrino Oscillations, normalization numubar->nuebar>";
+       break;
+       //
     case (kHypOscSterile4F) :
        return "<3+1 Sterile Neutrino Oscillations>";
        break;
@@ -177,9 +182,16 @@ string util::AsString (
   }
 
   // NEW BETABAR
-  // Placeholder for nubar+norm
+  // Placeholder for nubar+norm nubar
   if (hyp == valor::conv::kHypOsc3FBarNormBar) {
     out<<"3f+3fbar+normbar";
+  }
+  // 
+
+  // NEW BETABAR 2
+  // Placeholder for norm nubar
+  if (hyp == valor::conv::kHypOsc3FNormBar) {
+    out<<"3f+normbar";
   }
   // 
   
@@ -397,7 +409,82 @@ string util::AsString (
 
   }//3f_oscbar_normbar
 
-  // 
+  
+  // NEW BETABAR 2
+
+  // Placeholder for norm nuebar
+  if (hyp == valor::conv::kHypOsc3FNormBar) {
+    
+    double rndmz = -900;
+    bool show_mix12   = (mix12   > rndmz);
+    bool show_mix13   = (mix13   > rndmz);
+    bool show_mix23   = (mix23   > rndmz);
+    bool show_mix     = show_mix12 || show_mix13 || show_mix23;
+    bool show_deltacp = (deltacp > rndmz);
+    bool show_dm12sq  = (dm12sq  > rndmz);
+    bool show_dm23sq  = (dm23sq  > rndmz);
+    bool show_dmsq    = show_dm12sq || show_dm23sq;
+    bool show_betabar = (betabar > rndmz);
+
+    if(show_mix)
+    {
+       out << mixparam << "[";
+       if(show_mix12) {
+          out << "12_" << Form("%.3f",mix12);
+       }
+       if(show_mix13) {
+          if(show_mix12) {
+             out << ",";
+          }
+          out << "13_" << Form("%.3f",mix13);
+       }
+       if(show_mix23) {
+          if(show_mix13 || (!show_mix13 && show_mix12)) {
+             out << ",";
+          }
+          out << "23_" << Form("%.3f",mix23);
+       }
+       out << "]";
+    }
+
+    if(show_mix && (show_deltacp || show_dmsq))
+    {
+      out << ",";
+    }
+
+    if(show_deltacp)
+    {
+      out << "dcp_" << Form("%.3f",deltacp);
+    }
+
+    if(show_deltacp && show_dmsq)
+    {
+      out << ",";
+    }
+
+    if(show_dmsq)
+    {
+      out << "dmsq_" << util::AsString(Opt::Instance()->gMassHierarchyAssumed) << "[";
+       if(show_dm12sq) {
+          out << "12_" << Form("%.8f",dm12sq);
+       }
+       if(show_dm23sq) {
+          if(show_dm12sq) {
+             out << ",";
+          }
+          out << "23_" << Form("%.6f",dm23sq);
+       }
+       out << "]eV2";
+    }
+
+    if(show_betabar)
+      {
+	out << ",betabar_" << Form("%.3f",betabar);
+    }
+
+  }//3f_normbar
+  
+  //
   
   // Placeholder for steriles
   if (hyp == valor::conv::kHypOscSterile4F) {
@@ -441,6 +528,9 @@ PhysHypothesis_t util::PhysHypFromString (string sh)
 
   // NEW BETABAR
   if(sh == "3f_oscbar_normbar") return kHypOsc3FBarNormBar;
+  //
+  // NEW BETABAR 2
+  if(sh == "3f_osc_normbar") return kHypOsc3FNormBar;
   //
 
   if(sh == "3f_nsi"        ) return kHypNSI3F;
