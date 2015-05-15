@@ -31,7 +31,7 @@ namespace conv   {
 /////////////////////////////////////////////
 
 static const double kT2KBestFitDmsq12  = 7.5E-5; 
-static const double kT2KBestFitSinsqTheta12  = 0.304; 
+static const double kT2KBestFitSinsqTheta12  = 0.306; 
 static const double kT2KBestFitSinsq2Theta12  = 0.8495; 
 
 static const double kT2KBestFitDeltaCP_NH = 1.91;

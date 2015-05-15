@@ -1446,7 +1446,6 @@ void FitParamList::Copy(const FitParamList & plst)
 
   this->fParListName = plst.fParListName;
   this->fSystMode    = plst.fSystMode;
-
   this->fIdMap.insert(plst.fIdMap.begin(),  plst.fIdMap.end());
 
   for(int i = 0; i < plst.fNParams; i++) {
@@ -1475,11 +1474,18 @@ void FitParamList::Copy(const FitParamList & plst)
 
      this->fIsPrior2D[i]        = plst.fDoMarg[i];
 
-     this->fPriorHisto[i]    = (TH1D*) plst.fPriorHisto[i]->Clone("");
-     this->fToyHisto[i]      = (TH1D*) plst.fToyHisto[i]->Clone("");
-     this->fPriorHisto2D[i]  = (TH2D*) plst.fPriorHisto2D[i]->Clone("");
-     this->fToyHisto2D[i]    = (TH2D*) plst.fToyHisto2D[i]->Clone("");
-
+     if(plst.fPriorHisto[i]!=0) this->fPriorHisto[i]      = (TH1D*) plst.fPriorHisto[i]->Clone("");
+     else this->fPriorHisto[i] = 0;
+     
+     if(plst.fToyHisto[i]!=0)   this->fToyHisto[i]        = (TH1D*) plst.fToyHisto[i]->Clone("");
+     else this->fToyHisto[i] = 0;
+       
+     if(plst.fPriorHisto2D[i]!=0) this->fPriorHisto2D[i]  = (TH2D*) plst.fPriorHisto2D[i]->Clone("");
+     else this->fPriorHisto2D[i] = 0;
+     
+     if(plst.fToyHisto2D[i]!=0) this->fToyHisto2D[i]      = (TH2D*) plst.fToyHisto2D[i]->Clone("");
+     else this->fToyHisto2D[i] = 0;
+     
      //this->fPriorHisto[i]    = new TH1F(plst.fPriorHisto[i]);
      //this->fPriorHisto[i]->Copy(plst.fPriorHisto[i]);
      //
@@ -1490,20 +1496,20 @@ void FitParamList::Copy(const FitParamList & plst)
       (*this->fCovMatrix)[i][j] =  (*plst.fCovMatrix)[i][j];
     }
   }
-
-   this->fBestFitStatistic = plst.fBestFitStatistic;
-   this->fCurrStatistic    = plst.fCurrStatistic;
-   this->fFitTime          = plst.fFitTime;
-   this->fFitTries         = plst.fFitTries;
-
-   this->fStatusCodes.insert(plst.fStatusCodes.begin(),  plst.fStatusCodes.end());
-
-   this->fMigradErrorsSet = plst.fMigradErrorsSet;
-   this->fHesseErrorsSet  = plst.fHesseErrorsSet;
-   this->fMinosErrorsSet  = plst.fMinosErrorsSet;
-
-   this->fShowCurrValuesOnly    = plst.fShowCurrValuesOnly;
-   this->fShowBestFitValuesOnly = plst.fShowBestFitValuesOnly;
+    
+  this->fBestFitStatistic = plst.fBestFitStatistic;
+  this->fCurrStatistic    = plst.fCurrStatistic;
+  this->fFitTime          = plst.fFitTime;
+  this->fFitTries         = plst.fFitTries;
+  
+  this->fStatusCodes.insert(plst.fStatusCodes.begin(),  plst.fStatusCodes.end());
+  
+  this->fMigradErrorsSet = plst.fMigradErrorsSet;
+  this->fHesseErrorsSet  = plst.fHesseErrorsSet;
+  this->fMinosErrorsSet  = plst.fMinosErrorsSet;
+  
+  this->fShowCurrValuesOnly    = plst.fShowCurrValuesOnly;
+  this->fShowBestFitValuesOnly = plst.fShowBestFitValuesOnly;
 }
 //________________________________________________________________________________________
 void FitParamList::Init(int nparams)
@@ -1838,9 +1844,9 @@ void FitParamList::SetToyHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
 void FitParamList::SetToyHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior)
 {
   char name[200];
-  sprintf(name,"%s_%s","hToy",util::RawParamAsStringRaw(p).c_str());
-  fToyHisto [this->Id(p)] = (TH1D*) hprior->Clone(name);
-  fToyHisto [this->Id(p)]->Reset();
+  sprintf(name,"%s_%s","hToy2D",util::RawParamAsStringRaw(p).c_str());
+  fToyHisto2D [this->Id(p)] = (TH2D*) hprior->Clone(name);
+  fToyHisto2D [this->Id(p)]->Reset();
 }
 
 
