@@ -86,7 +86,8 @@ namespace util {
   double RandomizeDm23sqBar   (void); //
 
   double RandomizeUser        (TH1D *hPrior); // Extract random from a prior 
-
+  int    RandomizeMH          (const double probNH);
+  
   // NEW BETABAR
   double RandomizeBetaBar   (void); //
   //
