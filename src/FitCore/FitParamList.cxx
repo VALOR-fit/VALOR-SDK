@@ -1472,7 +1472,7 @@ void FitParamList::Copy(const FitParamList & plst)
      this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
      this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
 
-     this->fIsPrior2D[i]        = plst.fDoMarg[i];
+     this->fIsPrior2D[i]        = plst.fIsPrior2D[i];
 
      if(plst.fPriorHisto[i]!=0) this->fPriorHisto[i]      = (TH1D*) plst.fPriorHisto[i]->Clone("");
      else this->fPriorHisto[i] = 0;
