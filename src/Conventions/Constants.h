@@ -89,8 +89,9 @@ static const double kT2KReacBestFitSinsq2Theta23_IH  = 0.996;
 
 // Updated
 
-static const double kGlobFitDm12sq           = 7.53E-5; // (PDG 2014)
-
+static const double kGlobFitDm12sq           = kT2KReacBestFitDmsq12; // (PDG 2014)
+//static const double kGlobFitDm12sq           = 7.53E-5; // (PDG 2014)
+ 
 //static const double kGlobFitDm23sq           = 2.4E-3; // old
 //static const double kGlobFitDm23sq           = 2.32E-3; 
 //static const double kGlobFitDm23sq           = 2.44E-3; // (PDG 2014)
@@ -167,7 +168,8 @@ static const double kGlobFitSinsqTheta13   = kT2KReacBestFitSinsqTheta13_NH;
 
 //static const double kGlobFitSinsqTheta12    = 0.306; //fogli2011
 //static const double kGlobFitSinsqTheta12    = 0.311; //pdg2012
-static const double kGlobFitSinsqTheta12    = 0.304; 
+//static const double kGlobFitSinsqTheta12    = 0.304; 
+static const double kGlobFitSinsqTheta12    = kT2KReacBestFitSinsqTheta12; 
 
 //static const double kGlobFitErrSinsqTheta23 = 0.06;  // ~26% (1 sigma range)
 //static const double kGlobFitErrSinsqTheta23 = 0.018;  // ~1.8% (PDG 2014)
