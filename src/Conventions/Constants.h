@@ -80,6 +80,20 @@ static const double kT2KReacBestFitSinsq2Theta13_IH  = 0.0983;
 static const double kT2KReacBestFitSinsq2Theta23_NH  = 0.997; 
 static const double kT2KReacBestFitSinsq2Theta23_IH  = 0.996; 
 
+////////////////////////////////////////////////////////////////////
+//                                                                //
+// T2K+reactors joint fit results (Mach3, only normal hierarchy)  //
+//                                                                //
+////////////////////////////////////////////////////////////////////
+
+static const double kT2KReacMostProbDmsq12  = 7.5E-5; 
+static const double kT2KReacMostProbSinsqTheta12  = 0.306; 
+ static const double kT2KReacMostProbSinsq2Theta12  = 0.8495; 
+
+static const double kT2KReacMostProbDeltaCP_Mach3_NH = -1.601;
+static const double kT2KReacMostProbDmsq23_Mach3_NH  = 2.509E-3; 
+static const double kT2KReacMostProbSinsqTheta13_Mach3_NH  = 0.0250; 
+static const double kT2KReacMostProbSinsqTheta23_Mach3_NH  = 0.528; 
 
 /////////////////////////////////////
 //                                 //
