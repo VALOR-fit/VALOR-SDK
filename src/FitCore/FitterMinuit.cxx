@@ -327,75 +327,68 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   Double_t arglist[100];
   arglist[0] = 50000; // num of func calls
   arglist[1] = fTol;  // tolerance
-  
-  // Actually run the fit, but only if we have free parameters.
-  if (fFitInputs->FitParams().GetNumberFreeParameters()) {
-    if(!use_simplex) {
-      /*
-      //in disappearance mode, when fitting for deltacp, do two fits - fit everything but deltacp, then fit only deltacp
-      OscAnaType_t ana = Opt::Instance()->gOscAnaTypeChoice;
-      if(ana == kAnaNuMuDisappOnly && fFitInputs->FitParams().GetParListName() == "nuosc3f_numudisapp_nuis4+nuisance") {
-  #ifdef __show_fit_steps__
-        LOG("Minuit", pINFO) << "Performing two step fit. Fit everything but dcp, fit only dcp...";
-  #endif
-        //fix dcp
-        fFitInputs->FitParams().FixParameter(conv::kPhypDeltaCP);
-        double dcp_slot = (double)(fFitInputs->FitParams().Id(conv::kPhypDeltaCP) + 1); //FitParamList Id runs from 0. MINUIT Id runs from 1.
-        fitter->ExecuteCommand("FIX",&dcp_slot,1);
-        //fit
-        fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
-        //return if the not-dcp fit failed
-        if(fMigradMinStatusCode == 4) {
-    fFitInputs->FitParams().FreeParameter(conv::kPhypDeltaCP);
-    fitter->ExecuteCommand("RELEASE",&dcp_slot,1);
-    LOG("Minuit", pINFO) << "Fit did not converge when fixing dcp";
-    return false;
-        }
-        //print
-  #ifdef __show_fit_result__
-  #ifdef __show_fit_steps__
-        LOG("Minuit", pINFO) << "Printing MIGRAD intermediate fit results...";
-  #endif
-        fitter->ExecuteCommand("SHOW FCNVALUE",&fcntemp,0); //print the bestfit statistic
-        Double_t aminn = 0;
-        fitter->PrintResults(3,aminn);
-  #endif
-        //fix everything else
-        double fixed_slot[100] = {0};
-        int nfix = 0;
-        for(int ip = 0; ip < fFitInputs->FitParams().Size(); ip++) {
-    PhysParamId_t p = fFitInputs->FitParams().WhichParam(ip);
-    if(!fFitInputs->FitParams().IsFixed(p)) {
-      fFitInputs->FitParams().FixParameter(ip);
-      fixed_slot[nfix] = ip+1; //FitParamList Id runs from 0. MINUIT Id runs from 1.
-      nfix++;
-    }
-        }//ip
-        //free dcp
-        fFitInputs->FitParams().FreeParameter(conv::kPhypDeltaCP);
-        fitter->ExecuteCommand("RELEASE",&dcp_slot,1);
-        //fit
-        fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
-        //free everything that I just fixed
-        for(int ip = 0; ip <= nfix; ip++) {
-    fFitInputs->FitParams().FreeParameter(ip);
-        }
-        fitter->ExecuteCommand("RELEASE",fixed_slot,nfix);
-      }//disapp & free dcp
-      else
-      */
-      
+  if(!use_simplex) {
+    /*
+    //in disappearance mode, when fitting for deltacp, do two fits - fit everything but deltacp, then fit only deltacp
+    OscAnaType_t ana = Opt::Instance()->gOscAnaTypeChoice;
+    if(ana == kAnaNuMuDisappOnly && fFitInputs->FitParams().GetParListName() == "nuosc3f_numudisapp_nuis4+nuisance") {
+#ifdef __show_fit_steps__
+      LOG("Minuit", pINFO) << "Performing two step fit. Fit everything but dcp, fit only dcp...";
+#endif
+      //fix dcp
+      fFitInputs->FitParams().FixParameter(conv::kPhypDeltaCP);
+      double dcp_slot = (double)(fFitInputs->FitParams().Id(conv::kPhypDeltaCP) + 1); //FitParamList Id runs from 0. MINUIT Id runs from 1.
+      fitter->ExecuteCommand("FIX",&dcp_slot,1);
+      //fit
       fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
-      
-    }//!_use_simples
-    //SIMPLEX
-    else {
-      arglist[1] = 0.1; // higher tolerance
-      fMigradMinStatusCode = fitter->ExecuteCommand("SIMPLEX",arglist, 2);
-    }
-  }
-  else { // If no free parameters, just set it to successful.
-    fMigradMinStatusCode = 0;
+      //return if the not-dcp fit failed
+      if(fMigradMinStatusCode == 4) {
+	fFitInputs->FitParams().FreeParameter(conv::kPhypDeltaCP);
+	fitter->ExecuteCommand("RELEASE",&dcp_slot,1);
+	LOG("Minuit", pINFO) << "Fit did not converge when fixing dcp";
+	return false;
+      }
+      //print
+#ifdef __show_fit_result__
+#ifdef __show_fit_steps__
+      LOG("Minuit", pINFO) << "Printing MIGRAD intermediate fit results...";
+#endif
+      fitter->ExecuteCommand("SHOW FCNVALUE",&fcntemp,0); //print the bestfit statistic
+      Double_t aminn = 0;
+      fitter->PrintResults(3,aminn);
+#endif
+      //fix everything else
+      double fixed_slot[100] = {0};
+      int nfix = 0;
+      for(int ip = 0; ip < fFitInputs->FitParams().Size(); ip++) {
+	PhysParamId_t p = fFitInputs->FitParams().WhichParam(ip);
+	if(!fFitInputs->FitParams().IsFixed(p)) {
+	  fFitInputs->FitParams().FixParameter(ip);
+ 	  fixed_slot[nfix] = ip+1; //FitParamList Id runs from 0. MINUIT Id runs from 1.
+	  nfix++;
+	}
+      }//ip
+      //free dcp
+      fFitInputs->FitParams().FreeParameter(conv::kPhypDeltaCP);
+      fitter->ExecuteCommand("RELEASE",&dcp_slot,1);
+      //fit
+      fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
+      //free everything that I just fixed
+      for(int ip = 0; ip <= nfix; ip++) {
+	fFitInputs->FitParams().FreeParameter(ip);
+      }
+      fitter->ExecuteCommand("RELEASE",fixed_slot,nfix);
+    }//disapp & free dcp
+    else
+    */
+    
+    fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
+    
+  }//!_use_simples
+  //SIMPLEX
+  else {
+    arglist[1] = 0.1; // higher tolerance
+    fMigradMinStatusCode = fitter->ExecuteCommand("SIMPLEX",arglist, 2);
   }
   
   //return on not converged
