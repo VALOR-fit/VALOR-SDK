@@ -159,10 +159,29 @@ TMatrixD valor::util::CholeskyDecomposition(TMatrixD& cov_matrix)
         double tmp = L(k,i);
         L(i,i) -= tmp*tmp;
      }//k
+
+
      if(L(i,i) <= 0) {
-       cerr << "Decomposed covariance matrix not positive-definite" << endl;
-       exit(1);
+       if( fabs(L(i,i))<conv::kASmallNum ){
+	 L(i,i)=conv::kASmallNum;
+	 cerr << "  , changed to "<<L(i,i)<<endl;
+       }
+       else{
+	 cerr << "Decomposed covariance matrix not positive-definite" << endl;
+	 cerr << "L(" << i << "," << i << ") = " << L(i,i) << endl;
+	 exit(1);
+       }
      }
+     // if(L(i,i) <= 0) {
+     //   cerr << "util/CholeskyDecomposition >> "<< "Value: "<<i<<","<<i<<" = "<<L(i,i);
+     //   L(i,i)=conv::kASmallNum;
+     //   cerr << "  , changed to "<<L(i,i)<<endl;
+     //   //~ cerr << "Decomposed covariance matrix not positive-definite" << endl;
+     //   //~ exit(1);
+     // }
+
+
+
      L(i,i) = TMath::Sqrt(L(i,i));
      // then the off-diagonal terms
      for (int j = i+1; j < n; ++j) {
