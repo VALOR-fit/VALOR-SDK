@@ -84,6 +84,9 @@ namespace util {
   double RandomizeCPVBar      (void); //
   double RandomizeDm12sqBar   (void); //
   double RandomizeDm23sqBar   (void); //
+
+  double RandomizeUser        (TH1D *hPrior); // Extract random from a prior 
+  int    RandomizeMH          (const double probNH);
   
   // Full matrix diagonalisation using GSL
   // matrix_in is a pointer to a block representing a n*n complex matrix, equivalent to a double[n][n][2]

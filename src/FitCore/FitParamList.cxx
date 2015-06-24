@@ -1310,59 +1310,70 @@ void FitParamList::Copy(const FitParamList & plst)
 
   this->fParListName = plst.fParListName;
   this->fSystMode    = plst.fSystMode;
-
   this->fIdMap.insert(plst.fIdMap.begin(),  plst.fIdMap.end());
 
   for(int i = 0; i < plst.fNParams; i++) {
-    this->fName[i].SetString(plst.fName[i].GetString().Data());
-    this->fBestFitValue[i] = plst.fBestFitValue[i];
-    this->fCurrValue[i]    = plst.fCurrValue[i];
-    this->fInitValue[i]    = plst.fInitValue[i];
-    this->fMinValue[i]     = plst.fMinValue[i];
-    this->fMaxValue[i]     = plst.fMaxValue[i];
-    this->fStepSize[i]     = plst.fStepSize[i];
-    this->fIsFixed[i]      = plst.fIsFixed[i];
-    this->fIsNuisance[i]   = plst.fIsNuisance[i];
-    this->fMigradError[i]  = plst.fMigradError[i];
-    this->fHesseError[i]   = plst.fHesseError[i];
-    this->fPlusError[i]    = plst.fPlusError[i];
-    this->fMinusError[i]   = plst.fMinusError[i];
-    
-    // MARGINALIZATION
-    this->fDoMarg[i]        = plst.fDoMarg[i];
-    this->fPriorMode[i]     = plst.fPriorMode[i];
-    this->fPriorModeName[i].SetString(plst.fPriorModeName[i].GetString().Data());
-    this->fMeanGaus[i]      = plst.fMeanGaus[i];
-    this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
-    this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
-    this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
-    if (plst.fPriorHisto[i]) {
-      this->fPriorHisto[i]    = (TH1F*) plst.fPriorHisto[i]->Clone("");
-    }
-    else{
-      this->fPriorHisto[i]    = 0;
-    }
-  }
+     this->fName[i].SetString(plst.fName[i].GetString().Data());
+     this->fBestFitValue[i] = plst.fBestFitValue[i];
+     this->fCurrValue[i]    = plst.fCurrValue[i];
+     this->fInitValue[i]    = plst.fInitValue[i];
+     this->fMinValue[i]     = plst.fMinValue[i];
+     this->fMaxValue[i]     = plst.fMaxValue[i];
+     this->fStepSize[i]     = plst.fStepSize[i];
+     this->fIsFixed[i]      = plst.fIsFixed[i];
+     this->fIsNuisance[i]   = plst.fIsNuisance[i];
+     this->fMigradError[i]  = plst.fMigradError[i];
+     this->fHesseError[i]   = plst.fHesseError[i];
+     this->fPlusError[i]    = plst.fPlusError[i];
+     this->fMinusError[i]   = plst.fMinusError[i];
+
+     // MARGINALIZATION
+     this->fDoMarg[i]        = plst.fDoMarg[i];
+     this->fPriorMode[i]     = plst.fPriorMode[i];
+     this->fPriorModeName[i] = TObjString(plst.fPriorModeName[i]);
+     this->fMeanGaus[i]      = plst.fMeanGaus[i];
+     this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
+     this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
+     this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
+
+     this->fIsPrior2D[i]        = plst.fIsPrior2D[i];
+
+     if(plst.fPriorHisto[i]!=0) this->fPriorHisto[i]      = (TH1D*) plst.fPriorHisto[i]->Clone("");
+     else this->fPriorHisto[i] = 0;
+     
+     if(plst.fToyHisto[i]!=0)   this->fToyHisto[i]        = (TH1D*) plst.fToyHisto[i]->Clone("");
+     else this->fToyHisto[i] = 0;
+       
+     if(plst.fPriorHisto2D[i]!=0) this->fPriorHisto2D[i]  = (TH2D*) plst.fPriorHisto2D[i]->Clone("");
+     else this->fPriorHisto2D[i] = 0;
+     
+     if(plst.fToyHisto2D[i]!=0) this->fToyHisto2D[i]      = (TH2D*) plst.fToyHisto2D[i]->Clone("");
+     else this->fToyHisto2D[i] = 0;
+     
+     //this->fPriorHisto[i]    = new TH1F(plst.fPriorHisto[i]);
+     //this->fPriorHisto[i]->Copy(plst.fPriorHisto[i]);
+     //
+  } 
 
   for(int i = 0; i < plst.fNParams; i++) {
     for(int j = 0; j < plst.fNParams; j++) {
       (*this->fCovMatrix)[i][j] =  (*plst.fCovMatrix)[i][j];
     }
   }
-
-   this->fBestFitStatistic = plst.fBestFitStatistic;
-   this->fCurrStatistic    = plst.fCurrStatistic;
-   this->fFitTime          = plst.fFitTime;
-   this->fFitTries         = plst.fFitTries;
-
-   this->fStatusCodes.insert(plst.fStatusCodes.begin(),  plst.fStatusCodes.end());
-
-   this->fMigradErrorsSet = plst.fMigradErrorsSet;
-   this->fHesseErrorsSet  = plst.fHesseErrorsSet;
-   this->fMinosErrorsSet  = plst.fMinosErrorsSet;
-
-   this->fShowCurrValuesOnly    = plst.fShowCurrValuesOnly;
-   this->fShowBestFitValuesOnly = plst.fShowBestFitValuesOnly;
+    
+  this->fBestFitStatistic = plst.fBestFitStatistic;
+  this->fCurrStatistic    = plst.fCurrStatistic;
+  this->fFitTime          = plst.fFitTime;
+  this->fFitTries         = plst.fFitTries;
+  
+  this->fStatusCodes.insert(plst.fStatusCodes.begin(),  plst.fStatusCodes.end());
+  
+  this->fMigradErrorsSet = plst.fMigradErrorsSet;
+  this->fHesseErrorsSet  = plst.fHesseErrorsSet;
+  this->fMinosErrorsSet  = plst.fMinosErrorsSet;
+  
+  this->fShowCurrValuesOnly    = plst.fShowCurrValuesOnly;
+  this->fShowBestFitValuesOnly = plst.fShowBestFitValuesOnly;
 }
 //________________________________________________________________________________________
 void FitParamList::Init(int nparams)
@@ -1399,7 +1410,13 @@ void FitParamList::Init(int nparams)
      fSigmaGaus     = new double    [fNParams];
      fMinValueFlat  = new double    [fNParams];
      fMaxValueFlat  = new double    [fNParams];    
-     fPriorHisto    = new TH1F *    [fNParams];
+     fPriorHisto    = new TH1D *    [fNParams];
+     fToyHisto      = new TH1D *    [fNParams];
+
+     fIsPrior2D     = new bool      [fNParams];
+
+     fPriorHisto2D  = new TH2D *    [fNParams];
+     fToyHisto2D    = new TH2D *    [fNParams];
      //
 
    } else {
@@ -1426,7 +1443,11 @@ void FitParamList::Init(int nparams)
      fSigmaGaus     = 0;
      fMinValueFlat  = 0;
      fMaxValueFlat  = 0;
+     fIsPrior2D     = 0;
      fPriorHisto    = 0;
+     fToyHisto      = 0;
+     fPriorHisto2D  = 0;
+     fToyHisto2D    = 0;
      //
 
    }
@@ -1454,7 +1475,11 @@ void FitParamList::Init(int nparams)
      fSigmaGaus    [i] = 0;
      fMinValueFlat [i] = 0;
      fMaxValueFlat [i] = 0;
+     fIsPrior2D    [i] = 0;
      fPriorHisto   [i] = 0;
+     fToyHisto     [i] = 0;
+     fPriorHisto2D [i] = 0;
+     fToyHisto2D   [i] = 0;
      //
 
 
@@ -1504,7 +1529,13 @@ void FitParamList::CleanUp(void)
    if (fSigmaGaus     ) { delete [] fSigmaGaus    ; fSigmaGaus     = 0 ; }
    if (fMinValueFlat  ) { delete [] fMinValueFlat ; fMinValueFlat  = 0 ; }
    if (fMaxValueFlat  ) { delete [] fMaxValueFlat ; fMaxValueFlat  = 0 ; }
+
+   if (fIsPrior2D     ) { delete [] fIsPrior2D    ; fIsPrior2D     = 0 ; }
+
    if (fPriorHisto    ) { delete [] fPriorHisto   ; fPriorHisto    = 0 ; }
+   if (fToyHisto      ) { delete [] fToyHisto     ; fToyHisto      = 0 ; }
+   if (fPriorHisto2D  ) { delete [] fPriorHisto2D ; fPriorHisto2D  = 0 ; }
+   if (fToyHisto2D    ) { delete [] fToyHisto2D   ; fToyHisto2D    = 0 ; }
    //
    
    fBestFitStatistic = 0.;
@@ -1644,10 +1675,45 @@ void FitParamList::SetMaxValueFlat(valor::conv::PhysParamId_t p,double maxvalmar
   fMaxValueFlat [this->Id(p)] = maxvalmarg;
 }
 //________________________________________________________________________________________
-void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1F *hprior)
+void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
 {
-  fPriorHisto [this->Id(p)] = (TH1F*) hprior->Clone(hprior->GetName());
+  char name[200];
+  sprintf(name,"%s_%s","hPrior",util::RawParamAsStringRaw(p).c_str());
+  fPriorHisto [this->Id(p)] = (TH1D*) hprior->Clone(name);
+  
+  this->SetPriorDimension2D(p,false); // The prior is 1D
 }
+
+//________________________________________________________________________________________
+void FitParamList::SetPriorHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior)
+{
+  char name[200];
+  sprintf(name,"%s_%s","hPrior",util::RawParamAsStringRaw(p).c_str());
+  fPriorHisto2D [this->Id(p)] = (TH2D*) hprior->Clone(name);
+
+  this->SetPriorDimension2D(p,true); // The prior is 2D
+}
+
+
+//________________________________________________________________________________________
+void FitParamList::SetToyHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
+{
+  char name[200];
+  sprintf(name,"%s_%s","hToy",util::RawParamAsStringRaw(p).c_str());
+  fToyHisto [this->Id(p)] = (TH1D*) hprior->Clone(name);
+  fToyHisto [this->Id(p)]->Reset();
+}
+
+//________________________________________________________________________________________
+void FitParamList::SetToyHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior)
+{
+  char name[200];
+  sprintf(name,"%s_%s","hToy2D",util::RawParamAsStringRaw(p).c_str());
+  fToyHisto2D [this->Id(p)] = (TH2D*) hprior->Clone(name);
+  fToyHisto2D [this->Id(p)]->Reset();
+}
+
+
 //________________________________________________________________________________________
 string FitParamList::GetPriorModeName (valor::conv::PhysParamId_t p) const
 {
@@ -1655,3 +1721,7 @@ string FitParamList::GetPriorModeName (valor::conv::PhysParamId_t p) const
   return string(data);
 }
 //________________________________________________________________________________________
+
+void FitParamList::SetPriorDimension2D(valor::conv::PhysParamId_t p, bool isprior2d){
+  fIsPrior2D [this->Id(p)] = isprior2d;
+}

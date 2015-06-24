@@ -32,6 +32,8 @@
 #include <Fit/Fitter.h>
 
 #include "TH1F.h"
+#include "TH2.h"
+#include "TH1.h"
 
 #include "Conventions/PhysParamId.h"
 #include "Conventions/PhysHypothesisId.h"
@@ -215,7 +217,13 @@ public:
    void SetSigmaGaus(valor::conv::PhysParamId_t p,double sigma);
    void SetMinValueFlat(valor::conv::PhysParamId_t p,double minvalmarg);
    void SetMaxValueFlat(valor::conv::PhysParamId_t p,double maxvalmarg);
-   void SetPriorHisto(valor::conv::PhysParamId_t p,TH1F *hprior);
+
+   void SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior);
+   void SetPriorHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior);
+   void SetToyHisto(valor::conv::PhysParamId_t p,TH1D *hprior);
+   void SetToyHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior);
+   
+   void SetPriorDimension2D(valor::conv::PhysParamId_t p, bool isprior2d);
 
    bool   IsMarginalized   (valor::conv::PhysParamId_t p) const { return fDoMarg        [this->Id(p)]; }
    int    GetPriorMode     (valor::conv::PhysParamId_t p) const { return fPriorMode     [this->Id(p)]; }
@@ -224,7 +232,14 @@ public:
    double GetSigmaGaus     (valor::conv::PhysParamId_t p) const { return fSigmaGaus     [this->Id(p)]; }
    double GetMinValueFlat  (valor::conv::PhysParamId_t p) const { return fMinValueFlat  [this->Id(p)]; }
    double GetMaxValueFlat  (valor::conv::PhysParamId_t p) const { return fMaxValueFlat  [this->Id(p)]; }
-   TH1F * GetPriorHisto    (valor::conv::PhysParamId_t p) const { return fPriorHisto    [this->Id(p)]; }
+
+   TH1D * GetPriorHisto    (valor::conv::PhysParamId_t p) const { return fPriorHisto    [this->Id(p)]; }
+   TH2D * GetPriorHisto2D  (valor::conv::PhysParamId_t p) const { return fPriorHisto2D  [this->Id(p)]; }
+   TH1D * GetToyHisto      (valor::conv::PhysParamId_t p) const { return fToyHisto      [this->Id(p)]; }
+   TH2D * GetToyHisto2D    (valor::conv::PhysParamId_t p) const { return fToyHisto2D    [this->Id(p)]; }
+
+   bool   IsPrior2D        (valor::conv::PhysParamId_t p) const { return fIsPrior2D     [this->Id(p)]; }
+   
    //
 
 
@@ -314,8 +329,14 @@ private:
    double *fMinValueFlat; //[fNParams]  // Low edge of the marginalization interval (flat prior)
    double *fMaxValueFlat; //[fNParams]  // Up  edge of the marginalization interval (flat prior)
 
-   TH1F **fPriorHisto;   //[fNParams]  // Prior histgram 
-  
+   TH1D **fPriorHisto; //[fNParams]  // Prior histgram 
+   TH1D **fToyHisto;   //[fNParams]  // Extracted histgram from Prior 
+
+   TH2D **fPriorHisto2D; //[fNParams]  // Prior histgram 
+   TH2D **fToyHisto2D;   //[fNParams]  // Extracted histgram from Prior 
+
+   bool *fIsPrior2D; //[fNParams] If user prior is used define if the 1D or 2D one has to be used
+     
    ////////////////////////////////////
 
 

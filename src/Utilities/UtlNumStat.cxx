@@ -123,8 +123,7 @@ double valor::util::ChisqGauss(
   return chisq;
 }
 //____________________________________________________________________________
-double valor::util::ChisqPoisson(
-  double ndata, double nmc)
+double valor::util::ChisqPoisson(double ndata, double nmc)
 {
   if(nmc <= 0.)
     nmc = kSetNegEventsTo;
@@ -156,8 +155,11 @@ TMatrixD valor::util::CholeskyDecomposition(TMatrixD& cov_matrix)
         L(i,i) -= tmp*tmp;
      }//k
      if(L(i,i) <= 0) {
-       cerr << "Decomposed covariance matrix not positive-definite" << endl;
-       exit(1);
+       cerr << "util/CholeskyDecomposition >> "<< "Value: "<<i<<","<<i<<" = "<<L(i,i);
+       L(i,i)=conv::kASmallNum;
+       cerr << "  , changed to "<<L(i,i)<<endl;
+       //~ cerr << "Decomposed covariance matrix not positive-definite" << endl;
+       //~ exit(1);
      }
      L(i,i) = TMath::Sqrt(L(i,i));
      // then the off-diagonal terms
@@ -692,6 +694,48 @@ double valor::util::RandomizeDm23sqBar(void)
   //or try again
   return util::RandomizeDm23sqBar();
 }
+//____________________________________________________________________________
+double valor::util::RandomizeUser(TH1D *hPrior)
+{
+  return hPrior->GetRandom(); 
+}
+//____________________________________________________________________________
+int valor::util::RandomizeMH(const double probNH)
+{
+  
+  const double min = 0.;
+  const double max = 1.;
+  double Pnh = probNH;
+  double Pih = 1 - probNH;
+
+  if(Pnh < 0. || Pnh > 1.){
+    cerr << endl;
+    cerr << "FitMarginalization::RandomizeMH" << endl;
+    cerr << "The input probability for NH is not possible" << endl;
+    cerr << "P(NH) = " << Pnh << endl;
+    cerr << endl;
+    exit(1);
+  }
+  if(Pih < 0. || Pih > 1.){
+    cerr << endl;
+    cerr << "FitMarginalization::RandomizeMH" << endl;
+    cerr << "The input probability for IH is not possible" << endl;
+    cerr << "P(IH) = " << Pih << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  double rndm = Rnd::Instance()->RndToyMCosc().Uniform(min,max);
+  
+  int MH = conv::kBadResult;
+  if(rndm <= Pnh) MH = 0; // Normal Hierarchy
+  else            MH = 1; // Inverted Hierarchy
+  
+  return MH;
+}
+
+
+
 //____________________________________________________________________________
 int valor::util::Sign(double tweaking_dial)
 {

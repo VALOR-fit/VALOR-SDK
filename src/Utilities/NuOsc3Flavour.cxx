@@ -2225,6 +2225,19 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
     }
     return;
   }
+  else if(nFlavourIndex > 0)
+    {
+      //if 2 mixing angles are small, treat it as a 2-flavour calculation
+      for (int i = 0 ; i < nFlav ; i++){
+	for (int j = 0 ; j < nFlav ; j++){
+	  if(isAntineutrino)
+	    osc_probs[i][j] = this->Calc2FlavMatterOscProb(-(12+2*i), -(12+2*j), energy, nFlavourIndex);
+	  else
+	    osc_probs[i][j] = this->Calc2FlavMatterOscProb(12+2*i, 12+2*j, energy, nFlavourIndex);
+	}
+      }
+      return;
+    }
 
   // The mass squared matrix has diagonal elements 0, dmsq12, dmsq13; 
   // all off-diagonal elements are zero.

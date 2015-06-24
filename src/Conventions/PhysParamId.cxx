@@ -18,6 +18,244 @@ ChangeLog:
 using namespace valor;
 using namespace valor::conv;
 
+
+
+
+//________________________________________________________________________________________
+string util::RawParamAsStringRaw(PhysParamId_t p)
+{
+  switch(p) {
+
+    case ( kPhypMixing23 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th23"; break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th23";   break;
+           default                 : return "--";                break;
+         }
+    }
+    break;
+    case ( kPhypMixing13 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th_13";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th13";    break;
+           default                 : return "--";                 break;
+         }
+    }
+    break;
+    case ( kPhypMixing12 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th12";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th12";    break;
+           default                 : return "--";                 break;
+         }
+    }
+    break;
+    case ( kPhypCPV ) : 
+    {
+        conv::NuOscDeltaCP_t cpv = Opt::Instance()->gOscDeltaCP;
+        switch(cpv) {
+           case(kNuDeltaCPPhase) : return "delta_cp";      break;
+           case(kNuDeltaCPSin  ) : return "sin_delta_cp"; break;
+           default               : return "--";            break;
+        }
+    }
+    break;
+
+    case ( kPhypDm23sq  ) :
+    {
+        NuOscDmsqScheme_t dmscheme = Opt::Instance()->GetEffectiveDmsqScheme();
+        switch(dmscheme) {
+          case(kNuDmsq12andAbs23) : return "dmsq_32";                  break;
+          case(kNuDmsq12andAbs31) : return "dmsq_31";                  break;
+          case(kNuDmsqFogliLisi ) : return "dmsq_fl";                   break;
+          default                 : return "--";                         break;
+        }
+    }
+    break;
+
+    case ( kPhypDm12sq ) : 
+    {
+        NuOscDmsqScheme_t dmscheme = Opt::Instance()->GetEffectiveDmsqScheme();
+        switch(dmscheme) {
+          case(kNuDmsq12andAbs23) : return "dmsq_12";                  break;
+          case(kNuDmsq12andAbs31) : return "dmsq_12";                  break;
+          case(kNuDmsqFogliLisi ) : return "dmsq_fl";                  break;
+          default                 : return "--";                       break;
+        }
+    }
+    break;
+    
+    // Nubar parameters
+    case ( kPhypMixing23Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th23_bar"; break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th23_bar";   break;
+           default                 : return "--";                    break;
+         }
+    }
+    break;
+    case ( kPhypMixing13Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th13_bar";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th13_bar";    break;
+           default                 : return "--";                     break;
+         }
+    }
+    break;
+    case ( kPhypMixing12Bar ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th12_bar";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th12_bar";    break;
+           default                 : return "--";                     break;
+         }
+    }
+    break;
+    case ( kPhypCPVBar ) : 
+    {
+        conv::NuOscDeltaCP_t cpv = Opt::Instance()->gOscDeltaCP;
+        switch(cpv) {
+           case(kNuDeltaCPPhase) : return "deltacp_bar";      break;
+           case(kNuDeltaCPSin  ) : return "sin_deltacp_bar"; break;
+           default               : return "--";                break;
+        }
+    }
+    break;
+
+    case ( kPhypDm23sqBar  ) :
+    {
+        NuOscDmsqScheme_t dmscheme = Opt::Instance()->GetEffectiveDmsqScheme();
+        switch(dmscheme) {
+          case(kNuDmsq12andAbs23) : return "dmsq_32_bar";                  break;
+          case(kNuDmsq12andAbs31) : return "dmsq_31_bar";                  break;
+          case(kNuDmsqFogliLisi ) : return "dmsq_fl_bar";                  break;
+          default                 : return "--";                             break;
+        }
+    }
+    break;
+
+    case ( kPhypDm12sqBar ) : 
+    {
+        NuOscDmsqScheme_t dmscheme = Opt::Instance()->GetEffectiveDmsqScheme();
+        switch(dmscheme) {
+          case(kNuDmsq12andAbs23) : return "dmsq_12_bar";                  break;
+          case(kNuDmsq12andAbs31) : return "dmsq_12_bar";                  break;
+          case(kNuDmsqFogliLisi ) : return "dmsq_fl_bar";                  break;
+          default                 : return "--";                           break;
+        }
+    }
+    break;
+
+    // 
+    case ( kPhypAlphaDecay            ) : return "alpha_decay";                break;
+    case ( kPhypSinsq2ThetaDecay      ) : return "sinsq_2th_decay";       break;
+    case ( kPhypMusqDecoh             ) : return "musq_decoh";                 break;
+    case ( kPhypSinsq2ThetaDecoh      ) : return "sinsq_2th_decoh";       break;
+
+    // Steriles
+    case ( kPhypMixing14 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th14";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th14";    break;
+           default                 : return "--";                 break;
+         }
+    }
+    break;
+    case ( kPhypMixing15 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th15";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th15";    break;
+           default                 : return "--";                 break;
+         }
+    }
+    break;
+    case ( kPhypMixing24 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th24";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th24";    break;
+           default                 : return "--";                 break;
+         }
+    }
+    break;
+    case ( kPhypMixing25 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th25";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th25";    break;
+           default                 : return "--";                 break;
+         }
+    }
+    break;
+    case ( kPhypMixing34 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th34";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th34";    break;
+           default                 : return "--";                 break;
+         }
+    }
+    break;
+    case ( kPhypMixing35 ) :
+    {
+        NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+        switch(omp) {
+           case(kNuMixSinsq2Theta) : return "sinsq_2th35";  break;
+           case(kNuMixSinsqTheta ) : return "sinsq_th35";    break;
+           default                 : return "--";                 break;
+         }
+    }
+    break;
+
+    case ( kPhypDelta12               ) : return "delta_12";        break;
+    case ( kPhypDelta13               ) : return "delta_13";        break;
+    case ( kPhypDelta15               ) : return "delta_15";        break;
+    case ( kPhypDelta34               ) : return "delta_34";        break;
+    case ( kPhypDelta35               ) : return "delta_35";        break;
+
+    case ( kPhypDm41sq                ) : return "dmsq_41";       break;
+    case ( kPhypDm51sq                ) : return "dmsq_51";       break;
+
+    // Nonstandard matter interaction
+    case ( kPhypNSIepsMuTau           ) : return "nsi_epsilonMuTau";    break;
+
+    default:
+    {
+    }
+
+  }//switch
+  
+  if (p >= kNuis000 && p< kLastNuisParam) {
+    string out(Form("nuis%03d",p-kNuis000));
+    return out;
+  }
+  
+  if (p == kLastNuisParam) {
+    return "LastNuisanceParam";
+  }
+
+  return "?";
+}
+
+
 //________________________________________________________________________________________
 string util::RawParamAsString(PhysParamId_t p)
 {
