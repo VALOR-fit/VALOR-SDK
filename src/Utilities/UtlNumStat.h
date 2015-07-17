@@ -92,6 +92,10 @@ namespace util {
   double RandomizeBetaBar   (void); //
   //
 
+  // NEW OSC PRIOR 
+  double FromSinsq2thToSinsqth(const double sinsq2th);
+  double FromSinsqthToSinsq2th(const double sinsqth);
+  //
 
   // Full matrix diagonalisation using GSL
   // matrix_in is a pointer to a block representing a n*n complex matrix, equivalent to a double[n][n][2]

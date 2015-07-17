@@ -773,6 +773,62 @@ int valor::util::RandomizeMH(const double probNH)
   
   return MH;
 }
+//____________________________________________________________________________
+
+
+// NEW OSC PRIOR
+int valor::util::FromSinsq2thToSinsqth(const double sinsq2th){
+  
+  if(sinsq2th<0. || sinsq2th>1.){
+    cerr << endl;
+    cerr << "valor::util::FromSinsq2thToSinsqth" << endl;
+    cerr << "Input parameter value of sinsq2th is not allowed" << endl;
+    cerr << "sinsq2th = " << sinsq2th << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  double sinsqth = 0.5 * ( 1 - sqrt(1 - sinsq2th) );
+
+  if(sinsqth<0. || sinsqth>1.){
+    cerr << endl;
+    cerr << "valor::util::FromSinsq2thToSinsqth" << endl;
+    cerr << "Input parameter value of sinsqth is not allowed" << endl;
+    cerr << "sinsqth = " << sinsqth << endl;
+    cerr << endl;
+    exit(1);
+  }
+  
+  return sinsqth;
+}
+//____________________________________________________________________________
+int valor::util::FromSinsqthToSinsq2th(const double sinsqth){
+   
+  if(sinsqth<0. || sinsqth>1.){
+    cerr << endl;
+    cerr << "valor::util::FromSinsqthToSinsq2th" << endl;
+    cerr << "Input parameter value of sinsqth is not allowed" << endl;
+    cerr << "sinsqth = " << sinsqth << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  double sinsq2th = 1 - (1 - 2*sinsqth)*(1 - 2*sinsqth);
+
+  if(sinsq2th<0. || sinsq2th>1.){
+    cerr << endl;
+    cerr << "valor::util::FromSinsqthToSinsq2th" << endl;
+    cerr << "Input parameter value of sinsq2th is not allowed" << endl;
+    cerr << "sinsq2th = " << sinsq2th << endl;
+    cerr << endl;
+    exit(1);
+  }
+  
+  return sinsq2th;
+}
+//
+
+
 
 
 
