@@ -777,7 +777,7 @@ int valor::util::RandomizeMH(const double probNH)
 
 
 // NEW OSC PRIOR
-int valor::util::FromSinsq2thToSinsqth(const double sinsq2th){
+double valor::util::FromSinsq2thToSinsqth(const double sinsq2th){
   
   if(sinsq2th<0. || sinsq2th>1.){
     cerr << endl;
@@ -802,7 +802,7 @@ int valor::util::FromSinsq2thToSinsqth(const double sinsq2th){
   return sinsqth;
 }
 //____________________________________________________________________________
-int valor::util::FromSinsqthToSinsq2th(const double sinsqth){
+double valor::util::FromSinsqthToSinsq2th(const double sinsqth){
    
   if(sinsqth<0. || sinsqth>1.){
     cerr << endl;
