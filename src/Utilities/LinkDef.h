@@ -15,6 +15,7 @@
 #pragma link C++ class valor::Env;
 #pragma link C++ class valor::Rnd;
 #pragma link C++ class valor::NuOsc3Flavour;
+#pragma link C++ class valor::NSI3Flavour;
 #pragma link C++ class valor::NuOscSterile;
 
 
