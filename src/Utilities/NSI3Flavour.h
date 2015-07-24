@@ -114,6 +114,8 @@ public:
  double CalcVacuumOscProbPDG   (int nu_start, int nu_end, double energy);
  double CalcMatterOscProb      (int nu_start, int nu_end, double energy);
  double Calc2FlavMatterOscProb (int nu_start, int nu_end, double energy, int index);
+
+ valor::conv::NuMassHierarchy_t GetMassHierarchy(void) const;
  
 private:
 

@@ -1913,3 +1913,8 @@ double NSI3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double ener
   return oscProb;
 }
 //________________________________________________________________________________________
+conv::NuMassHierarchy_t NSI3Flavour::GetMassHierarchy(void) const
+{
+  return fMassHierarchy;
+}
+//_________________________________________________________
