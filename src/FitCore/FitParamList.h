@@ -251,12 +251,14 @@ public:
    static FitParamList * NumuDecohFit                              (int nuisance = 0);
    static FitParamList * NuOscSterile4FlavourFit                   (int nuisance = 0);
    static FitParamList * NuOscSterile5FlavourFit                   (int nuisance = 0);
+   static FitParamList * NSI3FlavourFit                            (int nuisance = 0);
    
    static void           Append3FlavourOscillation                 (FitParamList * fp, int start);
    static void           Append3FlavourOscillationBar              (FitParamList * fp, int start);
    static void           Append2FlavourOscillation                 (FitParamList * fp, int start);
    static void           Append4FlavourSterileOscillation          (FitParamList * fp, int start);
    static void           Append5FlavourSterileOscillation          (FitParamList * fp, int start);
+   static void           AppendNSIMuTau                            (FitParamList * fp, int start);
    static void           AppendAllSystematics                      (FitParamList * fp, int start);
    
    void SetParListName (string s)   { fParListName = s; }

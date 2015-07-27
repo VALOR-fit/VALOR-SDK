@@ -883,6 +883,14 @@ FitParamList * FitParamList::NuOscSterile5FlavourFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
+FitParamList * FitParamList::NSI3FlavourFit(int nuisance)
+{
+  FitParamList * fparm = new FitParamList(7+nuisance);
+  FitParamList::Append3FlavourOscillation(fparm, 0);
+  FitParamList::AppendNSIMuTau(fparm, 6);
+  return fparm;
+}
+//________________________________________________________________________________________
 FitParamList * FitParamList::NumuDisapFit(int nuisance)
 {
   FitParamList * fparm = new FitParamList(2+nuisance);
@@ -1187,6 +1195,14 @@ void FitParamList::Append5FlavourSterileOscillation(FitParamList * fparm, int st
   
   fparm->AddParam( ip++, kPhypDm41sq,    kInitFitDm41sq,   kMinFitDm41sq, kMaxFitDm41sq, kStepDm41sq,  false, false);
   fparm->AddParam( ip++, kPhypDm51sq,    kInitFitDm51sq,   kMinFitDm51sq, kMaxFitDm51sq, kStepDm51sq,  false, false);
+}
+//________________________________________________________________________________________
+void FitParamList::AppendNSIMuTau(FitParamList * fparm, int start)
+{
+
+  int ip = start; // first unallocated element in the param list
+  
+  fparm->AddParam( ip, kPhypNSIepsMuTau, kInitFitNSIepsMuTau, kMinFitNSIepsMuTau, kMaxFitNSIepsMuTau, 5E-3, false, false);
 }
 //________________________________________________________________________________________
 void FitParamList::Append2FlavourOscillation(FitParamList * fparm, int start)

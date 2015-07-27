@@ -293,6 +293,13 @@ static const double kMinFitDm51sq            = kGlobFitDm23sq;
 static const double kMaxFitDm51sq            = 1.0E-2;
 static const double kStepDm51sq              = 1.0E-4;
 
+// NSI
+// Nonstandard interaction values and range
+static const double kInitFitNSIepsMuTau     =  0.0;
+static const double kMinFitNSIepsMuTau      = -1.;
+static const double kMaxFitNSIepsMuTau      =  1.;
+static const double kInitSigmaNSIepsMuTau   =  0.10;
+
 // fitter chisq surface ranges
 static const double kMinChisqSurfaceDm23sq            = 1.5E-3;
 static const double kMaxChisqSurfaceDm23sq            = 3.3E-3;
