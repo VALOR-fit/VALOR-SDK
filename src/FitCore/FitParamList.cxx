@@ -1268,6 +1268,17 @@ PhysHypothesis_t FitParamList::PhysicsHypothesis(void) const
   {
     return kHypOsc3FBar;
   }
+  // neutrino oscillations (3-flavour framework) with one NSI parameters
+  if( this->Exists(kPhypDm12sq     )  &&
+      this->Exists(kPhypDm23sq     )  &&
+      this->Exists(kPhypMixing13   )  &&
+      this->Exists(kPhypMixing12   )  &&
+      this->Exists(kPhypMixing23   )  &&
+      this->Exists(kPhypCPV        )  &&
+      this->Exists(kPhypNSIepsMuTau) )
+  {
+    return kHypNSI3F;
+  }
   // neutrino oscillations (3-flavour framework)
   if( this->Exists(kPhypDm12sq)   &&
       this->Exists(kPhypDm23sq)   &&

@@ -66,6 +66,17 @@ PhysHypothesis::PhysHypothesis(const FitParamList & fp)
     this->SetCurrValue(kPhypMixing23, fp.CurrValue(kPhypMixing23));
     this->SetCurrValue(kPhypCPV,      fp.CurrValue(kPhypCPV));
   }
+  else if(hyp == kHypNSI3F)
+  {
+    this->Init(kHypNSI3F);
+    this->SetCurrValue(kPhypDm12sq     , fp.CurrValue(kPhypDm12sq));
+    this->SetCurrValue(kPhypDm23sq     , fp.CurrValue(kPhypDm23sq));
+    this->SetCurrValue(kPhypMixing12   , fp.CurrValue(kPhypMixing12));
+    this->SetCurrValue(kPhypMixing13   , fp.CurrValue(kPhypMixing13));
+    this->SetCurrValue(kPhypMixing23   , fp.CurrValue(kPhypMixing23));
+    this->SetCurrValue(kPhypCPV        , fp.CurrValue(kPhypCPV));
+    this->SetCurrValue(kPhypNSIepsMuTau, fp.CurrValue(kPhypNSIepsMuTau));
+  }
   // neutrino oscillations (3-flavour framework)
   else if(hyp == kHypOsc3FBar)
   {
@@ -199,6 +210,16 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
     fParams[kPhypCPV     ]  = 0;
     fParams[kPhypDm23sq  ]  = 0;
     fParams[kPhypDm12sq  ]  = 0;
+  }
+  // neutrino oscillations (3-flavour framework) + one NSI parameters
+  if(fHypothesis == kHypNSI3F) {
+    fParams[kPhypMixing12     ]  = 0;
+    fParams[kPhypMixing13     ]  = 0;
+    fParams[kPhypMixing23     ]  = 0;
+    fParams[kPhypCPV          ]  = 0;
+    fParams[kPhypDm23sq       ]  = 0;
+    fParams[kPhypDm12sq       ]  = 0;
+    fParams[kPhypNSIepsMuTau  ]  = 0;
   }
   // neutrino oscillations (3-flavour framework) - with separate mixings for neutrino and antineutrino
   if(fHypothesis == kHypOsc3FBar) {
