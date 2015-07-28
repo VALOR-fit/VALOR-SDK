@@ -501,16 +501,23 @@ int FitParamList::GetStatusCode(string st) const
 //________________________________________________________________________________________
 void FitParamList::Print(ostream & stream) const
 {
+  int max_width = 10;
+  for(int ip=0; ip<fNParams;  ip++) {
+    int len = fName[ip].GetString().Length();
+    if ( len > max_width) { max_width = len;}
+  }
+  max_width+=4;
+  
   if(fShowBestFitValuesOnly) {
      fShowBestFitValuesOnly = false; // has one-off effect
      stream << endl
             << setw(6)  << "id"
-            << setw(80) << "name"
+            << setw(max_width) << "name"
             << setw(15) << "best-fit"
             << endl;
      for(int ip=0; ip<fNParams;  ip++) {
        stream << setw(6)  << ip 
-              << setw(80) << fName[ip].GetString().Data()
+              << setw(max_width) << fName[ip].GetString().Data()
               << setprecision(6)
               << setw(15) << fBestFitValue[ip]
               << endl;
@@ -521,12 +528,12 @@ void FitParamList::Print(ostream & stream) const
      fShowCurrValuesOnly = false; // has one-off effect
      stream << endl
             << setw(6)  << "id"
-            << setw(80) << "name"
+            << setw(max_width) << "name"
             << setw(15) << "curr"
             << endl;
      for(int ip=0; ip<fNParams;  ip++) {
        stream << setw(6)  << ip 
-              << setw(80) << fName[ip].GetString().Data()
+              << setw(max_width) << fName[ip].GetString().Data()
               << setprecision(6)
               << setw(15) << fCurrValue[ip]
               << endl;
@@ -536,7 +543,7 @@ void FitParamList::Print(ostream & stream) const
   {
      stream << endl
             << setw(6)  << "id"
-            << setw(35) << "name"
+            << setw(max_width) << "name"
             << setw(15) << "curr"
             << setw(15) << "init"
             << setw(15) << "min"
@@ -547,7 +554,7 @@ void FitParamList::Print(ostream & stream) const
             << endl;
      for(int ip=0; ip<fNParams;  ip++) {
        stream << setw(6)  << ip 
-              << setw(35) << fName[ip].GetString().Data()
+              << setw(max_width) << fName[ip].GetString().Data()
               << setprecision(6)
               << setw(15) << fCurrValue[ip]
               << setw(15) << fInitValue[ip]
