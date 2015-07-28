@@ -64,6 +64,12 @@ namespace util {
   TVectorD CholeskyGenerateCorrelatedParams          (TMatrixD& Lch, TVectorD& mean, TVectorD& g_uncorrelated); ///< Generate a vector of correlated params
   TVectorD CholeskyGenerateCorrelatedParamVariations (TMatrixD& Lch);                 ///< Generate a vector of correlated param variations
   TVectorD CholeskyCalculateCorrelatedParamVariations(TMatrixD& Lch, TVectorD& g);    ///<
+  
+  // Combine matrices and vectors
+  template<class num> TVectorT<num> ConcatenateTVectors (
+    const std::vector< TVectorT<num> >  & tvecs );
+  //~ TVectorT<double> ConcatenateTVectors (
+    //~ const std::vector< TVectorT<double> >  & tvecs );
 
   //
   // Functions randomizing oscillation params (for use when params are marginalized)
