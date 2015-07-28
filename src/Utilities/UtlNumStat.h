@@ -84,6 +84,8 @@ namespace util {
   double RandomizeCPVBar      (void); //
   double RandomizeDm12sqBar   (void); //
   double RandomizeDm23sqBar   (void); //
+  
+  double RandomizeEpsMuTau    (void); // NSI parameter, flat between limits
 
   double RandomizeUser        (TH1D *hPrior); // Extract random from a prior 
   int    RandomizeMH          (const double probNH);

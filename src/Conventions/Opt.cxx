@@ -224,6 +224,9 @@ void Opt::SetDefaultParameterValues()
     fGlobalFitError [p] = fGlobalFitError [nonbar];
     //fInitialValue   [p] = fGlobalBestFit[nonbar];
   }
+  
+  fGlobalBestFit  [conv::kPhypNSIepsMuTau] = 0.;
+  fGlobalFitError [conv::kPhypNSIepsMuTau] = 0.33;
 }
 //________________________________________________________________________________________
 bool Opt::Undefined(void)

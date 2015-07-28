@@ -371,6 +371,8 @@ double valor::util::RandomizeParameter(conv::PhysParamId_t p)
     case kPhypDm23sqBar            : return util::RandomizeDm23sqBar  ();
     case kPhypDm12sqBar            : return util::RandomizeDm12sqBar  ();
     
+    case kPhypNSIepsMuTau          : return util::RandomizeEpsMuTau   ();
+    
     case kPhypAlphaDecay            :
     case kPhypSinsq2ThetaDecay      :
     case kPhypMusqDecoh             :
@@ -388,7 +390,6 @@ double valor::util::RandomizeParameter(conv::PhysParamId_t p)
     case kPhypDelta15               :
     case kPhypDelta34               :
     case kPhypDelta35               :
-    case kPhypNSIepsMuTau           :
 #ifdef __show_parameter_randomization_warnings__
       std::cerr<<"util/RandomizeParameter > Not implemented for "<<util::RawParamAsString(p)<<" ("<<p<<")"<<std::endl;
 #endif
@@ -693,6 +694,11 @@ double valor::util::RandomizeDm23sqBar(void)
   }
   //or try again
   return util::RandomizeDm23sqBar();
+}
+//____________________________________________________________________________
+double valor::util::RandomizeEpsMuTau(void)
+{
+  return Rnd::Instance()->RndToyMCosc().Uniform(conv::kMinFitNSIepsMuTau,conv::kMaxFitNSIepsMuTau);
 }
 //____________________________________________________________________________
 double valor::util::RandomizeUser(TH1D *hPrior)
