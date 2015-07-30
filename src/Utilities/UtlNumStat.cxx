@@ -808,3 +808,10 @@ template <class num> TVectorT<num> valor::util::ConcatenateTVectors (
   
   return output;
 }
+//____________________________________________________________________________
+double valor::util::SingleAngleToDoubleAngle(double sinsqtheta)
+{
+  double sinsq2theta = 1 - (1-2*sinsqtheta)*(1-2*sinsqtheta);   
+  return sinsq2theta;
+}
+//____________________________________________________________________________

@@ -65,6 +65,9 @@ namespace util {
   TVectorD CholeskyGenerateCorrelatedParamVariations (TMatrixD& Lch);                 ///< Generate a vector of correlated param variations
   TVectorD CholeskyCalculateCorrelatedParamVariations(TMatrixD& Lch, TVectorD& g);    ///<
   
+  // Simple maths
+  double SingleAngleToDoubleAngle(double sinsqtheta);
+  
   // Combine matrices and vectors
   template<class num> TVectorT<num> ConcatenateTVectors (
     const std::vector< TVectorT<num> >  & tvecs );
