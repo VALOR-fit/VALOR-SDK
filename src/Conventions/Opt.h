@@ -19,6 +19,7 @@
 #define __valor_opt__
 
 #include <iostream>
+#include <map>
 #include <TNamed.h>
 
 #include "Conventions/PhysParamId.h"
@@ -79,6 +80,22 @@ public:
 
   // Check for any parameters being undefined
   bool Undefined(void);
+  
+  // Store arbitrary objects or strings
+  bool ContainsMiscString   (const std::string & name) const;
+  std::string GetMiscString (const std::string & name) const;
+  void RemoveMiscString     (const std::string & name);
+  void SetMiscString        (const std::string & name, const std::string & value);
+  
+  bool ContainsMiscObject   (const std::string & name) const;
+  TObject * GetMiscObject   (const std::string & name) const;
+  void RemoveMiscObject     (const std::string & name);
+  void SetMiscObject        (const std::string & name, TObject * value);
+  
+  bool ContainsMiscDouble   (const std::string & name) const;
+  double GetMiscDouble      (const std::string & name) const;
+  void RemoveMiscDouble     (const std::string & name);
+  void SetMiscDouble        (const std::string & name, double value);
 
   // 
   void WriteTo  (Persistable & optp);
@@ -126,6 +143,10 @@ private:
     
   double fGlobalBestFit       [conv::knppmax];
   double fGlobalFitError      [conv::knppmax];
+  
+  std::map<std::string,std::string>   fMiscOptionString;
+  std::map<std::string,TObject *>     fMiscOptionObject;
+  std::map<std::string,double>        fMiscOptionDouble;
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }
@@ -137,6 +158,7 @@ private:
       }
   };
   friend struct Cleaner;
+  
 };
 
 ostream & operator<< (ostream & stream, const Opt & plst);

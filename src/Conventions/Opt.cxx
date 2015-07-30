@@ -9,14 +9,18 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <string>
+#include <map>
 #include <cstdlib>
 #include <cassert>
 
 #include "Conventions/Opt.h"
 #include "Conventions/Constants.h"
 
+using std::cout;
+using std::cerr;
 using std::endl;
 using std::string;
+using std::map;
 
 using namespace valor;
 using namespace valor::conv;
@@ -319,5 +323,95 @@ conv::NuOscDmsqScheme_t Opt::GetEffectiveDmsqScheme(void)
     return util::GetAutoDmsqSchemeFromHierarchy();
   }
   return gOscDmsqScheme;
+}
+//________________________________________________________________________________________
+bool Opt::ContainsMiscString   (const std::string & name) const
+{
+  map<string,string>::const_iterator it = fMiscOptionString.find(name);
+  return (it != fMiscOptionString.end());
+}
+//________________________________________________________________________________________
+std::string Opt::GetMiscString (const std::string & name) const
+{
+  map<string,string>::const_iterator it = fMiscOptionString.find(name);
+  if(it == fMiscOptionString.end()) {
+     cerr << "Opt/GetMiscString >> Option [" 
+          << name << "] was not set!" << endl;
+     return "";
+  } 
+  return it->second;
+}
+//________________________________________________________________________________________
+void Opt::RemoveMiscString     (const std::string & name)
+{
+  map<string,string>::iterator it = fMiscOptionString.find(name);
+  if (it != fMiscOptionString.end()) {
+    fMiscOptionString.erase(it);
+  }
+}
+//________________________________________________________________________________________
+void Opt::SetMiscString        (const std::string & name, const std::string & value)
+{
+  fMiscOptionString[name] = value;
+}
+//________________________________________________________________________________________
+bool Opt::ContainsMiscObject   (const std::string & name) const
+{
+  map<string,TObject*>::const_iterator it = fMiscOptionObject.find(name);
+  return (it != fMiscOptionObject.end());
+}
+//________________________________________________________________________________________
+TObject * Opt::GetMiscObject (const std::string & name) const
+{
+  map<string,TObject*>::const_iterator it = fMiscOptionObject.find(name);
+  if(it == fMiscOptionObject.end()) {
+     cerr << "Opt/GetMiscObject >> Option [" 
+          << name << "] was not set!" << endl;
+     return 0;
+  } 
+  return it->second;
+}
+//________________________________________________________________________________________
+void Opt::RemoveMiscObject     (const std::string & name)
+{
+  map<string,TObject*>::iterator it = fMiscOptionObject.find(name);
+  if (it != fMiscOptionObject.end()) {
+    fMiscOptionObject.erase(it);
+  }
+}
+//________________________________________________________________________________________
+void Opt::SetMiscObject        (const std::string & name, TObject * value)
+{
+  fMiscOptionObject[name] = value;
+}
+//________________________________________________________________________________________
+bool Opt::ContainsMiscDouble   (const std::string & name) const
+{
+  map<string,double>::const_iterator it = fMiscOptionDouble.find(name);
+  return (it != fMiscOptionDouble.end());
+}
+//________________________________________________________________________________________
+double Opt::GetMiscDouble (const std::string & name) const
+{
+  map<string,double>::const_iterator it = fMiscOptionDouble.find(name);
+  if(it == fMiscOptionDouble.end()) {
+     cerr << "Opt/GetMiscDouble >> Option [" 
+          << name << "] was not set!" << endl;
+     return 0;
+  } 
+  return it->second;
+}
+//________________________________________________________________________________________
+void Opt::RemoveMiscDouble     (const std::string & name)
+{
+  map<string,double>::iterator it = fMiscOptionDouble.find(name);
+  if (it != fMiscOptionDouble.end()) {
+    fMiscOptionDouble.erase(it);
+  }
+}
+//________________________________________________________________________________________
+void Opt::SetMiscDouble        (const std::string & name, double value)
+{
+  fMiscOptionDouble[name] = value;
 }
 //________________________________________________________________________________________
