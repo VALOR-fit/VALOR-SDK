@@ -83,22 +83,22 @@ public:
   
   // Store arbitrary objects or strings
   bool ContainsMiscString   (const std::string & name) const;
-  std::string GetMiscString (const std::string & name) const;
+  std::string GetMiscString (const std::string & name, bool silence_errors = false) const;
   void RemoveMiscString     (const std::string & name);
   void SetMiscString        (const std::string & name, const std::string & value);
   
   bool ContainsMiscObject   (const std::string & name) const;
-  TObject * GetMiscObject   (const std::string & name) const;
+  TObject * GetMiscObject   (const std::string & name, bool silence_errors = false) const;
   void RemoveMiscObject     (const std::string & name);
   void SetMiscObject        (const std::string & name, TObject * value);
   
   bool ContainsMiscDouble   (const std::string & name) const;
-  double GetMiscDouble      (const std::string & name) const;
+  double GetMiscDouble      (const std::string & name, bool silence_errors = false) const;
   void RemoveMiscDouble     (const std::string & name);
   void SetMiscDouble        (const std::string & name, double value);
   
   bool ContainsMiscBool     (const std::string & name) const;
-  bool GetMiscBool          (const std::string & name) const;
+  bool GetMiscBool          (const std::string & name, bool silence_errors = false) const;
   void RemoveMiscBool       (const std::string & name);
   void SetMiscBool          (const std::string & name, bool value);
 

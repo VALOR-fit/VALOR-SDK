@@ -331,13 +331,15 @@ bool Opt::ContainsMiscString   (const std::string & name) const
   return (it != fMiscOptionString.end());
 }
 //________________________________________________________________________________________
-std::string Opt::GetMiscString (const std::string & name) const
+std::string Opt::GetMiscString (const std::string & name, bool silence_errors) const
 {
   map<string,string>::const_iterator it = fMiscOptionString.find(name);
   if(it == fMiscOptionString.end()) {
-     cerr << "Opt/GetMiscString >> Option [" 
-          << name << "] was not set!" << endl;
-     return "";
+    if (!silence_errors) {
+      cerr << "Opt/GetMiscString >> Option [" 
+           << name << "] was not set!" << endl;
+    }
+    return "";
   } 
   return it->second;
 }
@@ -361,13 +363,15 @@ bool Opt::ContainsMiscObject   (const std::string & name) const
   return (it != fMiscOptionObject.end());
 }
 //________________________________________________________________________________________
-TObject * Opt::GetMiscObject (const std::string & name) const
+TObject * Opt::GetMiscObject (const std::string & name, bool silence_errors) const
 {
   map<string,TObject*>::const_iterator it = fMiscOptionObject.find(name);
   if(it == fMiscOptionObject.end()) {
-     cerr << "Opt/GetMiscObject >> Option [" 
-          << name << "] was not set!" << endl;
-     return 0;
+    if (!silence_errors) {
+      cerr << "Opt/GetMiscObject >> Option [" 
+           << name << "] was not set!" << endl;
+    }
+    return 0;
   } 
   return it->second;
 }
@@ -391,13 +395,15 @@ bool Opt::ContainsMiscDouble   (const std::string & name) const
   return (it != fMiscOptionDouble.end());
 }
 //________________________________________________________________________________________
-double Opt::GetMiscDouble (const std::string & name) const
+double Opt::GetMiscDouble (const std::string & name, bool silence_errors) const
 {
   map<string,double>::const_iterator it = fMiscOptionDouble.find(name);
   if(it == fMiscOptionDouble.end()) {
-     cerr << "Opt/GetMiscDouble >> Option [" 
-          << name << "] was not set!" << endl;
-     return 0;
+    if (!silence_errors) {
+      cerr << "Opt/GetMiscDouble >> Option [" 
+           << name << "] was not set!" << endl;
+    }
+    return 0;
   } 
   return it->second;
 }
@@ -421,13 +427,15 @@ bool Opt::ContainsMiscBool   (const std::string & name) const
   return (it != fMiscOptionBool.end());
 }
 //________________________________________________________________________________________
-bool Opt::GetMiscBool (const std::string & name) const
+bool Opt::GetMiscBool (const std::string & name, bool silence_errors) const
 {
   map<string,bool>::const_iterator it = fMiscOptionBool.find(name);
   if(it == fMiscOptionBool.end()) {
-     cerr << "Opt/GetMiscBool >> Option [" 
-          << name << "] was not set!" << endl;
-     return 0;
+    if (!silence_errors) {
+      cerr << "Opt/GetMiscBool >> Option [" 
+           << name << "] was not set!" << endl;
+    }
+    return false;
   } 
   return it->second;
 }
