@@ -415,3 +415,33 @@ void Opt::SetMiscDouble        (const std::string & name, double value)
   fMiscOptionDouble[name] = value;
 }
 //________________________________________________________________________________________
+bool Opt::ContainsMiscBool   (const std::string & name) const
+{
+  map<string,bool>::const_iterator it = fMiscOptionBool.find(name);
+  return (it != fMiscOptionBool.end());
+}
+//________________________________________________________________________________________
+bool Opt::GetMiscBool (const std::string & name) const
+{
+  map<string,bool>::const_iterator it = fMiscOptionBool.find(name);
+  if(it == fMiscOptionBool.end()) {
+     cerr << "Opt/GetMiscBool >> Option [" 
+          << name << "] was not set!" << endl;
+     return 0;
+  } 
+  return it->second;
+}
+//________________________________________________________________________________________
+void Opt::RemoveMiscBool     (const std::string & name)
+{
+  map<string,bool>::iterator it = fMiscOptionBool.find(name);
+  if (it != fMiscOptionBool.end()) {
+    fMiscOptionBool.erase(it);
+  }
+}
+//________________________________________________________________________________________
+void Opt::SetMiscBool        (const std::string & name, bool value)
+{
+  fMiscOptionBool[name] = value;
+}
+//________________________________________________________________________________________

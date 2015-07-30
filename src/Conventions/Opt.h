@@ -96,6 +96,11 @@ public:
   double GetMiscDouble      (const std::string & name) const;
   void RemoveMiscDouble     (const std::string & name);
   void SetMiscDouble        (const std::string & name, double value);
+  
+  bool ContainsMiscBool     (const std::string & name) const;
+  bool GetMiscBool          (const std::string & name) const;
+  void RemoveMiscBool       (const std::string & name);
+  void SetMiscBool          (const std::string & name, bool value);
 
   // 
   void WriteTo  (Persistable & optp);
@@ -147,6 +152,7 @@ private:
   std::map<std::string,std::string>   fMiscOptionString;
   std::map<std::string,TObject *>     fMiscOptionObject;
   std::map<std::string,double>        fMiscOptionDouble;
+  std::map<std::string,bool>          fMiscOptionBool;
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }
