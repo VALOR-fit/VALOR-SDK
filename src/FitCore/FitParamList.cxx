@@ -22,6 +22,7 @@ ChangeLog:
 #include "Conventions/Opt.h"
 #include "FitCore/PhysParamList.h"
 #include "FitCore/FitParamList.h"
+#include "Utilities/UtlNumStat.h"
 
 using std::vector;
 using std::cout;
@@ -1622,7 +1623,15 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
       center = conv::kGlobFitSinsq2Theta13;
       error = conv::kGlobFitErrSinsq2Theta13 * center;
     }
-
+    
+    if (p==conv::kPhypMixing23 && omp==conv::kNuMixSinsqTheta) {
+      if (Opt::Instance()->GetMiscBool("UseDoubleAngle23Constraint",true)) {
+        current = util::SingleAngleToDoubleAngle(current);
+        center = conv::kMinosSinsq2Theta23BestFit;
+        error  = conv::kMinosSinsq2Theta23Error * center;
+      }
+    }
+    
     if (center == -999) {
       std::cerr<<"FitParamList/HypothesisFitStatisticPenalty >> Using zero penalty for parameter "
                << fName[ip].GetString() << std::endl;
