@@ -788,22 +788,20 @@ int, double *, double *, double *
 #endif
 }
 //____________________________________________________________________________
-template <class num> TVectorT<num> valor::util::ConcatenateTVectors (
-  const vector< TVectorT<num> > & tvecs )
-//~ TVectorT<double> valor::util::ConcatenateTVectors (
-  //~ const vector< TVectorT<double> > & tvecs )
+TVectorD valor::util::ConcatenateTVectors (
+  const vector< const TVectorD * > & tvecs )
 {
   unsigned int vsize = tvecs.size();
   vector<int> edge_vec(vsize+1);
   edge_vec[0] = 0;
   for (unsigned int i = 0 ; i < vsize; i++) {
-    edge_vec[i+1] = edge_vec[i] + tvecs.at(i).GetNoElements();
+    edge_vec[i+1] = edge_vec[i] + tvecs.at(i)->GetNoElements();
   }
   
-  TVectorT<double> output(edge_vec[vsize]);
+  TVectorD output(edge_vec[vsize]);
   
   for (unsigned int i = 0 ; i < vsize; i++) {
-    output.SetSub(edge_vec[i],tvecs.at(i));
+    output.SetSub(edge_vec[i],*tvecs.at(i));
   }
   
   return output;

@@ -69,10 +69,8 @@ namespace util {
   double SingleAngleToDoubleAngle(double sinsqtheta);
   
   // Combine matrices and vectors
-  template<class num> TVectorT<num> ConcatenateTVectors (
-    const std::vector< TVectorT<num> >  & tvecs );
-  //~ TVectorT<double> ConcatenateTVectors (
-    //~ const std::vector< TVectorT<double> >  & tvecs );
+  TVectorD ConcatenateTVectors (
+    const std::vector<const TVectorD *>  & tvecs );
 
   //
   // Functions randomizing oscillation params (for use when params are marginalized)

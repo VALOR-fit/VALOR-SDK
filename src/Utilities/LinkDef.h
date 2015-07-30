@@ -18,5 +18,10 @@
 #pragma link C++ class valor::NSI3Flavour;
 #pragma link C++ class valor::NuOscSterile;
 
+#pragma link C++ class vector<const TVectorD *>;
+#pragma link C++ class vector<const TVectorF *>;
+#pragma link C++ class vector<TVectorD *>;
+#pragma link C++ class vector<TVectorF *>;
+
 
 #endif
