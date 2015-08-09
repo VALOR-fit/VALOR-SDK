@@ -134,6 +134,24 @@ bool valor::util::XML2Bool(
   return false;
 }
 //____________________________________________________________________________________________________
+int valor::util::XML2Int(
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
+{
+// Get the specified node content as a floating-point number
+//
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
+  if(!found_node) {
+    LOG("XML", pFATAL) 
+       << "No node was found at input XML node node_path: " << node_path;
+    exit(1);
+  }
+  string content = xml_eng->GetNodeContent(found_node);
+  int value = atoi(content.c_str());
+  return value;
+}
+//____________________________________________________________________________________________________
 double valor::util::XML2Dbl(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
