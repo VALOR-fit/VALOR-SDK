@@ -39,6 +39,7 @@ class TAxis;
 
 using std::string;
 using std::vector;
+using std::pair;
 
 namespace valor {
 namespace util {
@@ -51,6 +52,7 @@ namespace util {
   double           XML2Dbl           (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   vector<double>   XML2DblArray      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   string           XML2String        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  pair<double,double> XML2DblDblPair (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
   string           XML2RootFileName  (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   string           XML2RootObjName   (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);

@@ -220,6 +220,38 @@ string valor::util::XML2String(
   return TrimSpaces(content);
 }
 //____________________________________________________________________________________________________
+pair<double,double> valor::util::XML2DblDblPair(
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
+{
+// Get the specified node content as a pair of floating-point numbers
+// The node content should be 2 comma-separed numbers
+
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
+  if(!found_node) {
+    LOG("XML",pFATAL) 
+       << "No node was found at input XML node node_path: " << node_path;
+    exit(1);
+  }
+  pair<double,double> pair;
+  const char * nc = xml_eng->GetNodeContent(found_node);
+  if (not nc) return pair;
+  
+  string content = TrimSpaces(nc);
+  
+  vector<string> str_tokens = Tokens(content, ",");
+  if(str_tokens.size() != 2) {
+    LOG("XML",pFATAL)
+      << "XML2DblDblPair cannot get exactly two values from: " << content;
+    exit(1);
+  }
+  
+  pair.first  = atof(str_tokens[0].c_str());
+  pair.second = atof(str_tokens[1].c_str());
+  return pair;
+}
+//____________________________________________________________________________________________________
 //
 // When we specify a ROOT object to be obtained from within a file,
 // the XML schema for specifying the ROOT filename, the object name and the 
