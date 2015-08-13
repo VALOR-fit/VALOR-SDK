@@ -49,8 +49,8 @@ public:
                          double deltaCP        /* delta_{CP} phase in radians */
                         );
 
-  double GetSinsqthFromSinsq2th(double sinsqth);
-  double GetSinsq2thFromSinsqth(double sinsq2th);
+  // THIS ISN"T IMPLEMENTED ANYMORE! double GetSinsqthFromSinsq2th(double sinsqth);
+  // THIS ISN"T IMPLEMENTED ANYMORE! double GetSinsq2thFromSinsqth(double sinsq2th);
   
   void SetOscParametersSinSqTAll (double sinsqtheta12, /* sin^2(theta_{12}) */
                                   double sinsqtheta13, /* sin^2(theta_{13}) */
