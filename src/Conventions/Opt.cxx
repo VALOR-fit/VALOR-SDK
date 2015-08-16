@@ -11,6 +11,7 @@ ChangeLog:
 #include <string>
 #include <cstdlib>
 #include <cassert>
+#include <iostream>
 
 #include "Conventions/Opt.h"
 #include "Conventions/Constants.h"
@@ -143,6 +144,24 @@ void Opt::SetDefaults(void)
   this->SetDefaultParameterValues();
 }
 //____________________________________________________________________________
+void Opt::SetValues(const char * dmsqscheme, const char * hierarchy,
+		    const char * mixparamchoice, const char * mixparamoctant,
+		    const char * cpvchoice, bool print)
+{
+  gMassHierarchyAssumed = util::HierarchyFromString(hierarchy);
+  gOscDmsqScheme        = util::DmsqSchemeFromString(dmsqscheme);
+  gOscMixingParamChoice = util::MixingTypeFromString(mixparamchoice);
+  gOscOctantChoice      = util::OctantFromString(mixparamoctant);
+  gOscDeltaCP           = util::CPVChoiceFromString(cpvchoice);
+  if(Undefined()) {
+    std::cerr << "Global options not defined correctly. Exiting..." << endl;
+    Print(std::cerr);
+    exit(1);
+  }
+  if(print)
+    Print(std::cout);
+}
+//____________________________________________________________________________
 void Opt::SetDefaultParameterValues()
 {
   // Set default global parameter values
@@ -169,9 +188,9 @@ void Opt::SetDefaultParameterValues()
       mean  = kGlobFitDm23sq; 
       break;
     case(kNuDmsq12andAbs31):
-      if(Opt::Instance()->gMassHierarchyAssumed == kNmhNormal)
+      if(gMassHierarchyAssumed == kNmhNormal)
         mean  = kGlobFitDm23sq + kGlobFitDm12sq; 
-      else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
+      else if(gMassHierarchyAssumed == kNmhInverted)
         mean  = kGlobFitDm23sq - kGlobFitDm12sq; 
       else assert(!"Should never happen");
       break;

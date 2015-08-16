@@ -67,6 +67,11 @@ public:
   // Choice of deltaCP, use it as purely phase or its sin
   conv::NuOscDeltaCP_t gOscDeltaCP;
 
+  // Set the 'global' oscillation parameter options
+  void SetValues(const char * dmsqscheme, const char * hierarchy,
+		 const char * mixparamchoice, const char * mixparamoctant,
+		 const char * cpvchoice, bool print = true);
+
   void Print(ostream & stream) const;
   friend ostream & operator << (ostream & stream, const Opt & opt);
   
