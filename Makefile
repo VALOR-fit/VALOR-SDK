@@ -19,6 +19,7 @@ BUILD_TARGETS =    print-make-info    \
 		   build-conventions  \
 		   build-utilities    \
 		   build-messenger    \
+		   build-parser       \
 		   build-core-fitter  \
                    build-example-fits 
 
@@ -58,6 +59,14 @@ build-messenger: FORCE
 	make;\
 	cd ${VALOR_FMWK}
 
+build-parser: FORCE
+	@echo " "
+	@echo "** Building Parser package..."
+	cd ${VALOR_FMWK}/src;\
+	cd Parser;\
+	make;\
+	cd ${VALOR_FMWK}
+
 build-core-fitter: FORCE
 	@echo " "
 	@echo "** Building FitCore package..."
@@ -88,6 +97,7 @@ purge: FORCE
 	cd Conventions;               make purge; cd ..; \
 	cd Utilities;                 make purge; cd ..; \
 	cd Messenger;                 make purge; cd ..; \
+	cd Parser;                    make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
 	cd Examples/X01;              make purge; cd ..; \
 	cd ${VALOR_FMWK}
@@ -101,6 +111,7 @@ clean-files: FORCE
 	cd Conventions;             make clean; cd ..; \
 	cd Utilities;               make clean; cd ..; \
 	cd Messenger;               make clean; cd ..; \
+	cd Parser;                  make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
 	cd Examples/X01;            make clean; cd ..; \
 	cd $(VALOR_FMWK);\
