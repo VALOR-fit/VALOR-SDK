@@ -118,7 +118,6 @@ ARCH_OK       = YES
 IS_MACOSX     = YES
 CXXFLAGS      = -pipe -W -Wall -Wno-long-double \
 		-fsigned-char -fno-common -flat_namespace \
-		-std=c++11 \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
@@ -150,7 +149,6 @@ ARCH_OK       = YES
 IS_MACOSX     = YES
 CXXFLAGS      = -m64 -pipe -W -Wall \
 		-fsigned-char -fno-common -flat_namespace \
-		-std=c++11 \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
@@ -187,7 +185,6 @@ ARCH_OK       = YES
 CXXFLAGS      = -Wall -fPIC \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
-		-std=c++11 \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
@@ -213,7 +210,6 @@ endif
 ifeq ($(strip $(ARCH)),linuxx8664gcc) 
 ARCH_OK       = YES
 CXXFLAGS      = -Wall -fPIC \
-		-std=c++11 \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
