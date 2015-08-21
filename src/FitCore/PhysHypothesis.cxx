@@ -340,6 +340,18 @@ PhysParamList PhysHypothesis::AsPhysParamList(void) const
   return pl;
 }
 //________________________________________________________________________________________
+void PhysHypothesis::CopyToPhysParamList(PhysParamList & pl) const
+{
+  map<int, double>::const_iterator iter = fParams.begin();
+  for( ; iter != fParams.end(); ++iter)
+  {
+    PhysParamId_t p = (PhysParamId_t)iter->first;
+    double v = iter->second;
+    pl.SetValue(p,v);
+  }
+  return;
+}
+//________________________________________________________________________________________
 void PhysHypothesis::SetNuisance (conv::PhysParamId_t p, bool isNuisance)
 {
   fIsNuisance[p] = isNuisance;

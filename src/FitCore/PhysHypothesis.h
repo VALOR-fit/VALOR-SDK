@@ -60,6 +60,7 @@ public:
 
    // Copy values to a PhysParamList 
    valor::PhysParamList AsPhysParamList(void) const;
+   void CopyToPhysParamList(valor::PhysParamList & pl) const;
 
 private:
 
