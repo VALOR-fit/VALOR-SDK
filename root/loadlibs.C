@@ -1,6 +1,6 @@
 {
   TString libs0 = gSystem->GetDynamicPath();
-  TString libs  = libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib";
+  TString libs  = libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib:/usr/lib64";
   gSystem->SetDynamicPath(libs.Data());
 
   // extra ROOT libs
@@ -21,9 +21,10 @@
 
   // VALOR libs
   gSystem->Load("libValorConv.so");
-  gSystem->Load("libValorUtil.so");
   gSystem->Load("libValorMesg.so");
   gSystem->Load("libValorFitCore.so");
+  gSystem->Load("libValorUtil.so");
   gSystem->Load("libValorFitX01.so");
+  gSystem->Load("libValorParse.so");
 }
 
