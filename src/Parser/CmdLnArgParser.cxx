@@ -22,6 +22,8 @@
 #include "Parser/CmdLnArgParser.h"
 #include "Messenger/Messenger.h"
 #include "Utilities/UtlStr.h"
+#include "Utilities/UtlStyle.h"
+#include "Utilities/Env.h"
 
 using namespace valor;
 
@@ -30,7 +32,10 @@ CmdLnArgParser::CmdLnArgParser(int argc, char **argv) :
 fArgc(argc),
 fArgv(argv)
 {
-
+  TString conf_dir  = valor::Env::Instance()->TopLevelConfDir();
+  TString verbosity = conf_dir + "/verbosity.xml";
+  
+  valor::util::Verbosity(verbosity.Data());
 }
 //____________________________________________________________________________
 CmdLnArgParser::~CmdLnArgParser()
