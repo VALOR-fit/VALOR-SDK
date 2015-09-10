@@ -14,13 +14,14 @@ include $(VALOR_FMWK)/make/Make.include
 
 # define composite targets
 #
-BUILD_TARGETS =    print-make-info    \
-		   make-bin-lib-dir   \
-		   build-conventions  \
-		   build-utilities    \
-		   build-messenger    \
-		   build-parser       \
-		   build-core-fitter  \
+BUILD_TARGETS =    print-make-info     \
+		   make-bin-lib-dir    \
+		   copy-scripts-to-bin \
+		   build-conventions   \
+		   build-utilities     \
+		   build-messenger     \
+		   build-parser        \
+		   build-core-fitter   \
                    build-example-fits 
 
 # define targets
@@ -34,6 +35,11 @@ print-make-info: FORCE
 	@echo "***** Building VALOR framework from source tree at: $(VALOR_FMWK)"
 	@echo "***** The source tree corresponds to VALOR framework version $(VALOR_VERSION)"
 	@echo " "
+
+copy-scripts-to-bin: FORCE
+	@echo " "
+	@echo "** Copying scripts to bin..."
+	cp ${VALOR_FMWK}/make/valor_fmwk-config ${VALOR_FMWK}/bin
 
 build-conventions: FORCE
 	@echo " "
@@ -107,6 +113,7 @@ clean: clean-files clean-dir clean-etc
 clean-files: FORCE
 	@echo " "
 	@echo "** Cleaning..."
+	rm -f ${VALOR_FMWK}/bin/valor_fmwk-config; \
 	cd ${VALOR_FMWK}/src;\
 	cd Conventions;             make clean; cd ..; \
 	cd Utilities;               make clean; cd ..; \

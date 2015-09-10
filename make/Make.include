@@ -93,11 +93,25 @@ RANLIB    = ranlib
 #                        COMPILER OPTIONS
 #-------------------------------------------------------------------
 
+APPLE_CLANG  := $(shell clang -v 2>&1 | sed -n "s/.*based on LLVM //p" | cut -d . -f 1)
+ifeq ($(APPLE_CLANG),)
+APPLE_CLANG  := 1
+endif
+
+ifeq ($(subst $(APPLE_CLANG),,12),12)
+#
+# -- clang
+#
+CXX           = clang++
+CC            = clang
+LD            = clang++
+else
+#
 # -- gcc
-
+#
 CXX = g++
+CC  = gcc
 LD  = g++
-
 # get gcc version & split in '.' delimited tokens (major/minor/revison num.)
 CXXVRS      = $(shell $(CXX) -dumpversion)
 CXXVRS_MAJ  = $(shell awk 'BEGIN {\
@@ -106,10 +120,11 @@ CXXVRS_MIN  = $(shell awk 'BEGIN {\
 		str="$(CXXVRS)"; split(str, tk, "."); print tk[2]}')
 CXXVRS_REV  = $(shell awk 'BEGIN {\
 		str="$(CXXVRS)"; split(str, tk, "."); print tk[3]}')
-
 # gcc version >= 4.1.0 ?
 GCC_GE_4_1_0  = $(shell awk 'BEGIN {\
 		if($(CXXVRS_MAJ)>=4 && $(CXXVRS_MIN)>0) print "YES"}') 
+#endif
+endif
 
 # MAC OS X with gcc, 32-bit mode
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,7 +162,7 @@ ifeq ($(strip $(ARCH)),macosx64)
 OSX_VERSION      = $(shell sw_vers | grep 'ProductVersion:' | grep -o '[0-9]*\.[0-9]*\.[0-9]*')  
 ARCH_OK       = YES
 IS_MACOSX     = YES
-CXXFLAGS      = -m64 -pipe -W -Wall \
+CXXFLAGS      = -m64 -pipe -Wshadow -W -Wall -Woverloaded-virtual \
 		-fsigned-char -fno-common -flat_namespace \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
