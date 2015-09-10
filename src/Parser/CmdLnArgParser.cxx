@@ -132,6 +132,21 @@ vector<string> CmdLnArgParser::ArgAsStringTokens(char op, string delimeter)
   return tokens;
 }
 //____________________________________________________________________________
+
+
+
+
+vector<string> CmdLnArgParser::ArgAsStringTokens(string op, string delimeter)
+{
+  string argument = this->ArgAsString(op);
+  //string argument = op;
+  
+  vector<string> tokens = util::Tokens(argument, delimeter);
+  return tokens;
+}
+
+
+//____________________________________________________________________________
 double CmdLnArgParser::ArgAsDouble(char op)
 {
   char * argument = this->Arg(op);

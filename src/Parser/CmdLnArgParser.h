@@ -45,6 +45,9 @@ public:
 
   string         ArgAsString       (char opt);
   vector<string> ArgAsStringTokens (char opt, string delimeter);
+  
+  vector<string> ArgAsStringTokens (string opt, string delimeter);
+  
   double         ArgAsDouble       (char opt);
   vector<double> ArgAsDoubleTokens (char opt, string delimeter);
   int            ArgAsInt          (char opt);
