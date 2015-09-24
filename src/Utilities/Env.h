@@ -35,12 +35,14 @@ public:
   string TopLevelDir     (void) { return fTopLevelDir;     }
   string TopLevelDataDir (void) { return fTopLevelDataDir; }
   string TopLevelConfDir (void) { return fTopLevelConfDir; }
+  string AppName         (void) { return fAppName;         }
 
   void AutoSet (Option_t * valor_application);
 
   void SetTopLevelDir     (string dir) { fTopLevelDir     = dir; }
   void SetTopLevelDataDir (string dir) { fTopLevelDataDir = dir; }
   void SetTopLevelConfDir (string dir) { fTopLevelConfDir = dir; }
+  void SetAppName         (string app) { fAppName         = app; }
 
   void Print(ostream & stream) const;
   friend ostream & operator << (ostream & stream, const Env & env);
@@ -56,6 +58,7 @@ private:
   string fTopLevelDir;
   string fTopLevelDataDir;
   string fTopLevelConfDir;
+  string fAppName;  
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }

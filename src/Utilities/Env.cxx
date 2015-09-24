@@ -32,6 +32,7 @@ Env::Env()
   fTopLevelDir     = "";
   fTopLevelDataDir = "";
   fTopLevelConfDir = "";
+  fAppName         = "";
 
   fInstance = 0;
 }
@@ -66,6 +67,7 @@ void Env::AutoSet(Option_t * app)
        fTopLevelDir     = topdir;
        fTopLevelDataDir = fTopLevelDir + "/inputs/";
        fTopLevelConfDir = fTopLevelDir + "/config/";
+       fAppName         = "t2xk";
     }//topdir
   }
 
@@ -75,6 +77,7 @@ void Env::AutoSet(Option_t * app)
        fTopLevelDir     = topdir;
        fTopLevelDataDir = fTopLevelDir + "/data/";
        fTopLevelConfDir = fTopLevelDir + "/config/";
+       fAppName         = "lbnx";
     }//topdir
   }
 
@@ -84,6 +87,7 @@ void Env::AutoSet(Option_t * app)
        fTopLevelDir     = topdir;
        fTopLevelDataDir = fTopLevelDir + "/data/";
        fTopLevelConfDir = fTopLevelDir + "/config/";
+       fAppName         = "fmwk";
     }//topdir
   }
 }
@@ -94,5 +98,6 @@ void Env::Print(ostream & stream) const
   stream << " - top dir      : " << fTopLevelDir     << endl;
   stream << " - top data dir : " << fTopLevelDataDir << endl;
   stream << " - top conf dir : " << fTopLevelConfDir << endl;
+  stream << " - running app  : " << fAppName         << endl;
 }
 //________________________________________________________________________________________

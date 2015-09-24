@@ -18,5 +18,8 @@
 #pragma link C++ class valor::NuOsc3Flavour;
 #pragma link C++ class valor::NuOscSterile;
 
+#pragma link C++ class valor::util::OscParams;
+#pragma link C++ class valor::RunOpt;
+
 
 #endif
