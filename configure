@@ -267,7 +267,10 @@ if(-e $MKCONF_FILENAME) {
 
 sub auto_detect {
 
-  @search_dir  = ("/usr","/opt","/lib");           # std search paths
+  @search_dir  = ("/usr","/lib");              # std search paths
+  unshift (@search_dir,"/cvmfs/t2k.egi.eu/include");                              # add t2k cvmfs includes
+  unshift (@search_dir,"/cvmfs/t2k.egi.eu/lib-Linux2.6.32-431.23.3.el6.x86_64");  # add t2k cvmfs libraries
+  push (@search_dir,"/opt");                        # Add opt 
   push (@search_dir,"$ENV{'HOME'}") 
                  if defined $ENV{'HOME'};          # add $HOME
   push (@search_dir,"/hep");                       # add where I add ext apps in my mac book air
