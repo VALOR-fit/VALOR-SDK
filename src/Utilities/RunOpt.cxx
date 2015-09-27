@@ -227,12 +227,26 @@ void valor::RunOpt::ReadCommonOptions()
 {
   if(fParser->OptionExists("file-tag"))
     fFileTag = fParser->ArgAsString("file-tag");
-  
+  else{
+    cerr << endl;
+    cerr << "You must pass the tag of the file" << endl;
+    cerr << "Use option --file-tag" << endl;
+    cerr << endl;
+    exit(1);  
+  }
+
   if(fParser->OptionExists("run"))
     fRun = fParser->ArgAsInt("run");
 
   if(fParser->OptionExists("config-file"))
     fConfigFile = util::FormFilePath(fParser->ArgAsString("config-file").c_str(), "config");
+  else{
+    cerr << endl;
+    cerr << "You must pass the configuration file" << endl;
+    cerr << "Use option --config-file" << endl;
+    cerr << endl;
+    exit(1);
+  }
 }
 //____________________________________________________________________________
 void valor::RunOpt::ReadToyOptions()
