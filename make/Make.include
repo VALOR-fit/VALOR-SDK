@@ -267,7 +267,7 @@ LIBRARIES := $(SYSLIBS) \
 
 CXXFLAGS := $(ENV_CXXFLAGS) $(CXXFLAGS)
 CPPFLAGS  = $(INCLUDES)
-CFLAGS    = -g
+CFLAGS    = $(OPT_WITH_CXX_DEBUG_FLAG)
 
 #-------------------------------------------------------------------
 #                            MAKE RULES
