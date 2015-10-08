@@ -40,6 +40,7 @@ copy-scripts-to-bin: FORCE
 	@echo " "
 	@echo "** Copying scripts to bin..."
 	cp ${VALOR_FMWK}/make/valor_fmwk-config ${VALOR_FMWK}/bin
+	cp ${VALOR_FMWK}/root/valor ${VALOR_FMWK}/bin
 
 build-conventions: FORCE
 	@echo " "
