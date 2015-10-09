@@ -56,13 +56,6 @@ public:
   // Toy histograms
   void FillOscToyHisto(PhysHypothesis &ph);
   TH1D *GetToyHisto(string oscparam,string MH="normal");
-  TH1D *GetToyHisto_Mix13(string MH="normal");
-  TH1D *GetToyHisto_Mix23(string MH="normal");
-  TH1D *GetToyHisto_Dm23(string MH="normal");
-  TH1D *GetToyHisto_Mix12(string MH="normal");
-  TH1D *GetToyHisto_Dm12(string MH="normal");
-  TH1D *GetToyHisto_dcp(string MH="normal");
-  TH1D *GetToyHisto_MH();
 
   // Write the histograms in the OscParams
   void Write(TFile * f);
