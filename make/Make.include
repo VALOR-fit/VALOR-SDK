@@ -93,25 +93,21 @@ RANLIB    = ranlib
 #                        COMPILER OPTIONS
 #-------------------------------------------------------------------
 
-APPLE_CLANG  := $(shell clang -v 2>&1 | sed -n "s/.*based on LLVM //p" | cut -d . -f 1)
-ifeq ($(APPLE_CLANG),)
-APPLE_CLANG  := 1
+ifeq ($(OPT_WITH_COMPILER),$(filter $(OPT_WITH_COMPILER),clang clang++))
+  # --clang
+  CXX           = clang++
+  CC            = clang
+  LD            = clang++
+  USING_CLANG   = YES
+else ifeq ($(OPT_WITH_COMPILER),$(filter $(OPT_WITH_COMPILER),gcc g++))
+  # -- gcc
+  CXX = g++
+  CC  = gcc
+  LD  = g++
+else
+  $(error OPT_WITH_COMPILER not set correctly!)
 endif
 
-ifeq ($(subst $(APPLE_CLANG),,12),12)
-#
-# -- clang
-#
-CXX           = clang++
-CC            = clang
-LD            = clang++
-else
-#
-# -- gcc
-#
-CXX = g++
-CC  = gcc
-LD  = g++
 # get gcc version & split in '.' delimited tokens (major/minor/revison num.)
 CXXVRS      = $(shell $(CXX) -dumpversion)
 CXXVRS_MAJ  = $(shell awk 'BEGIN {\
@@ -122,9 +118,10 @@ CXXVRS_REV  = $(shell awk 'BEGIN {\
 		str="$(CXXVRS)"; split(str, tk, "."); print tk[3]}')
 # gcc version >= 4.1.0 ?
 GCC_GE_4_1_0  = $(shell awk 'BEGIN {\
-		if($(CXXVRS_MAJ)>=4 && $(CXXVRS_MIN)>0) print "YES"}') 
-#endif
-endif
+		if($(CXXVRS_MAJ)>=4 && $(CXXVRS_MIN)>0) print "YES"}')
+# gcc version >= 4.2.1 ?
+GCC_GE_4_2_1  = $(shell awk 'BEGIN {\
+		if($(CXXVRS_MAJ)>=4 && $(CXXVRS_MIN)>0 && $(CXXVRS_REV)>=0) print "YES"}')
 
 # MAC OS X with gcc, 32-bit mode
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,12 +129,15 @@ ifeq ($(strip $(ARCH)),macosx)
 ARCH_OK       = YES
 IS_MACOSX     = YES
 CXXFLAGS      = -pipe -W -Wall -Wno-long-double \
-		-fsigned-char -fno-common -flat_namespace \
+		-fsigned-char -fno-common \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
+endif
+ifneq ($(USING_CLANG), YES)
+  CXXFLAGS += -flat_namespace
 endif
 LDFLAGS       = -bind_at_load
 SOFLAGS       = -dynamiclib -flat_namespace \
@@ -159,20 +159,37 @@ endif
 # MAC OS X with gcc, 64-bit mode
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ifeq ($(strip $(ARCH)),macosx64)
-OSX_VERSION      = $(shell sw_vers | grep 'ProductVersion:' | grep -o '[0-9]*\.[0-9]*\.[0-9]*')  
+OSX_VERSION = $(shell sw_vers | grep 'ProductVersion:' | grep -o '[0-9]*\.[0-9]*\.[0-9]*')  
+OSXVRS_MAJ  = $(shell awk 'BEGIN {\
+		str="$(OSX_VERSION)"; split(str, tk, "."); print tk[1]}')
+OSXVRS_MIN  = $(shell awk 'BEGIN {\
+		str="$(OSX_VERSION)"; split(str, tk, "."); print tk[2]}')
+OSXVRS_REV  = $(shell awk 'BEGIN {\
+		str="$(OSX_VERSION)"; split(str, tk, "."); print tk[3]}')
+# osx version >= 10.6 ?
+OSX_GE_10_6_0  = $(shell awk 'BEGIN {\
+		if($(OSXVRS_MAJ)>=10 && $(OSXVRS_MIN)>=6) print "YES"}')
+# osx version >= 10.9 ?
+OSX_GE_10_9_0  = $(shell awk 'BEGIN {\
+		if($(OSXVRS_MAJ)>=10 && $(OSXVRS_MIN)>=9) print "YES"}')
 ARCH_OK       = YES
 IS_MACOSX     = YES
 CXXFLAGS      = -m64 -pipe -Wshadow -W -Wall -Woverloaded-virtual \
-		-fsigned-char -fno-common -flat_namespace \
+		-fsigned-char -fno-common \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
-  ifeq (OSX_VERSION,10.9.)
-  CXXFLAGS += -Wno-strict-aliasing -stdlib=libc++ -mmacosx-version-min=10.9
-  elseif (OSX_VERSION,10.6.)
-  CXXFLAGS += -Wno-strict-aliasing -stdlib=libstdc++ -mmacosx-version-min=10.6
+  ifeq ($(OSX_GE_10_9_0),YES)
+    CXXFLAGS += -Wno-strict-aliasing -stdlib=libc++ -mmacosx-version-min=10.9
+  else ifeq ($(OSX_GE_10_6_0),YES)
+    CXXFLAGS += -Wno-strict-aliasing -stdlib=libstdc++ -mmacosx-version-min=10.6
+  else
+    CXXFLAGS += -Wno-strict-aliasing
+  endif
 endif
+ifneq ($(USING_CLANG), YES)
+  CXXFLAGS += -flat_namespace
 endif
 LDFLAGS       = -bind_at_load
 SOFLAGS       = -dynamiclib -flat_namespace \
@@ -190,8 +207,6 @@ OutPutOpt     = -o
 SOMINF        =
 EXTRALIBS     = 
 endif
-
-
 
 # LINUX / 32-bit x86 / with gcc
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

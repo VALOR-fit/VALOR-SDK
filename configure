@@ -22,6 +22,7 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
   print "    log4cpp-inc       Path to log4cpp includes                                    default: - (auto-detection enabled) \n";
   print "    log4cpp-lib       Path to log4cpp library                                     default: - (auto-detection enabled) \n";
+  print "    compiler          Compiler to use (any of clang,g++)                          default: g++ \n";
   print "If the printout was too long then pipe it through a pager, eg: \n";
   print "./configure --help | more \n";
   exit 0;
@@ -83,7 +84,7 @@ if(($match = grep(/--prefix/i, @ARGV)) > 0) {
   }
 }
 
-# Default --enable/--disable config options (for a minimal genie build)
+# Default --enable/--disable config options (for a minimal build)
 #
 my $opt_enable_debug      = "NO";
 my $opt_enable_gsl        = "NO";
@@ -102,6 +103,13 @@ if($opt_enable_debug eq "YES") { $opt_with_cxx_debug_flag = "-g"; }
 my $opt_with_cxx_optimiz_flag="O2"; # default
 if( $options=~m/--with-optimiz-level=(\S*)/i ) {
   $opt_with_cxx_optimiz_flag = $1;
+}
+
+# Check compiler
+#
+my $opt_with_compiler="g++"; # default
+if( $options=~m/--with-compiler=(\S*)/i ) {
+  $opt_with_compiler = $1;
 }
 
 #
@@ -245,6 +253,7 @@ print MKCONF "OPT_WITH_CXX_OPTIMIZ_FLAG=-$opt_with_cxx_optimiz_flag\n";
 print MKCONF "OPT_ENABLE_GSL=$opt_enable_gsl\n";
 print MKCONF "OPT_WITH_LOG4CPP_INC=$opt_with_log4cpp_inc\n";
 print MKCONF "OPT_WITH_LOG4CPP_LIB=$opt_with_log4cpp_lib\n";
+print MKCONF "OPT_WITH_COMPILER=$opt_with_compiler\n";
 close(MKCONF);
 if(-e $MKCONF_FILENAME) {
   print "\nThe following config options were set in Make.config: \n";
