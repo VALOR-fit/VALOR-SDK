@@ -228,6 +228,8 @@ public:
   TString fTypeError;
   bool fDrawFullChisq;
   string fTeststat;
+  int fPriorId;   // 0 --> T2K+react, 1 --> T2K only
+  
   //conv::PhysParamId_t fFreepar0;
   //conv::PhysParamId_t fFreepar1;
   //

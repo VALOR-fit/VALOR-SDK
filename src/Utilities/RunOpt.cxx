@@ -114,6 +114,8 @@ void valor::RunOpt::Init(void)
   
   // Priors
 
+  fPriorId = conv::kBadResult;
+
   fPriorsFile = ""; //use this for default OFF
   //fPriorsFile = util::FormFilePath("priors/joint_T2Kreact_run14/Priors_T2Kreact_run14_Mach3_22Maj15.root", "inputs"); //use this for default ON
 
@@ -225,23 +227,39 @@ void valor::RunOpt::ReadFromCommandLine(int argc, char ** argv, int parseopt)
 //____________________________________________________________________________
 void valor::RunOpt::ReadCommonOptions()
 {
-  if(fParser->OptionExists("file-tag"))
+  // Set file tag
+  if(fParser->OptionExists("file-tag")){
     fFileTag = fParser->ArgAsString("file-tag");
+  }
   else{
     cerr << endl;
+    cerr << "Common options:" << endl;
     cerr << "You must pass the tag of the file" << endl;
     cerr << "Use option --file-tag" << endl;
     cerr << endl;
     exit(1);  
   }
 
-  if(fParser->OptionExists("run"))
+  // Set run
+  if(fParser->OptionExists("run")){
     fRun = fParser->ArgAsInt("run");
-
-  if(fParser->OptionExists("config-file"))
-    fConfigFile = util::FormFilePath(fParser->ArgAsString("config-file").c_str(), "config");
+  }
   else{
     cerr << endl;
+    cerr << "Common options:" << endl;
+    cerr << "You must pass the run file" << endl;
+    cerr << "Use option --run" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  // Set configuration file
+  if(fParser->OptionExists("config-file")){
+    fConfigFile = util::FormFilePath(fParser->ArgAsString("config-file").c_str(), "config");
+  }
+  else{
+    cerr << endl;
+    cerr << "Common options:" << endl;
     cerr << "You must pass the configuration file" << endl;
     cerr << "Use option --config-file" << endl;
     cerr << endl;
@@ -251,208 +269,230 @@ void valor::RunOpt::ReadCommonOptions()
 //____________________________________________________________________________
 void valor::RunOpt::ReadToyOptions()
 {
-  if(fParser->OptionExists("first-experiment")) {
-    if(!fParser->OptionExists("last-experiment")) {
-      cerr << "last-experiment is required if first-experiment is given" << endl;
-      exit(1);
-    }
-    if(fParser->OptionExists("n-experiments")) {
-      cerr << "n-experiments is not allowed if first-experiment is given" << endl;
-      exit(1);
-    }    
-    fFirstExperiment = fParser->ArgAsInt("first-experiment");
+  // Set experiment id and # of experiments
+  if( !fParser->OptionExists("first-experiment") ||
+      !fParser->OptionExists("n-experiments") ){
+    cerr << endl;
+    cerr << "Toy options:" << endl;
+    cerr << "You must set the first experiment id using: --first-experiment" << endl;
+    cerr << "and the total number of experiments using: --n-experiments" << endl;
+    cerr << endl;
+    exit(1);
   }
-  
-  if(fParser->OptionExists("last-experiment")) {
-    if(!fParser->OptionExists("first-experiment")) {
-      cerr << "first-experiment is required if last-experiment is given" << endl;
-      exit(1);
-    }
-    fLastExperiment = fParser->ArgAsInt("last-experiment");
-  }
-  
-  if(fParser->OptionExists("n-experiments")) {
+  else{
     fNExperiments = fParser->ArgAsInt("n-experiments");
-    //set the 'other' number of experiments option
-    fFirstExperiment = 0;
-    fLastExperiment  = fNExperiments - 1;
+    fFirstExperiment = fParser->ArgAsInt("first-experiment");
+    fLastExperiment = fFirstExperiment + fNExperiments - 1;
   }
-  else
-      fNExperiments = fLastExperiment - fFirstExperiment + 1;
-
-  if( fParser->OptionExists("enable-stat-fluct") &&
-      fParser->OptionExists("disable-stat-fluct")
-      ){
-    cerr << endl;
-    cerr << "Statistical fluctuations are both enabled and disabled" << endl;
-    cerr << endl;
-    exit(1);
-  }
-  else if(fParser->OptionExists("enable-stat-fluct"))
-    fStatFluctuations = true;
-  else if(fParser->OptionExists("disable-stat-fluct"))
-    fStatFluctuations = false;
-  else{
-    cerr << endl;
-    cerr << "You must enable or disable the statistical fluctuations" << endl;
-    cerr << "Use --enable-stat-fluct or --disable-stat-fluct" << endl;
-    cerr << endl;
-    exit(1);
-  }
-
-  if(fParser->OptionExists("syst-tweak-mode"))
-    fSystTweakMode = fParser->ArgAsInt("syst-tweak-mode");
   
-  if( fParser->OptionExists("enable-rethrow-unphysical-toys") &&
-      fParser->OptionExists("disable-rethrow-unphysical-toys")
-      ){
-    cerr << endl;
-    cerr << "Rethrowing of physical and unphysical toys is both enabled and disabled" << endl;
-    cerr << endl;
-    exit(1);
+  // Set statistical fluctuations mode
+  if(fParser->OptionExists("enable-stat-fluct")) {
+    fStatFluctuations = fParser->ArgAsInt("enable-stat-fluct");
+    if(fStatFluctuations<0 || fStatFluctuations>1){
+      cerr << endl;
+      cerr << "Toy options:" << endl;
+      cerr << "You set a wrong statistical fluctuation mode" << endl;
+      cerr << "Options --enable-stat-fluct can have only the following input parameter:" << endl;
+      cerr << " 0 --> no statistical fluctuations" << endl;
+      cerr << " 1 --> make statistical fluctuations" << endl;
+      cerr << endl;
+      exit(1);
+    }
   }
-  else if(fParser->OptionExists("enable-rethrow-unphysical-toys"))
-    fRethrowIfUnphysical = true;
-  else if(fParser->OptionExists("disable-rethrow-unphysical-toys"))
-    fRethrowIfUnphysical = false;
   else{
     cerr << endl;
-    cerr << "You must enable or disable the rethrowing of unphysical toys" << endl;
-    cerr << "Use --enable-rethrow-unphysical-toys or --disable-rethrow-unphysical-toys" << endl;
+    cerr << "Toy options:" << endl;
+    cerr << "You didn't set the statistical fluctuations mode" << endl;
+    cerr << "Use options --enable-stat-fluct with the following input parameter:" << endl;
+    cerr << " 0 --> no statistical fluctuations" << endl;
+    cerr << " 1 --> make statistical fluctuations" << endl;
     cerr << endl;
     exit(1);
   }
 
-  if(fParser->OptionExists("enable-verbose-syst-throws"))
-    fVerboseSystThrows = true;
-  else if(fParser->OptionExists("disable-verbose-syst-throws"))
-    fVerboseSystThrows = false;
+  // Set systematic tweak mode
+  if(fParser->OptionExists("syst-tweak-mode")){
+    fSystTweakMode = fParser->ArgAsInt("syst-tweak-mode");
+    // The check of the systematic tweak is done in UtlForMacros.cxx (T2K trunk)
+    // Also it's different depending on the analysis framework
+  }
+  else{
+    cerr << endl;
+    cerr << "Toy options:" << endl;
+    cerr << "You didn't set the tweak systematic mode" << endl;
+    cerr << "Use options --syst-tweak-mode with the following input parameter:" << endl;
+    cerr << " 0 --> no systematic tweak" << endl;
+    cerr << " 1 --> do systematic tweak" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  // Set retrhowing of unphysical toys mode
+  if( fParser->OptionExists("enable-rethrow-unphysical-toys") ){
+    fRethrowIfUnphysical = (bool) fParser->ArgAsInt("enable-rethrow-unphysical-toys");
+  }
+  else{
+    cerr << endl;
+    cerr << "Toy options:" << endl;
+    cerr << "You must enable or disable the rethrowing of unphysical toys" << endl;
+    cerr << "Use --enable-rethrow-unphysical-toys with inputs 0 or 1" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  // Set verbosity of systematic throws
+  if(fParser->OptionExists("enable-verbose-syst-throws")){
+    fVerboseSystThrows = (bool) fParser->ArgAsInt("enable-verbose-syst-throws");
+  }
+  else{
+    cerr << endl;
+    cerr << "Toy options:" << endl;
+    cerr << "You didn't set the option --enable-verbose-syst-throws (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
 }
 //____________________________________________________________________________
 void valor::RunOpt::ReadGlobalOptions()
 {
-  if(fParser->OptionExists("dmsq-scheme"))
+  if(fParser->OptionExists("dmsq-scheme")){
     fGlobalDmsqScheme = fParser->ArgAsString("dmsq-scheme");
+  }
+  else{
+    cerr << endl;
+    cerr << "Global options:" << endl;
+    cerr << "You must set the dmsq scheme using --dmsq-scheme" << endl;
+    cerr << endl;
+    exit(1);
+  }
 
-  if(fParser->OptionExists("mix-param-scheme"))
+  if(fParser->OptionExists("mix-param-scheme")){
     fGlobalMixParamScheme = fParser->ArgAsString("mix-param-scheme");
+  }
+  else{
+    cerr << endl;
+    cerr << "Global options:" << endl;
+    cerr << "You must set the mixing parameters scheme using --mix-param-scheme" << endl;
+    cerr << endl;
+    exit(1);
+  }
 
-  if(fParser->OptionExists("cpv-phase-scheme"))
+  if(fParser->OptionExists("cpv-phase-scheme")){
     fGlobalCPVPhaseScheme = fParser->ArgAsString("cpv-phase-scheme");
+  }
+  else{
+    cerr << endl;
+    cerr << "Global options:" << endl;
+    cerr << "You must set the cpv scheme using --cpv-phase-scheme" << endl;
+    cerr << endl;
+    exit(1);
+  }
 
-  if(fParser->OptionExists("mass-hierarchy"))
+  if(fParser->OptionExists("mass-hierarchy")){
     fGlobalMassHierarchy = fParser->ArgAsString("mass-hierarchy");
-
-  if(fParser->OptionExists("mix-param-octant"))
+  }
+  else{
+    cerr << endl;
+    cerr << "Global options:" << endl;
+    cerr << "You must set the mass hierarchy using --mass-hierarchy" << endl;
+    cerr << endl;
+    exit(1);
+  }
+  
+  if(fParser->OptionExists("mix-param-octant")){
     fGlobalMixParamOctant = fParser->ArgAsString("mix-param-octant");
-
+  }
+  else{
+    cerr << endl;
+    cerr << "Global options:" << endl;
+    cerr << "You must set the mixing parameter octant using --mix-param-octant" << endl;
+    cerr << endl;
+    exit(1);
+  }
+  
   cout << "ReadGlobalOptions" << endl;
-
+  
   Opt::Instance()->SetValues(fGlobalDmsqScheme.c_str(),     fGlobalMassHierarchy.c_str(),
-			   fGlobalMixParamScheme.c_str(), fGlobalMixParamOctant.c_str(),
-			   fGlobalCPVPhaseScheme.c_str());
+			     fGlobalMixParamScheme.c_str(), fGlobalMixParamOctant.c_str(),
+			     fGlobalCPVPhaseScheme.c_str());
 }
 //____________________________________________________________________________
 void valor::RunOpt::Read3FOscParamsOptions()
 {
 
-  if(fParser->OptionExists("hypothesis"))
+  if(fParser->OptionExists("hypothesis")){
     fHypothesis = fParser->ArgAsString("hypothesis");
+  }
+  else{
+    cerr << endl;
+    cerr << "3FOscParams options:" << endl;
+    cerr << "You didn't set the physics hypothesis" << endl;
+    cerr << "Use option --hypothesis" << endl;
+    cerr << endl;
+    exit(1);
+  }
 
   //
   // Keep the following order:
-  // - randomize-all-oscparams
-  // - default-all-oscparams
-  // - set each single osc params
+  // - Set the priors: 0 --> fixed osc params (default), 1 --> T2K+react, 2 --> T2K only
+  // - set each single osc params (instead of default one). If prior is set, the parameter it's fixed anymore
   //
 
-  if(fParser->OptionExists("randomize-all-oscparams"))
-    InitOscParams(-999);
-
-  if(fParser->OptionExists("default-all-oscparams"))
-    InitOscParams(-99);
-   
-  for(int i = 0; i < 2; i++) {
-    if(fParser->OptionExists(Form("mixing12-%s", fHierStr[i].c_str())))
-      fMix12[i] = fParser->ArgAsDouble(Form("mixing12-%s", fHierStr[i].c_str()));
-    
-    if(fParser->OptionExists(Form("mixing13-%s", fHierStr[i].c_str())))
-      fMix13[i] = fParser->ArgAsDouble(Form("mixing13-%s", fHierStr[i].c_str()));
-    
-    if(fParser->OptionExists(Form("mixing23-%s", fHierStr[i].c_str())))
-      fMix23[i] = fParser->ArgAsDouble(Form("mixing23-%s", fHierStr[i].c_str()));
-    
-    if(fParser->OptionExists(Form("cpv-%s", fHierStr[i].c_str())))            
-      fCPV[i] = fParser->ArgAsDouble(Form("cpv-%s", fHierStr[i].c_str()));
-    
-    if(fParser->OptionExists(Form("dm12sq-%s", fHierStr[i].c_str())))
-      fDm12sq[i] = fParser->ArgAsDouble(Form("dm12sq-%s", fHierStr[i].c_str()));
-    
-    if(fParser->OptionExists(Form("dm23sq-%s", fHierStr[i].c_str())))
-      fDm23sq[i] = fParser->ArgAsDouble(Form("dm23sq-%s", fHierStr[i].c_str()));
-  }//i
-
-
-  if( fParser->OptionExists("enable-synch-osc-ih-to-nh") && 
-      fParser->OptionExists("disable-synch-osc-ih-to-nh") 
-      ){
-    cerr << endl;
-    cerr << "You both enabled and disabled the synchronization of IH to NH osc params" << endl;
-    cerr << endl;
-    exit(1);
+  if(fParser->OptionExists("enable-synch-osc-ih-to-nh")){
+    fSynchronizeIHtoNH = (bool) fParser->ArgAsInt("enable-synch-osc-ih-to-nh");
   }
-  if(fParser->OptionExists("enable-synch-osc-ih-to-nh"))
-    fSynchronizeIHtoNH = true;
-  else if( fParser->OptionExists("disable-synch-osc-ih-to-nh") )
-    fSynchronizeIHtoNH = false;
   else{
     cerr << endl;
+    cerr << "3FOscParams options:" << endl;
     cerr << "You didn't enabled or disabled the synchronization of IH to NH osc params" << endl;
-    cerr << "Use --enable-synch-osc-ih-to-nh or --disable-synch-osc-ih-to-nh" << endl;
+    cerr << "Use --enable-synch-osc-ih-to-nh (0 or 1)" << endl;
     cerr << endl;
     exit(1);
   }
 
-  if(fParser->OptionExists("beta-bar"))
-    fBetaBar = fParser->ArgAsDouble("beta-bar");
+  // Set Mass Hierarchy (default value and prior)
 
-  if(fParser->OptionExists("normal-mass-hierarchy-prior"))
+  if(fParser->OptionExists("normal-mass-hierarchy-prior")){
     fPriorProbNH = fParser->ArgAsDouble("normal-mass-hierarchy-prior");
-  
-  if( fParser->OptionExists("enable-marg-mass-hierarchy") &&
-      fParser->OptionExists("disable-marg-mass-hierarchy")
-      ){
-    cerr << endl;
-    cerr << "You both disabled and enabled the marginalization of the mass hierarchy" << endl;
-    cerr << endl;
-    exit(1);
   }
-  else if(fParser->OptionExists("enable-marg-mass-hierarchy"))
-    fMargMH = true;
-  else if(fParser->OptionExists("disable-marg-mass-hierarchy"))
-    fMargMH = false;
   else{
     cerr << endl;
-    cerr << "You must enable or disable the marginalization of mass hierarchy" << endl;
-    cerr << "Use --enable-marg-mass-hierarchy or --disable-marg-mass-hierarchy" << endl;
+    cerr << "3FOscParams options:" << endl;
+    cerr << "You didn't set the prior for mass hierarchy (Normal Hierarchy, IH = 1-NH)" << endl;
     cerr << endl;
     exit(1);
   }
-
-  // Set the priors
-
-  // NEW 
   
-  if( fParser->OptionExists("prior-t2konly") && 
-      fParser->OptionExists("prior-reactors")
-      ){
+  if(fParser->OptionExists("enable-marg-mass-hierarchy")){
+    fMargMH = (bool) fParser->ArgAsInt("enable-marg-mass-hierarchy");
+  }
+  else{
     cerr << endl;
-    cerr << "Both T2K-only and T2K+reactors priors are called" << endl;
-    cerr << "You can call only one of them" << endl;
+    cerr << "3FOscParams options:" << endl;
+    cerr << "You must enable or disable the marginalization of mass hierarchy" << endl;
+    cerr << "Use --enable-marg-mass-hierarchy (0 or 1)" << endl;
     cerr << endl;
     exit(1);
   }
-  else if(fParser->OptionExists("prior-reactors")){ 
+
+  // Set the priors of oscillation parameters
+
+  if( fParser->OptionExists("prior") ){ 
+    fPriorId = fParser->ArgAsInt("prior");  
+    cout << endl;
+    cout << "Set priors for fake data sets:" << endl;
+  }
+
+  if(fPriorId == 0){
+    cout << "Fix parameters to default values" << endl;
+    cout << endl;
+    InitOscParams(-99);
+  }
+  else if(fPriorId == 1){
+    cout << "Set prior to T2K+reactors (PDG 2014)" << endl;
+    cout << endl;
+
+    InitOscParams(-999); // Randomize all osc params
 
     fMargMixing12        = true;
     fPriorMixing12       = "gaus";   
@@ -487,7 +527,13 @@ void valor::RunOpt::Read3FOscParamsOptions()
     fPriorParDeltaCP[0]  = -TMath::Pi();
     fPriorParDeltaCP[1]  = +TMath::Pi();
   }
-  else if(fParser->OptionExists("prior-t2konly")){
+  else if(fPriorId == 2){
+
+    cout << endl;
+    cout << "Set prior to T2K only" << endl;
+    cout << endl;
+
+    InitOscParams(-999);
 
     fMargMixing12        = true;
     fPriorMixing12       = "gaus";   
@@ -523,59 +569,87 @@ void valor::RunOpt::Read3FOscParamsOptions()
     fPriorParDeltaCP[1]  = +TMath::Pi();
   }
   else{
-    if(!fParser->OptionExists("default-all-oscparams")){
-      cerr << endl;
-      cerr << "Priors are not defined" << endl;
-      cerr << endl;
-      exit(1);
-    }
+    cerr << endl;
+    cerr << "3FOscParams options:" << endl;
+    cerr << "You must set the prior to make fakedata sets using option: --prior" << endl;
+    cerr << "0 --> No priors (default parameteres), "
+	 << "1 --> T2K+reactors (PDG2014), "
+	 << "2 --> T2K only" << endl;
+    cerr << endl;
+    exit(1);
   }
-  
 
-  if(fParser->OptionExists("prior-mixing12")){
-    fMargMixing12 = true;
-    vector<string> input = fParser->ArgAsStringTokens("prior-mixing12",",");
-    fPriorMixing12       = input[0];   
-    fPriorParMixing12[0] = (double)atof(input[1].c_str());
-    fPriorParMixing12[1] = (double)atof(input[2].c_str());
-    fMixModeMixing12     = input[3];
-  }
-  if(fParser->OptionExists("prior-mixing13")){
-    fMargMixing13 = true;
-    vector<string> input = fParser->ArgAsStringTokens("prior-mixing13",",");
-    fPriorMixing13       = input[0];   
-    fPriorParMixing13[0] = (double)atof(input[1].c_str());
-    fPriorParMixing13[1] = (double)atof(input[2].c_str());
-    fMixModeMixing13     = input[3];
-  }
-  if(fParser->OptionExists("prior-mixing23")){
-    fMargMixing23 = true;
-    vector<string> input = fParser->ArgAsStringTokens("prior-mixing23",",");
-    fPriorMixing23       = input[0];   
-    fPriorParMixing23[0] = (double)atof(input[1].c_str());
-    fPriorParMixing23[1] = (double)atof(input[2].c_str());
-    fMixModeMixing23     = input[3];
-  }
-  if(fParser->OptionExists("prior-dmsq23")){
-    fMargDm23sq = true;
-    vector<string> input = fParser->ArgAsStringTokens("prior-dmsq23",",");
-    fPriorDm23sq       = input[0];   
-    fPriorParDm23sq[0] = (double)atof(input[1].c_str());
-    fPriorParDm23sq[1] = (double)atof(input[2].c_str());
-  }
-  if(fParser->OptionExists("prior-dmsq12")){
-    fMargDm12sq = true;
-    vector<string> input = fParser->ArgAsStringTokens("prior-dmsq12",",");
-    fPriorDm12sq       = input[0];   
-    fPriorParDm12sq[0] = (double)atof(input[1].c_str());
-    fPriorParDm12sq[1] = (double)atof(input[2].c_str());
-  }
-  if(fParser->OptionExists("prior-deltacp")){
-    fMargDeltaCP = true;
-    vector<string> input = fParser->ArgAsStringTokens("prior-deltacp",",");
-    fPriorDeltaCP       = input[0];   
-    fPriorParDeltaCP[0] = (double)atof(input[1].c_str());
-    fPriorParDeltaCP[1] = (double)atof(input[2].c_str());
+  // // Set prior independently for each osc parameters
+  // if(fParser->OptionExists("prior-mixing12")){
+  //   fMargMixing12 = true;
+  //   vector<string> input = fParser->ArgAsStringTokens("prior-mixing12",",");
+  //   fPriorMixing12       = input[0];   
+  //   fPriorParMixing12[0] = (double)atof(input[1].c_str());
+  //   fPriorParMixing12[1] = (double)atof(input[2].c_str());
+  //   fMixModeMixing12     = input[3];
+  // }
+  // if(fParser->OptionExists("prior-mixing13")){
+  //   fMargMixing13 = true;
+  //   vector<string> input = fParser->ArgAsStringTokens("prior-mixing13",",");
+  //   fPriorMixing13       = input[0];   
+  //   fPriorParMixing13[0] = (double)atof(input[1].c_str());
+  //   fPriorParMixing13[1] = (double)atof(input[2].c_str());
+  //   fMixModeMixing13     = input[3];
+  // }
+  // if(fParser->OptionExists("prior-mixing23")){
+  //   fMargMixing23 = true;
+  //   vector<string> input = fParser->ArgAsStringTokens("prior-mixing23",",");
+  //   fPriorMixing23       = input[0];   
+  //   fPriorParMixing23[0] = (double)atof(input[1].c_str());
+  //   fPriorParMixing23[1] = (double)atof(input[2].c_str());
+  //   fMixModeMixing23     = input[3];
+  // }
+  // if(fParser->OptionExists("prior-dmsq23")){
+  //   fMargDm23sq = true;
+  //   vector<string> input = fParser->ArgAsStringTokens("prior-dmsq23",",");
+  //   fPriorDm23sq       = input[0];   
+  //   fPriorParDm23sq[0] = (double)atof(input[1].c_str());
+  //   fPriorParDm23sq[1] = (double)atof(input[2].c_str());
+  // }
+  // if(fParser->OptionExists("prior-dmsq12")){
+  //   fMargDm12sq = true;
+  //   vector<string> input = fParser->ArgAsStringTokens("prior-dmsq12",",");
+  //   fPriorDm12sq       = input[0];   
+  //   fPriorParDm12sq[0] = (double)atof(input[1].c_str());
+  //   fPriorParDm12sq[1] = (double)atof(input[2].c_str());
+  // }
+  // if(fParser->OptionExists("prior-deltacp")){
+  //   fMargDeltaCP = true;
+  //   vector<string> input = fParser->ArgAsStringTokens("prior-deltacp",",");
+  //   fPriorDeltaCP       = input[0];   
+  //   fPriorParDeltaCP[0] = (double)atof(input[1].c_str());
+  //   fPriorParDeltaCP[1] = (double)atof(input[2].c_str());
+  // }
+  
+  
+  // Set nominal oscillation parameters (not mandatory, default values already set)
+
+  for(int i = 0; i < 2; i++) {
+    if(fParser->OptionExists(Form("mixing12-%s", fHierStr[i].c_str())))
+      fMix12[i] = fParser->ArgAsDouble(Form("mixing12-%s", fHierStr[i].c_str()));
+    
+    if(fParser->OptionExists(Form("mixing13-%s", fHierStr[i].c_str())))
+      fMix13[i] = fParser->ArgAsDouble(Form("mixing13-%s", fHierStr[i].c_str()));
+    
+    if(fParser->OptionExists(Form("mixing23-%s", fHierStr[i].c_str())))
+      fMix23[i] = fParser->ArgAsDouble(Form("mixing23-%s", fHierStr[i].c_str()));
+    
+    if(fParser->OptionExists(Form("cpv-%s", fHierStr[i].c_str())))            
+      fCPV[i] = fParser->ArgAsDouble(Form("cpv-%s", fHierStr[i].c_str()));
+    
+    if(fParser->OptionExists(Form("dm12sq-%s", fHierStr[i].c_str())))
+      fDm12sq[i] = fParser->ArgAsDouble(Form("dm12sq-%s", fHierStr[i].c_str()));
+    
+    if(fParser->OptionExists(Form("dm23sq-%s", fHierStr[i].c_str())))
+      fDm23sq[i] = fParser->ArgAsDouble(Form("dm23sq-%s", fHierStr[i].c_str()));
+  }//i
+  if(fParser->OptionExists("beta-bar")){
+    fBetaBar = fParser->ArgAsDouble("beta-bar");
   }
 
   // Synchronize IH to NH osc params
@@ -619,89 +693,257 @@ void valor::RunOpt::Read3FOscParamsOptions()
 void valor::RunOpt::ReadFitMargOptions()
 {
   if(fParser->OptionExists("do-toys")){
-    fDoToys = true;
+    fDoToys = (bool)fParser->ArgAsInt("do-toys");
   }
   else{
-    fDoToys = false;
-
-    if(fParser->OptionExists("use-xml-file")){
-      fXmlfile = fParser->ArgAsString("use-xml-file");
-      fUsing_xml_file = true;
-    }
-    else if(fParser->OptionExists("use-root-file")){
-      fRootfile = fParser->ArgAsString("use-root-file");
-      fUsing_xml_file = false;
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't enabled or disabled the fake data set generation" << endl;
+    cerr << "Use --do-toys (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
+  
+  if(fParser->OptionExists("use-xml-file")){
+    fUsing_xml_file = (bool)fParser->ArgAsInt("use-xml-file");
+  }
+  else{
+    cerr << endl;
+    cerr << "You didn't decide whether to use root or xml files for input fakedata sets" << endl;
+    cerr << "Use --use-xml-file (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
+  
+  if(fUsing_xml_file){ // Pass input xml file for fakedata sets
+    if(fParser->OptionExists("fakedata-xml-file")){
+      fXmlfile = fParser->ArgAsString("fakedata-xml-file");
+      fRootfile = "";
     }
     else{
       cerr << endl;
-      cerr << "You not doing toys on the fly but you didn't pass neither root nor xml file" << endl;
+      cerr << "FitMarg options:" << endl;
+      cerr << "You didn't pass the input xml file for input fakedata sets" << endl;
+      cerr << "Use --fakedata-xml-file" << endl;
       cerr << endl;
       exit(1);
     }
   }
-  
-  if(fParser->OptionExists("fit-param-list"))
+  else{ // Pass input root file for fakedata sets
+    if(fParser->OptionExists("fakedata-root-file")){
+      fRootfile = fParser->ArgAsString("fakedata-root-file");
+      fXmlfile = "";
+    }
+    else{
+      cerr << endl;
+      cerr << "FitMarg options:" << endl;
+      cerr << "You didn't pass the input root file for input fakedata sets" << endl;
+      cerr << "Use --fakedata-root-file" << endl;
+      cerr << endl;
+      exit(1);
+    }
+  }
+
+  if(fParser->OptionExists("fit-param-list")){
     fFit_param_list = fParser->ArgAsString("fit-param-list");
-
-  if(fParser->OptionExists("marg-file"))
-    fInfilename = fParser->ArgAsString("marg-file");
-  
-  if(fParser->OptionExists("nfiles-marg"))
-    fNfiles = fParser->ArgAsInt("nfiles-marg");
-
-  if(fParser->OptionExists("ntoys-marg"))
-    fNtoysMarg = fParser->ArgAsInt("ntoys-marg");
-  
-  if(fParser->OptionExists("freepar0-name"))
-    fFreeparname0 = fParser->ArgAsString("freepar0-name");
-  
-  if(fParser->OptionExists("freepar1-name"))
-    fFreeparname1 = fParser->ArgAsString("freepar1-name");
-  
-  if(fParser->OptionExists("freepar0-min"))
-    fFreeparmin0 = fParser->ArgAsDouble("freepar0-min");
-
-  if(fParser->OptionExists("freepar1-min"))
-    fFreeparmin1 = fParser->ArgAsDouble("freepar1-min");
-
-  if(fParser->OptionExists("freepar0-max"))
-    fFreeparmax0 = fParser->ArgAsDouble("freepar0-max");
-
-  if(fParser->OptionExists("freepar1-max"))
-    fFreeparmax1 = fParser->ArgAsDouble("freepar1-max");
-
-
-  // to check
-
-  if(fParser->OptionExists("freepar0-npt"))
-    fNptScan0 = fParser->ArgAsInt("freepar0-npt");
- 
-  if(fParser->OptionExists("freepar1-npt"))
-    fNptScan1 = fParser->ArgAsInt("freepar1-npt");
- 
-  if(fParser->OptionExists("marginalize-mh"))
-    fDoMargMH = true;
-  else
-    fDoMargMH = false;
-  
-  if(fParser->OptionExists("mass-hierarchy-marg"))
-    fHierarchy_marg = fParser->ArgAsString("mass-hierarchy-marg");
-  
-  if(fParser->OptionExists("type-error"))
-    fTypeError = fParser->ArgAsString("type-error");
-  
-  if(fParser->OptionExists("full-chisq"))
-    fDrawFullChisq = true;
-  else
-    fDrawFullChisq = false;
-
-  if(fParser->OptionExists("rate-shape"))
-    fTeststat = "rate+shape";
-  else if(fParser->OptionExists("rate-only"))
-    fTeststat = "rate-only";
+  }
   else{
     cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the input fit parameter list" << endl;
+    cerr << "Use --fit-param-list" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("marg-file")){
+    fInfilename = fParser->ArgAsString("marg-file");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the toy marginalization input file" << endl;
+    cerr << "Use --marg-file" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("nfiles-marg")){
+    fNfiles = fParser->ArgAsInt("nfiles-marg");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the # of toy marginalization input files" << endl;
+    cerr << "Use --nfiles-marg" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("ntoys-marg")){
+    fNtoysMarg = fParser->ArgAsInt("ntoys-marg");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the total # toys of marginalization" << endl;
+    cerr << "Use --ntoys-marg" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+  
+  if(fParser->OptionExists("freepar0-name")){
+    fFreeparname0 = fParser->ArgAsString("freepar0-name");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the fit marginalization free parameter 0" << endl;
+    cerr << "Use --freepar0-name" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("freepar1-name")){
+    fFreeparname1 = fParser->ArgAsString("freepar1-name");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the fit marginalization free parameter 1" << endl;
+    cerr << "Use --freepar1-name" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("freepar0-min")){
+    fFreeparmin0 = fParser->ArgAsDouble("freepar0-min");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the min value of fit marginalization free parameter 0" << endl;
+    cerr << "Use --freepar0-min" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("freepar1-min")){
+    fFreeparmin1 = fParser->ArgAsDouble("freepar1-min");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the min value of fit marginalization free parameter 1" << endl;
+    cerr << "Use --freepar1-min" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("freepar0-max")){
+    fFreeparmax0 = fParser->ArgAsDouble("freepar0-max");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the max value of fit marginalization free parameter 0" << endl;
+    cerr << "Use --freepar0-max" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+  
+  if(fParser->OptionExists("freepar1-max")){
+    fFreeparmax1 = fParser->ArgAsDouble("freepar1-max");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the max value of fit marginalization free parameter 1" << endl;
+    cerr << "Use --freepar1-max" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("freepar0-npt")){
+    fNptScan0 = fParser->ArgAsInt("freepar0-npt");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the # of grid point of fit marginalization free parameter 0" << endl;
+    cerr << "Use --freepar0-npt" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("freepar1-npt")){
+    fNptScan1 = fParser->ArgAsInt("freepar1-npt");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't pass the # of grid point of fit marginalization free parameter 1" << endl;
+    cerr << "Use --freepar1-npt" << endl;
+    cerr << endl;
+    exit(1);   
+  }
+
+  if(fParser->OptionExists("marginalize-mh-margtoys")){
+    fDoMargMH = (bool) fParser->ArgAsInt("marginalize-mh-margtoys");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't decide whether to marginalize mass hierarchy for marginalization toys files" << endl;
+    cerr << "Use --marginalize-mh-margtoys (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  if(fParser->OptionExists("mass-hierarchy-marg")){
+    fHierarchy_marg = fParser->ArgAsString("mass-hierarchy-marg");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't choose mass hierarchy for marginalization toys files" << endl;
+    cerr << "Use --mass-hierarchy-marg" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  if(fParser->OptionExists("type-error")){
+    fTypeError = fParser->ArgAsString("type-error");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't set the error type for fit with marginalization" << endl;
+    cerr << "Use --type-error (\"HESSE\" or \"MINOS\")" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  if(fParser->OptionExists("full-chisq")){
+    fDrawFullChisq = (bool) fParser->ArgAsInt("full-chisq");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't decide whether to draw the full chisq in fit with marginalization" << endl;
+    cerr << "Use --full-chisq (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);    
+  }
+
+  if(fParser->OptionExists("test-statistic")){
+    fTeststat = fParser->ArgAsString("test-statistic");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
     cerr << "The test statistic for marginalization is not defined" << endl;
+    cerr << "Use --test-statistic" << endl;
     cerr << endl;
     exit(1);
   }
@@ -725,13 +967,12 @@ void valor::RunOpt::Usage(const int w)
   }//kParseCommon
   if(fParseType & kParseToys) {
     cout << "Toy running options:" << endl
-	 << " " << setw(w) << "--first-experiment VALUE"         << "first experiment to read/write" << endl
-	 << " " << setw(w) << "--last-experiment VALUE"          << "last experiment to read/write (option required if --first-experiment given)" << endl
-	 << " " << setw(w) << "--n-experiments VALUE"            << "number of experiments to read/write. Use this or first/last above" << endl
-	 << " " << setw(w) << "--enable-stat-fluct"              << "use statistical fluctuations" << endl
-	 << " " << setw(w) << "--syst-tweak-mode VALUE"          << "which systematics to throw" << endl
-	 << " " << setw(w) << "--enable-rethrow-unphysical-toys" << "rethrow unphysical toys" << endl
-	 << " " << setw(w) << "--enable-verbose-syst-throws"     << "print the SKExp everytime you tweak systematics" << endl
+	 << " " << setw(w) << "--first-experiment VALUE"               << "first experiment to read/write" << endl
+	 << " " << setw(w) << "--n-experiments VALUE"                  << "number of experiments to read/write. Use this with first above" << endl
+	 << " " << setw(w) << "--enable-stat-fluct VALUE"              << "statistical fluctuations or not" << endl
+	 << " " << setw(w) << "--syst-tweak-mode VALUE"                << "which systematics to throw" << endl
+	 << " " << setw(w) << "--enable-rethrow-unphysical-toys VALUE" << "rethrow unphysical toys or not" << endl
+	 << " " << setw(w) << "--enable-verbose-syst-throws VALUE"     << "print the SKExp everytime you tweak systematics or not" << endl
 	 << endl;    
   }//kParseToys
   if(fParseType & kParseGlobal) {
@@ -746,8 +987,13 @@ void valor::RunOpt::Usage(const int w)
   if(fParseType & kParse3FOscParams) {
     cout << "3 flavour running options:" << endl
 	 << " " << setw(w) << "--hypothesis VALUE"         << "3f_osc 3f_oscbar 3f_osc_normbar 3f_oscbar_normbar 2f_numu_disap" << endl
-	 << " " << setw(w) << "--randomize-all-oscparams"  << "Randomize all oscillation parameters (i.e. set to -999)" << endl
-	 << " " << setw(w) << "--default-all-oscparams"    << "Set all oscillation parameters to defaults (i.e. set to -99)" << endl;
+	 << " " << setw(w) << "--enable-synch-osc-ih-to-nh VALUE" << "Synchronize IH to NH init oscillation parameters" << endl
+	 << " " << setw(w) << "--normal-mass-hierarchy-prior VALUE" << "The prior probability of normal hierarchy" << endl
+	 << " " << setw(w) << "--enable-marg-mass-hierarchy"        << "Marginalise the mass hierarchy" << endl
+	 << " " << setw(w) << "--prior VALUE"                 << "Set the prior mode for fakedata sets" << endl;
+      
+    note_stream << "Note: options are read in the order above, so you can randomize all then set e.g. beta-bar to something specific" << endl;
+
     for(int i = 0; i < 2; i++) {
       cout << " " << setw(w) << Form("--mixing12-%s VALUE", fHierStr[i].c_str()) << endl
 	   << " " << setw(w) << Form("--mixing13-%s VALUE", fHierStr[i].c_str()) << endl
@@ -756,15 +1002,33 @@ void valor::RunOpt::Usage(const int w)
 	   << " " << setw(w) << Form("--dm12sq-%s VALUE",   fHierStr[i].c_str()) << endl
 	   << " " << setw(w) << Form("--dm23sq-%s VALUE",   fHierStr[i].c_str()) << endl;
     }//i
-    cout << " " << setw(w) << "--beta-bar VALUE" << endl
-	 << " " << setw(w) << "--normal-mass-hierarchy-prior VALUE" << "The prior probability of normal hierarchy" << endl
-	 << " " << setw(w) << "--enable-marg-mass-hierarchy"        << "Marginalise the mass hierarchy" << endl
-	 << " " << setw(w) << "--priors-file VALUE"                 << "The file containing 2D priors (in $T2KOSCANA/inputs/). Use 'off' for no priors" << endl
-	 << " " << setw(w) << "--disable-priors"                    << "Turn off the use of priors. Overrides --priors-file" << endl
-	 << endl;
-    note_stream << "Note: options are read in the order above, so you can randomize all then set e.g. beta-bar to something specific" << endl;
+    cout << " " << setw(w) << "--beta-bar VALUE" << endl;
   }//kParse3FOscParams
-
+  if(fParseType & kParseFitMarg) {
+    cout << "Fit with marginalization running options:" << endl
+	 << " " << setw(w) << "--do-toys VALUE"         << "Set whether to make fakedata sets on the fly or not" << endl
+	 << " " << setw(w) << "--use-xml-file VALUE"    << "Choose between using root or xml input file for fakedata sets" << endl
+	 << " " << setw(w) << "--fakedata-xml-file VALUE" << "Set the name of the input xml file for fakedata sets" << endl
+	 << " " << setw(w) << "--fakedata-root-file VALUE" << "Set the name of the input root file for fakedata sets" << endl
+	 << " " << setw(w) << "--fit-param-list VALUE"     << "Set the fit parameter list" << endl
+	 << " " << setw(w) << "--marg-file VALUE"          << "Set the input file tag for marginalization toys" << endl
+	 << " " << setw(w) << "--nfiles-marg VALUE"        << "Set the # of files for marginalization toys" << endl
+	 << " " << setw(w) << "--ntoys-marg VALUE"         << "Set the # of toys for marginalization toys" << endl
+	 << " " << setw(w) << "--freepar0-name VALUE"      << "Set the fit marginalization free parameter 0" << endl
+	 << " " << setw(w) << "--freepar1-name VALUE"      << "Set the fit marginalization free parameter 1" << endl
+	 << " " << setw(w) << "--freepar0-min VALUE"       << "Set the fit marginalization min value of free parameter 0" << endl
+	 << " " << setw(w) << "--freepar1-min VALUE"       << "Set the fit marginalization min value of free parameter 1" << endl
+	 << " " << setw(w) << "--freepar0-max VALUE"       << "Set the fit marginalization max value of free parameter 0" << endl
+	 << " " << setw(w) << "--freepar1-max VALUE"       << "Set the fit marginalization max value of free parameter 1" << endl
+	 << " " << setw(w) << "--freepar0-npt VALUE"       << "Set the fit marginalization # of grid points of free parameter 0" << endl
+	 << " " << setw(w) << "--freepar1-npt VALUE"       << "Set the fit marginalization # of grid points of free parameter 1" << endl
+	 << " " << setw(w) << "--marginalize-mh-margtoys VALUE" << "Set marginalization of mass hierarchy for input toy marginalization files" << endl
+	 << " " << setw(w) << "--mass-hierarchy-marg VALUE" << "Set prior of mass hierarchy for input toy marginalization files" << endl
+	 << " " << setw(w) << "--type-error VALUE"         << "Set error type for fit marginalization (HESSE or MINOS)" << endl
+	 << " " << setw(w) << "--full-chisq VALUE"         << "Decide whether to draw the full marginalized chisq or not" << endl
+	 << " " << setw(w) << "--test-statistic VALUE"     << "Set the test statistic for fit with marginalization (rate+shape or rate-only)" << endl;
+  }//kParseFitMarg
+  
   cout << note_stream.str();
   cout << "Note: all 'enable' options can be turned off by substituting 'disable'" << endl
        << "Note: 'enable' takes precedence" << endl
@@ -805,7 +1069,12 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
   }//kParseGlobal
   if(fParseType & kParse3FOscParams) {
     stream << "3f oscillation running options:" << endl
-	   << " - " << setw(w) << "Hypothesis:" << fHypothesis << endl;
+	   << " - " << setw(w) << "Hypothesis:" << fHypothesis << endl
+      	   << " - " << setw(w) << "Synchronize IH to NH osc params:"  << ((fSynchronizeIHtoNH) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Normal hierarchy prior prob:" << fPriorProbNH << endl
+	   << " - " << setw(w) << "Marginalise mass hierarchy:"  << ((fMargMH) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Prior mode:"  << fPriorId << endl;
+      
     for(int i = 0; i < 2; i++) {
       stream << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing12).c_str(), fHierStr[i].c_str()) << fMix12[i] << endl
 	     << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing13).c_str(), fHierStr[i].c_str()) << fMix13[i] << endl
@@ -815,11 +1084,35 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
 	     << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypDm23sq).c_str(),   fHierStr[i].c_str()) << fDm23sq[i] << endl;
     }//i
     stream << " - " << setw(w) << "Beta bar:"                    << fBetaBar << endl
-	   << " - " << setw(w) << "Normal hierarchy prior prob:" << fPriorProbNH << endl
-	   << " - " << setw(w) << "Marginalise mass hierarchy:"  << ((fMargMH) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Using priors:"                << (fPriorsFile.empty() ? "NO" : Form("YES: %s", fPriorsFile.c_str())) << endl
+      //<< " - " << setw(w) << "Using priors:"                << (fPriorsFile.empty() ? "NO" : Form("YES: %s", fPriorsFile.c_str())) << endl
 	   << endl;
   }//kParse3FOscParams
+
+  if(fParseType & kParseFitMarg) {
+    stream << "Fit with marginalization running options:" << endl
+	   << " - " << setw(w) << "Do toys for fake datasets on the fly:" << ((fDoToys) ? "YES " : "NO") << endl
+      	   << " - " << setw(w) << "Use xml file for fakedata sets (if not use root file):"  << ((fUsing_xml_file) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Input xml file for fakedata sets:" << fXmlfile << endl
+	   << " - " << setw(w) << "Input root file for fakedata sets:" << fRootfile << endl
+	   << " - " << setw(w) << "Fit parameter list:"  << fFit_param_list << endl
+	   << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl
+	   << " - " << setw(w) << "Number of input file for marginalization toys:"  << fNfiles << endl
+	   << " - " << setw(w) << "Number of toys for marginalization:"  << fNtoysMarg << endl
+	   << " - " << setw(w) << "Name of free parameter 0 for fit with marginalization:"  << fFreeparname0 << endl
+	   << " - " << setw(w) << "Name of free parameter 1 for fit with marginalization:"  << fFreeparname1 << endl
+	   << " - " << setw(w) << "Min value of free parameter 0 for fit with marginalization:"  << fFreeparmin0 << endl
+	   << " - " << setw(w) << "Min value of free parameter 1 for fit with marginalization:"  << fFreeparmin1 << endl
+	   << " - " << setw(w) << "Max value of free parameter 0 for fit with marginalization:"  << fFreeparmax0 << endl
+	   << " - " << setw(w) << "Max value of free parameter 1 for fit with marginalization:"  << fFreeparmax1 << endl
+	   << " - " << setw(w) << "Number of points of free parameter 0 for fit with marginalization:"  << fNptScan0 << endl
+	   << " - " << setw(w) << "Number of points of free parameter 1 for fit with marginalization:"  << fNptScan1 << endl
+	   << " - " << setw(w) << "Marginalization of mass hierarchy for input marginalization files:"  << ((fDoMargMH) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Mass hierarchy for input marginalization files:"  << fHierarchy_marg << endl
+	   << " - " << setw(w) << "Error type for fit with marginalization:"  << fTypeError << endl
+	   << " - " << setw(w) << "Draw fill marginalized chisq:"  << ((fDrawFullChisq) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Test statistic for fit with marginalization:"  << fTeststat << endl
+      	   << endl;
+  }//kParseFitMarg
 }
 //___________________________________________________________________________
 
