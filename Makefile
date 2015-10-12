@@ -44,51 +44,33 @@ copy-scripts-to-bin: FORCE
 
 build-conventions: FORCE
 	@echo " "
-	@echo "** Building Conventions package..."
-	cd ${VALOR_FMWK}/src;\
-	cd Conventions;\
-	make;\
-	cd ${VALOR_FMWK}
+	@echo "** Building Conventions package..."${VALOR_FMWK}/src;\
+	make -C "${VALOR_FMWK}/src/Conventions"
 
 build-utilities: FORCE
 	@echo " "
 	@echo "** Building Utilities package..."
-	cd ${VALOR_FMWK}/src;\
-	cd Utilities;\
-	make;\
-	cd ${VALOR_FMWK}
+	make -C "${VALOR_FMWK}/src/Utilities"
 
 build-messenger: FORCE
 	@echo " "
 	@echo "** Building Messenger package..."
-	cd ${VALOR_FMWK}/src;\
-	cd Messenger;\
-	make;\
-	cd ${VALOR_FMWK}
+	make -C "${VALOR_FMWK}/src/Messenger"
 
 build-parser: FORCE
 	@echo " "
 	@echo "** Building Parser package..."
-	cd ${VALOR_FMWK}/src;\
-	cd Parser;\
-	make;\
-	cd ${VALOR_FMWK}
+	make -C "${VALOR_FMWK}/src/Parser"
 
 build-core-fitter: FORCE
 	@echo " "
 	@echo "** Building FitCore package..."
-	cd ${VALOR_FMWK}/src;\
-	cd FitCore;\
-	make;\
-	cd ${VALOR_FMWK}
+	make -C "${VALOR_FMWK}/src/FitCore"
 
 build-example-fits: FORCE
 	@echo " "
 	@echo "** Building Example packages..."
-	cd ${VALOR_FMWK}/src;\
-	cd Examples/X01;\
-	make;\
-	cd ${VALOR_FMWK}
+	make -C "${VALOR_FMWK}/src/Examples/X01"
 
 make-bin-lib-dir: FORCE
 	@echo " "
