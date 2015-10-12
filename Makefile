@@ -22,7 +22,7 @@ BUILD_TARGETS =    print-make-info     \
 		   build-messenger     \
 		   build-parser        \
 		   build-core-fitter   \
-                   build-example-fits 
+		   build-example-fits 
 
 # define targets
 
@@ -36,41 +36,41 @@ print-make-info: FORCE
 	@echo "***** The source tree corresponds to VALOR framework version $(VALOR_VERSION)"
 	@echo " "
 
-copy-scripts-to-bin: FORCE
+copy-scripts-to-bin: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Copying scripts to bin..."
 	cp ${VALOR_FMWK}/make/valor_fmwk-config ${VALOR_FMWK}/bin
 	cp ${VALOR_FMWK}/root/valor ${VALOR_FMWK}/bin
 
-build-conventions: FORCE
+build-conventions: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Conventions package..."${VALOR_FMWK}/src;\
-	make -C "${VALOR_FMWK}/src/Conventions"
+	$(MAKE) -C "${VALOR_FMWK}/src/Conventions"
 
-build-utilities: FORCE
+build-utilities: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Utilities package..."
-	make -C "${VALOR_FMWK}/src/Utilities"
+	$(MAKE) -C "${VALOR_FMWK}/src/Utilities"
 
-build-messenger: FORCE
+build-messenger: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Messenger package..."
-	make -C "${VALOR_FMWK}/src/Messenger"
+	$(MAKE) -C "${VALOR_FMWK}/src/Messenger"
 
-build-parser: FORCE
+build-parser: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Parser package..."
-	make -C "${VALOR_FMWK}/src/Parser"
+	$(MAKE) -C "${VALOR_FMWK}/src/Parser"
 
-build-core-fitter: FORCE
+build-core-fitter: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building FitCore package..."
-	make -C "${VALOR_FMWK}/src/FitCore"
+	$(MAKE) -C "${VALOR_FMWK}/src/FitCore"
 
-build-example-fits: FORCE
+build-example-fits: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Example packages..."
-	make -C "${VALOR_FMWK}/src/Examples/X01"
+	$(MAKE) -C "${VALOR_FMWK}/src/Examples/X01"
 
 make-bin-lib-dir: FORCE
 	@echo " "
