@@ -119,7 +119,8 @@ public:
   TString TypeError () const { if(fParseType & kParseFitMarg) return fTypeError; cerr << "kParseFitMarg not set" << endl; exit(-1); }
   bool   DrawFullChisq () const { if(fParseType & kParseFitMarg) return fDrawFullChisq; cerr << "kParseFitMarg not set" << endl; exit(-1); }
   string Teststat () const { if(fParseType & kParseFitMarg) return fTeststat; cerr << "kParseFitMarg not set" << endl; exit(-1); }
-  
+  bool StoreLikeWeights () const { if(fParseType & kParseFitMarg) return fStoreLikeWeights; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+
   // Print 
   virtual void   Print (ostream & stream, const int w = 30) const;
   friend ostream & operator << (ostream & stream, const RunOpt & opt);
@@ -229,7 +230,8 @@ public:
   bool fDrawFullChisq;
   string fTeststat;
   int fPriorId;   // 0 --> T2K+react, 1 --> T2K only
-  
+  bool fStoreLikeWeights;
+
   //conv::PhysParamId_t fFreepar0;
   //conv::PhysParamId_t fFreepar1;
   //

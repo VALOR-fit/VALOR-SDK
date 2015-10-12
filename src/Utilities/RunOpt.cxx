@@ -173,6 +173,7 @@ void valor::RunOpt::Init(void)
   fTypeError      = "";
   fDrawFullChisq  = true;
   fTeststat       = "rate+shape";
+  fStoreLikeWeights = false;
 }
 //____________________________________________________________________________
 void valor::RunOpt::InitOscParams(double value)
@@ -269,9 +270,11 @@ void valor::RunOpt::ReadCommonOptions()
 //____________________________________________________________________________
 void valor::RunOpt::ReadToyOptions()
 {
+
   // Set experiment id and # of experiments
-  if( !fParser->OptionExists("first-experiment") ||
-      !fParser->OptionExists("n-experiments") ){
+  if( !fParser->OptionExists("first-experiment") || 
+      !fParser->OptionExists("n-experiments") 
+      ) {
     cerr << endl;
     cerr << "Toy options:" << endl;
     cerr << "You must set the first experiment id using: --first-experiment" << endl;
@@ -947,6 +950,31 @@ void valor::RunOpt::ReadFitMargOptions()
     cerr << endl;
     exit(1);
   }
+
+  if(fParser->OptionExists("store-like-weights")){
+    fStoreLikeWeights = (bool) fParser->ArgAsInt("store-like-weights");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't decide whether to store the likelihood weights for each toy of fit with marginalization" << endl;
+    cerr << "To use it only when a single fit is done" << endl;
+    cerr << "Use --store-like-weights" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  // Cannot store likelihood weights if more than 1 fit w/ marginalization is performed
+  if(fStoreLikeWeights){
+    if(fNExperiments>1 || fNExperiments<0){
+      cerr << endl;
+      cerr << "Cannot store likelihood weights if more than 1 fit w/ marginalization is performed" << endl;
+      cerr << "Either set --n-experiments to 1 or disable --store-like-weights" << endl;
+      cerr << endl;
+      exit(1);
+    }
+  }
+
 }
 //____________________________________________________________________________
 void valor::RunOpt::Usage(const int w)
@@ -1026,7 +1054,8 @@ void valor::RunOpt::Usage(const int w)
 	 << " " << setw(w) << "--mass-hierarchy-marg VALUE" << "Set prior of mass hierarchy for input toy marginalization files" << endl
 	 << " " << setw(w) << "--type-error VALUE"         << "Set error type for fit marginalization (HESSE or MINOS)" << endl
 	 << " " << setw(w) << "--full-chisq VALUE"         << "Decide whether to draw the full marginalized chisq or not" << endl
-	 << " " << setw(w) << "--test-statistic VALUE"     << "Set the test statistic for fit with marginalization (rate+shape or rate-only)" << endl;
+	 << " " << setw(w) << "--test-statistic VALUE"     << "Set the test statistic for fit with marginalization (rate+shape or rate-only)" << endl
+	 << " " << setw(w) << "--store-like-weights VALUE" << "Decide whether to store likelihood weights of fit with marginalization" << endl;
   }//kParseFitMarg
   
   cout << note_stream.str();
@@ -1111,6 +1140,7 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
 	   << " - " << setw(w) << "Error type for fit with marginalization:"  << fTypeError << endl
 	   << " - " << setw(w) << "Draw fill marginalized chisq:"  << ((fDrawFullChisq) ? "YES " : "NO") << endl
 	   << " - " << setw(w) << "Test statistic for fit with marginalization:"  << fTeststat << endl
+	   << " - " << setw(w) << "Store likelihood weights of fit with marginalization?:"  << ((fStoreLikeWeights) ? "YES " : "NO") << endl
       	   << endl;
   }//kParseFitMarg
 }
