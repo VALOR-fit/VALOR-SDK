@@ -177,7 +177,7 @@ public:
   bool   fSynchronizeIHtoNH;
   double fBetaBar;
   double fPriorProbNH;
-  bool   fMargMH;
+  bool   fThrowMH;
   string fPriorsFile;
   // NEW
   bool fMargMixing12;

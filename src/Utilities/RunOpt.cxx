@@ -119,7 +119,7 @@ void valor::RunOpt::Init(void)
   fPriorsFile = ""; //use this for default OFF
   //fPriorsFile = util::FormFilePath("priors/joint_T2Kreact_run14/Priors_T2Kreact_run14_Mach3_22Maj15.root", "inputs"); //use this for default ON
 
-  fMargMH       = false;
+  fThrowMH       = false;
   fPriorProbNH  = 0.5;
 
   // NEW
@@ -289,13 +289,13 @@ void valor::RunOpt::ReadToyOptions()
   }
   
   // Set statistical fluctuations mode
-  if(fParser->OptionExists("enable-stat-fluct")) {
-    fStatFluctuations = fParser->ArgAsInt("enable-stat-fluct");
+  if(fParser->OptionExists("stat-fluct")) {
+    fStatFluctuations = fParser->ArgAsInt("stat-fluct");
     if(fStatFluctuations<0 || fStatFluctuations>1){
       cerr << endl;
       cerr << "Toy options:" << endl;
       cerr << "You set a wrong statistical fluctuation mode" << endl;
-      cerr << "Options --enable-stat-fluct can have only the following input parameter:" << endl;
+      cerr << "Options --stat-fluct can have only the following input parameter:" << endl;
       cerr << " 0 --> no statistical fluctuations" << endl;
       cerr << " 1 --> make statistical fluctuations" << endl;
       cerr << endl;
@@ -306,7 +306,7 @@ void valor::RunOpt::ReadToyOptions()
     cerr << endl;
     cerr << "Toy options:" << endl;
     cerr << "You didn't set the statistical fluctuations mode" << endl;
-    cerr << "Use options --enable-stat-fluct with the following input parameter:" << endl;
+    cerr << "Use options --stat-fluct with the following input parameter:" << endl;
     cerr << " 0 --> no statistical fluctuations" << endl;
     cerr << " 1 --> make statistical fluctuations" << endl;
     cerr << endl;
@@ -331,26 +331,26 @@ void valor::RunOpt::ReadToyOptions()
   }
 
   // Set retrhowing of unphysical toys mode
-  if( fParser->OptionExists("enable-rethrow-unphysical-toys") ){
-    fRethrowIfUnphysical = (bool) fParser->ArgAsInt("enable-rethrow-unphysical-toys");
+  if( fParser->OptionExists("rethrow-unphysical-toys") ){
+    fRethrowIfUnphysical = (bool) fParser->ArgAsInt("rethrow-unphysical-toys");
   }
   else{
     cerr << endl;
     cerr << "Toy options:" << endl;
     cerr << "You must enable or disable the rethrowing of unphysical toys" << endl;
-    cerr << "Use --enable-rethrow-unphysical-toys with inputs 0 or 1" << endl;
+    cerr << "Use --rethrow-unphysical-toys with inputs 0 or 1" << endl;
     cerr << endl;
     exit(1);
   }
 
   // Set verbosity of systematic throws
-  if(fParser->OptionExists("enable-verbose-syst-throws")){
-    fVerboseSystThrows = (bool) fParser->ArgAsInt("enable-verbose-syst-throws");
+  if(fParser->OptionExists("verbose-syst-throws")){
+    fVerboseSystThrows = (bool) fParser->ArgAsInt("verbose-syst-throws");
   }
   else{
     cerr << endl;
     cerr << "Toy options:" << endl;
-    cerr << "You didn't set the option --enable-verbose-syst-throws (0 or 1)" << endl;
+    cerr << "You didn't set the option --verbose-syst-throws (0 or 1)" << endl;
     cerr << endl;
     exit(1);
   }
@@ -441,14 +441,14 @@ void valor::RunOpt::Read3FOscParamsOptions()
   // - set each single osc params (instead of default one). If prior is set, the parameter it's fixed anymore
   //
 
-  if(fParser->OptionExists("enable-synch-osc-ih-to-nh")){
-    fSynchronizeIHtoNH = (bool) fParser->ArgAsInt("enable-synch-osc-ih-to-nh");
+  if(fParser->OptionExists("synch-osc-ih-to-nh")){
+    fSynchronizeIHtoNH = (bool) fParser->ArgAsInt("synch-osc-ih-to-nh");
   }
   else{
     cerr << endl;
     cerr << "3FOscParams options:" << endl;
     cerr << "You didn't enabled or disabled the synchronization of IH to NH osc params" << endl;
-    cerr << "Use --enable-synch-osc-ih-to-nh (0 or 1)" << endl;
+    cerr << "Use --synch-osc-ih-to-nh (0 or 1)" << endl;
     cerr << endl;
     exit(1);
   }
@@ -466,22 +466,22 @@ void valor::RunOpt::Read3FOscParamsOptions()
     exit(1);
   }
   
-  if(fParser->OptionExists("enable-marg-mass-hierarchy")){
-    fMargMH = (bool) fParser->ArgAsInt("enable-marg-mass-hierarchy");
+  if(fParser->OptionExists("throw-mass-hierarchy")){
+    fThrowMH = (bool) fParser->ArgAsInt("throw-mass-hierarchy");
   }
   else{
     cerr << endl;
     cerr << "3FOscParams options:" << endl;
-    cerr << "You must enable or disable the marginalization of mass hierarchy" << endl;
-    cerr << "Use --enable-marg-mass-hierarchy (0 or 1)" << endl;
+    cerr << "You must enable or disable the throwing of mass hierarchy for fakedata sets" << endl;
+    cerr << "Use --throw-mass-hierarchy (0 or 1)" << endl;
     cerr << endl;
     exit(1);
   }
 
   // Set the priors of oscillation parameters
 
-  if( fParser->OptionExists("prior") ){ 
-    fPriorId = fParser->ArgAsInt("prior");  
+  if( fParser->OptionExists("prior-mode-toy") ){ 
+    fPriorId = fParser->ArgAsInt("prior-mode-toy");  
     cout << endl;
     cout << "Set priors for fake data sets:" << endl;
   }
@@ -574,7 +574,7 @@ void valor::RunOpt::Read3FOscParamsOptions()
   else{
     cerr << endl;
     cerr << "3FOscParams options:" << endl;
-    cerr << "You must set the prior to make fakedata sets using option: --prior" << endl;
+    cerr << "You must set the prior to make fakedata sets using option: --prior-mode-toy" << endl;
     cerr << "0 --> No priors (default parameteres), "
 	 << "1 --> T2K+reactors (PDG2014), "
 	 << "2 --> T2K only" << endl;
@@ -669,7 +669,7 @@ void valor::RunOpt::Read3FOscParamsOptions()
   util::OscParams::Instance()->SetValues(fMix12[0], fMix13[0], fMix23[0], fCPV[0], fDm12sq[0], fDm23sq[0],
 					 fBetaBar,
 					 fMix12[1], fMix13[1], fMix23[1], fCPV[1], fDm12sq[1], fDm23sq[1],
-					 fPriorProbNH, fMargMH
+					 fPriorProbNH, fThrowMH
 					 );
 
   // Set priors of osc params to defaults, or set them to be randomised
@@ -759,38 +759,38 @@ void valor::RunOpt::ReadFitMargOptions()
     exit(1);   
   }
 
-  if(fParser->OptionExists("marg-file")){
-    fInfilename = fParser->ArgAsString("marg-file");
+  if(fParser->OptionExists("file-margtoys")){
+    fInfilename = fParser->ArgAsString("file-margtoys");
   }
   else{
     cerr << endl;
     cerr << "FitMarg options:" << endl;
     cerr << "You didn't pass the toy marginalization input file" << endl;
-    cerr << "Use --marg-file" << endl;
+    cerr << "Use --file-margtoys" << endl;
     cerr << endl;
     exit(1);   
   }
 
-  if(fParser->OptionExists("nfiles-marg")){
-    fNfiles = fParser->ArgAsInt("nfiles-marg");
+  if(fParser->OptionExists("nfiles-margtoys")){
+    fNfiles = fParser->ArgAsInt("nfiles-margtoys");
   }
   else{
     cerr << endl;
     cerr << "FitMarg options:" << endl;
     cerr << "You didn't pass the # of toy marginalization input files" << endl;
-    cerr << "Use --nfiles-marg" << endl;
+    cerr << "Use --nfiles-margtoys" << endl;
     cerr << endl;
     exit(1);   
   }
 
-  if(fParser->OptionExists("ntoys-marg")){
-    fNtoysMarg = fParser->ArgAsInt("ntoys-marg");
+  if(fParser->OptionExists("ntoys-margtoys")){
+    fNtoysMarg = fParser->ArgAsInt("ntoys-margtoys");
   }
   else{
     cerr << endl;
     cerr << "FitMarg options:" << endl;
     cerr << "You didn't pass the total # toys of marginalization" << endl;
-    cerr << "Use --ntoys-marg" << endl;
+    cerr << "Use --ntoys-margtoys" << endl;
     cerr << endl;
     exit(1);   
   }
@@ -903,14 +903,14 @@ void valor::RunOpt::ReadFitMargOptions()
     exit(1);
   }
 
-  if(fParser->OptionExists("mass-hierarchy-marg")){
-    fHierarchy_marg = fParser->ArgAsString("mass-hierarchy-marg");
+  if(fParser->OptionExists("mass-hierarchy-margtoys")){
+    fHierarchy_marg = fParser->ArgAsString("mass-hierarchy-margtoys");
   }
   else{
     cerr << endl;
     cerr << "FitMarg options:" << endl;
     cerr << "You didn't choose mass hierarchy for marginalization toys files" << endl;
-    cerr << "Use --mass-hierarchy-marg" << endl;
+    cerr << "Use --mass-hierarchy-margtoys" << endl;
     cerr << endl;
     exit(1);
   }
@@ -997,10 +997,10 @@ void valor::RunOpt::Usage(const int w)
     cout << "Toy running options:" << endl
 	 << " " << setw(w) << "--first-experiment VALUE"               << "first experiment to read/write" << endl
 	 << " " << setw(w) << "--n-experiments VALUE"                  << "number of experiments to read/write. Use this with first above" << endl
-	 << " " << setw(w) << "--enable-stat-fluct VALUE"              << "statistical fluctuations or not" << endl
+	 << " " << setw(w) << "--stat-fluct VALUE"              << "statistical fluctuations or not" << endl
 	 << " " << setw(w) << "--syst-tweak-mode VALUE"                << "which systematics to throw" << endl
-	 << " " << setw(w) << "--enable-rethrow-unphysical-toys VALUE" << "rethrow unphysical toys or not" << endl
-	 << " " << setw(w) << "--enable-verbose-syst-throws VALUE"     << "print the SKExp everytime you tweak systematics or not" << endl
+	 << " " << setw(w) << "--rethrow-unphysical-toys VALUE" << "rethrow unphysical toys or not" << endl
+	 << " " << setw(w) << "--verbose-syst-throws VALUE"     << "print the SKExp everytime you tweak systematics or not" << endl
 	 << endl;    
   }//kParseToys
   if(fParseType & kParseGlobal) {
@@ -1015,10 +1015,10 @@ void valor::RunOpt::Usage(const int w)
   if(fParseType & kParse3FOscParams) {
     cout << "3 flavour running options:" << endl
 	 << " " << setw(w) << "--hypothesis VALUE"         << "3f_osc 3f_oscbar 3f_osc_normbar 3f_oscbar_normbar 2f_numu_disap" << endl
-	 << " " << setw(w) << "--enable-synch-osc-ih-to-nh VALUE" << "Synchronize IH to NH init oscillation parameters" << endl
+	 << " " << setw(w) << "--synch-osc-ih-to-nh VALUE" << "Synchronize IH to NH init oscillation parameters" << endl
 	 << " " << setw(w) << "--normal-mass-hierarchy-prior VALUE" << "The prior probability of normal hierarchy" << endl
-	 << " " << setw(w) << "--enable-marg-mass-hierarchy"        << "Marginalise the mass hierarchy" << endl
-	 << " " << setw(w) << "--prior VALUE"                 << "Set the prior mode for fakedata sets" << endl;
+	 << " " << setw(w) << "--throw-mass-hierarchy"      << "Throw the mass hierarchy for fakedata sets" << endl
+	 << " " << setw(w) << "--prior-mode-toy VALUE"      << "Set the prior mode for fakedata sets" << endl;
       
     note_stream << "Note: options are read in the order above, so you can randomize all then set e.g. beta-bar to something specific" << endl;
 
@@ -1039,9 +1039,9 @@ void valor::RunOpt::Usage(const int w)
 	 << " " << setw(w) << "--fakedata-xml-file VALUE" << "Set the name of the input xml file for fakedata sets" << endl
 	 << " " << setw(w) << "--fakedata-root-file VALUE" << "Set the name of the input root file for fakedata sets" << endl
 	 << " " << setw(w) << "--fit-param-list VALUE"     << "Set the fit parameter list" << endl
-	 << " " << setw(w) << "--marg-file VALUE"          << "Set the input file tag for marginalization toys" << endl
-	 << " " << setw(w) << "--nfiles-marg VALUE"        << "Set the # of files for marginalization toys" << endl
-	 << " " << setw(w) << "--ntoys-marg VALUE"         << "Set the # of toys for marginalization toys" << endl
+	 << " " << setw(w) << "--file-margtoys VALUE"      << "Set the input file tag for marginalization toys" << endl
+	 << " " << setw(w) << "--nfiles-margtoys VALUE"    << "Set the # of files for marginalization toys" << endl
+	 << " " << setw(w) << "--ntoys-margtoys VALUE"         << "Set the # of toys for marginalization toys" << endl
 	 << " " << setw(w) << "--freepar0-name VALUE"      << "Set the fit marginalization free parameter 0" << endl
 	 << " " << setw(w) << "--freepar1-name VALUE"      << "Set the fit marginalization free parameter 1" << endl
 	 << " " << setw(w) << "--freepar0-min VALUE"       << "Set the fit marginalization min value of free parameter 0" << endl
@@ -1051,7 +1051,7 @@ void valor::RunOpt::Usage(const int w)
 	 << " " << setw(w) << "--freepar0-npt VALUE"       << "Set the fit marginalization # of grid points of free parameter 0" << endl
 	 << " " << setw(w) << "--freepar1-npt VALUE"       << "Set the fit marginalization # of grid points of free parameter 1" << endl
 	 << " " << setw(w) << "--marginalize-mh-margtoys VALUE" << "Set marginalization of mass hierarchy for input toy marginalization files" << endl
-	 << " " << setw(w) << "--mass-hierarchy-marg VALUE" << "Set prior of mass hierarchy for input toy marginalization files" << endl
+	 << " " << setw(w) << "--mass-hierarchy-margtoys VALUE" << "Set prior of mass hierarchy for input toy marginalization files" << endl
 	 << " " << setw(w) << "--type-error VALUE"         << "Set error type for fit marginalization (HESSE or MINOS)" << endl
 	 << " " << setw(w) << "--full-chisq VALUE"         << "Decide whether to draw the full marginalized chisq or not" << endl
 	 << " " << setw(w) << "--test-statistic VALUE"     << "Set the test statistic for fit with marginalization (rate+shape or rate-only)" << endl
@@ -1101,7 +1101,7 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
 	   << " - " << setw(w) << "Hypothesis:" << fHypothesis << endl
       	   << " - " << setw(w) << "Synchronize IH to NH osc params:"  << ((fSynchronizeIHtoNH) ? "YES " : "NO") << endl
 	   << " - " << setw(w) << "Normal hierarchy prior prob:" << fPriorProbNH << endl
-	   << " - " << setw(w) << "Marginalise mass hierarchy:"  << ((fMargMH) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Throw mass hierarchy:"  << ((fThrowMH) ? "YES " : "NO") << endl
 	   << " - " << setw(w) << "Prior mode:"  << fPriorId << endl;
       
     for(int i = 0; i < 2; i++) {
