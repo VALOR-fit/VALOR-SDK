@@ -290,8 +290,9 @@ void valor::RunOpt::ReadToyOptions()
   
   // Set statistical fluctuations mode
   if(fParser->OptionExists("stat-fluct")) {
-    fStatFluctuations = fParser->ArgAsInt("stat-fluct");
-    if(fStatFluctuations<0 || fStatFluctuations>1){
+    int stafluct_integer =  fParser->ArgAsInt("stat-fluct");
+    fStatFluctuations = (bool)stafluct_integer;
+    if(stafluct_integer<0 || stafluct_integer>1){
       cerr << endl;
       cerr << "Toy options:" << endl;
       cerr << "You set a wrong statistical fluctuation mode" << endl;
