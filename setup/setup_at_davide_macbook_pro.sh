@@ -13,4 +13,4 @@ ROOTwork_nd280
 export VALOR_FMWK=$1
 
 export DYLD_LIBRARY_PATH=${VALOR_FMWK}/lib:${ROOTSYS}/lib:${DYLD_LIBRARY_PATH}
-export PATH=${VALOR_FMWK}/root:${VALOR_FMWK}/production:${ROOTSYS}/bin:${PATH}
+export PATH=${VALOR_FMWK}/root:${VALOR_FMWK}/production:${VALOR_FWMK}/bin:${ROOTSYS}/bin:${PATH}
