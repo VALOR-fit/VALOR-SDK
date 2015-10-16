@@ -83,7 +83,8 @@ make-bin-lib-dir: FORCE
 color:
 	$(MAKE) -C "${VALOR_FMWK}/external/color"
 
-colorclean: clean-dir
+colorclean:
+	rm ./bin/g++ ./bin/gcc ./bin/c++ ./bin/cc 2>/dev/null || true
 	$(MAKE) -C "${VALOR_FMWK}/external/color" clean
 
 purge: FORCE

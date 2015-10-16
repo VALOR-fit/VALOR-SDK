@@ -100,15 +100,14 @@ sub initDefaults
 {
    
    # Begin Steve's modifications
-   $bn = abs_path($0);
-   chomp($this_file = `readlink -m $bn`);
+   $this_file = abs_path($0);
    
    @compilers = ('gcc', 'g++', 'cc' , 'c++');
    foreach $compiler (@compilers) {
       @options = `which -a $compiler`;
       foreach $path (@options) {
          chomp($path);
-         chomp($real_path = `readlink -m $path`);
+         $real_path = abs_path($path);
          if ( $real_path ne $this_file ) {
             $compilerPaths{$compiler} = $real_path;
             last;
