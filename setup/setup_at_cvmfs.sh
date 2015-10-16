@@ -27,5 +27,5 @@ fi
 export CVMFS_LIBRARIES="/cvmfs/t2k.egi.eu/lib-Linux2.6.32-431.23.3.el6.x86_64/"
 
 export LD_LIBRARY_PATH="${VALOR_FMWK}/lib:${ROOTSYS}/lib:${LD_LIBRARY_PATH}:${CVMFS_LIBRARIES}"
-export PATH=${VALOR_FMWK}/root:${ROOTSYS}/bin:${PATH}
+export PATH=${VALOR_FMWK}/bin:${ROOTSYS}/bin:${PATH}
 
