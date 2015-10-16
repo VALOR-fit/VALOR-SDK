@@ -9,9 +9,14 @@
 
 
 
-source "/cvmfs/atlas.cern.ch/repo/sw/atlas-gcc/472/x86_64/setup.sh" # use G++ 472
-source "/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/root/5.34.21-x86_64-slc6-gcc47-opt/bin/thisroot.sh" # and ROOT
+#~ source "/cvmfs/atlas.cern.ch/repo/sw/atlas-gcc/472/x86_64/setup.sh" # use G++ 472
+#~ source "/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/root/5.34.21-x86_64-slc6-gcc47-opt/bin/thisroot.sh" # and appropriate ROOT
 
+source "/cvmfs/atlas.cern.ch/repo/sw/atlas-gcc/484/x86_64/setup.sh" # use G++ 484
+source "/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/root/5.34.25-x86_64-slc6-gcc48-opt/bin/thisroot.sh" # and appropriate ROOT
+
+# Use T2K root
+#~ source "/cvmfs/t2k.egi.eu/nd280v11r31p5/ROOT/v5r34p09n04/Linux-x86_64/bin/thisroot.sh"
 
 export VALOR_FMWK="${1}"
 if [ -z "$VALOR_FMWK" ]; then
