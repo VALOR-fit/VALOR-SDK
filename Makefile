@@ -41,6 +41,7 @@ copy-scripts-to-bin: make-bin-lib-dir FORCE
 	@echo "** Copying scripts to bin..."
 	cp ${VALOR_FMWK}/make/valor_fmwk-config ${VALOR_FMWK}/bin
 	cp ${VALOR_FMWK}/root/valor ${VALOR_FMWK}/bin
+	[ ! -d "${VALOR_FMWK}/external/color/build/" ] || cp "${VALOR_FMWK}/external/color/build/"* "${VALOR_FMWK}/bin"
 
 build-conventions: make-bin-lib-dir FORCE
 	@echo " "
@@ -78,6 +79,12 @@ make-bin-lib-dir: FORCE
 	cd ${VALOR_FMWK}; \
 	[ -d bin ] || mkdir bin; chmod 755 bin;\
 	[ -d lib ] || mkdir lib; chmod 755 lib;
+
+color:
+	$(MAKE) -C "${VALOR_FMWK}/external/color"
+
+colorclean: clean-dir
+	$(MAKE) -C "${VALOR_FMWK}/external/color" clean
 
 purge: FORCE
 	@echo " "
