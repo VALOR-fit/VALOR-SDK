@@ -24,7 +24,10 @@ if [ -z "$VALOR_FMWK" ]; then
       export VALOR_FMWK="$( dirname "$( dirname "${source}" )" )/" # Directory above the one containing this file
 fi
 
-export CVMFS_LIBRARIES="/cvmfs/t2k.egi.eu/lib-Linux2.6.32-431.23.3.el6.x86_64/"
+#export CVMFS_LIBRARIES="/cvmfs/t2k.egi.eu/lib-Linux2.6.32-431.23.3.el6.x86_64/"
+
+# Use NOvA build of log4cpp since it matches the compiler above
+export CVMFS_LIBRARIES="/cvmfs/nova.opensciencegrid.org/externals/log4cpp/v1_1_1a/Linux64bit+2.6-2.5-e5-prof/lib/"
 
 export LD_LIBRARY_PATH="${VALOR_FMWK}/lib:${ROOTSYS}/lib:${LD_LIBRARY_PATH}:${CVMFS_LIBRARIES}"
 export PATH=${VALOR_FMWK}/bin:${ROOTSYS}/bin:${PATH}
