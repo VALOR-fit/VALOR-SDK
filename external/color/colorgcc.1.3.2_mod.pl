@@ -100,15 +100,15 @@ sub initDefaults
 {
    
    # Begin Steve's modifications
-   $this_file = abs_path($0);
-   
    @compilers = ('gcc', 'g++', 'cc' , 'c++');
    foreach $compiler (@compilers) {
+      # Get list of available executables
       @options = `which -a $compiler`;
       foreach $path (@options) {
          chomp($path);
          $real_path = abs_path($path);
-         if ( $real_path ne $this_file ) {
+         # Take first binary file
+         if ( -B $real_path ) {
             $compilerPaths{$compiler} = $real_path;
             last;
          }
