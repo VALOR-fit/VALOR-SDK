@@ -809,7 +809,13 @@ TVectorD valor::util::ConcatenateTVectors (
 //____________________________________________________________________________
 double valor::util::SingleAngleToDoubleAngle(double sinsqtheta)
 {
-  double sinsq2theta = 1 - (1-2*sinsqtheta)*(1-2*sinsqtheta);   
+  double sinsq2theta = 1 - (1-2*sinsqtheta)*(1-2*sinsqtheta);
   return sinsq2theta;
+}
+//____________________________________________________________________________
+double valor::util::DoubleAngleToSingleAngle(double sinsq2theta)
+{
+  double sinsqtheta = 0.5 * (1 - sqrt(1 - sinsq2theta));
+  return sinsqtheta;
 }
 //____________________________________________________________________________

@@ -67,6 +67,7 @@ namespace util {
   
   // Simple maths
   double SingleAngleToDoubleAngle(double sinsqtheta);
+  double DoubleAngleToSingleAngle(double sinsq2theta);
   
   // Combine matrices and vectors
   TVectorD ConcatenateTVectors (
