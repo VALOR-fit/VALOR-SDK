@@ -500,36 +500,36 @@ void valor::RunOpt::Read3FOscParamsOptions()
 
     fMargMixing12        = true;
     fPriorMixing12       = "gaus";   
-    fPriorParMixing12[0] = 0.846;
-    fPriorParMixing12[1] = 0.021;
+    fPriorParMixing12[0] = conv::kPrior_Sinsq2th12_Used_Mean; //0.846;
+    fPriorParMixing12[1] = conv::kPrior_Sinsq2th12_Used_RMS;  //0.021;
     fMixModeMixing12     = "sinsq2th";
 
     fMargMixing13        = true;
     fPriorMixing13       = "gaus";   
-    fPriorParMixing13[0] = 0.093;
-    fPriorParMixing13[1] = 0.008;
+    fPriorParMixing13[0] = conv::kPrior_Sinsq2th13_Used_Mean; //0.093;
+    fPriorParMixing13[1] = conv::kPrior_Sinsq2th13_Used_RMS; //0.008;
     fMixModeMixing13     = "sinsq2th";
 
     fMargMixing23        = true;
     fPriorMixing23       = "flat";   
-    fPriorParMixing23[0] = 0.3;
-    fPriorParMixing23[1] = 0.7;
+    fPriorParMixing23[0] = conv::kPrior_Sinsq2th23_Flat_Low; //0.3;
+    fPriorParMixing23[1] = conv::kPrior_Sinsq2th23_Flat_Up;  //0.7;
     fMixModeMixing23     = "sinsqth";
 
     fMargDm23sq          = true;
     fPriorDm23sq         = "flat";   
-    fPriorParDm23sq[0]   = 2E-3;
-    fPriorParDm23sq[1]   = 3E-3;
+    fPriorParDm23sq[0]   = conv::kPrior_Dm23sq_Flat_Low; //2E-3;
+    fPriorParDm23sq[1]   = conv::kPrior_Dm23sq_Flat_Up;  //3E-3;
 
     fMargDm12sq          = true;
     fPriorDm12sq         = "gaus";   
-    fPriorParDm12sq[0]   = 7.53E-5;
-    fPriorParDm12sq[1]   = 0.18E-5;
+    fPriorParDm12sq[0]   = conv::kPrior_Dm12sq_Used_Mean; //7.53E-5;
+    fPriorParDm12sq[1]   = conv::kPrior_Dm12sq_Used_RMS;  //0.18E-5;
 
     fMargDeltaCP         = true;
     fPriorDeltaCP        = "flat";   
-    fPriorParDeltaCP[0]  = -TMath::Pi();
-    fPriorParDeltaCP[1]  = +TMath::Pi();
+    fPriorParDeltaCP[0]  = conv::kPrior_deltaCP_Flat_Low; //-TMath::Pi();
+    fPriorParDeltaCP[1]  = conv::kPrior_deltaCP_Flat_Up;  //+TMath::Pi();
   }
   else if(fPriorId == 2){
 
@@ -541,36 +541,36 @@ void valor::RunOpt::Read3FOscParamsOptions()
 
     fMargMixing12        = true;
     fPriorMixing12       = "gaus";   
-    fPriorParMixing12[0] = 0.846;
-    fPriorParMixing12[1] = 0.021;
+    fPriorParMixing12[0] = conv::kPrior_Sinsq2th12_Used_Mean; //0.846;
+    fPriorParMixing12[1] = conv::kPrior_Sinsq2th12_Used_RMS;  //0.021;
     fMixModeMixing12     = "sinsq2th";
 
     fMargMixing13        = true;
     fPriorMixing13       = "gaus";   
-    fPriorParMixing13[0] = 0.095;
-    fPriorParMixing13[1] = 0.010;
+    fPriorParMixing13[0] = kPrior_Sinsq2th13_PDG2013_Mean; //0.095;
+    fPriorParMixing13[1] = kPrior_Sinsq2th13_PDG2013_RMS; //0.010;
     fMixModeMixing13     = "sinsq2th";
 
     fMargMixing23        = true;
     fPriorMixing23       = "flat";   
-    fPriorParMixing23[0] = 0.3;
-    fPriorParMixing23[1] = 0.7;
+    fPriorParMixing23[0] = conv::kPrior_Sinsq2th23_Flat_Low; //0.3;
+    fPriorParMixing23[1] = conv::kPrior_Sinsq2th23_Flat_Up;  //0.7;
     fMixModeMixing23     = "sinsqth";
 
     fMargDm23sq          = true;
     fPriorDm23sq         = "flat";   
-    fPriorParDm23sq[0]   = 2E-3;
-    fPriorParDm23sq[1]   = 3E-3;
+    fPriorParDm23sq[0]   = conv::kPrior_Dm23sq_Flat_Low; //2E-3;
+    fPriorParDm23sq[1]   = conv::kPrior_Dm23sq_Flat_Up; //3E-3;
 
     fMargDm12sq          = true;
     fPriorDm12sq         = "gaus";   
-    fPriorParDm12sq[0]   = 7.53E-5;
-    fPriorParDm12sq[1]   = 0.18E-5;
+    fPriorParDm12sq[0]   = conv::kPrior_Dm12sq_Used_Mean; //7.53E-5;
+    fPriorParDm12sq[1]   = conv::kPrior_Dm12sq_Used_RMS;  //0.18E-5;
 
     fMargDeltaCP         = true;
     fPriorDeltaCP        = "flat";   
-    fPriorParDeltaCP[0]  = -TMath::Pi();
-    fPriorParDeltaCP[1]  = +TMath::Pi();
+    fPriorParDeltaCP[0]  = conv::kPrior_deltaCP_Flat_Low; //-TMath::Pi();
+    fPriorParDeltaCP[1]  = conv::kPrior_deltaCP_Flat_Up;  //+TMath::Pi();
   }
   else{
     cerr << endl;

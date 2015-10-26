@@ -399,6 +399,8 @@ static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
  
  // Gaussian priors
 
+ static const double kPrior_Sinsq2th13_PDG2013_Mean = 0.095;
+ static const double kPrior_Sinsq2th13_PDG2013_RMS  = 0.010;
  static const double kPrior_Sinsq2th13_PDG2014_Mean = 0.093;
  static const double kPrior_Sinsq2th13_PDG2014_RMS  = 0.008;
  static const double kPrior_Sinsq2th13_PDG2015_Mean = 0.085;
