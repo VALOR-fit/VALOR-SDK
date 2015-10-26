@@ -157,7 +157,7 @@ static const double kGlobFitErrSinsq2Theta23 = 0.109;  // ~10.9% (T2K Run1-4 NH)
 //static const double kGlobFitErrSinsq2Theta12 = 0.028; // ~2.8% pdg2012
 static const double kGlobFitErrSinsq2Theta12 = 0.025; // ~2.5% (PDG 2014)
 
-//static const double kGlobFitErrSinsq2Theta13 = 0.059;  // Daya Bay Neutrino 2014 
+//static const double kGlobFitErrSinsq2Theta13 = 0.05 * 0.084;  // Daya Bay Neutrino 2014 
 //static const double kGlobFitErrSinsq2Theta13 = 0.133;  // ~13.3%    // old (PDG 2012)
 //static const double kGlobFitErrSinsq2Theta13 = 0.105; // ~10.5% (PDG 2013)
 //static const double kGlobFitErrSinsq2Theta13 = 0.086; // ~8.6% (PDG 2014)
@@ -193,7 +193,7 @@ static const double kGlobFitErrSinsqTheta23 = 0.109;  // ~10.9% (T2K Run1-4 NH)
 //static const double kGlobFitErrSinsqTheta12 = 0.053;  // ~5.3% pdg2012
 static const double kGlobFitErrSinsqTheta12 = 0.025;  // ~2.5% (PDG 2014)
 
-//static const double kGlobFitErrSinsqTheta13 = 0.059; // Daya Bay Neutrino 2014 //0.139;  // ~13.9%
+//static const double kGlobFitErrSinsqTheta13 = 0.05 * 0.02146; // Daya Bay Neutrino 2014 //0.139;  // ~13.9%
 //static const double kGlobFitErrSinsqTheta13 = 0.139; // ~13.9% // old (PDG 2012)
 //static const double kGlobFitErrSinsqTheta13 = 0.105; // ~10.5% (PDG 2013)
 // static const double kGlobFitErrSinsqTheta13 = 0.086; // ~8.6% (PDG 2014)
@@ -378,6 +378,47 @@ static const double kMaxChisqSurfaceDm23sq            = 3.3E-3;
 static const double kMinChisqSurfaceSinsq2Theta23     = 0.80;
 static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
 
+
+//
+// Priors of oscillation parameters
+//
+
+// flat priors
+ 
+ static const double kPrior_deltaCP_Flat_Low = -3.14159265358979312e+00;
+ static const double kPrior_deltaCP_Flat_Up  = +3.14159265358979312e+00;
+
+ static const double kPrior_Sinsq2th13_Flat_Low = 0.;
+ static const double kPrior_Sinsq2th13_Flat_Up  = 0.4;
+
+ static const double kPrior_Sinsq2th23_Flat_Low = 0.3;
+ static const double kPrior_Sinsq2th23_Flat_Up  = 0.7;
+
+ static const double kPrior_Dm23sq_Flat_Low = 2E-3;
+ static const double kPrior_Dm23sq_Flat_Up  = 3E-3;
+ 
+ // Gaussian priors
+
+ static const double kPrior_Sinsq2th13_PDG2014_Mean = 0.093;
+ static const double kPrior_Sinsq2th13_PDG2014_RMS  = 0.008;
+ static const double kPrior_Sinsq2th13_PDG2015_Mean = 0.085;
+ static const double kPrior_Sinsq2th13_PDG2015_RMS  = 0.005;
+ static const double kPrior_Sinsq2th13_Used_Mean    = kPrior_Sinsq2th13_PDG2015_Mean;
+ static const double kPrior_Sinsq2th13_Used_RMS     = kPrior_Sinsq2th13_PDG2015_RMS;
+
+ static const double kPrior_Dm12sq_PDG2014_Mean = 7.53E-5;
+ static const double kPrior_Dm12sq_PDG2014_RMS  = 0.18E-5;
+ static const double kPrior_Dm12sq_PDG2015_Mean = 7.53E-5; // same as 2014
+ static const double kPrior_Dm12sq_PDG2015_RMS  = 0.18E-5; // same as 2014
+ static const double kPrior_Dm12sq_Used_Mean    = kPrior_Dm12sq_PDG2015_Mean; 
+ static const double kPrior_Dm12sq_Used_RMS     = kPrior_Dm12sq_PDG2015_RMS; 
+
+ static const double kPrior_Sinsq2th12_PDG2014_Mean = 0.846;
+ static const double kPrior_Sinsq2th12_PDG2014_RMS  = 0.021;
+ static const double kPrior_Sinsq2th12_PDG2015_Mean = 0.846; // same as 2014
+ static const double kPrior_Sinsq2th12_PDG2015_RMS  = 0.021; // same as 2014
+ static const double kPrior_Sinsq2th12_Used_Mean    = kPrior_Sinsq2th12_PDG2015_Mean;
+ static const double kPrior_Sinsq2th12_Used_RMS     = kPrior_Sinsq2th12_PDG2015_RMS;
 
 //
 // Other constants
