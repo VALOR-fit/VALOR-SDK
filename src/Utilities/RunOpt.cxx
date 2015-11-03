@@ -152,28 +152,30 @@ void valor::RunOpt::Init(void)
   fSynchronizeIHtoNH = true;
   
   // fit marg options
-  fXmlfile = "";
-  fRootfile = "";
-  fUsing_xml_file = false;
-  fDoToys = true;
-  fFit_param_list = "nuosc3f+nuisance";
-  fInfilename     = "submit_prova_TemplVArray";
-  fNfiles         = 9;
-  fNtoysMarg      = 100;
-  fFreeparname0   = "deltacp";
-  fFreeparmin0    = -3.14159265358979312e+00;
-  fFreeparmax0    = +3.14159265358979312e+00;
-  fNptScan0       = 9;
-  fFreeparname1   = "";
-  fFreeparmin1    = 0.;
-  fFreeparmax1    = 0.;
-  fNptScan1       = 1;
-  fDoMargMH       = false;
-  fHierarchy_marg = "normal";
-  fTypeError      = "";
-  fDrawFullChisq  = true;
-  fTeststat       = "rate+shape";
+  fXmlfile          = "";
+  fRootfile         = "";
+  fUsing_xml_file   = false;
+  fDoToys           = true;
+  fFit_param_list   = "nuosc3f+nuisance";
+  fInfilename       = "submit_prova_TemplVArray";
+  fNfiles           = 9;
+  fNtoysMarg        = 100;
+  fFreeparname0     = "deltacp";
+  fFreeparmin0      = -3.14159265358979312e+00;
+  fFreeparmax0      = +3.14159265358979312e+00;
+  fNptScan0         = 9;
+  fFreeparname1     = "";
+  fFreeparmin1      = 0.;
+  fFreeparmax1      = 0.;
+  fNptScan1         = 1;
+  fDoMargMH         = false;
+  fHierarchy_marg   = "normal";
+  fTypeError        = "";
+  fDrawFullChisq    = true;
+  fTeststat         = "rate+shape";
   fStoreLikeWeights = false;
+  fPenaltyTerm0     = false;
+  fPenaltyTerm1     = false; 
 }
 //____________________________________________________________________________
 void valor::RunOpt::InitOscParams(double value)
@@ -493,7 +495,7 @@ void valor::RunOpt::Read3FOscParamsOptions()
     InitOscParams(-99);
   }
   else if(fPriorId == 1){
-    cout << "Set prior to T2K+reactors (PDG 2014)" << endl;
+    cout << "Set prior to T2K+reactors" << endl;
     cout << endl;
 
     InitOscParams(-999); // Randomize all osc params
@@ -976,6 +978,30 @@ void valor::RunOpt::ReadFitMargOptions()
     }
   }
 
+  if(fParser->OptionExists("penalty-freepar0")){
+    fPenaltyTerm0 = (bool) fParser->ArgAsInt("penalty-freepar0");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't decide whether to penalty term for parameter 0 is used" << endl;
+    cerr << "Use --penalty-freepar0 (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
+  if(fParser->OptionExists("penalty-freepar1")){
+    fPenaltyTerm1 = (bool) fParser->ArgAsInt("penalty-freepar1");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't decide whether to penalty term for parameter 1 is used" << endl;
+    cerr << "Use --penalty-freepar1 (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
 }
 //____________________________________________________________________________
 void valor::RunOpt::Usage(const int w)
@@ -1142,6 +1168,8 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
 	   << " - " << setw(w) << "Draw fill marginalized chisq:"  << ((fDrawFullChisq) ? "YES " : "NO") << endl
 	   << " - " << setw(w) << "Test statistic for fit with marginalization:"  << fTeststat << endl
 	   << " - " << setw(w) << "Store likelihood weights of fit with marginalization?:"  << ((fStoreLikeWeights) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Use penalty term for free parameter 0:"  << ((fPenaltyTerm0) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Use penalty term for free parameter 1:"  << ((fPenaltyTerm1) ? "YES " : "NO") << endl
       	   << endl;
   }//kParseFitMarg
 }
