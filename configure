@@ -310,7 +310,7 @@ sub auto_detect {
   foreach(@search_dir) {
      $curr_dir = $_;
      if(! -d $curr_dir) {next;}
-     @matches = `find $curr_dir -type f -maxdepth 7 -name $search_file 2> /dev/null | grep \"$optional_fullpath_substr\"`;
+     @matches = `find $curr_dir/ -type f -maxdepth 7 -name \"$search_file\" 2> /dev/null | grep \"$optional_fullpath_substr\"`;
      $nmatches = @matches;
      if( $nmatches > 0) { return $matches[0]; }
   }
