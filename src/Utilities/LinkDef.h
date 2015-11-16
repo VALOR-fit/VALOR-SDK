@@ -21,5 +21,7 @@
 #pragma link C++ class valor::util::OscParams;
 #pragma link C++ class valor::RunOpt;
 
+#pragma link C++ class valor::util::NameRegistry;
+
 
 #endif

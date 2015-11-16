@@ -8,9 +8,8 @@ ChangeLog:
 */
 //________________________________________________________________________________________
 
-#include <Conventions/NameRegistry.h>
-
 #include <cassert>
+#include "Utilities/NameRegistry.h"
 
 using namespace valor;
 using namespace valor::conv;

@@ -42,15 +42,16 @@ namespace util {
       std::string AsString      (conv::PhysParamId_t p) const;
       std::string AsStringSimple(conv::PhysParamId_t p) const;
       
+      // Maps for storing param names
+      std::map<conv::PhysParamId_t, std::string> fParamNames;
+      std::map<conv::PhysParamId_t, std::string> fParamNamesSimple;
+      
     private:
       NameRegistry();
       NameRegistry(const NameRegistry &) {}
       ~NameRegistry() {}
       void Init();
       
-      std::map<conv::PhysParamId_t, std::string> fParamNames;
-      std::map<conv::PhysParamId_t, std::string> fParamNamesSimple;
-
       static NameRegistry * fInstance;
       struct Cleaner {
         void DummyMethodAndSilentCompiler() { } 
