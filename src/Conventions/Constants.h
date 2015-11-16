@@ -433,6 +433,7 @@ static const double kALargeNum      = 999999999.;                    //
 static const double kBadResult      = -999;                          // If a fit fails, give this value to Opt
 static const double kOneMeV         = 0.001;                         // 
 static const double kBaseline       = 295;                           // Tokai->Kamioka (km)
+static const double kBeamDir[3]     = {0.669764, -0.742179, 0.024223}; // T2K beam direction vector
 static const double kOscDimensFactor= 1.26693281;                    // Dimensional factor (GeV/eV^2/km) appearing in netrino oscillation formula
 static const double kCrustDensity   = 2.6;                           // Average density of Earth's continental crust (gr / cm^3)
 static const double kpi             = 3.141592653589793;             // pi
@@ -444,6 +445,12 @@ static const double kGF             = 1.16637e-5;                    // Fermi co
 static const double kGF_SI          = kGF*khbarc3_SI*1.0e-18;        // Fermi coupling constant, (eV cm^3, SI units), 1e-18 is used for GeV^-2 -> eV^-2
 static const double kNA             = 6.022142e23;                   // Avogadro number (mol^-1)
 
+//particle masses
+static const double kElectronMassGeV =   0.511 / 1000.;
+static const double kEuonMassGeV     = 105.658 / 1000.;
+static const double kNeutronMassGeV  = 939.565 / 1000.;
+static const double kProtonMassGeV   = 938.272 / 1000.;
+  
 } // conv
 } // valor
   
