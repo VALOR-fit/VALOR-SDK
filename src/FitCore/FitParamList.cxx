@@ -78,6 +78,13 @@ bool FitParamList::AddParam (int ip, PhysParamId_t p,
              <<") to slot "<<ip<<" (max params "<<fNParams<<") "<<endl;
     exit(-1);
   }
+  
+  if (this->Exists(p)) {
+    this->Print();
+    cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::RawParamAsString(p) <<" ("<<name
+             <<"): parameter already exists."<<endl;
+    exit(-1);
+  }
 
   fIdMap.insert(map<PhysParamId_t, int>::value_type(p,ip));
 
@@ -1606,7 +1613,7 @@ void FitParamList::Init(int nparams)
      // MARGINALIZATION
      fDoMarg       [i] = 0;
      fPriorMode    [i] = 0;
-     fPriorModeName[i].SetString("");
+     fPriorModeName[i].SetString("Uninitialised");
      fMeanGaus     [i] = 0;
      fSigmaGaus    [i] = 0;
      fMinValueFlat [i] = 0;
