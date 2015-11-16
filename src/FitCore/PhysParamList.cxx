@@ -14,6 +14,8 @@ ChangeLog:
 #include "FitCore/PhysParamList.h"
 #include "Conventions/PhysParamId.h"
 
+#include "Utilities/NameRegistry.h"
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -68,7 +70,7 @@ double PhysParamList::Value(PhysParamId_t p) const
   map<int,double>::const_iterator it = fParams.find(p);
   if(it == fParams.end()) {
      cerr << "PhysParamList >> Parameter [" 
-          << util::RawParamAsString(p) << "] was not set!" << endl;
+          << util::NameRegistry::Instance()->AsString(p) << "] was not set!" << endl;
      return -99999;
   } 
   return it->second;

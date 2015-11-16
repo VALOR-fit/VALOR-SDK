@@ -14,6 +14,7 @@ ChangeLog:
 #include <cstdlib>
 
 #include "Conventions/PhysHypothesisId.h"
+#include "Utilities/NameRegistry.h"
 #include "FitCore/PhysParamList.h"
 #include "FitCore/PhysHypothesis.h"
 
@@ -320,7 +321,7 @@ void PhysHypothesis::Print(ostream & stream) const
      PhysParamId_t p = (PhysParamId_t) it->first;
      double        v = it->second;
      stream << " - "
-            << setw(15)  << util::RawParamAsString(p) << " = "
+            << setw(15)  << util::NameRegistry::Instance()->AsString(p) << " = "
             << setprecision(8) << setw(12) << v
             << endl;
   }

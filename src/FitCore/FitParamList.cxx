@@ -23,6 +23,8 @@ ChangeLog:
 #include "FitCore/PhysParamList.h"
 #include "FitCore/FitParamList.h"
 
+#include "Utilities/NameRegistry.h"
+
 using std::vector;
 using std::cout;
 using std::cerr;
@@ -74,14 +76,14 @@ bool FitParamList::AddParam (int ip, PhysParamId_t p,
 {
   if (ip < 0 || ip >= fNParams) {
     this->Print();
-    cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::RawParamAsString(p) <<" ("<<name
+    cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
              <<") to slot "<<ip<<" (max params "<<fNParams<<") "<<endl;
     exit(-1);
   }
   
   if (this->Exists(p)) {
     this->Print();
-    cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::RawParamAsString(p) <<" ("<<name
+    cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
              <<"): parameter already exists."<<endl;
     exit(-1);
   }
@@ -89,7 +91,7 @@ bool FitParamList::AddParam (int ip, PhysParamId_t p,
   fIdMap.insert(map<PhysParamId_t, int>::value_type(p,ip));
 
   if(name.size()==0) {
-    name = util::RawParamAsString(p);
+    name = util::NameRegistry::Instance()->AsString(p);
   }
 
   fName         [ip].SetString(name.c_str());
@@ -1694,7 +1696,7 @@ int FitParamList::Id(PhysParamId_t p) const
 {
    map<PhysParamId_t, int>::const_iterator it = fIdMap.find(p);
    if(it == fIdMap.end()) {
-     cerr << "FitParamList::Id() >> Parameter: " << util::RawParamAsString(p) << " PhysParamId_t p = " << p 
+     cerr << "FitParamList::Id() >> Parameter: " << util::NameRegistry::Instance()->AsString(p) << " PhysParamId_t p = " << p 
           << " was not included in current fit parameter list" << endl;
      exit(1);
    }
