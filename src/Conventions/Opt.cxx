@@ -35,7 +35,8 @@ namespace valor {
 //________________________________________________________________________________________
 Opt * Opt::fInstance = 0;
 //________________________________________________________________________________________
-Opt::Opt() 
+Opt::Opt() :
+ gDoNotDie(false)
 {
   this->SetDefaults();
   fInstance = 0;
@@ -140,7 +141,7 @@ void Opt::SetDefaults(void)
   else
     gOscAnaTypeChoice = kAnaUndefined;
 */
-
+  
   this->SetDefaultParameterValues();
 }
 //____________________________________________________________________________

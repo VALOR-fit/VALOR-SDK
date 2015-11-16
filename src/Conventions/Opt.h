@@ -88,6 +88,8 @@ public:
   // 
   void WriteTo  (Persistable & optp);
   void ReadFrom (Persistable & optp);
+  
+  bool gDoNotDie; // Avoid quitting to prevent interactive sessions dying.
 
   // nested lightweight class to extract state in a persistable named object
   class Persistable: public TNamed {
