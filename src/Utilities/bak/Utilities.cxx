@@ -1001,10 +1001,10 @@ string valor::util::AsString(PhysParamId_t p)
 #endif
     {
       int ip = (int)p - (int)kNuisBANFF00;
-      return Form("BANFF %2d; SK %s flux; %.1f - %.1f GeV",
-                   ip, util::Pdg2String(kNuPdgCodeOfFluxParamInBANFFfit[ip]).c_str(), 
-                   kEtrueRangeOfFluxParamInBANFFfit[ip][0],
-                   kEtrueRangeOfFluxParamInBANFFfit[ip][1]);     
+      return std::string(Form("BANFF %2d; SK %s flux; %.1f - %.1f GeV",
+			      ip, util::Pdg2String(kNuPdgCodeOfFluxParamInBANFFfit[ip]).c_str(), 
+			      kEtrueRangeOfFluxParamInBANFFfit[ip][0],
+			      kEtrueRangeOfFluxParamInBANFFfit[ip][1]));     
       break;
     }
 #ifndef ONEOVERMAQE
@@ -1081,8 +1081,8 @@ string valor::util::AsString(PhysParamId_t p)
 	  nutypes = "all NC (1Rmu)"; break;
         default : nutypes = "--";
       }
-      return Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
-		  kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
+			      kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
 #endif
@@ -1125,8 +1125,8 @@ string valor::util::AsString(PhysParamId_t p)
 	  nutypes = "all NC (1Re)"; break;
         default : nutypes = "--";
 	}
-      return Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
-		  kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
+			      kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
       }
 #endif
@@ -1159,8 +1159,8 @@ string valor::util::AsString(PhysParamId_t p)
 	  nutypes = "all NC (1Rmu)"; break;
         default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
 #endif
@@ -1203,8 +1203,8 @@ string valor::util::AsString(PhysParamId_t p)
 	  nutypes = "all NC (1Re)"; break;
         default : nutypes = "--";
 	}
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
       }
 #endif
@@ -1259,8 +1259,8 @@ string valor::util::AsString(PhysParamId_t p)
 	  nutypes = "all NC (1Rmu)"; break;
         default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
     case ( kNuisSKDetFSI020 ) :
@@ -1297,8 +1297,8 @@ string valor::util::AsString(PhysParamId_t p)
 	  nutypes = "all NC (1Re)"; break;
         default : nutypes = "--";
 	}
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));
       break;
       }
 #endif
@@ -1345,10 +1345,10 @@ string valor::util::AsString(PhysParamId_t p)
 #endif
     {
       int ip = (int)p - (int)kRHCNuisBANFF00;
-      return Form("BANFF %2d; SK %s flux; %.1f - %.1f GeV; RHC",
-		  ip, util::Pdg2String(kNuPdgCodeOfRHCFluxParamInBANFFfit[ip]).c_str(), 
-		  kEtrueRangeOfRHCFluxParamInBANFFfit[ip][0],
-		  kEtrueRangeOfRHCFluxParamInBANFFfit[ip][1]);     
+      return std::string(Form("BANFF %2d; SK %s flux; %.1f - %.1f GeV; RHC",
+			      ip, util::Pdg2String(kNuPdgCodeOfRHCFluxParamInBANFFfit[ip]).c_str(), 
+			      kEtrueRangeOfRHCFluxParamInBANFFfit[ip][0],
+			      kEtrueRangeOfRHCFluxParamInBANFFfit[ip][1]));
       break;
     }
 #ifndef ONEOVERMAQE
@@ -1427,8 +1427,8 @@ string valor::util::AsString(PhysParamId_t p)
 	nutypes = "all NC (1Rmu)"; break;
       default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s; RHC",ip,
-                  kRHCSKDetFSIParamsErecoCut[ip][0],kRHCSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s; RHC",ip,
+			      kRHCSKDetFSIParamsErecoCut[ip][0],kRHCSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
 #endif
@@ -1471,8 +1471,8 @@ string valor::util::AsString(PhysParamId_t p)
 	nutypes = "all NC (1Re)"; break;
       default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s; RHC",ip,
-                  kRHCSKDetFSIParamsErecoCut[ip][0],kRHCSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s; RHC",ip,
+			      kRHCSKDetFSIParamsErecoCut[ip][0],kRHCSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }
 #endif
@@ -1528,8 +1528,8 @@ string valor::util::AsString(PhysParamId_t p)
           nutypes = "all NC (1Rmu)"; break;
         default : nutypes = "--";
 	}
-	return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s; RHC",ip,
-		    kRHCSKDetFSIParamsErecoCut[ip][0],kRHCSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+	return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s; RHC",ip,
+				kRHCSKDetFSIParamsErecoCut[ip][0],kRHCSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
 	break;
       }//FSI for 1Rmu
     case ( kRHCNuisSKDetFSI020 ) :
@@ -1566,8 +1566,8 @@ string valor::util::AsString(PhysParamId_t p)
           nutypes = "all NC (1Re)"; break;
         default : nutypes = "--";
         }
-	return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s; RHC",ip,
-		    kRHCSKDetFSIParamsErecoCut[ip][0],kRHCSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+	return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s; RHC",ip,
+				kRHCSKDetFSIParamsErecoCut[ip][0],kRHCSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
 	break;
       }
 #endif
@@ -1773,10 +1773,10 @@ string valor::util::AsStringTex(PhysParamId_t p)
 #endif
     {
       int ip = (int)p - (int)kNuisBANFF00;
-      return Form("BANFF %2d, SK %s flux, %.1f - %.1f GeV",
-                   ip, util::Pdg2String(kNuPdgCodeOfFluxParamInBANFFfit[ip]).c_str(), 
-                   kEtrueRangeOfFluxParamInBANFFfit[ip][0],
-                   kEtrueRangeOfFluxParamInBANFFfit[ip][1]);     
+      return std::string(Form("BANFF %2d, SK %s flux, %.1f - %.1f GeV",
+			      ip, util::Pdg2String(kNuPdgCodeOfFluxParamInBANFFfit[ip]).c_str(), 
+			      kEtrueRangeOfFluxParamInBANFFfit[ip][0],
+			      kEtrueRangeOfFluxParamInBANFFfit[ip][1]));
       break;
     }
 #ifndef ONEOVERMAQE
@@ -1850,8 +1850,8 @@ string valor::util::AsStringTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{\\mu}$)"; break;
         default : nutypes = "--";
       }
-      return Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
-		  kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
+			      kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
 #endif
@@ -1895,8 +1895,8 @@ string valor::util::AsStringTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{e}$)"; break;
         default : nutypes = "--";
       }
-      return Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
-		  kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
+			      kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Re
 #endif
@@ -1926,8 +1926,8 @@ string valor::util::AsStringTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{\\mu}$)"; break;
         default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
 #endif
@@ -1971,8 +1971,8 @@ string valor::util::AsStringTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{e}$)"; break;
         default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Re
 #endif
@@ -2027,8 +2027,8 @@ string valor::util::AsStringTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{\\mu}$)"; break;
         default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
     case ( kNuisSKDetFSI020 ) :
@@ -2065,8 +2065,8 @@ string valor::util::AsStringTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{e}$)"; break;
         default : nutypes = "--";
 	}
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));
       break;
       }
 #endif
@@ -2277,10 +2277,10 @@ string valor::util::AsStringPresentTex(PhysParamId_t p)
 #endif
     {
       int ip = (int)p - (int)kNuisBANFF00;
-      return Form("%s flux %.1f-%.1f GeV",
-		  util::Pdg2StringTex(kNuPdgCodeOfFluxParamInBANFFfit[ip]).c_str(), 
-		  kEtrueRangeOfFluxParamInBANFFfit[ip][0],
-		  kEtrueRangeOfFluxParamInBANFFfit[ip][1]);     
+      return std::string(Form("%s flux %.1f-%.1f GeV",
+			      util::Pdg2StringTex(kNuPdgCodeOfFluxParamInBANFFfit[ip]).c_str(), 
+			      kEtrueRangeOfFluxParamInBANFFfit[ip][0],
+			      kEtrueRangeOfFluxParamInBANFFfit[ip][1]));
       break;
     }
 #ifndef ONEOVERMAQE
@@ -2354,8 +2354,8 @@ string valor::util::AsStringPresentTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{\\mu}$)"; break;
         default : nutypes = "--";
       }
-      return Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
-		  kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
+			      kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
 #endif
@@ -2399,8 +2399,8 @@ string valor::util::AsStringPresentTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{e}$)"; break;
         default : nutypes = "--";
       }
-      return Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
-		  kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
+			      kFSIParamsErecoCut[ip][0],kFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Re
 #endif
@@ -2431,7 +2431,7 @@ string valor::util::AsStringPresentTex(PhysParamId_t p)
 	  nutypes = "SK+FSI NC"; break;
         default : nutypes = "--";
       }
-      return Form("%s",nutypes.c_str());     
+      return std::string(Form("%s",nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
 #endif
@@ -2475,8 +2475,8 @@ string valor::util::AsStringPresentTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{e}$)"; break;
         default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.1f - %.1f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Re
 #endif
@@ -2531,8 +2531,8 @@ string valor::util::AsStringPresentTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{\\mu}$)"; break;
         default : nutypes = "--";
       }
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+      return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+			      kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
     }//FSI for 1Rmu
     case ( kNuisSKDetFSI020 ) :
@@ -2569,8 +2569,8 @@ string valor::util::AsStringPresentTex(PhysParamId_t p)
 	  nutypes = "all NC ($1R_{e}$)"; break;
         default : nutypes = "--";
 	}
-      return Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
-		  kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str());     
+	return std::string(Form("SKDet + FSI/SI %2d; Ereco range %.2f - %.2f GeV; %s",ip,
+				kSKDetFSIParamsErecoCut[ip][0],kSKDetFSIParamsErecoCut[ip][1],nutypes.c_str()));     
       break;
       }
 #endif
@@ -2791,7 +2791,7 @@ string valor::util::AsStringPaperTex(PhysParamId_t p)
 #endif
     {
       int ip = (int)p - (int)kNuisBANFF00;
-      return Form("$f_{%d; t, r}^{banff}$", ip);
+      return std::string(Form("$f_{%d; t, r}^{banff}$", ip));
       break;
     }
     
@@ -2865,7 +2865,7 @@ string valor::util::AsStringPaperTex(PhysParamId_t p)
 #else
       int ip = (int)p - (int)kNuisSKDetFSI006;
 #endif
-      return Form("$f_{%d; t, r}^{SK+FSI}$", ip);
+      return std::string(Form("$f_{%d; t, r}^{SK+FSI}$", ip));
       break;
     }//FSI
 
@@ -2933,7 +2933,7 @@ string valor::util::AsStringPaperTex(PhysParamId_t p)
 #endif
     {
       int ip = (int)p - (int)kRHCNuisBANFF00;
-      return Form("$f_{%d; t, r}^{banff}RHC$", ip);
+      return std::string(Form("$f_{%d; t, r}^{banff}RHC$", ip));
       break;
     }
     
@@ -3007,7 +3007,7 @@ string valor::util::AsStringPaperTex(PhysParamId_t p)
 #else
       int ip = (int)p - (int)kRHCNuisSKDetFSI006;
 #endif
-      return Form("$f_{%d; t, r}^{SK+FSI}RHC$", ip);
+      return std::string(Form("$f_{%d; t, r}^{SK+FSI}RHC$", ip));
       break;
     }//FSI
 
@@ -3246,7 +3246,7 @@ string valor::util::AsStringPaperTexNoDollar(PhysParamId_t p)
 #endif
     {
       int ip = (int)p - (int)kNuisBANFF00;
-      return Form("f_{%d; t, r}^{banff}", ip);
+      return std::string(Form("f_{%d; t, r}^{banff}", ip));
       break;
     }
     
@@ -3304,7 +3304,7 @@ string valor::util::AsStringPaperTexNoDollar(PhysParamId_t p)
 #else
       int ip = (int)p - (int)kNuisFSI006;
 #endif
-      return Form("f_{%d; r}^{FSI}", ip);
+      return std::string(Form("f_{%d; r}^{FSI}", ip));
       break;
     }//FSI                
 #ifdef SKFSITOGETHER
@@ -3353,7 +3353,7 @@ string valor::util::AsStringPaperTexNoDollar(PhysParamId_t p)
 #else
       int ip = (int)p - (int)kNuisSKDetFSI006;
 #endif
-      return Form("f_{%d; r}^{SK+FSI}", ip);
+      return std::string(Form("f_{%d; r}^{SK+FSI}", ip));
       break;
     }//FSI
 
@@ -3518,7 +3518,7 @@ string valor::util::AsStringPaperRooTex(PhysParamId_t p)
 #endif
     {
       int ip = (int)p - (int)kNuisBANFF00;
-      return Form("f_{%d; t, r}^{banff}", ip);
+      return std::string(Form("f_{%d; t, r}^{banff}", ip));
       break;
     }
 
@@ -3576,7 +3576,7 @@ string valor::util::AsStringPaperRooTex(PhysParamId_t p)
 #else
       int ip = (int)p - (int)kNuisFSI006;
 #endif
-      return Form("f_{%d; t, r}^{FSI}", ip);
+      return std::string(Form("f_{%d; t, r}^{FSI}", ip));
       break;
     }//FSI      
 #ifdef SKFSITOGETHER
@@ -3625,7 +3625,7 @@ string valor::util::AsStringPaperRooTex(PhysParamId_t p)
 #else
       int ip = (int)p - (int)kNuisSKDetFSI006;
 #endif
-      return Form("f_{%d; t, r}^{SK+FSI}", ip);
+      return std::string(Form("f_{%d; t, r}^{SK+FSI}", ip));
       break;
     }//FSI
 

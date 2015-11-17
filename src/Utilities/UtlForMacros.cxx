@@ -39,12 +39,12 @@ using namespace valor::conv;
 const char * valor::util::FormFilePath(const char * file, const char * dir)
 {
   FileStat_t dummy;
-  const char * filename = Form("%s/%s/%s", Env::Instance()->TopLevelDir().c_str(), dir, file);
-  if(gSystem->GetPathInfo(filename, dummy)) {
+  string filename(Form("%s/%s/%s", Env::Instance()->TopLevelDir().c_str(), dir, file));
+  if(gSystem->GetPathInfo(filename.c_str(), dummy)) {
     cerr << "File not found: " << filename << endl;
     exit(-1);
   }
-  return filename; 
+  return filename.c_str();
 }
 //____________________________________________________________________________
 string valor::util::SysThrowIdToString(unsigned int tweak_systematics)
