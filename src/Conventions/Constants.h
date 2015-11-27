@@ -86,14 +86,15 @@ static const double kT2KReacBestFitSinsq2Theta23_IH  = 0.996;
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 
-static const double kT2KReacMostProbDmsq12  = 7.5E-5; 
-static const double kT2KReacMostProbSinsqTheta12  = 0.306; 
- static const double kT2KReacMostProbSinsq2Theta12  = 0.8495; 
-
+static const double kT2KReacMostProbDmsq12  = 7.5E-5;
+static const double kT2KReacMostProbSinsqTheta12  = 0.306;
+static const double kT2KReacMostProbSinsq2Theta12  = 0.8495;
 static const double kT2KReacMostProbDeltaCP_Mach3_NH = -1.601;
-static const double kT2KReacMostProbDmsq23_Mach3_NH  = 2.509E-3; 
-static const double kT2KReacMostProbSinsqTheta13_Mach3_NH  = 0.0250; 
-static const double kT2KReacMostProbSinsqTheta23_Mach3_NH  = 0.528; 
+static const double kT2KReacMostProbDmsq23_Mach3_NH  = 2.509E-3;
+static const double kT2KReacMostProbSinsqTheta13_Mach3_NH  = 0.0243;
+static const double kT2KReacMostProbSinsqTheta23_Mach3_NH  = 0.528;
+
+static const double kT2KReacMostProbSinsq2Theta23_Mach3_NH = 0.996864;
 
 /////////////////////////////////////
 //                                 //
@@ -103,13 +104,13 @@ static const double kT2KReacMostProbSinsqTheta23_Mach3_NH  = 0.528;
 
 // Updated
 
-static const double kGlobFitDm12sq         = kT2KReacMostProbDmsq12; //kT2KReacBestFitDmsq12;
- //static const double kGlobFitDm12sq           = 7.53E-5; // (PDG 2014)
+//static const double kGlobFitDm12sq         = kT2KReacMostProbDmsq12; //kT2KReacBestFitDmsq12;
+static const double kGlobFitDm12sq           = 7.53E-5; // (PDG 2014)
  
 //static const double kGlobFitDm23sq           = 2.4E-3; // old
 //static const double kGlobFitDm23sq           = 2.32E-3; 
 //static const double kGlobFitDm23sq           = 2.44E-3; // (PDG 2014)
- static const double kGlobFitDm23sq         = kT2KReacMostProbDmsq23_Mach3_NH; //kT2KReacBestFitDmsq23_NH; 
+static const double kGlobFitDm23sq         = kT2KReacMostProbDmsq23_Mach3_NH; //kT2KReacBestFitDmsq23_NH; 
 
 static const double kGlobFitDmsqFL           = 2.36E-3;
 
@@ -143,7 +144,8 @@ static const double kGlobFitErrDeltaCP       = 0.10; // ~10%
 //static const double kGlobFitSinsq2Theta13    = 0.098;  // old (PDG 2012)   
 //static const double kGlobFitSinsq2Theta13    = 0.095;  // old (PDG 2013)
 //static const double kGlobFitSinsq2Theta13    = 0.093;  // (PDG 2014)
-static const double kGlobFitSinsq2Theta13    = kT2KReacBestFitSinsq2Theta13_NH;  
+static const double kGlobFitSinsq2Theta13    = 0.085;  // (PDG 2015)
+//static const double kGlobFitSinsq2Theta13    = kT2KReacBestFitSinsq2Theta13_NH;  
 
 //static const double kGlobFitSinsq2Theta12    = 0.8495; //fogli2011
 //static const double kGlobFitSinsq2Theta12    = 0.857; //pdg2012
@@ -178,12 +180,13 @@ static const double kGlobFitErrSinsq2Theta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
 //static const double kGlobFitSinsqTheta13   = 0.0251; // old (PDG 2012)
 //static const double kGlobFitSinsqTheta13   = 0.0243; // (PDG 2013)
 //static const double kGlobFitSinsqTheta13   = 0.0238; // (PDG 2014)
- static const double kGlobFitSinsqTheta13   = kT2KReacMostProbSinsqTheta13_Mach3_NH; //kT2KReacBestFitSinsqTheta13_NH; 
+static const double kGlobFitSinsqTheta13   = 0.0217; // (PDG 2015)
+//static const double kGlobFitSinsqTheta13   = kT2KReacMostProbSinsqTheta13_Mach3_NH; //kT2KReacBestFitSinsqTheta13_NH; 
 
 //static const double kGlobFitSinsqTheta12    = 0.306; //fogli2011
 //static const double kGlobFitSinsqTheta12    = 0.311; //pdg2012
-//static const double kGlobFitSinsqTheta12    = 0.304; 
- static const double kGlobFitSinsqTheta12    = kT2KReacMostProbSinsqTheta12; //kT2KReacBestFitSinsqTheta12; 
+static const double kGlobFitSinsqTheta12    = 0.304; 
+//static const double kGlobFitSinsqTheta12    = kT2KReacMostProbSinsqTheta12; //kT2KReacBestFitSinsqTheta12; 
 
 //static const double kGlobFitErrSinsqTheta23 = 0.06;  // ~26% (1 sigma range)
 //static const double kGlobFitErrSinsqTheta23 = 0.018;  // ~1.8% (PDG 2014)
@@ -421,6 +424,25 @@ static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
  static const double kPrior_Sinsq2th12_PDG2015_RMS  = 0.021; // same as 2014
  static const double kPrior_Sinsq2th12_Used_Mean    = kPrior_Sinsq2th12_PDG2015_Mean;
  static const double kPrior_Sinsq2th12_Used_RMS     = kPrior_Sinsq2th12_PDG2015_RMS;
+ 
+ static const double kPrior_MH = 0.5;
+ 
+ // Used nominal parameters
+
+ static const double kUsed_DeltaCP      = kT2KReacMostProbDeltaCP_Mach3_NH;
+
+ static const double kUsed_Dm12sq       = kGlobFitDm12sq; 
+ static const double kUsed_Dm23sq       = kT2KReacMostProbDmsq23_Mach3_NH; 
+
+ static const double kUsed_BetaBar      = 1.; 
+
+ static const double kUsed_SinsqTheta12  = kGlobFitSinsqTheta12; 
+ static const double kUsed_SinsqTheta13  = kGlobFitSinsqTheta13; 
+ static const double kUsed_SinsqTheta23  = kT2KReacMostProbSinsqTheta23_Mach3_NH; 
+
+ static const double kUsed_Sinsq2Theta12 = kGlobFitSinsq2Theta12; 
+ static const double kUsed_Sinsq2Theta13 = kGlobFitSinsq2Theta13; 
+ static const double kUsed_Sinsq2Theta23 = kT2KReacMostProbSinsq2Theta23_Mach3_NH; 
 
 //
 // Other constants

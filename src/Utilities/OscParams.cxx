@@ -291,41 +291,76 @@ void valor::util::OscParams::SetValues(double input_mixing12_nh, double input_mi
   //Beta bar
   randomize_beta_bar    = (TMath::Abs(input_beta_bar    + 999) < kASmallNum);
   
+  //Set to defaults parameters that are randomized
+  
+  //NH
+  if(Opt::Instance()->gOscMixingParamChoice == conv::kNuMixSinsq2Theta) {
+    if(randomize_mixing13_nh) input_mixing13_nh = conv::kUsed_Sinsq2Theta13;
+    if(randomize_mixing23_nh) input_mixing23_nh = conv::kUsed_Sinsq2Theta23;
+    if(randomize_mixing12_nh) input_mixing12_nh = conv::kUsed_Sinsq2Theta12;
+  }
+  else {
+    if(randomize_mixing13_nh) input_mixing13_nh = conv::kUsed_SinsqTheta13;
+    if(randomize_mixing23_nh) input_mixing23_nh = conv::kUsed_SinsqTheta23;
+    if(randomize_mixing12_nh) input_mixing12_nh = conv::kUsed_SinsqTheta12;
+  }
+  if(randomize_dm23sq_nh) input_dm23sq_nh = conv::kUsed_Dm23sq;
+  if(randomize_dm12sq_nh) input_dm12sq_nh = conv::kUsed_Dm12sq;
+  if(randomize_dcp_nh)    input_dcp_nh    = conv::kUsed_DeltaCP;
+  //IH
+  if(Opt::Instance()->gOscMixingParamChoice == conv::kNuMixSinsq2Theta) {
+    if(randomize_mixing13_ih) input_mixing13_ih = conv::kUsed_Sinsq2Theta13;
+    if(randomize_mixing23_ih) input_mixing23_ih = conv::kUsed_Sinsq2Theta23;
+    if(randomize_mixing12_ih) input_mixing12_ih = conv::kUsed_Sinsq2Theta12;
+  }
+  else {
+    if(randomize_mixing13_ih) input_mixing13_ih = conv::kUsed_SinsqTheta13;
+    if(randomize_mixing23_ih) input_mixing23_ih = conv::kUsed_SinsqTheta23;
+    if(randomize_mixing12_ih) input_mixing12_ih = conv::kUsed_SinsqTheta12;
+  }
+  if(randomize_dm23sq_ih) input_dm23sq_ih = conv::kUsed_Dm23sq;
+  if(randomize_dm12sq_ih) input_dm12sq_ih = conv::kUsed_Dm12sq;
+  if(randomize_dcp_ih)    input_dcp_ih    = conv::kUsed_DeltaCP;
+  //Beta bar
+  if(randomize_beta_bar) input_beta_bar = conv::kUsed_BetaBar;
+
+
   //Set to defaults (only if enough negative (standard value is -99)
   //NH
   if(Opt::Instance()->gOscMixingParamChoice == conv::kNuMixSinsq2Theta) {
-    if(input_mixing13_nh < -1 && input_mixing13_nh > -900) input_mixing13_nh = conv::kGlobFitSinsq2Theta13;
-    if(input_mixing23_nh < -1 && input_mixing23_nh > -900) input_mixing23_nh = conv::kGlobFitSinsq2Theta23;
-    if(input_mixing12_nh < -1 && input_mixing12_nh > -900) input_mixing12_nh = conv::kGlobFitSinsq2Theta12;
+    if(input_mixing13_nh < -1 && input_mixing13_nh > -900) input_mixing13_nh = conv::kUsed_Sinsq2Theta13;
+    if(input_mixing23_nh < -1 && input_mixing23_nh > -900) input_mixing23_nh = conv::kUsed_Sinsq2Theta23;
+    if(input_mixing12_nh < -1 && input_mixing12_nh > -900) input_mixing12_nh = conv::kUsed_Sinsq2Theta12;
   }
   else {
-    if(input_mixing13_nh < -1 && input_mixing13_nh > -900) input_mixing13_nh = conv::kGlobFitSinsqTheta13;
-    if(input_mixing23_nh < -1 && input_mixing23_nh > -900) input_mixing23_nh = conv::kGlobFitSinsqTheta23;
-    if(input_mixing12_nh < -1 && input_mixing12_nh > -900) input_mixing12_nh = conv::kGlobFitSinsqTheta12;
+    if(input_mixing13_nh < -1 && input_mixing13_nh > -900) input_mixing13_nh = conv::kUsed_SinsqTheta13;
+    if(input_mixing23_nh < -1 && input_mixing23_nh > -900) input_mixing23_nh = conv::kUsed_SinsqTheta23;
+    if(input_mixing12_nh < -1 && input_mixing12_nh > -900) input_mixing12_nh = conv::kUsed_SinsqTheta12;
   }
-  if(input_dm23sq_nh < -1  && input_dm23sq_nh > -900) input_dm23sq_nh = conv::kGlobFitDm23sq;
-  if(input_dm12sq_nh < -1  && input_dm12sq_nh > -900) input_dm12sq_nh = conv::kGlobFitDm12sq;
-  if(input_dcp_nh    < -90 && input_dcp_nh    > -900) input_dcp_nh    = conv::kGlobFitDeltaCP;
+  if(input_dm23sq_nh < -1  && input_dm23sq_nh > -900) input_dm23sq_nh = conv::kUsed_Dm23sq;
+  if(input_dm12sq_nh < -1  && input_dm12sq_nh > -900) input_dm12sq_nh = conv::kUsed_Dm12sq;
+  if(input_dcp_nh    < -90 && input_dcp_nh    > -900) input_dcp_nh    = conv::kUsed_DeltaCP;
   //IH
   if(Opt::Instance()->gOscMixingParamChoice == conv::kNuMixSinsq2Theta) {
-    if(input_mixing13_ih < -1 && input_mixing13_ih > -900) input_mixing13_ih = conv::kGlobFitSinsq2Theta13;
-    if(input_mixing23_ih < -1 && input_mixing23_ih > -900) input_mixing23_ih = conv::kGlobFitSinsq2Theta23;
-    if(input_mixing12_ih < -1 && input_mixing12_ih > -900) input_mixing12_ih = conv::kGlobFitSinsq2Theta12;
+    if(input_mixing13_ih < -1 && input_mixing13_ih > -900) input_mixing13_ih = conv::kUsed_Sinsq2Theta13;
+    if(input_mixing23_ih < -1 && input_mixing23_ih > -900) input_mixing23_ih = conv::kUsed_Sinsq2Theta23;
+    if(input_mixing12_ih < -1 && input_mixing12_ih > -900) input_mixing12_ih = conv::kUsed_Sinsq2Theta12;
   }
   else {
-    if(input_mixing13_ih < -1 && input_mixing13_ih > -900) input_mixing13_ih = conv::kGlobFitSinsqTheta13;
-    if(input_mixing23_ih < -1 && input_mixing23_ih > -900) input_mixing23_ih = conv::kGlobFitSinsqTheta23;
-    if(input_mixing12_ih < -1 && input_mixing12_ih > -900) input_mixing12_ih = conv::kGlobFitSinsqTheta12;
+    if(input_mixing13_ih < -1 && input_mixing13_ih > -900) input_mixing13_ih = conv::kUsed_SinsqTheta13;
+    if(input_mixing23_ih < -1 && input_mixing23_ih > -900) input_mixing23_ih = conv::kUsed_SinsqTheta23;
+    if(input_mixing12_ih < -1 && input_mixing12_ih > -900) input_mixing12_ih = conv::kUsed_SinsqTheta12;
   }
-  if(input_dm23sq_ih < -1  && input_dm23sq_ih > -900) input_dm23sq_ih = conv::kGlobFitDm23sq;
-  if(input_dm12sq_ih < -1  && input_dm12sq_ih > -900) input_dm12sq_ih = conv::kGlobFitDm12sq;
-  if(input_dcp_ih    < -90 && input_dcp_ih    > -900) input_dcp_ih = conv::kGlobFitDeltaCP;
+  if(input_dm23sq_ih < -1  && input_dm23sq_ih > -900) input_dm23sq_ih = conv::kUsed_Dm23sq;
+  if(input_dm12sq_ih < -1  && input_dm12sq_ih > -900) input_dm12sq_ih = conv::kUsed_Dm12sq;
+  if(input_dcp_ih    < -90 && input_dcp_ih    > -900) input_dcp_ih = conv::kUsed_DeltaCP;
   //Beta bar
-  if(input_beta_bar < -90 && input_beta_bar > -900) input_beta_bar = conv::kGlobFitBetaBar;
+  if(input_beta_bar < -90 && input_beta_bar > -900) input_beta_bar = conv::kUsed_BetaBar;
 
   //MH
-  if(input_mh_nh_prior < -1 && input_mh_nh_prior > -900) input_mh_nh_prior = 0.5;
-  cerr << "Default value for input_mh_nh_prior is hard coded. This should be moved into the relevant Conventions file" << endl;
+  if(input_mh_nh_prior < -1 && input_mh_nh_prior > -900) input_mh_nh_prior = conv::kPrior_MH;
+  
+  //cerr << "Default value for input_mh_nh_prior is hard coded. This should be moved into the relevant Conventions file" << endl;
   
   //Set the input values in the OscParams
   //NH
@@ -344,6 +379,7 @@ void valor::util::OscParams::SetValues(double input_mixing12_nh, double input_mi
   dm23sq_ih   = input_dm23sq_ih;
   //Other
   beta_bar       = input_beta_bar;
+
   marginalize_mh = marginalize_MH;
   mh_nh_prior    = input_mh_nh_prior;
   MH             = Opt::Instance()->gMassHierarchyAssumed;
@@ -352,10 +388,6 @@ void valor::util::OscParams::SetValues(double input_mixing12_nh, double input_mi
 //____________________________________________________________________________
 void valor::util::OscParams::Randomize()
 {
-  cout << endl;
-  cout << "valor::util::OscParams::Randomize()" << endl;
-  cout << endl;
-
   // Mass Hierarchy
 
 #ifdef __print_toys__ 
