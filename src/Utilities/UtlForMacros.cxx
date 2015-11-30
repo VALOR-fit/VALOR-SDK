@@ -36,7 +36,7 @@ using namespace valor;
 using namespace valor::conv;
 
 //____________________________________________________________________________
-const char * valor::util::FormFilePath(const char * file, const char * dir)
+std::string valor::util::FormFilePath(const char * file, const char * dir)
 {
   FileStat_t dummy;
   string filename(Form("%s/%s/%s", Env::Instance()->TopLevelDir().c_str(), dir, file));
@@ -44,7 +44,7 @@ const char * valor::util::FormFilePath(const char * file, const char * dir)
     cerr << "File not found: " << filename << endl;
     exit(-1);
   }
-  return filename.c_str();
+  return filename;
 }
 //____________________________________________________________________________
 string valor::util::SysThrowIdToString(unsigned int tweak_systematics)

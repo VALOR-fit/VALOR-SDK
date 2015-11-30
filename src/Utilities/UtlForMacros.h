@@ -35,7 +35,7 @@ namespace util {
   std::string SysThrowIdToString(unsigned int tweak_systematics);
 
   // Construct an absolute file path, relative to $T2KOSCANA
-  const char * FormFilePath(const char * file, const char * dir);
+  std::string FormFilePath(const char * file, const char * dir);
 
   // Helper function. Get a TH2D from a file & check its valid
   TH2D * GetTH2DFromTFile(TFile * f, const char * name);
