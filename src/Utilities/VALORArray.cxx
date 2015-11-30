@@ -16,6 +16,10 @@ ChangeLog:
 #include <fstream>
 #include <numeric>
 
+#include "RZip.h" // ROOT compression
+
+#include "Utilities/UtlSystem.h"
+
 #include "Utilities/VALORArray.h"
 #include "Utilities/VALORArrayF.h"
 
@@ -37,13 +41,15 @@ ClassImp(VALORArray);
 
 //#define DEBUG_VA_ADDRESS
 //#define VALORARRAY_USE_GSL
+//#define USE_UNCOMPRESSED_VARRAY_FORMAT
 
 //________________________________________________________________________________________
 VALORArray::VALORArray() :
   TNamed(),
   fNDim(0),
   fIncrement(NULL),
-  fArray(NULL)
+  fArray(NULL),
+  fCompressionLevel(conv::kDefaultCompressionLevel)
 {
 }
 //________________________________________________________________________________________
@@ -80,14 +86,34 @@ VALORArray::VALORArray(int dim1, int dim2, int dim3, int dim4, int dim5, int dim
 //________________________________________________________________________________________
 void VALORArray::Construct(int nd, const int * dimensions)
 {
+  fCompressionLevel = conv::kDefaultCompressionLevel;
   assert(nd > 0 && nd <= 6);
   fNDim = nd;
   fIncrement  = new int[nd];
   for (int i = 0 ; i < 6 ; i++) {
-    fDimensions[i] = 1;
+    fDimensions[i] = (i<nd ? dimensions[i] : 1);
     fNames[i] = "";
   }
-  memcpy(fDimensions,dimensions,nd*sizeof(int));
+  fSize = 1;
+  for (int i = fNDim-1 ; i >= 0 ; i--) {
+    fIncrement[i] = fSize;
+    fSize *= dimensions[i];
+  }
+  fArray = new double[fSize];
+  
+  this->SetAll(0.);
+}
+//________________________________________________________________________________________
+void VALORArray::ConstructT(int nd, const Int_t * dimensions)
+{
+  fCompressionLevel = conv::kDefaultCompressionLevel;
+  assert(nd > 0 && nd <= 6);
+  fNDim = nd;
+  fIncrement  = new int[nd];
+  for (int i = 0 ; i < 6 ; i++) {
+    fDimensions[i] = (i<nd ? dimensions[i] : 1);
+    fNames[i] = "";
+  }
   fSize = 1;
   for (int i = fNDim-1 ; i >= 0 ; i--) {
     fIncrement[i] = fSize;
@@ -106,9 +132,13 @@ fSize(arr.fSize)
   fIncrement  = new int[fNDim];
   fArray      = new double[fSize];
   
-  memcpy(fDimensions , arr.fDimensions , 6*sizeof(int));
+  memcpy(fDimensions , arr.fDimensions , 6*sizeof(Int_t));
   memcpy(fIncrement  , arr.fIncrement  , fNDim*sizeof(int));
   memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
+  
+  for (int i = 0 ; i < 6; i++) {
+    fNames[i] = arr.fNames[i];
+  }
 }
 //________________________________________________________________________________________
 void VALORArray::CopyFrom(const VALORArray & arr)
@@ -117,7 +147,7 @@ void VALORArray::CopyFrom(const VALORArray & arr)
   arr.Copy(*this);
   this->Construct(arr.GetNDim(),arr.GetDimensions());
   
-  memcpy(fDimensions , arr.fDimensions , 6*sizeof(int));
+  memcpy(fDimensions , arr.fDimensions , 6*sizeof(Int_t));
   memcpy(fIncrement  , arr.fIncrement  , fNDim*sizeof(int));
   memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
   
@@ -440,11 +470,34 @@ void VALORArray::ReadFile(std::string file_to_read) {
   ifstream is(file_to_read.c_str(),ios::binary|ios::in);
   assert(is);
   
+#ifndef USE_UNCOMPRESSED_VARRAY_FORMAT
+  VALORArrayHeader header;
+  int result = header.Read(is);
+  
+  if (result) {
+    std::cerr<<"VALORArray/ReadFile >> Bad header from file "<<file_to_read<<" - giving up."<<std::endl;
+    is.close();
+    util::Die(1); return;
+  }
+  this->ConstructT(header.GetNDimensions(),header.GetDimensions());
+  
+  int compressed_data_size   = header.GetCompressedSize();
+  //~ int compressed_buffer_size = sizeof(double) * (fSize+2);
+  int out_data_size          = sizeof(double) * (fSize);
+  unsigned char * compressed_buffer = new unsigned char[compressed_data_size];
+  is.read( (char*) compressed_buffer, compressed_data_size );
+  
+  //~ cerr<<"Pre:  Arguments are "<<compressed_data_size<<"\t"<<(void*)compressed_buffer<<"\t"<<out_data_size<<"\t"<<(void*)fArray<<"\t"<<result<<std::endl;
+  R__unzip(&compressed_data_size,compressed_buffer,&out_data_size,(unsigned char *)fArray, &result);
+  //~ cerr<<"Post: Arguments are "<<compressed_data_size<<"\t"<<(void*)compressed_buffer<<"\t"<<out_data_size<<"\t"<<(void*)fArray<<"\t"<<result<<std::endl;
+  
+  assert(result==sizeof(double)*fSize);
+#else // with USE_UNCOMPRESSED_VARRAY_FORMAT
   int ndim = 0;
   int dims[6] = {};
+  
   is.read( (char*)&ndim  ,sizeof(int));
   is.read( (char*)dims   ,sizeof(int)*6);
-  
   this->Construct(ndim,dims);
   
 #ifndef NDEBUG
@@ -454,8 +507,9 @@ void VALORArray::ReadFile(std::string file_to_read) {
   is.seekg(0,is.beg);
   assert(n==(7*sizeof(int) + fSize*sizeof(double)));
   is.seekg(startn);
-#endif
+#endif //NDEBUG
   is.read( (char*)fArray,fSize*sizeof(double));
+#endif //USE_UNCOMPRESSED_VARRAY_FORMAT
   is.close();
   return;
 }
@@ -463,9 +517,31 @@ void VALORArray::ReadFile(std::string file_to_read) {
 void VALORArray::WriteFile(std::string file_to_write) {
   ofstream os(file_to_write.c_str(),ios::binary|ios::out);
   assert(os);
+#ifndef USE_UNCOMPRESSED_VARRAY_FORMAT
+  
+  int nbytes_compressed=-999;
+  
+  int uncompressed_buffer_size = (fSize           )*sizeof(double);
+  int compressed_buffer_size   = (fSize*1.0004    )*sizeof(double) + 11;
+  // ^^ For possible expansion, need 5 bytes per 16kb, plus 6 - I padded it a bit more than that. http://www.zlib.net/zlib_tech.html 
+  char * compressed_buffer = new char[compressed_buffer_size];
+  
+  //~ cerr<<"Doing compression"<<endl;
+  //~ cerr<<"Pre:  Arguments are "<<fCompressionLevel<<"\t"<<uncompressed_buffer_size<<"\t"<<fArray<<"\t"<<compressed_buffer_size<<"\t"<<(void*)compressed_buffer<<std::endl;
+  R__zip(fCompressionLevel, &uncompressed_buffer_size, (char*)fArray, &compressed_buffer_size, compressed_buffer, &nbytes_compressed);
+  //~ cerr<<"Post: Arguments are "<<fCompressionLevel<<"\t"<<uncompressed_buffer_size<<"\t"<<fArray<<"\t"<<compressed_buffer_size<<"\t"<<(void*)compressed_buffer<<std::endl;
+  
+  VALORArrayHeader header(VALORArray::kDataType,fNDim,fDimensions,nbytes_compressed,fCompressionLevel);
+  
+  header.Write(os);
+  os.write( (char*)compressed_buffer,nbytes_compressed);
+  
+  delete compressed_buffer;
+#else // with USE_UNCOMPRESSED_VARRAY_FORMAT
   os.write( (char*)&fNDim      ,sizeof(int));
-  os.write( (char*)fDimensions ,sizeof(int)*6);
+  os.write( (char*)fDimensions ,sizeof(Int_t)*6);
   os.write( (char*)fArray,fSize*sizeof(double) );
+#endif //USE_UNCOMPRESSED_VARRAY_FORMAT
   os.close();
   return;
 }
@@ -492,5 +568,10 @@ void VALORArray::Resize(int dim1, int dim2, int dim3, int dim4, int dim5, int di
     else break;
   }
   this->Construct(ndim, dimensions);
+}
+//________________________________________________________________________________________
+void VALORArray::SetCompressionLevel(int level)
+{
+  fCompressionLevel = level;
 }
 //________________________________________________________________________________________

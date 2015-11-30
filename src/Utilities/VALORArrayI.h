@@ -3,12 +3,12 @@
 
 \class    valor::VALORArrayI
 
-\brief    N-dimensional array (for N<=6), but with integers
+\brief    N-dimensional array (for N<=6). Should be replaced with template class for different types.
 
 \author   Steve Dennis <stephen.dennis \at warwick.ac.uk>
           University of Warwick, Rutherford Appleton Laboratory
 
-\created  Februrary 2015
+\created  Feb 2015
 
 */
 //____________________________________________________________________________
@@ -20,8 +20,11 @@
 #include <vector>
 
 #include "Conventions/Build.h"
+#include "Utilities/VALORArrayHeader.h"
 
 namespace valor {
+  
+class VALORArray;
 
 class VALORArrayI: public TNamed
 {
@@ -33,6 +36,7 @@ public:
   VALORArrayI(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
   VALORArrayI(std::string file_to_read); // Read from a file
   VALORArrayI(const VALORArrayI & arr);
+  VALORArrayI(const VALORArray  & arr); // Copy from VALORArray of doubles
  ~VALORArrayI();
   
   // Retrives size of total array, or size of dimension
@@ -90,6 +94,9 @@ public:
   
   void CopyFrom(const VALORArrayI & arr);
   
+  // Compression info
+  void SetCompressionLevel(int level);
+  
 private:
   int fNDim;
   int fSize;
@@ -100,10 +107,16 @@ private:
   int * fArray;    //[fSize] Stores actual contents of array
   std::string fNames[6]; //Store the dimension names if we need them.
   
-  void Construct(int nd, const int * dimensions);
+  void Construct (int nd, const int   * dimensions);
+  void ConstructT(int nd, const Int_t * dimensions); // Copy of the above, using aliased type
   void Cleanup();
   
-ClassDef(VALORArrayI, 2)
+  int fCompressionLevel; // For our own file writing interface only.
+  
+  static const VALORArrayHeader::kVArrayType kDataType = VALORArrayHeader::kVATInt;
+  
+  
+ClassDef(VALORArrayI, 3)
 };
 
 } //valor

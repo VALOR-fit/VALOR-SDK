@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "Conventions/Build.h"
+#include "Utilities/VALORArrayHeader.h"
 
 namespace valor { 
   
@@ -93,20 +94,29 @@ public:
   
   void CopyFrom(const VALORArray & arr);
   
+  // Compression info
+  void SetCompressionLevel(int level);
+  
 private:
   int fNDim;
   int fSize;
   
-  int fDimensions[6]; // Stores size of each dimension
+  Int_t fDimensions[6]; // Stores size of each dimension
   int * fIncrement;   //[fNDim] Stores number to increment in main array to get +1 in this dimension
   
   double * fArray;    //[fSize] Stores actual contents of array
   std::string fNames[6]; //Store the dimension names if we need them.
   
-  void Construct(int nd, const int * dimensions);
+  void Construct (int nd, const int   * dimensions);
+  void ConstructT(int nd, const Int_t * dimensions); // Copy of the above, using aliased type
   void Cleanup();
   
-ClassDef(VALORArray, 2)
+  int fCompressionLevel; // For our own file writing interface only.
+  
+  static const VALORArrayHeader::kVArrayType kDataType = VALORArrayHeader::kVATDouble;
+  
+  
+ClassDef(VALORArray, 3)
 };
 
 } //valor

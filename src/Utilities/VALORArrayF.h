@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "Conventions/Build.h"
+#include "Utilities/VALORArrayHeader.h"
 
 namespace valor {
   
@@ -93,6 +94,9 @@ public:
   
   void CopyFrom(const VALORArrayF & arr);
   
+  // Compression info
+  void SetCompressionLevel(int level);
+  
 private:
   int fNDim;
   int fSize;
@@ -103,10 +107,16 @@ private:
   float * fArray;    //[fSize] Stores actual contents of array
   std::string fNames[6]; //Store the dimension names if we need them.
   
-  void Construct(int nd, const int * dimensions);
+  void Construct (int nd, const int   * dimensions);
+  void ConstructT(int nd, const Int_t * dimensions); // Copy of the above, using aliased type
   void Cleanup();
   
-ClassDef(VALORArrayF, 2)
+  int fCompressionLevel; // For our own file writing interface only.
+  
+  static const VALORArrayHeader::kVArrayType kDataType = VALORArrayHeader::kVATFloat;
+  
+  
+ClassDef(VALORArrayF, 3)
 };
 
 } //valor
