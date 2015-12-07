@@ -16,8 +16,6 @@ ChangeLog:
 #include <fstream>
 #include <numeric>
 
-#include "RZip.h" // ROOT compression
-
 #include "Utilities/UtlSystem.h"
 
 #include "Utilities/VALORArray.h"
@@ -42,6 +40,10 @@ ClassImp(VALORArray);
 //#define DEBUG_VA_ADDRESS
 //#define VALORARRAY_USE_GSL
 //#define USE_UNCOMPRESSED_VARRAY_FORMAT
+
+// Compression function prototypes. Declared in RZip.h for ROOT versions above 5.34.21, but we can't rely on that.
+extern "C" void R__zip(int cxlevel, int *srcsize, char *src, int *tgtsize, char *tgt, int *irep);
+extern "C" void R__unzip(int *srcsize, unsigned char *src, int *tgtsize, unsigned char *tgt, int *irep);
 
 //________________________________________________________________________________________
 VALORArray::VALORArray() :

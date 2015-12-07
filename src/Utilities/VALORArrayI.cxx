@@ -16,8 +16,6 @@ ChangeLog:
 #include <fstream>
 #include <numeric>
 
-#include "RZip.h" // ROOT compression
-
 #include "Utilities/UtlSystem.h"
 
 #include "Utilities/VALORArray.h"
@@ -27,6 +25,10 @@ ChangeLog:
 #include "gsl/gsl_vector.h"
 #include "gsl/gsl_blas.h"
 #endif
+
+// Compression function prototypes. Declared in RZip.h for ROOT versions above 5.34.21, but we can't rely on that.
+extern "C" void R__zip(int cxlevel, int *srcsize, char *src, int *tgtsize, char *tgt, int *irep);
+extern "C" void R__unzip(int *srcsize, unsigned char *src, int *tgtsize, unsigned char *tgt, int *irep);
 
 using namespace valor;
 using std::vector;
