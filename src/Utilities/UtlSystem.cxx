@@ -9,6 +9,7 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <iostream>
+#include <cstdlib>
 
 #include "Utilities/UtlSystem.h"
 #include "Conventions/Opt.h"
