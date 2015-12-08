@@ -70,17 +70,17 @@ void Env::AutoSet(Option_t * app)
        fAppName         = "t2xk";
     }//topdir
   }
-
-  if(valor_app.find("lbnx") != string::npos) {
-    const char * topdir = gSystem->Getenv("VALOR_LBNX");
+  
+  if(valor_app.find("dune") != string::npos) {
+    const char * topdir = gSystem->Getenv("VALOR_DUNE");
     if(topdir) {
        fTopLevelDir     = topdir;
        fTopLevelDataDir = fTopLevelDir + "/data/";
        fTopLevelConfDir = fTopLevelDir + "/config/";
-       fAppName         = "lbnx";
+       fAppName         = "dune";
     }//topdir
   }
-
+  
   if(valor_app.find("fmwk") != string::npos) {
     const char * topdir = gSystem->Getenv("VALOR_FMWK");
     if(topdir) {
