@@ -137,7 +137,7 @@ double valor::util::ChisqPoisson(double ndata, double nmc)
   //   return 2. * (nmc-ndata);
 }
 //____________________________________________________________________________
-TMatrixD valor::util::CholeskyDecomposition(TMatrixD& cov_matrix)
+TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 {
 // Perform a Cholesky decomposition of the input covariance matrix and
 // return the lower triangular matrix
@@ -210,7 +210,7 @@ TMatrixD valor::util::CholeskyDecomposition(TMatrixD& cov_matrix)
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParams (
-    TMatrixD& cholesky_triangular, TVectorD& mean_params) 
+    const TMatrixD& cholesky_triangular, TVectorD& mean_params) 
 {
 // Generate a vector of correlated params
 
@@ -267,7 +267,7 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams (
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParams (
- TMatrixD& cholesky_triangular, TVectorD& mean_params, TVectorD& g_uncorrelated) 
+ const TMatrixD& cholesky_triangular, TVectorD& mean_params, TVectorD& g_uncorrelated) 
 {
 // Generate a vector of correlated params
 
@@ -325,7 +325,7 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams (
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParamVariations (
-    TMatrixD& cholesky_triangular) 
+    const TMatrixD& cholesky_triangular) 
 {
 // Generate a vector of correlated params
 
@@ -352,7 +352,7 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParamVariations (
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyCalculateCorrelatedParamVariations (
-    TMatrixD& cholesky_triangular, TVectorD & g_uncorrelated) 
+    const TMatrixD& cholesky_triangular, TVectorD & g_uncorrelated) 
 {
 // Generate a vector of correlated params
 

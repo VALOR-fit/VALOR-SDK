@@ -59,11 +59,11 @@ namespace util {
   // Cholesky decomposition
   //
 
-  TMatrixD CholeskyDecomposition                     (TMatrixD& cov);                 ///< Cholesky decomposition. Return lower triangular matrix.
-  TVectorD CholeskyGenerateCorrelatedParams          (TMatrixD& Lch, TVectorD& mean); ///< Generate a vector of correlated params
-  TVectorD CholeskyGenerateCorrelatedParams          (TMatrixD& Lch, TVectorD& mean, TVectorD& g_uncorrelated); ///< Generate a vector of correlated params
-  TVectorD CholeskyGenerateCorrelatedParamVariations (TMatrixD& Lch);                 ///< Generate a vector of correlated param variations
-  TVectorD CholeskyCalculateCorrelatedParamVariations(TMatrixD& Lch, TVectorD& g);    ///<
+  TMatrixD CholeskyDecomposition                     (const TMatrixD& cov);                 ///< Cholesky decomposition. Return lower triangular matrix.
+  TVectorD CholeskyGenerateCorrelatedParams          (const TMatrixD& Lch, TVectorD& mean); ///< Generate a vector of correlated params
+  TVectorD CholeskyGenerateCorrelatedParams          (const TMatrixD& Lch, TVectorD& mean, TVectorD& g_uncorrelated); ///< Generate a vector of correlated params
+  TVectorD CholeskyGenerateCorrelatedParamVariations (const TMatrixD& Lch);                 ///< Generate a vector of correlated param variations
+  TVectorD CholeskyCalculateCorrelatedParamVariations(const TMatrixD& Lch, TVectorD& g);    ///<
 
   //
   // Functions randomizing oscillation params (for use when params are marginalized)
