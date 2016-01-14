@@ -28,6 +28,8 @@
 #include <TVectorD.h>
 #include <TMatrixD.h>
 #include <TH1D.h>
+#include <TH2D.h>
+#include <TH3D.h>
 #include <TSpline.h>
 
 class TGraph;
@@ -35,6 +37,7 @@ class TH1;
 class TH1F;
 class TH1D;
 class TH2D;
+class TH3D;
 class TAxis;
 
 using std::string;
@@ -60,8 +63,10 @@ namespace util {
 
   TFile *          XML2TFile         (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TH1F *           XML2TH1F          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TGraph *         XML2TGraph        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TH1D *           XML2TH1D          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TH2D *           XML2TH2D          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
+  TH3D *           XML2TH3D          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TTree *          XML2TTree         (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TVectorD *       XML2TVectorD      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TMatrixDSym *    XML2TMatrixDSym   (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");

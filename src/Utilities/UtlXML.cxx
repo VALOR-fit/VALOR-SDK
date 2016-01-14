@@ -21,6 +21,7 @@ ChangeLog:
 #include <TGraph.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <TH3.h>
 #include <TAxis.h>
 #include <TVectorD.h>
 #include <TMatrixD.h>
@@ -405,6 +406,40 @@ TH1D * valor::util::XML2TH1D(
   return hcopy;
 }
 //____________________________________________________________________________________________________
+TGraph * valor::util::XML2TGraph(
+                             TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
+{
+    // Get a TGraph instance from the info in the input XML config file
+    //
+    LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+    
+    string filename = XML2RootFileName(xml_eng,top_node,node_path);
+    string objname  = XML2RootObjName (xml_eng,top_node,node_path);
+    
+    string used_base_dir = base_dir;
+    if(base_dir.find("<env>") != string::npos) {
+        used_base_dir = Env::Instance()->TopLevelDataDir();
+    }
+    
+    const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+    
+    TFile file(full_filename,"read");
+    TGraph * h = (TGraph*)file.Get(objname.c_str());
+    if(!h) {
+        LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+        file.Close();
+        exit(1);
+    }
+    
+    TGraph * hcopy = new TGraph(*h);
+    
+    delete h;
+    file.Close();
+    
+    return hcopy;
+}
+
+//____________________________________________________________________________________________________
 TH2D * valor::util::XML2TH2D(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
@@ -437,6 +472,40 @@ TH2D * valor::util::XML2TH2D(
   file.Close();
 
   return h2copy;
+}
+//____________________________________________________________________________________________________
+TH3D * valor::util::XML2TH3D(
+                             TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
+{
+    // Get a TH3D instance from the info in the input XML config file
+    //
+    LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+    
+    string filename = XML2RootFileName(xml_eng,top_node,node_path);
+    string objname  = XML2RootObjName (xml_eng,top_node,node_path);
+    
+    string used_base_dir = base_dir;
+    if(base_dir.find("<env>") != string::npos) {
+        used_base_dir = Env::Instance()->TopLevelDataDir();
+    }
+    
+    const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+    
+    TFile file(full_filename,"read");
+    TH3D * h2 = (TH3D*)file.Get(objname.c_str());
+    if(!h2) {
+        LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+        file.Close();
+        exit(1);
+    }
+    
+    TH3D * h2copy = new TH3D(*h2);
+    h2copy->SetDirectory(0);
+    
+    delete h2;
+    file.Close();
+    
+    return h2copy;
 }
 //____________________________________________________________________________________________________
 TTree * valor::util::XML2TTree(
