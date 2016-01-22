@@ -3,16 +3,14 @@
 #
 # VALOR framework code setup script for RAL (no CVMFS)
 #
-# Input argument: top-level directory
+# Input argument: top-level <directory>
 #
 
-export VALOR_FMWK=$1
-
-#export VALOR_FMWK="${1}"
-#if [ -z "$VALOR_FMWK" ]; then
-#    source="$( readlink -m "${BASH_SOURCE[0]}" )"
-#      export VALOR_FMWK="$( dirname "$( dirname "${source}" )" )/" # Directory above the one containing this file
-#fi
+export VALOR_FMWK="${1}"
+if [ -z "$VALOR_FMWK" ]; then
+    source="$( readlink -m "${BASH_SOURCE[0]}" )"
+      export VALOR_FMWK="$( dirname "$( dirname "${source}" )" )/" # Directory above the one containing this file
+fi
 
 export ROOTSYS=/opt/ppd/t2k/softw/ROOT/builds/SL6.x86_64/v5.34.30/
 
