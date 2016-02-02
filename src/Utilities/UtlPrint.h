@@ -1,0 +1,38 @@
+//____________________________________________________________________________
+/*!
+
+\class     valor::utils
+
+\brief     Utilities for printing ROOT objects in a neat way
+
+\author    Steve Dennis <stephen.dennis \at warwick.ac.uk>
+           University of Warwick
+          
+\created   Feb 01, 2016
+
+\copyright (c) 2010-2016, The VALOR group.
+
+*/
+//____________________________________________________________________________
+
+#ifndef _valor_print_utils_h_
+#define _valor_print_utils_h_
+
+#include "TVector.h"
+#include "TMatrix.h"
+#include <iostream>
+
+namespace valor {
+namespace util {
+
+  void PrintVector    (const TVectorD & v, int w=15, int prec=9, Option_t * opt="", std::ostream & stream = std::cout);
+  void PrintVectorPair(const TVectorD & current, const TVectorD & nominal, int w=15, int prec=9, Option_t * option="", std::ostream & stream = std::cout);
+  void PrintMatrix    (const TMatrixD & m, int w=15, int prec=9, std::ostream & stream = std::cout);
+  //~ void PrintMatrixTeX (const TMatrixD & m, int w=20, int prec=9, std::ostream & stream = std::cout, TString opt = "");
+  
+} // util
+} // valor
+  
+#endif
+
+
