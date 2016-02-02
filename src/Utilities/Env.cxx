@@ -70,8 +70,7 @@ void Env::AutoSet(Option_t * app)
        fAppName         = "t2xk";
     }//topdir
   }
-  
-  if(valor_app.find("dune") != string::npos) {
+  else if(valor_app.find("dune") != string::npos) {
     const char * topdir = gSystem->Getenv("VALOR_DUNE");
     if(topdir) {
        fTopLevelDir     = topdir;
@@ -80,8 +79,7 @@ void Env::AutoSet(Option_t * app)
        fAppName         = "dune";
     }//topdir
   }
-  
-  if(valor_app.find("fmwk") != string::npos) {
+  else if(valor_app.find("fmwk") != string::npos) {
     const char * topdir = gSystem->Getenv("VALOR_FMWK");
     if(topdir) {
        fTopLevelDir     = topdir;
@@ -89,6 +87,9 @@ void Env::AutoSet(Option_t * app)
        fTopLevelConfDir = fTopLevelDir + "/config/";
        fAppName         = "fmwk";
     }//topdir
+  }
+  else {
+    std::cerr<<"Failed to Autoset Environment variables for app: "<<app<<endl;
   }
 }
 //________________________________________________________________________________________
