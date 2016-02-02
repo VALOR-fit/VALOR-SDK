@@ -492,7 +492,7 @@ void VALORArrayI::ReadFile(std::string file_to_read) {
   R__unzip(&compressed_data_size,compressed_buffer,&out_data_size,(unsigned char *)fArray, &result);
   //~ cerr<<"Post: Arguments are "<<compressed_data_size<<"\t"<<(void*)compressed_buffer<<"\t"<<out_data_size<<"\t"<<(void*)fArray<<"\t"<<result<<std::endl;
   
-  assert(result==sizeof(int)*fSize);
+  assert((size_t)result==sizeof(int)*fSize);
 #else // with USE_UNCOMPRESSED_VARRAY_FORMAT
   int ndim = 0;
   int dims[6] = {};
