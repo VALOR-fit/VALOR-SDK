@@ -8,21 +8,21 @@
 #pragma link C++ namespace valor::conv;
 #pragma link C++ namespace valor::util;
 
-#pragma link C++ class valor::VALORArray;
-#pragma link C++ class valor::VALORArrayI;
-#pragma link C++ class valor::VALORArrayF;
+#pragma link C++ class valor::VALORArray+;
+#pragma link C++ class valor::VALORArrayI+;
+#pragma link C++ class valor::VALORArrayF+;
 
-#pragma link C++ class valor::VALORArrayHeader;
+#pragma link C++ class valor::VALORArrayHeader+;
 
-#pragma link C++ class valor::Env;
-#pragma link C++ class valor::Rnd;
-#pragma link C++ class valor::NuOsc3Flavour;
-#pragma link C++ class valor::NuOscSterile;
+#pragma link C++ class valor::Env+;
+#pragma link C++ class valor::Rnd+;
+#pragma link C++ class valor::NuOsc3Flavour+;
+#pragma link C++ class valor::NuOscSterile+;
 
-#pragma link C++ class valor::util::OscParams;
-#pragma link C++ class valor::RunOpt;
+#pragma link C++ class valor::util::OscParams+;
+#pragma link C++ class valor::RunOpt+;
 
-#pragma link C++ class valor::util::NameRegistry;
+#pragma link C++ class valor::util::NameRegistry+;
 
 
 #endif

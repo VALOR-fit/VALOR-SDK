@@ -7,6 +7,6 @@
 #pragma link C++ namespace log4cpp;
 #pragma link C++ namespace valor;
 
-#pragma link C++ class valor::Messenger;
+#pragma link C++ class valor::Messenger+;
 
 #endif

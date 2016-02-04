@@ -7,7 +7,7 @@
 #pragma link C++ namespace valor;
 #pragma link C++ namespace valor::util::example01;
 
-#pragma link C++ class valor::X01Data;
-#pragma link C++ class valor::X01Model;
+#pragma link C++ class valor::X01Data+;
+#pragma link C++ class valor::X01Model+;
 
 #endif

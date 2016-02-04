@@ -20,7 +20,7 @@
 #pragma link C++ enum  valor::conv::PhysParamId_t;
 #pragma link C++ enum  valor::conv::PhysHypothesis_t;
 
-#pragma link C++ class valor::Opt;
-#pragma link C++ class valor::Opt::Persistable;
+#pragma link C++ class valor::Opt+;
+#pragma link C++ class valor::Opt::Persistable+;
 
 #endif
