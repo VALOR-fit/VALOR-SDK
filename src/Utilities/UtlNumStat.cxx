@@ -36,11 +36,13 @@ ChangeLog:
 #include <TXMLEngine.h>
 #include <TFile.h>
 #include <TSystem.h>
+#include <TDecompSVD.h>
 
 #include "Conventions/Constants.h"
 #include "Conventions/PhysHypothesisId.h"
 #include "Conventions/Opt.h"
 #include "Utilities/UtlNumStat.h"
+#include "Utilities/UtlSystem.h"
 #include "Utilities/Rnd.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
@@ -876,5 +878,26 @@ int, double *, double *, double *
   std::cerr<<"GSL Disabled"<<std::endl;
   exit(-1);
 #endif
+}
+//____________________________________________________________________________
+TMatrixD valor::util::CovarianceMatrixToCorrelationMatrix(const TMatrixD & cov_m)
+{
+  int n = cov_m.GetNrows();
+  TMatrixD corr_m(n,n);
+  for (int ii = 0 ; ii < n; ii++) {
+    for (int jj = 0 ; jj < n; jj++) {
+      corr_m[ii][jj] = cov_m[ii][jj] / sqrt(cov_m[ii][ii] * cov_m[jj][jj]);
+    }
+  }
+  return corr_m;
+}
+//____________________________________________________________________________
+TMatrixD valor::util::MatrixPseudoInverted(const TMatrixD & m)
+{
+  TDecompSVD svd(m);
+  TMatrixD output(m);
+  //~ bool status =
+  svd.Invert(output);
+  return output;
 }
 //____________________________________________________________________________
