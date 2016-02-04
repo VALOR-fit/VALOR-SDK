@@ -1,3 +1,3 @@
 #!/bin/sh
 
-root $VALOR_FMWK/root/valor_interpreter.C $*
+root -l $VALOR_FMWK/root/valor_interpreter.C $*

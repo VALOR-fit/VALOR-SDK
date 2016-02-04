@@ -15,4 +15,5 @@ void valor_interpreter()
     gROOT->ProcessLine(loadlibs.Data());    
     
     TString loadutils = ".x " + top_dir + "/root/valor_utils.C";
+    gROOT->ProcessLine(loadutils.Data());   
 }
