@@ -450,6 +450,7 @@ PhysParamList FitParamList::AsPhysParamList(Option_t * option) const
 void FitParamList::FromPhysParamList(valor::PhysParamList pl, Option_t * option, bool skip_osc_params)
 {
   TString opt(option);
+  if (opt.Contains("skiposc")) {skip_osc_params = true;}
   map<PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
   for( ; iter != fIdMap.end(); ++iter)
   {

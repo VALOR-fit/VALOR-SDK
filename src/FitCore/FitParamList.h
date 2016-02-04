@@ -140,7 +140,7 @@ public:
 
    // copy initial, current or best-fit values to a PhysParamList 
    valor::PhysParamList AsPhysParamList(Option_t * option = "current") const;
-   void FromPhysParamList(valor::PhysParamList pl, Option_t * option, bool skip_osc_params);
+   void FromPhysParamList(valor::PhysParamList pl, Option_t * option, bool skip_osc_params = false); // skip_osc_params is deprecated. Use option "skiposc" instead.
 
    // Get number of free (not fixed) parameters
    int GetNumberFreeParameters(void);
