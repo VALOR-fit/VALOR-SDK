@@ -12,6 +12,7 @@ ChangeLog:
 #include "TVector.h"
 
 #include <iomanip>
+#include <cmath>
 
 #include "Conventions/Constants.h"
 #include "Utilities/UtlPrint.h"
