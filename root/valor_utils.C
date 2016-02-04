@@ -124,21 +124,8 @@ void config_mesg()
   valor::util::Verbosity(verbosity.Data());
 }
 
-void valor()
-{   
-    TString curr_dir = gSystem->pwd();
-    gSystem->cd(curr_dir.Data());
-
-    TString top_dir = gSystem->Getenv("VALOR_FMWK");
-
-    TString loadincs = ".x " + top_dir + "/root/loadincs.C";
-    TString loadlibs = ".x " + top_dir + "/root/loadlibs.C";
- 
-    gROOT->ProcessLine(loadincs.Data());    
-    gROOT->ProcessLine(loadlibs.Data());    
-
-    change_prompt();
-
+void valor_utils()
+{
     define_valor_style();
     gROOT->SetStyle("VALOR");
 
