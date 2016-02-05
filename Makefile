@@ -22,7 +22,8 @@ BUILD_TARGETS =    print-make-info     \
 		   build-messenger     \
 		   build-parser        \
 		   build-core-fitter   \
-		   build-example-fits 
+		   build-example-fits  \
+		   copy-rootdict-to-lib
 
 # define targets
 
@@ -73,6 +74,12 @@ build-example-fits: make-bin-lib-dir FORCE
 	@echo "** Building Example packages..."
 	$(MAKE) -C "${VALOR_FMWK}/src/Examples/X01"
 
+copy-rootdict-to-lib: make-bin-lib-dir FORCE
+	@echo " "
+	@echo -n "** Copying ROOT dictionary PCM files to ${VALOR_FMWK}/lib ..."
+	$(shell find "${VALOR_FMWK}/src/" -name "_RootDict*_rdict.pcm" | xargs -n 1 -I_ cp _ "${VALOR_FMWK}/lib/" )
+	@echo " done\n"
+
 make-bin-lib-dir: FORCE
 	@echo " "
 	@echo "** Creating VALOR framework lib and bin directories..."
@@ -114,6 +121,7 @@ clean-files: FORCE
 	cd Examples/X01;            make clean; cd ..; \
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm ./bin/*;\
+        [ ! -d ./lib ] || rm ./lib/*_rdict.pcm;\
 	cd $(VALOR_FMWK)
 
 clean-dir: FORCE

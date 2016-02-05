@@ -54,7 +54,7 @@ void define_valor_style()
 
   // use bold lines and markers
   valorStyle->SetMarkerStyle(20);
-  valorStyle->SetHistLineWidth(1.85);
+  valorStyle->SetHistLineWidth(2);
   valorStyle->SetLineStyleString(2,"[12 12]"); // postscript dashes
 
   // get rid of X error bars and y error bar caps
@@ -78,7 +78,7 @@ void define_valor_style()
   valorStyle->SetTextFont(42); //less bold
 
   // Add a greyscale palette for 2D plots
-  /*
+  
   int ncol=50;
   double dcol = 1./float(ncol);
   double gray = 1;
