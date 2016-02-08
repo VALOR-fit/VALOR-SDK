@@ -24,6 +24,7 @@ ChangeLog:
 #include "FitCore/FitParamList.h"
 
 #include "Utilities/NameRegistry.h"
+#include "Utilities/UtlSystem.h"
 
 using std::vector;
 using std::cout;
@@ -451,20 +452,41 @@ void FitParamList::FromPhysParamList(valor::PhysParamList pl, Option_t * option,
 {
   TString opt(option);
   if (opt.Contains("skiposc")) {skip_osc_params = true;}
+  
+  bool silently_pass_missing_parameters = opt.Contains("silent");
+  bool type_to_update_not_found = false;
+  
   map<PhysParamId_t, int>::const_iterator iter = fIdMap.begin();
   for( ; iter != fIdMap.end(); ++iter)
   {
     PhysParamId_t p = iter->first;
-    if(skip_osc_params && !util::IsSystematic(p))
-      continue;
+    if(skip_osc_params && !util::IsSystematic(p)) {continue;}
+    
     int ip = iter->second;
-    double input = pl.Value(p);
-    if(input > -99998) {
-      if      ( opt.Contains("initial")  ) fInitValue[ip]    = input;
-      else if ( opt.Contains("current")  ) fCurrValue[ip]    = input;
-      else if ( opt.Contains("best-fit") ) fBestFitValue[ip] = input;
+    if (pl.Contains(p)) {
+      double input = pl.Value(p);
+      if      ( opt.Contains("initial")  ) {fInitValue[ip]    = input;}
+      else if ( opt.Contains("current")  ) {fCurrValue[ip]    = input;}
+      else if ( opt.Contains("best-fit") ) {fBestFitValue[ip] = input;}
+      else {
+        type_to_update_not_found = true;
+      }
     }
+    else {
+      if (!silently_pass_missing_parameters) {
+        cout << "FitParamList/FromPhysParamList >> Skipping parameter not found in PhysParamList: "
+             << util::NameRegistry::Instance()->AsString(p) <<endl;
+      }
+    }
+  } //iter
+  
+  if (type_to_update_not_found) {
+    cerr<<"FitParamList/FromPhysParamList >> Could not find appropriate parameter type to update in option string "
+        <<option<<". Please specify one of 'initial', 'current' or 'best-fit'"<<endl;
+        util::Die(-1);
   }
+  
+  return;
 }
 //________________________________________________________________________________________
 int FitParamList::GetNumberFreeParameters(void)

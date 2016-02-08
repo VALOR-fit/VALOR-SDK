@@ -69,7 +69,7 @@ double PhysParamList::Value(PhysParamId_t p) const
 {
   map<int,double>::const_iterator it = fParams.find(p);
   if(it == fParams.end()) {
-     cerr << "PhysParamList >> Parameter [" 
+     cerr << "PhysParamList/Value >> Parameter [" 
           << util::NameRegistry::Instance()->AsString(p) << "] was not set!" << endl;
      return -99999;
   } 
