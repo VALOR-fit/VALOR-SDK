@@ -77,8 +77,9 @@ build-example-fits: make-bin-lib-dir FORCE
 copy-rootdict-to-lib: make-bin-lib-dir FORCE
 	@echo " "
 	@echo -n "** Copying ROOT dictionary PCM files to ${VALOR_FMWK}/lib ..."
-	$(shell find "${VALOR_FMWK}/src/" -name "_RootDict*_rdict.pcm" | xargs -n 1 -I_ cp _ "${VALOR_FMWK}/lib/" )
-	@echo " done\n"
+	$(shell find "${VALOR_FMWK}/src/" -name "_RootDict*_rdict.pcm" | xargs -n 1 -I{} cp {} "${VALOR_FMWK}/lib/" )
+	@echo " done"
+	@echo
 
 make-bin-lib-dir: FORCE
 	@echo " "
