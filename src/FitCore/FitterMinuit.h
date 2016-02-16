@@ -71,6 +71,7 @@ protected:
    double      fTol;                 ///< set tolerance
    int         fStr;
    int         fPrintLevel;
+   int         fMaxNumCalls;
 };
 
 } // valor

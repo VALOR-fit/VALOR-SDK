@@ -65,9 +65,10 @@ void FitterMinuit::Init(void)
   fCalcHesseErrors     = false;
   fCalcMinosErrors     = false;
 //fSimplex             = false;
-  fTol                 = 0.01;
+  fTol                 = 0.1; // 0.01;
   fStr                 = 1;
-  fPrintLevel          = -1;
+  fPrintLevel          = -1; // 3;
+  fMaxNumCalls         = 100000;
   fMigradMinStatusCode = -999;
   fMigradErrStatusCode = -999;      
   fHesseErrStatusCode  = -999; 
@@ -249,8 +250,6 @@ bool FitterMinuit::DoTheFit(void)
   }
 */
 
-
-
   if(fMigradMinStatusCode == 4) {
     LOG("Minuit", pWARN) << "Fit failed...";
     if( fOption.Contains("with_simplex_fallback") ) 
@@ -318,8 +317,9 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   LOG("Minuit", pINFO) << "Running " << ((use_simplex) ? "SIMPLEX..." : "MIGRAD... ") << TTimeStamp().AsString();
 #endif
   Double_t arglist[100];
-  arglist[0] = 50000; // num of func calls
-  arglist[1] = fTol;  // tolerance
+  arglist[0] = fMaxNumCalls; 
+  arglist[1] = fTol;  
+
   if(!use_simplex) {
     /*
     //in disappearance mode, when fitting for deltacp, do two fits - fit everything but deltacp, then fit only deltacp
