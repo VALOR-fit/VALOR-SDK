@@ -70,6 +70,7 @@ protected:
    bool        fCalcMinosErrors;     ///< calculate MINOS errors?
    double      fTol;                 ///< set tolerance
    int         fStr;
+   int         fPrintLevel;
 };
 
 } // valor

@@ -67,26 +67,13 @@ void FitterMinuit::Init(void)
 //fSimplex             = false;
   fTol                 = 0.01;
   fStr                 = 1;
+  fPrintLevel          = -1;
   fMigradMinStatusCode = -999;
   fMigradErrStatusCode = -999;      
   fHesseErrStatusCode  = -999; 
   fMinosErrStatusCode  = -999; 
   fFitTime             = 0;
   fFitTries            = 0;
-}
-//____________________________________________________________________________ 
-int FitterMinuit::FitStatusCode (Option_t * option) 
-{ 
-  if(!option) return 9999;
-
-  TString opt(option);
-
-  if ( opt.Contains("migrad_min") ) return fMigradMinStatusCode;
-  if ( opt.Contains("migrad_err") ) return fMigradErrStatusCode;
-  if ( opt.Contains("hesse_err")  ) return fHesseErrStatusCode;
-  if ( opt.Contains("minos_err")  ) return fMinosErrStatusCode;
-  
-  return -999;
 }
 //____________________________________________________________________________ 
 void FitterMinuit::Init(FitInputs * fit_inputs, Option_t * option) 
@@ -119,7 +106,7 @@ void FitterMinuit::Init(FitInputs * fit_inputs, Option_t * option)
     
     // set print level
     Double_t arglist[5];
-    arglist[0] = -1;
+    arglist[0] = fPrintLevel;
     fitter->ExecuteCommand("SET PRINT",arglist,1);
     
     // set params
@@ -136,7 +123,7 @@ void FitterMinuit::Init(FitInputs * fit_inputs, Option_t * option)
     
     // set print level              
     Double_t arglist[5];
-    arglist[0] = -1;
+    arglist[0] = fPrintLevel;
     fitter->ExecuteCommand("SET PRINT",arglist,1);
     
     // set params                
@@ -178,7 +165,7 @@ bool FitterMinuit::DoTheFit(void)
   TVirtualFitter * fitter = TVirtualFitter::Fitter(0,param_list_size);
   // set print level
   Double_t arglist[5];
-  arglist[0] = -1;
+  arglist[0] = fPrintLevel;
   fitter->ExecuteCommand("SET PRINT",arglist,1);
   
   // set params
@@ -262,10 +249,16 @@ bool FitterMinuit::DoTheFit(void)
   }
 */
 
+
+
   if(fMigradMinStatusCode == 4) {
-    LOG("Minuit", pWARN) << "Fits still failed; trying SIMPLEX";
-    this->RunOnce(true);
-    fFitTries = 99;
+    LOG("Minuit", pWARN) << "Fit failed...";
+    if( fOption.Contains("with_simplex_fallback") ) 
+    {
+       LOG("Minuit", pWARN) << "Trying SIMPLEX";
+       this->RunOnce(true);
+       fFitTries++;
+    }
   }  
 
   // stop clock
@@ -288,7 +281,6 @@ bool FitterMinuit::DoTheFit(void)
   fFitInputs->FitParams().SetStatusCode("migrad_min", fMigradMinStatusCode);
   fFitInputs->FitParams().SetStatusCode("migrad_err", fMigradErrStatusCode);
 
-
   if(fCalcHesseErrors) {
     fFitInputs->FitParams().SetStatusCode("hesse_err", fHesseErrStatusCode);
   }
@@ -300,7 +292,6 @@ bool FitterMinuit::DoTheFit(void)
 //____________________________________________________________________________ 
 bool FitterMinuit::RunOnce(bool use_simplex) 
 {
-
   fHesseErrStatusCode = -1;
   double fcntemp;
 
@@ -320,9 +311,11 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 #endif
   gMinuit->SetObjectFit(fFitInputs);
 
+  fitter->ExecuteCommand("SHO EPS", arg, 1);///
+
   // Run MINUIT's minimization step
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Running MIGRAD... "<<TTimeStamp().AsString();
+  LOG("Minuit", pINFO) << "Running " << ((use_simplex) ? "SIMPLEX..." : "MIGRAD... ") << TTimeStamp().AsString();
 #endif
   Double_t arglist[100];
   arglist[0] = 50000; // num of func calls
@@ -508,5 +501,19 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 #endif
 
   return true;//(fMigradErrStatusCode == 3);
+}
+//____________________________________________________________________________ 
+int FitterMinuit::FitStatusCode (Option_t * option) 
+{ 
+  if(!option) return 9999;
+
+  TString opt(option);
+
+  if ( opt.Contains("migrad_min") ) return fMigradMinStatusCode;
+  if ( opt.Contains("migrad_err") ) return fMigradErrStatusCode;
+  if ( opt.Contains("hesse_err")  ) return fHesseErrStatusCode;
+  if ( opt.Contains("minos_err")  ) return fMinosErrStatusCode;
+  
+  return -999;
 }
 //____________________________________________________________________________ 
