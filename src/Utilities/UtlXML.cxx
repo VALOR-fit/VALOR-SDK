@@ -372,6 +372,38 @@ TH1F * valor::util::XML2TH1F(
   return hcopy;
 }
 //____________________________________________________________________________________________________
+TGraph * valor::util::XML2TGraph(
+                             TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
+{
+    // Get a TH1F instance from the info in the input XML config file
+    //
+    LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+    
+    string filename = XML2RootFileName(xml_eng,top_node,node_path);
+    string objname  = XML2RootObjName (xml_eng,top_node,node_path);
+    
+    string used_base_dir = base_dir;
+    if(base_dir.find("<env>") != string::npos) {
+        used_base_dir = Env::Instance()->TopLevelDataDir();
+    }
+    
+    const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+    
+    TFile file(full_filename,"read");
+    TGraph * h = (TGraph*)file.Get(objname.c_str());
+    if(!h) {
+        LOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
+        file.Close();
+        exit(1);
+    }
+    
+    TGraph * hcopy = new TGraph(*h);
+    
+    file.Close();
+    
+    return hcopy;
+}
+//____________________________________________________________________________________________________
 TH1D * valor::util::XML2TH1D(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
@@ -405,40 +437,6 @@ TH1D * valor::util::XML2TH1D(
 
   return hcopy;
 }
-//____________________________________________________________________________________________________
-TGraph * valor::util::XML2TGraph(
-                             TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
-{
-    // Get a TGraph instance from the info in the input XML config file
-    //
-    LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
-    
-    string filename = XML2RootFileName(xml_eng,top_node,node_path);
-    string objname  = XML2RootObjName (xml_eng,top_node,node_path);
-    
-    string used_base_dir = base_dir;
-    if(base_dir.find("<env>") != string::npos) {
-        used_base_dir = Env::Instance()->TopLevelDataDir();
-    }
-    
-    const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
-    
-    TFile file(full_filename,"read");
-    TGraph * h = (TGraph*)file.Get(objname.c_str());
-    if(!h) {
-        LOG("XML",pFATAL) << "No " << objname << " in " << filename;
-        file.Close();
-        exit(1);
-    }
-    
-    TGraph * hcopy = new TGraph(*h);
-    
-    delete h;
-    file.Close();
-    
-    return hcopy;
-}
-
 //____________________________________________________________________________________________________
 TH2D * valor::util::XML2TH2D(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
@@ -535,7 +533,7 @@ TTree * valor::util::XML2TTree(
 
   return tree;
 //TTree * treecopy = tree->CloneTree();
-//file.Close();
+//file->Close();
 //return treecopy;
 }
 //____________________________________________________________________________________________________

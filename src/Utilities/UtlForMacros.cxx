@@ -41,7 +41,7 @@ std::string valor::util::FormFilePath(const char * file, const char * dir)
   FileStat_t dummy;
   string filename(Form("%s/%s/%s", Env::Instance()->TopLevelDir().c_str(), dir, file));
   if(gSystem->GetPathInfo(filename.c_str(), dummy)) {
-    cerr << "File not found: " << filename << endl;
+    cerr << "Utils/UtilForMacros/FormFilePath >> File not found: " << filename << endl;
     exit(-1);
   }
   return filename;
@@ -90,7 +90,7 @@ TH2D * valor::util::GetTH2DFromTFile(TFile * f, const char * name)
   TH2D * h = 0;
   f->GetObject(name, h);
   if(!h || h->IsZombie()) {
-    cerr << "Error: the histogram " << name << " hasn't been found" << endl;
+    cerr << "Utils/UtilForMacros/GetTH2DFromTFile >> Error: the histogram " << name << " hasn't been found" << endl;
     exit(1);
   }
   return h;

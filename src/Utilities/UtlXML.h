@@ -31,6 +31,7 @@
 #include <TH2D.h>
 #include <TH3D.h>
 #include <TSpline.h>
+#include <TGraph.h>
 
 class TGraph;
 class TH1;
