@@ -1654,7 +1654,6 @@ void FitParamList::Init(int nparams)
   fSystMode = -1;
   
   fNParams = nparams;
-  cout << "init fit param list nparams: " << fNParams << endl;
   if(nparams>0) {
     fName         = new TObjString[fNParams];
     fBestFitValue = new double[fNParams];
