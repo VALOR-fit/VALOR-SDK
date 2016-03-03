@@ -37,7 +37,7 @@ using std::ios;
 
 ClassImp(VALORArray);
 
-//#define DEBUG_VA_ADDRESS
+//#define CHECK_VA_ADDRESS
 //#define VALORARRAY_USE_GSL
 //#define USE_UNCOMPRESSED_VARRAY_FORMAT
 
@@ -91,10 +91,11 @@ void VALORArray::Construct(int nd, const int * dimensions)
   fCompressionLevel = conv::kDefaultCompressionLevel;
   assert(nd > 0 && nd <= 6);
   fNDim = nd;
-  fIncrement  = new int[nd];
+  fIncrement  = new int[6];
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = (i<nd ? dimensions[i] : 1);
     fNames[i] = "";
+    fIncrement[i] = 0;
   }
   fSize = 1;
   for (int i = fNDim-1 ; i >= 0 ; i--) {
@@ -111,10 +112,11 @@ void VALORArray::ConstructT(int nd, const Int_t * dimensions)
   fCompressionLevel = conv::kDefaultCompressionLevel;
   assert(nd > 0 && nd <= 6);
   fNDim = nd;
-  fIncrement  = new int[nd];
+  fIncrement  = new int[6];
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = (i<nd ? dimensions[i] : 1);
     fNames[i] = "";
+    fIncrement = 0;
   }
   fSize = 1;
   for (int i = fNDim-1 ; i >= 0 ; i--) {
@@ -131,11 +133,11 @@ TNamed(arr),
 fNDim(arr.fNDim),
 fSize(arr.fSize)
 {
-  fIncrement  = new int[fNDim];
+  fIncrement  = new int[6];
   fArray      = new double[fSize];
   
   memcpy(fDimensions , arr.fDimensions , 6*sizeof(Int_t));
-  memcpy(fIncrement  , arr.fIncrement  , fNDim*sizeof(int));
+  memcpy(fIncrement  , arr.fIncrement  , 6*sizeof(int));
   memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
   
   for (int i = 0 ; i < 6; i++) {
@@ -150,7 +152,7 @@ void VALORArray::CopyFrom(const VALORArray & arr)
   this->Construct(arr.GetNDim(),arr.GetDimensions());
   
   memcpy(fDimensions , arr.fDimensions , 6*sizeof(Int_t));
-  memcpy(fIncrement  , arr.fIncrement  , fNDim*sizeof(int));
+  memcpy(fIncrement  , arr.fIncrement  , 6*sizeof(int));
   memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
   
   for (int i = 0 ; i < 6; i++) {
@@ -196,12 +198,11 @@ int VALORArray::GetSize(int dim) const
 //________________________________________________________________________________________
 int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
 {
+#ifdef CHECK_VA_ADDRESS
   int indices[6] = {ind1,ind2,ind3,ind4,ind5,ind6};
-
-#ifdef DEBUG_VA_ADDRESS
-  cerr<<this->GetName()<<"\t"<<fNDim<<endl;
+  //~ cerr<<this->GetName()<<"\t"<<fNDim<<endl;
   for (int i = 0 ; i < fNDim; i++) {
-    cerr<<indices[i]<<"\t"<<fDimensions[i]<<endl;
+    //~ cerr<<indices[i]<<"\t"<<fDimensions[i]<<endl;
   }
   for (int i = 0 ; i < fNDim; i++) {
     assert(indices[i]>=0);
@@ -211,12 +212,12 @@ int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int in
   }
 #endif
   
-  int address = 0;
-  for (int i = 0 ; i < fNDim; i++) {
-    assert(indices[i]>=0); //Check correct number of dimensions specified
-    assert(indices[i] < fDimensions[i]); //Check array bounds in range.
-    address += indices[i] * fIncrement[i];
-  }
+  int address = ind1 * fIncrement[0] +
+                ind2 * fIncrement[1] +
+                ind3 * fIncrement[2] +
+                ind4 * fIncrement[3] +
+                ind5 * fIncrement[4] +
+                ind6 * fIncrement[5];
   return address;
 }
 //________________________________________________________________________________________
