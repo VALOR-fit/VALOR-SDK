@@ -10,7 +10,7 @@
 
 \created   March 30, 2014
 
-\copyright (c) 2010-2014, The VALOR group
+\copyright (c) 2010-2016, The VALOR group
 
 */
 //____________________________________________________________________________

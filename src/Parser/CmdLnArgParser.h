@@ -11,11 +11,11 @@
 
 \created    July 23, 2010
 
-\cpright    Copyright (c) 2003-2015, GENIE Neutrino MC Generator Collaboration
+\cpright    Copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
             For the full text of the license visit http://copyright.genie-mc.org
             or see $GENIE/LICENSE
 
-\copyright (c) 2010-2014, The VALOR group. 
+\copyright (c) 2010-2016, The VALOR group. 
 
 */
 //____________________________________________________________________________

@@ -10,7 +10,7 @@
 
 \created   June 03, 2014
 
-\copyright (c) 2010-2014, The VALOR group.
+\copyright (c) 2010-2016, The VALOR group.
 
 */
 //____________________________________________________________________________
@@ -36,6 +36,7 @@ public:
   string TopLevelDataDir (void) { return fTopLevelDataDir; }
   string TopLevelConfDir (void) { return fTopLevelConfDir; }
   string AppName         (void) { return fAppName;         }
+  string Banner          (void) { return fBanner;          }
 
   void AutoSet (Option_t * valor_application);
 
@@ -59,6 +60,7 @@ private:
   string fTopLevelDataDir;
   string fTopLevelConfDir;
   string fAppName;  
+  string fBanner;  
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }

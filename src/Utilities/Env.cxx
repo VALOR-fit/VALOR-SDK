@@ -1,7 +1,7 @@
 //________________________________________________________________________________________
 /*
 
-Copyright (c) 2010-2014, The VALOR group. All rights reserved.
+Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
 ChangeLog:
 
@@ -33,6 +33,7 @@ Env::Env()
   fTopLevelDataDir = "";
   fTopLevelConfDir = "";
   fAppName         = "";
+  fBanner          = "";
 
   fInstance = 0;
 }
@@ -68,6 +69,7 @@ void Env::AutoSet(Option_t * app)
        fTopLevelDataDir = fTopLevelDir + "/inputs/";
        fTopLevelConfDir = fTopLevelDir + "/config/";
        fAppName         = "t2xk";
+       fBanner          = fTopLevelDir + "/inputs/banner/banner.dat";
     }//topdir
   }
   else if(valor_app.find("dune") != string::npos) {
@@ -77,6 +79,7 @@ void Env::AutoSet(Option_t * app)
        fTopLevelDataDir = fTopLevelDir + "/data/";
        fTopLevelConfDir = fTopLevelDir + "/config/";
        fAppName         = "dune";
+       fBanner          = fTopLevelDir + "/data/banner/banner.dat";
     }//topdir
   }
   else if(valor_app.find("fmwk") != string::npos) {
@@ -86,6 +89,7 @@ void Env::AutoSet(Option_t * app)
        fTopLevelDataDir = fTopLevelDir + "/data/";
        fTopLevelConfDir = fTopLevelDir + "/config/";
        fAppName         = "fmwk";
+       fBanner          = fTopLevelDir + "/data/banner/banner.dat";
     }//topdir
   }
   else {
