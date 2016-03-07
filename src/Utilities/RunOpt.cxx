@@ -661,22 +661,22 @@ void valor::RunOpt::Read3FOscParamsOptions()
       fDm23sq[i] = fParser->ArgAsDouble(Form("dm23sq-%s", fHierStr[i].c_str()));
     
     if(fParser->OptionExists(Form("mixing12Bar-%s", fHierStr[i].c_str())))
-      fMix12[i] = fParser->ArgAsDouble(Form("mixing12Bar-%s", fHierStr[i].c_str()));
+      fMix12Bar[i] = fParser->ArgAsDouble(Form("mixing12Bar-%s", fHierStr[i].c_str()));
     
     if(fParser->OptionExists(Form("mixing13Bar-%s", fHierStr[i].c_str())))
-      fMix13[i] = fParser->ArgAsDouble(Form("mixing13Bar-%s", fHierStr[i].c_str()));
+      fMix13Bar[i] = fParser->ArgAsDouble(Form("mixing13Bar-%s", fHierStr[i].c_str()));
     
     if(fParser->OptionExists(Form("mixing23Bar-%s", fHierStr[i].c_str())))
-      fMix23[i] = fParser->ArgAsDouble(Form("mixing23Bar-%s", fHierStr[i].c_str()));
+      fMix23Bar[i] = fParser->ArgAsDouble(Form("mixing23Bar-%s", fHierStr[i].c_str()));
     
     if(fParser->OptionExists(Form("cpvBar-%s", fHierStr[i].c_str())))
-      fCPV[i] = fParser->ArgAsDouble(Form("cpvBar-%s", fHierStr[i].c_str()));
+      fCPVBar[i] = fParser->ArgAsDouble(Form("cpvBar-%s", fHierStr[i].c_str()));
     
     if(fParser->OptionExists(Form("dm12sqBar-%s", fHierStr[i].c_str())))
-      fDm12sq[i] = fParser->ArgAsDouble(Form("dm12sqBar-%s", fHierStr[i].c_str()));
+      fDm12sqBar[i] = fParser->ArgAsDouble(Form("dm12sqBar-%s", fHierStr[i].c_str()));
     
     if(fParser->OptionExists(Form("dm23sqBar-%s", fHierStr[i].c_str())))
-      fDm23sq[i] = fParser->ArgAsDouble(Form("dm23sqBar-%s", fHierStr[i].c_str()));
+      fDm23sqBar[i] = fParser->ArgAsDouble(Form("dm23sqBar-%s", fHierStr[i].c_str()));
   }//i
   if(fParser->OptionExists("beta-bar")){
     fBetaBar = fParser->ArgAsDouble("beta-bar");
