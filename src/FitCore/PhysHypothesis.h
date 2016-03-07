@@ -47,6 +47,8 @@ public:
    void Copy (const PhysHypothesis & ph);
 
    conv::PhysHypothesis_t Hypothesis (void) const { return fHypothesis; }
+   
+   bool Contains (conv::PhysParamId_t p) const;
 
    double CurrValue    (conv::PhysParamId_t p) const;
    void   SetCurrValue (conv::PhysParamId_t p, double v);

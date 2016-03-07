@@ -390,3 +390,9 @@ bool PhysHypothesis::IsNuisance(conv::PhysParamId_t p) const
   return it->second;
 }
 //________________________________________________________________________________________
+bool PhysHypothesis::Contains(conv::PhysParamId_t p) const
+{
+  map<int,double>::const_iterator it = fParams.find(p);
+  return (it != fParams.end());
+}
+//________________________________________________________________________________________
