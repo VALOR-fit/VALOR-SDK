@@ -603,13 +603,13 @@ void valor::util::OscParams::Randomize()
   bool rand_mix23_nh 		= false;
   bool rand_mix13_nh 		= false;
   bool rand_mix12_nh 		= false;
-  bool rand_dcp_nh 	 		= false;
+  bool rand_dcp_nh 	 	= false;
   bool rand_dm23sq_nh   	= false;
   bool rand_dm12sq_nh 		= false;
   bool rand_mix23_ih 		= false;
   bool rand_mix13_ih 		= false;
   bool rand_mix12_ih 		= false;
-  bool rand_dcp_ih 	 		= false;
+  bool rand_dcp_ih 	 	= false;
   bool rand_dm23sq_ih   	= false;
   bool rand_dm12sq_ih 		= false;
 
@@ -617,13 +617,13 @@ void valor::util::OscParams::Randomize()
   bool rand_mix13bar_nh 	= false;
   bool rand_mix12bar_nh 	= false;
   bool rand_dcpbar_nh 	 	= false;
-  bool rand_dm23sqbar_nh    = false;
+  bool rand_dm23sqbar_nh        = false;
   bool rand_dm12sqbar_nh 	= false;
   bool rand_mix23bar_ih 	= false;
   bool rand_mix13bar_ih 	= false;
   bool rand_mix12bar_ih 	= false;
   bool rand_dcpbar_ih 	 	= false;
-  bool rand_dm23sqbar_ih    = false;
+  bool rand_dm23sqbar_ih        = false;
   bool rand_dm12sqbar_ih 	= false;
   
   // Normal Hierarchy
@@ -650,18 +650,18 @@ void valor::util::OscParams::Randomize()
     }
     
     // deltaCP
-    par1 = -TMath::Pi();
-    par2 = +TMath::Pi();
+    par1 = params_dcp[0];
+    par2 = params_dcp[1];
     priormode = priormode_dcp;
     mixmode = "";
     if(randomize_dcp_nh){
       dcp_nh = this->ExtractParam(conv::kPhypCPV,priormode,par1,par2,mixmode);
-   	  rand_dcp_nh = true;
+      rand_dcp_nh = true;
     }
     
     // dmsq23
-    par1 = 2E-3;
-    par2 = 3E-3;
+    par1 = params_dm23sq[0];
+    par2 = params_dm23sq[1];
     priormode = priormode_dm23sq;
     mixmode = "";
     if(randomize_dm23sq_nh){
@@ -670,8 +670,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // dmsq12
-    par1 = 7.53E-5;
-    par2 = 0.18E-5;
+    par1 = params_dm12sq[0];
+    par2 = params_dm12sq[1];
     priormode = priormode_dm12sq;
     mixmode = "";
     if(randomize_dm12sq_nh){
@@ -682,17 +682,14 @@ void valor::util::OscParams::Randomize()
     // mixing12
     par1 = params_mixing12[0];
     par2 = params_mixing12[1];
-    priormode = priormode_mixing13;
+    priormode = priormode_mixing12;
     mixmode = mixmode_mixing12;
     if(randomize_mixing12_nh){
       mixing12_nh = this->ExtractParam(conv::kPhypMixing12,priormode,par1,par2,mixmode);
       rand_mix12_nh = true;
     }
-    
-    
-    
+        
     //NuBar Parameters!
-    
 
     // mixing23
     par1 = params_mixing23[0];
@@ -715,8 +712,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // deltaCP
-    par1 = -TMath::Pi();
-    par2 = +TMath::Pi();
+    par1 = params_dcp[0];
+    par2 = params_dcp[1];
     priormode = priormode_dcp;
     mixmode = "";
     if(randomize_dcpbar_nh){
@@ -725,8 +722,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // dmsq23
-    par1 = 2E-3;
-    par2 = 3E-3;
+    par1 = params_dm23sq[0];
+    par2 = params_dm23sq[1];
     priormode = priormode_dm23sq;
     mixmode = "";
     if(randomize_dm23sqbar_nh){
@@ -735,8 +732,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // dmsq12
-    par1 = 7.53E-5;
-    par2 = 0.18E-5;
+    par1 = params_dm12sq[0];
+    par2 = params_dm12sq[1];
     priormode = priormode_dm12sq;
     mixmode = "";
     if(randomize_dm12sqbar_nh){
@@ -747,7 +744,7 @@ void valor::util::OscParams::Randomize()
     // mixing12
     par1 = params_mixing12[0];
     par2 = params_mixing12[1];
-    priormode = priormode_mixing13;
+    priormode = priormode_mixing12;
     mixmode = mixmode_mixing12;
     if(randomize_mixing12bar_nh){
       mixing12bar_nh = this->ExtractParam(conv::kPhypMixing12Bar,priormode,par1,par2,mixmode);
@@ -781,8 +778,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // deltaCP
-    par1 = -TMath::Pi();
-    par2 = +TMath::Pi();
+    par1 = params_dcp[0];
+    par2 = params_dcp[1];
     priormode = priormode_dcp;
     mixmode = "";
     if(randomize_dcp_ih){
@@ -791,8 +788,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // dmsq23
-    par1 = 2E-3;
-    par2 = 3E-3;
+    par1 = params_dm23sq[0];
+    par2 = params_dm23sq[1];
     priormode = priormode_dm23sq;
     mixmode = "";
     if(randomize_dm23sq_ih){
@@ -801,8 +798,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // dmsq12
-    par1 = 7.53E-5;
-    par2 = 0.18E-5;
+    par1 = params_dm12sq[0];
+    par2 = params_dm12sq[1];
     priormode = priormode_dm12sq;
     mixmode = "";
     if(randomize_dm12sq_ih){
@@ -813,7 +810,7 @@ void valor::util::OscParams::Randomize()
     // mixing12
     par1 = params_mixing12[0];
     par2 = params_mixing12[1];
-    priormode = priormode_mixing13;
+    priormode = priormode_mixing12;
     mixmode = mixmode_mixing12;
     if(randomize_mixing12_ih){
       mixing12_ih = this->ExtractParam(conv::kPhypMixing12,priormode,par1,par2,mixmode);
@@ -841,8 +838,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // deltaCP
-    par1 = -TMath::Pi();
-    par2 = +TMath::Pi();
+    par1 = params_dcp[0];
+    par2 = params_dcp[1];
     priormode = priormode_dcp;
     mixmode = "";
     if(randomize_dcpbar_ih){
@@ -851,8 +848,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // dmsq23
-    par1 = 2E-3;
-    par2 = 3E-3;
+    par1 = params_dm23sq[0];
+    par2 = params_dm23sq[1];
     priormode = priormode_dm23sq;
     mixmode = "";
     if(randomize_dm23sqbar_ih){
@@ -861,8 +858,8 @@ void valor::util::OscParams::Randomize()
     }
     
     // dmsq12
-    par1 = 7.53E-5;
-    par2 = 0.18E-5;
+    par1 = params_dm12sq[0];
+    par2 = params_dm12sq[1];
     priormode = priormode_dm12sq;
     mixmode = "";
     if(randomize_dm12sqbar_ih){
@@ -873,7 +870,7 @@ void valor::util::OscParams::Randomize()
     // mixing12
     par1 = params_mixing12[0];
     par2 = params_mixing12[1];
-    priormode = priormode_mixing13;
+    priormode = priormode_mixing12;
     mixmode = mixmode_mixing12;
     if(randomize_mixing12bar_ih){
       mixing12bar_ih = this->ExtractParam(conv::kPhypMixing12Bar,priormode,par1,par2,mixmode);
@@ -917,20 +914,33 @@ void valor::util::OscParams::FillOscToyHisto(PhysHypothesis &ph)
 {
   
   // Fill toy osc params histograms
+
+  double mix12 = conv::kBadResult;
+  double mix13 = conv::kBadResult;
+  double mix23 = conv::kBadResult;
+  double dm12  = conv::kBadResult;
+  double dm23  = conv::kBadResult;
+  double dcp   = conv::kBadResult;
+  double mix12bar = conv::kBadResult;
+  double mix13bar = conv::kBadResult;
+  double mix23bar = conv::kBadResult;
+  double dm12bar  = conv::kBadResult;
+  double dm23bar  = conv::kBadResult;
+  double dcpbar   = conv::kBadResult;
   
-  double mix12 = ph.CurrValue(kPhypMixing12);
-  double mix13 = ph.CurrValue(kPhypMixing13);
-  double mix23 = ph.CurrValue(kPhypMixing23);
-  double dm12 = ph.CurrValue(kPhypDm12sq);
-  double dm23 = ph.CurrValue(kPhypDm23sq);
-  double dcp = ph.CurrValue(kPhypCPV);
+  if(ph.Contains(kPhypMixing12)) mix12 = ph.CurrValue(kPhypMixing12);
+  if(ph.Contains(kPhypMixing13)) mix13 = ph.CurrValue(kPhypMixing13);
+  if(ph.Contains(kPhypMixing23)) mix23 = ph.CurrValue(kPhypMixing23);
+  if(ph.Contains(kPhypDm12sq))   dm12 = ph.CurrValue(kPhypDm12sq);
+  if(ph.Contains(kPhypDm23sq))   dm23 = ph.CurrValue(kPhypDm23sq);
+  if(ph.Contains(kPhypCPV))      dcp = ph.CurrValue(kPhypCPV);
   
-  double mix12bar = ph.CurrValue(kPhypMixing12Bar);
-  double mix13bar = ph.CurrValue(kPhypMixing13Bar);
-  double mix23bar = ph.CurrValue(kPhypMixing23Bar);
-  double dm12bar = ph.CurrValue(kPhypDm12sqBar);
-  double dm23bar = ph.CurrValue(kPhypDm23sqBar);
-  double dcpbar = ph.CurrValue(kPhypCPVBar);
+  if(ph.Contains(kPhypMixing12Bar)) mix12bar = ph.CurrValue(kPhypMixing12Bar);
+  if(ph.Contains(kPhypMixing13Bar)) mix13bar = ph.CurrValue(kPhypMixing13Bar);
+  if(ph.Contains(kPhypMixing23Bar)) mix23bar = ph.CurrValue(kPhypMixing23Bar);
+  if(ph.Contains(kPhypDm12sqBar))   dm12bar = ph.CurrValue(kPhypDm12sqBar);
+  if(ph.Contains(kPhypDm23sqBar))   dm23bar = ph.CurrValue(kPhypDm23sqBar);
+  if(ph.Contains(kPhypCPVBar))      dcpbar = ph.CurrValue(kPhypCPVBar);
   
   int mh = Opt::Instance()->gMassHierarchyAssumed;
   
@@ -1029,11 +1039,14 @@ double valor::util::OscParams::ExtractParam(conv::PhysParamId_t physpar,string m
 {
   double valrndm = conv::kBadResult;
   
+  //cout << util::RawParamAsString(physpar) << endl;
+
   if(mode=="gaus")
     valrndm = Rnd::Instance()->RndToyMCosc().Gaus(par1,par2);
   else if(mode=="flat"){
     if(par1>=par2){
       cerr << endl;
+      cerr << "valor::util::OscParams::ExtractParam" << endl;
       cerr << "Parameters for " << mode << " prior are not set correctly" << endl;
       cerr << "par1 = " << par1 << " - par2 = " << par2 << endl;
       cerr << endl;
@@ -1043,6 +1056,7 @@ double valor::util::OscParams::ExtractParam(conv::PhysParamId_t physpar,string m
   }
   else{
     cerr << endl;
+    cerr << "valor::util::OscParams::ExtractParam" << endl;
     cerr << "Prior is not defined: " << mode << endl;
     cerr << endl;
     exit(1);
@@ -1054,6 +1068,7 @@ double valor::util::OscParams::ExtractParam(conv::PhysParamId_t physpar,string m
       else if(mixmode == "sinsq2th") return util::FromSinsq2thToSinsqth(valrndm);
       else {
         cerr << endl;
+	cerr << "valor::util::OscParams::ExtractParam" << endl;
         cerr << "mixmode is not defined: " << mixmode << endl;
         cerr << endl;
         exit(1);
@@ -1064,12 +1079,14 @@ double valor::util::OscParams::ExtractParam(conv::PhysParamId_t physpar,string m
       else if(mixmode == "sinsq2th") return valrndm;
       else {
         cerr << endl;
-        cerr << "mixmode is not defined: " << mixmode << endl;
+        cerr << "valor::util::OscParams::ExtractParam" << endl;
+	cerr << "mixmode is not defined: " << mixmode << endl;
         cerr << endl;
         exit(1);
       }
     }
   }
+
   return valrndm;
 }
 //____________________________________________________________________________
