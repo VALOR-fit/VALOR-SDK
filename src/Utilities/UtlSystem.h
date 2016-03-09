@@ -24,6 +24,8 @@ namespace util {
   
   void Die(int status_code); // Call exit() unless Opt::DoNotDie is true.
   
+  void ChangeInterpreterPrompt(std::string new_prompt = "VALOR: [%d] ");
+  
 } // util
 } // valor
 

@@ -1,11 +1,3 @@
-void change_prompt()
-{
-    TRint* rint = dynamic_cast<TRint*>(gApplication);
-    if (!rint) return;
-
-    rint->SetPrompt("VALOR: [%d] ");
-}
-
 void define_valor_style()
 {
   // VALOR style definition
@@ -134,4 +126,6 @@ void valor_utils()
 
     print_banner();
     config_mesg();
+    
+    valor::util::ChangeInterpreterPrompt("VALOR: [%d] ");
 }

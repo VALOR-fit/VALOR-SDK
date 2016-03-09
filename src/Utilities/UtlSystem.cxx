@@ -11,6 +11,8 @@ ChangeLog:
 #include <iostream>
 #include <cstdlib>
 
+#include "TRint.h"
+
 #include "Utilities/UtlSystem.h"
 #include "Conventions/Opt.h"
 
@@ -37,5 +39,13 @@ void valor::util::Die(int status_code)
     return;
   }
   exit(status_code);
+}
+//____________________________________________________________________________
+void valor::util::ChangeInterpreterPrompt(std::string new_prompt)
+{
+    TRint* rint = dynamic_cast<TRint*>(gApplication);
+    if (!rint) return;
+
+    rint->SetPrompt(new_prompt.c_str());
 }
 //____________________________________________________________________________
