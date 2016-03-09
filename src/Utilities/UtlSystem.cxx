@@ -11,7 +11,9 @@ ChangeLog:
 #include <iostream>
 #include <cstdlib>
 
-#include "TRint.h"
+#include "TApplication.h"
+#include "TROOT.h"
+#include "TString.h"
 
 #include "Utilities/UtlSystem.h"
 #include "Conventions/Opt.h"
@@ -43,9 +45,12 @@ void valor::util::Die(int status_code)
 //____________________________________________________________________________
 void valor::util::ChangeInterpreterPrompt(std::string new_prompt)
 {
-    TRint* rint = dynamic_cast<TRint*>(gApplication);
-    if (!rint) return;
-
-    rint->SetPrompt(new_prompt.c_str());
+  TString appname = gApplication->ApplicationName();
+  if (appname.Contains("Rint")) {
+    TString command = TString::Format(
+      "((TRint*)gApplication)->SetPrompt(\"%s\");",
+      new_prompt.c_str());
+    gROOT->ProcessLine(command.Data());
+  }
 }
 //____________________________________________________________________________
