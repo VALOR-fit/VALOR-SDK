@@ -80,8 +80,7 @@ void Messenger::SetPriorityLevel(
 bool Messenger::Configure(string filename)
 {
 // Set priority levels and set them.
-
-  LOG("Messenger",pINFO) << "Configuring messenger using ["<<filename<<"]";
+  
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(filename.c_str());
   if (xmldoc==0) {
@@ -110,6 +109,8 @@ bool Messenger::Configure(string filename)
   
   xml->FreeDoc(xmldoc);
   delete xml;
+  
+  LOG("Messenger",pINFO) << "Configured messenger using ["<<filename<<"]";
 
   return true;
 }
