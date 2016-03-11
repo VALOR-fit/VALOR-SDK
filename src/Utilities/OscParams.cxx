@@ -679,13 +679,6 @@ void valor::util::OscParams::Randomize()
       rand_dm12sq_nh = true;
     }
     
-    cout << endl;
-    cout << "dmsq12 NH" << endl; 
-    cout << par1 << " - " << par2 << endl;
-    cout << priormode << endl;
-    cout << "dm12sq_nh = " << dm12sq_nh << endl; 
-    cout << endl;
-    
     // mixing12
     par1 = params_mixing12[0];
     par2 = params_mixing12[1];
@@ -747,17 +740,7 @@ void valor::util::OscParams::Randomize()
       dm12sqbar_nh = this->ExtractParam(conv::kPhypDm12sqBar,priormode,par1,par2,mixmode);
       rand_dm12sqbar_nh = true;
     }
-    
-    cout << endl;
-    cout << "dmsq12 NH Bar" << endl; 
-    cout << par1 << " - " << par2 << endl;
-    cout << priormode << endl;
-    cout << "dm12sq_nh = " << dm12sq_nh << endl; 
-    cout << endl;
  
-
-
-
     // mixing12
     par1 = params_mixing12[0];
     par2 = params_mixing12[1];
@@ -823,16 +806,7 @@ void valor::util::OscParams::Randomize()
       dm12sq_ih = this->ExtractParam(conv::kPhypDm12sq,priormode,par1,par2,mixmode);
       rand_dm12sq_ih = true;
     }
-    
-    cout << endl;
-    cout << "dmsq12 IH" << endl; 
-    cout << par1 << " - " << par2 << endl;
-    cout << priormode << endl;
-    cout << "dm12sq_nh = " << dm12sq_nh << endl; 
-    cout << endl;
-
-
-    
+     
     // mixing12
     par1 = params_mixing12[0];
     par2 = params_mixing12[1];
@@ -893,17 +867,6 @@ void valor::util::OscParams::Randomize()
       rand_dm12sqbar_ih = true;
     }
     
-
-    cout << endl;
-    cout << "dmsq12 IH Bar" << endl; 
-    cout << par1 << " - " << par2 << endl;
-    cout << priormode << endl;
-    cout << "dm12sq_nh = " << dm12sq_nh << endl; 
-    cout << endl;
-
-
-
-
     // mixing12
     par1 = params_mixing12[0];
     par2 = params_mixing12[1];
