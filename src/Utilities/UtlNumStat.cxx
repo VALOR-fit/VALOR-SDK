@@ -901,3 +901,34 @@ TMatrixD valor::util::MatrixPseudoInverted(const TMatrixD & m)
   return output;
 }
 //____________________________________________________________________________
+TVectorD valor::util::ConcatenateTVectors (
+  const vector< const TVectorD * > & tvecs )
+{
+  unsigned int vsize = tvecs.size();
+  vector<int> edge_vec(vsize+1);
+  edge_vec[0] = 0;
+  for (unsigned int i = 0 ; i < vsize; i++) {
+    edge_vec[i+1] = edge_vec[i] + tvecs.at(i)->GetNoElements();
+  }
+  
+  TVectorD output(edge_vec[vsize]);
+  
+  for (unsigned int i = 0 ; i < vsize; i++) {
+    output.SetSub(edge_vec[i],*tvecs.at(i));
+  }
+  
+  return output;
+}
+//____________________________________________________________________________
+double valor::util::SingleAngleToDoubleAngle(double sinsqtheta)
+{
+  double sinsq2theta = 1 - (1-2*sinsqtheta)*(1-2*sinsqtheta);
+  return sinsq2theta;
+}
+//____________________________________________________________________________
+double valor::util::DoubleAngleToSingleAngle(double sinsq2theta)
+{
+  double sinsqtheta = 0.5 * (1 - sqrt(1 - sinsq2theta));
+  return sinsqtheta;
+}
+//____________________________________________________________________________
