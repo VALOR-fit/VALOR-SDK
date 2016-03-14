@@ -43,7 +43,7 @@ CmdLnArgParser::~CmdLnArgParser()
 
 }
 //____________________________________________________________________________
-char * CmdLnArgParser::Arg(char op)
+const char * CmdLnArgParser::Arg(char op) const
 {
   const int buf_size = 2048;
 
@@ -51,8 +51,8 @@ char * CmdLnArgParser::Arg(char op)
   char *  argument  = new char[buf_size];
   strcpy(argument, "");
 
-  int     argc      = fArgc;
-  char ** argv      = fArgv;
+  int     argc = fArgc;
+  char ** argv = fArgv;
 
   while(argc>2)
   {
@@ -97,7 +97,7 @@ char * CmdLnArgParser::Arg(char op)
   return argument;
 }
 //____________________________________________________________________________
-bool CmdLnArgParser::OptionExists(char op)
+bool CmdLnArgParser::OptionExists(char op) const
 {
   bool set = false;
 
@@ -115,16 +115,16 @@ bool CmdLnArgParser::OptionExists(char op)
   return set;
 }
 //____________________________________________________________________________
-string CmdLnArgParser::ArgAsString(char op)
+string CmdLnArgParser::ArgAsString(char op) const
 {
-  char * argument = this->Arg(op);
+  const char * argument = this->Arg(op);
   string value = string(argument);
   delete [] argument;
 
   return value;
 }
 //____________________________________________________________________________
-vector<string> CmdLnArgParser::ArgAsStringTokens(char op, string delimeter)
+vector<string> CmdLnArgParser::ArgAsStringTokens(char op, string delimeter) const
 {
   string argument = this->ArgAsString(op);
 
@@ -132,11 +132,7 @@ vector<string> CmdLnArgParser::ArgAsStringTokens(char op, string delimeter)
   return tokens;
 }
 //____________________________________________________________________________
-
-
-
-
-vector<string> CmdLnArgParser::ArgAsStringTokens(string op, string delimeter)
+vector<string> CmdLnArgParser::ArgAsStringTokens(string op, string delimeter) const
 {
   string argument = this->ArgAsString(op);
   //string argument = op;
@@ -144,19 +140,17 @@ vector<string> CmdLnArgParser::ArgAsStringTokens(string op, string delimeter)
   vector<string> tokens = util::Tokens(argument, delimeter);
   return tokens;
 }
-
-
 //____________________________________________________________________________
-double CmdLnArgParser::ArgAsDouble(char op)
+double CmdLnArgParser::ArgAsDouble(char op) const
 {
-  char * argument = this->Arg(op);
+  const char * argument = this->Arg(op);
   double value = atof(argument);
   delete [] argument;
 
   return value;
 }
 //____________________________________________________________________________
-vector<double> CmdLnArgParser::ArgAsDoubleTokens(char op, string delimeter)
+vector<double> CmdLnArgParser::ArgAsDoubleTokens(char op, string delimeter) const
 {
   vector<string> strtokens = this->ArgAsStringTokens(op, delimeter);
   vector<double> tokens;
@@ -168,16 +162,16 @@ vector<double> CmdLnArgParser::ArgAsDoubleTokens(char op, string delimeter)
   return tokens;
 }
 //____________________________________________________________________________
-int CmdLnArgParser::ArgAsInt(char op)
+int CmdLnArgParser::ArgAsInt(char op) const
 {
-  char * argument = this->Arg(op);
+  const char * argument = this->Arg(op);
   int value = atoi(argument);
   delete [] argument;
 
   return value;
 }
 //____________________________________________________________________________
-unsigned int CmdLnArgParser::ArgAsUInt(char op)
+unsigned int CmdLnArgParser::ArgAsUInt(char op) const
 {
   const char * argument = this->Arg(op);
   unsigned int value = strtoul(argument,NULL,0);
@@ -186,7 +180,7 @@ unsigned int CmdLnArgParser::ArgAsUInt(char op)
   return value;
 }
 //____________________________________________________________________________
-vector<int> CmdLnArgParser::ArgAsIntTokens(char op, string delimeter)
+vector<int> CmdLnArgParser::ArgAsIntTokens(char op, string delimeter) const
 {
   vector<string> strtokens = this->ArgAsStringTokens(op, delimeter);
   vector<int> tokens;
@@ -198,7 +192,7 @@ vector<int> CmdLnArgParser::ArgAsIntTokens(char op, string delimeter)
   return tokens;
 }
 //____________________________________________________________________________
-vector<unsigned int> CmdLnArgParser::ArgAsUIntTokens(char op, string delimeter)
+vector<unsigned int> CmdLnArgParser::ArgAsUIntTokens(char op, string delimeter) const
 {
   vector<string> strtokens = this->ArgAsStringTokens(op, delimeter);
   vector<unsigned int> tokens;
@@ -210,16 +204,16 @@ vector<unsigned int> CmdLnArgParser::ArgAsUIntTokens(char op, string delimeter)
   return tokens;
 }
 //____________________________________________________________________________
-long CmdLnArgParser::ArgAsLong(char op)
+long CmdLnArgParser::ArgAsLong(char op) const
 {
-  char * argument = this->Arg(op);
+  const char * argument = this->Arg(op);
   long value = atol(argument);
   delete [] argument;
 
   return value;
 }
 //____________________________________________________________________________
-vector<long> CmdLnArgParser::ArgAsLongTokens(char op, string delimeter)
+vector<long> CmdLnArgParser::ArgAsLongTokens(char op, string delimeter) const
 {
   vector<string> strtokens = this->ArgAsStringTokens(op, delimeter);
   vector<long> tokens;
@@ -231,15 +225,15 @@ vector<long> CmdLnArgParser::ArgAsLongTokens(char op, string delimeter)
   return tokens;
 }
 //____________________________________________________________________________
-char * CmdLnArgParser::Arg(string op)
+const char * CmdLnArgParser::Arg(string op) const
 {
   const int buf_size = 2048;
   //bool    set        = false;
   char *  argument   = new char[buf_size];
   strcpy(argument, "");
 
-  int     argc      = fArgc;
-  char ** argv      = fArgv;
+  int     argc  = fArgc;
+  char ** argv  = fArgv;
 
   while(argc>2)
   {
@@ -285,7 +279,7 @@ char * CmdLnArgParser::Arg(string op)
   return argument;
 }
 //____________________________________________________________________________
-bool CmdLnArgParser::OptionExists(string op)
+bool CmdLnArgParser::OptionExists(string op) const
 {
   const int buf_size = 2048;
   bool set = false;
@@ -307,34 +301,34 @@ bool CmdLnArgParser::OptionExists(string op)
   return set;
 }
 //____________________________________________________________________________
-string CmdLnArgParser::ArgAsString(string op)
+string CmdLnArgParser::ArgAsString(string op) const
 {
-  char * argument = this->Arg(op);
+  const char * argument = this->Arg(op);
   string value = string(argument);
   delete [] argument;
 
   return value;
 }
 //____________________________________________________________________________
-double CmdLnArgParser::ArgAsDouble(string op)
+double CmdLnArgParser::ArgAsDouble(string op) const
 {
-  char * argument = this->Arg(op);
+  const char * argument = this->Arg(op);
   double value = atof(argument);
   delete [] argument;
 
   return value;
 }
 //____________________________________________________________________________
-int CmdLnArgParser::ArgAsInt(string op)
+int CmdLnArgParser::ArgAsInt(string op) const
 {
-  char * argument = this->Arg(op);
+  const char * argument = this->Arg(op);
   int value = atoi(argument);
   delete [] argument;
 
   return value;
 }
 //____________________________________________________________________________
-unsigned int CmdLnArgParser::ArgAsUInt(string op)
+unsigned int CmdLnArgParser::ArgAsUInt(string op) const
 {
   const char * argument = this->Arg(op);
   int value = strtoul(argument,NULL,0);
@@ -343,9 +337,9 @@ unsigned int CmdLnArgParser::ArgAsUInt(string op)
   return value;
 }
 //____________________________________________________________________________
-long CmdLnArgParser::ArgAsLong(string op)
+long CmdLnArgParser::ArgAsLong(string op) const
 {
-  char * argument = this->Arg(op);
+  const char * argument = this->Arg(op);
   long value = atol(argument);
   delete [] argument;
 

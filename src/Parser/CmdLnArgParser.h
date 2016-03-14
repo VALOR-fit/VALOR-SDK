@@ -40,38 +40,38 @@ public:
   // Methods to check the existence of single character switches (eg -f, -s)
   // and retrieve the command-line argument following the switch
 
-  bool    OptionExists (char opt);   ///< was option set?
-  char *  Arg          (char opt);   ///< return argument following -`opt'
+  bool          OptionExists (char opt) const;   ///< was option set?
+  const char *  Arg          (char opt) const;   ///< return argument following -`opt'
 
-  string         ArgAsString       (char opt);
-  vector<string> ArgAsStringTokens (char opt, string delimeter);
+  string         ArgAsString       (char opt) const;
+  vector<string> ArgAsStringTokens (char opt, string delimeter) const;
   
-  vector<string> ArgAsStringTokens (string opt, string delimeter);
+  vector<string> ArgAsStringTokens (string opt, string delimeter) const;
   
-  double                ArgAsDouble       (char opt);
-  vector<double>        ArgAsDoubleTokens (char opt, string delimeter);
-  int                   ArgAsInt          (char opt);
-  vector<int>           ArgAsIntTokens    (char opt, string delimeter);
-  unsigned int          ArgAsUInt         (char opt);
-  vector<unsigned int>  ArgAsUIntTokens   (char opt, string delimeter);
-  long                  ArgAsLong         (char opt);
-  vector<long>          ArgAsLongTokens   (char opt, string delimeter);
+  double                ArgAsDouble       (char opt) const;
+  vector<double>        ArgAsDoubleTokens (char opt, string delimeter) const;
+  int                   ArgAsInt          (char opt) const;
+  vector<int>           ArgAsIntTokens    (char opt, string delimeter) const;
+  unsigned int          ArgAsUInt         (char opt) const;
+  vector<unsigned int>  ArgAsUIntTokens   (char opt, string delimeter) const;
+  long                  ArgAsLong         (char opt) const;
+  vector<long>          ArgAsLongTokens   (char opt, string delimeter) const;
 
   // As above, but supporting multi-character switches (eg --with-x-file )
 
-  bool    OptionExists (string opt); ///< was option set?
-  char *  Arg          (string opt); ///< return argument following --`opt'
+  bool    OptionExists (string opt) const; ///< was option set?
+  const char *  Arg    (string opt) const; ///< return argument following --`opt'
 
-  string         ArgAsString       (string opt);
-  double         ArgAsDouble       (string opt);
-  int            ArgAsInt          (string opt);
-  unsigned int   ArgAsUInt         (string opt);
-  long           ArgAsLong         (string opt);
+  string         ArgAsString       (string opt) const;
+  double         ArgAsDouble       (string opt) const;
+  int            ArgAsInt          (string opt) const;
+  unsigned int   ArgAsUInt         (string opt) const;
+  long           ArgAsLong         (string opt) const;
 
 private:
 
-  int    fArgc;
-  char **fArgv;
+  int     fArgc;
+  char ** fArgv;
   
 };
 
