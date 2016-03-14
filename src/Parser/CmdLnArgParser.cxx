@@ -177,6 +177,15 @@ int CmdLnArgParser::ArgAsInt(char op)
   return value;
 }
 //____________________________________________________________________________
+unsigned int CmdLnArgParser::ArgAsUInt(char op)
+{
+  const char * argument = this->Arg(op);
+  unsigned int value = strtoul(argument,NULL,0);
+  delete [] argument;
+
+  return value;
+}
+//____________________________________________________________________________
 vector<int> CmdLnArgParser::ArgAsIntTokens(char op, string delimeter)
 {
   vector<string> strtokens = this->ArgAsStringTokens(op, delimeter);
@@ -185,6 +194,18 @@ vector<int> CmdLnArgParser::ArgAsIntTokens(char op, string delimeter)
   for( ; iter != strtokens.end(); ++iter) {
     string arg = *iter;
     tokens.push_back(atoi(arg.c_str()));
+  }
+  return tokens;
+}
+//____________________________________________________________________________
+vector<unsigned int> CmdLnArgParser::ArgAsUIntTokens(char op, string delimeter)
+{
+  vector<string> strtokens = this->ArgAsStringTokens(op, delimeter);
+  vector<unsigned int> tokens;
+  vector<string>::const_iterator iter = strtokens.begin();
+  for( ; iter != strtokens.end(); ++iter) {
+    string arg = *iter;
+    tokens.push_back(strtoul(arg.c_str(),NULL,0));
   }
   return tokens;
 }
@@ -308,6 +329,15 @@ int CmdLnArgParser::ArgAsInt(string op)
 {
   char * argument = this->Arg(op);
   int value = atoi(argument);
+  delete [] argument;
+
+  return value;
+}
+//____________________________________________________________________________
+unsigned int CmdLnArgParser::ArgAsUInt(string op)
+{
+  const char * argument = this->Arg(op);
+  int value = strtoul(argument,NULL,0);
   delete [] argument;
 
   return value;

@@ -48,12 +48,14 @@ public:
   
   vector<string> ArgAsStringTokens (string opt, string delimeter);
   
-  double         ArgAsDouble       (char opt);
-  vector<double> ArgAsDoubleTokens (char opt, string delimeter);
-  int            ArgAsInt          (char opt);
-  vector<int>    ArgAsIntTokens    (char opt, string delimeter);
-  long           ArgAsLong         (char opt);
-  vector<long>   ArgAsLongTokens   (char opt, string delimeter);
+  double                ArgAsDouble       (char opt);
+  vector<double>        ArgAsDoubleTokens (char opt, string delimeter);
+  int                   ArgAsInt          (char opt);
+  vector<int>           ArgAsIntTokens    (char opt, string delimeter);
+  unsigned int          ArgAsUInt         (char opt);
+  vector<unsigned int>  ArgAsUIntTokens   (char opt, string delimeter);
+  long                  ArgAsLong         (char opt);
+  vector<long>          ArgAsLongTokens   (char opt, string delimeter);
 
   // As above, but supporting multi-character switches (eg --with-x-file )
 
@@ -63,6 +65,7 @@ public:
   string         ArgAsString       (string opt);
   double         ArgAsDouble       (string opt);
   int            ArgAsInt          (string opt);
+  unsigned int   ArgAsUInt         (string opt);
   long           ArgAsLong         (string opt);
 
 private:
