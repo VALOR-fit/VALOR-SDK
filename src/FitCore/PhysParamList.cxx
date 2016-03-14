@@ -106,7 +106,7 @@ void PhysParamList::Print(ostream & stream) const
      PhysParamId_t p = (PhysParamId_t) it->first;
      double        v = it->second;
      stream << setw(5) << i++
-            << setw(30) << util::RawParamAsString(p) << " = "
+            << setw(30) << util::NameRegistry::Instance()->AsString(p) << " = "
             << setprecision(8) << setw(12) << v
             << endl;      
   }
