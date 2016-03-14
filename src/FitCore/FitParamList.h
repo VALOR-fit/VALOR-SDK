@@ -95,6 +95,7 @@ namespace valor {
     
     // Copy current param values to best-fit values & vice-versa
     void CopyCurrToBestFitValues (void);
+    void CopyCurrToInitValues    (void);
     void CopyBestFitToCurrValues (void);
     void CopyBestFitToInitValues (void);
     void CopyBestFitToInitValues (const FitParamList & plst);

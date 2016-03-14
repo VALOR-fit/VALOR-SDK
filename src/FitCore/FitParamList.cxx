@@ -163,6 +163,13 @@ void FitParamList::CopyBestFitToInitValues(void)
   }
 }
 //________________________________________________________________________________________
+void FitParamList::CopyCurrToInitValues(void)
+{
+  for(int ip = 0; ip < fNParams; ip++) {
+    fInitValue[ip] = fCurrValue[ip];
+  }
+}
+//________________________________________________________________________________________
 void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
 {
   if(plst.GetParListName() != fParListName) {
