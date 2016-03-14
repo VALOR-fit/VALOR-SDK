@@ -14,6 +14,7 @@
 #include <string>
 
 #include "Utilities/RunOpt.h"
+#include "Utilities/Rnd.h"
 
 #include "Conventions/Opt.h"
 #include "Conventions/Constants.h"
@@ -91,6 +92,7 @@ void valor::RunOpt::Init(void)
   fHierStr[1] = "ih";
   //common options
   fConfigFile      = util::FormFilePath("", "config");
+  fVerbosityFile   = util::FormFilePath("verbosity.xml", "config");
   fFileTag         = "tag";
   fRun             = 0;
   //toy options
@@ -110,6 +112,13 @@ void valor::RunOpt::Init(void)
   //3f osc options
   InitOscParams(-99);
   fHypothesis = "3f_osc";
+  
+  // Seeds
+  fSeedToyMCstat = 0;
+  fSeedToyMCsyst = 0;
+  fSeedToyMCosc  = 0;
+  fSeedFitter    = 0;
+  fSeedOther     = 0;
   
   
   // Priors
@@ -274,6 +283,55 @@ void valor::RunOpt::ReadCommonOptions()
     cerr << endl;
     exit(1);
   }
+  
+  // Set verbosity file
+  if(fParser->OptionExists("verbosity-file")){
+    fVerbosityFile = util::FormFilePath(fParser->ArgAsString("verbosity-file").c_str(), "config");
+  }
+  
+    
+  // seeds
+  if (fParser->OptionExists("seed-toys-stat")) {
+    fSeedToyMCstat = fParser->ArgAsUInt("seed-toys-stat");
+  }
+  else {
+    fSeedToyMCstat = 0;
+  }
+  
+  if (fParser->OptionExists("seed-toys-syst")) {
+    fSeedToyMCsyst = fParser->ArgAsUInt("seed-toys-syst");
+  }
+  else {
+    fSeedToyMCsyst = 0;
+  }
+  
+  if (fParser->OptionExists("seed-toys-osc")) {
+    fSeedToyMCosc = fParser->ArgAsUInt("seed-toys-osc");
+  }
+  else {
+    fSeedToyMCosc = 0;
+  }
+  
+  if (fParser->OptionExists("seed-fitter")) {
+    fSeedFitter = fParser->ArgAsUInt("seed-fitter");
+  }
+  else {
+    fSeedFitter = 0;
+  }
+  
+  if (fParser->OptionExists("seed-misc")) {
+    fSeedToyMCosc = fParser->ArgAsUInt("seed-misc");
+  }
+  else {
+    fSeedOther = 0;
+  }
+  
+  // Should this be done here? Or in macro code.
+  Rnd::Instance()->SetSeeds(fSeedToyMCstat,fSeedToyMCsyst,fSeedToyMCosc,fSeedFitter,fSeedOther);
+  
+  cerr<<*Rnd::Instance();
+  
+  
 }
 //____________________________________________________________________________
 void valor::RunOpt::ReadToyOptions()
@@ -363,6 +421,7 @@ void valor::RunOpt::ReadToyOptions()
     cerr << endl;
     exit(1);
   }
+
 }
 //____________________________________________________________________________
 void valor::RunOpt::ReadGlobalOptions()
@@ -1138,48 +1197,67 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
   cout << std::left;
   cout << endl;
   
+  TString seedToyMCstat  ("random");
+  TString seedToyMCsyst  ("random");
+  TString seedToyMCosc   ("random");
+  TString seedFitter     ("random");
+  TString seedOther      ("random");
+  if (fSeedToyMCstat  ){seedToyMCstat = TString::Format("%u",fSeedToyMCstat);}
+  if (fSeedToyMCsyst  ){seedToyMCsyst = TString::Format("%u",fSeedToyMCsyst);}
+  if (fSeedToyMCosc   ){seedToyMCosc  = TString::Format("%u",fSeedToyMCosc );}
+  if (fSeedFitter     ){seedFitter    = TString::Format("%u",fSeedFitter   );}
+  if (fSeedOther      ){seedOther     = TString::Format("%u",fSeedOther    );}
+  
+  
   if(fParseType & kParseCommon) {
     stream << "Common running options:" << endl
-	   << " - " << setw(w) << "Config file:"     << fConfigFile << endl
-	   << " - " << setw(w) << "Output file tag:" << fFileTag << endl
-	   << " - " << setw(w) << "Run number:"      << fRun << endl
-	   << endl;
+           << " - " << setw(w) << "Config file:  "   << fConfigFile    << endl
+           << " - " << setw(w) << "Verbosity file:"  << fVerbosityFile << endl
+           << " - " << setw(w) << "Output file tag:" << fFileTag       << endl
+           << " - " << setw(w) << "Run number:"      << fRun           << endl
+           << " - " << setw(w) << "Seed (stat):   "  << seedToyMCstat  << endl
+           << " - " << setw(w) << "Seed (syst):   "  << seedToyMCsyst  << endl
+           << " - " << setw(w) << "Seed (osc):    "  << seedToyMCosc   << endl
+           << " - " << setw(w) << "Seed (fitter): "  << seedFitter     << endl
+           << " - " << setw(w) << "Seed (other):  "  << seedOther      << endl
+           
+           << endl;
   }//kParseCommon
   if(fParseType & kParseToys) {
     stream << "Toy running options:" << endl
-	   << " - " << setw(w) << "First experiment:"         << fFirstExperiment << endl
-	   << " - " << setw(w) << "Last experiment:"          << fLastExperiment << endl
-	   << " - " << setw(w) << "N experiments:"            << fNExperiments << endl
-	   << " - " << setw(w) << "Statistical fluctuations:" << ((fStatFluctuations) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Randomize systematics:"    << util::SysThrowIdToString(fSystTweakMode) << endl
-	   << " - " << setw(w) << "Rethrow unphysical:"       << ((fRethrowIfUnphysical) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Verbose skexp::Tweak():"   << ((fVerboseSystThrows) ? "YES " : "NO") << endl
-	   << endl;
+           << " - " << setw(w) << "First experiment:"         << fFirstExperiment << endl
+           << " - " << setw(w) << "Last experiment:"          << fLastExperiment << endl
+           << " - " << setw(w) << "N experiments:"            << fNExperiments << endl
+           << " - " << setw(w) << "Statistical fluctuations:" << ((fStatFluctuations) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Randomize systematics:"    << util::SysThrowIdToString(fSystTweakMode) << endl
+           << " - " << setw(w) << "Rethrow unphysical:"       << ((fRethrowIfUnphysical) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Verbose skexp::Tweak():"   << ((fVerboseSystThrows) ? "YES " : "NO") << endl
+           << endl;
   }//kParseToys
   if(fParseType & kParseGlobal) {
     stream << "Global running options:" << endl
-	   << " - " << setw(w) << "Dmsq scheme:"              << fGlobalDmsqScheme << endl
-	   << " - " << setw(w) << "Mixing parameters scheme:" << fGlobalMixParamScheme << endl
-	   << " - " << setw(w) << "CPV phase scheme:"         << fGlobalCPVPhaseScheme << endl
-	   << " - " << setw(w) << "Mass hierarchy:"           << fGlobalMassHierarchy << endl
-	   << " - " << setw(w) << "Mixing parameter octant:"  << fGlobalMixParamOctant << endl
-	   << endl;
+           << " - " << setw(w) << "Dmsq scheme:"              << fGlobalDmsqScheme << endl
+           << " - " << setw(w) << "Mixing parameters scheme:" << fGlobalMixParamScheme << endl
+           << " - " << setw(w) << "CPV phase scheme:"         << fGlobalCPVPhaseScheme << endl
+           << " - " << setw(w) << "Mass hierarchy:"           << fGlobalMassHierarchy << endl
+           << " - " << setw(w) << "Mixing parameter octant:"  << fGlobalMixParamOctant << endl
+           << endl;
   }//kParseGlobal
   if(fParseType & kParse3FOscParams) {
     stream << "3f oscillation running options:" << endl
-	   << " - " << setw(w) << "Hypothesis:" << fHypothesis << endl
-    << " - " << setw(w) << "Synchronize IH to NH osc params:"  << ((fSynchronizeIHtoNH) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Normal hierarchy prior prob:" << fPriorProbNH << endl
-	   << " - " << setw(w) << "Throw mass hierarchy:"  << ((fThrowMH) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Prior mode:"  << fPriorId << endl;
+           << " - " << setw(w) << "Hypothesis:" << fHypothesis << endl
+           << " - " << setw(w) << "Synchronize IH to NH osc params:"  << ((fSynchronizeIHtoNH) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Normal hierarchy prior prob:" << fPriorProbNH << endl
+           << " - " << setw(w) << "Throw mass hierarchy:"  << ((fThrowMH) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Prior mode:"  << fPriorId << endl;
     
     for(int i = 0; i < 2; i++) {
       stream << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing12).c_str(), fHierStr[i].c_str()) << fMix12[i] << endl
-	     << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing13).c_str(), fHierStr[i].c_str()) << fMix13[i] << endl
-	     << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing23).c_str(), fHierStr[i].c_str()) << fMix23[i] << endl
-	     << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypCPV).c_str(),      fHierStr[i].c_str()) << fCPV[i] << endl
-	     << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypDm12sq).c_str(),   fHierStr[i].c_str()) << fDm12sq[i] << endl
-	     << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypDm23sq).c_str(),   fHierStr[i].c_str()) << fDm23sq[i] << endl
+             << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing13).c_str(), fHierStr[i].c_str()) << fMix13[i] << endl
+             << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing23).c_str(), fHierStr[i].c_str()) << fMix23[i] << endl
+             << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypCPV).c_str(),      fHierStr[i].c_str()) << fCPV[i] << endl
+             << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypDm12sq).c_str(),   fHierStr[i].c_str()) << fDm12sq[i] << endl
+             << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypDm23sq).c_str(),   fHierStr[i].c_str()) << fDm23sq[i] << endl
       << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing13Bar).c_str(), fHierStr[i].c_str()) << fMix13Bar[i] << endl
       << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypMixing23Bar).c_str(), fHierStr[i].c_str()) << fMix23Bar[i] << endl
       << " - " << setw(w) << Form("%s_%s", util::RawParamAsString(kPhypCPVBar).c_str(),      fHierStr[i].c_str()) << fCPVBar[i] << endl
@@ -1189,35 +1267,35 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
     }//i
     stream << " - " << setw(w) << "Beta bar:"                    << fBetaBar << endl
     //<< " - " << setw(w) << "Using priors:"                << (fPriorsFile.empty() ? "NO" : Form("YES: %s", fPriorsFile.c_str())) << endl
-	   << endl;
+           << endl;
   }//kParse3FOscParams
   
   if(fParseType & kParseFitMarg) {
     stream << "Fit with marginalization running options:" << endl
-	   << " - " << setw(w) << "Do toys for fake datasets on the fly:" << ((fDoToys) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Do toys for fake datasets on the fly:" << ((fDoToys) ? "YES " : "NO") << endl
     << " - " << setw(w) << "Use xml file for fakedata sets (if not use root file):"  << ((fUsing_xml_file) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Input xml file for fakedata sets:" << fXmlfile << endl
-	   << " - " << setw(w) << "Input root file for fakedata sets:" << fRootfile << endl
-	   << " - " << setw(w) << "Fit parameter list:"  << fFit_param_list << endl
-	   << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl
-	   << " - " << setw(w) << "Number of input file for marginalization toys:"  << fNfiles << endl
-	   << " - " << setw(w) << "Number of toys for marginalization:"  << fNtoysMarg << endl
-	   << " - " << setw(w) << "Name of free parameter 0 for fit with marginalization:"  << fFreeparname0 << endl
-	   << " - " << setw(w) << "Name of free parameter 1 for fit with marginalization:"  << fFreeparname1 << endl
-	   << " - " << setw(w) << "Min value of free parameter 0 for fit with marginalization:"  << fFreeparmin0 << endl
-	   << " - " << setw(w) << "Min value of free parameter 1 for fit with marginalization:"  << fFreeparmin1 << endl
-	   << " - " << setw(w) << "Max value of free parameter 0 for fit with marginalization:"  << fFreeparmax0 << endl
-	   << " - " << setw(w) << "Max value of free parameter 1 for fit with marginalization:"  << fFreeparmax1 << endl
-	   << " - " << setw(w) << "Number of points of free parameter 0 for fit with marginalization:"  << fNptScan0 << endl
-	   << " - " << setw(w) << "Number of points of free parameter 1 for fit with marginalization:"  << fNptScan1 << endl
-	   << " - " << setw(w) << "Marginalization of mass hierarchy for input marginalization files:"  << ((fDoMargMH) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Mass hierarchy for input marginalization files:"  << fHierarchy_marg << endl
-	   << " - " << setw(w) << "Error type for fit with marginalization:"  << fTypeError << endl
-	   << " - " << setw(w) << "Draw fill marginalized chisq:"  << ((fDrawFullChisq) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Test statistic for fit with marginalization:"  << fTeststat << endl
-	   << " - " << setw(w) << "Store likelihood weights of fit with marginalization?:"  << ((fStoreLikeWeights) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Use penalty term for free parameter 0:"  << ((fPenaltyTerm0) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Use penalty term for free parameter 1:"  << ((fPenaltyTerm1) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Input xml file for fakedata sets:" << fXmlfile << endl
+           << " - " << setw(w) << "Input root file for fakedata sets:" << fRootfile << endl
+           << " - " << setw(w) << "Fit parameter list:"  << fFit_param_list << endl
+           << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl
+           << " - " << setw(w) << "Number of input file for marginalization toys:"  << fNfiles << endl
+           << " - " << setw(w) << "Number of toys for marginalization:"  << fNtoysMarg << endl
+           << " - " << setw(w) << "Name of free parameter 0 for fit with marginalization:"  << fFreeparname0 << endl
+           << " - " << setw(w) << "Name of free parameter 1 for fit with marginalization:"  << fFreeparname1 << endl
+           << " - " << setw(w) << "Min value of free parameter 0 for fit with marginalization:"  << fFreeparmin0 << endl
+           << " - " << setw(w) << "Min value of free parameter 1 for fit with marginalization:"  << fFreeparmin1 << endl
+           << " - " << setw(w) << "Max value of free parameter 0 for fit with marginalization:"  << fFreeparmax0 << endl
+           << " - " << setw(w) << "Max value of free parameter 1 for fit with marginalization:"  << fFreeparmax1 << endl
+           << " - " << setw(w) << "Number of points of free parameter 0 for fit with marginalization:"  << fNptScan0 << endl
+           << " - " << setw(w) << "Number of points of free parameter 1 for fit with marginalization:"  << fNptScan1 << endl
+           << " - " << setw(w) << "Marginalization of mass hierarchy for input marginalization files:"  << ((fDoMargMH) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Mass hierarchy for input marginalization files:"  << fHierarchy_marg << endl
+           << " - " << setw(w) << "Error type for fit with marginalization:"  << fTypeError << endl
+           << " - " << setw(w) << "Draw fill marginalized chisq:"  << ((fDrawFullChisq) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Test statistic for fit with marginalization:"  << fTeststat << endl
+           << " - " << setw(w) << "Store likelihood weights of fit with marginalization?:"  << ((fStoreLikeWeights) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Use penalty term for free parameter 0:"  << ((fPenaltyTerm0) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Use penalty term for free parameter 1:"  << ((fPenaltyTerm1) ? "YES " : "NO") << endl
     << endl;
   }//kParseFitMarg
 }

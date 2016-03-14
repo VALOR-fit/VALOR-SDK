@@ -72,10 +72,16 @@ namespace valor {
         
         // Get options set
         //common options
-        string ConfigFile      () const { if(fParseType & kParseCommon) return fConfigFile; cerr << "kParseCommon not set" << endl; exit(-1); }
-        string FileTag         () const { if(fParseType & kParseCommon) return fFileTag;    cerr << "kParseCommon not set" << endl; exit(-1); }
-        int    Run             () const { if(fParseType & kParseCommon) return fRun;        cerr << "kParseCommon not set" << endl; exit(-1); }
+        string ConfigFile      () const { if(fParseType & kParseCommon) return fConfigFile;    cerr << "kParseCommon not set" << endl; exit(-1); }
+        string VerbosityFile   () const { if(fParseType & kParseCommon) return fVerbosityFile; cerr << "kParseCommon not set" << endl; exit(-1); }
+        string FileTag         () const { if(fParseType & kParseCommon) return fFileTag;       cerr << "kParseCommon not set" << endl; exit(-1); }
+        int    Run             () const { if(fParseType & kParseCommon) return fRun;           cerr << "kParseCommon not set" << endl; exit(-1); }
         
+        UInt_t RndSeedToyMCstat() const {return fSeedToyMCstat;}
+        UInt_t RndSeedToyMCsyst() const {return fSeedToyMCsyst;}
+        UInt_t RndSeedToyMCosc () const {return fSeedToyMCosc; }
+        UInt_t RndSeedFitter   () const {return fSeedFitter;   }
+        UInt_t RndSeedOther    () const {return fSeedOther;    }
         
         //global options
         string GlobalDmsqScheme    () const { if(fParseType & kParseGlobal) return fGlobalDmsqScheme;     cerr << "kParseGlobal not set" << endl; exit(-1); }
@@ -130,7 +136,7 @@ namespace valor {
         // usage
         virtual void Usage(const int w = 40);
         
-        void Init (void);
+        virtual void Init (void);
         void InitOscParams(double value = -99);
         
         // These functions get the parameters from the parser and set the
@@ -151,6 +157,7 @@ namespace valor {
         //Keep track of the options we've read
         // common options
         string fConfigFile;
+        string fVerbosityFile;
         string fFileTag;
         int    fRun;
         // toy options
@@ -167,6 +174,14 @@ namespace valor {
         string fGlobalMixParamScheme;
         string fGlobalMixParamOctant;
         string fGlobalCPVPhaseScheme;
+        
+        // Random seeds
+        UInt_t fSeedToyMCstat;      ///< initial seeds for RNG - stat fluctuations
+        UInt_t fSeedToyMCsyst;      ///< initial seeds for RNG - syst fluctuations
+        UInt_t fSeedToyMCosc;       ///< initial seeds for RNG - osc param fluctutations
+        UInt_t fSeedFitter;         ///< initial seeds for RNG - randomisation of start points in fitter
+        UInt_t fSeedOther;          ///< initial seeds for RNG - misc
+  
         // 3f osc options
         string fHypothesis;
         double fMix12 [2];
