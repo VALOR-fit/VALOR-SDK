@@ -49,7 +49,7 @@ public:
    virtual int        NDOF          (void)              { return fNFitBins - fNFreeFitParams; }
    virtual int        NBinsInFit    (void)              { return fNFitBins;                   }
    virtual int        NFitParams    (void)              { return fNFreeFitParams;             }
-   virtual void       SetTol        (double tol)        { fTol  = tol ;                       }
+   virtual void       SetTol        (double tol)        { fTol  = tol ;                       }//Minuit targets an EDM of 0.001*tolerance for chisq dist
    virtual void       SetStr        (int str   )        { fStr  = str ;                       }
    virtual void       SetMaxCalls   (int ncalls)        { fMaxNumCalls = ncalls ;             }
    

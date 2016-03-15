@@ -501,14 +501,11 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 #ifdef __show_fit_steps__
     LOG("Minuit", pINFO) << "Running HESSE...";
 #endif
-    fHesseErrStatusCode = fitter->ExecuteCommand("HESSE",arglist, 1);
+    fitter->ExecuteCommand("HESSE",arglist, 1);
     
-    int hesseMatrixStatus = fitter->GetStats(ha, edm, errdef, nvpar, nparx);
-    int hesseMatrixStatus2 = dynamic_cast<TFitter*>(fitter)->GetMinuit()->GetStatus();
+    errMatrixStatus = fitter->GetStats(ha, edm, errdef, nvpar, nparx);
     
-    std::cout<<"ERR STATUS: "<<errMatrixStatus<<"\t"
-             <<hesseMatrixStatus<<"\t"<<fHesseErrStatusCode<<"\t"
-             <<errdef<<"\t"<<hesseMatrixStatus2<<std::endl;
+    fHesseErrStatusCode = errMatrixStatus;
     
     // Fill the HESSE errors
     for (int ip = 0 ; ip < num_of_params ; ip++) {
@@ -553,7 +550,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     fitter->PrintResults(3,amin);
   //fitter->PrintResults(1,amin); // prints limits
   }
-  LOG("Minuit", pINFO) << "Final error matrix status = " << fMigradErrStatusCode; 
+  LOG("Minuit", pINFO) << "Final error matrix status = " << errMatrixStatus; 
 #endif
 
 #ifdef __show_fit_steps__
