@@ -189,4 +189,23 @@ TObjArray * valor::util::MakeHistogramsOfParameterValues(int n_entries, const Ph
   return out_arr;
 }
 //___________________________________________________________________________
-
+TH1 * valor::util::MakeFittedHistogramShowingFittedValues(const TH1* hist, const TF1* func, int npoints)
+{
+  TH1 * fitted_hist = dynamic_cast<TH1*>(hist->Clone());
+  assert(fitted_hist);
+  
+  int nbins_in = fitted_hist->GetXaxis()->GetNbins();
+  
+  double xmin = fitted_hist->GetXaxis()->GetBinLowEdge(1);
+  double xmax = fitted_hist->GetXaxis()->GetBinUpEdge (nbins_in);
+  fitted_hist->SetBins(npoints,xmin,xmax);
+    
+  for (int ibin = 1 ; ibin <= fitted_hist->GetXaxis()->GetNbins() ; ibin++) {
+    double bin_width = fitted_hist->GetXaxis()->GetBinWidth(1);
+    double bin_centre = fitted_hist->GetXaxis()->GetBinCenter(ibin);
+    double func_val = func->Eval(bin_centre);
+    fitted_hist->SetBinContent(ibin, func_val);
+  }
+  return fitted_hist;
+}
+//___________________________________________________________________________

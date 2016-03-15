@@ -54,6 +54,9 @@ namespace util {
   double DeltaChisquare   (conv::ConfLevel_t cl, int nfitparams);
   double ChisqGauss       (double ndata, double nmc);
   double ChisqPoisson     (double ndata, double nmc);
+  
+  TAxis EstimateOptimalBinning(int npoints, double * points);
+  int EstimateOptimalNumberOfBinsForGaussian(int npoints, double nsigma);
 
   //
   // Cholesky decomposition

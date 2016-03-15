@@ -932,3 +932,33 @@ double valor::util::DoubleAngleToSingleAngle(double sinsq2theta)
   return sinsqtheta;
 }
 //____________________________________________________________________________
+TAxis valor::util::EstimateOptimalBinning(int npoints, double * points)
+{
+  // Uses Freedman-Diaconis rule to guess a (fixed size) binning scheme as a starting point.
+  
+  //Get interquartile range
+  double desired_quantiles[5] = {0,0.25,0.5,0.75,1.};
+  double quantiles_out[5];
+  TMath::Quantiles(npoints,5,points,quantiles_out,desired_quantiles,false);
+  double iqr = quantiles_out[3]-quantiles_out[1];
+  
+  // Freedman-Diaconis
+  double bin_size = 2 * iqr * pow(npoints,-.33333333333333);
+  double xmax = quantiles_out[4];
+  double xmin = quantiles_out[0];
+  int nbins = TMath::Nint((xmax-xmin)/bin_size);
+  return TAxis(nbins,xmin,xmax);
+}
+//____________________________________________________________________________
+int valor::util::EstimateOptimalNumberOfBinsForGaussian(int npoints, double nsigma)
+{
+  // Uses Freedman-Diaconis rule
+  
+  static const double iqr = 27./20.; //assume sigma = 1 - we divide it out later
+  
+  // Freedman-Diaconis
+  double bin_size = 2. * iqr * pow(npoints,-.33333333333333);
+  int nbins = TMath::Nint(2*nsigma/bin_size);
+  return nbins;
+}
+//____________________________________________________________________________
