@@ -320,7 +320,7 @@ void valor::RunOpt::ReadCommonOptions()
   }
   
   if (fParser->OptionExists("seed-misc")) {
-    fSeedToyMCosc = fParser->ArgAsUInt("seed-misc");
+    fSeedOther = fParser->ArgAsUInt("seed-misc");
   }
   else {
     fSeedOther = 0;
