@@ -329,9 +329,6 @@ void valor::RunOpt::ReadCommonOptions()
   // Should this be done here? Or in macro code.
   Rnd::Instance()->SetSeeds(fSeedToyMCstat,fSeedToyMCsyst,fSeedToyMCosc,fSeedFitter,fSeedOther);
   
-  cerr<<*Rnd::Instance();
-  
-  
 }
 //____________________________________________________________________________
 void valor::RunOpt::ReadToyOptions()
