@@ -38,6 +38,8 @@ class FitterMinuit: public FitterABC
 public:
    FitterMinuit();
    FitterMinuit(FitInputs * inputs, Option_t * option = "minuit"); // option: "minuit","minuit+hesse_err","minuit+minos_err" (migrad_err by default)
+   // Options can also specify tolerance=x and max function evaluations, eg
+   // option="minuit+hesse+tolerance=0.01+maxcalls=1E6"
    virtual ~FitterMinuit();
 
    virtual bool       DoTheFit      (void);
@@ -49,6 +51,7 @@ public:
    virtual int        NFitParams    (void)              { return fNFreeFitParams;             }
    virtual void       SetTol        (double tol)        { fTol  = tol ;                       }
    virtual void       SetStr        (int str   )        { fStr  = str ;                       }
+   virtual void       SetMaxCalls   (int ncalls)        { fMaxNumCalls = ncalls ;             }
    
 protected:
 

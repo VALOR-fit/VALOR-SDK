@@ -15,16 +15,20 @@ ChangeLog:
 #include <cstdlib> 
 #include <vector> 
 
-#include <TMath.h> 
-#include <TRandom3.h> 
-#include <TVirtualFitter.h> 
-#include <TString.h> 
 #include <TFile.h>
-#include <TSystem.h>
-#include <TStopwatch.h>
-#include <TTimeStamp.h>
+#include <TFitter.h> 
+#include <TMath.h> 
 #include <TMatrixDSym.h>
+#include <TObjArray.h> 
+#include <TPRegexp.h> 
+#include <TRandom3.h> 
+#include <TStopwatch.h>
+#include <TString.h> 
+#include <TSystem.h>
+#include <TTimeStamp.h>
+#include <TVirtualFitter.h> 
 
+#include "Conventions/Constants.h"
 #include "Conventions/Opt.h"
 #include "Utilities/Rnd.h"
 #include "Messenger/Messenger.h"
@@ -115,6 +119,55 @@ void FitterMinuit::Init(FitInputs * fit_inputs, Option_t * option)
     
     // set minimization function
     fitter->SetFCN(FitFunc);            
+  }
+  
+  // Parse a tolerance out of the fitter option
+  if(fOption.Contains("tolerance",TString::kIgnoreCase)) {
+    TPRegexp tol_re("(?<=tolerance\\=)-?[\\d.]+(?:e-?\\d+)?");
+    /*               |Lookahead name |Generic number pattern| */
+    TObjArray * matches = tol_re.MatchS(fOption,"i"); // i is case insensitive
+    double tolerance = 0;
+    if(matches->GetEntries()==1) {
+      TObjString * tolerance_string = dynamic_cast<TObjString*>(matches->At(0));
+      if (tolerance_string) {
+        tolerance = strtod(tolerance_string->GetString().Data(),NULL);
+      }
+    }
+      
+    delete matches;
+    
+    if (tolerance > conv::kAVerySmallNum) {
+      LOG("Minuit", pINFO) << "Set tolerance to "<<tolerance;
+      this->SetTol(tolerance);
+    }
+    else {
+      LOG("Minuit",pWARN) << "Failed to parse valid single tolerance from option string "<<fOption;
+    }
+  }
+  
+  // Parse a max number of calls out of the fitter option
+  if(fOption.Contains("maxcalls",TString::kIgnoreCase)) {
+    TPRegexp call_re("(?<=maxcalls\\=)-?[\\d.]+(?:e-?\\d+)?");
+    /*               |Lookahead name |Generic number pattern| */
+    TObjArray * matches = call_re.MatchS(fOption,"i"); // i is case insensitive
+    double maxcalls = 0;
+    if(matches->GetEntries()==1) {
+      TObjString * maxcalls_string = dynamic_cast<TObjString*>(matches->At(0));
+      if (maxcalls_string) {
+        maxcalls = strtod(maxcalls_string->GetString().Data(),NULL);
+      }
+    }
+      
+    delete matches;
+    
+    if (maxcalls > conv::kAVerySmallNum) {
+      int ncalls = TMath::Nint(maxcalls);
+      LOG("Minuit", pINFO) << "Set max number of calls to "<<ncalls;
+      this->SetMaxCalls(ncalls);
+    }
+    else {
+      LOG("Minuit",pWARN) << "Failed to parse valid single max number of calls from option string "<<fOption;
+    }
   }
 
 /*
@@ -449,6 +502,13 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     LOG("Minuit", pINFO) << "Running HESSE...";
 #endif
     fHesseErrStatusCode = fitter->ExecuteCommand("HESSE",arglist, 1);
+    
+    int hesseMatrixStatus = fitter->GetStats(ha, edm, errdef, nvpar, nparx);
+    int hesseMatrixStatus2 = dynamic_cast<TFitter*>(fitter)->GetMinuit()->GetStatus();
+    
+    std::cout<<"ERR STATUS: "<<errMatrixStatus<<"\t"
+             <<hesseMatrixStatus<<"\t"<<fHesseErrStatusCode<<"\t"
+             <<errdef<<"\t"<<hesseMatrixStatus2<<std::endl;
     
     // Fill the HESSE errors
     for (int ip = 0 ; ip < num_of_params ; ip++) {
