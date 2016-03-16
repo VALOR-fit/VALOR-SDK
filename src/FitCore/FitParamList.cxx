@@ -529,6 +529,11 @@ void FitParamList::SetStatusCode(string st, int code)
   fStatusCodes[st] = code;
 }
 //________________________________________________________________________________________
+void FitParamList::SetStatusCode(const char * st, int code)
+{
+  this->SetStatusCode(std::string(st),code);
+}
+//________________________________________________________________________________________
 int FitParamList::GetStatusCode(string st) const
 {
   map<string,int>::const_iterator sciter = fStatusCodes.find(st);
@@ -536,6 +541,11 @@ int FitParamList::GetStatusCode(string st) const
     return sciter->second;
   }
   return -9876;
+}
+//________________________________________________________________________________________
+int FitParamList::GetStatusCode(const char * st) const
+{
+  return this->GetStatusCode(std::string(st));
 }
 //________________________________________________________________________________________
 void FitParamList::Print(ostream & stream) const

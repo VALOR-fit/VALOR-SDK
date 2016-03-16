@@ -149,8 +149,11 @@ namespace valor {
     
     // Set and get other fit properties: statistic at best-fit point, fit time, status codes etc
     void   ClearStatusCodes    (void);
-    void   SetStatusCode       (string st, int code);
-    int    GetStatusCode       (string st) const;
+    void   SetStatusCode       (std::string st , int code);
+    void   SetStatusCode       (const char  * st, int code);
+    int    GetStatusCode       (std::string  st) const;
+    int    GetStatusCode       (const char  * st) const;
+    
     void   SetBestFitStatistic (double stat_bf)   { fBestFitStatistic = stat_bf; }
     double GetBestFitStatistic (void) const       { return fBestFitStatistic;    }
     void   SetCurrStatistic    (double stat_curr) { fCurrStatistic = stat_curr;  }
