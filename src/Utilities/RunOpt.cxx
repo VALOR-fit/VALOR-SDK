@@ -770,7 +770,7 @@ void valor::RunOpt::Read3FOscParamsOptions()
   if(fMargMixing13) util::OscParams::Instance()->SetPrior(conv::kPhypMixing13, fPriorMixing13,  fPriorParMixing13[0], fPriorParMixing13[1], fMixModeMixing13); // Convert to sinsqth
   if(fMargDeltaCP)  util::OscParams::Instance()->SetPrior(conv::kPhypCPV,      fPriorDeltaCP,  fPriorParDeltaCP[0],  fPriorParDeltaCP[1],  ""              );
   if(fMargMixing12) util::OscParams::Instance()->SetPrior(conv::kPhypMixing12, fPriorMixing12, fPriorParMixing12[0], fPriorParMixing12[1], fMixModeMixing12); // Convert to sinsqth
-  if(fMargDm12sq)   util::OscParams::Instance()->SetPrior(conv::kPhypDm12sq,   fPriorDm12sq,   fPriorParDm23sq[0],   fPriorParDm23sq[1],   ""              );
+  if(fMargDm12sq)   util::OscParams::Instance()->SetPrior(conv::kPhypDm12sq,   fPriorDm12sq,   fPriorParDm12sq[0],   fPriorParDm12sq[1],   ""              );
   
   //if(fParser->OptionExists("disable-priors")) {
   //fPriorsFile = "";
