@@ -1888,7 +1888,17 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
   
   return chisq;
 }
-
+//________________________________________________________________________________________
+bool FitParamList::IsComplete()
+{
+  for (int ip = 0 ; ip < fNParams; ip++)
+  {
+    PhysParamId_t p = this->WhichParam(ip);
+    if (p==conv::kPhypUndefined) {return false;}
+  }
+  return true;
+}
+//________________________________________________________________________________________
 
 
 

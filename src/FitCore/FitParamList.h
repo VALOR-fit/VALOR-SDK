@@ -163,6 +163,9 @@ namespace valor {
     void   SetFitTries         (int   fit_tries)  { fFitTries = fit_tries;       }
     int    GetFitTries         (void) const       { return fFitTries;            }
     
+    // Check if this FPL is complete and ready to be used
+    bool IsComplete();
+    
     TMatrixDSym * GetCovMatrix(void) { return fCovMatrix; }
     
     // Calculate the fit statistic penalty
