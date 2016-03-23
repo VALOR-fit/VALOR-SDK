@@ -76,8 +76,8 @@ namespace util {
   TMatrixD CovarianceMatrixToCorrelationMatrix(const TMatrixD & cov_m);
   TMatrixD MatrixPseudoInverted(const TMatrixD & m);
 
-  TVectorD ConcatenateTVectors (
-    const std::vector<const TVectorD *>  & tvecs );
+  TVectorD ConcatenateTVectors  (const std::vector<const TVectorD *>  & tvecs );
+  TMatrixD ConcatenateTMatrices (const std::vector<const TMatrixD *>  & tmats );
 
   //
   // Functions randomizing oscillation params (for use when params are marginalized)

@@ -920,6 +920,28 @@ TVectorD valor::util::ConcatenateTVectors (
   return output;
 }
 //____________________________________________________________________________
+TMatrixD valor::util::ConcatenateTMatrices (
+  const std::vector<const TMatrixD *>  & tmats )
+{
+  unsigned int vsize = tmats.size();
+  vector<int> edge_vec_x(vsize+1);
+  edge_vec_x[0] = 0;
+  vector<int> edge_vec_y(vsize+1);
+  edge_vec_y[0] = 0;
+  for (unsigned int i = 0 ; i < vsize; i++) {
+    edge_vec_x[i+1] = edge_vec_x[i] + tmats.at(i)->GetNrows();
+    edge_vec_y[i+1] = edge_vec_y[i] + tmats.at(i)->GetNcols();
+  }
+  
+  TMatrixD output(edge_vec_x[vsize],edge_vec_y[vsize]);
+  
+  for (unsigned int i = 0 ; i < vsize; i++) {
+    output.SetSub(edge_vec_x[i],edge_vec_y[i],*tmats.at(i));
+  }
+  
+  return output;
+}
+//____________________________________________________________________________
 double valor::util::SingleAngleToDoubleAngle(double sinsqtheta)
 {
   double sinsq2theta = 1 - (1-2*sinsqtheta)*(1-2*sinsqtheta);
