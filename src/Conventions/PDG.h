@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include "Conventions/NuFlavour.h"
+
 using std::string;
 
 namespace valor {
@@ -34,6 +36,15 @@ static const int kPdgNuS4     =   80;
 static const int kPdgNuS5     =  100;
 static const int kPdgNuS4Bar  =  -80;
 static const int kPdgNuS5Bar  = -100;
+
+static const int kPdgNuFlavs[kNNuFlavour] = {
+  12,
+  14,
+  16,
+ -12,
+ -14,
+ -16
+};
 
 } // conv
 
