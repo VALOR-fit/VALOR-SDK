@@ -51,6 +51,7 @@ namespace valor {
       
       // Randomize ALL oscillation parameters (if requested)
       void Randomize();
+      void SetRandomize(conv::PhysParamId_t p, bool random = true);
       
       // Update all the values in the PhysHypothesis / FitParamList
       void UpdatePhysHypothesis(PhysHypothesis & ph,  bool print = true);
