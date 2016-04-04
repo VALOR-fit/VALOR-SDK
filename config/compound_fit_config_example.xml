@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<analysis_inputs analysis="FNAL_LAR" version="2016v0" layout="DUNE_NEAR_FAR">
+  
+  <model>
+    <name>   DUNE_ND </name>
+    <class>  NDModel </class>
+    <config> $VALOR_DUNE/config/dune_ndfit.xml </config>
+  </model>
+  
+  <model>
+    <name>   DUNE_FD </name>
+    <class>  NDModel </class>
+    <config> $VALOR_DUNE/config/dune_ndfit.xml </config>
+  </model>
+  
+</analysis_inputs>
