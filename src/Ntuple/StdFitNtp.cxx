@@ -6,38 +6,35 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 */
 //________________________________________________________________________________________
 
-//#include <cassert>
-
 #include <TFile.h>
 #include <TTree.h>
 #include <TObjArray.h>
 
-#include "NDFit/NDNtp.h"
-
 #include "FitCore/FitParamList.h"
 #include "FitCore/PhysParamList.h"
 #include "Messenger/Messenger.h"
+#include "Ntuple/StdFitNtp.h"
 
 using namespace valor;
 using namespace valor::conv;
 
 //________________________________________________________________________________________
-NDNtp::NDNtp()
+StdFitNtp::StdFitNtp()
 {
   this->Init();
 }
 //________________________________________________________________________________________
-NDNtp::~NDNtp() 
+StdFitNtp::~StdFitNtp() 
 {
   this->Clean();
 }
 //________________________________________________________________________________________
-void NDNtp::Create(const char * output_filename)
+void StdFitNtp::Create(const char* file_name, const char* ntp_name, const char* ntp_label)
 {
-  LOG("NDNtp", pDEBUG) << "Booking VALOR/DUNE ND fit tree...";
+  LOG("Ntp", pDEBUG) << "Creating standard VALOR fit n-tuple...";
 
-  if(output_filename) {
-    fOutFile = new TFile(output_filename, "recreate");
+  if(file_name) {
+    fOutFile = new TFile(file_name, "recreate");
   }
 
   fTrueParamArr    = new PhysParamList;
@@ -50,7 +47,7 @@ void NDNtp::Create(const char * output_filename)
 
 //int migradmin, migraderr;
 
-  fVTree = new TTree("valor_dune_nd_ntp","VALOR/DUNE ND fit results");
+  fVTree = new TTree(ntp_name, ntp_label);
 
   fVTree->Branch("true_params",     "valor::PhysParamList", &fTrueParamArr,    1280000,0);
   fVTree->Branch("best_fit_params", "valor::FitParamList",  &fBestFitParamArr, 1280000,0);
@@ -59,10 +56,9 @@ void NDNtp::Create(const char * output_filename)
 
 //fVTree->Branch("migradmin",                               &migradmin);
 //fVTree->Branch("migraderr",                               &migraderr);
-
 }
 //________________________________________________________________________________________
-void NDNtp::Reset(void)
+void StdFitNtp::Reset(void)
 {
   fTrueParamArr    -> Clear();
   fBestFitParamArr -> Clear();
@@ -70,12 +66,12 @@ void NDNtp::Reset(void)
   fDataArr         -> Clear();
 }
 //________________________________________________________________________________________
-void NDNtp::Fill(void)
+void StdFitNtp::Fill(void)
 {
   fVTree -> Fill();
 }
 //________________________________________________________________________________________
-void NDNtp::Save(void)
+void StdFitNtp::Save(void)
 {
   if(fOutFile) {
     fOutFile -> cd();
@@ -83,9 +79,9 @@ void NDNtp::Save(void)
   }
 }
 //________________________________________________________________________________________
-void NDNtp::Init(void)
+void StdFitNtp::Init(void)
 {
-  LOG("NDNtp", pDEBUG) << "Initializing...";
+  LOG("Ntp", pDEBUG) << "Initializing...";
 
   fOutFile         = 0;
   fVTree           = 0;
@@ -95,9 +91,9 @@ void NDNtp::Init(void)
   fDataArr         = 0;
 }
 //________________________________________________________________________________________
-void NDNtp::Clean(void)
+void StdFitNtp::Clean(void)
 {
-  LOG("NDNtp", pDEBUG) << "Cleaning-up...";
+  LOG("Ntp", pDEBUG) << "Cleaning-up...";
 
   if (fOutFile) {
      fOutFile->Close();

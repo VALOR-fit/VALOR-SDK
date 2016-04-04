@@ -20,6 +20,7 @@ BUILD_TARGETS =    print-make-info     \
 		   build-conventions   \
 		   build-utilities     \
 		   build-messenger     \
+		   build-ntuple        \
 		   build-parser        \
 		   build-core-fitter   \
 		   build-example-fits  \
@@ -58,6 +59,11 @@ build-messenger: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Messenger package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/Messenger"
+
+build-ntuple: make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building Ntuple package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/Ntuple"
 
 build-parser: make-bin-lib-dir FORCE
 	@echo " "
@@ -102,6 +108,7 @@ purge: FORCE
 	cd Conventions;               make purge; cd ..; \
 	cd Utilities;                 make purge; cd ..; \
 	cd Messenger;                 make purge; cd ..; \
+	cd Ntuple;                    make purge; cd ..; \
 	cd Parser;                    make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
 	cd Examples/X01;              make purge; cd ..; \
@@ -117,6 +124,7 @@ clean-files: FORCE
 	cd Conventions;             make clean; cd ..; \
 	cd Utilities;               make clean; cd ..; \
 	cd Messenger;               make clean; cd ..; \
+	cd Ntuple;                  make clean; cd ..; \
 	cd Parser;                  make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
 	cd Examples/X01;            make clean; cd ..; \

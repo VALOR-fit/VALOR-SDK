@@ -1,9 +1,9 @@
 //____________________________________________________________________________ 
 /*!
 
-\class     valor::NDNtp
+\class     valor::StdFitNtp.h
 
-\brief     ND fit n-tuple writer
+\brief     Standard VALOR fit n-tuple 
 
 \author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
            University of Liverpool & STFC Rutherford Appleton Laboratory
@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _valor_dune_nd_ntp_h_
-#define _valor_dune_nd_ntp_h_
+#ifndef _valor_standard_output_fit_ntuple_h_
+#define _valor_standard_output_fit_ntuple_h_
 
 class TFile;
 class TTree;
@@ -27,13 +27,13 @@ namespace valor {
 class PhysParamList;
 class FitParamList;
 
-class NDNtp
+class StdFitNtp
 {
 public:
-  NDNtp();
-  virtual ~NDNtp();
+  StdFitNtp();
+  virtual ~StdFitNtp();
    
-  void Create (const char * output_file);
+  void Create (const char* file_name, const char* ntp_name = "valor_ntp", const char* ntp_label = "");
   void Fill   (void);
   void Reset  (void);
   void Save   (void);
@@ -50,8 +50,8 @@ protected:
   void Init  (void);
   void Clean (void);
 
-  TFile *         fOutFile;            ///< Output file
-  TTree *         fVTree;              ///< VALOR/DUNE ND tree
+  TFile *         fOutFile;            ///< Output ROOT file
+  TTree *         fVTree;              ///< Output VALOR tree
   PhysParamList * fTrueParamArr;       ///< array holding true parameters
   FitParamList *  fBestFitParamArr;    ///< array holding best-fit parameters
   TObjArray *     fBestFitModelArr;    ///< array holding best-fit predictions for all datasets
