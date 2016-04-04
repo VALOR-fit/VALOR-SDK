@@ -14,7 +14,7 @@ libdir=$VALOR_FMWK/lib
 srcdir=$VALOR_FMWK/src
 
 # VALOR/FMWK libraries:
-libs="-L$libdir -lValorMesg -lValorNtuple -lValorConv -lValorUtil -lValorParse -lValorFitCore"
+libs="-L$libdir -lValorMesg -lValorNtuple -lValorRegistry -lValorConv -lValorUtil -lValorParse -lValorFitCore"
 
 #
 # Usage
