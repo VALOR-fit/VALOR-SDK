@@ -8,13 +8,23 @@ ChangeLog:
 */
 //________________________________________________________________________________________
 
+#include <iostream>
+
+#include "TClass.h"
 #include "TFile.h"
 #include "TObjArray.h"
+#include "TSystem.h"
 
 #include "Messenger/Messenger.h"
+#include "Utilities/UtlSystem.h"
+#include "Utilities/UtlXML.h"
 #include "FitCore/CompoundFitModel.h"
 
 using namespace valor;
+using std::string;
+using std::cout;
+using std::cerr;
+using std::endl;
 
 //________________________________________________________________________________________
 CompoundFitModel::CompoundFitModel() 
@@ -32,11 +42,52 @@ std::string CompoundFitModel::Name()
   return fName;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Read(string file, Option_t * opt)
+bool CompoundFitModel::Read(string file, Option_t * /*opt*/)
 {
   bool status = true;
   
-  // Read new XML file
+  // Parse the input XML configuration file
+  TXMLEngine* xml = new TXMLEngine;   
+  XMLDocPointer_t xmldoc = xml->ParseFile(file.c_str());
+  if (xmldoc==0) {
+    LOG("NDModel",pERROR) << "Can not parse input XML file [" << file << "]";
+    delete xml;
+    util::Die(1); return false;
+  }
+  XMLNodePointer_t root_node = xml->DocGetRootElement(xmldoc);
+  
+  for ( XMLNodePointer_t curr_node = util::FindNode(xml,root_node,"model");
+        (!(xml->IsEmptyNode(curr_node)));
+        curr_node = xml->GetNext(curr_node) )
+  {
+    string model_name = util::XML2String(xml,curr_node,"name");
+    string class_name = util::XML2String(xml,curr_node,"class");
+    TString config_path = util::XML2String(xml,curr_node,"config");
+    gSystem->ExpandPathName(config_path);
+    
+    // Use factory class to get proper model
+    TClass * curr_class = TClass::GetClass(class_name.c_str());
+    if (!curr_class) {
+      LOG("NDModel",pERROR) << "Cannot find class "<<class_name;
+      status = false;
+      continue;
+    }
+    void * curr_obj = curr_class->New();
+    FitModelABC * curr_model = static_cast<FitModelABC*>(curr_obj);
+    
+    if (!curr_model) {
+      LOG("NDModel",pERROR) << "Failed to properly turn class "<<class_name;
+      status = false;
+      continue;
+    }
+    
+    status = curr_model->Read(config_path.Data());
+    
+    fSubModels.push_back(curr_model);
+    
+  }
+  
+  if (not status) { util::Die(-1); }
   
   return status;
 }
