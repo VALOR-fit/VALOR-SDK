@@ -37,7 +37,7 @@ CompoundFitModel::~CompoundFitModel()
 
 }
 //________________________________________________________________________________________
-std::string CompoundFitModel::Name()
+std::string CompoundFitModel::Name() const
 {
   return fName;
 }
@@ -144,11 +144,10 @@ void CompoundFitModel::PrintSystematics (std::ostream & stream, Option_t * opt) 
   }
 }
 //________________________________________________________________________________________
-PhysParamList CompoundFitModel::Tweaks(/*Option_t * opt*/)
+PhysParamList CompoundFitModel::Tweaks(Option_t * opt) const
 {
-  Option_t * opt = 0;
   PhysParamList ppl;
-  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+  for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
     PhysParamList ppl2 = (*it)->Tweaks();
     ppl.MergeFrom(ppl2,opt);
   }

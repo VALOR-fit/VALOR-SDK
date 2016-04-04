@@ -35,10 +35,10 @@ public:
   virtual ~FitModelABC();
 
   // Identify fit model with a name (to be propagated in output files, etc)
-  virtual string Name(void) = 0;
+  virtual std::string Name(void) const = 0;
 
   // Read configuration data from file
-  virtual bool Read(string file, Option_t * opt = 0) = 0;
+  virtual bool Read(std::string file, Option_t * opt = 0) = 0;
 
   // Below are a set methods to generate model predictions for a given physics hypothesis and a set of nuisance parameters.
   // The model is first tweaked appropriately by setting systematics to particular values or by randomizing them.
@@ -47,12 +47,12 @@ public:
   // (for example, in T2K context, to specify whether the input tweak is wrt to the nominal and BANFF-tuned MC parameters).
   virtual bool Generate             (const PhysHypothesis & ph, Option_t * opt = 0) = 0;
   virtual void RandomizeSystematics (Option_t * opt = 0) = 0; 
-  virtual void TweakSystematic      (string syst_name, double twkdial=0., Option_t * opt = 0) = 0; 
+  virtual void TweakSystematic      (std::string syst_name, double twkdial=0., Option_t * opt = 0) = 0; 
   virtual void TweakSystematic      (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0) = 0; 
   // Additional related methods to reset the systematics and enquire their values.
   virtual void ResetSystematics (Option_t * opt = 0) = 0;  
   virtual void PrintSystematics (std::ostream & stream = std::cout, Option_t * opt = 0) const = 0;
-  virtual PhysParamList Tweaks(void) = 0;
+  virtual PhysParamList Tweaks(Option_t * opt = 0) const = 0;
 
   // This is a second interface for generating predictions for a given physics hypothesis and systematics.
   // This interface method was developed for fitters. 

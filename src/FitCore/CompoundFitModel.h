@@ -35,7 +35,7 @@ public:
  ~CompoundFitModel();
 // Fit Model ABC interface
   // Identify fit model with a name (to be propagated in output files, etc)
-  virtual std::string Name(void) ;
+  virtual std::string Name(void) const ;
 
   // Read configuration data from file
   virtual bool Read(std::string file, Option_t * opt = 0) ;
@@ -52,7 +52,7 @@ public:
   // Additional related methods to reset the systematics and enquire their values.
   virtual void ResetSystematics (Option_t * opt = 0) ;  
   virtual void PrintSystematics (std::ostream & stream = std::cout, Option_t * opt = 0) const ;
-  virtual PhysParamList Tweaks(void) ;
+  virtual PhysParamList Tweaks(Option_t * opt = 0) const ;
 
   // This is a second interface for generating predictions for a given physics hypothesis and systematics.
   // This interface method was developed for fitters. 
