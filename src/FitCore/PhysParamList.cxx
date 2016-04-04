@@ -11,6 +11,7 @@ ChangeLog:
 #include <iomanip>
 #include <cstdlib>
 
+#include "Messenger/Messenger.h"
 #include "FitCore/PhysParamList.h"
 #include "Conventions/PhysParamId.h"
 
@@ -136,5 +137,21 @@ void PhysParamList::CopyFrom(const PhysParamList & ppl)
   this->Clear();
   ppl.Copy(*this);
   fParams = ppl.Map();
+}
+//________________________________________________________________________________________
+void PhysParamList::MergeFrom(const PhysParamList & ppl, Option_t * opt)
+{
+  bool no_warning = TString(opt).Contains("silent");
+  map<int,double>::const_iterator it = ppl.fParams.begin();
+  for( ; it != ppl.fParams.end(); ++it) {
+    PhysParamId_t p = (PhysParamId_t) it->first;
+    double        v = it->second;
+    if (!no_warning) {
+      if (this->Contains(p)) {
+        LOG("PhysParamList",pWARN) << "Warning, replacing parameter "<<util::NameRegistry::Instance()->AsString(p)<<" during merge. Old value "<<this->Value(p)<<", new value "<<v;
+      }
+    }
+    this->SetValue(p,v);
+  }
 }
 //________________________________________________________________________________________

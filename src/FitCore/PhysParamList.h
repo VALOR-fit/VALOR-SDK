@@ -57,7 +57,9 @@ public:
 
    const map<int,double> & Map(void) const { return fParams; }
    
-   void CopyFrom(const PhysParamList & ppl);
+   // Get the contents of another PPL.
+   void CopyFrom(const PhysParamList & ppl); // Wipes current contents
+   void MergeFrom(const PhysParamList & ppl, Option_t * opt = 0); // Keeps current contents
 
 private:
 
