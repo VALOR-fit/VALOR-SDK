@@ -103,35 +103,38 @@ public:
   // Methods to set/retrieve Registry values
   //
   void   Set (RgIMapPair entry);
-  void   Set (RgKey key, RgBool  item);
-  void   Set (RgKey key, RgInt   item);
-  void   Set (RgKey key, RgDbl   item);
-  void   Set (RgKey key, RgStr   item);
-  void   Set (RgKey key, RgCChAr item);
-  void   Set (RgKey key, RgH1F   item);
-  void   Set (RgKey key, RgH2F   item);
-  void   Set (RgKey key, RgTree  item);
+  void   Set (RgKey key, RgBool   item);
+  void   Set (RgKey key, RgInt    item);
+  void   Set (RgKey key, RgDbl    item);
+  void   Set (RgKey key, RgStr    item);
+  void   Set (RgKey key, RgCChAr  item);
+  void   Set (RgKey key, RgH1F    item);
+  void   Set (RgKey key, RgH2F    item);
+  void   Set (RgKey key, RgTree   item);
+  void   Set (RgKey key, RgObject item);
 
   void   Get (RgKey key, const RegistryItemI * & item) const;
-  void   Get (RgKey key, RgBool & item) const;
-  void   Get (RgKey key, RgInt &  item) const;
-  void   Get (RgKey key, RgDbl &  item) const;
-  void   Get (RgKey key, RgStr &  item) const;
-  void   Get (RgKey key, RgH1F &  item) const;
-  void   Get (RgKey key, RgH2F &  item) const;
-  void   Get (RgKey key, RgTree & item) const;
+  void   Get (RgKey key, RgBool   & item) const;
+  void   Get (RgKey key, RgInt    & item) const;
+  void   Get (RgKey key, RgDbl    & item) const;
+  void   Get (RgKey key, RgStr    & item) const;
+  void   Get (RgKey key, RgH1F    & item) const;
+  void   Get (RgKey key, RgH2F    & item) const;
+  void   Get (RgKey key, RgTree   & item) const;
+  void   Get (RgKey key, RgObject & item) const;
 
-  RgBool GetBool      (RgKey key) const;
-  RgInt  GetInt       (RgKey key) const;
-  RgDbl  GetDouble    (RgKey key) const;
-  RgStr  GetString    (RgKey key) const;
-  RgH1F  GetH1F       (RgKey key) const;
-  RgH2F  GetH2F       (RgKey key) const;
-  RgTree GetTree      (RgKey key) const;
-  RgBool GetBoolDef   (RgKey key, RgBool def_opt, bool set_def=true);
-  RgInt  GetIntDef    (RgKey key, RgInt  def_opt, bool set_def=true);
-  RgDbl  GetDoubleDef (RgKey key, RgDbl  def_opt, bool set_def=true);
-  RgStr  GetStringDef (RgKey key, RgStr  def_opt, bool set_def=true);
+  RgBool   GetBool      (RgKey key) const;
+  RgInt    GetInt       (RgKey key) const;
+  RgDbl    GetDouble    (RgKey key) const;
+  RgStr    GetString    (RgKey key) const;
+  RgH1F    GetH1F       (RgKey key) const;
+  RgH2F    GetH2F       (RgKey key) const;
+  RgTree   GetTree      (RgKey key) const;
+  RgObject GetObject    (RgKey key) const;
+  RgBool   GetBoolDef   (RgKey key, RgBool def_opt, bool set_def=true);
+  RgInt    GetIntDef    (RgKey key, RgInt  def_opt, bool set_def=true);
+  RgDbl    GetDoubleDef (RgKey key, RgDbl  def_opt, bool set_def=true);
+  RgStr    GetStringDef (RgKey key, RgStr  def_opt, bool set_def=true);
 
   int    NEntries     (void) const;                     ///< get number of items
   bool   Exists       (RgKey key) const;                ///< item with input key exists?

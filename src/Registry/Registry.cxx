@@ -301,6 +301,11 @@ void Registry::Set(RgKey key, RgTree item)
   SetRegistryItem(this, key, item); // call templated set method
 }
 //____________________________________________________________________________
+void Registry::Set(RgKey key, RgObject item)
+{
+  SetRegistryItem(this, key, item); // call templated set method
+}
+//____________________________________________________________________________
 void Registry::Get(RgKey key, const RegistryItemI * & item) const
 {
   RgIMapConstIter entry = fRegistry.find(key);
@@ -375,6 +380,18 @@ void Registry::Get(RgKey key, RgTree & item) const
   }
 }
 //____________________________________________________________________________
+void Registry::Get(RgKey key, RgObject & item) const
+{
+  RgIMapConstIter entry = fRegistry.find(key);
+  RegistryItemI * rib = entry->second;
+  RegistryItem<RgObject> *ri =  dynamic_cast<RegistryItem<RgObject>*> (rib);
+  item = ri->Data();
+
+  if(!item) {
+    LOG("Reg", pWARN) << "Returned NULL ptr for TObject param = " << key;
+  }
+}
+//____________________________________________________________________________
 RgBool Registry::GetBool(RgKey key) const
 {
   RgBool value;
@@ -430,6 +447,16 @@ RgTree Registry::GetTree(RgKey key) const
   RegistryItem<RgTree> *ri = dynamic_cast<RegistryItem<RgTree>*> (rib);
 
   RgTree item = ri->Data();
+  return item;
+}
+//____________________________________________________________________________
+RgObject Registry::GetObject(RgKey key) const
+{
+  RgIMapConstIter entry = fRegistry.find(key);
+  RegistryItemI * rib = entry->second;
+  RegistryItem<RgObject> *ri = dynamic_cast<RegistryItem<RgObject>*> (rib);
+
+  RgObject item = ri->Data();
   return item;
 }
 //____________________________________________________________________________
@@ -646,6 +673,16 @@ void Registry::Append(const Registry & registry, RgKey prefix)
            } else {
              LOG("Reg", pERROR)
                << "Null TTree with key = " << name << " - not copied";
+           }
+     } else if (type == kRgObject) {
+           RgObject obj = registry.GetObject(name);
+           if(obj) {
+             TObject * cobj = obj->Clone();
+             LOG("Reg", pDEBUG) << cobj->GetName();
+             cri = new RegistryItem<RgObject>(cobj,ilk);
+           } else {
+             LOG("Reg", pERROR)
+               << "Null TObject with key = " << name << " - not copied";
            }
      } else {}
 

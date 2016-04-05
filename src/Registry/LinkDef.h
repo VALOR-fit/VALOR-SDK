@@ -14,6 +14,7 @@
 #pragma link C++ class valor::RegistryItem<RgH1F>+;
 #pragma link C++ class valor::RegistryItem<RgH2F>+;
 #pragma link C++ class valor::RegistryItem<RgTree>+;
+#pragma link C++ class valor::RegistryItem<RgObject>+;
 #pragma link C++ class valor::RegistryItemI;
 
 #endif

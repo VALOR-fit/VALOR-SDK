@@ -33,7 +33,8 @@ typedef enum ERgType {
   kRgStr,
   kRgH1F,
   kRgH2F,
-  kRgTree
+  kRgTree,
+  kRgObject
 
 } RgType_t;
 
@@ -51,6 +52,7 @@ public:
       case (kRgH1F)       : return "h1f";       break;
       case (kRgH2F)       : return "h2f";       break;
       case (kRgTree)      : return "tree";      break;
+      case (kRgObject)    : return "object";    break;
       default             : return "undefined";
     }
   }

@@ -32,6 +32,8 @@ template ostream & operator <<
                (ostream & stream, const RegistryItem<RgH2F>  & r);
 template ostream & operator << 
                (ostream & stream, const RegistryItem<RgTree> & r);
+template ostream & operator << 
+               (ostream & stream, const RegistryItem<RgObject> & r);
 //____________________________________________________________________________
 template <typename T>
    ostream & operator << (ostream & stream, const RegistryItem<T> & rec)
@@ -116,6 +118,11 @@ template<> RgType_t RegistryItem<RgTree>::TypeInfo(void) const
   return kRgTree; 
 }
 //____________________________________________________________________________
+template<> RgType_t RegistryItem<RgObject>::TypeInfo(void) const 
+{ 
+  return kRgObject; 
+}
+//____________________________________________________________________________
 template<typename T> void RegistryItem<T>::Print(ostream & stream) const
 {
   stream << ((fIsLocked) ? "[  locked]" : "[unlocked]") 
@@ -175,6 +182,7 @@ template class RegistryItem<RgStr>;
 template class RegistryItem<RgH1F>;
 template class RegistryItem<RgH2F>;
 template class RegistryItem<RgTree>;
+template class RegistryItem<RgObject>;
 
 //____________________________________________________________________________
 

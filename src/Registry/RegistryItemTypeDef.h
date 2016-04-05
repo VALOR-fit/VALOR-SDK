@@ -39,5 +39,6 @@ typedef const char * RgCChAr;
 typedef TH1F *       RgH1F;
 typedef TH2F *       RgH2F;
 typedef TTree *      RgTree;
+typedef TObject *    RgObject;
 
 #endif // _valor_registry_item_type_def_h_
