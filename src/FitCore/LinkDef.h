@@ -7,6 +7,8 @@
 #pragma link C++ namespace valor;
 #pragma link C++ namespace valor::util;
 
+#pragma link C++ class valor::CorrelatedSystematics+;
+
 #pragma link C++ class valor::PhysHypothesis+;
 
 #pragma link C++ class valor::FitParamList+;
