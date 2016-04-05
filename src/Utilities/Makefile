@@ -11,7 +11,7 @@ MAKEFILE = Makefile
 include $(VALOR_FMWK)/make/Make.include
 
 PACKAGE           = ValorUtil
-DICTIONARY        = _RootDict$(PACKAGE)
+DICTIONARY        = _RootDict_$(PACKAGE)
 LIBNAME           = lib$(PACKAGE)
 
 all : rootcint lib lib-link
