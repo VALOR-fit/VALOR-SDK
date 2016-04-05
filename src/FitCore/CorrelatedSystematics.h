@@ -27,6 +27,8 @@
 #include <TMatrixTSym.h>
 #include <TXMLEngine.h>
 
+#include "Conventions/PhysParamId.h"
+
 namespace valor {
 
 class FitParamList;
@@ -45,7 +47,11 @@ public:
   const TMatrixD & CovMatrix         (void) const { return *fCovMtrx;          }
   const TMatrixD & CovMatrixInv      (void) const { return *fCovMtrxInv;       }
   const TMatrixD & CovMatrixCholesky (void) const { return *fCovMtrxChoL;      }
-
+  
+  const TVectorD & UntunedValues (void) const { return *fUntunedValues;}
+  const TVectorD & InitialValues (void) const { return *fInitialValues;}
+  const TVectorD & CurrentValues (void) const { return *fCurrentValues;}
+  
   double OneSigmaError(conv::PhysParamId_t p) const;
   double OneSigmaErrorByIndex(int idx) const;
 
@@ -64,9 +70,14 @@ public:
   
   double InitialValueByIndex(int idx) const;
   double InitialValue(conv::PhysParamId_t p) const;
+  
+  // Find out which parameters are at which indices
+  unsigned int Size(void) const;
+  conv::PhysParamId_t WhichParam(int idx) const;
 
-  // Get & tweak flags
-  bool IsTweaked (void) const { return fIsTweaked; } 
+  // Get flags
+  bool IsTweaked   (void) const { return fIsTweaked;   } 
+  bool IsConfigured(void) const { return fIsConfigured;}
 
   // Print
   void PrintSystematicVariations (std::ostream & stream = std::cout) const;
@@ -82,8 +93,12 @@ public:
   //~ using TObject::Read;
   //~ using TObject::Draw;
   
+  // Name strings
   void SetName(std::string name);
   void SetXMLNodeName(std::string xml_node_name);
+  
+  std::string GetName(void) const;
+  std::string GetXMLNodeName(void) const;
     
 protected:
   CorrelatedSystematics();

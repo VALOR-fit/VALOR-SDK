@@ -40,8 +40,6 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 using std::cout;
 using std::cerr;
 using std::endl;
-using std::setw;
-using std::setprecision;
 
 using namespace valor;
 using namespace valor::conv;
@@ -117,6 +115,27 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
   
   fName        = "Systematics";
   fXMLNodeName = xml_node_name;
+  
+  bool failure = false;
+  // And do a check for duplicate or undefined parameters.
+  for (unsigned int ii = 0 ; ii < n_syst ; ii++) {
+    if (fSystParameters[ii] == conv::kPhypUndefined) {
+      failure = true;
+      LOG("CorrelatedSystematics",pFATAL) << "Parameter "<<ii<<" is undefined.";
+      continue;
+    }
+    for (unsigned int jj = 0 ; jj < ii ; jj++) {
+      if (fSystParameters[ii] == fSystParameters[jj]) {
+        LOG("CorrelatedSystematics",pFATAL) << "Parameter "<<fSystParameters[ii]<<" is duplicated - appearing as both entry "<<ii<<" and "<<jj<<".";
+        failure = true;
+        break;
+      }
+    }
+  }
+  if (failure) {
+    util::Die(-1);
+  }
+  return;
 }
 //________________________________________________________________________________________
 void CorrelatedSystematics::FillParam2Idx(void)
@@ -216,7 +235,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   if(cov.GetNrows() != np || cov.GetNcols() != np) 
   {
      LOG("CorrelatedSystematics",pFATAL)
-        << "\n Syst covariance matrix has unexpected size!"
+        << "\n Syst covariance matrix for "<<fName<<" has unexpected size!"
         << "\n Expecting: " <<  np << " x " << np << " matrix"
         << "\n Found: " << cov.GetNrows() << " x " <<  cov.GetNcols() << " matrix";
      util::Die(1); return false;
@@ -234,13 +253,17 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   TMatrixD cholInvT(TMatrixD::kTransposed,cholInv);
   fCovMtrxInv = new TMatrixD(cholInvT * cholInv);
   
-  //~ // Calculate matrix inversion directly
-  //~ fCovMtrxInv = new TMatrixD(cov);
-  //~ fCovMtrxInv->Invert(&det);
-  //~ std::cout<<"CorrelatedSystematics/Read >> Syst covariance matrix decomposition: "<<det<<endl;
-  
-  //~ // Use scalar value decomposition for matrix inverse
-  //~ fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
+  // Other matrix inversion methods - not used.
+#ifdef __matrix_invert_direct__
+  // Calculate matrix inversion directly
+  fCovMtrxInv = new TMatrixD(cov);
+  fCovMtrxInv->Invert(&det);
+  LOG("CorrelatedSystematics",pINFO) << "Syst covariance matrix determinant (direct): " << det;
+#elif __matrix_invert_svd__
+  // Use scalar value decomposition for matrix inverse
+  fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
+  LOG("CorrelatedSystematics",pINFO) << "Syst covariance matrix determinant (SVD): " << det;
+#endif
   
   // Say we're configured
   fIsConfigured = true;
@@ -540,5 +563,25 @@ void CorrelatedSystematics::SetName(std::string name)
 void CorrelatedSystematics::SetXMLNodeName(std::string xml_node_name)
 {
   fXMLNodeName = xml_node_name;
+}
+//________________________________________________________________________________________
+std::string CorrelatedSystematics::GetName(void) const
+{
+  return fXMLNodeName;
+}
+//________________________________________________________________________________________
+std::string CorrelatedSystematics::GetXMLNodeName(void) const
+{
+  return fXMLNodeName;
+}
+//________________________________________________________________________________________
+unsigned int CorrelatedSystematics::Size(void) const
+{
+  return fNSystParameters;
+}
+//________________________________________________________________________________________
+conv::PhysParamId_t CorrelatedSystematics::WhichParam(int idx) const
+{
+  return fSystParameters[idx];
 }
 //________________________________________________________________________________________
