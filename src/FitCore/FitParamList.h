@@ -288,6 +288,9 @@ namespace valor {
     void CleanUp        (void);
     void Init           (int nparams);
     
+    // Returns the first open slot in list - returns conv::kBadResult otherwise.
+    int FirstEmptyEntry();
+    
     // Various functions called by NamedParameterList(name)
     
     //~ static FitParamList * NuOsc3FlavourFitWithAllSyst               (void);

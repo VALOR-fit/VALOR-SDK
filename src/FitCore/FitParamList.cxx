@@ -75,6 +75,10 @@ FitParamList::~FitParamList()
 bool FitParamList::AddParam (int ip, PhysParamId_t p,
                              double init, double min, double max, double step, bool fix, bool nuis, string name)
 {
+  if (ip < 0) {
+    ip = this->FirstEmptyEntry();
+  }
+  
   if (ip < 0 || ip >= fNParams) {
     this->Print();
     cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
@@ -1897,6 +1901,16 @@ bool FitParamList::IsComplete()
     if (p==conv::kPhypUndefined) {return false;}
   }
   return true;
+}
+//________________________________________________________________________________________
+int FitParamList::FirstEmptyEntry()
+{
+  for (int ip = 0 ; ip < fNParams; ip++)
+  {
+    PhysParamId_t p = this->WhichParam(ip);
+    if (p==conv::kPhypUndefined) {return ip;}
+  }
+  return conv::kBadResult;
 }
 //________________________________________________________________________________________
 
