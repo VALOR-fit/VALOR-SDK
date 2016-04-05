@@ -8,6 +8,7 @@
 #pragma link C++ namespace valor::util;
 
 #pragma link C++ class valor::CorrelatedSystematics+;
+#pragma link C++ class valor::CompoundCorrelatedSystematics+;
 
 #pragma link C++ class valor::PhysHypothesis+;
 
