@@ -110,6 +110,8 @@ protected:
   std::string fName;
   std::string fXMLNodeName;
   
+  bool fIsConfigured;
+  
 ClassDef(CorrelatedSystematics, 1)
 };
 

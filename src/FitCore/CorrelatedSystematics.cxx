@@ -50,14 +50,30 @@ using namespace valor::util;
 ClassImp(CorrelatedSystematics)
 
 //________________________________________________________________________________________
-CorrelatedSystematics::CorrelatedSystematics(unsigned int n_syst, const PhysParamId_t * syst_params)
-//~ : TObject()
+CorrelatedSystematics::CorrelatedSystematics(unsigned int n_syst, const PhysParamId_t * syst_params):
+//~ TObject(),
+fUntunedValues    (nullptr),
+fInitialValues    (nullptr),
+fCurrentValues    (nullptr),
+fCovMtrx          (nullptr),
+fCovMtrxInv       (nullptr),
+fCovMtrxChoL      (nullptr),
+fSystParameters   (nullptr),
+fIsConfigured     (false)
 {
   this->Init(n_syst,syst_params);
 }
 //________________________________________________________________________________________
-CorrelatedSystematics::CorrelatedSystematics()
-//~ : TObject()
+CorrelatedSystematics::CorrelatedSystematics() :
+//~ TObject()
+fUntunedValues    (nullptr),
+fInitialValues    (nullptr),
+fCurrentValues    (nullptr),
+fCovMtrx          (nullptr),
+fCovMtrxInv       (nullptr),
+fCovMtrxChoL      (nullptr),
+fSystParameters   (nullptr),
+fIsConfigured     (false)
 {
   this->Init(0,nullptr);
 }
@@ -69,6 +85,8 @@ CorrelatedSystematics::~CorrelatedSystematics()
 //________________________________________________________________________________________
 void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst_params)
 {
+  this->CleanUp();
+  
   fNSystParameters = n_syst;
   fSystParameters = new PhysParamId_t[fNSystParameters];
   for (unsigned int i = 0 ; i < n_syst ; i++) {
@@ -122,13 +140,25 @@ void CorrelatedSystematics::CleanUp(void)
   if ( fCurrentValues ) delete fCurrentValues;
   if ( fCovMtrx       ) delete fCovMtrx;
   if ( fCovMtrxInv    ) delete fCovMtrxInv;
-  if ( fCovMtrxChoL   ) delete fCovMtrxChoL;  
+  if ( fCovMtrxChoL   ) delete fCovMtrxChoL;
+  
+  if ( fSystParameters) delete[] fSystParameters;
+  
+  fIsConfigured = false;
 }
 //________________________________________________________________________________________
 bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
 {
-  this->CleanUp();
-
+  if (fIsConfigured) {
+    PhysParamId_t tmp_par[fNSystParameters];
+    for (unsigned int i = 0 ; i < fNSystParameters ; i++) {
+      tmp_par[i] = fSystParameters[i];
+    }
+    this->CleanUp();
+    this->Init(fNSystParameters,tmp_par);
+  }
+  
+    
   // Get syst covariance matrix
   TString cov_mtrx_path = TString::Format("syst/%s/covariance_matrix",fXMLNodeName.c_str());
   fCovMtrx = util::XML2TMatrixD(xml,root_node,cov_mtrx_path.Data());  
@@ -168,9 +198,11 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   
   //~ // Use scalar value decomposition for matrix inverse
   //~ fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
+  
+  // Say we're configured
+  fIsConfigured = true;
 
 #ifdef __init_check_inverse__
-  bool failure = false;
   TMatrixD covTimesInverse = (cov * (*fCovMtrxInv));
   for (int ii = 0 ; ii < np ; ii++) {
     for (int jj = 0 ; jj < np ; jj++) {
@@ -179,11 +211,11 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
         LOG("CorrelatedSystematics",pERROR) 
           << "Bad inversion of syst matrix - element: "
           << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?"*":"");
-        failure = true;
+        fIsConfigured = false;
       }
     }
   }
-  if (failure) {util::Die(1); return false;}
+  if (!fIsConfigured) {util::Die(1); return fIsConfigured;}
 #endif // __init_check_inverse__
   
 #ifdef __show_init_mesg_debug__
@@ -193,7 +225,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   util::PrintMatrix(*fCovMtrxInv,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
   
-  return true;
+  return fIsConfigured;
 }
 //________________________________________________________________________________________
 double CorrelatedSystematics::CurrentValue(PhysParamId_t p) const
@@ -237,7 +269,7 @@ void CorrelatedSystematics::Tweak(
   //
   // Get best-fit and current syst params
   //
-
+  
   TVectorD & initial_values = *fInitialValues;
   TVectorD & current_values = *fCurrentValues;
 
