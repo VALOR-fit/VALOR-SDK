@@ -152,7 +152,7 @@ void CorrelatedSystematics::FillParam2Idx(void)
     PhysParamId_t p = (PhysParamId_t)ip;
     for (unsigned int i = 0 ; i < fNSystParameters; i++) {
       if (p == fSystParameters[i]) {
-        fParam2Idx[ip] = p;
+        fParam2Idx[p] = i;
         break;
       }
     }
@@ -348,7 +348,7 @@ void CorrelatedSystematics::SetCurrentValueByIndex(int idx, double value)
 double CorrelatedSystematics::OneSigmaError(PhysParamId_t p) const
 {
   const TMatrixD & cov = *fCovMtrx;
-  int idx = this->Param2Idx(p); 
+  int idx = this->Param2Idx(p);
   return TMath::Sqrt(cov[idx][idx]);
 }
 //________________________________________________________________________________________
@@ -595,7 +595,7 @@ conv::PhysParamId_t CorrelatedSystematics::WhichParam(int idx) const
 //________________________________________________________________________________________
 bool CorrelatedSystematics::AppendParamsTo(valor::FitParamList & fpl) const
 {
-  for (int i = 0 ; i < fInitialValues->GetNoElements() ; i++) {
+  for (unsigned int i = 0 ; i < fNSystParameters ; i++) {
     PhysParamId_t p = fSystParameters[i];
     double one_sig = this->OneSigmaError(p);
     double central = fInitialArray[i];
