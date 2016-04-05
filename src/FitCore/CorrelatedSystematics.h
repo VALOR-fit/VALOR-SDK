@@ -35,7 +35,7 @@ class PhysParamList;
 class CorrelatedSystematics
 {
 public:
-  CorrelatedSystematics(unsigned int n_syst, const conv::PhysParamId_t * syst_params);
+  CorrelatedSystematics(unsigned int n_syst, const conv::PhysParamId_t * syst_params, const std::string & xml_node_name = "syst");
   virtual ~CorrelatedSystematics();
 
   // Read inputs from XML file
@@ -51,11 +51,19 @@ public:
 
   // Penalty term included in the chisq 
   double ChisqPenalty (bool all_syst = true) const;
-
-  void Tweak(bool force_inputs, TVectorD * input_vec);
-
+  
+  // Tweak all the systematics, either to a specific vector or randomly with correlations.
+  void Tweak(bool force_inputs, TVectorD * input_vec, Option_t * opt = 0);
+  
+  // Access vector values
   double CurrentValueByIndex(int idx) const;
   double CurrentValue(conv::PhysParamId_t p) const;
+  
+  double UntunedValueByIndex(int idx) const;
+  double UntunedValue(conv::PhysParamId_t p) const;
+  
+  double InitialValueByIndex(int idx) const;
+  double InitialValue(conv::PhysParamId_t p) const;
 
   // Get & tweak flags
   bool IsTweaked (void) const { return fIsTweaked; } 
@@ -80,7 +88,7 @@ public:
 protected:
   CorrelatedSystematics();
 
-  void Init      (unsigned int n_syst, const conv::PhysParamId_t * syst_params);
+  void Init      (unsigned int n_syst, const conv::PhysParamId_t * syst_params, const std::string & xml_node_name = "syst");
   void CleanUp   (void);
   
   void FillParam2Idx(void);

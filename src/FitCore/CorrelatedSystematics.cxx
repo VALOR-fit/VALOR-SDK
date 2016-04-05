@@ -50,29 +50,29 @@ using namespace valor::util;
 ClassImp(CorrelatedSystematics)
 
 //________________________________________________________________________________________
-CorrelatedSystematics::CorrelatedSystematics(unsigned int n_syst, const PhysParamId_t * syst_params):
+CorrelatedSystematics::CorrelatedSystematics(unsigned int n_syst, const PhysParamId_t * syst_params, const string & xml_node_name):
 //~ TObject(),
-fUntunedValues    (nullptr),
-fInitialValues    (nullptr),
-fCurrentValues    (nullptr),
-fCovMtrx          (nullptr),
-fCovMtrxInv       (nullptr),
-fCovMtrxChoL      (nullptr),
-fSystParameters   (nullptr),
+fUntunedValues    (NULL),
+fInitialValues    (NULL),
+fCurrentValues    (NULL),
+fCovMtrx          (NULL),
+fCovMtrxInv       (NULL),
+fCovMtrxChoL      (NULL),
+fSystParameters   (NULL),
 fIsConfigured     (false)
 {
-  this->Init(n_syst,syst_params);
+  this->Init(n_syst,syst_params,xml_node_name);
 }
 //________________________________________________________________________________________
 CorrelatedSystematics::CorrelatedSystematics() :
 //~ TObject()
-fUntunedValues    (nullptr),
-fInitialValues    (nullptr),
-fCurrentValues    (nullptr),
-fCovMtrx          (nullptr),
-fCovMtrxInv       (nullptr),
-fCovMtrxChoL      (nullptr),
-fSystParameters   (nullptr),
+fUntunedValues    (NULL),
+fInitialValues    (NULL),
+fCurrentValues    (NULL),
+fCovMtrx          (NULL),
+fCovMtrxInv       (NULL),
+fCovMtrxChoL      (NULL),
+fSystParameters   (NULL),
 fIsConfigured     (false)
 {
   this->Init(0,nullptr);
@@ -83,7 +83,7 @@ CorrelatedSystematics::~CorrelatedSystematics()
   this->CleanUp();
 }
 //________________________________________________________________________________________
-void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst_params)
+void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst_params, const string & xml_node_name)
 {
   this->CleanUp();
   
@@ -116,7 +116,7 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
   }
   
   fName        = "Systematics";
-  fXMLNodeName = "syst";
+  fXMLNodeName = xml_node_name;
 }
 //________________________________________________________________________________________
 void CorrelatedSystematics::FillParam2Idx(void)
@@ -158,7 +158,50 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     this->Init(fNSystParameters,tmp_par);
   }
   
-    
+  // If specified, get the untuned parameter values. Otherwise make a vector with all values 1.
+  TString untuned_values_path = TString::Format("syst/%s/untuned_values",fXMLNodeName.c_str());
+  if (util::NodeExists(xml,root_node,untuned_values_path.Data())) {
+    TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,untuned_values_path.Data());
+    if(!tmp_vec) {
+      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<fName<<" untuned values vector from "<<untuned_values_path;
+      util::Die(1); return false;
+    }
+    if (tmp_vec->GetNrows()!=fUntunedValues->GetNrows()) {
+      LOG("CorrelatedSystematics",pFATAL) << fName<<" untuned values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fUntunedValues->GetNrows();
+      util::Die(1); return false;
+    }
+    (*fUntunedValues) = (*tmp_vec);
+    delete tmp_vec;
+  }
+  else {
+    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<fName<<" untuned values vector to one.";
+    for (int i = 0 ; i < fUntunedValues->GetNrows(); i++) {
+      (*fUntunedValues)[i] = 1.;
+    }
+  }
+  
+  // If specified, get the initial parameter values. Otherwise make a vector with all values 1.
+  TString initial_values_path = TString::Format("syst/%s/initial_values",fXMLNodeName.c_str());
+  if (util::NodeExists(xml,root_node,initial_values_path.Data())) {
+    TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,initial_values_path.Data());
+    if(!tmp_vec) {
+      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<fName<<" initial values vector from "<<initial_values_path;
+      util::Die(1); return false;
+    }
+    if (tmp_vec->GetNrows()!=fInitialValues->GetNrows()) {
+      LOG("CorrelatedSystematics",pFATAL) << fName<<" initial values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fInitialValues->GetNrows();
+      util::Die(1); return false;
+    }
+    (*fInitialValues) = (*tmp_vec);
+    delete tmp_vec;
+  }
+  else {
+    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<fName<<" initial values vector to one.";
+    for (int i = 0 ; i < fInitialValues->GetNrows(); i++) {
+      (*fInitialValues)[i] = 1.;
+    }
+  }
+  
   // Get syst covariance matrix
   TString cov_mtrx_path = TString::Format("syst/%s/covariance_matrix",fXMLNodeName.c_str());
   fCovMtrx = util::XML2TMatrixD(xml,root_node,cov_mtrx_path.Data());  
@@ -239,6 +282,28 @@ double CorrelatedSystematics::CurrentValueByIndex(int idx) const
   return fCurrentArray[idx];
 }
 //________________________________________________________________________________________
+double CorrelatedSystematics::InitialValue(PhysParamId_t p) const
+{
+  int idx = this->Param2Idx(p); 
+  return fInitialArray[idx];
+}
+//________________________________________________________________________________________
+double CorrelatedSystematics::InitialValueByIndex(int idx) const
+{
+  return fInitialArray[idx];
+}
+//________________________________________________________________________________________
+double CorrelatedSystematics::UntunedValue(PhysParamId_t p) const
+{
+  int idx = this->Param2Idx(p); 
+  return fUntunedArray[idx];
+}
+//________________________________________________________________________________________
+double CorrelatedSystematics::UntunedValueByIndex(int idx) const
+{
+  return fUntunedArray[idx];
+}
+//________________________________________________________________________________________
 double CorrelatedSystematics::OneSigmaError(PhysParamId_t p) const
 {
   const TMatrixD & cov = *fCovMtrx;
@@ -254,7 +319,8 @@ double CorrelatedSystematics::OneSigmaErrorByIndex(int idx) const
 //________________________________________________________________________________________
 void CorrelatedSystematics::Tweak(
   bool       force_inputs, // force the input params or generate random ones internally  
-  TVectorD * input_vec     // input vector of syst params - Set to 0 to reset to nominal ones 
+  TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
+  Option_t * opt
 )
 {
   
@@ -264,7 +330,12 @@ void CorrelatedSystematics::Tweak(
 
   // Switch flags
   fIsTweaked         = true;
-  //~ fIsSystWghtUpdated = false;
+  
+  bool reset_to_untuned = (opt && TString(opt).Contains("untuned"));
+  if (reset_to_untuned) {
+    (*fCurrentValues) = (*fUntunedValues);
+    return;
+  }
 
   //
   // Get best-fit and current syst params
