@@ -77,12 +77,16 @@ FitParamList & FitInputs::FitParams(void)
 //________________________________________________________________________________________
 double FitInputs::Statistic(Option_t * option) const
 {
+  double statistic = 0;
   if (option || fGoodnessOfFit) {
     const char * s = fGoodnessOfFit ? "%s gof" : "%s";
     Option_t * newopt( Form(s,option) );
-    return fObs->Statistic(fExp,*fFitParams, newopt);
+    statistic =  fObs->Statistic(fExp,*fFitParams, newopt);
   }
-  return fObs->Statistic(fExp,*fFitParams, NULL);
+  else {
+    statistic = fObs->Statistic(fExp,*fFitParams, NULL);
+  }
+  return statistic;
 }
 /*
 //________________________________________________________________________________________
