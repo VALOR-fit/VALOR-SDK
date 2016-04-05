@@ -12,9 +12,11 @@
 
 #include <TMath.h>
 
+#include "Conventions/Build.h"
 #include "Conventions/Opt.h"
 #include "Conventions/PDG.h"
 #include "Utilities/NuOscSterile.h"
+#include "Utilities/UtlNumStat.h"
 
 using std::cout;
 using std::cerr;
