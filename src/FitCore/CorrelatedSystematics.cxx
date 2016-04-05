@@ -325,7 +325,7 @@ void CorrelatedSystematics::CholeskyDecomposeMatrix(void)
 #ifdef __show_cholesky_mesg_debug__
     LOG("CorrelatedSystematics",pDEBUG) 
        << "Syst covariance matrix: "; 
-    util::PrintCompact(this->CovMatrix(),7,5); // would be nice to use the same stream and threshold as mesg above
+    util::PrintMatrix(this->CovMatrix(),7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
 
     TMatrixD L = util::CholeskyDecomposition(this->CovMatrix());
@@ -333,7 +333,7 @@ void CorrelatedSystematics::CholeskyDecomposeMatrix(void)
 #ifdef __show_cholesky_mesg_debug__
     LOG("CorrelatedSystematics",pDEBUG) 
        << "Cholesky decomposition of syst covariance matrix: ";
-    util::PrintCompact(*fCovMtrxChoL,7,5); // would be nice to use the same stream and threshold as mesg above
+    util::PrintMatrix(*fCovMtrxChoL,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
 }
 //________________________________________________________________________________________
@@ -354,7 +354,7 @@ double CorrelatedSystematics::ChisqPenalty(bool /*all_syst*/) const
   
 #ifdef __show_chisqpenalty_mesg_debug__
   LOG("CorrelatedSystematics",pDEBUG) << "Deviations in syst parameters: ";
-  util::PrintVectorPair(*fCurrentValues,*fInitialValues,7,5); // would be nice to use the same stream and threshold as mesg above
+  util::PrintVectorPair(*fCurrentValues,*fInitialValues,fSystParameters,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
 
 #ifdef __show_chisqpenalty_mesg_debug2__
