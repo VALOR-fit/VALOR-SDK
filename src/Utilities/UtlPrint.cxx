@@ -15,9 +15,12 @@ ChangeLog:
 #include <cmath>
 
 #include "Conventions/Constants.h"
+#include "Utilities/NameRegistry.h"
 #include "Utilities/UtlPrint.h"
 
 using namespace std;
+using namespace valor;
+using namespace valor::conv;
 
 //____________________________________________________________________________
 void valor::util::PrintVector(
@@ -82,6 +85,55 @@ void valor::util::PrintMatrix(
     }//rows
     stream << endl;
   }//columns
+  stream << scientific;
+}
+//___________________________________________________________________________
+void valor::util::PrintVector(
+        const TVectorD & v, const PhysParamId_t * params, int w, int prec, Option_t * /*option*/, std::ostream & stream)
+{
+  //~ TString opt = option;
+  
+  int np = v.GetNoElements();
+  stream << fixed;
+
+  for(int ip = 0; ip < np; ip++) {
+    PhysParamId_t p = params[ip];
+    stream << "> param = " << setw(3) << ip;
+
+    stream << setw(42) << NameRegistry::Instance()->AsString(p);
+    stream << " ]";
+    stream << " - value = " << setw(w) << setprecision(prec) << v[ip] << endl;
+  }
+  stream << scientific;
+}
+//___________________________________________________________________________
+void valor::util::PrintVectorPair(
+   const TVectorD & current, const TVectorD & nominal, const PhysParamId_t * params,
+   int w, int prec, Option_t * /*option*/, std::ostream & stream)
+{
+  //~ TString opt = option;
+  
+  int np = current.GetNoElements();
+  stream << fixed;
+
+  for(int ip = 0; ip < np; ip++) {
+    PhysParamId_t p = params[ip];
+    stream << "> param = " << setw(3) << ip;
+    stream << " [ ";
+
+    stream << setw(30) << NameRegistry::Instance()->AsString(p);
+    stream << " ]";
+    
+    stream << " - current = " 
+         << setw(w) << setprecision(prec) << current[ip];
+    stream << " - nominal = " 
+         << setw(w) << setprecision(prec) << nominal[ip];
+    if(fabs(nominal[ip]) > conv::kASmallNum) {
+      stream << " - current/nominal = " 
+           << setw(w) << setprecision(prec) << current[ip]/nominal[ip];
+    }
+    stream << endl;
+  }
   stream << scientific;
 }
 //___________________________________________________________________________
