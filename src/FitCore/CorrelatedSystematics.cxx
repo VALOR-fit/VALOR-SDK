@@ -118,6 +118,8 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
     fCurrentArray[i] = 1.;
   }
   
+  this->FillParam2Idx();
+  
   this->SetName("Systematics");
   fXMLNodeName = xml_node_name;
   
