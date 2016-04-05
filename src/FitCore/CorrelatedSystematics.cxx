@@ -27,6 +27,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include <TMath.h>
 // fmwk
 #include "Messenger/Messenger.h"
+#include "Conventions/Build.h"
 #include "Conventions/Constants.h"
 #include "Utilities/NameRegistry.h"
 #include "Utilities/UtlXML.h"
@@ -44,6 +45,10 @@ using std::endl;
 using namespace valor;
 using namespace valor::conv;
 using namespace valor::util;
+
+#ifndef NSIGMA_LIMIT
+#define NSIGMA_LIMIT 5
+#endif
 
 ClassImp(CorrelatedSystematics)
 
@@ -113,7 +118,7 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
     fCurrentArray[i] = 1.;
   }
   
-  fName        = "Systematics";
+  this->SetName("Systematics");
   fXMLNodeName = xml_node_name;
   
   bool failure = false;
@@ -182,18 +187,18 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   if (util::NodeExists(xml,root_node,untuned_values_path.Data())) {
     TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,untuned_values_path.Data());
     if(!tmp_vec) {
-      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<fName<<" untuned values vector from "<<untuned_values_path;
+      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<this->GetName()<<" untuned values vector from "<<untuned_values_path;
       util::Die(1); return false;
     }
     if (tmp_vec->GetNrows()!=fUntunedValues->GetNrows()) {
-      LOG("CorrelatedSystematics",pFATAL) << fName<<" untuned values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fUntunedValues->GetNrows();
+      LOG("CorrelatedSystematics",pFATAL) << this->GetName()<<" untuned values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fUntunedValues->GetNrows();
       util::Die(1); return false;
     }
     (*fUntunedValues) = (*tmp_vec);
     delete tmp_vec;
   }
   else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<fName<<" untuned values vector to one.";
+    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" untuned values vector to one.";
     for (int i = 0 ; i < fUntunedValues->GetNrows(); i++) {
       (*fUntunedValues)[i] = 1.;
     }
@@ -204,18 +209,18 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   if (util::NodeExists(xml,root_node,initial_values_path.Data())) {
     TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,initial_values_path.Data());
     if(!tmp_vec) {
-      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<fName<<" initial values vector from "<<initial_values_path;
+      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<this->GetName()<<" initial values vector from "<<initial_values_path;
       util::Die(1); return false;
     }
     if (tmp_vec->GetNrows()!=fInitialValues->GetNrows()) {
-      LOG("CorrelatedSystematics",pFATAL) << fName<<" initial values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fInitialValues->GetNrows();
+      LOG("CorrelatedSystematics",pFATAL) << this->GetName()<<" initial values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fInitialValues->GetNrows();
       util::Die(1); return false;
     }
     (*fInitialValues) = (*tmp_vec);
     delete tmp_vec;
   }
   else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<fName<<" initial values vector to one.";
+    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to one.";
     for (int i = 0 ; i < fInitialValues->GetNrows(); i++) {
       (*fInitialValues)[i] = 1.;
     }
@@ -225,7 +230,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   TString cov_mtrx_path = TString::Format("syst/%s/covariance_matrix",fXMLNodeName.c_str());
   fCovMtrx = util::XML2TMatrixD(xml,root_node,cov_mtrx_path.Data());  
   if(!fCovMtrx) {
-    LOG("CorrelatedSystematics",pFATAL) << "No "<<fName<<" covariance matrix was found at "<<cov_mtrx_path;
+    LOG("CorrelatedSystematics",pFATAL) << "No "<<this->GetName()<<" covariance matrix was found at "<<cov_mtrx_path;
     util::Die(1); return false;
   }
   
@@ -235,7 +240,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   if(cov.GetNrows() != np || cov.GetNcols() != np) 
   {
      LOG("CorrelatedSystematics",pFATAL)
-        << "\n Syst covariance matrix for "<<fName<<" has unexpected size!"
+        << "\n Syst covariance matrix for "<<this->GetName()<<" has unexpected size!"
         << "\n Expecting: " <<  np << " x " << np << " matrix"
         << "\n Found: " << cov.GetNrows() << " x " <<  cov.GetNcols() << " matrix";
      util::Die(1); return false;
@@ -325,6 +330,17 @@ double CorrelatedSystematics::UntunedValue(PhysParamId_t p) const
 double CorrelatedSystematics::UntunedValueByIndex(int idx) const
 {
   return fUntunedArray[idx];
+}
+//________________________________________________________________________________________
+void CorrelatedSystematics::SetCurrentValue(PhysParamId_t p, double value)
+{
+  int idx = this->Param2Idx(p); 
+  fCurrentArray[idx] = value;
+}
+//________________________________________________________________________________________
+void CorrelatedSystematics::SetCurrentValueByIndex(int idx, double value)
+{
+  fCurrentArray[idx] = value;
 }
 //________________________________________________________________________________________
 double CorrelatedSystematics::OneSigmaError(PhysParamId_t p) const
@@ -555,19 +571,9 @@ void CorrelatedSystematics::CopyOneSigmaErrorsTo(valor::PhysParamList & ppl) con
   return;
 }
 //________________________________________________________________________________________
-void CorrelatedSystematics::SetName(std::string name)
-{
-  fName = name;
-}
-//________________________________________________________________________________________
 void CorrelatedSystematics::SetXMLNodeName(std::string xml_node_name)
 {
   fXMLNodeName = xml_node_name;
-}
-//________________________________________________________________________________________
-std::string CorrelatedSystematics::GetName(void) const
-{
-  return fXMLNodeName;
 }
 //________________________________________________________________________________________
 std::string CorrelatedSystematics::GetXMLNodeName(void) const
@@ -583,5 +589,19 @@ unsigned int CorrelatedSystematics::Size(void) const
 conv::PhysParamId_t CorrelatedSystematics::WhichParam(int idx) const
 {
   return fSystParameters[idx];
+}
+//________________________________________________________________________________________
+bool CorrelatedSystematics::AppendParamsTo(valor::FitParamList & fpl) const
+{
+  for (int i = 0 ; i < fInitialValues->GetNoElements() ; i++) {
+    PhysParamId_t p = fSystParameters[i];
+    double one_sig = this->OneSigmaError(p);
+    double central = fInitialArray[i];
+    double pmin    = central - NSIGMA_LIMIT*one_sig;
+    double pmax    = central + NSIGMA_LIMIT*one_sig;
+    double step    = 0.1 * one_sig;
+    fpl.AddParam(-999,p,central,pmin,pmax,step,false,true);
+  }
+  return true;
 }
 //________________________________________________________________________________________

@@ -34,7 +34,7 @@ namespace valor {
 class FitParamList;
 class PhysParamList;
 
-class CorrelatedSystematics
+class CorrelatedSystematics : public TNamed
 {
 public:
   CorrelatedSystematics(unsigned int n_syst, const conv::PhysParamId_t * syst_params, const std::string & xml_node_name = "syst");
@@ -71,6 +71,10 @@ public:
   double InitialValueByIndex(int idx) const;
   double InitialValue(conv::PhysParamId_t p) const;
   
+  // Change vector values
+  void SetCurrentValueByIndex(int idx, double value);
+  void SetCurrentValue(conv::PhysParamId_t p, double value);
+  
   // Find out which parameters are at which indices
   unsigned int Size(void) const;
   conv::PhysParamId_t WhichParam(int idx) const;
@@ -82,22 +86,22 @@ public:
   // Print
   void PrintSystematicVariations (std::ostream & stream = std::cout) const;
   
-  void UpdateFrom(const valor::FitParamList  & fpl);
-  void UpdateFrom(const valor::PhysParamList & ppl);
+  // Interact with FPL
+  void UpdateFrom    (const valor::FitParamList  & fpl);
+  void UpdateFrom    (const valor::PhysParamList & ppl);
   
-  void CopyTweaksTo(valor::PhysParamList & ppl) const;
-  void CopyTweaksTo(valor::FitParamList & fpl) const;
-  void CopyOneSigmaErrorsTo(valor::PhysParamList & ppl) const;
+  bool AppendParamsTo      (valor::FitParamList  & fpl ) const;
+  void CopyTweaksTo        (valor::FitParamList  & fpl ) const;
+  void CopyTweaksTo        (valor::PhysParamList & ppl ) const;
+  void CopyOneSigmaErrorsTo(valor::PhysParamList & ppl ) const;
   
-  //~ // Suppress clang warnings related to TObject
-  //~ using TObject::Read;
-  //~ using TObject::Draw;
+  // Suppress clang warnings related to TObject
+  using TObject::Read;
+  using TObject::Draw;
   
   // Name strings
-  void SetName(std::string name);
   void SetXMLNodeName(std::string xml_node_name);
   
-  std::string GetName(void) const;
   std::string GetXMLNodeName(void) const;
     
 protected:
@@ -130,7 +134,6 @@ protected:
   unsigned int fNSystParameters;
   conv::PhysParamId_t * fSystParameters; //[fNSystParameters]
   
-  std::string fName;
   std::string fXMLNodeName;
   
   bool fIsConfigured;
