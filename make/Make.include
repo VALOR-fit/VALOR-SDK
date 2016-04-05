@@ -230,8 +230,8 @@ CXXFLAGS      = -Wall -fPIC \
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
 endif
-LDFLAGS       = -g
-SOFLAGS       = -shared
+LDFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) 
+SOFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) -shared
 DllSuf       := so
 DllLinkSuf   := 
 StaticLibSuf := a
@@ -258,8 +258,8 @@ CXXFLAGS      = -Wall -fPIC \
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
 endif
-LDFLAGS       = -g
-SOFLAGS       = -shared
+LDFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) 
+SOFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) -shared
 DllSuf       := so
 DllLinkSuf   := 
 StaticLibSuf := a
