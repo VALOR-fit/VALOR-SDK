@@ -102,7 +102,7 @@ private:
   int fSize;
   
   Int_t fDimensions[6]; // Stores size of each dimension
-  int * fIncrement;   //[fNDim] Stores number to increment in main array to get +1 in this dimension
+  int   fIncrement [6]; // Stores number to increment in main array to get +1 in this dimension
   
   double * fArray;    //[fSize] Stores actual contents of array
   std::string fNames[6]; //Store the dimension names if we need them.
@@ -116,7 +116,7 @@ private:
   static const VALORArrayHeader::kVArrayType kDataType = VALORArrayHeader::kVATDouble;
   
   
-ClassDef(VALORArray, 3)
+ClassDef(VALORArray, 4)
 };
 
 } //valor

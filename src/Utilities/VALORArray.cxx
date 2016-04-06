@@ -49,7 +49,6 @@ extern "C" void R__unzip(int *srcsize, unsigned char *src, int *tgtsize, unsigne
 VALORArray::VALORArray() :
   TNamed(),
   fNDim(0),
-  fIncrement(NULL),
   fArray(NULL),
   fCompressionLevel(conv::kDefaultCompressionLevel)
 {
@@ -91,7 +90,6 @@ void VALORArray::Construct(int nd, const int * dimensions)
   fCompressionLevel = conv::kDefaultCompressionLevel;
   assert(nd > 0 && nd <= 6);
   fNDim = nd;
-  fIncrement  = new int[6];
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = (i<nd ? dimensions[i] : 1);
     fNames[i] = "";
@@ -112,11 +110,10 @@ void VALORArray::ConstructT(int nd, const Int_t * dimensions)
   fCompressionLevel = conv::kDefaultCompressionLevel;
   assert(nd > 0 && nd <= 6);
   fNDim = nd;
-  fIncrement  = new int[6];
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = (i<nd ? dimensions[i] : 1);
     fNames[i] = "";
-    fIncrement = 0;
+    fIncrement[i] = 0;
   }
   fSize = 1;
   for (int i = fNDim-1 ; i >= 0 ; i--) {
@@ -129,20 +126,9 @@ void VALORArray::ConstructT(int nd, const Int_t * dimensions)
 }
 //________________________________________________________________________________________
 VALORArray::VALORArray(const VALORArray & arr) :
-TNamed(arr),
-fNDim(arr.fNDim),
-fSize(arr.fSize)
+TNamed(arr)
 {
-  fIncrement  = new int[6];
-  fArray      = new double[fSize];
-  
-  memcpy(fDimensions , arr.fDimensions , 6*sizeof(Int_t));
-  memcpy(fIncrement  , arr.fIncrement  , 6*sizeof(int));
-  memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
-  
-  for (int i = 0 ; i < 6; i++) {
-    fNames[i] = arr.fNames[i];
-  }
+  this->CopyFrom(arr);
 }
 //________________________________________________________________________________________
 void VALORArray::CopyFrom(const VALORArray & arr)
@@ -150,6 +136,8 @@ void VALORArray::CopyFrom(const VALORArray & arr)
   this->Cleanup();
   arr.Copy(*this);
   this->Construct(arr.GetNDim(),arr.GetDimensions());
+  
+  assert(this->fSize>=0);
   
   memcpy(fDimensions , arr.fDimensions , 6*sizeof(Int_t));
   memcpy(fIncrement  , arr.fIncrement  , 6*sizeof(int));
@@ -176,7 +164,6 @@ TNamed(arr)
 //________________________________________________________________________________________
 void VALORArray::Cleanup()
 {
-  delete[] fIncrement;
   delete[] fArray;
   
   for (int i = 0 ; i < 6 ; i++) {
@@ -209,6 +196,7 @@ int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int in
   }
   for (int i = fNDim ; i < 6 ; i++) {
     assert(indices[i]==-1);
+    assert(fIncrement[i]==0);
   }
 #endif
   
