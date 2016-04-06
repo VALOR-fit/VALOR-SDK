@@ -87,10 +87,7 @@ public :
   // set the chisq definition 5 bins vs 73 bins
   void SetChisqDefinition (bool goodnessoffit) { fGoodnessOfFit = goodnessoffit; }
   bool GetChisqDefinition (void) { return fGoodnessOfFit; }
-    
-  // get chisquare for the best fit prediction
-  //double BestFitChisquare (Option_t * opt = "poisson");
-  
+      
   // Set the chisquare type (e.g. poisson) to be used in the fit
   void SetChisquareFitOption(Option_t * opt) { fOpt = opt; }
   
@@ -120,8 +117,6 @@ private:
   string                  fOpt;
   int                     fMode;
   double                  fErrDef;
-  bool                    fAllBANFFFit;
-  bool                    fAll1ReEff;
   bool                    fGoodnessOfFit;
   int                     fNPoints;
   int                     fNDim;
