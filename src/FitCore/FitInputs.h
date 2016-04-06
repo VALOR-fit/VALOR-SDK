@@ -107,8 +107,6 @@ public :
   int GetNDim(void) const {return fNDim;}
   int GetNPoints (void) const {return fNPoints;}
 
-  double ChisquarePenaltyTerm(void) const;
-
 private:
   
   FitDataABC *            fObs;
