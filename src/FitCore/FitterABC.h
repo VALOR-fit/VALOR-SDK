@@ -19,6 +19,7 @@
 #define _valor_fitter_abc_h_
 
 #include <TString.h>
+#include "Registry/Registry.h"
 
 namespace valor {
 
@@ -27,6 +28,7 @@ class FitterABC
 public:
    virtual ~FitterABC();
 
+   virtual bool       Configure     (const Registry & conf)  = 0;
    virtual bool       DoTheFit      (void)                   = 0; 
    virtual int        FitStatusCode (Option_t * option = "") = 0; 
    virtual double     FitTime       (void)                   = 0;

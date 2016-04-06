@@ -203,6 +203,20 @@ void FitterMinuit::Init(FitInputs * fit_inputs, Option_t * option)
   
 }
 //____________________________________________________________________________ 
+bool FitterMinuit::Configure(const Registry & conf)
+{
+  LOG("Minuit", pINFO) << "Fitter configuration: " << conf;
+
+  //
+  //
+  // use this and deprecate the various Set(...) methods and some or all 
+  // of the info passed via Option_t in the ctor
+  //
+  //
+
+  return true;
+}
+//____________________________________________________________________________ 
 bool FitterMinuit::DoTheFit(void) 
 {
   // start clock

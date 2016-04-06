@@ -42,6 +42,7 @@ public:
    // option="minuit+hesse+tolerance=0.01+maxcalls=1E6"
    virtual ~FitterMinuit();
 
+   virtual bool       Configure     (const Registry & conf);
    virtual bool       DoTheFit      (void);
    virtual int        FitStatusCode (Option_t * option = ""); // option: "migrad_min", "migrad_err", "hesse_err", "minos_err"
    virtual double     FitTime       (void)              { return fFitTime;                    }
