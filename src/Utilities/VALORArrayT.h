@@ -116,6 +116,12 @@ private:
 ClassDef(VALORArrayT, 1)
 };
 
+// Typedefs
+typedef VALORArrayT<double> VALORArray;
+typedef VALORArrayT<double> VALORArrayD;
+typedef VALORArrayT<float > VALORArrayF;
+typedef VALORArrayT<int   > VALORArrayI;
+
 } //valor
 
 #endif //_valor_array_template_h_

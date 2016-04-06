@@ -3,8 +3,4 @@
 #ifndef _valor_array_double_h_
 #define _valor_array_double_h_
 #include "Utilities/VALORArrayT.h"
-
-namespace valor{
-  typedef VALORArrayT<double> VALORArrayD;
-};
 #endif //_valor_array_double_h_
