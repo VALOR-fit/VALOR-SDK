@@ -257,66 +257,6 @@ bool FitterMinuit::DoTheFit(void)
   // 4: migrad not converged
   fFitTries = 1;
 
-/* 
-  HERE: This bit of code has a considerable amount of ugliness and it can not be eaily ported,
-  although perhaps it contains some wisdom of how to resolve pathological fit cases.
-  Comment-out but keep so as to review later
-
-  int maxntries = 10;
-  OscAnaType_t ana = Opt::Instance()->gOscAnaTypeChoice;
-  if(ana != kAnaNuMuDisappOnly)
-    maxntries = 25;
-  while(fMigradMinStatusCode == 4 && fFitTries < maxntries) {
-    cout << "Original fit failed; reseeding & trying again. Attempt: " << fFitTries << endl;
-    //randomise oscillation parameters
-    NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
-    switch(omp) {
-    case(conv::kNuMixSinsq2Theta):
-      if((ana == kAnaNuMuDisappOnly || ana == kAnaCombined) && fFitInputs->FitParams().Exists(conv::kPhypMixing23) && !fFitInputs->FitParams().IsFixed(conv::kPhypMixing23))
-	fFitInputs->FitParams().SetInitValue(conv::kPhypMixing23, Rnd::Instance()->RndFitter().Uniform(0.80,0.98));
-      if((ana == kAnaNuEAppOnly     || ana == kAnaCombined) && fFitInputs->FitParams().Exists(conv::kPhypMixing13) && !fFitInputs->FitParams().IsFixed(conv::kPhypMixing13))
-	fFitInputs->FitParams().SetInitValue(conv::kPhypMixing13, Rnd::Instance()->RndFitter().Uniform(0.05,0.15));
-      break;
-    case(conv::kNuMixSinsqTheta):
-      if((ana == kAnaNuMuDisappOnly || ana == kAnaCombined) && fFitInputs->FitParams().Exists(conv::kPhypMixing23) && !fFitInputs->FitParams().IsFixed(conv::kPhypMixing23)) {
-	if (fFitInputs->FitParams().InitValue(conv::kPhypMixing23)< 0.515)
-	  fFitInputs->FitParams().SetInitValue(conv::kPhypMixing23, Rnd::Instance()->RndFitter().Uniform(0.35,0.50));
-	else
-	  fFitInputs->FitParams().SetInitValue(conv::kPhypMixing23, Rnd::Instance()->RndFitter().Uniform(0.53,0.68));
-      }
-      if((ana == kAnaNuEAppOnly || ana == kAnaCombined) && fFitInputs->FitParams().Exists(conv::kPhypMixing13) && !fFitInputs->FitParams().IsFixed(conv::kPhypMixing13))
-	fFitInputs->FitParams().SetInitValue(conv::kPhypMixing13, Rnd::Instance()->RndFitter().Uniform(0.015,0.035));
-      break;
-    case(conv::kNuMixUndefined):
-      cerr << "Mixing parameter type undefinded. Exiting..." << endl;
-      exit(1);
-      break;
-    }
-    if(fFitInputs->FitParams().Exists(conv::kPhypDm23sq) && !fFitInputs->FitParams().IsFixed(conv::kPhypDm23sq))
-      fFitInputs->FitParams().SetInitValue(conv::kPhypDm23sq, Rnd::Instance()->RndFitter().Uniform(0.0020,0.0030));
-    if(fFitInputs->FitParams().Exists(conv::kPhypDm12sq) && !fFitInputs->FitParams().IsFixed(conv::kPhypDm12sq))
-      fFitInputs->FitParams().SetInitValue(conv::kPhypDm12sq, util::RandomizeDm12sq());
-    if(fFitInputs->FitParams().Exists(conv::kPhypMixing12) && !fFitInputs->FitParams().IsFixed(conv::kPhypMixing12))
-      fFitInputs->FitParams().SetInitValue(conv::kPhypMixing12, util::RandomizeMixing12());
-    if(fFitInputs->FitParams().Exists(conv::kPhypDeltaCP) && !fFitInputs->FitParams().IsFixed(conv::kPhypDeltaCP))
-      fFitInputs->FitParams().SetInitValue(conv::kPhypDeltaCP, util::RandomizeDeltaCP());
-    //randomise systematics
-    //first check if there is a floating systematic in the fit (only need to look at one, since we're only ever fitting either 0 or all systematics)
-    if(fFitInputs->FitParams().Exists(conv::kNuisXSecNormNuEToNuMu) && !fFitInputs->FitParams().IsFixed(conv::kNuisXSecNormNuEToNuMu)) {
-      //tweak everything
-      fFitInputs->Expectation().TweakAllSystematics();
-      //get the tweaks
-      PhysParamList tweaks = fFitInputs->Expectation().Tweaks();
-      //initialise the FitParamList with these random tweaks
-      fFitInputs->FitParams().FromPhysParamList(tweaks,"initial",true);
-      fFitInputs->FitParams().FromPhysParamList(tweaks,"current",true);
-    }//systematics exist in fit
-    //cout << fFitInputs->FitParams() << endl;
-    this->RunOnce(false);
-    fFitTries++;
-  }
-*/
-
   if(fMigradMinStatusCode == 4) {
     LOG("Minuit", pWARN) << "Fit failed...";
     if( fOption.Contains("with_simplex_fallback") ) 
@@ -388,62 +328,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   arglist[1] = fTol;  
 
   if(!use_simplex) {
-    /*
-    //in disappearance mode, when fitting for deltacp, do two fits - fit everything but deltacp, then fit only deltacp
-    OscAnaType_t ana = Opt::Instance()->gOscAnaTypeChoice;
-    if(ana == kAnaNuMuDisappOnly && fFitInputs->FitParams().GetParListName() == "nuosc3f_numudisapp_nuis4+nuisance") {
-#ifdef __show_fit_steps__
-      LOG("Minuit", pINFO) << "Performing two step fit. Fit everything but dcp, fit only dcp...";
-#endif
-      //fix dcp
-      fFitInputs->FitParams().FixParameter(conv::kPhypDeltaCP);
-      double dcp_slot = (double)(fFitInputs->FitParams().Id(conv::kPhypDeltaCP) + 1); //FitParamList Id runs from 0. MINUIT Id runs from 1.
-      fitter->ExecuteCommand("FIX",&dcp_slot,1);
-      //fit
-      fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
-      //return if the not-dcp fit failed
-      if(fMigradMinStatusCode == 4) {
-	fFitInputs->FitParams().FreeParameter(conv::kPhypDeltaCP);
-	fitter->ExecuteCommand("RELEASE",&dcp_slot,1);
-	LOG("Minuit", pINFO) << "Fit did not converge when fixing dcp";
-	return false;
-      }
-      //print
-#ifdef __show_fit_result__
-#ifdef __show_fit_steps__
-      LOG("Minuit", pINFO) << "Printing MIGRAD intermediate fit results...";
-#endif
-      fitter->ExecuteCommand("SHOW FCNVALUE",&fcntemp,0); //print the bestfit statistic
-      Double_t aminn = 0;
-      fitter->PrintResults(3,aminn);
-#endif
-      //fix everything else
-      double fixed_slot[100] = {0};
-      int nfix = 0;
-      for(int ip = 0; ip < fFitInputs->FitParams().Size(); ip++) {
-	PhysParamId_t p = fFitInputs->FitParams().WhichParam(ip);
-	if(!fFitInputs->FitParams().IsFixed(p)) {
-	  fFitInputs->FitParams().FixParameter(ip);
- 	  fixed_slot[nfix] = ip+1; //FitParamList Id runs from 0. MINUIT Id runs from 1.
-	  nfix++;
-	}
-      }//ip
-      //free dcp
-      fFitInputs->FitParams().FreeParameter(conv::kPhypDeltaCP);
-      fitter->ExecuteCommand("RELEASE",&dcp_slot,1);
-      //fit
-      fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
-      //free everything that I just fixed
-      for(int ip = 0; ip <= nfix; ip++) {
-	fFitInputs->FitParams().FreeParameter(ip);
-      }
-      fitter->ExecuteCommand("RELEASE",fixed_slot,nfix);
-    }//disapp & free dcp
-    else
-    */
-    
-    fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);
-    
+    fMigradMinStatusCode = fitter->ExecuteCommand("MIGRAD",arglist, 2);    
   }//!_use_simples
   //SIMPLEX
   else {
