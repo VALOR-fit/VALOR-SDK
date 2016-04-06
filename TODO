@@ -1,7 +1,0 @@
-Framework:
-* Rename a couple of poorly named enumerations (just a global find&replace)
-* kDeltaCP param already renamed to kPhypCPV (need to do the same in T2K) as it could be both delta or sindelta (just a global find&replace)
-* For similar reasons as above, rename kPhypDm23sq and kPhypDm12sq to kPhypLargeDm2 and kPhypSmallDm2 (just a global find&replace)
-
-* $T2KOSCANA is in several places in UtilXML.cxx; Find a workaround so that these methods can be used from the LBNx package too.
-
