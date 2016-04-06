@@ -36,7 +36,8 @@ namespace valor {
 Opt * Opt::fInstance = 0;
 //________________________________________________________________________________________
 Opt::Opt() :
- gDoNotDie(false)
+ gDoNotDie(false),
+ fRegistry("VALORRegistry",false)
 {
   this->SetDefaults();
   fInstance = 0;
@@ -342,5 +343,15 @@ conv::NuOscDmsqScheme_t Opt::GetEffectiveDmsqScheme(void)
     return util::GetAutoDmsqSchemeFromHierarchy();
   }
   return gOscDmsqScheme;
+}
+//________________________________________________________________________________________
+Registry & Opt::MutableGlobalRegistry(void)
+{
+  return fRegistry;
+}
+//________________________________________________________________________________________
+const Registry & Opt::GlobalRegistry(void) const
+{
+  return fRegistry;
 }
 //________________________________________________________________________________________

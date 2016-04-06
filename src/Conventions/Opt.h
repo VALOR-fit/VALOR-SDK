@@ -21,8 +21,8 @@
 #include <iostream>
 #include <TNamed.h>
 
+#include "Registry/Registry.h"
 #include "Conventions/PhysParamId.h"
-
 #include "Conventions/NuMassHierarchy.h"
 #include "Conventions/NuOscMixParam.h"
 #include "Conventions/NuOscDmsqScheme.h"
@@ -90,6 +90,10 @@ public:
   void ReadFrom (Persistable & optp);
   
   bool gDoNotDie; // Avoid quitting to prevent interactive sessions dying.
+  
+  // Store a VALOR registry
+  Registry & MutableGlobalRegistry();
+  const Registry & GlobalRegistry() const;
 
   // nested lightweight class to extract state in a persistable named object
   class Persistable: public TNamed {
@@ -133,6 +137,8 @@ private:
     
   double fGlobalBestFit       [conv::knppmax];
   double fGlobalFitError      [conv::knppmax];
+  
+  Registry fRegistry;
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }
