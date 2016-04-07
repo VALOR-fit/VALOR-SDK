@@ -56,6 +56,7 @@ ClassImp(CorrelatedSystematics)
 CorrelatedSystematics::CorrelatedSystematics(unsigned int n_syst, const PhysParamId_t * syst_params, const string & xml_node_name)
  :
 TNamed(),
+fDefaultValues    (NULL),
 fUntunedValues    (NULL),
 fInitialValues    (NULL),
 fCurrentValues    (NULL),
@@ -71,6 +72,7 @@ fIsConfigured     (false)
 CorrelatedSystematics::CorrelatedSystematics()
  :
 TNamed(),
+fDefaultValues    (NULL),
 fUntunedValues    (NULL),
 fInitialValues    (NULL),
 fCurrentValues    (NULL),
@@ -98,6 +100,7 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
     fSystParameters[i] = syst_params[i];
   }
   
+  fDefaultValues        = new TVectorD(fNSystParameters);
   fUntunedValues        = new TVectorD(fNSystParameters);
   fInitialValues        = new TVectorD(fNSystParameters);
   fCurrentValues        = new TVectorD(fNSystParameters);
@@ -115,9 +118,10 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
   }
   
   for(int i = 0 ; i < fCurrentValues->GetNrows(); i++ ) {
-    fUntunedArray[i] = 1.;
-    fInitialArray[i] = 1.;
-    fCurrentArray[i] = 1.;
+    (*fDefaultValues)[i] = 1.;
+    (*fUntunedValues)[i] = 1.;
+    (*fInitialValues)[i] = 1.;
+    (*fCurrentValues)[i] = 1.;
   }
   
   this->FillParam2Idx();
@@ -163,6 +167,7 @@ void CorrelatedSystematics::FillParam2Idx(void)
 //________________________________________________________________________________________
 void CorrelatedSystematics::CleanUp(void)
 {
+  if ( fDefaultValues ) { delete fDefaultValues ; fDefaultValues = NULL;}
   if ( fUntunedValues ) { delete fUntunedValues ; fUntunedValues = NULL;}
   if ( fInitialValues ) { delete fInitialValues ; fInitialValues = NULL;}
   if ( fCurrentValues ) { delete fCurrentValues ; fCurrentValues = NULL;}
@@ -202,10 +207,8 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     delete tmp_vec;
   }
   else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" untuned values vector to one.";
-    for (int i = 0 ; i < fUntunedValues->GetNrows(); i++) {
-      (*fUntunedValues)[i] = 1.;
-    }
+    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" untuned values vector to default.";
+    (*fUntunedValues) = *fDefaultValues;
   }
   
   // If specified, get the initial parameter values. Otherwise make a vector with all values 1.
@@ -224,11 +227,13 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     delete tmp_vec;
   }
   else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to one.";
-    for (int i = 0 ; i < fInitialValues->GetNrows(); i++) {
-      (*fInitialValues)[i] = 1.;
-    }
+    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to default.";
+    (*fInitialValues) = *fDefaultValues;
   }
+  
+  // Copy initial into current
+  
+  (*fCurrentValues) = *fInitialValues;
   
   // Get syst covariance matrix
   TString cov_mtrx_path = TString::Format("syst/%s/covariance_matrix",fXMLNodeName.c_str());

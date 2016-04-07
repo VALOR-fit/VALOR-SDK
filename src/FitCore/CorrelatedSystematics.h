@@ -117,14 +117,15 @@ protected:
   
   void CholeskyDecomposeMatrix (void);          ///< Cholesky decompose the covariance matrix
   
-  TVectorD *  fUntunedValues;     ///< Untuned values of the systematic parameters (all 1 if unspecified).
-  TVectorD *  fInitialValues;     ///< Initial values of parameters 
-  TVectorD *  fCurrentValues;     ///< Current values of parameters 
-  TMatrixD *  fCovMtrx;           ///< Covariance matrix
+  TVectorD *  fDefaultValues;     ///< Default values of the systematic parameters (all 1 unless subclass alters one. Used only when XML vectors not specified).
+  TVectorD *  fUntunedValues;     ///< Untuned values of the systematic parameters, read from XML if possible.
+  TVectorD *  fInitialValues;     ///< Initial values of parameters, read from XML if possible.
+  TVectorD *  fCurrentValues;     ///< Current values of parameters, read from XML if possible.
+  TMatrixD *  fCovMtrx;           ///< Covariance matrix, read from XML.
   TMatrixD *  fCovMtrxInv;        ///< Inverse covariance matrix
   TMatrixD *  fCovMtrxChoL;       ///< Triangular matrix obtained from Cholesky decomposition of covariance matrix
   bool        fIsTweaked;         ///< Were params tweaked?
-
+  
   double * fUntunedArray; //! ///< Pointer to the actual memory location of the untuned values
   double * fInitialArray; //! ///< Pointer to the actual memory location of the initial values
   double * fCurrentArray; //! ///< Pointer to the actual memory location of the current values
