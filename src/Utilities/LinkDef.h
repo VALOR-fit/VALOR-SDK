@@ -12,10 +12,10 @@
 #pragma link C++ class valor::VALORArrayT<float>+;
 #pragma link C++ class valor::VALORArrayT<int>+;
 
-#pragma link C++ typedef VALORArray;
-#pragma link C++ typedef VALORArrayF;
-#pragma link C++ typedef VALORArrayI;
-#pragma link C++ typedef VALORArrayD;
+//~ #pragma link C++ typedef VALORArray;
+//~ #pragma link C++ typedef VALORArrayF;
+//~ #pragma link C++ typedef VALORArrayI;
+//~ #pragma link C++ typedef VALORArrayD;
 
 #pragma link C++ class valor::VALORArrayHeader+;
 
