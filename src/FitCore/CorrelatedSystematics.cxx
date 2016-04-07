@@ -53,8 +53,9 @@ using namespace valor::util;
 ClassImp(CorrelatedSystematics)
 
 //________________________________________________________________________________________
-CorrelatedSystematics::CorrelatedSystematics(unsigned int n_syst, const PhysParamId_t * syst_params, const string & xml_node_name):
-//~ TObject(),
+CorrelatedSystematics::CorrelatedSystematics(unsigned int n_syst, const PhysParamId_t * syst_params, const string & xml_node_name)
+ :
+TNamed(),
 fUntunedValues    (NULL),
 fInitialValues    (NULL),
 fCurrentValues    (NULL),
@@ -67,8 +68,9 @@ fIsConfigured     (false)
   this->Init(n_syst,syst_params,xml_node_name);
 }
 //________________________________________________________________________________________
-CorrelatedSystematics::CorrelatedSystematics() :
-//~ TObject()
+CorrelatedSystematics::CorrelatedSystematics()
+ :
+TNamed(),
 fUntunedValues    (NULL),
 fInitialValues    (NULL),
 fCurrentValues    (NULL),
