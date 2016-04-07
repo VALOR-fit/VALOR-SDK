@@ -163,14 +163,14 @@ void CorrelatedSystematics::FillParam2Idx(void)
 //________________________________________________________________________________________
 void CorrelatedSystematics::CleanUp(void)
 {
-  if ( fUntunedValues ) delete fUntunedValues;
-  if ( fInitialValues ) delete fInitialValues;
-  if ( fCurrentValues ) delete fCurrentValues;
-  if ( fCovMtrx       ) delete fCovMtrx;
-  if ( fCovMtrxInv    ) delete fCovMtrxInv;
-  if ( fCovMtrxChoL   ) delete fCovMtrxChoL;
+  if ( fUntunedValues ) { delete fUntunedValues ; fUntunedValues = NULL;}
+  if ( fInitialValues ) { delete fInitialValues ; fInitialValues = NULL;}
+  if ( fCurrentValues ) { delete fCurrentValues ; fCurrentValues = NULL;}
+  if ( fCovMtrx       ) { delete fCovMtrx       ; fCovMtrx       = NULL;}
+  if ( fCovMtrxInv    ) { delete fCovMtrxInv    ; fCovMtrxInv    = NULL;}
+  if ( fCovMtrxChoL   ) { delete fCovMtrxChoL   ; fCovMtrxChoL   = NULL;}
   
-  if ( fSystParameters) delete[] fSystParameters;
+  if ( fSystParameters) { delete[] fSystParameters; fSystParameters = NULL;}
   
   fIsConfigured = false;
 }
