@@ -28,7 +28,7 @@ class TObjArray;
 
 namespace valor {
 
-class CompoundFitModel : FitModelABC
+class CompoundFitModel : public FitModelABC
 {
 public:
   CompoundFitModel();
