@@ -34,6 +34,8 @@ public:
   VALORArrayT(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
   VALORArrayT(std::string file_to_read); // Read from a file
   VALORArrayT(const VALORArrayT<numtype> & arr);
+  template <typename fromtype> VALORArrayT(const VALORArrayT<fromtype> & arr);
+  
  ~VALORArrayT();
   
   // Retrives size of total array, or size of dimension
@@ -115,6 +117,27 @@ private:
   
 ClassDef(VALORArrayT, 1)
 };
+
+// Function to convert between VALORarrays of different types
+// Header-only so we don't have to manually specify code generation
+namespace util {
+  template<typename typefrom, typename typeto>
+    VALORArrayT<typeto> ConvertVALORArray(const VALORArrayT<typefrom> & input)
+  {
+    VALORArrayT<typeto> output (input.GetNDim(),input.GetDimensions());
+    
+    typeto * output_arr = output.GetArray();
+    const typefrom * input_arr = input.GetArray();
+    
+    for (int i = 0 ; i < output.GetSize() ; i++) {
+      output_arr[i] = (typeto) input_arr[i];
+    }
+    for (int i = 0 ; i < output.GetNDim(); i++) {
+      output.SetDimensionName(i,input.GetDimensionName(i));
+    }
+    return output;
+  }
+}//util
 
 // Typedefs
 typedef VALORArrayT<double> VALORArray;

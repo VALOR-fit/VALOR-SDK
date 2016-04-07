@@ -147,20 +147,6 @@ template<typename numtype> void VALORArrayT<numtype>::CopyFrom(const VALORArrayT
   }
 }
 //________________________________________________________________________________________
-//~ template<typename numtype>  VALORArrayT<numtype>::VALORArrayT(const VALORArrayTF & arr) :
-//~ TNamed(arr)
-//~ {
-  //~ this->Construct(arr.GetNDim(),arr.GetDimensions());
-  //~ 
-  //~ const float * x = arr.GetArray();
-  //~ for (int i = 0 ; i < fSize ; i++) {
-    //~ fArray[i] = (numtype) x[i];
-  //~ }
-  //~ for (int i = 0 ; i < fNDim; i++) {
-    //~ fNames[i] = arr.GetDimensionName(i);
-  //~ }
-//~ }
-//________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::Cleanup()
 {
   delete[] fArray;
