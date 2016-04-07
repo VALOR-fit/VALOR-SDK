@@ -112,6 +112,6 @@ void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, co
 //________________________________________________________________________________________
 CompoundCorrelatedSystematics::~CompoundCorrelatedSystematics()
 {
-  this->CleanUp();
+  
 }
 //________________________________________________________________________________________
