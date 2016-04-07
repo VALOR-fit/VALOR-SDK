@@ -227,8 +227,8 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     delete tmp_vec;
   }
   else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to default.";
-    (*fInitialValues) = *fDefaultValues;
+    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to untuned values.";
+    (*fInitialValues) = *fUntunedValues;
   }
   
   // Copy initial into current
