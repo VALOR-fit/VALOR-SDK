@@ -138,6 +138,7 @@ CXXFLAGS      = -pipe -W -Wall -Wno-long-double \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
+		$(OPT_WITH_CXX_MISC_FLAGS) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
@@ -185,6 +186,7 @@ CXXFLAGS      = -m64 -pipe -Wshadow -W -Wall -Woverloaded-virtual \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
+		$(OPT_WITH_CXX_MISC_FLAGS) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifneq ($(strip $(GCC_GE_4_2_1)), YES) 
   ifneq ($(USING_CLANG), YES)
@@ -226,6 +228,7 @@ CXXFLAGS      = -Wall -fPIC \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
+		$(OPT_WITH_CXX_MISC_FLAGS) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
@@ -254,6 +257,7 @@ CXXFLAGS      = -Wall -fPIC \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
+		$(OPT_WITH_CXX_MISC_FLAGS) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
@@ -288,7 +292,8 @@ INCLUDES  := $(VALOR_INCLUDES) \
 LIBRARIES := $(SYSLIBS) \
 	     $(LOG_LIBRARIES) \
 	     $(ROOT_LIBRARIES) \
-	     $(GPROF_LIBRARIES) 
+	     $(GPROF_LIBRARIES) \
+	     $(OPT_WITH_MISC_LIBS)
 
 # Default compiler and preprocessor flags
 
