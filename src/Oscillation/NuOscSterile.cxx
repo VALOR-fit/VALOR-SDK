@@ -2,8 +2,7 @@
 //________________________________________________________________________________________
 /*
 
- >> ChangeLog:
-
+Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
 */
 //________________________________________________________________________________________
@@ -15,8 +14,8 @@
 #include "Conventions/Build.h"
 #include "Conventions/Opt.h"
 #include "Conventions/PDG.h"
-#include "Utilities/NuOscSterile.h"
 #include "Utilities/UtlNumStat.h"
+#include "Oscillation/NuOscSterile.h"
 
 using std::cout;
 using std::cerr;

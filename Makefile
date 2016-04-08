@@ -21,6 +21,7 @@ BUILD_TARGETS =    print-make-info     \
 		   build-utilities     \
 		   build-messenger     \
 		   build-varray        \
+		   build-oscillation   \
 		   build-ntuple        \
 		   build-registry      \
 		   build-parser        \
@@ -63,8 +64,13 @@ build-messenger: make-bin-lib-dir FORCE
 
 build-varray: make-bin-lib-dir FORCE
 	@echo " "
-	@echo "** Building VArr package..."
+	@echo "** Building VArray package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/VArray"
+
+build-oscillation: make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building Oscillation package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/Oscillation"
 
 build-ntuple: make-bin-lib-dir FORCE
 	@echo " "
@@ -115,6 +121,7 @@ purge: FORCE
 	cd Utilities;                 make purge; cd ..; \
 	cd Messenger;                 make purge; cd ..; \
 	cd VArray;                    make purge; cd ..; \
+	cd Oscillation;               make purge; cd ..; \
 	cd Ntuple;                    make purge; cd ..; \
 	cd Registry;                  make purge; cd ..; \
 	cd Parser;                    make purge; cd ..; \
@@ -132,6 +139,7 @@ clean-files: FORCE
 	cd Utilities;               make clean; cd ..; \
 	cd Messenger;               make clean; cd ..; \
 	cd VArray;                  make clean; cd ..; \
+	cd Oscillation;             make clean; cd ..; \
 	cd Ntuple;                  make clean; cd ..; \
 	cd Registry;                make clean; cd ..; \
 	cd Parser;                  make clean; cd ..; \

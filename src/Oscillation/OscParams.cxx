@@ -1,23 +1,21 @@
 //____________________________________________________________________________
 /*
- \copyright (c) 2010-2016, The VALOR group.
- 
- >> ChangeLog:
- 
+
+Copyright (c) 2010-2016, The VALOR group. All rights reserved.
+
  */
 //____________________________________________________________________________
 
 #include <cstdlib>
 
-#include "Utilities/OscParams.h"
+#include <TMath.h>
 
 #include "Conventions/Opt.h"
 #include "Conventions/PhysHypothesisId.h"
 #include "Conventions/Constants.h"
 #include "Utilities/UtlNumStat.h"
 #include "Utilities/Rnd.h"
-
-#include <TMath.h>
+#include "Oscillation/OscParams.h"
 
 //#define __print_toys__
 

@@ -1,14 +1,16 @@
 //____________________________________________________________________________
 /*!
 
-\class    valor::NuOsc3Flavour
+\class     valor::NuOsc3Flavour
 
-\brief    Neutrino-oscillation probabilities (incl. matter effects) in 
-          computed in a 3-flavour framework.
+\brief     Neutrino-oscillation probabilities (incl. matter effects) in 
+           computed in a 3-flavour framework.
 
-\author   Nick Grant <n.grant@lancaster.ac.uk>
+\author    Nick Grant <n.grant@lancaster.ac.uk>
 
-\created  July 05, 2011
+\created   July 05, 2011
+
+\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
 
 */
 //____________________________________________________________________________

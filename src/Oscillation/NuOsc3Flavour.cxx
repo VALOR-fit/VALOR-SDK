@@ -1,15 +1,7 @@
 //________________________________________________________________________________________
 /*
 
- >> ChangeLog:
-
- For changes up to version 2010_v3.0.0 (last implementation of the 2010-era analysis)
- see code in the corresponding SVN branch.
-
- Changes since 2011_v0.9.0:
-
- @ 18/2/13 - LE                                                                                                              
- Added back the selection of dmsq schema,from branch 2010_v3: choice between usual Dm12sq + Dm23sq and Fogli&Lisi schema      
+Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
 */
 //________________________________________________________________________________________
@@ -23,8 +15,8 @@
 
 #include "Conventions/Opt.h"
 #include "Conventions/PDG.h"
-#include "Utilities/NuOsc3Flavour.h"
 #include "Messenger/Messenger.h"
+#include "Oscillation/NuOsc3Flavour.h"
 
 using std::cout;
 using std::cerr;

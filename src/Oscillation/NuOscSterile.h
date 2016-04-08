@@ -2,14 +2,16 @@
 //____________________________________________________________________________
 /*!
 
-\class    valor::NuOscSterile
+\class     valor::NuOscSterile
 
-\brief    Neutrino-oscillation probabilities (incl. matter effects) for 
-          1 or 2 sterile neutrinos in addition to the 3 active neutrinos.
+\brief     Neutrino-oscillation probabilities (incl. matter effects) for 
+           1 or 2 sterile neutrinos in addition to the 3 active neutrinos.
 
-\author   Nick Grant <n.grant@lancaster.ac.uk>
+\author    Nick Grant <n.grant@lancaster.ac.uk>
 
-\created  14th January 2014
+\created   14th January 2014
+
+\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
 
 */
 //____________________________________________________________________________
@@ -28,9 +30,9 @@ namespace valor {
 
 class NuOscSterile
 {
- public:     
+public:     
   NuOscSterile();
-  ~NuOscSterile();
+ ~NuOscSterile();
 
   static int const nFlav = 5;
 

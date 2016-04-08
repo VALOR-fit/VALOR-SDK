@@ -1,18 +1,18 @@
 //____________________________________________________________________________
 /*!
  
- \class     valor::utils::OscParams
+\class     valor::utils::OscParams
  
- \brief     Singleton class to hold the oscillation parameter options
+\brief     Singleton class to hold the oscillation parameter options
  
- \author    Tom Dealtry <t.dealtry \at lancaster.ac.uk>
- Lancaster University
+\author    Tom Dealtry <t.dealtry \at lancaster.ac.uk>
+           Lancaster University
  
- \created   Aug 15, 2015
+\created   Aug 15, 2015
  
- \copyright (c) 2010-2016, The VALOR group.
+\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
  
- */
+*/
 //____________________________________________________________________________
 
 #ifndef _valor_osc_params_h_
