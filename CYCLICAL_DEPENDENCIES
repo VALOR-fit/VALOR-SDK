@@ -1,0 +1,41 @@
+Intended/ideal hierarchy (each package includes packages from below only):
+
+ Ntuple
+ FitCore
+ Conventions
+ Utilities
+ Parser
+ Registry
+ Messenger
+ ....................
+ ROOT
+ GSL  
+ log4pp
+ C++
+
+------------------------------------------------------------------------------------
+
+Actual results:
+
+[Conventions]
+Includes (C++, ROOT, own and) Utilities headers
+
+[FitCore]
+Includes (C++, ROOT, own,) Conventions, Registry, Messenger and Utilities headers
+
+[Messenger]
+Includes (C++, log4cpp, ROOT, own and) Conventions headers
+
+[Ntuple]
+Includes (ROOT, own,) FitCore and Messenger headers
+
+[Parser]
+Includes (C++, own and) Messenger and Utilities headers
+
+[Registry]
+Includes (C++, ROOT, own and) Messenger headers
+
+[Utilities]
+Includes (C++, GSL, ROOT, own and) Conventions, Messenger and FitCore headers
+
+------------------------------------------------------------------------------------
