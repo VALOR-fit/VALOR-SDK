@@ -1,14 +1,16 @@
 //____________________________________________________________________________
 /*!
 
-\class    valor::VALORArrayT
+\class     valor::VALORArrayT
 
-\brief    N-dimensional array (for N<=6)
+\brief     N-dimensional array (for N<=6)
 
-\author   Steve Dennis <stephen.dennis \at warwick.ac.uk>
-          University of Warwick, Rutherford Appleton Laboratory
+\author    Steve Dennis <s.r.dennis@liverpool.ac.uk>
+           University of Liverpool
 
-\created  April 2016
+\created   April 2016
+
+\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
 
 */
 //____________________________________________________________________________
@@ -20,7 +22,7 @@
 #include <vector>
 
 #include "Conventions/Build.h"
-#include "Utilities/VALORArrayHeader.h"
+#include "VArray/VALORArrayHeader.h"
 
 namespace valor { 
 

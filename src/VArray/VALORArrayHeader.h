@@ -1,15 +1,18 @@
 //____________________________________________________________________________
 /*!
 
-\class    valor::VALORArrayHeader
+\class     valor::VALORArrayHeader
 
-\brief    Simple header format for writing VALORArrays as blocks.
-          No dependence on stored data type - so it should be common to all VALORArray types.
+\brief     Simple header format for writing VALORArrays as blocks.
+           No dependence on stored data type - so it should be common 
+           to all VALORArray types.
 
-\author   Steve Dennis <stephen.dennis \at warwick.ac.uk>
-          University of Warwick, Rutherford Appleton Laboratory
+\author    Steve Dennis <s.r.dennis@liverpool.ac.uk>
+           University of Liverpool
 
-\created  November 2015
+\created   November 2015
+
+\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
 
 */
 //____________________________________________________________________________
@@ -37,8 +40,7 @@ public:
     kVATFloat  = 1,
     kVATInt    = 2,
   } kVArrayType;
-  
-  
+    
   VALORArrayHeader(void);
   VALORArrayHeader(kVArrayType type, UInt_t ndims, Int_t * dimensions, UInt_t compressed_size, UInt_t compression_level);
   

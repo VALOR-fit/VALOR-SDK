@@ -26,7 +26,7 @@
 #include <FitCore/PhysParamList.h>
 #include <FitCore/FitParamList.h>
 
-#include "Utilities/VALORArray.h"
+#include "VArray/VALORArray.h"
 
 namespace valor {
 namespace util {

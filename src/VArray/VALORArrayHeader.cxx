@@ -3,15 +3,12 @@
 
 Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
-
-ChangeLog:
-
 */ 
 //____________________________________________________________________________
 
 #include <cstring>
 
-#include "Utilities/VALORArrayHeader.h"
+#include "VArray/VALORArrayHeader.h"
 
 using namespace valor;
 using std::endl;

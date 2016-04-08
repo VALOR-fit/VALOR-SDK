@@ -26,7 +26,6 @@
 #include "FitCore/FitModelABC.h"
 #include "FitCore/FitParamList.h"
 #include "FitCore/PhysParamList.h"
-#include "Utilities/VALORArray.h"
 #include "FitCore/PhysHypothesis.h"
 #include "Parser/CmdLnArgParser.h"
 

@@ -20,11 +20,11 @@ BUILD_TARGETS =    print-make-info     \
 		   build-conventions   \
 		   build-utilities     \
 		   build-messenger     \
+		   build-varray        \
 		   build-ntuple        \
 		   build-registry      \
 		   build-parser        \
 		   build-core-fitter   \
-		   build-example-fits  \
 		   copy-rootdict-to-lib
 
 # define targets
@@ -61,6 +61,11 @@ build-messenger: make-bin-lib-dir FORCE
 	@echo "** Building Messenger package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/Messenger"
 
+build-varray: make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building VArr package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/VArray"
+
 build-ntuple: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Ntuple package..."
@@ -80,11 +85,6 @@ build-core-fitter: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building FitCore package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/FitCore"
-
-build-example-fits: make-bin-lib-dir FORCE
-	@echo " "
-	@echo "** Building Example packages..."
-	$(MAKE) -C "${VALOR_FMWK}/src/Examples/X01"
 
 copy-rootdict-to-lib: make-bin-lib-dir FORCE
 	@echo " "
@@ -114,11 +114,11 @@ purge: FORCE
 	cd Conventions;               make purge; cd ..; \
 	cd Utilities;                 make purge; cd ..; \
 	cd Messenger;                 make purge; cd ..; \
+	cd VArray;                    make purge; cd ..; \
 	cd Ntuple;                    make purge; cd ..; \
 	cd Registry;                  make purge; cd ..; \
 	cd Parser;                    make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
-	cd Examples/X01;              make purge; cd ..; \
 	cd ${VALOR_FMWK}
 
 clean: clean-files clean-dir clean-etc
@@ -131,11 +131,11 @@ clean-files: FORCE
 	cd Conventions;             make clean; cd ..; \
 	cd Utilities;               make clean; cd ..; \
 	cd Messenger;               make clean; cd ..; \
+	cd VArray;                  make clean; cd ..; \
 	cd Ntuple;                  make clean; cd ..; \
 	cd Registry;                make clean; cd ..; \
 	cd Parser;                  make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
-	cd Examples/X01;            make clean; cd ..; \
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm ./bin/*;\
         [ ! -d ./lib ] || rm ./lib/*_rdict.pcm;\

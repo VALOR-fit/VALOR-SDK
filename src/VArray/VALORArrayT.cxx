@@ -3,9 +3,6 @@
 
 Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
-
-ChangeLog:
-
 */ 
 //____________________________________________________________________________
 
@@ -17,8 +14,7 @@ ChangeLog:
 #include <numeric>
 
 #include "Utilities/UtlSystem.h"
-
-#include "Utilities/VALORArrayT.h"
+#include "VArray/VALORArrayT.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 #include "gsl/gsl_vector.h"
