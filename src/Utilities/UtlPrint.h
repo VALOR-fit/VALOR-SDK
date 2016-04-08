@@ -33,7 +33,8 @@ namespace util {
   // As above, but taking a list of parameters so the names can be printed
           
   void PrintVector     (const TVectorD & v, const conv::PhysParamId_t * params, int w=15, int prec=9, Option_t * opt="", std::ostream & stream = std::cout);
-  void PrintVectorPair (const TVectorD & current, const TVectorD & nominal, const conv::PhysParamId_t * params, int w, int prec, Option_t * option, std::ostream & stream = std::cout);
+  void PrintVectorPair (const TVectorD & current, const TVectorD & nominal, const conv::PhysParamId_t * params,
+                        int w, int prec, Option_t * option = "", std::ostream & stream = std::cout);
   
 } // util
 } // valor

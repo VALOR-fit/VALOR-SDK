@@ -36,7 +36,7 @@ void valor::util::PrintVector(
      
      stream << " - value = " << setw(w) << setprecision(prec) << v[ip] << endl;
   }
-  stream << scientific;
+  stream.unsetf( ios::basefield | ios::floatfield);
 }
 //___________________________________________________________________________
 void valor::util::PrintVectorPair(
@@ -61,7 +61,7 @@ void valor::util::PrintVectorPair(
      }
      stream << endl;
   }
-  stream << scientific;
+  stream.unsetf( ios::basefield | ios::floatfield);
 }
 //___________________________________________________________________________
 void valor::util::PrintMatrix(
@@ -85,7 +85,7 @@ void valor::util::PrintMatrix(
     }//rows
     stream << endl;
   }//columns
-  stream << scientific;
+  stream.unsetf( ios::basefield | ios::floatfield);
 }
 //___________________________________________________________________________
 void valor::util::PrintVector(
@@ -104,7 +104,7 @@ void valor::util::PrintVector(
     stream << " ]";
     stream << " - value = " << setw(w) << setprecision(prec) << v[ip] << endl;
   }
-  stream << scientific;
+  stream.unsetf( ios::basefield | ios::floatfield);
 }
 //___________________________________________________________________________
 void valor::util::PrintVectorPair(
@@ -134,6 +134,6 @@ void valor::util::PrintVectorPair(
     }
     stream << endl;
   }
-  stream << scientific;
+  stream.unsetf( ios::basefield | ios::floatfield);
 }
 //___________________________________________________________________________
