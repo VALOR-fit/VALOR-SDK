@@ -6,6 +6,7 @@
 
 #pragma link C++ namespace valor;
 
+#pragma link C++ class valor::CmdLnArgList+;
 #pragma link C++ class valor::CmdLnArgParser+;
 
 #endif
