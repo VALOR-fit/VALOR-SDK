@@ -24,7 +24,7 @@ BUILD_TARGETS =    print-make-info     \
 		   build-oscillation   \
 		   build-ntuple        \
 		   build-registry      \
-		   build-parser        \
+		   build-cmdline       \
 		   build-core-fitter   \
 		   copy-rootdict-to-lib
 
@@ -82,10 +82,10 @@ build-registry: make-bin-lib-dir FORCE
 	@echo "** Building Registry package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/Registry"
 
-build-parser: make-bin-lib-dir FORCE
+build-cmdline: make-bin-lib-dir FORCE
 	@echo " "
-	@echo "** Building Parser package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/Parser"
+	@echo "** Building CmdLine package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/CmdLine"
 
 build-core-fitter: make-bin-lib-dir FORCE
 	@echo " "
@@ -124,7 +124,7 @@ purge: FORCE
 	cd Oscillation;               make purge; cd ..; \
 	cd Ntuple;                    make purge; cd ..; \
 	cd Registry;                  make purge; cd ..; \
-	cd Parser;                    make purge; cd ..; \
+	cd CmdLine;                   make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
 	cd ${VALOR_FMWK}
 
@@ -142,7 +142,7 @@ clean-files: FORCE
 	cd Oscillation;             make clean; cd ..; \
 	cd Ntuple;                  make clean; cd ..; \
 	cd Registry;                make clean; cd ..; \
-	cd Parser;                  make clean; cd ..; \
+	cd CmdLine;                 make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm ./bin/*;\

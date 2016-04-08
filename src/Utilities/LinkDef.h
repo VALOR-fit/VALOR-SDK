@@ -10,7 +10,6 @@
 
 #pragma link C++ class valor::Env+;
 #pragma link C++ class valor::Rnd+;
-#pragma link C++ class valor::RunOpt+;
 
 #pragma link C++ class valor::util::NameRegistry+;
 

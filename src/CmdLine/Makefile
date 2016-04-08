@@ -10,7 +10,7 @@ MAKEFILE = Makefile
 #
 include $(VALOR_FMWK)/make/Make.include
 
-PACKAGE           = ValorParse
+PACKAGE           = ValorCmdLine
 DICTIONARY        = undefined
 LIBNAME           = lib$(PACKAGE)
 

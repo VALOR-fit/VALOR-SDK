@@ -4,7 +4,9 @@
 \class     valor::CmdLnArgList
 
 \brief     Holds command-line arguments.
-           
+
+           Configured with a file that is formatted as follows:
+
          # argument   |   type       |  require?   |   default for optional
          # ...................................................................
            ntoys      |   integer    |  optional   |   1000
@@ -16,7 +18,7 @@
 
 \created   April 08, 2016
 
-\copyright (c) 2010-2016, The VALOR group
+\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
 
 */
 //____________________________________________________________________________

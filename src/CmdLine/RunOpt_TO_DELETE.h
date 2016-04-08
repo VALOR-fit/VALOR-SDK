@@ -27,8 +27,7 @@
 #include "FitCore/FitParamList.h"
 #include "FitCore/PhysParamList.h"
 #include "FitCore/PhysHypothesis.h"
-#include "Parser/CmdLnArgParser.h"
-
+#include "CmdLine/CmdLnArgParser.h"
 #include "Utilities/UtlForMacros.h"
 
 #include <iostream>

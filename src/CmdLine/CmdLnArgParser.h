@@ -3,19 +3,14 @@
 
 \class      valor::CmdLnArgParser
 
-\brief      Command line argument parser
-            Taken from $GENIE/src/Utils
+\brief      Command line argument parser taken from $GENIE/src/Utils
 
 \author     Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
             University of Liverpool & STFC Rutherford Appleton Lab
 
 \created    July 23, 2010
 
-\cpright    Copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
-            For the full text of the license visit http://copyright.genie-mc.org
-            or see $GENIE/LICENSE
-
-\copyright (c) 2010-2016, The VALOR group. 
+\copyright  Copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
 
 */
 //____________________________________________________________________________
