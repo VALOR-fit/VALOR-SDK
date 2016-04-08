@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-#include <TObject.h>
+//#include <TObject.h>
 
 #include "Registry/Registry.h"
 
@@ -38,7 +38,7 @@ using std::vector;
 
 namespace valor {
 
-class CmdLnArgList: public TObject {
+class CmdLnArgList: public Registry {
 
 public:
   CmdLnArgList();
@@ -50,7 +50,6 @@ public:
 private:
 
   vector<string> fConfigFileContent;
-  Registry       fArgs;
 };
 
 }

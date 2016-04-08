@@ -15,7 +15,8 @@ using std::ifstream;
 using namespace valor;
 
 //________________________________________________________________________________________
-CmdLnArgList::CmdLnArgList()
+CmdLnArgList::CmdLnArgList() :
+Registry("command_line_arg",false)
 {
 
 }
