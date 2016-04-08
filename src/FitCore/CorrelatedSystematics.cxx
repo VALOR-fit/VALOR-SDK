@@ -256,14 +256,14 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   }
   
   // Do Cholesky decomposition
-  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of syst covariance matrix ";
+  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();
   double det;
   
   // Calculate matrix inversion using Cholesky triangular matrices - should be most accurate.
   TMatrixD cholInv(*fCovMtrxChoL);
   cholInv.Invert(&det);
-  LOG("CorrelatedSystematics",pINFO) << "Syst covariance matrix decomposition determinant: " << det;
+  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix decomposition determinant: " << det;
   TMatrixD cholInvT(TMatrixD::kTransposed,cholInv);
   fCovMtrxInv = new TMatrixD(cholInvT * cholInv);
   
@@ -272,11 +272,11 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   // Calculate matrix inversion directly
   fCovMtrxInv = new TMatrixD(cov);
   fCovMtrxInv->Invert(&det);
-  LOG("CorrelatedSystematics",pINFO) << "Syst covariance matrix determinant (direct): " << det;
+  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (direct): " << det;
 #elif __matrix_invert_svd__
   // Use scalar value decomposition for matrix inverse
   fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
-  LOG("CorrelatedSystematics",pINFO) << "Syst covariance matrix determinant (SVD): " << det;
+  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (SVD): " << det;
 #endif
   
   // Say we're configured
@@ -289,7 +289,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
       int target = (ii==jj);
       if (fabs(covTimesInverse[ii][jj]-target) > 1E-9) {
         LOG("CorrelatedSystematics",pERROR) 
-          << "Bad inversion of syst matrix - element: "
+          << "Bad inversion of "<<this->GetName()<<" matrix - element: "
           << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?"*":"");
         fIsConfigured = false;
       }
@@ -299,9 +299,9 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
 #endif // __init_check_inverse__
   
 #ifdef __show_init_mesg_debug__
-  LOG("CorrelatedSystematics",pDEBUG) << "Input syst covariance matrix: "; 
+  LOG("CorrelatedSystematics",pDEBUG) << "Input "<<this->GetName()<<" covariance matrix: "; 
   util::PrintMatrix(cov,7,5); // would be nice to use the same stream and threshold as mesg above
-  LOG("CorrelatedSystematics",pDEBUG) << "Inverse syst covariance matrix: ";
+  LOG("CorrelatedSystematics",pDEBUG) << "Inverse "<<this->GetName()<<" covariance matrix: ";
   util::PrintMatrix(*fCovMtrxInv,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
   
@@ -310,7 +310,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
 //________________________________________________________________________________________
 double CorrelatedSystematics::CurrentValue(PhysParamId_t p) const
 {
-  int idx = this->Param2Idx(p); 
+  int idx = this->Param2Idx(p);
   return fCurrentArray[idx];
 }
 //________________________________________________________________________________________
@@ -506,7 +506,14 @@ void CorrelatedSystematics::PrintSystematicVariations(std::ostream & stream) con
 int CorrelatedSystematics::Param2Idx(PhysParamId_t p) const
 {
   assert(p!=kPhypUndefined);
-  return fParam2Idx[p];  
+  int idx = fParam2Idx[p];
+#ifdef __VALOR_FMWK_DEBUG_ENABLED__
+  if (idx < 0 || idx > (int)fNSystParameters) {
+    LOG("CorrelatedSysteatics",pFATAL)<<this->GetName()<<" got bad index "<<idx<<" for param "<<util::NameRegistry::Instance()->AsString(p);
+    util::Die(-1);
+  }
+#endif
+  return idx;  
 }
 //________________________________________________________________________________________
 conv::PhysParamId_t CorrelatedSystematics::Idx2Param (int index) const
