@@ -65,6 +65,13 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
         string line = "";
         std::getline(file,line);
         LOG("CmdLnArgList",pDEBUG) << "Read line: " << line;
+
+        if(line.find('#') != string::npos) {
+          // comment line, continue
+          // stricly speaking should check the first character other than space...
+          continue;
+        }
+
         // tokenize using | as delimeter
         vector<string> line_tokens = util::Tokens(line, "|");
         assert(line_tokens.size()==4);
