@@ -15,6 +15,7 @@
 //~ #pragma link C++ typedef VALORArrayI;
 //~ #pragma link C++ typedef VALORArrayD;
 
+#pragma link C++ class valor::VALORArrayBin+;
 #pragma link C++ class valor::VALORArrayHeader+;
 
 #endif

@@ -241,6 +241,92 @@ template<typename numtype> void VALORArrayT<numtype>::
   return;
 }
 //________________________________________________________________________________________
+// Similar to before but with bin class
+//________________________________________________________________________________________
+template<typename numtype> int VALORArrayT<numtype>::
+  Address(const VALORArrayBin & bin) const
+{
+#ifdef CHECK_VA_ADDRESS
+  int indices[6] = {ind1,ind2,ind3,ind4,ind5,ind6};
+  //~ cerr<<this->GetName()<<"\t"<<fNDim<<endl;
+  for (int i = 0 ; i < fNDim; i++) {
+    //~ cerr<<indices[i]<<"\t"<<fDimensions[i]<<endl;
+  }
+  for (int i = 0 ; i < fNDim; i++) {
+    assert(indices[i]>=0);
+  }
+  for (int i = fNDim ; i < 6 ; i++) {
+    assert(indices[i]==-1);
+    assert(fIncrement[i]==0);
+  }
+#endif
+  
+  int address = bin.bin1 * fIncrement[0] +
+                bin.bin2 * fIncrement[1] +
+                bin.bin3 * fIncrement[2] +
+                bin.bin4 * fIncrement[3] +
+                bin.bin5 * fIncrement[4] +
+                bin.bin6 * fIncrement[5];
+  return address;
+}
+//________________________________________________________________________________________
+template<typename numtype> VALORArrayBin VALORArrayT<numtype>::
+  InverseAddress(int address) const
+{
+  int return_indices[6] = {-1,-1,-1,-1,-1,-1};
+  for (int i = 0 ; i < fNDim; i++) {
+    return_indices[i] = 0;
+    while (address >= fIncrement[i]) {
+      address-=fIncrement[i];
+      return_indices[i]+=1;
+    }
+  }
+  return VALORArrayBin(
+    return_indices[0],
+    return_indices[1],
+    return_indices[2],
+    return_indices[3],
+    return_indices[4],
+    return_indices[5]);
+}
+//________________________________________________________________________________________
+template<typename numtype> numtype & VALORArrayT<numtype>::
+  GetEntryRef(const VALORArrayBin & bin) 
+{
+  int address = this->Address(bin);
+  return fArray[address];
+}
+//________________________________________________________________________________________
+template<typename numtype> const numtype & VALORArrayT<numtype>::
+  GetEntryRef(const VALORArrayBin & bin) const
+{
+  int address = this->Address(bin);
+  return fArray[address];
+}
+//________________________________________________________________________________________
+template<typename numtype> numtype VALORArrayT<numtype>::
+  GetEntry(const VALORArrayBin & bin) const
+{
+  int address = this->Address(bin);
+  return fArray[address];
+}
+//________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+  SetEntry(numtype value, const VALORArrayBin & bin)
+{
+  int address = this->Address(bin);
+  fArray[address] = value;
+  return;
+}
+//________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+  AddToEntry(numtype value, const VALORArrayBin & bin)
+{
+  int address = this->Address(bin);
+  fArray[address] += value;
+  return;
+}
+//________________________________________________________________________________________
 template<typename numtype> int VALORArrayT<numtype>::
   GetNDim() const
 {

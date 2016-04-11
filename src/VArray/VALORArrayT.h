@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "Conventions/Build.h"
+#include "VArray/VALORArrayBin.h"
 #include "VArray/VALORArrayHeader.h"
 
 namespace valor { 
@@ -47,10 +48,21 @@ public:
   numtype GetEntry           (int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1) const;
   numtype & GetEntryRef      (int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1);
   const numtype & GetEntryRef(int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1) const;
-  
   // Set value at specific point
   void SetEntry(numtype value, int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1);
   void AddToEntry(numtype value, int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1);
+  // Convert index to block address (and back)
+  int Address(int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1) const;
+  void InverseAddress(int address, int * return_indices) const;
+  
+  // Same as above but using the VALORArrayBin struct
+  numtype GetEntry           (const VALORArrayBin & bin) const;
+  numtype & GetEntryRef      (const VALORArrayBin & bin);
+  const numtype & GetEntryRef(const VALORArrayBin & bin) const;
+  void SetEntry(numtype value, const VALORArrayBin & bin);
+  void AddToEntry(numtype value, const VALORArrayBin & bin);
+  int Address(const VALORArrayBin & bin) const;
+  VALORArrayBin InverseAddress(int address) const;
   
   int GetNDim() const;
   const numtype * GetArray(void) const;
@@ -67,9 +79,6 @@ public:
   // By default integrates over the full range in the removed dimension
   // Can specify min and max bins to get a smaller integrated range or a single bin.
   VALORArrayT GetSlice(int dimension, int min_bin = -1, int max_bin = -1) const;
-  
-  int Address(int ind1, int ind2=-1, int ind3=-1, int ind4=-1, int ind5=-1, int ind6=-1) const;
-  void InverseAddress(int address, int * return_indices) const;
   
   numtype Integral() const;
   numtype Integral(int min_dim1     , int max_dim1=-1, int min_dim2=-1, int max_dim2=-1, 
