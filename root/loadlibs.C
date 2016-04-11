@@ -23,9 +23,11 @@
   gSystem->Load("libValorMesg.so");
   gSystem->Load("libValorRegistry.so");
   gSystem->Load("libValorConv.so");
+  gSystem->Load("libValorArray.so");
   gSystem->Load("libValorFitCore.so");
+  gSystem->Load("libValorNtuple.so");
+  gSystem->Load("libValorOsc.so");
   gSystem->Load("libValorUtil.so");
-  gSystem->Load("libValorFitX01.so");
-  gSystem->Load("libValorParse.so");
+  gSystem->Load("libValorCmdLine.so");
 }
 
