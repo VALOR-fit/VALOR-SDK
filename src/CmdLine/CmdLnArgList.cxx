@@ -9,6 +9,8 @@
 #include <cassert>
 #include <fstream>
 
+#include <TSystem.h>
+
 #include "Utilities/UtlStr.h"
 #include "Messenger/Messenger.h"
 #include "CmdLine/CmdLnArgList.h"
@@ -54,6 +56,25 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
      string filename = *fvit;
      LOG("CmdLnArgList",pNOTICE)
        << "Reading command-line argument specs from file: " << filename;
+     // replace $BLAH (if any) with gSystem->Getenv("BLAH")
+     if(filename.find("$") != string::npos) {
+       size_t start  = filename.find("$",0);
+       size_t end    = filename.find("/", start);
+       size_t length = end-start-1;
+       string env_var = filename.substr(start+1,length);
+       LOG("CmdLnArgList",pNOTICE)
+          << "Looking up env. var: " << env_var;
+       const char * env_var_value =  gSystem->Getenv(env_var.c_str());
+       if(!env_var_value) {
+           LOG("CmdLnArgList",pERROR)
+              << "Undefined env. var: " << env_var;
+           return false;
+       }
+       string str_env_var_value = env_var_value;
+       filename.replace(start,length+1,str_env_var_value);
+       LOG("CmdLnArgList",pNOTICE)
+          << "Actually, reading command-line argument specs from file: " << filename;
+     }
      // open file
      ifstream file;     
      file.open(filename.c_str());
