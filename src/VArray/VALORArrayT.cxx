@@ -143,6 +143,12 @@ template<typename numtype> void VALORArrayT<numtype>::CopyFrom(const VALORArrayT
   }
 }
 //________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::CopyDataOnlyFrom(const VALORArrayT<numtype> & arr)
+{
+  //~ assert(arr.GetDimensionSizes()==this->GetDimensionSizes());// Does this check work?
+  memcpy(fArray      , arr.fArray      , fSize*sizeof(numtype));
+}
+//________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::Cleanup()
 {
   delete[] fArray;
@@ -349,6 +355,12 @@ template<typename numtype> const int * VALORArrayT<numtype>::
   GetDimensions(void) const
 {
   return fDimensions;
+}
+//________________________________________________________________________________________
+template<typename numtype> VALORArrayBin VALORArrayT<numtype>::
+  GetDimensionSizes(void) const
+{
+  return VALORArrayBin(fDimensions);
 }
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::

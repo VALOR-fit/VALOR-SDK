@@ -69,6 +69,7 @@ public:
   numtype * GetArray(void);
   
   const int * GetDimensions(void) const;
+  VALORArrayBin GetDimensionSizes(void) const;
   
   void SetAll(numtype value);
   
@@ -103,6 +104,7 @@ public:
   void Resize(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
   
   void CopyFrom(const VALORArrayT<numtype> & arr);
+  void CopyDataOnlyFrom(const VALORArrayT<numtype> & arr);
   
   // Compression info
   void SetCompressionLevel(int level);

@@ -35,3 +35,15 @@ VALORArrayBin::VALORArrayBin(int b1, int b2, int b3, int b4, int b5, int b6)
   return;
 }
 //____________________________________________________________________________
+VALORArrayBin::VALORArrayBin(const int * bin_numbers)
+ :
+ bin1 (bin_numbers[0]),
+ bin2 (bin_numbers[1]),
+ bin3 (bin_numbers[2]),
+ bin4 (bin_numbers[3]),
+ bin5 (bin_numbers[4]),
+ bin6 (bin_numbers[5])
+{
+  return;
+}
+//____________________________________________________________________________

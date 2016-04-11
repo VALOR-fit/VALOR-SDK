@@ -31,6 +31,7 @@ struct VALORArrayBin
 public:
   VALORArrayBin();
   VALORArrayBin(int b1 ,int b2, int b3, int b4, int b5, int b6);
+  VALORArrayBin(const int * bin_numbers);
   
   int bin1;
   int bin2;
