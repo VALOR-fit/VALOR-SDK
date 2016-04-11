@@ -65,12 +65,16 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
         string line = "";
         std::getline(file,line);
         LOG("CmdLnArgList",pDEBUG) << "Read line: " << line;
-
         if(line.find('#') != string::npos) {
           // comment line, continue
           // stricly speaking should check the first character other than space...
           continue;
         }
+        if(line.size() == 0) {         
+          continue;
+        }
+        LOG("CmdLnArgList",pDEBUG) 
+          << "Line: [" << line << "]";
 
         // tokenize using | as delimeter
         vector<string> line_tokens = util::Tokens(line, "|");
@@ -81,7 +85,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
         string deflt    = util::TrimSpaces(line_tokens[3]);
         LOG("CmdLnArgList",pINFO) 
           << "Argument: " << argument
-          << ", type: " << type
+          << " -> type: " << type
           << ", required: " << required
           << ", default value: " << deflt;
 
@@ -221,13 +225,25 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
              return false;
           }
   
+          // All should be OK now, insert input value or default
           boolargit = boolarglist.begin();
-          for( ; boolargit != boolarglist.end(); ++boolargit) {
-              string boolarg = *boolargit;
-              if(parser.OptionExists(boolarg) || boolarg==deflt) {
-                 this->Set(argument,true);
-              } else {
-                 this->Set(argument,false);
+          if(is_optional && nfound==0) {
+              for( ; boolargit != boolarglist.end(); ++boolargit) {
+                 string boolarg = *boolargit;
+                 if(boolarg==deflt) {
+                    this->Set(boolarg,true);
+                 } else {
+                    this->Set(boolarg,false);
+                 }
+              }
+          } else {
+              for( ; boolargit != boolarglist.end(); ++boolargit) {
+                 string boolarg = *boolargit;
+                 if(parser.OptionExists(boolarg)) {
+                    this->Set(boolarg,true);
+                 } else {
+                    this->Set(boolarg,false);
+                 }
               }
           }        
         }// boolean list
