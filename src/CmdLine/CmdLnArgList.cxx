@@ -95,28 +95,32 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
         bool no_deflt     = (deflt == "-");
         bool is_found = parser.OptionExists(argument);
 
+        //
+        // Handle integer,double,string inputs
+        //
+
         if(is_int || is_dbl || is_str) {
 
-          // handle error conditions for integer,double,string inputs
+          // Error conditions 
 
-          // mandatory argument not found
+          // Mandatory argument not found
           if(is_mandatory && !is_found) {
-             LOG("CmdLnArgList",pFATAL) 
+             LOG("CmdLnArgList",pERROR) 
                  << "Mandatory argument: " << argument
                  << " was not found!";
              return false;
           }
-          // optional argument not found, but no default either
+          // Optional argument not found, but no default either
           if(is_optional && !is_found && no_deflt) {
-             LOG("CmdLnArgList",pFATAL) 
+             LOG("CmdLnArgList",pERROR) 
                  << "Optional argument: " << argument
                  << " wasn't set and has no default value specified!";
              return false;
           }
   
-          // all should be OK now, insert input value or default
+          // All should be OK now, insert input value or default
 
-          // integers
+          // Integers
           if(is_int) { 
             if(is_found) { // whether optional or mandatory
                int ival = parser.ArgAsInt(argument);
@@ -128,7 +132,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
                }
             }
           }
-          // doubles
+          // Doubles
           if(is_dbl) { 
             if(is_found) { // whether optional or mandatory
                double xval = parser.ArgAsDouble(argument);
@@ -140,7 +144,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
                }
             }
           }
-          // strings
+          // Strings
           if(is_str) { 
             if(is_found) { // whether optional or mandatory
                string sval = parser.ArgAsString(argument);
@@ -154,6 +158,80 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
           }
 
         } // int, or double, or string
+
+
+        //
+        // Handle boolean inputs
+        //
+
+        if(is_bln && !is_blnlst) {
+          // can not be mandatory argument - see comments in header file
+          if(is_mandatory) {
+             LOG("CmdLnArgList",pERROR) 
+                 << "Argument: " << argument
+                 << " can not be mandatory!";
+             return false;
+          }
+          this->Set(argument,is_found);
+        }// boolean
+
+        //
+        // Handle boolean list inputs
+        //
+
+        if(is_blnlst) {
+
+          // split input comma-delimited list
+          vector<string> boolarglist = 
+              util::Tokens(argument, ","); 
+
+          // Error conditions 
+
+          if(boolarglist.size() <= 1) {
+             LOG("CmdLnArgList",pERROR) 
+                 << "Input: " << argument
+                 << " does not contain a list of multiple boolean arguments!";
+             return false;
+          }
+          int nfound = 0;
+          vector<string>::const_iterator boolargit = boolarglist.begin();
+          for( ; boolargit != boolarglist.end(); ++boolargit) {
+              string boolarg = *boolargit;
+              if( parser.OptionExists(boolarg) ) { nfound++; }
+          }        
+          // More than one found (whether optional or mandatory) or
+          // none found (if optional)
+          if(is_mandatory && nfound==0) {
+             LOG("CmdLnArgList",pERROR) 
+                 << "Mandatory argument from list: " << argument
+                 << " was not found!";
+             return false;
+          }
+          if(nfound>1) {
+             LOG("CmdLnArgList",pERROR) 
+                 << "Multiple argument from list: " << argument
+                 << " were not found but only one is expected!";
+             return false;
+          }
+          // Optional argument not found, but no default either
+          if(is_optional && nfound==0 && no_deflt) {
+             LOG("CmdLnArgList",pERROR) 
+                 << "None of the arguments in list: " << argument
+                 << " was set, but no default value was specified either!";
+             return false;
+          }
+  
+          boolargit = boolarglist.begin();
+          for( ; boolargit != boolarglist.end(); ++boolargit) {
+              string boolarg = *boolargit;
+              if(parser.OptionExists(boolarg) || boolarg==deflt) {
+                 this->Set(argument,true);
+              } else {
+                 this->Set(argument,false);
+              }
+          }        
+        }// boolean list
+
 
         //
         //

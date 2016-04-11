@@ -17,7 +17,7 @@
              red,green,blue |   boolean_list |  mandatory  |   -         (b)
              red,green,blue |   boolean_list |  optional   |   red       (c)
 
-           (a) No default needed.
+           (a) No default needed / can only be optional.
                If `--with-xyz' is not specified, then without xyz is  used.
            (b) One of the three _must_ be specified.
                The list will contain all `red',`green',`blue' entries.
