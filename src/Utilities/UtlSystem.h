@@ -18,6 +18,9 @@
 #ifndef valor_system_utils_h
 #define valor_system_utils_h
 
+#include <vector>
+#include <string>
+
 namespace valor {
 
 namespace util {
@@ -25,6 +28,8 @@ namespace util {
   void Die(int status_code); // Call exit() unless Opt::DoNotDie is true.
   
   void ChangeInterpreterPrompt(std::string new_prompt = "VALOR: [%d] ");
+  
+  std::vector<std::string> GetLinkedLibraries(std::string executable_path, std::string pattern);
   
 } // util
 } // valor
