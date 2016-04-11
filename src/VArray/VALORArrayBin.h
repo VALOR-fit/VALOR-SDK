@@ -42,6 +42,8 @@ public:
   
 }; // VALORArrayBin
 
+bool operator==(const VALORArrayBin & lhs, const VALORArrayBin & rhs);
+
 } //valor
 
 #endif

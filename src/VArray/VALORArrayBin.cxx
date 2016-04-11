@@ -6,6 +6,8 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 */ 
 //____________________________________________________________________________
 
+#include <cassert>
+#include <cstring>
 #include "VArray/VALORArrayBin.h"
 
 using namespace valor;
@@ -45,5 +47,13 @@ VALORArrayBin::VALORArrayBin(const int * bin_numbers)
  bin6 (bin_numbers[5])
 {
   return;
+}
+//____________________________________________________________________________
+namespace valor {
+  bool operator==(const VALORArrayBin & lhs, const VALORArrayBin & rhs)
+  {
+    assert(sizeof(lhs)==6*sizeof(int));
+    return !(memcmp(&lhs,&rhs,sizeof(lhs)));
+  }
 }
 //____________________________________________________________________________
