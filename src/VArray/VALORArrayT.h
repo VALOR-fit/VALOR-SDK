@@ -114,7 +114,7 @@ private:
   
   int fCompressionLevel; // For our own file writing interface only.
   
-  static const VALORArrayHeader::kVArrayType kDataType = VALORArrayHeader::kVATDouble;
+  VALORArrayHeader::kVArrayType GetHeaderType(void);
   
   
 ClassDef(VALORArrayT, 1)

@@ -527,7 +527,7 @@ template<typename numtype> void VALORArrayT<numtype>::
   R__zip(fCompressionLevel, &uncompressed_buffer_size, (char*)fArray, &compressed_buffer_size, compressed_buffer, &nbytes_compressed);
   //~ cerr<<"Post: Arguments are "<<fCompressionLevel<<"\t"<<uncompressed_buffer_size<<"\t"<<fArray<<"\t"<<compressed_buffer_size<<"\t"<<(void*)compressed_buffer<<std::endl;
   
-  VALORArrayHeader header(VALORArrayT<numtype>::kDataType,fNDim,fDimensions,nbytes_compressed,fCompressionLevel);
+  VALORArrayHeader header(this->GetHeaderType(),fNDim,fDimensions,nbytes_compressed,fCompressionLevel);
   
   header.Write(os);
   os.write( (char*)compressed_buffer,nbytes_compressed);
@@ -575,10 +575,32 @@ template<typename numtype> void VALORArrayT<numtype>::
   fCompressionLevel = level;
 }
 //________________________________________________________________________________________
-
-
-
-
+namespace valor { // g++ bug requires specialisations to be in namespace
+template <typename numtype> VALORArrayHeader::kVArrayType VALORArrayT<numtype>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATUndefined;
+}
+//________________________________________________________________________________________
+template <> VALORArrayHeader::kVArrayType VALORArrayT<double>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATDouble;
+}
+//________________________________________________________________________________________
+template <> VALORArrayHeader::kVArrayType VALORArrayT<float>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATFloat;
+}
+//________________________________________________________________________________________
+template <> VALORArrayHeader::kVArrayType VALORArrayT<int>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATInt;
+}
+//________________________________________________________________________________________
+}
 
 //________________________________________________________________________________________
 // Explicit template instantiation - must be last.

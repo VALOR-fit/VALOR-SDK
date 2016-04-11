@@ -36,9 +36,10 @@ public:
   static const unsigned int kArrayVersion = 1;
   
   typedef enum EVArrayType {
-    kVATDouble = 0,
-    kVATFloat  = 1,
-    kVATInt    = 2,
+    kVATUndefined = -1,
+    kVATDouble    =  0,
+    kVATFloat     =  1,
+    kVATInt       =  2,
   } kVArrayType;
     
   VALORArrayHeader(void);
