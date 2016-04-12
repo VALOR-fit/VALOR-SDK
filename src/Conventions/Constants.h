@@ -163,7 +163,8 @@ static const double kGlobFitErrSinsq2Theta12 = 0.025; // ~2.5% (PDG 2014)
 //static const double kGlobFitErrSinsq2Theta13 = 0.133;  // ~13.3%    // old (PDG 2012)
 //static const double kGlobFitErrSinsq2Theta13 = 0.105; // ~10.5% (PDG 2013)
 //static const double kGlobFitErrSinsq2Theta13 = 0.086; // ~8.6% (PDG 2014)
-static const double kGlobFitErrSinsq2Theta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
+//static const double kGlobFitErrSinsq2Theta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
+static const double kGlobFitErrSinsq2Theta13 = 0.005 / kGlobFitSinsq2Theta13; // 2015 PDG
 
 
 
@@ -180,7 +181,7 @@ static const double kGlobFitErrSinsq2Theta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
 //static const double kGlobFitSinsqTheta13   = 0.0251; // old (PDG 2012)
 //static const double kGlobFitSinsqTheta13   = 0.0243; // (PDG 2013)
 //static const double kGlobFitSinsqTheta13   = 0.0238; // (PDG 2014)
-static const double kGlobFitSinsqTheta13   = 0.0217; // (PDG 2015)
+static const double kGlobFitSinsqTheta13   = 0.02172183825; // (PDG 2015)
 //static const double kGlobFitSinsqTheta13   = kT2KReacMostProbSinsqTheta13_Mach3_NH; //kT2KReacBestFitSinsqTheta13_NH; 
 
 //static const double kGlobFitSinsqTheta12    = 0.306; //fogli2011
@@ -200,7 +201,8 @@ static const double kGlobFitErrSinsqTheta12 = 0.025;  // ~2.5% (PDG 2014)
 //static const double kGlobFitErrSinsqTheta13 = 0.139; // ~13.9% // old (PDG 2012)
 //static const double kGlobFitErrSinsqTheta13 = 0.105; // ~10.5% (PDG 2013)
 // static const double kGlobFitErrSinsqTheta13 = 0.086; // ~8.6% (PDG 2014)
- static const double kGlobFitErrSinsqTheta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
+// static const double kGlobFitErrSinsqTheta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
+ static const double kGlobFitErrSinsqTheta13 = 0.00130677093 / kGlobFitSinsqTheta13; // (PDG 2015 2theta conversion)
 
 
 /////////////////////////////////////
