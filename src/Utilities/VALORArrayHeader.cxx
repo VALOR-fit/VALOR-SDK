@@ -3,9 +3,6 @@
 
 Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
-
-ChangeLog:
-
 */ 
 //____________________________________________________________________________
 

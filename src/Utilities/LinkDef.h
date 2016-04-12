@@ -8,10 +8,11 @@
 #pragma link C++ namespace valor::conv;
 #pragma link C++ namespace valor::util;
 
-#pragma link C++ class valor::VALORArray+;
-#pragma link C++ class valor::VALORArrayI+;
-#pragma link C++ class valor::VALORArrayF+;
+#pragma link C++ class valor::VALORArrayT<double>+;
+#pragma link C++ class valor::VALORArrayT<float>+;
+#pragma link C++ class valor::VALORArrayT<int>+;
 
+#pragma link C++ class valor::VALORArrayBin+;
 #pragma link C++ class valor::VALORArrayHeader+;
 
 #pragma link C++ class valor::Env+;

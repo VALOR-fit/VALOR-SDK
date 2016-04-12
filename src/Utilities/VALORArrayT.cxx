@@ -3,9 +3,6 @@
 
 Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
-
-ChangeLog:
-
 */ 
 //____________________________________________________________________________
 
@@ -17,9 +14,7 @@ ChangeLog:
 #include <numeric>
 
 #include "Utilities/UtlSystem.h"
-
-#include "Utilities/VALORArray.h"
-#include "Utilities/VALORArrayF.h"
+#include "Utilities/VALORArrayT.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 #include "gsl/gsl_vector.h"
@@ -35,8 +30,6 @@ using std::ifstream;
 using std::ofstream;
 using std::ios;
 
-ClassImp(VALORArray);
-
 //#define CHECK_VA_ADDRESS
 //#define VALORARRAY_USE_GSL
 //#define USE_UNCOMPRESSED_VARRAY_FORMAT
@@ -46,35 +39,34 @@ extern "C" void R__zip(int cxlevel, int *srcsize, char *src, int *tgtsize, char 
 extern "C" void R__unzip(int *srcsize, unsigned char *src, int *tgtsize, unsigned char *tgt, int *irep);
 
 //________________________________________________________________________________________
-VALORArray::VALORArray() :
+template<typename numtype> VALORArrayT<numtype>::VALORArrayT() :
   TNamed(),
   fNDim(0),
-  fIncrement(NULL),
   fArray(NULL),
   fCompressionLevel(conv::kDefaultCompressionLevel)
 {
 }
 //________________________________________________________________________________________
 
-VALORArray::VALORArray(const vector<int> dimensions) :
+template<typename numtype> VALORArrayT<numtype>::VALORArrayT(const vector<int> dimensions) :
   TNamed()
 {
   this->Construct(dimensions.size(), &dimensions[0]);
 }
 //________________________________________________________________________________________
-VALORArray::VALORArray(int nd, const int * dimensions) :
+template<typename numtype> VALORArrayT<numtype>::VALORArrayT(int nd, const int * dimensions) :
   TNamed()
 {
   this->Construct(nd,dimensions);
 }
 //________________________________________________________________________________________
-VALORArray::VALORArray(std::string file_to_read) :
+template<typename numtype> VALORArrayT<numtype>::VALORArrayT(std::string file_to_read) :
   TNamed()
 {
   this->ReadFile(file_to_read);
 }
 //________________________________________________________________________________________
-VALORArray::VALORArray(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) :
+template<typename numtype> VALORArrayT<numtype>::VALORArrayT(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) :
   TNamed()
 {
   int dimensions[6] = {dim1,dim2,dim3,dim4,dim5,dim6};
@@ -86,12 +78,11 @@ VALORArray::VALORArray(int dim1, int dim2, int dim3, int dim4, int dim5, int dim
   this->Construct(ndim, dimensions);
 }
 //________________________________________________________________________________________
-void VALORArray::Construct(int nd, const int * dimensions)
+template<typename numtype> void VALORArrayT<numtype>::Construct(int nd, const int * dimensions)
 {
   fCompressionLevel = conv::kDefaultCompressionLevel;
   assert(nd > 0 && nd <= 6);
   fNDim = nd;
-  fIncrement  = new int[6];
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = (i<nd ? dimensions[i] : 1);
     fNames[i] = "";
@@ -102,81 +93,64 @@ void VALORArray::Construct(int nd, const int * dimensions)
     fIncrement[i] = fSize;
     fSize *= dimensions[i];
   }
-  fArray = new double[fSize];
+  fArray = new numtype[fSize];
   
   this->SetAll(0.);
 }
 //________________________________________________________________________________________
-void VALORArray::ConstructT(int nd, const Int_t * dimensions)
+template<typename numtype> void VALORArrayT<numtype>::ConstructT(int nd, const Int_t * dimensions)
 {
   fCompressionLevel = conv::kDefaultCompressionLevel;
   assert(nd > 0 && nd <= 6);
   fNDim = nd;
-  fIncrement  = new int[6];
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = (i<nd ? dimensions[i] : 1);
     fNames[i] = "";
-    fIncrement = 0;
+    fIncrement[i] = 0;
   }
   fSize = 1;
   for (int i = fNDim-1 ; i >= 0 ; i--) {
     fIncrement[i] = fSize;
     fSize *= dimensions[i];
   }
-  fArray = new double[fSize];
+  fArray = new numtype[fSize];
   
   this->SetAll(0.);
 }
 //________________________________________________________________________________________
-VALORArray::VALORArray(const VALORArray & arr) :
+template<typename numtype> VALORArrayT<numtype>::VALORArrayT(const VALORArrayT<numtype> & arr) :
 TNamed(arr),
 fNDim(arr.fNDim),
 fSize(arr.fSize)
 {
-  fIncrement  = new int[6];
-  fArray      = new double[fSize];
-  
-  memcpy(fDimensions , arr.fDimensions , 6*sizeof(Int_t));
-  memcpy(fIncrement  , arr.fIncrement  , 6*sizeof(int));
-  memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
-  
-  for (int i = 0 ; i < 6; i++) {
-    fNames[i] = arr.fNames[i];
-  }
+  this->CopyFrom(arr);
 }
 //________________________________________________________________________________________
-void VALORArray::CopyFrom(const VALORArray & arr)
+template<typename numtype> void VALORArrayT<numtype>::CopyFrom(const VALORArrayT<numtype> & arr)
 {
   this->Cleanup();
   arr.Copy(*this);
   this->Construct(arr.GetNDim(),arr.GetDimensions());
   
+  assert(this->fSize>=0);
+  
   memcpy(fDimensions , arr.fDimensions , 6*sizeof(Int_t));
   memcpy(fIncrement  , arr.fIncrement  , 6*sizeof(int));
-  memcpy(fArray      , arr.fArray      , fSize*sizeof(double));
+  memcpy(fArray      , arr.fArray      , fSize*sizeof(numtype));
   
   for (int i = 0 ; i < 6; i++) {
     fNames[i] = arr.fNames[i];
   }
 }
 //________________________________________________________________________________________
-VALORArray::VALORArray(const VALORArrayF & arr) :
-TNamed(arr)
+template<typename numtype> void VALORArrayT<numtype>::CopyDataOnlyFrom(const VALORArrayT<numtype> & arr)
 {
-  this->Construct(arr.GetNDim(),arr.GetDimensions());
-  
-  const float * x = arr.GetArray();
-  for (int i = 0 ; i < fSize ; i++) {
-    fArray[i] = (double) x[i];
-  }
-  for (int i = 0 ; i < fNDim; i++) {
-    fNames[i] = arr.GetDimensionName(i);
-  }
+  //~ assert(arr.GetDimensionSizes()==this->GetDimensionSizes());// Does this check work?
+  memcpy(fArray      , arr.fArray      , fSize*sizeof(numtype));
 }
 //________________________________________________________________________________________
-void VALORArray::Cleanup()
+template<typename numtype> void VALORArrayT<numtype>::Cleanup()
 {
-  delete[] fIncrement;
   delete[] fArray;
   
   for (int i = 0 ; i < 6 ; i++) {
@@ -185,18 +159,19 @@ void VALORArray::Cleanup()
   }
 }
 //________________________________________________________________________________________
-VALORArray::~VALORArray()
+template<typename numtype> VALORArrayT<numtype>::~VALORArrayT()
 {
   this->Cleanup();
 }
 //________________________________________________________________________________________
-int VALORArray::GetSize(int dim) const
+template<typename numtype> int VALORArrayT<numtype>::GetSize(int dim) const
 {
   if (dim<0) return fSize;
   return fDimensions[dim];
 }
 //________________________________________________________________________________________
-int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
+template<typename numtype> int VALORArrayT<numtype>::
+  Address(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
 {
 #ifdef CHECK_VA_ADDRESS
   int indices[6] = {ind1,ind2,ind3,ind4,ind5,ind6};
@@ -209,6 +184,7 @@ int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int in
   }
   for (int i = fNDim ; i < 6 ; i++) {
     assert(indices[i]==-1);
+    assert(fIncrement[i]==0);
   }
 #endif
   
@@ -221,7 +197,8 @@ int VALORArray::Address(int ind1, int ind2, int ind3, int ind4, int ind5, int in
   return address;
 }
 //________________________________________________________________________________________
-void VALORArray::InverseAddress(int address, int * return_indices) const
+template<typename numtype> void VALORArrayT<numtype>::
+  InverseAddress(int address, int * return_indices) const
 {
   for (int i = 0 ; i < fNDim; i++) {
     return_indices[i] = 0;
@@ -233,78 +210,183 @@ void VALORArray::InverseAddress(int address, int * return_indices) const
   return;
 }
 //________________________________________________________________________________________
-double & VALORArray::GetEntryRef(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) 
+template<typename numtype> numtype & VALORArrayT<numtype>::
+  GetEntryRef(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) 
 {
   int address = this->Address(ind1, ind2, ind3, ind4, ind5, ind6);
   return fArray[address];
 }
 //________________________________________________________________________________________
-const double & VALORArray::GetEntryRef(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
+template<typename numtype> const numtype & VALORArrayT<numtype>::
+  GetEntryRef(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
 {
   int address = this->Address(ind1, ind2, ind3, ind4, ind5, ind6);
   return fArray[address];
 }
 //________________________________________________________________________________________
-double VALORArray::GetEntry(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
+template<typename numtype> numtype VALORArrayT<numtype>::
+  GetEntry(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6) const
 {
   int address = this->Address(ind1, ind2, ind3, ind4, ind5, ind6);
   return fArray[address];
 }
 //________________________________________________________________________________________
-void VALORArray::SetEntry(double value, int ind1, int ind2, int ind3, int ind4, int ind5, int ind6)
+template<typename numtype> void VALORArrayT<numtype>::
+  SetEntry(numtype value, int ind1, int ind2, int ind3, int ind4, int ind5, int ind6)
 {
   int address = this->Address(ind1, ind2, ind3, ind4, ind5, ind6);
   fArray[address] = value;
   return;
 }
 //________________________________________________________________________________________
-void VALORArray::AddToEntry(double value, int ind1, int ind2, int ind3, int ind4, int ind5, int ind6)
+template<typename numtype> void VALORArrayT<numtype>::
+  AddToEntry(numtype value, int ind1, int ind2, int ind3, int ind4, int ind5, int ind6)
 {
   int address = this->Address(ind1, ind2, ind3, ind4, ind5, ind6);
   fArray[address] += value;
   return;
 }
 //________________________________________________________________________________________
-int VALORArray::GetNDim() const
+// Similar to before but with bin class
+//________________________________________________________________________________________
+template<typename numtype> int VALORArrayT<numtype>::
+  Address(const VALORArrayBin & bin) const
+{
+#ifdef CHECK_VA_ADDRESS
+  int indices[6] = {ind1,ind2,ind3,ind4,ind5,ind6};
+  //~ cerr<<this->GetName()<<"\t"<<fNDim<<endl;
+  for (int i = 0 ; i < fNDim; i++) {
+    //~ cerr<<indices[i]<<"\t"<<fDimensions[i]<<endl;
+  }
+  for (int i = 0 ; i < fNDim; i++) {
+    assert(indices[i]>=0);
+  }
+  for (int i = fNDim ; i < 6 ; i++) {
+    assert(indices[i]==-1);
+    assert(fIncrement[i]==0);
+  }
+#endif
+  
+  int address = bin.bin1 * fIncrement[0] +
+                bin.bin2 * fIncrement[1] +
+                bin.bin3 * fIncrement[2] +
+                bin.bin4 * fIncrement[3] +
+                bin.bin5 * fIncrement[4] +
+                bin.bin6 * fIncrement[5];
+  return address;
+}
+//________________________________________________________________________________________
+template<typename numtype> VALORArrayBin VALORArrayT<numtype>::
+  InverseAddress(int address) const
+{
+  int return_indices[6] = {-1,-1,-1,-1,-1,-1};
+  for (int i = 0 ; i < fNDim; i++) {
+    return_indices[i] = 0;
+    while (address >= fIncrement[i]) {
+      address-=fIncrement[i];
+      return_indices[i]+=1;
+    }
+  }
+  return VALORArrayBin(
+    return_indices[0],
+    return_indices[1],
+    return_indices[2],
+    return_indices[3],
+    return_indices[4],
+    return_indices[5]);
+}
+//________________________________________________________________________________________
+template<typename numtype> numtype & VALORArrayT<numtype>::
+  GetEntryRef(const VALORArrayBin & bin) 
+{
+  int address = this->Address(bin);
+  return fArray[address];
+}
+//________________________________________________________________________________________
+template<typename numtype> const numtype & VALORArrayT<numtype>::
+  GetEntryRef(const VALORArrayBin & bin) const
+{
+  int address = this->Address(bin);
+  return fArray[address];
+}
+//________________________________________________________________________________________
+template<typename numtype> numtype VALORArrayT<numtype>::
+  GetEntry(const VALORArrayBin & bin) const
+{
+  int address = this->Address(bin);
+  return fArray[address];
+}
+//________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+  SetEntry(numtype value, const VALORArrayBin & bin)
+{
+  int address = this->Address(bin);
+  fArray[address] = value;
+  return;
+}
+//________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+  AddToEntry(numtype value, const VALORArrayBin & bin)
+{
+  int address = this->Address(bin);
+  fArray[address] += value;
+  return;
+}
+//________________________________________________________________________________________
+template<typename numtype> int VALORArrayT<numtype>::
+  GetNDim() const
 {
   return fNDim;
 }
 //________________________________________________________________________________________
-const double * VALORArray::GetArray(void) const
+template<typename numtype> const numtype *  VALORArrayT<numtype>::
+  GetArray(void) const
 {
   return fArray;
 }
 //________________________________________________________________________________________
-double * VALORArray::GetArray(void)
+template<typename numtype> numtype * VALORArrayT<numtype>::
+  GetArray(void)
 {
   return fArray;
 }
 //________________________________________________________________________________________
-const int * VALORArray::GetDimensions(void) const
+template<typename numtype> const int * VALORArrayT<numtype>::
+  GetDimensions(void) const
 {
   return fDimensions;
 }
 //________________________________________________________________________________________
-void VALORArray::SetAll(double value)
+template<typename numtype> VALORArrayBin VALORArrayT<numtype>::
+  GetDimensionSizes(void) const
+{
+  return VALORArrayBin(fDimensions);
+}
+//________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+  SetAll(numtype value)
 {
   for (int ii = 0 ; ii < fSize ; ii++) {
     fArray[ii] = value;
   }
 }
 //________________________________________________________________________________________
-void VALORArray::SetDimensionName(int dimension, const std::string & name)
+template<typename numtype> void VALORArrayT<numtype>::
+  SetDimensionName(int dimension, const std::string & name)
 {
   fNames[dimension] = name;
 }
 //________________________________________________________________________________________
-std::string VALORArray::GetDimensionName(int dimension) const
+template<typename numtype> std::string VALORArrayT<numtype>::
+  GetDimensionName(int dimension) const
 {
   return fNames[dimension];
 }
 //________________________________________________________________________________________
-VALORArray VALORArray::GetSlice(int dimension, int min_bin, int max_bin) const
+template<typename numtype> VALORArrayT<numtype> VALORArrayT<numtype>::
+  GetSlice(int dimension, int min_bin, int max_bin) const
 {
-  if (fNDim < 2) return VALORArray();
+  if (fNDim < 2) return VALORArrayT();
   // Find out dimensions of new array
   int new_ndim = fNDim-1;
   int new_dims[new_ndim];
@@ -319,7 +401,7 @@ VALORArray VALORArray::GetSlice(int dimension, int min_bin, int max_bin) const
     i_new_dim++;
   }
   
-  VALORArray slice(new_ndim,new_dims); // make new array
+  VALORArrayT<numtype> slice(new_ndim,new_dims); // make new array
   
   // copy dimension names
   i_new_dim = 0;
@@ -352,17 +434,19 @@ VALORArray VALORArray::GetSlice(int dimension, int min_bin, int max_bin) const
   return slice;
 }
 //________________________________________________________________________________________
-double VALORArray::Integral() const
+template<typename numtype> numtype VALORArrayT<numtype>::
+  Integral() const
 {
   if (fNDim) return std::accumulate(fArray,fArray+fSize, 0.);
   return 0;
 }
 //________________________________________________________________________________________
-double VALORArray::Integral(int min_dim1 , int max_dim1, int min_dim2, int max_dim2, 
-                            int min_dim3 , int max_dim3, int min_dim4, int max_dim4, 
-                            int min_dim5 , int max_dim5, int min_dim6, int max_dim6 ) const
+template<typename numtype> numtype VALORArrayT<numtype>::
+  Integral(int min_dim1 , int max_dim1, int min_dim2, int max_dim2, 
+           int min_dim3 , int max_dim3, int min_dim4, int max_dim4, 
+           int min_dim5 , int max_dim5, int min_dim6, int max_dim6 ) const
 {
-  double integral = 0;
+  numtype integral = 0;
   min_dim1 = (min_dim1<0 ? 0 : min_dim1) ; max_dim1 = (max_dim1<0 ? fDimensions[0]-1 : max_dim1) ;
   min_dim2 = (min_dim2<0 ? 0 : min_dim2) ; max_dim2 = (max_dim2<0 ? fDimensions[1]-1 : max_dim2) ;
   min_dim3 = (min_dim3<0 ? 0 : min_dim3) ; max_dim3 = (max_dim3<0 ? fDimensions[2]-1 : max_dim3) ;
@@ -393,7 +477,8 @@ double VALORArray::Integral(int min_dim1 , int max_dim1, int min_dim2, int max_d
   return integral;
 }
 //________________________________________________________________________________________
-void VALORArray::Scale(double factor) {
+template<typename numtype> void VALORArrayT<numtype>::
+  Scale(numtype factor) {
 #if defined(__VALOR_FMWK_GSL_ENABLED__) && defined(VALORARRAY_USE_GSL)
   gsl_vector_view v = gsl_vector_view_array(fArray,fSize);
   gsl_blas_dscal(factor, (&v.vector));
@@ -404,8 +489,9 @@ void VALORArray::Scale(double factor) {
 #endif
 }
 //________________________________________________________________________________________
-void VALORArray::ScaleBins(double factor, int ibin1, int ibin2, int ibin3,
-                                          int ibin4, int ibin5, int ibin6)
+template<typename numtype> void VALORArrayT<numtype>::
+  ScaleBins(numtype factor, int ibin1, int ibin2, int ibin3,
+                            int ibin4, int ibin5, int ibin6)
 {
   for (int i1 = 0 ; i1 < fDimensions[0] ; i1++) {
     if (ibin1>=0 && ibin1 !=i1 ) continue;
@@ -435,10 +521,11 @@ void VALORArray::ScaleBins(double factor, int ibin1, int ibin2, int ibin3,
   return;
 }
 //________________________________________________________________________________________
-void VALORArray::ScaleBinRange(double factor,
-                               int min_dim1 , int max_dim1, int min_dim2, int max_dim2, 
-                               int min_dim3 , int max_dim3, int min_dim4, int max_dim4, 
-                               int min_dim5 , int max_dim5, int min_dim6, int max_dim6 )
+template<typename numtype> void VALORArrayT<numtype>::
+  ScaleBinRange(numtype factor,
+                int min_dim1 , int max_dim1, int min_dim2, int max_dim2, 
+                int min_dim3 , int max_dim3, int min_dim4, int max_dim4, 
+                int min_dim5 , int max_dim5, int min_dim6, int max_dim6 )
 {
   min_dim1 = (min_dim1<0 ? 0 : min_dim1) ; max_dim1 = (max_dim1<0 ? fDimensions[0]-1 : max_dim1) ;
   min_dim2 = (min_dim2<0 ? 0 : min_dim2) ; max_dim2 = (max_dim2<0 ? fDimensions[1]-1 : max_dim2) ;
@@ -468,7 +555,9 @@ void VALORArray::ScaleBinRange(double factor,
   }
 }
 //________________________________________________________________________________________
-void VALORArray::ReadFile(std::string file_to_read) {
+template<typename numtype> void VALORArrayT<numtype>::
+  ReadFile(std::string file_to_read)
+{
   this->Cleanup();
   ifstream is(file_to_read.c_str(),ios::binary|ios::in);
   assert(is);
@@ -478,15 +567,20 @@ void VALORArray::ReadFile(std::string file_to_read) {
   int result = header.Read(is);
   
   if (result) {
-    std::cerr<<"VALORArray/ReadFile >> Bad header from file "<<file_to_read<<" - giving up."<<std::endl;
+    std::cerr<<"VALORArrayT/ReadFile >> Bad header from file "<<file_to_read<<" - giving up."<<std::endl;
+    is.close();
+    util::Die(1); return;
+  }
+  if (header.GetDataType() != this->GetHeaderType()) {
+    std::cerr<<"VALORArrayT/ReadFile >> Bad variable type from file "<<file_to_read<<" - giving up."<<std::endl;
     is.close();
     util::Die(1); return;
   }
   this->ConstructT(header.GetNDimensions(),header.GetDimensions());
   
   int compressed_data_size   = header.GetCompressedSize();
-  //~ int compressed_buffer_size = sizeof(double) * (fSize+2);
-  int out_data_size          = sizeof(double) * (fSize);
+  //~ int compressed_buffer_size = sizeof(numtype) * (fSize+2);
+  int out_data_size          = sizeof(numtype) * (fSize);
   unsigned char * compressed_buffer = new unsigned char[compressed_data_size];
   is.read( (char*) compressed_buffer, compressed_data_size );
   
@@ -494,7 +588,7 @@ void VALORArray::ReadFile(std::string file_to_read) {
   R__unzip(&compressed_data_size,compressed_buffer,&out_data_size,(unsigned char *)fArray, &result);
   //~ cerr<<"Post: Arguments are "<<compressed_data_size<<"\t"<<(void*)compressed_buffer<<"\t"<<out_data_size<<"\t"<<(void*)fArray<<"\t"<<result<<std::endl;
   
-  assert((size_t)result==sizeof(double)*fSize);
+  assert((size_t)result==sizeof(numtype)*fSize);
 #else // with USE_UNCOMPRESSED_VARRAY_FORMAT
   int ndim = 0;
   int dims[6] = {};
@@ -508,24 +602,26 @@ void VALORArray::ReadFile(std::string file_to_read) {
   is.seekg(0,is.end);
   unsigned int n = is.tellg();
   is.seekg(0,is.beg);
-  assert(n==(7*sizeof(int) + fSize*sizeof(double)));
+  assert(n==(7*sizeof(int) + fSize*sizeof(numtype)));
   is.seekg(startn);
 #endif //NDEBUG
-  is.read( (char*)fArray,fSize*sizeof(double));
+  is.read( (char*)fArray,fSize*sizeof(numtype));
 #endif //USE_UNCOMPRESSED_VARRAY_FORMAT
   is.close();
   return;
 }
 //________________________________________________________________________________________
-void VALORArray::WriteFile(std::string file_to_write) {
+template<typename numtype> void VALORArrayT<numtype>::
+  WriteFile(std::string file_to_write)
+{
   ofstream os(file_to_write.c_str(),ios::binary|ios::out);
   assert(os);
 #ifndef USE_UNCOMPRESSED_VARRAY_FORMAT
   
   int nbytes_compressed=-999;
   
-  int uncompressed_buffer_size = (fSize           )*sizeof(double);
-  int compressed_buffer_size   = (fSize*1.0004    )*sizeof(double) + 11;
+  int uncompressed_buffer_size = (fSize           )*sizeof(numtype);
+  int compressed_buffer_size   = (fSize*1.0004    )*sizeof(numtype) + 11;
   // ^^ For possible expansion, need 5 bytes per 16kb, plus 6 - I padded it a bit more than that. http://www.zlib.net/zlib_tech.html 
   char * compressed_buffer = new char[compressed_buffer_size];
   
@@ -534,7 +630,7 @@ void VALORArray::WriteFile(std::string file_to_write) {
   R__zip(fCompressionLevel, &uncompressed_buffer_size, (char*)fArray, &compressed_buffer_size, compressed_buffer, &nbytes_compressed);
   //~ cerr<<"Post: Arguments are "<<fCompressionLevel<<"\t"<<uncompressed_buffer_size<<"\t"<<fArray<<"\t"<<compressed_buffer_size<<"\t"<<(void*)compressed_buffer<<std::endl;
   
-  VALORArrayHeader header(VALORArray::kDataType,fNDim,fDimensions,nbytes_compressed,fCompressionLevel);
+  VALORArrayHeader header(this->GetHeaderType(),fNDim,fDimensions,nbytes_compressed,fCompressionLevel);
   
   header.Write(os);
   os.write( (char*)compressed_buffer,nbytes_compressed);
@@ -543,25 +639,28 @@ void VALORArray::WriteFile(std::string file_to_write) {
 #else // with USE_UNCOMPRESSED_VARRAY_FORMAT
   os.write( (char*)&fNDim      ,sizeof(int));
   os.write( (char*)fDimensions ,sizeof(Int_t)*6);
-  os.write( (char*)fArray,fSize*sizeof(double) );
+  os.write( (char*)fArray,fSize*sizeof(numtype) );
 #endif //USE_UNCOMPRESSED_VARRAY_FORMAT
   os.close();
   return;
 }
 //________________________________________________________________________________________
-void VALORArray::Resize(const std::vector<int> dimensions)
+template<typename numtype> void VALORArrayT<numtype>::
+  Resize(const std::vector<int> dimensions)
 {
   this->Cleanup();
   this->Construct(dimensions.size(), &dimensions[0]);
 }
 //________________________________________________________________________________________
-void VALORArray::Resize(int nd, const int * dimensions)
+template<typename numtype> void VALORArrayT<numtype>::
+  Resize(int nd, const int * dimensions)
 {
   this->Cleanup();
   this->Construct(nd,dimensions);
 }
 //________________________________________________________________________________________
-void VALORArray::Resize(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6)
+template<typename numtype> void VALORArrayT<numtype>::
+  Resize(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6)
 {
   this->Cleanup();
   int dimensions[6] = {dim1,dim2,dim3,dim4,dim5,dim6};
@@ -573,8 +672,42 @@ void VALORArray::Resize(int dim1, int dim2, int dim3, int dim4, int dim5, int di
   this->Construct(ndim, dimensions);
 }
 //________________________________________________________________________________________
-void VALORArray::SetCompressionLevel(int level)
+template<typename numtype> void VALORArrayT<numtype>::
+  SetCompressionLevel(int level)
 {
   fCompressionLevel = level;
 }
+//________________________________________________________________________________________
+namespace valor { // g++ bug requires specialisations to be in namespace
+template <typename numtype> VALORArrayHeader::kVArrayType VALORArrayT<numtype>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATUndefined;
+}
+//________________________________________________________________________________________
+template <> VALORArrayHeader::kVArrayType VALORArrayT<double>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATDouble;
+}
+//________________________________________________________________________________________
+template <> VALORArrayHeader::kVArrayType VALORArrayT<float>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATFloat;
+}
+//________________________________________________________________________________________
+template <> VALORArrayHeader::kVArrayType VALORArrayT<int>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATInt;
+}
+//________________________________________________________________________________________
+}
+
+//________________________________________________________________________________________
+// Explicit template instantiation - must be last.
+template class valor::VALORArrayT<double>;
+template class valor::VALORArrayT<float>;
+template class valor::VALORArrayT<int>;
 //________________________________________________________________________________________
