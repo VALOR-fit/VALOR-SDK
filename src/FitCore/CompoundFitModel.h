@@ -67,6 +67,7 @@ public:
   virtual double GetFitStatisticPenalty(Option_t * opt = 0) const ;
   
 // Own interface
+  virtual void AddSubModel(FitModelABC * model, Option_t * opt = 0);
   virtual const FitModelABC * GetSubModel(int model_idx, Option_t * opt = 0) const;
   virtual FitModelABC * GetSubModel(int model_idx, Option_t * opt = 0);
   

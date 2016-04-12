@@ -187,6 +187,12 @@ double CompoundFitModel::GetFitStatisticPenalty(Option_t * opt) const
   return fitstat;
 }
 //________________________________________________________________________________________
+void CompoundFitModel::AddSubModel(FitModelABC * model, Option_t * /*opt*/)
+{
+  fSubModels.push_back(model);
+  return;
+}
+//________________________________________________________________________________________
 const FitModelABC * CompoundFitModel::GetSubModel(int model_idx, Option_t * /*opt*/) const
 {
   return fSubModels.at(model_idx);
