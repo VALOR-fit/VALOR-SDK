@@ -136,6 +136,8 @@ public:
   RgDbl    GetDoubleDef (RgKey key, RgDbl  def_opt, bool set_def=true);
   RgStr    GetStringDef (RgKey key, RgStr  def_opt, bool set_def=true);
 
+  RgIMapConstIter SafeFind  (RgKey key) const;
+
   int    NEntries     (void) const;                     ///< get number of items
   bool   Exists       (RgKey key) const;                ///< item with input key exists?
   bool   CanSetItem   (RgKey key) const;                ///< can I set the specifed item?

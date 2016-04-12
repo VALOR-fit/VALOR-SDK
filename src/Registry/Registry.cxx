@@ -308,13 +308,13 @@ void Registry::Set(RgKey key, RgObject item)
 //____________________________________________________________________________
 void Registry::Get(RgKey key, const RegistryItemI * & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   item = entry->second;
 }
 //____________________________________________________________________________
 void Registry::Get(RgKey key, RgBool & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgBool> * ri = dynamic_cast<RegistryItem<RgBool>*> (rib);
   item = ri->Data();
@@ -322,7 +322,7 @@ void Registry::Get(RgKey key, RgBool & item) const
 //____________________________________________________________________________
 void Registry::Get(RgKey key, RgInt & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgInt> * ri = dynamic_cast< RegistryItem<RgInt> * > (rib);
   item = ri->Data();
@@ -330,7 +330,7 @@ void Registry::Get(RgKey key, RgInt & item) const
 //____________________________________________________________________________
 void Registry::Get(RgKey key, RgDbl & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgDbl> * ri = dynamic_cast<RegistryItem<RgDbl>*> (rib);
   item = ri->Data();
@@ -338,7 +338,7 @@ void Registry::Get(RgKey key, RgDbl & item) const
 //____________________________________________________________________________
 void Registry::Get(RgKey key, RgStr & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgStr> * ri = dynamic_cast<RegistryItem<RgStr>*> (rib);
   item = ri->Data();
@@ -346,7 +346,7 @@ void Registry::Get(RgKey key, RgStr & item) const
 //____________________________________________________________________________
 void Registry::Get(RgKey key, RgH1F & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgH1F> *ri = dynamic_cast<RegistryItem<RgH1F>*> (rib);
   item = ri->Data();
@@ -358,7 +358,7 @@ void Registry::Get(RgKey key, RgH1F & item) const
 //____________________________________________________________________________
 void Registry::Get(RgKey key, RgH2F & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgH2F> *ri = dynamic_cast<RegistryItem<RgH2F>*> (rib);
   item = ri->Data();
@@ -370,7 +370,7 @@ void Registry::Get(RgKey key, RgH2F & item) const
 //____________________________________________________________________________
 void Registry::Get(RgKey key, RgTree & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgTree> *ri =  dynamic_cast<RegistryItem<RgTree>*> (rib);
   item = ri->Data();
@@ -382,7 +382,7 @@ void Registry::Get(RgKey key, RgTree & item) const
 //____________________________________________________________________________
 void Registry::Get(RgKey key, RgObject & item) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgObject> *ri =  dynamic_cast<RegistryItem<RgObject>*> (rib);
   item = ri->Data();
@@ -422,7 +422,7 @@ RgStr Registry::GetString(RgKey key) const
 //____________________________________________________________________________
 RgH1F Registry::GetH1F(RgKey key) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgH1F> *ri = dynamic_cast<RegistryItem<RgH1F>*> (rib);
 
@@ -432,7 +432,7 @@ RgH1F Registry::GetH1F(RgKey key) const
 //____________________________________________________________________________
 RgH2F Registry::GetH2F(RgKey key) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgH2F> *ri = dynamic_cast<RegistryItem<RgH2F>*> (rib);
 
@@ -442,7 +442,7 @@ RgH2F Registry::GetH2F(RgKey key) const
 //____________________________________________________________________________
 RgTree Registry::GetTree(RgKey key) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgTree> *ri = dynamic_cast<RegistryItem<RgTree>*> (rib);
 
@@ -452,7 +452,7 @@ RgTree Registry::GetTree(RgKey key) const
 //____________________________________________________________________________
 RgObject Registry::GetObject(RgKey key) const
 {
-  RgIMapConstIter entry = fRegistry.find(key);
+  RgIMapConstIter entry = this->SafeFind(key);
   RegistryItemI * rib = entry->second;
   RegistryItem<RgObject> *ri = dynamic_cast<RegistryItem<RgObject>*> (rib);
 
@@ -478,6 +478,18 @@ double Registry::GetDoubleDef(RgKey key, double def_opt, bool set_def)
 string Registry::GetStringDef(RgKey key, string def_opt, bool set_def) 
 {
   return GetValueOrUseDefault(this, key, def_opt, set_def);
+}
+//____________________________________________________________________________
+RgIMapConstIter Registry::SafeFind(RgKey key) const
+{
+  RgIMapConstIter entry = fRegistry.find(key);
+  if (entry!=fRegistry.end()) {
+    return entry;
+  }
+  LOG("Reg", pFATAL)
+       << "*** Key: " << key
+       << " does not exist in registry: " << this->Name();
+  exit(1);    
 }
 //____________________________________________________________________________
 bool Registry::Exists(RgKey key) const
@@ -730,9 +742,9 @@ void Registry::Clear(bool force)
 {
 // clean all registry entries
 
-  LOG("Reg", pINFO) 
-      << "Cleaning-up [force unlock = " << ((force)?"true":"false")
-      << "] registry: " << this->Name();
+  //~ LOG("Reg", pINFO) 
+      //~ << "Cleaning-up [force unlock = " << ((force)?"true":"false")
+      //~ << "] registry: " << this->Name();
   if(!force) {
    if(this->IsLocked()) {
       LOG("Reg", pWARN) << "Registry is locked. Can't clear its entries";
