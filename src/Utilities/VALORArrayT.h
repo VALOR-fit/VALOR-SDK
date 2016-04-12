@@ -109,6 +109,9 @@ public:
   // Compression info
   void SetCompressionLevel(int level);
   
+  // Print the contents
+  void Print(std::ostream & str = std::cout);
+  
 private:
   int fNDim;
   int fSize;
