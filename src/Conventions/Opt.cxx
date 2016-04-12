@@ -13,6 +13,7 @@ ChangeLog:
 #include <cassert>
 #include <iostream>
 
+#include "Messenger/Messenger.h"
 #include "Conventions/Opt.h"
 #include "Conventions/Constants.h"
 
@@ -58,6 +59,7 @@ Opt * Opt::Instance()
   if(fInstance == 0) {
     static Opt::Cleaner cleaner;
     cleaner.DummyMethodAndSilentCompiler();
+    LOG("Opt",pDEBUG)<<"Producing new Opt::Instance()";
     fInstance = new Opt;
   }
   return fInstance;
