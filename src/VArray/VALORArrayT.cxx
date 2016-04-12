@@ -681,6 +681,47 @@ template<typename numtype> void VALORArrayT<numtype>::
   fCompressionLevel = level;
 }
 //________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+  Print(std::ostream & stream)
+{
+  for (int i1 = 0 ; i1 < fDimensions[0] ; i1++) {
+    stream<<"{ ";
+    for (int i2 = 0 ; i2 < fDimensions[1] ; i2++) {
+      if (fDimensions[2]>1){ stream<<" { ";}
+      for (int i3 = 0 ; i3 < fDimensions[2] ; i3++) {
+        if (fDimensions[3]>1){ stream<<" { ";}
+        for (int i4 = 0 ; i4 < fDimensions[3] ; i4++) {
+          if (fDimensions[4]>1){ stream<<" { ";}
+          for (int i5 = 0 ; i5 < fDimensions[4] ; i5++) {
+            if (fDimensions[5]>1){ stream<<" { ";}
+            for (int i6 = 0 ; i6 < fDimensions[5] ; i6++) {
+              int address = fIncrement[0]*i1+
+                            fIncrement[1]*i2+
+                            fIncrement[2]*i3+
+                            fIncrement[3]*i4+
+                            fIncrement[4]*i5+
+                            fIncrement[5]*i6 ;
+              stream<<fArray[address]<<(fDimensions[5]-i6 > 1 ? ", ":"");
+            }
+            if (fDimensions[5]     >1){ stream<<" }";}
+            if (fDimensions[4]-i5 > 1){ stream<<", ";}
+          }
+          if (fDimensions[4]     >1){ stream<<" }";}
+          if (fDimensions[3]-i4 > 1){ stream<<", ";}
+        }
+        if (fDimensions[3]     >1){ stream<<" }";}
+        if (fDimensions[2]-i3 > 1){ stream<<", ";}
+      }
+      if (fDimensions[2]     >1){ stream<<" }";}
+      if (fDimensions[1]-i2 > 1){ stream<<", ";}
+    }
+    stream<<" }";
+    if (fDimensions[0]-i1 > 1){ stream<<",\n";}
+  }
+  stream<<std::endl;
+  return;
+}
+//________________________________________________________________________________________
 namespace valor { // g++ bug requires specialisations to be in namespace
 template <typename numtype> VALORArrayHeader::kVArrayType VALORArrayT<numtype>::
  GetHeaderType(void)
