@@ -560,7 +560,10 @@ template<typename numtype> void VALORArrayT<numtype>::
 {
   this->Cleanup();
   ifstream is(file_to_read.c_str(),ios::binary|ios::in);
-  assert(is);
+  if (not is) {
+    std::cerr<<"VALORArrayT/ReadFile >> Can't open file "<<file_to_read<<" - giving up."<<std::endl;
+    util::Die(1); return;
+  }
   
 #ifndef USE_UNCOMPRESSED_VARRAY_FORMAT
   VALORArrayHeader header;
