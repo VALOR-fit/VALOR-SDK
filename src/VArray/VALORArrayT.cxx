@@ -571,6 +571,11 @@ template<typename numtype> void VALORArrayT<numtype>::
     is.close();
     util::Die(1); return;
   }
+  if (header.GetDataType() != this->GetHeaderType()) {
+    std::cerr<<"VALORArrayT/ReadFile >> Bad variable type from file "<<file_to_read<<" - giving up."<<std::endl;
+    is.close();
+    util::Die(1); return;
+  }
   this->ConstructT(header.GetNDimensions(),header.GetDimensions());
   
   int compressed_data_size   = header.GetCompressedSize();
