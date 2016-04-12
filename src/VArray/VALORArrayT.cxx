@@ -253,7 +253,7 @@ template<typename numtype> int VALORArrayT<numtype>::
   Address(const VALORArrayBin & bin) const
 {
 #ifdef CHECK_VA_ADDRESS
-  int indices[6] = {ind1,ind2,ind3,ind4,ind5,ind6};
+  int indices[6] = {bin.bin1,bin.bin2,bin.bin3,bin.bin4,bin.bin5,bin.bin6};
   //~ cerr<<this->GetName()<<"\t"<<fNDim<<endl;
   for (int i = 0 ; i < fNDim; i++) {
     //~ cerr<<indices[i]<<"\t"<<fDimensions[i]<<endl;
