@@ -25,8 +25,7 @@
 
 #pragma link C++ class valor::FitterABC+;
 #pragma link C++ class valor::FitterMinuit+;
-//#pragma link C++ class valor::FitterMinuit2+;
-//#pragma link C++ class valor::FitterGSL+;
 
+#pragma link C++ class valor::FitterABC_new+;
 
 #endif
