@@ -6,9 +6,6 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 */ 
 //____________________________________________________________________________
 
-#define __show_fit_result__ 
-#define __show_fit_steps__ 
-
 #include <cassert> 
 #include <cstdlib> 
 #include <vector> 
@@ -41,15 +38,9 @@ using std::vector;
    
 //____________________________________________________________________________ 
 VMinuitFitter::VMinuitFitter() :
-FitterABC()
+FitterABC_new()
 {
   this->Init();
-}
-//____________________________________________________________________________ 
-VMinuitFitter::VMinuitFitter(FitInputs * fit_inputs, Option_t * option) :
-FitterABC()
-{
-  this->Init(fit_inputs, option);
 }
 //____________________________________________________________________________ 
 VMinuitFitter::~VMinuitFitter() 
@@ -59,8 +50,6 @@ VMinuitFitter::~VMinuitFitter()
 //____________________________________________________________________________ 
 void VMinuitFitter::Init(void) 
 {
-  fFitInputs           = 0;
-  fOption              = "";
   fNFreeFitParams      = 0;
   fNFitBins            = 0;
   fCalcHesseErrors     = false;
@@ -78,139 +67,18 @@ void VMinuitFitter::Init(void)
   fFitTries            = 0;
 }
 //____________________________________________________________________________ 
-void VMinuitFitter::Init(FitInputs * fit_inputs, Option_t * option) 
-{
-  LOG("Minuit", pINFO) << "Fitter initialization...";
-
-  this->Init();
-
-  fFitInputs = fit_inputs;
-  if(!fFitInputs) {
-     LOG("Minuit", pFATAL) << "** Null fit inputs!";
-     exit(1);
-  }
-
-  FitParamList & fit_params = fFitInputs->FitParams();
-  int param_list_size = fit_params.Size();
-
-  LOG("Minuit", pINFO) << "Fit parameter list size = " << param_list_size;
-
-  fOption = option;
-
-  // calc HESSE or MINOS errors after fit
-  fCalcHesseErrors  = fOption.Contains("hesse");
-  fCalcMinosErrors  = fOption.Contains("minos");
-
-  if(fOption.Contains("minuit")) {
-    // get fitter
-    TVirtualFitter::SetDefaultFitter("Minuit");
-    TVirtualFitter * fitter = TVirtualFitter::Fitter(0,param_list_size);
-    
-    // set print level
-    Double_t arglist[5];
-    arglist[0] = fPrintLevel;
-    fitter->ExecuteCommand("SET PRINT",arglist,1);
-    
-    // set params
-    fit_params.SetTo(fitter);
-    
-    // set minimization function
-    fitter->SetFCN(FitFunc);            
-  }
-  
-  // Parse a tolerance out of the fitter option
-  if(fOption.Contains("tolerance",TString::kIgnoreCase)) {
-    TPRegexp tol_re("(?<=tolerance\\=)-?[\\d.]+(?:e-?\\d+)?");
-    /*               |Lookahead name |Generic number pattern| */
-    TObjArray * matches = tol_re.MatchS(fOption,"i"); // i is case insensitive
-    double tolerance = 0;
-    if(matches->GetEntries()==1) {
-      TObjString * tolerance_string = dynamic_cast<TObjString*>(matches->At(0));
-      if (tolerance_string) {
-        tolerance = strtod(tolerance_string->GetString().Data(),NULL);
-      }
-    }
-      
-    delete matches;
-    
-    if (tolerance > conv::kAVerySmallNum) {
-      LOG("Minuit", pINFO) << "Set tolerance to "<<tolerance;
-      this->SetTol(tolerance);
-    }
-    else {
-      LOG("Minuit",pWARN) << "Failed to parse valid single tolerance from option string "<<fOption;
-    }
-  }
-  
-  // Parse a max number of calls out of the fitter option
-  if(fOption.Contains("maxcalls",TString::kIgnoreCase)) {
-    TPRegexp call_re("(?<=maxcalls\\=)-?[\\d.]+(?:e-?\\d+)?");
-    /*               |Lookahead name |Generic number pattern| */
-    TObjArray * matches = call_re.MatchS(fOption,"i"); // i is case insensitive
-    double maxcalls = 0;
-    if(matches->GetEntries()==1) {
-      TObjString * maxcalls_string = dynamic_cast<TObjString*>(matches->At(0));
-      if (maxcalls_string) {
-        maxcalls = strtod(maxcalls_string->GetString().Data(),NULL);
-      }
-    }
-      
-    delete matches;
-    
-    if (maxcalls > conv::kAVerySmallNum) {
-      int ncalls = TMath::Nint(maxcalls);
-      LOG("Minuit", pINFO) << "Set max number of calls to "<<ncalls;
-      this->SetMaxCalls(ncalls);
-    }
-    else {
-      LOG("Minuit",pWARN) << "Failed to parse valid single max number of calls from option string "<<fOption;
-    }
-  }
-
-/*
-  if(fOption.Contains("simplex")) {
-    TVirtualFitter::SetDefaultFitter("Simplex");
-    TVirtualFitter * fitter = TVirtualFitter::Fitter(0,param_list_size);
-    
-    // set print level              
-    Double_t arglist[5];
-    arglist[0] = fPrintLevel;
-    fitter->ExecuteCommand("SET PRINT",arglist,1);
-    
-    // set params                
-    fit_params.SetTo(fitter);
-    
-    // set minimization function     
-    fitter->SetFCN(FitFunc);
-    fSimplex = true;
-  }
-*/
-
-  // calculate degrees of freedom  
-  fNFitBins       = fit_inputs->Observation().NumOfBins();
-  fNFreeFitParams = fit_params.GetNumberFreeParameters();
-  
-  assert(fNFitBins > 0);
-  assert(fNFreeFitParams >= 0);
-
-  LOG("Minuit", pINFO) 
-       << "NDoF = " << this->NDOF()
-       << " (Number of bins = " << this->NBinsInFit()
-       << ", Number of free parameters = " << this->NFitParams() << ")";
-  
-}
-//____________________________________________________________________________ 
 bool VMinuitFitter::Configure(const Registry & conf)
 {
   LOG("Minuit", pINFO) << "Fitter configuration: " << conf;
 
+/*
   fCalcHesseErrors =
   fCalcMinosErrors =
   fTol             = 
   fStr             =
   fPrintLevel      =
   fMaxNumCalls     =
-
+*/
   //
   //
   // use this and deprecate the various Set(...) methods and some or all 
@@ -221,45 +89,60 @@ bool VMinuitFitter::Configure(const Registry & conf)
   return true;
 }
 //____________________________________________________________________________ 
-bool VMinuitFitter::DoTheFit(void) 
+bool VMinuitFitter::DoTheFit(FitInputs * inputs) 
 {
-  // start clock
+  // Start clock
   TStopwatch w;
   w.Start();
 
-  fFitTime  = 0;
-  fFitTries = -1;
-  
-  // Initialise and get ready.
-  // set params
-  FitParamList & fit_params = fFitInputs->FitParams();
+  // Get fit parameters
+  FitParamList & fit_params = inputs->FitParams();
   int param_list_size = fit_params.Size();
+
+  // Calculate degrees of freedom  
+  int nbins = inputs->Observation().NumOfBins();
+  int nparams_free = fit_params.GetNumberFreeParameters();
+  int ndof = nbins - nparams_free;
+
+  assert(nbins > 0);
+  assert(nparams_free >= 0);
+//assert(ndof > 0);
+
+  LOG("Minuit", pINFO) 
+    << "NDoF = " << ndof
+    << " (Number of bins = " << nbins
+    << ", Number of free parameters = " << nparams_free << ")";
+  
+  // Get MINUIT
+  TVirtualFitter::SetDefaultFitter("Minuit");
+//TVirtualFitter::SetDefaultFitter("Simplex");
   TVirtualFitter * fitter = TVirtualFitter::Fitter(0,param_list_size);
-  // set print level
+
+  // Set print level
   Double_t arglist[5];
   arglist[0] = fPrintLevel;
   fitter->ExecuteCommand("SET PRINT",arglist,1);
   
-  // set params
+  // Set params
   fit_params.SetTo(fitter);
-  // set minimization function
-  fitter->SetFCN(FitFunc);         
-  
-  
-  // And we're ready.   
 
+  // Set minimization function
+  fitter->SetFCN(FitFunc);         
+   
+  //-----------
   // reset fit time, bestfit statistic and status codes in
   // persistable FitParamList obj
-  fFitInputs->FitParams().SetFitTime(0);
-  fFitInputs->FitParams().SetBestFitStatistic(0);
-  fFitInputs->FitParams().ClearStatusCodes();
+  fit_params.SetFitTime(0);
+  fit_params.SetBestFitStatistic(0);
+  fit_params.ClearStatusCodes();
+  //-----------
 
   // Run the fitter once - we have the option here to check the status code
   // and if the fitter failed, re-seed the fitter and try again
   bool ok = this->RunOnce(false);
 
   // 4: migrad not converged
-  fFitTries = 1;
+  int ntries = 1;
 
   if(fMigradMinStatusCode == 4) {
     LOG("Minuit", pWARN) << "Fit failed...";
@@ -267,36 +150,36 @@ bool VMinuitFitter::DoTheFit(void)
     {
        LOG("Minuit", pWARN) << "Trying SIMPLEX";
        this->RunOnce(true);
-       fFitTries++;
+       ntries++;
     }
   }  
 
   // stop clock
   w.Stop();
-  fFitTime = w.CpuTime();
+  double tfit = w.CpuTime();
 
   LOG("Minuit", pINFO) 
-    << "Fit performed in " << fFitTime 
-    << " sec after " << fFitTries << " attempts";
+    << "Fit performed in " << tfit
+    << " sec after " << ntries << " attempts";
   LOG("Minuit", pINFO) 
-    << "Best-fit statistic: " << fFitInputs->FitParams().GetBestFitStatistic();
+    << "Best-fit statistic: " << fit_params.GetBestFitStatistic();
 
+  // -------------
   // copy fit time and bestfit statistic and status codes 
   // to persistable FitParamList obj
-
-  fFitInputs->FitParams().SetFitTime (fFitTime);
-  fFitInputs->FitParams().SetFitTries(fFitTries);
-  fFitInputs->FitParams().SetBestFitStatistic(fFitInputs->FitParams().GetBestFitStatistic());
-
-  fFitInputs->FitParams().SetStatusCode("migrad_min", fMigradMinStatusCode);
-  fFitInputs->FitParams().SetStatusCode("migrad_err", fMigradErrStatusCode);
-
+  fit_params.SetFitTime (tfit);
+  fit_params.SetFitTries(ntries);
+  fit_params.SetBestFitStatistic(fit_params.GetBestFitStatistic());
+  fit_params.SetStatusCode("migrad_min", fMigradMinStatusCode);
+  fit_params.SetStatusCode("migrad_err", fMigradErrStatusCode);
   if(fCalcHesseErrors) {
-    fFitInputs->FitParams().SetStatusCode("hesse_err", fHesseErrStatusCode);
+    fit_params.SetStatusCode("hesse_err", fHesseErrStatusCode);
   }
   if(fCalcMinosErrors) {
-    fFitInputs->FitParams().SetStatusCode("minos_err", fMinosErrStatusCode);
+    fit_params.SetStatusCode("minos_err", fMinosErrStatusCode);
   }
+  // -------------
+
   return ok;
 }
 //____________________________________________________________________________ 
@@ -306,27 +189,22 @@ bool VMinuitFitter::RunOnce(bool use_simplex)
   double fcntemp;
 
   // Get the fitter
-#ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Getting the fitter...";
-#endif
   TVirtualFitter * fitter = TVirtualFitter::GetFitter();
 
+  // Set strategy
   Double_t arg[5];
   arg[0] = fStr;
   fitter->ExecuteCommand("SET STRategy",arg,1);    
 
   // Pass fit inputs (data, pdf) to MINUIT
-#ifdef __show_fit_steps__
   LOG("Minuit", pINFO) << "Passing fit inputs (data & pdf)...";
-#endif
   gMinuit->SetObjectFit(fFitInputs);
 
+  //
   fitter->ExecuteCommand("SHO EPS", arg, 1);///
 
   // Run MINUIT's minimization step
-#ifdef __show_fit_steps__
   LOG("Minuit", pINFO) << "Running " << ((use_simplex) ? "SIMPLEX..." : "MIGRAD... ") << TTimeStamp().AsString();
-#endif
   Double_t arglist[100];
   arglist[0] = fMaxNumCalls; 
   arglist[1] = fTol;  
@@ -361,15 +239,12 @@ bool VMinuitFitter::RunOnce(bool use_simplex)
   fFitInputs->FitParams().CopyCurrToBestFitValues();
 
   // Print fit result
-#ifdef __show_fit_result__
-#ifdef __show_fit_steps__
   LOG("Minuit", pINFO) << "Printing MIGRAD fit results...";
-#endif
   fitter->ExecuteCommand("SHOW FCNVALUE",&fcntemp,0);
   Double_t aminn = 0;
   fitter->PrintResults(3,aminn);
-#endif
 
+  // Get error matrix
   TMatrixDSym cov(num_of_params);
   for(int i=0; i<num_of_params; i++) {
     for(int j=0; j<num_of_params; j++) {
@@ -378,6 +253,7 @@ bool VMinuitFitter::RunOnce(bool use_simplex)
   }
   fFitInputs->FitParams().SetCovMatrix(cov);
 
+  //
   double unfilled = -999;
 
   // Error vectors
@@ -401,9 +277,7 @@ bool VMinuitFitter::RunOnce(bool use_simplex)
 
   // Calculate HESSE or MINOS errors
   if(fCalcHesseErrors) {
-#ifdef __show_fit_steps__
     LOG("Minuit", pINFO) << "Running HESSE...";
-#endif
     fitter->ExecuteCommand("HESSE",arglist, 1);
     
     errMatrixStatus = fitter->GetStats(ha, edm, errdef, nvpar, nparx);
@@ -419,21 +293,15 @@ bool VMinuitFitter::RunOnce(bool use_simplex)
   
   //else 
   if(fCalcMinosErrors) {
-#ifdef __show_fit_steps__
     LOG("Minuit", pINFO) << "Running MINOS...";
-#endif
     fMinosErrStatusCode = fitter->ExecuteCommand("MINOS",arglist, 1);
   }
   // Get error matrix status
-#ifdef __show_fit_steps__
   LOG("Minuit", pINFO) << "Getting error matrix status...";
-#endif
   errMatrixStatus = fitter->GetStats(ha, edm, errdef, nvpar, nparx);
 
   // Get errors
-#ifdef __show_fit_steps__
   LOG("Minuit", pINFO) << "Getting errors...";
-#endif
 
   if(fCalcMinosErrors) {
     for(int ip = 0; ip < num_of_params; ip++) {
@@ -454,11 +322,8 @@ bool VMinuitFitter::RunOnce(bool use_simplex)
   //fitter->PrintResults(1,amin); // prints limits
   }
   LOG("Minuit", pINFO) << "Final error matrix status = " << errMatrixStatus; 
-#endif
 
-#ifdef __show_fit_steps__
   LOG("Minuit", pINFO) << "Done";
-#endif
 
   return true;//(fMigradErrStatusCode == 3);
 }
