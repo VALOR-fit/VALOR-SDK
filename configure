@@ -18,7 +18,6 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "\n enable/disable options with either --enable- or --disable- (eg --enable-lhapdf --disable-flux-drivers)\n\n";
   print "    debug             Adds -g in the compiler options to request debug info       default: disabled \n";
   print "    gsl               Enables GSL fitters. Requires ROOT MathMore library         default: disabled \n";
-  print "    c++11             Adds -std=c++11 in the compiler options to allow ROOT 6.    default: disabled \n";
   print "    asan              Build and link against AddressSanitizer.                    default: disabled \n";
   print "\n options for 3rd party software, prefix with --with- (eg --with-lhapdf-lib=/some/path/)\n\n";
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
@@ -90,21 +89,16 @@ if(($match = grep(/--prefix/i, @ARGV)) > 0) {
 #
 my $opt_enable_debug      = "NO";
 my $opt_enable_gsl        = "NO";
-my $opt_enable_cxx11      = "NO";
 my $opt_enable_asan       = "NO";
 
 # Check configure's command line arguments for non-default values
 #
 if(($match = grep(/--enable-debug/i,   @ARGV)) > 0) { $opt_enable_debug  = "YES"; }
 if(($match = grep(/--enable-gsl/i,     @ARGV)) > 0) { $opt_enable_gsl    = "YES"; }
-if(($match = grep(/--enable-c\+\+11/i, @ARGV)) > 0) { $opt_enable_cxx11  = "YES"; }
 if(($match = grep(/--enable-asan/i,    @ARGV)) > 0) { $opt_enable_asan   = "YES"; }
 
 my $opt_with_cxx_debug_flag="";
 if($opt_enable_debug eq "YES") { $opt_with_cxx_debug_flag = "-g"; }
-
-my $opt_with_cxx_version_flag="";
-if($opt_enable_cxx11 eq "YES") { $opt_with_cxx_version_flag = "-std=c++11"; }
 
 my $opt_with_cxx_misc_flags="";
 my $opt_with_cxx_misc_libs ="";
@@ -272,7 +266,6 @@ print MKCONF "# \n";
 print MKCONF "OPT_PREFIX=$opt_prefix\n";
 print MKCONF "OPT_WITH_CXX_DEBUG_FLAG=$opt_with_cxx_debug_flag\n";
 print MKCONF "OPT_WITH_CXX_OPTIMIZ_FLAG=-$opt_with_cxx_optimiz_flag\n";
-print MKCONF "OPT_WITH_CXX_VERSION_FLAG=$opt_with_cxx_version_flag\n";
 print MKCONF "OPT_WITH_CXX_MISC_FLAGS=$opt_with_cxx_misc_flags\n";
 print MKCONF "OPT_WITH_MISC_LIBS=$opt_with_cxx_misc_libs\n";
 print MKCONF "OPT_ENABLE_GSL=$opt_enable_gsl\n";

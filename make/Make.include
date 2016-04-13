@@ -32,6 +32,7 @@ VALOR_INCLUDES := -I$(VALOR_FMWK)/src/
 #                              ROOT
 #-------------------------------------------------------------------
 # ROOT headers and libraries
+ROOT_FLAGS  = -I$(shell root-config --cflags)
 ROOT_INCLUDES  = -I$(shell root-config --incdir)
 ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore -lEGPythia6
 
@@ -135,6 +136,7 @@ ARCH_OK       = YES
 IS_MACOSX     = YES
 CXXFLAGS      = -pipe -W -Wall -Wno-long-double \
 		-fsigned-char -fno-common \
+		$(ROOT_FLAGS)  \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
@@ -183,6 +185,7 @@ ARCH_OK       = YES
 IS_MACOSX     = YES
 CXXFLAGS      = -m64 -pipe -Wshadow -W -Wall -Woverloaded-virtual \
 		-fsigned-char -fno-common \
+		$(ROOT_FLAGS)  \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
@@ -224,7 +227,8 @@ endif
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ifeq ($(strip $(ARCH)),linux) 
 ARCH_OK       = YES
-CXXFLAGS      = -Wall -fPIC \
+CXXFLAGS      = -Wall -Wextra -Wshadow  -fPIC \
+		$(ROOT_FLAGS)  \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
@@ -253,7 +257,8 @@ endif
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ifeq ($(strip $(ARCH)),linuxx8664gcc) 
 ARCH_OK       = YES
-CXXFLAGS      = -Wall -fPIC \
+CXXFLAGS      = -Wall -Wextra -Wshadow -fPIC \
+		$(ROOT_FLAGS)  \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
