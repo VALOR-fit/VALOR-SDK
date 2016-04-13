@@ -28,16 +28,33 @@ class FitterABC_new
 public:
    virtual ~FitterABC_new();
 
-   virtual bool       Configure     (const Registry & conf)  = 0;
-   virtual bool       DoTheFit      (void)                   = 0; 
+   virtual bool Configure (const Registry & conf)  = 0;
+/*
+the above replaces:
+
+   virtual void       SetTol        (double tol)             = 0;
+   virtual void       SetStr        (int str   )             = 0;
+
+and many other optiosn passed through the ctor 
+and is a uniform interface that can be used with any fitter
+*/
+
+   virtual bool DoTheFit (void) = 0; 
+
+
+
+   virtual const Registry & FitInfo(void) const = 0;
+
+/*
+the above replaces:
+
    virtual int        FitStatusCode (Option_t * option = "") = 0; 
    virtual double     FitTime       (void)                   = 0;
    virtual int        FitNTries     (void)                   = 0;
    virtual int        NDOF          (void)                   = 0;
    virtual int        NBinsInFit    (void)                   = 0;
    virtual int        NFitParams    (void)                   = 0;
-   virtual void       SetTol        (double tol)             = 0;
-   virtual void       SetStr        (int str   )             = 0;
+*/
 
 protected:
    FitterABC_new();
