@@ -22,6 +22,7 @@
 #include <iostream>
 #include <vector>
 
+#include "FitCore/CorrelatedSystematics.h"
 #include "FitCore/FitModelABC.h"
 
 class TObjArray;
@@ -71,9 +72,17 @@ public:
   virtual const FitModelABC * GetSubModel(int model_idx, Option_t * opt = 0) const;
   virtual FitModelABC * GetSubModel(int model_idx, Option_t * opt = 0);
   
+  // By default SetSystConf just points at an external syst object. Use opt="copy" or "adopt" if you want control.
+  virtual void  SetSystConf(CorrelatedSystematics * syst, Option_t * opt = "");
+  virtual       CorrelatedSystematics * GetSystematics(Option_t * opt = "");
+  virtual const CorrelatedSystematics * GetSystematics(Option_t * opt = "") const;
+  
 private:
   std::string fName;
   std::vector<FitModelABC *> fSubModels;
+  
+  CorrelatedSystematics * fSystematics;
+  bool fOwnerOfSystematics;
   
 };
 

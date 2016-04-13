@@ -21,20 +21,23 @@ ChangeLog:
 #include "FitCore/CompoundFitModel.h"
 
 using namespace valor;
+using namespace valor::conv;
 using std::string;
 using std::cout;
 using std::cerr;
 using std::endl;
 
 //________________________________________________________________________________________
-CompoundFitModel::CompoundFitModel() 
+CompoundFitModel::CompoundFitModel() :
+ fSystematics(0),
+ fOwnerOfSystematics(false)
 {
   fName = "UninitialisedCompoundFitModel";
 }
 //________________________________________________________________________________________
 CompoundFitModel::~CompoundFitModel() 
 {
-
+  if (fSystematics && fOwnerOfSystematics) { delete fSystematics; }
 }
 //________________________________________________________________________________________
 std::string CompoundFitModel::Name() const
@@ -104,6 +107,9 @@ bool CompoundFitModel::Generate (const PhysHypothesis & ph, Option_t * opt)
 bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
 {
   bool status = true;
+  if (fSystematics) {
+    fSystematics->UpdateFrom(fp);
+  }
   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
     status = status & (*it)->Generate(fp,opt);
   }
@@ -112,22 +118,34 @@ bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
 //________________________________________________________________________________________
 void CompoundFitModel::RandomizeSystematics (Option_t * opt)
 {
-  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    (*it)->RandomizeSystematics(opt);
+  if (fSystematics) {  // If we have our own systematic model, tweak that
+    fSystematics->Tweak(false, NULL);
+  }
+  else {// otherwise loop over all submodels.
+    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      (*it)->RandomizeSystematics(opt);
+    }
   }
 }
 //________________________________________________________________________________________
 void CompoundFitModel::TweakSystematic (string syst_name, double twkdial, Option_t * opt)
 {
-  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    (*it)->TweakSystematic(syst_name, twkdial, opt);
-  }
+  assert(!"Not implemented");
+  (void)syst_name;
+  PhysParamId_t syst = conv::kPhypUndefined; // util::PhysParamFromString(syst_name);
+  this->TweakSystematic(syst,twkdial,opt);
 }
 //________________________________________________________________________________________
 void CompoundFitModel::TweakSystematic (conv::PhysParamId_t syst, double twkdial, Option_t * opt)
 {
-  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    (*it)->TweakSystematic(syst, twkdial, opt);
+  // If we have our own systematic model, tweak that
+  if (fSystematics) {
+    fSystematics->SetCurrentValue(syst, twkdial);
+  }
+  else { // otherwise loop over all submodels.
+    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      (*it)->TweakSystematic(syst, twkdial, opt);
+    }
   }
 }
 //________________________________________________________________________________________
@@ -201,5 +219,29 @@ const FitModelABC * CompoundFitModel::GetSubModel(int model_idx, Option_t * /*op
 FitModelABC * CompoundFitModel::GetSubModel(int model_idx, Option_t * /*opt*/)
 {
   return fSubModels.at(model_idx);
+}
+//________________________________________________________________________________________
+CorrelatedSystematics * CompoundFitModel::GetSystematics(Option_t * /*opt*/)
+{
+  return fSystematics;
+}
+//________________________________________________________________________________________
+const CorrelatedSystematics * CompoundFitModel::GetSystematics(Option_t * /*opt*/) const
+{
+  return fSystematics;
+}
+//________________________________________________________________________________________
+void CompoundFitModel::SetSystConf(CorrelatedSystematics * syst, Option_t * opt)
+{
+  TString ts(opt);
+  if (ts.Contains("copy") ) {
+    fSystematics = dynamic_cast<CorrelatedSystematics *>(syst->Clone());
+    fOwnerOfSystematics = true;
+  }
+  else {
+    fSystematics = syst;
+    fOwnerOfSystematics = ts.Contains("adopt");
+  }
+  return;
 }
 //________________________________________________________________________________________
