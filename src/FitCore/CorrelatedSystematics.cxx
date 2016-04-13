@@ -192,7 +192,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   }
   
   // If specified, get the untuned parameter values. Otherwise make a vector with all values 1.
-  TString untuned_values_path = TString::Format("syst/%s/untuned_values",fXMLNodeName.c_str());
+  TString untuned_values_path = TString::Format("%s/untuned_values",fXMLNodeName.c_str());
   if (util::NodeExists(xml,root_node,untuned_values_path.Data())) {
     TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,untuned_values_path.Data());
     if(!tmp_vec) {
@@ -212,7 +212,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   }
   
   // If specified, get the initial parameter values. Otherwise make a vector with all values 1.
-  TString initial_values_path = TString::Format("syst/%s/initial_values",fXMLNodeName.c_str());
+  TString initial_values_path = TString::Format("%s/initial_values",fXMLNodeName.c_str());
   if (util::NodeExists(xml,root_node,initial_values_path.Data())) {
     TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,initial_values_path.Data());
     if(!tmp_vec) {
@@ -236,7 +236,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   (*fCurrentValues) = *fInitialValues;
   
   // Get syst covariance matrix
-  TString cov_mtrx_path = TString::Format("syst/%s/covariance_matrix",fXMLNodeName.c_str());
+  TString cov_mtrx_path = TString::Format("%s/covariance_matrix",fXMLNodeName.c_str());
   fCovMtrx = util::XML2TMatrixD(xml,root_node,cov_mtrx_path.Data());  
   if(!fCovMtrx) {
     LOG("CorrelatedSystematics",pFATAL) << "No "<<this->GetName()<<" covariance matrix was found at "<<cov_mtrx_path;
