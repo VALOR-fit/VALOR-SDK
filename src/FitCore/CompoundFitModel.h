@@ -77,6 +77,8 @@ public:
   virtual       CorrelatedSystematics * GetSystematics(Option_t * opt = "");
   virtual const CorrelatedSystematics * GetSystematics(Option_t * opt = "") const;
   
+  void SetName(std::string name);
+  
 protected:
   std::string fName;
   std::vector<FitModelABC *> fSubModels;

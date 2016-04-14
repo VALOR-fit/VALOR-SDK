@@ -275,3 +275,8 @@ void CompoundFitModel::SetSystConf(CorrelatedSystematics * syst, Option_t * opt)
   return;
 }
 //________________________________________________________________________________________
+void CompoundFitModel::SetName(std::string name)
+{
+  fName = name;
+}
+//________________________________________________________________________________________

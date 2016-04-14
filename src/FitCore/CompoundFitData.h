@@ -77,6 +77,8 @@ public:
   virtual void AddSubData(FitDataABC * data, Option_t * opt = 0);
   virtual const FitDataABC * GetSubData(int data_idx, Option_t * opt = 0) const;
   virtual FitDataABC * GetSubData(int data_idx, Option_t * opt = 0);
+  
+  void SetName(std::string name);
 
 protected:
   std::string fName;

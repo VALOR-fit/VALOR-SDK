@@ -136,7 +136,7 @@ double CompoundFitData::Statistic (FitModelABC * model, const PhysHypothesis & p
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     statistic += (*it)->Statistic(model, ph, opt);
   }
-  LOG("CompoundFitData",pINFO) << fName<<" - statitistic = "<<statistic;
+  LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
@@ -146,7 +146,7 @@ double CompoundFitData::Statistic (FitModelABC * model, const FitParamList & fp,
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     statistic += (*it)->Statistic(model, fp, opt);
   }
-  LOG("CompoundFitData",pINFO) << fName<<" - statitistic = "<<statistic;
+  LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
@@ -156,7 +156,7 @@ double CompoundFitData::Statistic (FitModelABC * model, Option_t * opt)
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     statistic += (*it)->Statistic(model, opt);
   }
-  LOG("CompoundFitData",pINFO) << fName<<" - statitistic = "<<statistic;
+  LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
@@ -199,5 +199,10 @@ const FitDataABC * CompoundFitData::GetSubData(int data_idx, Option_t * /*opt*/)
 FitDataABC * CompoundFitData::GetSubData(int data_idx, Option_t * /*opt*/)
 {
   return fSubData.at(data_idx);
+}
+//________________________________________________________________________________________
+void CompoundFitData::SetName(std::string name)
+{
+  fName = name;
 }
 //________________________________________________________________________________________
