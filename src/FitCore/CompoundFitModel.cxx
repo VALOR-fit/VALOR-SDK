@@ -99,7 +99,7 @@ bool CompoundFitModel::Generate (const PhysHypothesis & ph, Option_t * opt)
 {
   bool status = true;
   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    status = status & (*it)->Generate(ph,opt);
+    status = status && (*it)->Generate(ph,opt);
   }
   return status;
 }
@@ -111,7 +111,7 @@ bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
     fSystematics->UpdateFrom(fp);
   }
   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    status = status & (*it)->Generate(fp,opt);
+    status = status && (*it)->Generate(fp,opt);
   }
   return status;
 }
