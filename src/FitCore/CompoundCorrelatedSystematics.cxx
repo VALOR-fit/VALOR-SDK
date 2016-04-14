@@ -45,6 +45,7 @@ CompoundCorrelatedSystematics::CompoundCorrelatedSystematics(unsigned int n_cov_
 void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, const CorrelatedSystematics * const * syst_objs, string xml_node_name)
 {
   // Count how many total elements we have
+  LOG("CompoundCorrelatedSystematics",pDEBUG) << "Initialising a CompoundCorrelatedSystematics from "<<n_cov_matrices<<" smaller matrices";
   unsigned int total_elements = 0;
   for (unsigned int icov = 0 ; icov < n_cov_matrices ; icov++) {
     const CorrelatedSystematics * corr = syst_objs[icov];
@@ -58,6 +59,8 @@ void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, co
     }
     total_elements += corr->Size();
   } // icov
+  
+  LOG("CompoundCorrelatedSystematics",pDEBUG) << "New CompoundCorrelatedSystematics contains "<<total_elements<<" parameters.";
   
   std::vector<const TMatrixD *> all_cov_matrices;
   std::vector<const TVectorD *> all_untuned_vectors;
@@ -82,7 +85,7 @@ void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, co
   this->Init(total_elements, params, xml_node_name);
   
   // Copy vectors and matrices
-  (*fCovMtrx) = util::ConcatenateTMatrices(all_cov_matrices);
+  fCovMtrx = new TMatrixD(util::ConcatenateTMatrices(all_cov_matrices));
   (*fUntunedValues) = util::ConcatenateTVectors(all_untuned_vectors);
   (*fInitialValues) = util::ConcatenateTVectors(all_initial_vectors);
   (*fCurrentValues) = util::ConcatenateTVectors(all_current_vectors);
