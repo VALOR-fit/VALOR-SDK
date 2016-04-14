@@ -132,37 +132,41 @@ bool CompoundFitData::Write (TObjArray* collection, const char * tag, Option_t *
 //________________________________________________________________________________________
 double CompoundFitData::Statistic (FitModelABC * model, const PhysHypothesis & ph, Option_t * opt)
 {
-  double statistic = true;
+  double statistic = 0;
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     statistic += (*it)->Statistic(model, ph, opt);
   }
+  LOG("CompoundFitData",pINFO) << fName<<" - statitistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
 double CompoundFitData::Statistic (FitModelABC * model, const FitParamList & fp, Option_t * opt)
 {
-  double statistic = true;
+  double statistic = 0;
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     statistic += (*it)->Statistic(model, fp, opt);
   }
+  LOG("CompoundFitData",pINFO) << fName<<" - statitistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
 double CompoundFitData::Statistic (FitModelABC * model, Option_t * opt)
 {
-  double statistic = true;
+  double statistic = 0;
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     statistic += (*it)->Statistic(model, opt);
   }
+  LOG("CompoundFitData",pINFO) << fName<<" - statitistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
-int CompoundFitData::NumOfBins(Option_t * opt) const
+int CompoundFitData::NumOfBins(Option_t * /*opt*/) const
 {
   int nbins = 0;
   for (std::vector<FitDataABC*>::const_iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     nbins += (*it)->NumOfBins();
   }
+  LOG("CompoundFitData",pDEBUG) << fName<<" - number of bins = "<<nbins;
   return nbins;
 }
 //________________________________________________________________________________________
