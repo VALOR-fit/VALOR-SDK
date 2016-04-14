@@ -16,6 +16,8 @@
 #ifndef constants_h
 #define constants_h
 
+#include "Conventions/Build.h"
+
 namespace valor {
 namespace conv   {
 

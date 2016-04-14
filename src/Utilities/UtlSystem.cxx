@@ -60,19 +60,6 @@ std::vector<std::string> valor::util::GetLinkedLibraries(std::string executable_
 {
   TString command = TString::Format("ldd %s | grep -e %s",executable_path.c_str(),pattern.c_str());
   FILE * f = gSystem->OpenPipe(command.Data(),"r");
-  //~ long size = ftell(f);
-  //~ cerr<<"Size = "<<size<<"\t"<<strerror(errno)<<endl;
-  //~ rewind(f);
-  //~ cerr<<"Rewind done"<<endl;
-  //~ char * buffer = new char[size]();
-  //~ cerr<<"Alloc done"<<endl;
-  //~ size_t result = fread(buffer,1,size,f);
-  //~ cerr<<"Read done"<<endl;
-  //~ gSystem->ClosePipe(f);
-  //~ cerr<<"pipe closed"<<endl;
-  //~ vector<string> lines = Tokens(buffer,"\n");
-  //~ delete buffer;
-  //~ cerr<<"buffer deleted"<<endl;
   
   TPRegexp re("(lib[\\w.]*) => (.*)[\\s]+(?=\\(0[xX][0-9a-fA-F]+\\))");
   vector<string> out_lines;

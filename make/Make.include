@@ -348,6 +348,6 @@ CFLAGS    = $(OPT_WITH_CXX_DEBUG_FLAG)
 	$(RANLIB) $@
 	$(RM) $*.o
 
-
+# Print variable name for debugging MakeFile, eg make print-INCLUDES
 print-%  : ; @echo $* = $($*)
 
