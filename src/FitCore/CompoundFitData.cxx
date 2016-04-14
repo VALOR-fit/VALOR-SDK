@@ -39,7 +39,7 @@ CompoundFitData::~CompoundFitData()
   
 }
 //________________________________________________________________________________________
-std::string CompoundFitData::Name() /*const*/
+std::string CompoundFitData::Name() const
 {
   return fName;
 }
@@ -157,10 +157,10 @@ double CompoundFitData::Statistic (FitModelABC * model, Option_t * opt)
   return statistic;
 }
 //________________________________________________________________________________________
-int CompoundFitData::NumOfBins() /*const*/
+int CompoundFitData::NumOfBins(Option_t * opt) const
 {
   int nbins = 0;
-  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
+  for (std::vector<FitDataABC*>::const_iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     nbins += (*it)->NumOfBins();
   }
   return nbins;

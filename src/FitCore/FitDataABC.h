@@ -37,7 +37,7 @@ public:
   virtual ~FitDataABC();
 
   // Identify fit data with a name (to be propagated in output files, etc)
-  virtual string Name(void) = 0;  
+  virtual string Name(void) const = 0;  
 
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
@@ -70,7 +70,7 @@ public:
   virtual bool Write (const char * filename,  const char * tag = "data", Option_t * write_opt = 0, Option_t * file_opt = 0) = 0;
 
   // Number of bins in fit data, or number of events for unbinned fits
-  virtual int NumOfBins (void) = 0;
+  virtual int NumOfBins (Option_t * opt = 0) const = 0;
 
   // Calculate the specified statistic
   // The corresponding prediction is taken from the input model.
