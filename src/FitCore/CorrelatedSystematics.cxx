@@ -458,6 +458,11 @@ void CorrelatedSystematics::CholeskyDecomposeMatrix(void)
 //________________________________________________________________________________________
 double CorrelatedSystematics::ChisqPenalty(bool /*all_syst*/) const
 {
+  return this->FitStatisticPenalty();
+}
+//________________________________________________________________________________________
+double CorrelatedSystematics::FitStatisticPenalty(Option_t * /*opt*/) const
+{
   //covariance matrix
   const TMatrixD & cov    (this->CovMatrix()   );
   const TMatrixD & covInv (this->CovMatrixInv());

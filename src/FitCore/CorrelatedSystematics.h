@@ -56,6 +56,7 @@ public:
   double OneSigmaErrorByIndex(int idx) const;
 
   // Penalty term included in the chisq 
+  double FitStatisticPenalty (Option_t * opt = 0) const;
   double ChisqPenalty (bool all_syst = true) const;
   
   // Tweak all the systematics, either to a specific vector or randomly with correlations.
