@@ -53,7 +53,7 @@ bool CompoundFitModel::Read(string file, Option_t * /*opt*/)
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(file.c_str());
   if (xmldoc==0) {
-    LOG("NDModel",pERROR) << "Can not parse input XML file [" << file << "]";
+    LOG("CompoundFitModel",pERROR) << "Can not parse input XML file [" << file << "]";
     delete xml;
     util::Die(1); return false;
   }
@@ -71,7 +71,7 @@ bool CompoundFitModel::Read(string file, Option_t * /*opt*/)
     // Use factory class to get proper model
     TClass * curr_class = TClass::GetClass(class_name.c_str());
     if (!curr_class) {
-      LOG("NDModel",pERROR) << "Cannot find class "<<class_name;
+      LOG("CompoundFitModel",pERROR) << "Cannot find class "<<class_name;
       status = false;
       continue;
     }
@@ -79,7 +79,7 @@ bool CompoundFitModel::Read(string file, Option_t * /*opt*/)
     FitModelABC * curr_model = static_cast<FitModelABC*>(curr_obj);
     
     if (!curr_model) {
-      LOG("NDModel",pERROR) << "Failed to properly turn class "<<class_name;
+      LOG("CompoundFitModel",pERROR) << "Failed to properly turn class "<<class_name;
       status = false;
       continue;
     }
@@ -198,6 +198,10 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
 //________________________________________________________________________________________
 double CompoundFitModel::GetFitStatisticPenalty(Option_t * opt) const
 {
+  if (fSystematics) {
+    return fSystematics->FitStatisticPenalty(opt);
+  }
+  LOG("CompoundFitModel",pNOTICE) << "No global covariance defined. Using submodel covariances for fit statistic penalty - may be wrong.";
   double fitstat = 0;
   for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
     fitstat+= (*it)->GetFitStatisticPenalty(opt);
@@ -242,6 +246,12 @@ void CompoundFitModel::SetSystConf(CorrelatedSystematics * syst, Option_t * opt)
     fSystematics = syst;
     fOwnerOfSystematics = ts.Contains("adopt");
   }
+  
+  //~ // Set the same matrix for the submodels
+  //~ for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+    //~ (*it)->SetSystConf(syst,opt);
+  //~ }
+  
   return;
 }
 //________________________________________________________________________________________
