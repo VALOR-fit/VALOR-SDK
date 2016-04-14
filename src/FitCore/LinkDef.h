@@ -19,6 +19,7 @@
 #pragma link C++ class valor::FitDataABC+;
 #pragma link C++ class valor::FitModelABC+;
 
+#pragma link C++ class valor::CompoundFitData+;
 #pragma link C++ class valor::CompoundFitModel+;
 
 #pragma link C++ class valor::FitInputs+;
