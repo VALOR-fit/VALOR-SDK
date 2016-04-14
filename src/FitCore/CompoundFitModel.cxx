@@ -152,25 +152,42 @@ void CompoundFitModel::TweakSystematic (conv::PhysParamId_t syst, double twkdial
   }
 }
 //________________________________________________________________________________________
-void CompoundFitModel::ResetSystematics (Option_t * opt){
-  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    (*it)->ResetSystematics(opt);
+void CompoundFitModel::ResetSystematics (Option_t * opt) {
+  if (fSystematics) {
+    fSystematics->Tweak(true,NULL);
   }
+  else {
+    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      (*it)->ResetSystematics(opt);
+    }
+  }
+  return;
 }
 //________________________________________________________________________________________
 void CompoundFitModel::PrintSystematics (std::ostream & stream, Option_t * opt) const
 {
-  for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    (*it)->PrintSystematics(stream,opt);
+  if (fSystematics) {
+    fSystematics->Print(opt);
   }
+  else {
+    for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      (*it)->PrintSystematics(stream,opt);
+    }
+  }
+  return;
 }
 //________________________________________________________________________________________
 PhysParamList CompoundFitModel::Tweaks(Option_t * opt) const
 {
   PhysParamList ppl;
-  for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    PhysParamList ppl2 = (*it)->Tweaks();
-    ppl.MergeFrom(ppl2,opt);
+  if (fSystematics) {
+    fSystematics->CopyTweaksTo(ppl);
+  }
+  else {
+    for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      PhysParamList ppl2 = (*it)->Tweaks();
+      ppl.MergeFrom(ppl2,opt);
+    }
   }
   return ppl;
 }
