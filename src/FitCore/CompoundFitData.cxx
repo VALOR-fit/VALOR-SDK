@@ -130,31 +130,31 @@ bool CompoundFitData::Write (TObjArray* collection, const char * tag, Option_t *
   return status;
 }
 //________________________________________________________________________________________
-double CompoundFitData::Statistic (FitModelABC * model, const PhysHypothesis & ph, Option_t * opt)
+double CompoundFitData::GetFitStatistic (FitModelABC * model, const PhysHypothesis & ph, Option_t * opt)
 {
   double statistic = 0;
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    statistic += (*it)->Statistic(model, ph, opt);
+    statistic += (*it)->GetFitStatistic(model, ph, opt);
   }
   LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
-double CompoundFitData::Statistic (FitModelABC * model, const FitParamList & fp, Option_t * opt)
+double CompoundFitData::GetFitStatistic (FitModelABC * model, const FitParamList & fp, Option_t * opt)
 {
   double statistic = 0;
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    statistic += (*it)->Statistic(model, fp, opt);
+    statistic += (*it)->GetFitStatistic(model, fp, opt);
   }
   LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
-double CompoundFitData::Statistic (FitModelABC * model, Option_t * opt)
+double CompoundFitData::GetFitStatistic (FitModelABC * model, Option_t * opt)
 {
   double statistic = 0;
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    statistic += (*it)->Statistic(model, opt);
+    statistic += (*it)->GetFitStatistic(model, opt);
   }
   LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;

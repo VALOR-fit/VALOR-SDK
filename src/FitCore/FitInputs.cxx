@@ -20,6 +20,7 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "Math/FitMethodFunction.h"
 #include "HFitInterface.h"
 
+#include "Messenger/Messenger.h"
 #include "Conventions/Constants.h"
 #include "Conventions/Opt.h" 
 #include "FitCore/FitDataABC.h"
@@ -79,12 +80,18 @@ double FitInputs::Statistic(Option_t * option) const
   if (option || fGoodnessOfFit) {
     const char * s = fGoodnessOfFit ? "%s gof" : "%s";
     Option_t * newopt( Form(s,option) );
-    statistic =  fObs->Statistic(fExp,*fFitParams, newopt);
+    statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt);
   }
   else {
-    statistic = fObs->Statistic(fExp,*fFitParams, NULL);
+    statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL);
   }
-  return statistic;
+  double syst_penalty = fExp->GetFitStatisticPenalty(option);
+  double phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);
+  
+  double total_stat = statistic + syst_penalty + phys_penalty;
+  LOG("FitInputs",pINFO)<<"Statistic = "<<total_stat<<" (data/MC="<<statistic
+    <<", syst penalty="<<syst_penalty<<", phys penalty="<<phys_penalty<<")";
+  return total_stat;
 }
 //____________________________________________________________________________ 
 // MINUIT fit functions 
@@ -114,15 +121,9 @@ void valor::FitFunc (
   // synchronize FitParamList with the paramerer array used by MINUIT
   fpar.Sync(par);
 
-  // judge the agreement between the data and the current prediction
-  FitDataABC &  data_abc  = inputs->Observation();
-  FitModelABC & model_abc = inputs->Expectation();
+  f = inputs->Statistic();
   
-  string fit_opt(Form("likelihood-ratio%s",(inputs->GetChisqDefinition() ? " gof" : "")));
-  f = data_abc.Statistic(&model_abc,fpar,fit_opt.c_str());
   fpar.SetCurrStatistic(f);
-
-  inputs->Statistic(); ///
 }
 //____________________________________________________________________________
 FitFunctor::FitFunctor(FitInputs * inputs) 
@@ -140,11 +141,8 @@ double FitFunctor::operator() (const double * x) const
 double FitFunctor::DoEval(const double * x) const 
 {
   fFitInputs->FitParams().Sync(x);
-/*
-	HACK
-  return fFitInputs->Chisquare("poisson");
-*/
-	return 0;
+  
+  return fFitInputs->Statistic();
 }
 ROOT::Math::IBaseFunctionMultiDim * FitFunctor::Clone(void) const 
 {
