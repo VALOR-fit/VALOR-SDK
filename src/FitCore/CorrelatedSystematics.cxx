@@ -191,6 +191,9 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     this->Init(fNSystParameters,tmp_par);
   }
   
+  LOG("CorrelatedSystematics",pDEBUG) << this->GetName()<<" reading from root node "<<xml->GetNodeName(root_node);
+
+  
   TString nodepath = "";
   if (fXMLNodeName.size()) {
     nodepath = TString::Format("%s/",fXMLNodeName.c_str());
