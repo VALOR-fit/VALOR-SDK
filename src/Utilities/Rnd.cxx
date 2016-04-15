@@ -12,6 +12,7 @@ ChangeLog:
 #include <cassert>
 
 #include "Utilities/Rnd.h"
+#include "CmdLine/CmdLnArgList.h"
 #include "Messenger/Messenger.h"
 //#include "Build.h"
 
@@ -140,5 +141,15 @@ void Rnd::Print(ostream & stream) const
   }
   stream << endl;
 }
-//____________________________________________________________________________
+//________________________________________________________________________________________________________________________________________________________
+void Rnd::SetSeeds(const CmdLnArgList & arg)
+{
+  this->SetSeeds(arg.GetInt("seed-toys-stat"),
+                 arg.GetInt("seed-toys-syst"),
+                 arg.GetInt("seed-toys-osc" ),
+                 arg.GetInt("seed-fitter"   ),
+                 arg.GetInt("seed-other"    ));
+  return;
+}
+//________________________________________________________________________________________________________________________________________________________
 

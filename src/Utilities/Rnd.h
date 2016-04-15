@@ -33,6 +33,8 @@
 using std::ostream;
 
 namespace valor {
+  
+class CmdLnArgList;
 
 class Rnd {
 
@@ -41,6 +43,7 @@ public:
 
   // default seed is 0
   void SetSeeds(UInt_t toymcstat = 0, UInt_t toymcsyst = 0, UInt_t toymcosc = 0, UInt_t fitter = 0, UInt_t other = 0);
+  void SetSeeds(const CmdLnArgList & arg);
 
   TRandom3 & RndToyMCstat  (void) { return fRndToyMCstat;  }
   TRandom3 & RndToyMCsyst  (void) { return fRndToyMCsyst;  }
