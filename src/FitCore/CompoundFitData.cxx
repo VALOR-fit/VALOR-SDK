@@ -20,6 +20,7 @@ ChangeLog:
 #include "Utilities/UtlSystem.h"
 #include "Utilities/UtlXML.h"
 #include "FitCore/CompoundFitData.h"
+#include "FitCore/CompoundFitModel.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -133,28 +134,34 @@ bool CompoundFitData::Write (TObjArray* collection, const char * tag, Option_t *
 double CompoundFitData::GetFitStatistic (FitModelABC * model, const PhysHypothesis & ph, Option_t * opt)
 {
   double statistic = 0;
-  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    statistic += (*it)->GetFitStatistic(model, ph, opt);
+  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+  if (!cfm) {util::Die(-1);return conv::kBadResult;}
+  for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
+    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), ph, opt);
   }
-  LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
+  LOG("CompoundFitData",pINFO) << fName<<" - statistic (ph) = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
 double CompoundFitData::GetFitStatistic (FitModelABC * model, const FitParamList & fp, Option_t * opt)
 {
   double statistic = 0;
-  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    statistic += (*it)->GetFitStatistic(model, fp, opt);
+  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+  if (!cfm) {util::Die(-1);return conv::kBadResult;}
+  for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
+    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), fp, opt);
   }
-  LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
+  LOG("CompoundFitData",pINFO) << fName<<" - statistic (fp) = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
 double CompoundFitData::GetFitStatistic (FitModelABC * model, Option_t * opt)
 {
   double statistic = 0;
-  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    statistic += (*it)->GetFitStatistic(model, opt);
+  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+  if (!cfm) {util::Die(-1);return conv::kBadResult;}
+  for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
+    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt);
   }
   LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;
