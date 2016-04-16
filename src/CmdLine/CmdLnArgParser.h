@@ -35,7 +35,7 @@ public:
   // Methods to check the existence of single character switches (eg -f, -s)
   // and retrieve the command-line argument following the switch
 
-  bool          OptionExists (char opt) const;   ///< was option set?
+  bool          OptionExists (char opt, bool set_used = true) const;   ///< was option set?
   const char *  Arg          (char opt) const;   ///< return argument following -`opt'
 
   string         ArgAsString       (char opt) const;
@@ -54,7 +54,7 @@ public:
 
   // As above, but supporting multi-character switches (eg --with-x-file )
 
-  bool    OptionExists (string opt) const; ///< was option set?
+  bool    OptionExists (string opt, bool set_used = true) const; ///< was option set?
   const char *  Arg    (string opt) const; ///< return argument following --`opt'
 
   string         ArgAsString       (string opt) const;
@@ -62,11 +62,16 @@ public:
   int            ArgAsInt          (string opt) const;
   unsigned int   ArgAsUInt         (string opt) const;
   long           ArgAsLong         (string opt) const;
+  
+  // Method to make sure all arguments given been identified
+  bool RecognisedAllArgs() const;
 
 private:
 
   int     fArgc;
   char ** fArgv;
+  
+  bool * fArgUsed;
   
 };
 

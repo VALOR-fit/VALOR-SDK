@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*
 
- Copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
+Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
 */
 //____________________________________________________________________________
@@ -19,18 +19,25 @@ using namespace valor;
 
 //____________________________________________________________________________
 CmdLnArgParser::CmdLnArgParser(int argc, char **argv) :
-fArgc(argc),
-fArgv(argv)
+  fArgc(argc),
+  fArgv(argv),
+  fArgUsed(new bool[fArgc])
 {
   TString conf_dir  = valor::Env::Instance()->TopLevelConfDir();
   TString verbosity = conf_dir + "/verbosity.xml";
-  
+
   valor::util::Verbosity(verbosity.Data());
+  
+  for (int i = 1 ; i < fArgc; i++) {
+    fArgUsed[i] = false;
+  }
+  
+  fArgUsed[0] = true;
 }
 //____________________________________________________________________________
 CmdLnArgParser::~CmdLnArgParser()
 {
-
+  if (fArgUsed) {delete[] fArgUsed;}
 }
 //____________________________________________________________________________
 const char * CmdLnArgParser::Arg(char op) const
@@ -51,30 +58,31 @@ const char * CmdLnArgParser::Arg(char op) const
 
     if (argv[1][0] == '-') {      
       LOG("Parser", pDEBUG) 
-       << "Got char (argv[1][1]) following argv[1][0]='-' : " << argv[1][1];
+        << "Got char (argv[1][1]) following argv[1][0]='-' : " << argv[1][1];
 
       if (argv[1][1] == op) {
-  	 LOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
+        LOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
 
-         if (strlen(&argv[1][2]) ) {
-            strcpy(argument,&argv[1][2]);
-            //set = true;
-            LOG("Parser", pINFO) 
-               << "Set opt = [" << op << "] to val = [" << argument << "]";
+        if (strlen(&argv[1][2]) ) {
+          strcpy(argument,&argv[1][2]);
+          //set = true;
+          LOG("Parser", pINFO) 
+            << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
+          
+        }
+        else if( (argc>2) && 
+            !(argv[2][0]=='-' && isalpha(argv[2][1])) ) {
 
-         } else if( (argc>2) && 
-                    !(argv[2][0]=='-' && isalpha(argv[2][1])) ) {
+          LOG("Parser", pDEBUG) 
+            << "argc>2 and next arg not a '-' followed by an alpha char";
 
-            LOG("Parser", pDEBUG) 
-              << "argc>2 and next arg not a '-' followed by an alpha char";
-
-            argc--;
-            argv++;
-            strcpy(argument,&argv[1][0]);
-            //set = true;
-            LOG("Parser", pINFO) 
-               << "Set opt = [" << op << "] to val = [" << argument << "]";
-         }
+          argc--;
+          argv++;
+          strcpy(argument,&argv[1][0]);
+          //set = true;
+          LOG("Parser", pINFO) 
+            << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
+        }
       }
     }
     argc--;
@@ -87,7 +95,7 @@ const char * CmdLnArgParser::Arg(char op) const
   return argument;
 }
 //____________________________________________________________________________
-bool CmdLnArgParser::OptionExists(char op) const
+bool CmdLnArgParser::OptionExists(char op, bool set_used) const
 {
   bool set = false;
 
@@ -96,7 +104,10 @@ bool CmdLnArgParser::OptionExists(char op) const
 
   while(argc>1) {
     if(argv[1][0] == '-') {
-      if (argv[1][1] == op) set = true;
+      if (argv[1][1] == op) {
+        set = true;
+        if (set_used) {fArgUsed[fArgc-argc+1] = true;}
+      }
     }
     argc--;
     argv++;
@@ -126,7 +137,7 @@ vector<string> CmdLnArgParser::ArgAsStringTokens(string op, string delimeter) co
 {
   string argument = this->ArgAsString(op);
   //string argument = op;
-  
+
   vector<string> tokens = util::Tokens(argument, delimeter);
   return tokens;
 }
@@ -237,27 +248,29 @@ const char * CmdLnArgParser::Arg(string op) const
       LOG("Parser", pDEBUG) 
         << "Got string following '--' : " << op_cur;
       if (strcmp(op.c_str(),op_cur)==0) {
-  	 LOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
+        LOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
 
-         if (strlen(&argv[2][0]) ) {
-            strcpy(argument,&argv[2][0]);
-            //set = true;
-            LOG("Parser", pINFO) 
-               << "Set opt = [" << op << "] to val = [" << argument << "]";
+        if (strlen(&argv[2][0]) ) {
+          strcpy(argument,&argv[2][0]);
+          //set = true;
+          LOG("Parser", pINFO) 
+            << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
 
-         } else if( (argc>2) && 
-                    !(argv[2][0]=='-' &&argv[2][1]=='-' && isalpha(argv[2][2])) ) {
-            LOG("Parser", pDEBUG) 
-              << "argc>2 and next arg not a '--' followed by an alpha char";
+        } else if( (argc>2) && 
+            !(argv[2][0]=='-' &&argv[2][1]=='-' && isalpha(argv[2][2])) ) {
+          LOG("Parser", pDEBUG) 
+            << "argc>2 and next arg not a '--' followed by an alpha char";
 
-            argc--;
-            argv++;
-            strcpy(argument,&argv[1][0]);
-            //set = true;
-            LOG("Parser", pINFO) 
-               << "Set opt = [" << op << "] to val = [" << argument << "]";
-         }
-      }
+          argc--;
+          argv++;
+          strcpy(argument,&argv[1][0]);
+          //set = true;
+          LOG("Parser", pINFO) 
+            << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
+        }
+        fArgUsed[fArgc-argc+1] = true;
+        fArgUsed[fArgc-argc+2] = true;
+      } //option_matched
     }
     argc--;
     argv++;
@@ -269,7 +282,7 @@ const char * CmdLnArgParser::Arg(string op) const
   return argument;
 }
 //____________________________________________________________________________
-bool CmdLnArgParser::OptionExists(string op) const
+bool CmdLnArgParser::OptionExists(string op, bool set_used) const
 {
   const int buf_size = 2048;
   bool set = false;
@@ -279,10 +292,13 @@ bool CmdLnArgParser::OptionExists(string op) const
 
   while(argc>1) {
     if(argv[1][0] == '-' && argv[1][1] == '-') {
-        //char * op_cur =  strndup(argv[1]+2,strlen(argv[1]));
-        char op_cur[buf_size];
-        strcpy(op_cur,&argv[1][2]);
-        if (strcmp(op.c_str(),op_cur)==0) set = true;
+      //char * op_cur =  strndup(argv[1]+2,strlen(argv[1]));
+      char op_cur[buf_size];
+      strcpy(op_cur,&argv[1][2]);
+      if (strcmp(op.c_str(),op_cur)==0) {
+        set = true;
+        if (set_used) {fArgUsed[fArgc-argc+1] = true;}
+      }
     }
     argc--;
     argv++;
@@ -334,5 +350,20 @@ long CmdLnArgParser::ArgAsLong(string op) const
   delete [] argument;
 
   return value;
+}
+//____________________________________________________________________________
+bool CmdLnArgParser::RecognisedAllArgs() const
+{
+  bool status = true;
+  for (int iarg = 0 ; iarg < fArgc; iarg++) {
+    if (!(fArgUsed[iarg])) {
+      LOG("Parser",pWARN) << "Argument not recognised "<<fArgv[iarg];
+      status = false;
+    }
+    else {
+      LOG("Parser",pDEBUG) << "Argument recognised "<<fArgv[iarg];
+    }
+  }
+  return status;
 }
 //____________________________________________________________________________
