@@ -222,7 +222,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
         int nfound = 0;
         vector<string>::const_iterator boolargit = boolarglist.begin();
         for( ; boolargit != boolarglist.end(); ++boolargit) {
-          string boolarg = *boolargit;
+          string boolarg = util::TrimSpaces(*boolargit);
           if( parser.OptionExists(boolarg) ) { nfound++; }
         }        
         // More than one found (whether optional or mandatory) or
@@ -251,7 +251,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
         boolargit = boolarglist.begin();
         if(is_optional && nfound==0) {
           for( ; boolargit != boolarglist.end(); ++boolargit) {
-            string boolarg = *boolargit;
+            string boolarg = util::TrimSpaces(*boolargit);
             if(boolarg==deflt) {
               this->Set(boolarg,true);
             } else {
@@ -261,7 +261,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
         }
         else {
           for( ; boolargit != boolarglist.end(); ++boolargit) {
-            string boolarg = *boolargit;
+            string boolarg = util::TrimSpaces(*boolargit);
             if(parser.OptionExists(boolarg)) {
               this->Set(boolarg,true);
             } else {
