@@ -85,6 +85,13 @@ if(($match = grep(/--prefix/i, @ARGV)) > 0) {
   }
 }
 
+# Check compiler
+#
+my $opt_with_compiler="g++"; # default
+if( $options=~m/--with-compiler=(\S*)/i ) {
+  $opt_with_compiler = $1;
+}
+
 # Default --enable/--disable config options (for a minimal build)
 #
 my $opt_enable_debug      = "NO";
@@ -104,7 +111,10 @@ my $opt_with_cxx_misc_flags="";
 my $opt_with_cxx_misc_libs ="";
 if($opt_enable_asan eq "YES") {
   $opt_with_cxx_misc_flags .= "-fsanitize=address -fno-omit-frame-pointer ";
-  $opt_with_cxx_misc_libs  .= "-lasan ";
+  $compiler_vers = `$opt_with_compiler --version`;
+  if ($compiler_vers!~"LLVM") {
+    $opt_with_cxx_misc_libs  .= "-lasan ";
+  }
 }
 
 
@@ -113,13 +123,6 @@ if($opt_enable_asan eq "YES") {
 my $opt_with_cxx_optimiz_flag="O2"; # default
 if( $options=~m/--with-optimiz-level=(\S*)/i ) {
   $opt_with_cxx_optimiz_flag = $1;
-}
-
-# Check compiler
-#
-my $opt_with_compiler="g++"; # default
-if( $options=~m/--with-compiler=(\S*)/i ) {
-  $opt_with_compiler = $1;
 }
 
 #
