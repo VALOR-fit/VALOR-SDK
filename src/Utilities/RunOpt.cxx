@@ -166,7 +166,12 @@ void valor::RunOpt::Init(void)
   fUsing_xml_file   = false;
   fDoToys           = true;
   fFit_param_list   = "nuosc3f+nuisance";
-  fInfilename       = "submit_prova_TemplVArray";
+
+  fInfilename       = "";
+  fInfilename_nh    = "";
+  fInfilename_ih    = "";
+  fDoFC             = false;
+
   fNfiles           = 9;
   fNtoysMarg        = 100;
   fFreeparname0     = "deltacp";
@@ -851,18 +856,77 @@ void valor::RunOpt::ReadFitMargOptions()
     exit(1);
   }
   
-  if(fParser->OptionExists("file-margtoys")){
-    fInfilename = fParser->ArgAsString("file-margtoys");
+
+
+
+
+
+  if(fParser->OptionExists("do-fc")){
+    fDoFC = (bool)fParser->ArgAsInt("do-fc");
   }
   else{
     cerr << endl;
-    cerr << "FitMarg options:" << endl;
-    cerr << "You didn't pass the toy marginalization input file" << endl;
-    cerr << "Use --file-margtoys" << endl;
+    cerr << "You didn't decide whether to run Feldman-Cousins or a single fit" << endl;
+    cerr << "Use --do-fc (0 or 1)" << endl;
     cerr << endl;
     exit(1);
   }
+
   
+  if(fDoFC==false){
+    
+    if(fParser->OptionExists("file-margtoys")){
+      fInfilename = fParser->ArgAsString("file-margtoys");
+    }
+    else{
+      cerr << endl;
+      cerr << "FitMarg options:" << endl;
+      cerr << "You didn't pass the toy marginalization input file" << endl;
+      cerr << "Use --file-margtoys" << endl;
+      cerr << endl;
+      exit(1);
+    }
+  }
+  
+  else{
+
+    if(fParser->OptionExists("file-margtoys-nh")){
+      fInfilename_nh= fParser->ArgAsString("file-margtoys-nh");
+    }
+    else{
+      cerr << endl;
+      cerr << "FitMarg options:" << endl;
+      cerr << "You are running Feldman-Cousins adn you didn't pass the toy marginalization input file for Normal Hierarchy" << endl;
+      cerr << "Use --file-margtoys-nh" << endl;
+      cerr << endl;
+      exit(1);
+    }
+
+    if(fParser->OptionExists("file-margtoys-ih")){
+      fInfilename_ih = fParser->ArgAsString("file-margtoys-ih");
+    }
+    else{
+      cerr << endl;
+      cerr << "FitMarg options:" << endl;
+      cerr << "You are running Feldman-Cousins adn you didn't pass the toy marginalization input file for Inverted Hierarchy" << endl;
+      cerr << "Use --file-margtoys-ih" << endl;
+      cerr << endl;
+      exit(1);
+    }
+
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
   if(fParser->OptionExists("nfiles-margtoys")){
     fNfiles = fParser->ArgAsInt("nfiles-margtoys");
   }
@@ -1270,12 +1334,22 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
   if(fParseType & kParseFitMarg) {
     stream << "Fit with marginalization running options:" << endl
            << " - " << setw(w) << "Do toys for fake datasets on the fly:" << ((fDoToys) ? "YES " : "NO") << endl
-    << " - " << setw(w) << "Use xml file for fakedata sets (if not use root file):"  << ((fUsing_xml_file) ? "YES " : "NO") << endl
+	   << " - " << setw(w) << "Use xml file for fakedata sets (if not use root file):"  << ((fUsing_xml_file) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Input xml file for fakedata sets:" << fXmlfile << endl
            << " - " << setw(w) << "Input root file for fakedata sets:" << fRootfile << endl
-           << " - " << setw(w) << "Fit parameter list:"  << fFit_param_list << endl
-           << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl
-           << " - " << setw(w) << "Number of input file for marginalization toys:"  << fNfiles << endl
+           << " - " << setw(w) << "Fit parameter list:"  << fFit_param_list << endl;
+    
+    
+    stream << " - " << setw(w) << "Running Feldman-Cousins:" << ((fDoFC) ? "YES " : "NO") << endl;
+    if(fDoFC==false){
+      stream << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl;
+    }
+    else{
+      stream << " - " << setw(w) << "Input file for marginalization toys NH:"  << fInfilename_nh << endl;
+      stream << " - " << setw(w) << "Input file for marginalization toys IH:"  << fInfilename_ih << endl;
+    }
+    
+    stream << " - " << setw(w) << "Number of input file for marginalization toys:"  << fNfiles << endl
            << " - " << setw(w) << "Number of toys for marginalization:"  << fNtoysMarg << endl
            << " - " << setw(w) << "Name of free parameter 0 for fit with marginalization:"  << fFreeparname0 << endl
            << " - " << setw(w) << "Name of free parameter 1 for fit with marginalization:"  << fFreeparname1 << endl
