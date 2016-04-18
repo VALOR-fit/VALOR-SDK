@@ -682,7 +682,7 @@ template<typename numtype> void VALORArrayT<numtype>::
 }
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::
-  Print(std::ostream & stream)
+  PrintEntries(std::ostream & stream)
 {
   for (int i1 = 0 ; i1 < fDimensions[0] ; i1++) {
     stream<<"{ ";
