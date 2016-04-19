@@ -297,8 +297,8 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
       int target = (ii==jj);
       if (fabs(covTimesInverse[ii][jj]-target) > 1E-9) {
         LOG("CorrelatedSystematics",pERROR) 
-          << "Bad inversion of "<<this->GetName()<<" matrix - element: "
-          << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?"*":"");
+          << "Bad inversion of "<<this->GetName()<<" matrix - element differs from identity by: "
+          << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?" (on diagonal)":"");
         fIsConfigured = false;
       }
     }
