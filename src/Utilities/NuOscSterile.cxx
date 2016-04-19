@@ -16,6 +16,8 @@
 #include "Conventions/PDG.h"
 #include "Utilities/NuOscSterile.h"
 
+#include "Utilities/UtlSystem.h"
+
 using std::cout;
 using std::cerr;
 using std::endl;
