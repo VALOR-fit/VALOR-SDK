@@ -18,6 +18,8 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "Messenger/Messenger.h"
 #include "Oscillation/NuOsc3Flavour.h"
 
+#include "Utilities/UtlSystem.h"
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -67,6 +69,13 @@ void NuOsc3Flavour::SetDensity(double density)
 void NuOsc3Flavour::SetMassHierarchy(NuMassHierarchy_t h)
 {
   //LOG("NuOsc3Flavour",pINFO) << "Mass hierarchy selected: " << util::AsString(h);
+
+  if(h==kNmhUndefined){
+    cerr << "NuOsc3Flavour::SetMassHierarchy" << endl;
+    cerr << "The Mass Hierarchy is not defined" << endl;
+    util::Die(-1);
+    return;
+  }
 
   fMassHierarchy = h;
 }

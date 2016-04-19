@@ -912,10 +912,14 @@ FitParamList * FitParamList::NuOsc3FlavourBarFit(int nuisance)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+      }
       break;
     default:
       std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
-      exit(-1);
+      util::Die(-1);
   }
   
   return fparm;
@@ -972,10 +976,14 @@ FitParamList * FitParamList::NuOsc3FlavourBarDissapFit(int nuisance)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
         fparm->SetInitValue(kPhypDm23sqBar, conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
       }
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+      }
       break;
     default:
       std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
-      exit(-1);
+      util::Die(-1);
   }
   
   return fparm;
@@ -1028,10 +1036,14 @@ FitParamList * FitParamList::NuOsc3FlavourBarNormBarFit(int nuisance)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+      }
       break;
     default:
-      std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
-      exit(-1);
+      std::cerr<<"Usnknown mass scheme: "<<odmsq<<std::endl;
+      util::Die(-1);
   }
   
   fparm->SetInitValue(kPhypBetaBar, conv::kGlobFitBetaBar); // set init value
@@ -1146,10 +1158,16 @@ void FitParamList::Append3FlavourOscillation(FitParamList * fparm, int start)
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq + kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq - kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+	return;
+      }
       break;
     default:
-      delete fparm;
-      return;
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
   fparm->AddParam( ip++, kPhypDm12sq,    kInitFitDm12sq,   kMinFitDm12sq, kMaxFitDm12sq, kStepDm12sq,  false, false);
@@ -1207,10 +1225,16 @@ void FitParamList::Append3FlavourOscillationBar(FitParamList * fparm, int start)
         fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar + kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar - kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+	return;
+      }
       break;
     default:
-      delete fparm;
-      return;
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
   fparm->AddParam( ip++, kPhypDm12sqBar,    kInitFitDm12sqBar,   kMinFitDm12sqBar, kMaxFitDm12sqBar, kStepDm12sqBar,  false, false);
@@ -1251,10 +1275,16 @@ void FitParamList::Append3Flavour23BarOscillation(FitParamList * fparm, int star
         fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar + kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar - kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    else{
+      std::cerr << "Mass hierarchy not defined" << std::endl;
+      util::Die(-1);
+      return;
+    }
       break;
     default:
-      delete fparm;
-      return;
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
 }
@@ -1333,10 +1363,16 @@ void FitParamList::Append4FlavourSterileOscillation(FitParamList * fparm, int st
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq + kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq - kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+	return;
+      }
       break;
     default:
-      delete fparm;
-      return;
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
   fparm->AddParam( ip++, kPhypDm41sq,    kInitFitDm41sq,   kMinFitDm41sq, kMaxFitDm41sq, kStepDm41sq,  false, false);
@@ -1415,10 +1451,16 @@ void FitParamList::Append5FlavourSterileOscillation(FitParamList * fparm, int st
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq + kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq - kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+	return;
+      }
       break;
     default:
-      delete fparm;
-      return;
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
   fparm->AddParam( ip++, kPhypDm41sq,    kInitFitDm41sq,   kMinFitDm41sq, kMaxFitDm41sq, kStepDm41sq,  false, false);

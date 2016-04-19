@@ -17,6 +17,8 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "Utilities/UtlNumStat.h"
 #include "Oscillation/NuOscSterile.h"
 
+#include "Utilities/UtlSystem.h"
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -131,6 +133,14 @@ void NuOscSterile::SetMassHierarchy(NuMassHierarchy_t h)
 #ifdef DEBUG_INFO
   cout << "NuOscSterile >> Mass hierarchy assumed: " << util::AsString(h) << endl;
 #endif
+
+  if(h==kNmhUndefined){
+    cerr << "NuOsc3Flavour::SetMassHierarchy" << endl;
+    cerr << "The Mass Hierarchy is not defined" << endl;
+    util::Die(-1);
+    return;
+  }
+
   fMassHierarchy = h;
 }
 //________________________________________________________________________________________
