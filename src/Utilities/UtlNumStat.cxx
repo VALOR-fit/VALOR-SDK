@@ -44,6 +44,7 @@ ChangeLog:
 #include "Utilities/UtlNumStat.h"
 #include "Utilities/UtlSystem.h"
 #include "Utilities/Rnd.h"
+#include "Messenger/Messenger.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 #include <gsl/gsl_complex.h>
@@ -165,13 +166,14 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 
      if(L(i,i) <= 0) {
        if( fabs(L(i,i))<conv::kASmallNum ){
+	 LOG("UtlNumStat", pWARN) << "Element: " << i << "," << i << " = " << L(i,i);
 	 L(i,i)=conv::kASmallNum;
-	 cerr << "  , changed to "<<L(i,i)<<endl;
+	 LOG("UtlNumStat", pWARN) << "Changed to "<<L(i,i);
        }
        else{
-	 cerr << "Decomposed covariance matrix not positive-definite" << endl;
-	 cerr << "L(" << i << "," << i << ") = " << L(i,i) << endl;
-	 exit(1);
+	 LOG("UtlNumStat", pERROR) << "Decomposed covariance matrix not positive-definite"
+				   << "L(" << i << "," << i << ") = " << L(i,i);
+	 util::Die(1);
        }
      }
      // if(L(i,i) <= 0) {
@@ -179,9 +181,8 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
      //   L(i,i)=conv::kASmallNum;
      //   cerr << "  , changed to "<<L(i,i)<<endl;
      //   //~ cerr << "Decomposed covariance matrix not positive-definite" << endl;
-     //   //~ exit(1);
+     //   //~ util::Die(1);
      // }
-
 
 
      L(i,i) = TMath::Sqrt(L(i,i));
@@ -222,11 +223,11 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams (
 
   if(ncols != nrows) {
     cerr << "util::CholeskyGenerateCorrelatedParams >> Number of columns " << ncols << " & rows " << nrows << " disagree. Exiting..." << endl;
-    exit(1);
+    util::Die(1);
   }
   if(npars != nrows) {
     cerr << "util::CholeskyGenerateCorrelatedParams >> Number of parameters " << npars << " & rows " << nrows << " disagree. Exiting..." << endl;
-    exit(1);
+    util::Die(1);
   }
 
   int n = nrows;
@@ -280,15 +281,15 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams (
 
   if(ncols != nrows) {
     cerr << "util::CholeskyGenerateCorrelatedParams >> Number of columns " << ncols << " & rows " << nrows << " disagree. Exiting..." << endl;
-    exit(1);
+    util::Die(1);
   }
   if(npars != nrows) {
     cerr << "util::CholeskyGenerateCorrelatedParams >> Number of parameters " << npars << " & rows " << nrows << " disagree. Exiting..." << endl;
-    exit(1);
+    util::Die(1);
   }
   if(nunco != nrows) {
     cerr << "util::CholeskyGenerateCorrelatedParams >> Number of uncorrelated parameters " << nunco << " & rows " << nrows << " disagree. Exiting..." << endl;
-    exit(1);
+    util::Die(1);
   }
 
   int n = nrows;
@@ -458,7 +459,7 @@ double valor::util::RandomizeMixing12(void)
      break;
    }
    default:
-     exit(1);
+     util::Die(1);
   }
   * */
 
@@ -498,7 +499,7 @@ double valor::util::RandomizeMixing23(void)
      break;
    }
    default:
-     exit(1);
+     util::Die(1);
   }*/
 
   // return if a physical value was generated
@@ -537,7 +538,7 @@ double valor::util::RandomizeMixing13(void)
       break;
     }
   default:
-    exit(1);
+    util::Die(1);
   }*/
 
   // return if a physical value was generated
@@ -756,7 +757,7 @@ int valor::util::RandomizeMH(const double probNH)
     cerr << "The input probability for NH is not possible" << endl;
     cerr << "P(NH) = " << Pnh << endl;
     cerr << endl;
-    exit(1);
+    util::Die(1);
   }
   if(Pih < 0. || Pih > 1.){
     cerr << endl;
@@ -764,7 +765,7 @@ int valor::util::RandomizeMH(const double probNH)
     cerr << "The input probability for IH is not possible" << endl;
     cerr << "P(IH) = " << Pih << endl;
     cerr << endl;
-    exit(1);
+    util::Die(1);
   }
 
   double rndm = Rnd::Instance()->RndToyMCosc().Uniform(min,max);
@@ -787,7 +788,7 @@ double valor::util::FromSinsq2thToSinsqth(const double sinsq2th){
     cerr << "Input parameter value of sinsq2th is not allowed" << endl;
     cerr << "sinsq2th = " << sinsq2th << endl;
     cerr << endl;
-    exit(1);
+    util::Die(1);
   }
 
   double sinsqth = 0.5 * ( 1 - sqrt(1 - sinsq2th) );
@@ -798,7 +799,7 @@ double valor::util::FromSinsq2thToSinsqth(const double sinsq2th){
     cerr << "Input parameter value of sinsqth is not allowed" << endl;
     cerr << "sinsqth = " << sinsqth << endl;
     cerr << endl;
-    exit(1);
+    util::Die(1);
   }
   
   return sinsqth;
@@ -812,7 +813,7 @@ double valor::util::FromSinsqthToSinsq2th(const double sinsqth){
     cerr << "Input parameter value of sinsqth is not allowed" << endl;
     cerr << "sinsqth = " << sinsqth << endl;
     cerr << endl;
-    exit(1);
+    util::Die(1);
   }
 
   double sinsq2th = 1 - (1 - 2*sinsqth)*(1 - 2*sinsqth);
@@ -823,7 +824,7 @@ double valor::util::FromSinsqthToSinsq2th(const double sinsqth){
     cerr << "Input parameter value of sinsq2th is not allowed" << endl;
     cerr << "sinsq2th = " << sinsq2th << endl;
     cerr << endl;
-    exit(1);
+    util::Die(1);
   }
   
   return sinsq2th;
@@ -876,7 +877,7 @@ int, double *, double *, double *
   return (status != GSL_SUCCESS);
 #else
   std::cerr<<"GSL Disabled"<<std::endl;
-  exit(-1);
+  util::Die(-1);
 #endif
 }
 //____________________________________________________________________________
