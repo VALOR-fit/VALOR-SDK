@@ -1112,10 +1112,6 @@ FitParamList * FitParamList::NumuDecohFit(int nuisance)
 //________________________________________________________________________________________
 void FitParamList::Append3FlavourOscillation(FitParamList * fparm, int start)
 {
-
-  cout << "FitParamList::Append3FlavourOscillation" << endl;
-  cout << "Beginning" << endl;
-
   int ip = start; // first unallocated element in the param list
   
   //
