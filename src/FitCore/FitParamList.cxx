@@ -79,14 +79,16 @@ bool FitParamList::AddParam (int ip, PhysParamId_t p,
     this->Print();
     cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
     <<") to slot "<<ip<<" (max params "<<fNParams<<") "<<endl;
-    exit(-1);
+    util::Die(-1);
+    return false;
   }
   
   if (this->Exists(p)) {
     this->Print();
     cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
     <<"): parameter already exists."<<endl;
-    exit(-1);
+    util::Die(-1);
+    return false;
   }
   
   fIdMap.insert(map<PhysParamId_t, int>::value_type(p,ip));
@@ -175,7 +177,8 @@ void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
   if(plst.GetParListName() != fParListName) {
     cerr << "Cannot copy BestFit values in FitParamList of type " << plst.GetParListName()
     << " to InitValues in FitParamList of type " << fParListName << endl;
-    exit(1);
+    util::Die(-1);
+    return;
   }
   for(int ip = 0; ip < fNParams; ip++) {
     fInitValue[ip] = plst.BestFitValueByIndex(ip);
@@ -210,7 +213,8 @@ void FitParamList::SetMigradErrors(vector<double> err)
     cerr << "FitterKernelMinuit2/SetMigradErrors >> Error vector size: " << err.size()
     << " is not the same size as the number of free parameters: "
     << this->GetNumberFreeParameters() << endl;
-    exit(1);
+    util::Die(-1);
+    return;
   }
   
   for(int ip = 0; ip < fNParams; ip++) {
@@ -225,7 +229,8 @@ void FitParamList::SetHesseErrors(vector<double> err)
     cerr << "FitterKernelMinuit2/SetHesseErrors >> Error vector size: " << err.size()
     << " is not the same size as the number of free parameters: "
     << this->GetNumberFreeParameters() << endl;
-    exit(1);
+    util::Die(-1);
+    return;
   }
   
   for(int ip = 0; ip < fNParams; ip++) {
@@ -240,12 +245,14 @@ void FitParamList::SetMinosErrors(vector<double> plus, vector<double> minus)
     cerr << "FitterKernelMinuit2/SetMinosErrors >> Error vector size: " << plus.size()
     << " is not the same size as the number of parameters: "
     << this->GetNumberFreeParameters() << endl;
-    exit(1);
+    util::Die(-1);
+    return;
   }
   if(plus.size() != minus.size()) {
     cerr << "FitterKernelMinuit2/SetMinosErrors >> Error vector size (plus): " << plus.size()
     << " is not the same size as error vector size (minus): " << minus.size() << endl;
-    exit(1);
+    util::Die(-1);
+    return;
   }
   
   for(int ip = 0; ip < fNParams; ip++) {
@@ -887,7 +894,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarFit(int nuisance)
       break;
     default:
       std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
-      exit(-1);
+      util::Die(-1);
   }
   
   fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
@@ -908,10 +915,14 @@ FitParamList * FitParamList::NuOsc3FlavourBarFit(int nuisance)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+      }      
       break;
     default:
       std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
-      exit(-1);
+      util::Die(-1);
   }
   
   return fparm;
@@ -941,7 +952,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarDissapFit(int nuisance)
       break;
     default:
       std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
-      exit(-1);
+      util::Die(-1);
   }
   
   fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
@@ -968,10 +979,14 @@ FitParamList * FitParamList::NuOsc3FlavourBarDissapFit(int nuisance)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
         fparm->SetInitValue(kPhypDm23sqBar, conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
       }
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+      }
       break;
     default:
       std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
-      exit(-1);
+      util::Die(-1);
   }
   
   return fparm;
@@ -1003,7 +1018,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarNormBarFit(int nuisance)
       break;
     default:
       std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
-      exit(-1);
+      util::Die(-1);
   }
   
   fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
@@ -1024,10 +1039,14 @@ FitParamList * FitParamList::NuOsc3FlavourBarNormBarFit(int nuisance)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->SetInitValue(kPhypDm23sq,    conv::kGlobFitDm23sq + conv::kGlobFitDm12sq);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+      }
       break;
     default:
       std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
-      exit(-1);
+      util::Die(-1);
   }
   
   fparm->SetInitValue(kPhypBetaBar, conv::kGlobFitBetaBar); // set init value
@@ -1093,6 +1112,10 @@ FitParamList * FitParamList::NumuDecohFit(int nuisance)
 //________________________________________________________________________________________
 void FitParamList::Append3FlavourOscillation(FitParamList * fparm, int start)
 {
+
+  cout << "FitParamList::Append3FlavourOscillation" << endl;
+  cout << "Beginning" << endl;
+
   int ip = start; // first unallocated element in the param list
   
   //
@@ -1142,10 +1165,16 @@ void FitParamList::Append3FlavourOscillation(FitParamList * fparm, int start)
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq + kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq - kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+	return;
+      }
       break;
-    default:
-      delete fparm;
-      return;
+  default:
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
   fparm->AddParam( ip++, kPhypDm12sq,    kInitFitDm12sq,   kMinFitDm12sq, kMaxFitDm12sq, kStepDm12sq,  false, false);
@@ -1203,10 +1232,16 @@ void FitParamList::Append3FlavourOscillationBar(FitParamList * fparm, int start)
         fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar + kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar - kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+	return;
+      }
       break;
-    default:
-      delete fparm;
-      return;
+  default:
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
   fparm->AddParam( ip++, kPhypDm12sqBar,    kInitFitDm12sqBar,   kMinFitDm12sqBar, kMaxFitDm12sqBar, kStepDm12sqBar,  false, false);
@@ -1236,21 +1271,27 @@ void FitParamList::Append3Flavour23BarOscillation(FitParamList * fparm, int star
   //  fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq,   kMinFitDm23sq, kMaxFitDm23sq, 1.0E-4,  false, false);
   NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
   switch (odmsq) {
-    case(kNuDmsqFogliLisi):
-      fparm->AddParam( ip++, kPhypDm23sqBar,    kGlobFitDmsqFL,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
-      break;
-    case(kNuDmsq12andAbs23):
-      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
-      break;
-    case(kNuDmsq12andAbs31):
-      if(Opt::Instance()->gMassHierarchyAssumed == kNmhNormal)
-        fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar + kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
-      else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
-        fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar - kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
-      break;
-    default:
-      delete fparm;
+  case(kNuDmsqFogliLisi):
+    fparm->AddParam( ip++, kPhypDm23sqBar,    kGlobFitDmsqFL,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    break;
+  case(kNuDmsq12andAbs23):
+    fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    break;
+  case(kNuDmsq12andAbs31):
+    if(Opt::Instance()->gMassHierarchyAssumed == kNmhNormal)
+      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar + kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
+      fparm->AddParam( ip++, kPhypDm23sqBar,    kInitFitDm23sqBar - kInitFitDm12sqBar,   kMinFitDm23sqBar, kMaxFitDm23sqBar, kStepDm23sqBar,  false, false);
+    else{
+      std::cerr << "Mass hierarchy not defined" << std::endl;
+      util::Die(-1);
       return;
+    }
+    break;
+  default:
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
 }
@@ -1329,10 +1370,16 @@ void FitParamList::Append4FlavourSterileOscillation(FitParamList * fparm, int st
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq + kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq - kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+	return;
+      }
       break;
-    default:
-      delete fparm;
-      return;
+  default:
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
   fparm->AddParam( ip++, kPhypDm41sq,    kInitFitDm41sq,   kMinFitDm41sq, kMaxFitDm41sq, kStepDm41sq,  false, false);
@@ -1411,10 +1458,16 @@ void FitParamList::Append5FlavourSterileOscillation(FitParamList * fparm, int st
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq + kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
       else if(Opt::Instance()->gMassHierarchyAssumed == kNmhInverted)
         fparm->AddParam( ip++, kPhypDm23sq,    kInitFitDm23sq - kInitFitDm12sq,   kMinFitDm23sq, kMaxFitDm23sq, kStepDm23sq,  false, false);
+      else{
+	std::cerr << "Mass hierarchy not defined" << std::endl;
+	util::Die(-1);
+	return;
+      }
       break;
-    default:
-      delete fparm;
-      return;
+  default:
+    std::cerr<<"Unknown mass scheme: "<<odmsq<<std::endl;
+    util::Die(-1);
+    return;
   }
   
   fparm->AddParam( ip++, kPhypDm41sq,    kInitFitDm41sq,   kMinFitDm41sq, kMaxFitDm41sq, kStepDm41sq,  false, false);
@@ -1839,7 +1892,8 @@ int FitParamList::Id(PhysParamId_t p) const
   if(it == fIdMap.end()) {
     cerr << "FitParamList::Id() >> Parameter: " << util::NameRegistry::Instance()->AsString(p) << " PhysParamId_t p = " << p
     << " was not included in current fit parameter list" << endl;
-    exit(1);
+    util::Die(-1);
+    return -1;
   }
   int id = it->second;
   return id;
@@ -1913,7 +1967,8 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,int priormode)
     cerr << "  0 --> flat prior" << endl;
     cerr << "  1 --> gaus prior" << endl;
     cerr << "  2 --> prior from user distribution" << endl;
-    exit(1);
+    util::Die(-1);
+    return;
   }
 }
 //________________________________________________________________________________________
@@ -1937,7 +1992,8 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,string priormodenam
     cerr << "  flat --> flat prior" << endl;
     cerr << "  gaus --> gaus prior" << endl;
     cerr << "  user --> prior from user distribution" << endl;
-    exit(1);
+    util::Die(-1);
+    return;
   }
 }
 //________________________________________________________________________________________

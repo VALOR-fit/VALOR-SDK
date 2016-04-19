@@ -130,6 +130,14 @@ void NuOscSterile::SetMassHierarchy(NuMassHierarchy_t h)
 #ifdef DEBUG_INFO
   cout << "NuOscSterile >> Mass hierarchy assumed: " << util::AsString(h) << endl;
 #endif
+
+  if(h==kNmhUndefined){
+    cerr << "NuOsc3Flavour::SetMassHierarchy" << endl;
+    cerr << "The Mass Hierarchy is not defined" << endl;
+    util::Die(-1);
+    return;
+  }
+
   fMassHierarchy = h;
 }
 //________________________________________________________________________________________
