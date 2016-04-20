@@ -57,6 +57,7 @@ namespace valor {
     // Get information for the fit parameters
     int    Size               (void)                         const { return fNParams;  }
     string Name               (valor::conv::PhysParamId_t p) const { return fName[this->Id(p)].GetString().Data();   }
+    string NameByIndex        (int i                       ) const { return fName[i].GetString().Data();}
     double BestFitValue       (valor::conv::PhysParamId_t p) const { return fBestFitValue[this->Id(p)]; }
     double BestFitValueByIndex(int i                       ) const { return fBestFitValue[i];           }
     double CurrValue          (valor::conv::PhysParamId_t p) const { return fCurrValue   [this->Id(p)]; }
