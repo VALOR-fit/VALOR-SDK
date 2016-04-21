@@ -7,9 +7,10 @@
 
 #pragma link C++ namespace valor;
 
-#pragma link C++ class valor::VMinuitFitter+;
-//#pragma link C++ class valor::VMinuit2Fitter+;
-//#pragma link C++ class valor::VGSLFitter+;
+#pragma link C++ class valor::FitterFactory+;
+#pragma link C++ class valor::MinuitFitter+;
+//#pragma link C++ class valor::Minuit2Fitter+;
+//#pragma link C++ class valor::GSLFitter+;
 
 
 #endif

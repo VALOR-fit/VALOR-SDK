@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\class     valor::VMinuitFitter
+\class     valor::MinuitFitter
 
 \brief     Minuit-based VALOR fitter.
 
@@ -33,12 +33,11 @@ namespace valor {
 
 class FitInputs;
 
-class VMinuitFitter: public FitterABC_new
+class MinuitFitter: public FitterABC_new
 {
 public:
-
-   VMinuitFitter();
-   virtual ~VMinuitFitter();
+   MinuitFitter();
+   virtual ~MinuitFitter();
 
    //
    // Configuration options:

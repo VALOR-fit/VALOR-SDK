@@ -27,7 +27,7 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "Conventions/Opt.h"
 #include "Utilities/Rnd.h"
 #include "Messenger/Messenger.h"
-#include "Fitters/VMinuitFitter.h" 
+#include "Fitters/MinuitFitter.h" 
 #include "FitCore/FitInputs.h" 
 #include "FitCore/FitParamList.h" 
 
@@ -37,18 +37,18 @@ using namespace valor::conv;
 using std::vector;
    
 //____________________________________________________________________________ 
-VMinuitFitter::VMinuitFitter() :
+MinuitFitter::MinuitFitter() :
 FitterABC_new()
 {
   this->Init();
 }
 //____________________________________________________________________________ 
-VMinuitFitter::~VMinuitFitter() 
+MinuitFitter::~MinuitFitter() 
 {
 
 }
 //____________________________________________________________________________ 
-void VMinuitFitter::Init(void) 
+void MinuitFitter::Init(void) 
 {
   fNFreeFitParams      = 0;
   fNFitBins            = 0;
@@ -67,7 +67,7 @@ void VMinuitFitter::Init(void)
   fFitTries            = 0;
 }
 //____________________________________________________________________________ 
-bool VMinuitFitter::Configure(const Registry & conf)
+bool MinuitFitter::Configure(const Registry & conf)
 {
   LOG("Minuit", pINFO) << "Fitter configuration: " << conf;
 
@@ -89,7 +89,7 @@ bool VMinuitFitter::Configure(const Registry & conf)
   return true;
 }
 //____________________________________________________________________________ 
-bool VMinuitFitter::DoTheFit(FitInputs * inputs) 
+bool MinuitFitter::DoTheFit(FitInputs * inputs) 
 {
   // Start clock
   TStopwatch w;
@@ -183,7 +183,7 @@ bool VMinuitFitter::DoTheFit(FitInputs * inputs)
   return ok;
 }
 //____________________________________________________________________________ 
-bool VMinuitFitter::RunOnce(bool use_simplex) 
+bool MinuitFitter::RunOnce(bool use_simplex) 
 {
   fHesseErrStatusCode = -1;
   double fcntemp;
@@ -328,7 +328,7 @@ bool VMinuitFitter::RunOnce(bool use_simplex)
   return true;//(fMigradErrStatusCode == 3);
 }
 //____________________________________________________________________________ 
-int VMinuitFitter::FitStatusCode (Option_t * option) 
+int MinuitFitter::FitStatusCode (Option_t * option) 
 { 
   if(!option) return 9999;
 
