@@ -121,7 +121,8 @@ template<typename numtype> void VALORArrayT<numtype>::ConstructT(int nd, const I
 template<typename numtype> VALORArrayT<numtype>::VALORArrayT(const VALORArrayT<numtype> & arr) :
 TNamed(arr),
 fNDim(arr.fNDim),
-fSize(arr.fSize)
+fSize(arr.fSize),
+fArray(NULL)
 {
   this->CopyFrom(arr);
 }
@@ -151,7 +152,7 @@ template<typename numtype> void VALORArrayT<numtype>::CopyDataOnlyFrom(const VAL
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::Cleanup()
 {
-  delete[] fArray;
+  if (fArray) {delete[] fArray; fArray = 0;}
   
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = 1;
