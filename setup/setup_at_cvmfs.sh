@@ -15,6 +15,16 @@
 source "/cvmfs/atlas.cern.ch/repo/sw/atlas-gcc/484/x86_64/setup.sh" # use G++ 484
 source "/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/root/5.34.25-x86_64-slc6-gcc48-opt/bin/thisroot.sh" # and appropriate ROOT
 
+#source "/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/python/2.7.9-x86_64-slc6-gcc48/setup.sh" # and matching python
+# above doesn't work for some reason. Do it manually.
+tmppy="/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/python/2.7.4-x86_64-slc6-gcc48/sw/lcg/external/Python/2.7.4/x86_64-slc6-gcc48-opt/"
+export PATH="${tmppy}/bin:${PATH}"
+export PYTHONPATH="${tmppy}/lib/python2.7:${PYTHONPATH}"
+export LD_LIBRARY_PATH="${tmppy}/lib:${LD_LIBRARY_PATH}"
+
+# Ipython
+#source "/cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc48-opt/20.8.1/sw/lcg/releases/LCG_75root6/pytools/1.9_python2.7/x86_64-slc6-gcc48-opt/pytools-env.sh" 1> /dev/null
+
 # Use T2K root
 #~ source "/cvmfs/t2k.egi.eu/nd280v11r31p5/ROOT/v5r34p09n04/Linux-x86_64/bin/thisroot.sh"
 
