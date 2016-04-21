@@ -1,0 +1,44 @@
+//____________________________________________________________________________
+/*!
+
+\class     valor::utils
+
+\brief     Fitter utilities
+
+\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+           University of Liverpool & STFC Rutherford Appleton Laboratory
+
+\created   Oct 20, 2010
+
+\copyright (c) 2010-2016, The VALOR group.
+
+*/
+//____________________________________________________________________________
+
+#ifndef _valor_fitter_utilities_h_
+#define _valor_fitter_utilities_h_
+
+#include "valor/FitCore/FitterABC.h"
+#include "valor/FitCore/FitInputs.h"
+
+namespace valor {
+namespace util {
+
+// Method to return a VALOR fitter.
+// Options:
+//   - minuit
+//   - minuit2
+//   - SimAnneal
+//   - LevMarq
+//   - ConjugateFR
+//   - ConjugatePR
+//   - VectorBFGS
+//   - SteepestDescent
+//
+FitterABC * GetFitter (FitInputs * inputs, Option_t * option);
+
+} // util
+} // valor
+
+#endif
+

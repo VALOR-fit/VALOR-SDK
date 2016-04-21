@@ -1,0 +1,359 @@
+//________________________________________________________________________________________
+/*
+
+Copyright (c) 2010-2016, The VALOR group. All rights reserved.
+
+ChangeLog:
+
+*/
+//________________________________________________________________________________________
+
+#include <string>
+#include <cstdlib>
+#include <cassert>
+#include <iostream>
+
+#include "valor/Messenger/Messenger.h"
+#include "valor/Conventions/Opt.h"
+#include "valor/Conventions/Constants.h"
+
+using std::endl;
+using std::string;
+
+using namespace valor;
+using namespace valor::conv;
+
+ClassImp(Opt::Persistable);
+
+//________________________________________________________________________________________
+namespace valor {
+  ostream & operator<<(ostream & stream, const Opt & opt)
+  {
+    opt.Print(stream);
+    return stream;
+  }
+}
+//________________________________________________________________________________________
+Opt * Opt::fInstance = 0;
+//________________________________________________________________________________________
+Opt::Opt() :
+ gDoNotDie(false),
+ fRegistry("VALORRegistry",false)
+{
+  this->SetDefaults();
+  fInstance = 0;
+}
+//________________________________________________________________________________________
+Opt::Opt(const Opt &) 
+{
+
+}
+//________________________________________________________________________________________
+Opt::~Opt()
+{
+
+}
+//________________________________________________________________________________________
+Opt * Opt::Instance()
+{
+  if(fInstance == 0) {
+    static Opt::Cleaner cleaner;
+    cleaner.DummyMethodAndSilentCompiler();
+    LOG("Opt",pDEBUG)<<"Producing new Opt::Instance()";
+    fInstance = new Opt;
+  }
+  return fInstance;
+}
+//________________________________________________________________________________________
+void Opt::SetDefaults(void) 
+{
+  gMassHierarchyAssumed = kNmhNormal;
+  gOscMixingParamChoice = kNuMixSinsqTheta;
+  gOscDmsqScheme        = kNuDmsq12andAbs23;
+  gOscDeltaCP           = kNuDeltaCPPhase;
+  gOscOctantChoice      = kNuOctantOne;
+/*
+  bool fit_1Rmu = false;
+  bool fit_1Re  = false;
+  bool fit_RHC_1Rmu = false;
+  bool fit_RHC_1Re  = false;
+
+  for(int is = 0; is < kns; is++) {
+    SuperkSample_t s = kSKSamples[is];
+    if(s == kSKsFCFV1RingMuLike) fit_1Rmu = true;
+    if(s == kSKsFCFV1RingELike ) fit_1Re  = true;
+    if(s == kSKsRHCFCFV1RingMuLike) fit_RHC_1Rmu = true;
+    if(s == kSKsRHCFCFV1RingELike ) fit_RHC_1Re  = true;
+  }
+
+#if defined __FHC_RUNNING__ && defined __RHC_RUNNING__
+#ifdef __NUMUONLY__
+  fit_1Re  = false;
+  fit_RHC_1Re  = false;
+#endif
+#ifdef __NUEONLY__
+  fit_1Rmu = false;
+  fit_RHC_1Rmu = false;
+#endif
+#else
+#ifdef __FHC_RUNNING__
+#ifdef __NUMUONLY__
+  fit_1Re  = false;
+  fit_RHC_1Re  = false;
+  fit_RHC_1Rmu = false;
+#endif
+#ifdef __NUEONLY__
+  fit_1Rmu = false;
+  fit_RHC_1Rmu = false;
+  fit_RHC_1Re  = false;
+#endif
+#else
+#ifdef __RHC_RUNNING__
+#ifdef __NUMUONLY__
+  fit_1Re  = false;
+  fit_RHC_1Re  = false;
+  fit_1Rmu = false;
+#endif
+#ifdef __NUEONLY__
+  fit_1Rmu = false;
+  fit_RHC_1Rmu = false;
+  fit_1Re  = false;
+#endif
+#endif
+#endif
+#endif
+
+  if(fit_1Rmu && fit_1Re && fit_RHC_1Rmu && fit_RHC_1Re)
+    gOscAnaTypeChoice = kAnaFHCAndRHCCombined;
+  else if(fit_1Rmu && !fit_1Re && fit_RHC_1Rmu && !fit_RHC_1Re) 
+    gOscAnaTypeChoice = kAnaFHCAndRHCNuMuDisappOnly;
+  else if(!fit_1Rmu && fit_1Re && !fit_RHC_1Rmu && fit_RHC_1Re)
+    gOscAnaTypeChoice = kAnaFHCAndRHCNuEAppOnly;
+  else if(fit_1Rmu && fit_1Re && !fit_RHC_1Rmu && !fit_RHC_1Re)
+    gOscAnaTypeChoice = kAnaCombined;
+  else if(fit_1Rmu && !fit_1Re && !fit_RHC_1Rmu && !fit_RHC_1Re)
+    gOscAnaTypeChoice = kAnaNuMuDisappOnly;
+  else if(!fit_1Rmu && fit_1Re && !fit_RHC_1Rmu && !fit_RHC_1Re)
+    gOscAnaTypeChoice = kAnaNuEAppOnly;
+  else if(!fit_1Rmu && !fit_1Re && fit_RHC_1Rmu && fit_RHC_1Re)
+    gOscAnaTypeChoice = kAnaRHCCombined;
+  else if(!fit_1Rmu && !fit_1Re && fit_RHC_1Rmu && !fit_RHC_1Re)
+    gOscAnaTypeChoice = kAnaRHCNuMuDisappOnly;
+  else if(!fit_1Rmu && !fit_1Re && !fit_RHC_1Rmu && fit_RHC_1Re)
+    gOscAnaTypeChoice = kAnaRHCNuEAppOnly;
+  else
+    gOscAnaTypeChoice = kAnaUndefined;
+*/
+  
+  this->SetDefaultParameterValues();
+}
+//____________________________________________________________________________
+void Opt::SetValues(const char * dmsqscheme, const char * hierarchy,
+		    const char * mixparamchoice, const char * mixparamoctant,
+		    const char * cpvchoice, bool print)
+{
+  gMassHierarchyAssumed = util::HierarchyFromString(hierarchy);
+  gOscDmsqScheme        = util::DmsqSchemeFromString(dmsqscheme);
+  gOscMixingParamChoice = util::MixingTypeFromString(mixparamchoice);
+  gOscOctantChoice      = util::OctantFromString(mixparamoctant);
+  gOscDeltaCP           = util::CPVChoiceFromString(cpvchoice);
+  if(Undefined()) {
+    std::cerr << "Global options not defined correctly. Exiting..." << endl;
+    Print(std::cerr);
+    exit(1);
+  }
+  if(print)
+    Print(std::cout);
+}
+//____________________________________________________________________________
+void Opt::SetDefaultParameterValues()
+{
+  // Set default global parameter values
+  // set empty values
+  for (int ip = 0 ; ip < knppmax ; ip++ ) {
+    fGlobalBestFit [ip] = conv::kBadResult;
+    fGlobalFitError[ip] = conv::kBadResult;
+    //fInitialValue  [ip] = 0.;
+  }
+  
+  double mean = conv::kBadResult;
+  
+  //dm12
+  fGlobalBestFit  [kPhypDm12sq] = kGlobFitDm12sq;
+  fGlobalFitError [kPhypDm12sq] = kGlobFitErrDm12sq;
+  //fInitialValue   [kPhypDm12sq] = kInitFitDm12sq;
+ 
+  //dm23
+  switch (gOscDmsqScheme) {
+    case(kNuDmsqFogliLisi):
+      mean  =  kGlobFitDmsqFL;
+      break;
+    case(kNuDmsq12andAbs23):
+      mean  = kGlobFitDm23sq; 
+      break;
+    case(kNuDmsq12andAbs31):
+      if(gMassHierarchyAssumed == kNmhNormal)
+        mean  = kGlobFitDm23sq + kGlobFitDm12sq; 
+      else if(gMassHierarchyAssumed == kNmhInverted)
+        mean  = kGlobFitDm23sq - kGlobFitDm12sq; 
+      else assert(!"Should never happen");
+      break;
+    default:
+      mean  = kGlobFitDm23sq;  
+  }
+  fGlobalBestFit  [kPhypDm23sq] = mean;
+  fGlobalFitError [kPhypDm23sq] = kGlobFitErrDm23sq;
+  //fInitialValue   [kPhypDm23sq] = fGlobalBestFit[kPhypDm23sq];
+  
+  // mixing angles
+  switch(gOscMixingParamChoice) {
+    case(kNuMixSinsq2Theta):
+    {
+      fGlobalBestFit  [kPhypMixing12] = kGlobFitSinsq2Theta12;
+      fGlobalFitError [kPhypMixing12] = kGlobFitErrSinsq2Theta12;
+      //fInitialValue   [kPhypMixing12] = fGlobalBestFit[kPhypMixing12];
+      
+      fGlobalBestFit  [kPhypMixing23] = kGlobFitSinsq2Theta23;
+      fGlobalFitError [kPhypMixing23] = kGlobFitErrSinsq2Theta23;
+      //fInitialValue   [kPhypMixing23] = fGlobalBestFit[kPhypMixing23];
+      
+      fGlobalBestFit  [kPhypMixing13] = kGlobFitSinsq2Theta13;
+      fGlobalFitError [kPhypMixing13] = kGlobFitErrSinsq2Theta13;
+      //fInitialValue   [kPhypMixing13] = fGlobalBestFit[kPhypMixing13];
+      break;
+    }
+    case(kNuMixSinsqTheta):
+    {
+      fGlobalBestFit  [kPhypMixing12] = kGlobFitSinsqTheta12;
+      fGlobalFitError [kPhypMixing12] = kGlobFitErrSinsqTheta12;
+      //fInitialValue   [kPhypMixing12] = fGlobalBestFit[kPhypMixing12];
+      
+      fGlobalBestFit  [kPhypMixing23] = kGlobFitSinsqTheta23;
+      fGlobalFitError [kPhypMixing23] = kGlobFitErrSinsqTheta23;
+      //fInitialValue   [kPhypMixing23] = fGlobalBestFit[kPhypMixing23];
+      
+      fGlobalBestFit  [kPhypMixing13] = kGlobFitSinsqTheta13;
+      fGlobalFitError [kPhypMixing13] = kGlobFitErrSinsqTheta13;
+      //fInitialValue   [kPhypMixing13] = fGlobalBestFit[kPhypMixing13];
+      break;
+    }
+    default: exit(-1);
+  }
+  
+  // Copy across to the bar variables - may need changing later to make them bespoke.
+  for (int p = conv::kPhypMixing23Bar ; p <= conv::kPhypDm12sqBar; p++){
+    int nonbar = p - conv::kPhypMixing23Bar + conv::kPhypMixing23;
+    fGlobalBestFit  [p] = fGlobalBestFit  [nonbar];
+    fGlobalFitError [p] = fGlobalFitError [nonbar];
+    //fInitialValue   [p] = fGlobalBestFit[nonbar];
+  }
+
+  // NEW BETABAR
+  // numubar->nuebar normalization
+  fGlobalBestFit  [kPhypBetaBar] = kGlobFitBetaBar;
+  fGlobalFitError [kPhypBetaBar] = kGlobFitErrBetaBar;
+  //
+}
+//________________________________________________________________________________________
+bool Opt::Undefined(void)
+{
+  if(gMassHierarchyAssumed == kNmhUndefined)
+    return true;
+  if(gOscMixingParamChoice == kNuMixUndefined)
+    return true;
+  if(gOscDmsqScheme        == kNuDmsqUndefined)
+    return true;
+  if(gOscDeltaCP           == kNuDeltaCPUndefined)
+    return true;
+  if(gOscOctantChoice      == kNuOctantUndefined)
+    return true;
+
+  return false;
+}
+//________________________________________________________________________________________
+void Opt::Print(ostream & stream) const
+{
+  stream << "[Global analysis options]" 
+         << endl;
+  stream << " - Hierarchy: " 
+         << util::AsString(gMassHierarchyAssumed) 
+         << endl;
+  stream << " - Mixing param choice: " 
+         << util::AsString(gOscMixingParamChoice) 
+         << endl;
+  stream << " - 23 octant choice: "
+	 << util::AsString(gOscOctantChoice)
+	 << endl;
+  stream << " - Independent squared mass splittings: "
+         << util::AsString(gOscDmsqScheme)
+         << endl;
+  stream << " - Choice for Delta CP phase: "
+         << util::AsString(gOscDeltaCP)
+         << endl;
+/*
+  stream << " - Oscillation analysis choice: " 
+         << util::AsString(gOscAnaTypeChoice) 
+         << endl;
+*/
+}
+//________________________________________________________________________________________
+void Opt::WriteTo (Opt::Persistable & optp)
+{
+  optp.mh    = gMassHierarchyAssumed; 
+  optp.mixp  = gOscMixingParamChoice;
+  optp.oct   = gOscOctantChoice; 
+  optp.dmsqs = gOscDmsqScheme;
+  optp.dcp   = gOscDeltaCP;
+}
+//________________________________________________________________________________________
+void Opt::ReadFrom (Opt::Persistable & optp)
+{
+  gMassHierarchyAssumed = optp.mh;
+  gOscMixingParamChoice = optp.mixp;
+  gOscOctantChoice      = optp.oct;
+  gOscDmsqScheme        = optp.dmsqs;
+  gOscDeltaCP           = optp.dcp;
+}
+//________________________________________________________________________________________
+void Opt::SetGlobalBestFit(PhysParamId_t p, double value)
+{
+  assert(p!=kPhypUndefined);
+  fGlobalBestFit[p] = value;
+}
+//________________________________________________________________________________________
+void Opt::SetGlobalFitError(PhysParamId_t p, double value)
+{
+  assert(p!=kPhypUndefined);
+  fGlobalFitError[p] = value;
+}
+//________________________________________________________________________________________
+double Opt::GetGlobalBestFit(PhysParamId_t p) const
+{
+  assert(p!=kPhypUndefined);
+  return fGlobalBestFit[p];
+}
+//________________________________________________________________________________________
+double Opt::GetGlobalFitError(PhysParamId_t p) const
+{
+  assert(p!=kPhypUndefined);
+  return fGlobalFitError[p];
+}
+//________________________________________________________________________________________
+conv::NuOscDmsqScheme_t Opt::GetEffectiveDmsqScheme(void)
+{
+  if (gOscDmsqScheme==conv::kNuDmsqAuto) {
+    return util::GetAutoDmsqSchemeFromHierarchy();
+  }
+  return gOscDmsqScheme;
+}
+//________________________________________________________________________________________
+Registry & Opt::MutableGlobalRegistry(void)
+{
+  return fRegistry;
+}
+//________________________________________________________________________________________
+const Registry & Opt::GlobalRegistry(void) const
+{
+  return fRegistry;
+}
+//________________________________________________________________________________________

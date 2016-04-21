@@ -1,0 +1,183 @@
+//____________________________________________________________________________
+/*!
+
+\class     valor::NuOsc3Flavour
+
+\brief     Neutrino-oscillation probabilities (incl. matter effects) in 
+           computed in a 3-flavour framework.
+
+\author    Nick Grant <n.grant@lancaster.ac.uk>
+
+\created   July 05, 2011
+
+\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
+
+*/
+//____________________________________________________________________________
+
+#ifndef _NuOsc3Flavour_
+#define _NuOsc3Flavour_
+
+#include <iostream>
+#include <math.h>
+
+#include "valor/Conventions/Constants.h"
+#include "valor/Conventions/OscChannelId.h"
+#include "valor/Conventions/NuMassHierarchy.h"
+
+namespace valor {
+
+class NuOsc3Flavour
+{
+public:     
+  NuOsc3Flavour();
+ ~NuOsc3Flavour();
+ 
+  static int const nFlav = 3;
+ 
+  //
+  // Set baseline, earth density, mass hierarchy, squared mass-splittings and
+  // mixing angles / phases.
+  //
+
+  void SetBaseline      (double length);
+  void SetDensity       (double density);
+  void SetMassHierarchy (valor::conv::NuMassHierarchy_t h); 
+  void SetOscParameters (double sinsq2theta12, /* sin^2(2*theta_{12}) */
+                         double sinsq2theta13, /* sin^2(2*theta_{13}) */
+                         double sinsq2theta23, /* sin^2(2*theta_{23}) */
+                         double dmsq12,        /*  Dm^2_{12} in eV^2/c^4 */
+                         double dmsq23,        /* |Dm^2_{23}| (always positive) in eV^2/c^4 */
+                         double deltaCP        /* delta_{CP} phase in radians */
+                        );
+
+  // THIS ISN"T IMPLEMENTED ANYMORE! double GetSinsqthFromSinsq2th(double sinsqth);
+  // THIS ISN"T IMPLEMENTED ANYMORE! double GetSinsq2thFromSinsqth(double sinsq2th);
+  
+  void SetOscParametersSinSqTAll (double sinsqtheta12, /* sin^2(theta_{12}) */
+                                  double sinsqtheta13, /* sin^2(theta_{13}) */
+                                  double sinsqtheta23, /* sin^2(theta_{23}) */
+                                  double dmsq12,       /*  Dm^2_{12} in eV^2/c^4 */
+                                  double dmsq23,       /* |Dm^2_{23}| (always positive) in eV^2/c^4 */
+                                  double deltaCP       /* delta_{CP} phase in radians */
+                                  );                    
+  void SetOscParametersSinSqTAllSinDeltaCP(double sinsqtheta12, /* sin^2(theta_{12}) */
+                                  double sinsqtheta13, /* sin^2(theta_{13}) */
+                                  double sinsqtheta23, /* sin^2(theta_{23}) */
+                                  double dmsq12,       /*  Dm^2_{12} in eV^2/c^4 */
+                                  double dmsq23,       /* |Dm^2_{23}| (always positive) in eV^2/c^4 */
+                                  double sindeltaCP       /* sin(delta_{CP}) phase */
+                                  );                    
+  void SetOscParametersSSq2TDmAtmSol (double sinsq2theta12, /* sin^2(2*theta_{12}) */
+                                 double sinsq2theta13, /* sin^2(2*theta_{13}) */
+                                 double sinsq2theta23,  /* sin^2(theta_{23}) */
+                                 double dmsq12,        /*  Dm^2_{12} in eV^2/c^4 */
+                                 double dmsqAtm,        /* |m_3^2 - [(m_1^2+m_2^2)/2]| (always positive) in eV^2/c^4 */
+                                 double deltaCP        /* delta_{CP} phase in radians */
+                                 );
+  void SetOscParametersDmsqAtmSol(double sinsqtheta12, /* sin^2(theta_{12}) */
+                                 double sinsqtheta13, /* sin^2(theta_{13}) */
+                                 double sinsqtheta23,  /* sin^2(theta_{23}) */
+                                 double dmsq12,        /*  Dm^2_{12} in eV^2/c^4 */
+                                 double dmsqAtm,       /* |m_3^2 - [(m_1^2+m_2^2)/2]| (always positive) in eV^2/c^4 */
+                                 double deltaCP        /* delta_{CP} phase in radians */
+                                 );
+  void SetOscParametersDmsqAtmSolSinDeltaCP(double sinsqtheta12, /* sin^2(theta_{12}) */
+                                 double sinsqtheta13, /* sin^2(theta_{13}) */
+                                 double sinsqtheta23,  /* sin^2(theta_{23}) */
+                                 double dmsq12,        /*  Dm^2_{12} in eV^2/c^4 */
+                                 double dmsqAtm,       /* |m_3^2 - [(m_1^2+m_2^2)/2]| (always positive) in eV^2/c^4 */
+                                 double sindeltaCP        /* sin(delta_{CP}) phase*/
+                                 );
+  void SetOscParametersSSq2TDmsq13(double sinsq2theta12, /* sin^2(2*theta_{12}) */
+                                   double sinsq2theta13, /* sin^2(2*theta_{13}) */
+                                   double sinsq2theta23, /* sin^2(2*theta_{23}) */
+                                   double dmsq12,        /*  Dm^2_{12} in eV^2/c^4 */
+                                   double dmsq13,        /*  Dm^2_{13} (always positiive) in eV^2/c^4 */
+                                   double deltaCP);      /* delta_{CP} phase in radians */
+  void SetOscParametersDmsq13(double sinsqtheta12,  /* sin^2(theta_{12}) */ 
+                              double sinsqtheta13,  /* sin^2(theta_{13}) */
+                              double sinsqtheta23,  /* sin^2(theta_{23}) */
+			      double dmsq12,        /*  Dm^2_{12} in eV^2/c^4 */
+                              double dmsq13,        /*  Dm^2_{13} (always positiive) in eV^2/c^4 */ 
+			      double deltaCP);      /* delta_{CP} phase in radians */
+  void SetOscParametersDmsq13SinDeltaCP(double sinsqtheta12,  /* sin^2(theta_{12}) */ 
+					double sinsqtheta13,  /* sin^2(theta_{13}) */
+					double sinsqtheta23,  /* sin^2(theta_{23}) */
+					double dmsq12,        /*  Dm^2_{12} in eV^2/c^4 */
+					double dmsq13,        /*  Dm^2_{13} (always positiive) in eV^2/c^4 */ 
+					double sindeltaCP);      /* sin(delta_{CP}) phase */
+
+
+ //         
+ // Calculate 3-flavour oscillation probabilities in vacuum and in matter.
+ // The neutrino codes are the PDG ones and the neutrino energy is in GeV.
+ //         
+
+ double CalcVacuumOscProb      (int nu_start, int nu_end, double energy);                
+ double CalcVacuumOscProbPDG   (int nu_start, int nu_end, double energy);
+ double CalcMatterOscProb      (int nu_start, int nu_end, double energy);
+ double Calc2FlavMatterOscProb (int nu_start, int nu_end, double energy, int index);
+ 
+ // Calculate all matter probabilities at once.
+ // Osc_probs_out should point to a block of memory nflav*nflav
+ // It fills this with an array[i][j] of P(nu_i)->P(nu_j)
+ void CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs_out[3][3]);
+ 
+ valor::conv::NuMassHierarchy_t GetMassHierarchy(void) const;
+ 
+private:
+
+  enum {
+    re,
+    im
+  };
+
+ void Init(void);
+
+ valor::conv::NuMassHierarchy_t fMassHierarchy; ///< mass hierarchy
+ double fBaseline; ///< baseline (km)
+ double fNe;       ///< number density of electrons in Earth's crust (cm^-3)
+
+ // Squared mass splittings
+ double dmsq23;    //< eV^2
+ double dmsq12;    //< eV^2
+ double dmsq13;    //< eV^2 
+ double dmsqAtm;   //< eV^2
+
+ // Moduli squared of PMNS matrix elements
+ double modUe1sq;
+ double modUe2sq;
+ double modUe3sq;
+ double modUmu1sq;
+ double modUmu2sq;
+ double modUmu3sq;
+ double modUtau1sq;
+ double modUtau2sq;
+ double modUtau3sq;
+
+ double Re12;
+ double Im12;
+ double arg12;
+ double Re13;
+ double Im13;
+ double arg13;
+ double Re23;
+ double Im23;
+ double arg23;
+
+ // The mass squared matrix has diagonal elements 0, dmsq12, dmsq13
+ // and all off-diagonal elements are zero
+ // UMassUdaggerVacuum is the product of the PMNS matrix, the mass 
+ // squared matrix and the dagger of the PMNS matrix in vacuum.
+ double UMassUdaggerVacuum[3][3][2];
+
+ bool useEquations12;
+ int nFlavourIndex;
+ 
+};
+
+}//end of namespace valor
+
+#endif
+

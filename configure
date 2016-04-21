@@ -185,7 +185,7 @@ $release=~m/(\d+).(\d+).(\d+)/;
 $major = $1;
 $minor = $2;
 $revis = $3;
-$VRS_HEADER_FILENAME = "$VALOR_FMWK/src/Conventions/Version.h";
+$VRS_HEADER_FILENAME = "$VALOR_FMWK/src/valor/Conventions/Version.h";
 print "Automatically generating file: $VRS_HEADER_FILENAME \n";
 open(VRS_HEADER_FILE, ">$VRS_HEADER_FILENAME") or die("Can not write out the Version.h file!");
 print VRS_HEADER_FILE "#ifndef _VALOR_FMWK_VERSION_H_ \n";
@@ -210,7 +210,7 @@ close(VRS_HEADER_FILE);
 # Automatically generate a header file with relevant build information that
 # can be used to make code conditional upon it
 #
-$BLD_HEADER_FILENAME = "$VALOR_FMWK/src/Conventions/Build.h";
+$BLD_HEADER_FILENAME = "$VALOR_FMWK/src/valor/Conventions/Build.h";
 print "Automatically generating file: $BLD_HEADER_FILENAME \n";
 open(BLD_HEADER_FILE, ">$BLD_HEADER_FILENAME") or die("Can not write out the Build.h file!");
 print BLD_HEADER_FILE "#ifndef _VALOR_FMWK_BUILD_H_ \n";

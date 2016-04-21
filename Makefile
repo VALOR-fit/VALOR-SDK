@@ -50,52 +50,52 @@ copy-scripts-to-bin: make-bin-lib-dir FORCE
 build-conventions: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Conventions package..."${VALOR_FMWK}/src;\
-	$(MAKE) -C "${VALOR_FMWK}/src/Conventions"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Conventions"
 
 build-utilities: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Utilities package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/Utilities"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Utilities"
 
 build-messenger: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Messenger package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/Messenger"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Messenger"
 
 build-varray: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building VArray package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/VArray"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/VArray"
 
 build-oscillation: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Oscillation package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/Oscillation"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Oscillation"
 
 build-ntuple: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Ntuple package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/Ntuple"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Ntuple"
 
 build-registry: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Registry package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/Registry"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Registry"
 
 build-cmdline: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building CmdLine package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/CmdLine"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/CmdLine"
 
 build-core-fitter: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building FitCore package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/FitCore"
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/FitCore"
 
 copy-rootdict-to-lib: make-bin-lib-dir FORCE
 	@echo " "
 	@echo -n "** Copying ROOT dictionary PCM files to ${VALOR_FMWK}/lib ..."
-	$(shell find "${VALOR_FMWK}/src/" -name "_RootDict*_rdict.pcm" | xargs -n 1 -I{} cp {} "${VALOR_FMWK}/lib/" )
+	$(shell find "${VALOR_FMWK}/src/valor" -name "_RootDict*_rdict.pcm" | xargs -n 1 -I{} cp {} "${VALOR_FMWK}/lib/" )
 	@echo " done"
 	@echo
 
@@ -116,7 +116,7 @@ colorclean:
 purge: FORCE
 	@echo " "
 	@echo "** Purging..."
-	cd ${VALOR_FMWK}/src;\
+	cd ${VALOR_FMWK}/src/valor;\
 	cd Conventions;               make purge; cd ..; \
 	cd Utilities;                 make purge; cd ..; \
 	cd Messenger;                 make purge; cd ..; \
@@ -134,7 +134,7 @@ clean-files: FORCE
 	@echo " "
 	@echo "** Cleaning..."
 	rm -f ${VALOR_FMWK}/bin/valor_fmwk-config; \
-	cd ${VALOR_FMWK}/src;\
+	cd ${VALOR_FMWK}/src/valor;\
 	cd Conventions;             make clean; cd ..; \
 	cd Utilities;               make clean; cd ..; \
 	cd Messenger;               make clean; cd ..; \
