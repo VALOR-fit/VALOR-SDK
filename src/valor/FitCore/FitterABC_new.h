@@ -19,9 +19,12 @@
 #define _valor_fitter_abc_new_h_
 
 #include <TString.h>
+
 #include "valor/Registry/Registry.h"
 
 namespace valor {
+
+class FitInputs;
 
 class FitterABC_new
 {
@@ -39,7 +42,7 @@ and many other optiosn passed through the ctor
 and is a uniform interface that can be used with any fitter
 */
 
-   virtual bool DoTheFit (void) = 0; 
+   virtual bool DoTheFit (FitInputs * inputs) = 0; 
 
 
 

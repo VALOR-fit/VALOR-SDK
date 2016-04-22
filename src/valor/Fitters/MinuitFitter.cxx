@@ -50,6 +50,15 @@ MinuitFitter::~MinuitFitter()
 //____________________________________________________________________________ 
 void MinuitFitter::Init(void) 
 {
+  // Set defaults
+  fConfig.Set("Minimizer",    "Migrad");
+  fConfig.Set("ErrType",      "Migrad");
+  fConfig.Set("Tolerance",        0.01);
+  fConfig.Set("Strategy",            1);  
+  fConfig.Set("MaxNumCalls",   1000000);
+  fConfig.Set("PrintLevel",         -1);
+
+/*
   fNFreeFitParams      = 0;
   fNFitBins            = 0;
   fCalcHesseErrors     = false;
@@ -65,27 +74,14 @@ void MinuitFitter::Init(void)
   fMinosErrStatusCode  = -999; 
   fFitTime             = 0;
   fFitTries            = 0;
+*/
+
 }
 //____________________________________________________________________________ 
 bool MinuitFitter::Configure(const Registry & conf)
 {
-  LOG("Minuit", pINFO) << "Fitter configuration: " << conf;
-
-/*
-  fCalcHesseErrors =
-  fCalcMinosErrors =
-  fTol             = 
-  fStr             =
-  fPrintLevel      =
-  fMaxNumCalls     =
-*/
-  //
-  //
-  // use this and deprecate the various Set(...) methods and some or all 
-  // of the info passed via Option_t in the ctor
-  //
-  //
-
+  fConfig.Append(conf);
+  LOG("Minuit", pINFO) << "Fitter configuration: " << fConfig;
   return true;
 }
 //____________________________________________________________________________ 
@@ -313,10 +309,7 @@ bool MinuitFitter::RunOnce(bool use_simplex)
   
   // Print fit result
   if(fCalcHesseErrors) {
-#ifdef __show_fit_result__
-#ifdef __show_fit_steps__
     LOG("Minuit", pINFO) << "Printing HESSE fit results...";
-#endif
     Double_t amin = 0;
     fitter->PrintResults(3,amin);
   //fitter->PrintResults(1,amin); // prints limits
