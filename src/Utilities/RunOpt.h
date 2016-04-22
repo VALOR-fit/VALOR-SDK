@@ -100,7 +100,8 @@ namespace valor {
         int    SystTweakMode       () const { if(fParseType & (kParseToys | kParseFitMarg)) return fSystTweakMode;       cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
         bool   RethrowIfUnphysical () const { if(fParseType & (kParseToys | kParseFitMarg)) return fRethrowIfUnphysical; cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
         bool   VerboseSystThrows   () const { if(fParseType & (kParseToys | kParseFitMarg)) return fVerboseSystThrows;   cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
-        
+        bool   VerboseFit          () const { if(fParseType & (kParseToys | kParseFitMarg)) return fVerboseFit       ;   cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
+
         // fit marginalization options
         //string Tag () const { if(fParseType & kParseFitMarg) return fTag; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Xmlfile () const { if(fParseType & kParseFitMarg) return fXmlfile; cerr << "kParseFitMarg not set" << endl; exit(-1); }
@@ -173,6 +174,7 @@ namespace valor {
         int  fSystTweakMode;
         bool fRethrowIfUnphysical;
         bool fVerboseSystThrows;
+        bool fVerboseFit;
         // global options
         string fGlobalDmsqScheme;
         string fGlobalMassHierarchy;

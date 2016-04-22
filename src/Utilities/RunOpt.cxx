@@ -424,6 +424,17 @@ void valor::RunOpt::ReadToyOptions()
     exit(1);
   }
 
+  // Set verbosity of fits
+  if(fParser->OptionExists("verbose-fit")){
+    fVerboseFit = (bool) fParser->ArgAsInt("verbose-fit");
+  }
+  else{
+    cerr << endl;
+    cerr << "Toy options:" << endl;
+    cerr << "You didn't set the option --verbose-fit (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
 }
 //____________________________________________________________________________
 void valor::RunOpt::ReadGlobalOptions()
