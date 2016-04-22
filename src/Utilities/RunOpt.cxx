@@ -103,6 +103,7 @@ void valor::RunOpt::Init(void)
   fSystTweakMode       = 1;
   fRethrowIfUnphysical = true;
   fVerboseSystThrows   = false; // Print out the output systematic tweaks
+  fVerboseFit   = false; // Print out the output systematic tweaks
   //global options
   fGlobalDmsqScheme     = "auto";
   fGlobalMassHierarchy  = "normal";
@@ -1192,6 +1193,7 @@ void valor::RunOpt::Usage(const int w)
     << " " << setw(w) << "--syst-tweak-mode VALUE"                << "which systematics to throw" << endl
     << " " << setw(w) << "--rethrow-unphysical-toys VALUE" << "rethrow unphysical toys or not" << endl
     << " " << setw(w) << "--verbose-syst-throws VALUE"     << "print the SKExp everytime you tweak systematics or not" << endl
+    << " " << setw(w) << "--verbose-fit VALUE"     << "Print out chisq distribution from fit" << endl
     << endl;
   }//kParseToys
   if(fParseType & kParseGlobal) {
@@ -1304,6 +1306,7 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
            << " - " << setw(w) << "Randomize systematics:"    << util::SysThrowIdToString(fSystTweakMode) << endl
            << " - " << setw(w) << "Rethrow unphysical:"       << ((fRethrowIfUnphysical) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Verbose skexp::Tweak():"   << ((fVerboseSystThrows) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Verbose fit:"              << ((fVerboseFit) ? "YES " : "NO") << endl
            << endl;
   }//kParseToys
   if(fParseType & kParseGlobal) {
