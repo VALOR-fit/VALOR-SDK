@@ -40,6 +40,9 @@ public:
     kVATDouble    =  0,
     kVATFloat     =  1,
     kVATInt       =  2,
+    kVATUInt      =  3,
+    kVATInt64     =  4,
+    kVATUInt64    =  5,
   } kVArrayType;
     
   VALORArrayHeader(void);

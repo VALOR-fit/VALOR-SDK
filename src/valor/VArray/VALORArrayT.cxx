@@ -748,6 +748,18 @@ template <> VALORArrayHeader::kVArrayType VALORArrayT<int>::
   return VALORArrayHeader::kVATInt;
 }
 //________________________________________________________________________________________
+template <> VALORArrayHeader::kVArrayType VALORArrayT<Long64_t>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATInt64;
+}
+//________________________________________________________________________________________
+template <> VALORArrayHeader::kVArrayType VALORArrayT<ULong64_t>::
+ GetHeaderType(void)
+{
+  return VALORArrayHeader::kVATUInt64;
+}
+//________________________________________________________________________________________
 }
 
 //________________________________________________________________________________________
@@ -755,4 +767,6 @@ template <> VALORArrayHeader::kVArrayType VALORArrayT<int>::
 template class valor::VALORArrayT<double>;
 template class valor::VALORArrayT<float>;
 template class valor::VALORArrayT<int>;
+template class valor::VALORArrayT<Long64_t>;
+template class valor::VALORArrayT<ULong64_t>;
 //________________________________________________________________________________________

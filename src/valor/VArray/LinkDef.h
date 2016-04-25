@@ -9,6 +9,8 @@
 #pragma link C++ class valor::VALORArrayT<double>+;
 #pragma link C++ class valor::VALORArrayT<float>+;
 #pragma link C++ class valor::VALORArrayT<int>+;
+#pragma link C++ class valor::VALORArrayT<Long64_t>+;
+#pragma link C++ class valor::VALORArrayT<ULong64_t>+;
 
 //~ #pragma link C++ typedef VALORArray;
 //~ #pragma link C++ typedef VALORArrayF;
