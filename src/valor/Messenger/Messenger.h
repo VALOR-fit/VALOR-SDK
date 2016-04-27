@@ -17,8 +17,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _MESSENGER_H_
-#define _MESSENGER_H_
+#ifndef _VALOR_MESSENGER_H_
+#define _VALOR_MESSENGER_H_
 
 #include <iostream>
 #include <cstring>
@@ -72,11 +72,12 @@ using std::string;
          appending a short string (using the __FUNCTION__ and __LINE__ macros)
          with information for the calling method [produces short message].
 */
-
+#ifndef SLOG
 #define SLOG(stream, priority) \
-           (*Messenger::Instance())(stream) \
+           (*valor::Messenger::Instance())(stream) \
                << priority << "[s] <" \
                << __FUNCTION__ << " (" << __LINE__ << ")> : "
+#endif
 
 /*!
   \def   LOG(stream, priority)
@@ -84,49 +85,64 @@ using std::string;
          appending a string (using the __FILE__, __FUNCTION__ and __LINE__ macros)
          with information for the calling method [produces normal messages].
 */
-
+#ifndef LOG
 #define LOG(stream, priority) \
-           (*Messenger::Instance())(stream) \
+           (*valor::Messenger::Instance())(stream) \
                << priority << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
+#endif
+
+// Copies of the above two functions with "V" in front (for VALORLog).
+// Can be used to prevent collisisons with GENIE logging in programs built against both.
+#define VSLOG(stream, priority) \
+           (*valor::Messenger::Instance())(stream) \
+               << priority << "[s] <" \
+               << __FUNCTION__ << " (" << __LINE__ << ")> : "
+#define VLOG(stream, priority) \
+           (*valor::Messenger::Instance())(stream) \
+               << priority << "[s] <" \
+               << __FUNCTION__ << " (" << __LINE__ << ")> : "
+               
+
+#ifndef LOG_FATAL //  This one will be used to assume all others below are already defined
 
 #define LOG_FATAL(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::FATAL << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LOG_ALERT(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::ALERT << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LOG_CRIT(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::CRIT << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LOG_ERROR(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::ERROR << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LOG_WARN(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::WARN << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LOG_NOTICE(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::NOTICE << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LOG_INFO(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::INFO << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LOG_DEBUG(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::DEBUG << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
@@ -138,47 +154,47 @@ using std::string;
 */
 
 #define LLOG(stream, priority) \
-           (*Messenger::Instance())(stream) \
+           (*valor::Messenger::Instance())(stream) \
                << priority << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LLOG_FATAL(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::FATAL << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LLOG_ALERT(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::ALERT << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LLOG_CRIT(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::CRIT << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LLOG_ERROR(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::ERROR << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LLOG_WARN(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::WARN << "'[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LLOG_NOTICE(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::NOTICE << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LLOG_INFO(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::INFO << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
 #define LLOG_DEBUG(stream) \
-          (*Messenger::Instance())(stream) \
+          (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::DEBUG << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
 
@@ -189,7 +205,9 @@ using std::string;
 */
 
 #define BLOG(stream, priority) \
-	  (*Messenger::Instance())(stream) << priority
+	  (*valor::Messenger::Instance())(stream) << priority
+       
+#endif // Our check for LOG_FATAL, to make sure we don't collide with GENIE
 
 namespace valor {
 
