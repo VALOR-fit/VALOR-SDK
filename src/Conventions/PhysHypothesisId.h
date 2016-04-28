@@ -34,7 +34,7 @@ namespace valor {
       kHypNuMuDisapp2F,      // muon-neutrino disappearance, simple 2-flavour oscillation framework
       kHypOsc3F,             // neutrino oscillations, 3-flavour framework
       kHypOsc3FBar,          // neutrino oscillations, 3-flavour framework with separate mixing parameters for nu and nubar
-      kHypOsc3FBarDissap,    // neutrino oscillations, 3-flavour framework with separate 23 sector mixing parameters for nu and nubar
+      kHypOsc3FBarDisapp,    // neutrino oscillations, 3-flavour framework with separate 23 sector mixing parameters for nu and nubar
       
       // NEW BETABAR
       kHypOsc3FBarNormBar,   // neutrino oscillations, 3-flavour framework with separate mixing parameters for nu and nubar and normalization for numubar->nuebar components
@@ -58,7 +58,7 @@ namespace valor {
     string PhysHypAsString (conv::PhysHypothesis_t h); //alias
     string AsString (conv::PhysHypothesis_t hyp, double mix12, double mix13, double mix23, double deltacp, double dm12sq, double dm23sq);
     
-    // NEW BETABAR + 23barDissap
+    // NEW BETABAR + 23barDisapp
     string AsString (conv::PhysHypothesis_t hyp, double mix12, double mix13, double mix23, double deltacp,
                      double dm12sq, double dm23sq, double betabar, double mix23bar, double dm23sqbar);
     //

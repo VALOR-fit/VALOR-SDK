@@ -39,7 +39,7 @@ string util::AsString(PhysHypothesis_t h)
     case (kHypOsc3FBar) :
       return "<3-flavour Neutrino Oscillations, split nu and nubar>";
       break;
-    case (kHypOsc3FBarDissap) :
+    case (kHypOsc3FBarDisapp) :
       return "<3-flavour Neutrino Oscillations, split 23 sector nu and nubar>";
       break;
       // NEW BETABAR
@@ -306,7 +306,7 @@ string util::AsString (
     out<<"3f+3fbar";
   }
   
-  if (hyp == valor::conv::kHypOsc3FBarDissap)
+  if (hyp == valor::conv::kHypOsc3FBarDisapp)
   {
     double rndmz = -900;
     bool show_mix12     = (mix12      > rndmz);
@@ -603,7 +603,7 @@ PhysHypothesis_t util::PhysHypFromString (string sh)
   if(sh == "2f_numu_disap"    ) return kHypNuMuDisapp2F;
   if(sh == "3f_osc"           ) return kHypOsc3F;
   if(sh == "3f_oscbar"        ) return kHypOsc3FBar;
-  if(sh == "3f_oscbar_dissap" ) return kHypOsc3FBarDissap;
+  if(sh == "3f_oscbar_disapp" ) return kHypOsc3FBarDisapp;
   
   // NEW BETABAR
   if(sh == "3f_oscbar_normbar") return kHypOsc3FBarNormBar;
