@@ -1207,7 +1207,7 @@ void valor::RunOpt::Usage(const int w)
   }//kParseGlobal
   if(fParseType & kParse3FOscParams) {
     cout << "3 flavour running options:" << endl
-    << " " << setw(w) << "--hypothesis VALUE"         << "3f_osc 3f_oscbar 3f_osc_normbar 3f_oscbar_normbar 2f_numu_disap 3f_oscbar_dissap" << endl
+    << " " << setw(w) << "--hypothesis VALUE"         << "3f_osc 3f_oscbar 3f_osc_normbar 3f_oscbar_normbar 2f_numu_disap 3f_oscbar_disapp" << endl
     << " " << setw(w) << "--synch-osc-ih-to-nh VALUE" << "Synchronize IH to NH init oscillation parameters" << endl
     << " " << setw(w) << "--normal-mass-hierarchy-prior VALUE" << "The prior probability of normal hierarchy" << endl
     << " " << setw(w) << "--throw-mass-hierarchy"      << "Throw the mass hierarchy for fakedata sets" << endl

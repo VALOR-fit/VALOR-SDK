@@ -1184,7 +1184,7 @@ void valor::util::OscParams::UpdatePhysHypothesis(PhysHypothesis& ph, bool print
     ph.SetCurrValue(kPhypDm12sqBar,    input_dm12sqbar_used);
     ph.SetCurrValue(kPhypDm23sqBar,    input_dm23sqbar_used);
   }//kHypOsc3FBar
-  else if(ph.Hypothesis() == kHypOsc3FBarDissap) {
+  else if(ph.Hypothesis() == kHypOsc3FBarDisapp) {
     ph.SetCurrValue(kPhypMixing12,  input_mixing12_used);
     ph.SetCurrValue(kPhypMixing13,  input_mixing13_used);
     ph.SetCurrValue(kPhypMixing23,  input_mixing23_used);
@@ -1344,7 +1344,7 @@ void valor::util::OscParams::UpdateFitParamList(FitParamList* fparm, bool set_in
       fparm->SetCurrentValue(kPhypDm23sqBar,    input_dm23sqbar_used);
     }
   }//kHypOsc3FBar
-  else if(fparm->PhysicsHypothesis() == kHypOsc3FBarDissap) {
+  else if(fparm->PhysicsHypothesis() == kHypOsc3FBarDisapp) {
     if(set_init) {
       fparm->SetInitValue(kPhypMixing12,  input_mixing12_used);
       fparm->SetInitValue(kPhypMixing13,  input_mixing13_used);
@@ -1365,7 +1365,7 @@ void valor::util::OscParams::UpdateFitParamList(FitParamList* fparm, bool set_in
       fparm->SetCurrentValue(kPhypMixing23Bar,  input_mixing23bar_used);
       fparm->SetCurrentValue(kPhypDm23sqBar,    input_dm23sqbar_used);
     }
-  }//kHypOsc3FBarDissap
+  }//kHypOsc3FBarDisapp
   else if(fparm->PhysicsHypothesis() == kHypOsc3FNormBar) {
     if(set_init) {
       fparm->SetInitValue(kPhypMixing12,  input_mixing12_used);
