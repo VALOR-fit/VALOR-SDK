@@ -6,7 +6,7 @@
  ChangeLog:
  
  */
-//_______________________________________________f_________________________________________
+//________________________________________________________________________________________
 
 #include <cassert>
 #include <vector>
@@ -929,7 +929,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarFit(int nuisance)
 }
 
 //________________________________________________________________________________________
-FitParamList * FitParamList::NuOsc3FlavourBarDissapFit(int nuisance)
+FitParamList * FitParamList::NuOsc3FlavourBarDisappFit(int nuisance)
 {
   FitParamList * fparm = new FitParamList(8+nuisance);
   FitParamList::Append3FlavourOscillation(fparm, 0);
@@ -1243,7 +1243,7 @@ void FitParamList::Append3FlavourOscillationBar(FitParamList * fparm, int start)
   fparm->AddParam( ip++, kPhypDm12sqBar,    kInitFitDm12sqBar,   kMinFitDm12sqBar, kMaxFitDm12sqBar, kStepDm12sqBar,  false, false);
   
 }
-//________New_For_NuMuBar_Dissap_Fit________________________________________________________________________________
+//________New_For_NuMuBar_Disapp_Fit________________________________________________________________________________
 void FitParamList::Append3Flavour23BarOscillation(FitParamList * fparm, int start)
 {
   int ip = start; // first unallocated element in the param list
@@ -1578,7 +1578,7 @@ PhysHypothesis_t FitParamList::PhysicsHypothesis(void) const
      this->Exists(kPhypMixing23)    &&
      this->Exists(kPhypCPV) )
   {
-    return kHypOsc3FBarDissap;
+    return kHypOsc3FBarDisapp;
   }
   
   // neutrino oscillations (3-flavour framework)

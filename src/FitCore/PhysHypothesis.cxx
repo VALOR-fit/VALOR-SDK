@@ -84,9 +84,9 @@ PhysHypothesis::PhysHypothesis(const FitParamList & fp)
     this->SetCurrValue(kPhypMixing23Bar, fp.CurrValue(kPhypMixing23Bar));
     this->SetCurrValue(kPhypCPVBar,      fp.CurrValue(kPhypCPVBar));
   }
-  else if(hyp == kHypOsc3FBarDissap)
+  else if(hyp == kHypOsc3FBarDisapp)
   {
-    this->Init(kHypOsc3FBarDissap);
+    this->Init(kHypOsc3FBarDisapp);
     this->SetCurrValue(kPhypDm12sq,      fp.CurrValue(kPhypDm12sq));
     this->SetCurrValue(kPhypDm23sq,      fp.CurrValue(kPhypDm23sq));
     this->SetCurrValue(kPhypMixing12,    fp.CurrValue(kPhypMixing12));
@@ -134,6 +134,25 @@ PhysHypothesis::PhysHypothesis(const FitParamList & fp)
     this->SetCurrValue(kPhypBetaBar,     fp.CurrValue(kPhypBetaBar));
   }
 
+  //
+
+  // NEW BETABAR 2
+  
+  // neutrino oscillations (3-flavour framework), + 23 bar
+  else if(hyp == kHypOsc3FBarDisapp)
+  {
+    this->Init(kHypOsc3FNormBar);
+    this->SetCurrValue(kPhypDm12sq,      fp.CurrValue(kPhypDm12sq));
+    this->SetCurrValue(kPhypDm23sq,      fp.CurrValue(kPhypDm23sq));
+    this->SetCurrValue(kPhypMixing12,    fp.CurrValue(kPhypMixing12));
+    this->SetCurrValue(kPhypMixing13,    fp.CurrValue(kPhypMixing13));
+    this->SetCurrValue(kPhypMixing23,    fp.CurrValue(kPhypMixing23));
+    this->SetCurrValue(kPhypCPV,         fp.CurrValue(kPhypCPV));
+    this->SetCurrValue(kPhypMixing23Bar, fp.CurrValue(kPhypMixing23Bar));
+    this->SetCurrValue(kPhypDm23sqBar,   fp.CurrValue(kPhypDm23sqBar));
+
+  }
+  
   //
 
 
@@ -317,6 +336,18 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
   //
   
 
+  // neutrino oscillations (3-flavour framework) + 23 bar parameters
+  if(fHypothesis == kHypOsc3FBarDisapp) {
+    fParams[kPhypMixing12    ]  = 0;
+    fParams[kPhypMixing13    ]  = 0;
+    fParams[kPhypMixing23    ]  = 0;
+    fParams[kPhypCPV         ]  = 0;
+    fParams[kPhypDm23sq      ]  = 0;
+    fParams[kPhypDm12sq      ]  = 0;
+    fParams[kPhypMixing23Bar ]  = 0;
+    fParams[kPhypDm23sqBar   ]  = 0;
+  }
+  //
 
   // neutrino decay 
   if(fHypothesis == kHypDecay) {

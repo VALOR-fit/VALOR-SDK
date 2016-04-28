@@ -250,7 +250,7 @@ namespace valor {
     // Returns a fit param list with a physics hypothesis, and 'nuisance' empty parameters.
     static FitParamList * NuOsc3FlavourFit                          (int nuisance = 0);
     static FitParamList * NuOsc3FlavourBarFit                       (int nuisance = 0);
-    static FitParamList * NuOsc3FlavourBarDissapFit                 (int nuisance = 0);
+    static FitParamList * NuOsc3FlavourBarDisappFit                 (int nuisance = 0);
     
     // NEW BETABAR 2
     static FitParamList * NuOsc3FlavourNormBarFit                   (int nuisance = 0);
