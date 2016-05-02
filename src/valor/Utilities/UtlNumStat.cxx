@@ -985,3 +985,17 @@ int valor::util::EstimateOptimalNumberOfBinsForGaussian(int npoints, double nsig
   return nbins;
 }
 //____________________________________________________________________________
+double valor::util::FractionOfBinContained(double min1, double max1, double min2, double max2)
+{
+  double range1 = max1-min1;
+  double overlap;
+  if     (min1 >= min2 && max1 <= max2) {overlap = max1 - min1;} // Entirely subsumed first bin
+  else if(min2 >= min1 && max2 <= max1) {overlap = max2 - min2;} // Entirely subsumed second bin
+  else if(max1 >  max2 && min1 >= min2) {overlap = max2 - min1;} // Second bin extends low
+  else if(min1 <  min2 && max1 <= max2) {overlap = max1 - min2;} // Second bin extends high
+  else {
+    overlap = 0; // No crossover
+  }
+  return TMath::Max(overlap/range1,0.);
+}
+//____________________________________________________________________________
