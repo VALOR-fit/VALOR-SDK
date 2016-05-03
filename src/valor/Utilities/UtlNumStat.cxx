@@ -128,16 +128,16 @@ double valor::util::ChisqGauss(
 //____________________________________________________________________________
 double valor::util::ChisqPoisson(double ndata, double nmc)
 {
-  if(nmc <= 0.)
-    nmc = kSetNegEventsTo;
-  if(ndata <= 0.)
+  if(nmc < conv::kSetNegEventsTo) {
+    if (ndata>conv::kAVerySmallNum) {
+      LOG("UtlNumStat",pWARN)<<"Zero MC events in bin with data events - chisquare should be infinite.";
+    }
+    nmc = conv::kSetNegEventsTo;
+  }
+  if(ndata <= conv::kAVerySmallNum) {
     return 2.*(nmc-ndata);
+  }
   return 2. * (nmc-ndata) + 2. * ndata * TMath::Log(ndata/nmc);
-
-  // if(nmc > 0. && ndata > 0.)
-  //   return 2. * (nmc-ndata) + 2. * ndata * TMath::Log(ndata/nmc);
-  // else 
-  //   return 2. * (nmc-ndata);
 }
 //____________________________________________________________________________
 TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
