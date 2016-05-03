@@ -246,8 +246,8 @@ bool FitterMinuit::DoTheFit(void)
 
   // reset fit time, bestfit statistic and status codes in
   // persistable FitParamList obj
-  fFitInputs->FitParams().SetFitTime(0);
-  fFitInputs->FitParams().SetBestFitStatistic(0);
+  fFitInputs->FitParams().SetFitTime(-999);
+  fFitInputs->FitParams().SetBestFitStatistic(-999);
   fFitInputs->FitParams().ClearStatusCodes();
 
   // Run the fitter once - we have the option here to check the status code
@@ -273,7 +273,8 @@ bool FitterMinuit::DoTheFit(void)
 
   LOG("Minuit", pINFO) 
     << "Fit performed in " << fFitTime 
-    << " sec after " << fFitTries << " attempts";
+    << " sec after " << fFitTries << " attempts."
+    << " Used " <<gMinuit->fNfcn << " calls.";
   LOG("Minuit", pINFO) 
     << "Best-fit statistic: " << fFitInputs->FitParams().GetBestFitStatistic();
 
