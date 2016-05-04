@@ -21,6 +21,7 @@ ChangeLog:
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 
 #include <TROOT.h>
 #include <TMath.h>
@@ -126,9 +127,12 @@ double valor::util::ChisqGauss(
   return chisq;
 }
 //____________________________________________________________________________
-double valor::util::ChisqPoisson(double ndata, double nmc)
+double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
 {
   double chisq;
+  // Use long doubles internally - since DUNEND needs great precision for big numbers
+  long double ndata = ndata_db;
+  long double nmc   = nmc_db;
   if(nmc < conv::kSetNegEventsTo) {
     if (ndata>conv::kAVerySmallNum) {
       LOG("UtlNumStat",pWARN)<<"Zero MC events in bin with data events - chisquare should be infinite.";
@@ -139,7 +143,7 @@ double valor::util::ChisqPoisson(double ndata, double nmc)
     chisq = 2.*(nmc-ndata);
   }
   else {
-    chisq = 2. * (nmc-ndata) + 2. * ndata * TMath::Log(ndata/nmc);
+    chisq = 2. * ndata * (nmc/ndata+std::log(ndata/nmc)-1.l);
   }
 #ifdef VALOR_FMWK_LOW_LEVEL_MESG_ENABLED
   if (chisq<0) {
