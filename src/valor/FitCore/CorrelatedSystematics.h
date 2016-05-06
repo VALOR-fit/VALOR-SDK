@@ -54,6 +54,9 @@ public:
   
   double OneSigmaError(conv::PhysParamId_t p) const;
   double OneSigmaErrorByIndex(int idx) const;
+  
+  double CovMatrixElement(conv::PhysParamId_t p1, conv::PhysParamId_t p2) const;
+  double CovMatrixElementByIndex(int idx1, int idx2) const;
 
   // Penalty term included in the chisq 
   double FitStatisticPenalty (Option_t * opt = 0) const;

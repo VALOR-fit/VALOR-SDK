@@ -373,6 +373,20 @@ double CorrelatedSystematics::OneSigmaErrorByIndex(int idx) const
   return TMath::Sqrt(cov[idx][idx]);
 }
 //________________________________________________________________________________________
+double CorrelatedSystematics::CovMatrixElement(PhysParamId_t p1, PhysParamId_t p2) const
+{
+  const TMatrixD & cov = *fCovMtrx;
+  int idx1 = this->Param2Idx(p1);
+  int idx2 = this->Param2Idx(p2);
+  return cov[idx1][idx2];
+}
+//________________________________________________________________________________________
+double CorrelatedSystematics::CovMatrixElementByIndex(int idx1, int idx2) const
+{
+  const TMatrixD & cov = *fCovMtrx;
+  return cov[idx1][idx2];
+}
+//________________________________________________________________________________________
 void CorrelatedSystematics::Tweak(
   bool       force_inputs, // force the input params or generate random ones internally  
   TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
