@@ -346,7 +346,8 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     return false;
   }
   
-  int num_of_params = fFitInputs->FitParams().Size();
+  int num_of_params      = fFitInputs->FitParams().Size();
+  int num_of_free_params = fFitInputs->FitParams().GetNumberFreeParameters();
   
   // Found best fit! Copy current --> best-fit values
   for(int ip = 0; ip < num_of_params; ip++) {
@@ -367,9 +368,9 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   fitter->PrintResults(3,aminn);
 #endif
 
-  TMatrixDSym cov(num_of_params);
-  for(int i=0; i<num_of_params; i++) {
-    for(int j=0; j<num_of_params; j++) {
+  TMatrixDSym cov(num_of_free_params);
+  for(int i=0; i<num_of_free_params; i++) {
+    for(int j=0; j<num_of_free_params; j++) {
         cov[i][j] = fitter->GetCovarianceMatrixElement(i,j);
     }
   }
