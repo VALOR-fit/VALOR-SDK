@@ -136,6 +136,18 @@ void FitParamList::SetCurrentValue(PhysParamId_t p, double v)
   fCurrValue [this->Id(p)] = v;
 }
 //________________________________________________________________________________________
+void FitParamList::SetInitValueByIndex(int i, double v)
+{
+  fInitValue [i] = v;
+  fCurrValue [i] = v;
+}
+
+//________________________________________________________________________________________
+void FitParamList::SetCurrentValueByIndex(int i, double v)
+{
+  fCurrValue [i] = v;
+}
+//________________________________________________________________________________________
 void FitParamList::ResetCurrToInitValues(void)
 {
   for(int ip = 0; ip < fNParams; ip++) {

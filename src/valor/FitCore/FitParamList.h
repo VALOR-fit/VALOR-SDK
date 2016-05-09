@@ -97,8 +97,10 @@ namespace valor {
     void Update(valor::conv::PhysParamId_t p, double v);
     
     // Allow modifying the initial value (minimization may be sensitive to this choice)
-    void SetInitValue(valor::conv::PhysParamId_t p, double v);
+    void SetInitValue   (valor::conv::PhysParamId_t p, double v);
     void SetCurrentValue(valor::conv::PhysParamId_t p, double v);
+    void SetInitValueByIndex    (int i, double v);
+    void SetCurrentValueByIndex (int i, double v);
     
     // Update limits
     void SetMinValue (valor::conv::PhysParamId_t p, double min) { fMinValue [this->Id(p)] = min; }
