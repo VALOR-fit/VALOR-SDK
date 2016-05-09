@@ -1012,3 +1012,14 @@ double valor::util::FractionOfBinContained(double min1, double max1, double min2
   return TMath::Max(overlap/range1,0.);
 }
 //____________________________________________________________________________
+bool valor::util::SplineIsFlat(const TSpline * spl)
+{
+  bool flat = true;
+  double x,y;
+  for (int i = 0 ; i < spl->GetNp() ; i++) {
+    spl->GetKnot(i,x,y);
+    if (std::fabs(y-1) > conv::kASmallNum) {flat = false;}
+  }
+  return flat;
+}
+//____________________________________________________________________________
