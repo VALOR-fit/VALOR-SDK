@@ -245,6 +245,11 @@ FitModelABC * CompoundFitModel::GetSubModel(int model_idx, Option_t * /*opt*/)
   return fSubModels.at(model_idx);
 }
 //________________________________________________________________________________________
+unsigned int CompoundFitModel::GetNSubModels(Option_t * /*opt*/) const
+{
+  return fSubModels.size();
+}
+//________________________________________________________________________________________
 CorrelatedSystematics * CompoundFitModel::GetSystematics(Option_t * /*opt*/)
 {
   return fSystematics;

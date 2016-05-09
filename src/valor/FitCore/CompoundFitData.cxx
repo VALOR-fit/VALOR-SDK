@@ -210,6 +210,11 @@ FitDataABC * CompoundFitData::GetSubData(int data_idx, Option_t * /*opt*/)
   return fSubData.at(data_idx);
 }
 //________________________________________________________________________________________
+unsigned int CompoundFitData::GetNSubData(Option_t * /*opt*/) const
+{
+  return fSubData.size();
+}
+//________________________________________________________________________________________
 void CompoundFitData::SetName(std::string name)
 {
   fName = name;
