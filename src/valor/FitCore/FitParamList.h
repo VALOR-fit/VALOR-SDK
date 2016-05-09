@@ -67,7 +67,9 @@ namespace valor {
     double MaxValue           (valor::conv::PhysParamId_t p) const { return fMaxValue    [this->Id(p)]; }
     double StepSize           (valor::conv::PhysParamId_t p) const { return fStepSize    [this->Id(p)]; }
     bool   IsFixed            (valor::conv::PhysParamId_t p) const { return fIsFixed     [this->Id(p)]; }
+    bool   IsFixedByIndex     (int i                       ) const { return fIsFixed     [i];           }
     bool   IsNuisance         (valor::conv::PhysParamId_t p) const { return fIsNuisance  [this->Id(p)]; }
+    bool   IsNuisanceByIndex  (int i                       ) const { return fIsNuisance  [i];           }
     double MigradError        (valor::conv::PhysParamId_t p) const { return fMigradError [this->Id(p)]; }
     double HesseError         (valor::conv::PhysParamId_t p) const { return fHesseError  [this->Id(p)]; }
     double PlusError          (valor::conv::PhysParamId_t p) const { return fPlusError   [this->Id(p)]; }
@@ -167,7 +169,8 @@ namespace valor {
     // Check if this FPL is complete and ready to be used
     bool IsComplete();
     
-    TMatrixDSym * GetCovMatrix(void) { return fCovMatrix; }
+    TMatrixDSym *       GetCovMatrix(void)       { return fCovMatrix; }
+    const TMatrixDSym * GetCovMatrix(void) const { return fCovMatrix; }
     
     // Calculate the fit statistic penalty
     double HypothesisFitStatisticPenalty(Option_t * opt = 0) const;
