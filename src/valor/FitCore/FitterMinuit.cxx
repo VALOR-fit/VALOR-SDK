@@ -301,6 +301,8 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 {
   fHesseErrStatusCode = -1;
   double fcntemp;
+  
+  FitParamList & fp = fFitInputs->FitParams();
 
   // Get the fitter
 #ifdef __show_fit_steps__
@@ -342,21 +344,20 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     return false;
   else if(fMigradMinStatusCode == 4 && use_simplex) {
     //copy current to best fit, to stop horrible crashes
-    fFitInputs->FitParams().CopyCurrToBestFitValues();
+    fp.CopyCurrToBestFitValues();
     return false;
   }
   
-  int num_of_params      = fFitInputs->FitParams().Size();
-  int num_of_free_params = fFitInputs->FitParams().GetNumberFreeParameters();
+  int num_of_params      = fp.GetNumberParameters();
   
   // Found best fit! Copy current --> best-fit values
   for(int ip = 0; ip < num_of_params; ip++) {
     double value, error;
     gMinuit->GetParameter(ip, value, error);
-    PhysParamId_t p = fFitInputs->FitParams().WhichParam(ip);
-    fFitInputs->FitParams().Update(p, value);
+    PhysParamId_t p = fp.WhichParam(ip);
+    fp.Update(p, value);
   }
-  fFitInputs->FitParams().CopyCurrToBestFitValues();
+  fp.CopyCurrToBestFitValues();
 
   // Print fit result
 #ifdef __show_fit_result__
@@ -368,13 +369,22 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   fitter->PrintResults(3,aminn);
 #endif
 
-  TMatrixDSym cov(num_of_free_params);
-  for(int i=0; i<num_of_free_params; i++) {
-    for(int j=0; j<num_of_free_params; j++) {
-        cov[i][j] = fitter->GetCovarianceMatrixElement(i,j);
+  TMatrixDSym cov(num_of_params);
+  int ifree = 0;
+  int jfree = 0;
+  for(int i = 0; i<num_of_params; i++) {
+    if (!fp.IsFixedByIndex(i)) {
+      for(int j = 0; j<num_of_params; j++) {
+        if (!fp.IsFixedByIndex(j)) {
+          cov[i][j] = fitter->GetCovarianceMatrixElement(ifree,jfree);
+          jfree++;
+        }
+      }
+      jfree = 0;
+      ifree++;
     }
   }
-  fFitInputs->FitParams().SetCovMatrix(cov);
+  fp.SetCovMatrix(cov);
 
   double unfilled = -999;
 
@@ -388,7 +398,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   for (int ip = 0 ; ip < num_of_params ; ip++) {
     migrad_err[ip] = fitter->GetParError(ip);
   }
-  fFitInputs->FitParams().SetMigradErrors(migrad_err);
+  fp.SetMigradErrors(migrad_err);
 
   // Get the error matrix status
   double ha(0.0);     // dummy vars
@@ -412,7 +422,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     for (int ip = 0 ; ip < num_of_params ; ip++) {
       hesse_err[ip] = fitter->GetParError(ip);
     }
-    fFitInputs->FitParams().SetHesseErrors (hesse_err);
+    fp.SetHesseErrors (hesse_err);
   }
   
   //else 
@@ -438,7 +448,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
       double glob_corr, parerr; // dummy vars
         fitter->GetErrors(ip, minos_err_plus[ip], minos_err_minus[ip],parerr,glob_corr);
     }
-    fFitInputs->FitParams().SetMinosErrors (minos_err_plus, minos_err_minus);
+    fp.SetMinosErrors (minos_err_plus, minos_err_minus);
   }
   
   // Print fit result
