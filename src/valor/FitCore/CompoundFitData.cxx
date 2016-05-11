@@ -99,7 +99,7 @@ bool CompoundFitData::Generate (FitModelABC * model, const PhysHypothesis & ph, 
 {
   bool status = true;
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    status = status & (*it)->Generate(model, ph, stat_fluct);
+    status = status && (*it)->Generate(model, ph, stat_fluct);
   }
   return status;
 }
