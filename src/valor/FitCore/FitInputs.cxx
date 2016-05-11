@@ -79,8 +79,8 @@ double FitInputs::Statistic(Option_t * option) const
   double statistic = 0;
   if (option || fGoodnessOfFit) {
     const char * s = fGoodnessOfFit ? "%s gof" : "%s";
-    Option_t * newopt( Form(s,option) );
-    statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt);
+    TString newopt =  TString::Format(s,option);
+    statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt.Data());
   }
   else {
     statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL);
