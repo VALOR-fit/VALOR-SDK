@@ -32,6 +32,7 @@ ChangeLog:
 #include "valor/Conventions/Opt.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Messenger/Messenger.h"
+#include "valor/FitCore/CompoundFitModel.h" 
 #include "valor/FitCore/FitterMinuit.h" 
 #include "valor/FitCore/FitInputs.h" 
 #include "valor/FitCore/FitParamList.h" 
@@ -369,12 +370,14 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   fitter->PrintResults(3,aminn);
 #endif
 
+  // Copy errors from HESSE for free parameters
   TMatrixDSym cov(num_of_params);
   int ifree = 0;
   int jfree = 0;
   for(int i = 0; i<num_of_params; i++) {
     if (!fp.IsFixedByIndex(i)) {
       for(int j = 0; j<num_of_params; j++) {
+        // Put unfixed errors in the matrix
         if (!fp.IsFixedByIndex(j)) {
           cov[i][j] = fitter->GetCovarianceMatrixElement(ifree,jfree);
           jfree++;
@@ -384,6 +387,17 @@ bool FitterMinuit::RunOnce(bool use_simplex)
       ifree++;
     }
   }
+  // Copy prior errors along diagonal for unfixed
+  const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fFitInputs->Expectation());
+  if (cm) {
+    for (int i = 0; i < num_of_params; i++) {
+      if (!fp.IsFixedByIndex(i)) {continue;}
+      PhysParamId_t p = fp.WhichParam(i);
+      cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
+    }
+  }
+    
+    
   fp.SetCovMatrix(cov);
 
   double unfilled = -999;
