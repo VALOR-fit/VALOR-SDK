@@ -79,6 +79,9 @@ public:
   void SetCurrentValueByIndex(int idx, double value);
   void SetCurrentValue(conv::PhysParamId_t p, double value);
   
+  // Replace the covariance matrix
+  void SetCovMatrix(const TMatrixD & matr);
+  
   // Find out which parameters are at which indices
   unsigned int Size(void) const;
   conv::PhysParamId_t WhichParam(int idx) const;
@@ -120,6 +123,7 @@ protected:
   conv::PhysParamId_t  Idx2Param (int index) const; ///< convert flux a covariance matrix or vector index to PhysParamId_t
   
   void CholeskyDecomposeMatrix (void);          ///< Cholesky decompose the covariance matrix
+  void InvertMatrix (void);
   
   TVectorD *  fDefaultValues;     ///< Default values of the systematic parameters (all 1 unless subclass alters one. Used only when XML vectors not specified).
   TVectorD *  fUntunedValues;     ///< Untuned values of the systematic parameters, read from XML if possible.

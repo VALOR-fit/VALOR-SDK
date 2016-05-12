@@ -266,26 +266,8 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   // Do Cholesky decomposition
   LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();
-  double det;
   
-  // Calculate matrix inversion using Cholesky triangular matrices - should be most accurate.
-  TMatrixD cholInv(*fCovMtrxChoL);
-  cholInv.Invert(&det);
-  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix decomposition determinant: " << det;
-  TMatrixD cholInvT(TMatrixD::kTransposed,cholInv);
-  fCovMtrxInv = new TMatrixD(cholInvT * cholInv);
-  
-  // Other matrix inversion methods - not used.
-#ifdef __matrix_invert_direct__
-  // Calculate matrix inversion directly
-  fCovMtrxInv = new TMatrixD(cov);
-  fCovMtrxInv->Invert(&det);
-  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (direct): " << det;
-#elif __matrix_invert_svd__
-  // Use scalar value decomposition for matrix inverse
-  fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
-  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (SVD): " << det;
-#endif
+  this->InvertMatrix();
   
   // Say we're configured
   fIsConfigured = true;
@@ -458,6 +440,7 @@ void CorrelatedSystematics::Tweak(
 //________________________________________________________________________________________
 void CorrelatedSystematics::CholeskyDecomposeMatrix(void)
 {
+  if (fCovMtrxChoL) {delete fCovMtrxChoL; fCovMtrxChoL = NULL;}
 #ifdef __show_cholesky_mesg_info__  
     LOG("CorrelatedSystematics",pDEBUG) 
       << "Running Cholesky's decomposition method on the syst covariance matrix.";
@@ -646,5 +629,40 @@ bool CorrelatedSystematics::AppendParamsTo(valor::FitParamList & fpl) const
     fpl.AddParam(-999,p,central,pmin,pmax,step,false,true);
   }
   return true;
+}
+//________________________________________________________________________________________
+void CorrelatedSystematics::SetCovMatrix(const TMatrixD & matr)
+{
+  *fCovMtrx = matr;
+  
+  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
+  this->CholeskyDecomposeMatrix();
+  
+  this->InvertMatrix();
+}
+//________________________________________________________________________________________
+void CorrelatedSystematics::InvertMatrix()
+{
+  if (fCovMtrxInv) {delete fCovMtrxInv; fCovMtrxInv = NULL;}
+  double det;
+  // Calculate matrix inversion using Cholesky triangular matrices - should be most accurate.
+  TMatrixD cholInv(*fCovMtrxChoL);
+  cholInv.Invert(&det);
+  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix decomposition determinant: " << det;
+  TMatrixD cholInvT(TMatrixD::kTransposed,cholInv);
+  fCovMtrxInv = new TMatrixD(cholInvT * cholInv);
+  
+  // Other matrix inversion methods - not used.
+#ifdef __matrix_invert_direct__
+  TMatrixD & cov = *fCovMtrx;
+  // Calculate matrix inversion directly
+  fCovMtrxInv = new TMatrixD(cov);
+  fCovMtrxInv->Invert(&det);
+  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (direct): " << det;
+#elif __matrix_invert_svd__
+  // Use scalar value decomposition for matrix inverse
+  fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
+  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (SVD): " << det;
+#endif
 }
 //________________________________________________________________________________________
