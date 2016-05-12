@@ -628,8 +628,10 @@ void valor::RunOpt::Read3FOscParamsOptions()
     
     fMargMixing13        = true;
     fPriorMixing13       = "gaus";
-    fPriorParMixing13[0] = kPrior_Sinsq2th13_PDG2013_Mean; //0.095;
-    fPriorParMixing13[1] = kPrior_Sinsq2th13_PDG2013_RMS; //0.010;
+    //fPriorParMixing13[0] = kPrior_Sinsq2th13_PDG2013_Mean; //0.095;
+    //fPriorParMixing13[1] = kPrior_Sinsq2th13_PDG2013_RMS; //0.010;
+    fPriorParMixing13[0] = kPrior_Sinsq2th13_Flat_Low; 
+    fPriorParMixing13[1] = kPrior_Sinsq2th13_Flat_Up; 
     fMixModeMixing13     = "sinsq2th";
     
     fMargMixing23        = true;
