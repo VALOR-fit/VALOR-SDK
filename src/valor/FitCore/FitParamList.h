@@ -57,33 +57,35 @@ namespace valor {
     // Get information for the fit parameters
     int    Size               (void)                         const { return fNParams;  }
     string Name               (valor::conv::PhysParamId_t p) const { return fName[this->Id(p)].GetString().Data();   }
-    double BestFitValue       (valor::conv::PhysParamId_t p) const { return fBestFitValue[this->Id(p)]; }
-    double CurrValue          (valor::conv::PhysParamId_t p) const { return fCurrValue   [this->Id(p)]; }
-    double InitValue          (valor::conv::PhysParamId_t p) const { return fInitValue   [this->Id(p)]; }
-    double MinValue           (valor::conv::PhysParamId_t p) const { return fMinValue    [this->Id(p)]; }
-    double MaxValue           (valor::conv::PhysParamId_t p) const { return fMaxValue    [this->Id(p)]; }
-    double StepSize           (valor::conv::PhysParamId_t p) const { return fStepSize    [this->Id(p)]; }
-    bool   IsFixed            (valor::conv::PhysParamId_t p) const { return fIsFixed     [this->Id(p)]; }
-    bool   IsNuisance         (valor::conv::PhysParamId_t p) const { return fIsNuisance  [this->Id(p)]; }
-    double MigradError        (valor::conv::PhysParamId_t p) const { return fMigradError [this->Id(p)]; }
-    double HesseError         (valor::conv::PhysParamId_t p) const { return fHesseError  [this->Id(p)]; }
-    double PlusError          (valor::conv::PhysParamId_t p) const { return fPlusError   [this->Id(p)]; }
-    double MinusError         (valor::conv::PhysParamId_t p) const { return fMinusError  [this->Id(p)]; }
+    double BestFitValue       (valor::conv::PhysParamId_t p) const { return fBestFitValue    [this->Id(p)]; }
+    double CurrValue          (valor::conv::PhysParamId_t p) const { return fCurrValue       [this->Id(p)]; }
+    double InitValue          (valor::conv::PhysParamId_t p) const { return fInitValue       [this->Id(p)]; }
+    double MinValue           (valor::conv::PhysParamId_t p) const { return fMinValue        [this->Id(p)]; }
+    double MaxValue           (valor::conv::PhysParamId_t p) const { return fMaxValue        [this->Id(p)]; }
+    double StepSize           (valor::conv::PhysParamId_t p) const { return fStepSize        [this->Id(p)]; }
+    bool   IsFixed            (valor::conv::PhysParamId_t p) const { return fIsFixed         [this->Id(p)]; }
+    bool   IsNuisance         (valor::conv::PhysParamId_t p) const { return fIsNuisance      [this->Id(p)]; }
+    double MigradError        (valor::conv::PhysParamId_t p) const { return fMigradError     [this->Id(p)]; }
+    double HesseError         (valor::conv::PhysParamId_t p) const { return fHesseError      [this->Id(p)]; }
+    double PlusError          (valor::conv::PhysParamId_t p) const { return fPlusError       [this->Id(p)]; }
+    double MinusError         (valor::conv::PhysParamId_t p) const { return fMinusError      [this->Id(p)]; }
+    double ParameterScaling   (valor::conv::PhysParamId_t p) const { return fParameterScaling[this->Id(p)]; }
     
     // Same as Above, but by index
-    string NameByIndex         (int i) const       { return fName[i].GetString().Data();   }
-    double BestFitValueByIndex (int i) const       { return fBestFitValue[i]; }
-    double CurrValueByIndex    (int i) const       { return fCurrValue   [i]; }
-    double InitValueByIndex    (int i) const       { return fInitValue   [i]; }
-    double MinValueByIndex     (int i) const       { return fMinValue    [i]; }
-    double MaxValueByIndex     (int i) const       { return fMaxValue    [i]; }
-    double StepSizeByIndex     (int i) const       { return fStepSize    [i]; }
-    bool   IsFixedByIndex      (int i) const       { return fIsFixed     [i]; }
-    bool   IsNuisanceByIndex   (int i) const       { return fIsNuisance  [i]; }
-    double MigradErrorByIndex  (int i) const       { return fMigradError [i]; }
-    double HesseErrorByIndex   (int i) const       { return fHesseError  [i]; }
-    double PlusErrorByIndex    (int i) const       { return fPlusError   [i]; }
-    double MinusErrorByIndex   (int i) const       { return fMinusError  [i]; }
+    string NameByIndex            (int i) const  { return fName[i].GetString().Data();   }
+    double BestFitValueByIndex    (int i) const  { return fBestFitValue    [i]; }
+    double CurrValueByIndex       (int i) const  { return fCurrValue       [i]; }
+    double InitValueByIndex       (int i) const  { return fInitValue       [i]; }
+    double MinValueByIndex        (int i) const  { return fMinValue        [i]; }
+    double MaxValueByIndex        (int i) const  { return fMaxValue        [i]; }
+    double StepSizeByIndex        (int i) const  { return fStepSize        [i]; }
+    bool   IsFixedByIndex         (int i) const  { return fIsFixed         [i]; }
+    bool   IsNuisanceByIndex      (int i) const  { return fIsNuisance      [i]; }
+    double MigradErrorByIndex     (int i) const  { return fMigradError     [i]; }
+    double HesseErrorByIndex      (int i) const  { return fHesseError      [i]; }
+    double PlusErrorByIndex       (int i) const  { return fPlusError       [i]; }
+    double MinusErrorByIndex      (int i) const  { return fMinusError      [i]; }
+    double ParameterScalingByIndex(int i) const  { return fParameterScaling[i]; }
     
     // Add a parameter
     bool AddParam (
@@ -94,7 +96,7 @@ namespace valor {
     bool Exists (valor::conv::PhysParamId_t p) const;
     
     // Update current/running value for the given parameter
-    void Update(valor::conv::PhysParamId_t p, double v);
+    void Update(valor::conv::PhysParamId_t p, double v, bool scaled = false);
     
     // Allow modifying the initial value (minimization may be sensitive to this choice)
     void SetInitValue   (valor::conv::PhysParamId_t p, double v);
@@ -107,6 +109,9 @@ namespace valor {
     void SetMaxValue (valor::conv::PhysParamId_t p, double max) { fMaxValue [this->Id(p)] = max; }
     void SetMinValueByIndex (int i, double min) { fMinValue [i] = min; }
     void SetMaxValueByIndex (int i, double max) { fMaxValue [i] = max; }
+    
+    void SetParameterScaling(conv::PhysParamId_t p, double scaling) { fParameterScaling[this->Id(p)] = scaling;}
+    void SetParameterScalingByIndex(int i , double scaling) { fParameterScaling[i] = scaling;}
     
     // Reset all current param values to their specified initial values
     void ResetCurrToInitValues (void);
@@ -154,8 +159,8 @@ namespace valor {
     void SetTo (ROOT::Fit::Fitter * fitter);
     
     // Sync fit param values stored this object with the values stored in the input array.
-    void Sync (const double * par);
-    void Sync (std::vector<double> par);
+    void Sync (const double * par, bool scaling = false);
+    void Sync (std::vector<double> par, bool scaling = false);
     
     // copy initial, current or best-fit values to a PhysParamList
     valor::PhysParamList AsPhysParamList(Option_t * option = "current") const;
@@ -342,6 +347,7 @@ namespace valor {
     double     * fHesseError;   //[fNParams]
     double     * fPlusError;    //[fNParams]
     double     * fMinusError;   //[fNParams]
+    double     * fParameterScaling; //[fNParams] - scale all parameters by this value before copying too/from fitter
     TMatrixDSym* fCovMatrix;
     double       fBestFitStatistic;
     double       fCurrStatistic;

@@ -119,7 +119,7 @@ void valor::FitFunc (
   FitParamList & fpar = inputs->FitParams(); 
 
   // synchronize FitParamList with the paramerer array used by MINUIT
-  fpar.Sync(par);
+  fpar.Sync(par,true);
 
   f = inputs->Statistic();
   

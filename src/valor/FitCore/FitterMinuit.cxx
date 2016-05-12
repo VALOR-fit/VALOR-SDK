@@ -356,7 +356,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     double value, error;
     gMinuit->GetParameter(ip, value, error);
     PhysParamId_t p = fp.WhichParam(ip);
-    fp.Update(p, value);
+    fp.Update(p, value, true);
   }
   fp.CopyCurrToBestFitValues();
 
@@ -379,7 +379,8 @@ bool FitterMinuit::RunOnce(bool use_simplex)
       for(int j = 0; j<num_of_params; j++) {
         // Put unfixed errors in the matrix
         if (!fp.IsFixedByIndex(j)) {
-          cov[i][j] = fitter->GetCovarianceMatrixElement(ifree,jfree);
+          double scaling = fp.ParameterScalingByIndex(i)*fp.ParameterScalingByIndex(j);
+          cov[i][j] = fitter->GetCovarianceMatrixElement(ifree,jfree)/scaling;
           jfree++;
         }
       }
@@ -396,8 +397,6 @@ bool FitterMinuit::RunOnce(bool use_simplex)
       cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
     }
   }
-    
-    
   fp.SetCovMatrix(cov);
 
   double unfilled = -999;
@@ -410,7 +409,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   
   // Fill the MIGRAD errors
   for (int ip = 0 ; ip < num_of_params ; ip++) {
-    migrad_err[ip] = fitter->GetParError(ip);
+    migrad_err[ip] = fitter->GetParError(ip)/fp.ParameterScalingByIndex(ip);
   }
   fp.SetMigradErrors(migrad_err);
 
@@ -434,7 +433,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     
     // Fill the HESSE errors
     for (int ip = 0 ; ip < num_of_params ; ip++) {
-      hesse_err[ip] = fitter->GetParError(ip);
+      hesse_err[ip] = fitter->GetParError(ip)/fp.ParameterScalingByIndex(ip);
     }
     fp.SetHesseErrors (hesse_err);
   }

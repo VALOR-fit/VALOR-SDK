@@ -6,7 +6,7 @@
  ChangeLog:
  
  */
-//_______________________________________________f_________________________________________
+//________________________________________________________________________________________
 
 #include <cassert>
 #include <vector>
@@ -119,9 +119,15 @@ bool FitParamList::Exists(PhysParamId_t p) const
   return false;
 }
 //________________________________________________________________________________________
-void FitParamList::Update(PhysParamId_t p, double v)
+void FitParamList::Update(PhysParamId_t p, double v, bool scaled)
 {
-  fCurrValue [this->Id(p)] = v;
+  int ip = this->Id(p);
+  if (scaled) {
+    fCurrValue [ip] = v/fParameterScaling[ip];
+  }
+  else {
+    fCurrValue [ip] = v;
+  }
 }
 //________________________________________________________________________________________
 void FitParamList::SetInitValue(PhysParamId_t p, double v)
@@ -327,13 +333,14 @@ void FitParamList::SetTo(TVirtualFitter * fitter)
   for ( ; iter != fIdMap.end(); ++iter) {
     PhysParamId_t p = iter->first;
     int iparam = iter->second;
+    double scaling = this->ParameterScaling(p);
     fitter->SetParameter(
                          iparam,
                          this->Name(p).c_str(),
-                         this->InitValue(p),
-                         this->StepSize(p),
-                         this->MinValue(p),
-                         this->MaxValue(p) );
+                         scaling*this->InitValue(p),
+                         scaling*this->StepSize(p) ,
+                         scaling*this->MinValue(p) ,
+                         scaling*this->MaxValue(p) );
     
     if(this->IsFixed(p)) {
       fitter->FixParameter(iparam);
@@ -437,19 +444,19 @@ void FitParamList::SetTo(ROOT::Fit::Fitter * fitter)
   }
 }
 //________________________________________________________________________________________
-void FitParamList::Sync(std::vector<double> par)
+void FitParamList::Sync(std::vector<double> par, bool scaling)
 {
   if(par.size() <= 0) return;
   for(int ip = 0; ip < fNParams; ip++) {
-    fCurrValue[ip] = par[ip];
+    fCurrValue[ip] = par[ip]/ (scaling ? fParameterScaling[ip] : 1);
   }
 }
 //________________________________________________________________________________________
-void FitParamList::Sync(const double * par)
+void FitParamList::Sync(const double * par, bool scaling)
 {
   if(!par) return;
   for(int ip = 0; ip < fNParams; ip++) {
-    fCurrValue[ip] = par[ip];
+    fCurrValue[ip] = par[ip]/ (scaling ? fParameterScaling[ip] : 1);
   }
 }
 //________________________________________________________________________________________
@@ -1730,19 +1737,20 @@ void FitParamList::Init(int nparams)
   
   fNParams = nparams;
   if(nparams>0) {
-    fName         = new TObjString[fNParams];
-    fBestFitValue = new double[fNParams];
-    fCurrValue    = new double[fNParams];
-    fInitValue    = new double[fNParams];
-    fMinValue     = new double[fNParams];
-    fMaxValue     = new double[fNParams];
-    fStepSize     = new double[fNParams];
-    fIsFixed      = new bool  [fNParams];
-    fIsNuisance   = new bool  [fNParams];
-    fMigradError  = new double[fNParams];
-    fHesseError   = new double[fNParams];
-    fPlusError    = new double[fNParams];
-    fMinusError   = new double[fNParams];
+    fName             = new TObjString[fNParams];
+    fBestFitValue     = new double[fNParams];
+    fCurrValue        = new double[fNParams];
+    fInitValue        = new double[fNParams];
+    fMinValue         = new double[fNParams];
+    fMaxValue         = new double[fNParams];
+    fStepSize         = new double[fNParams];
+    fIsFixed          = new bool  [fNParams];
+    fIsNuisance       = new bool  [fNParams];
+    fMigradError      = new double[fNParams];
+    fHesseError       = new double[fNParams];
+    fPlusError        = new double[fNParams];
+    fMinusError       = new double[fNParams];
+    fParameterScaling = new double[fNParams];
     fCovMatrix    = new TMatrixDSym(fNParams);
     
     // MARGINALIZATION
@@ -1762,20 +1770,21 @@ void FitParamList::Init(int nparams)
     //
     
   } else {
-    fName         = 0;
-    fBestFitValue = 0;
-    fCurrValue    = 0;
-    fInitValue    = 0;
-    fMinValue     = 0;
-    fMaxValue     = 0;
-    fStepSize     = 0;
-    fIsFixed      = 0;
-    fIsNuisance   = 0;
-    fMigradError  = 0;
-    fHesseError   = 0;
-    fPlusError    = 0;
-    fMinusError   = 0;
-    fCovMatrix    = 0;
+    fName             = 0;
+    fBestFitValue     = 0;
+    fCurrValue        = 0;
+    fInitValue        = 0;
+    fMinValue         = 0;
+    fMaxValue         = 0;
+    fStepSize         = 0;
+    fIsFixed          = 0;
+    fIsNuisance       = 0;
+    fMigradError      = 0;
+    fHesseError       = 0;
+    fPlusError        = 0;
+    fMinusError       = 0;
+    fParameterScaling = 0;
+    fCovMatrix        = 0;
     
     // MARGINALIZATION
     fDoMarg        = 0;
@@ -1795,19 +1804,20 @@ void FitParamList::Init(int nparams)
   }
   
   for (int i = 0 ; i < fNParams ; i++) {
-    fName         [i].SetString("Uninitialised");
-    fBestFitValue [i] = 0;
-    fCurrValue    [i] = 0;
-    fInitValue    [i] = 0;
-    fMinValue     [i] = 0;
-    fMaxValue     [i] = 0;
-    fStepSize     [i] = 0;
-    fIsFixed      [i] = 0;
-    fIsNuisance   [i] = 0;
-    fMigradError  [i] = 0;
-    fHesseError   [i] = 0;
-    fPlusError    [i] = 0;
-    fMinusError   [i] = 0;
+    fName            [i].SetString("Uninitialised");
+    fBestFitValue    [i] = 0;
+    fCurrValue       [i] = 0;
+    fInitValue       [i] = 0;
+    fMinValue        [i] = 0;
+    fMaxValue        [i] = 0;
+    fStepSize        [i] = 0;
+    fIsFixed         [i] = 0;
+    fIsNuisance      [i] = 0;
+    fMigradError     [i] = 0;
+    fHesseError      [i] = 0;
+    fPlusError       [i] = 0;
+    fMinusError      [i] = 0;
+    fParameterScaling[i] = 1;
     
     // MARGINALIZATION
     fDoMarg       [i] = 0;
@@ -1849,20 +1859,21 @@ void FitParamList::CleanUp(void)
   fStatusCodes.clear();
   
   
-  if( fName        ) { delete [] fName        ; fName         = 0; }                      
-  if( fBestFitValue) { delete [] fBestFitValue; fBestFitValue = 0; }
-  if( fCurrValue   ) { delete [] fCurrValue   ; fCurrValue    = 0; }
-  if( fInitValue   ) { delete [] fInitValue   ; fInitValue    = 0; }
-  if( fMinValue    ) { delete [] fMinValue    ; fMinValue     = 0; }
-  if( fMaxValue    ) { delete [] fMaxValue    ; fMaxValue     = 0; }
-  if( fStepSize    ) { delete [] fStepSize    ; fStepSize     = 0; }
-  if( fIsFixed     ) { delete [] fIsFixed     ; fIsFixed      = 0; }
-  if( fIsNuisance  ) { delete [] fIsNuisance  ; fIsNuisance   = 0; }
-  if( fMigradError ) { delete [] fMigradError ; fMigradError  = 0; }
-  if( fHesseError  ) { delete [] fHesseError  ; fHesseError   = 0; }
-  if( fPlusError   ) { delete [] fPlusError   ; fPlusError    = 0; }
-  if( fMinusError  ) { delete [] fMinusError  ; fMinusError   = 0; }
-  if( fCovMatrix   ) { delete    fCovMatrix   ; fCovMatrix    = 0; }
+  if( fName              ) { delete [] fName              ; fName              = 0; }                      
+  if( fBestFitValue      ) { delete [] fBestFitValue      ; fBestFitValue      = 0; }
+  if( fCurrValue         ) { delete [] fCurrValue         ; fCurrValue         = 0; }
+  if( fInitValue         ) { delete [] fInitValue         ; fInitValue         = 0; }
+  if( fMinValue          ) { delete [] fMinValue          ; fMinValue          = 0; }
+  if( fMaxValue          ) { delete [] fMaxValue          ; fMaxValue          = 0; }
+  if( fStepSize          ) { delete [] fStepSize          ; fStepSize          = 0; }
+  if( fIsFixed           ) { delete [] fIsFixed           ; fIsFixed           = 0; }
+  if( fIsNuisance        ) { delete [] fIsNuisance        ; fIsNuisance        = 0; }
+  if( fMigradError       ) { delete [] fMigradError       ; fMigradError       = 0; }
+  if( fHesseError        ) { delete [] fHesseError        ; fHesseError        = 0; }
+  if( fPlusError         ) { delete [] fPlusError         ; fPlusError         = 0; }
+  if( fMinusError        ) { delete [] fMinusError        ; fMinusError        = 0; }
+  if( fParameterScaling  ) { delete [] fParameterScaling  ; fParameterScaling  = 0; }
+  if( fCovMatrix         ) { delete    fCovMatrix         ; fCovMatrix         = 0; }
   
   // MARGINALIZATION
   if (fDoMarg        ) { delete [] fDoMarg       ; fDoMarg        = 0 ; }
