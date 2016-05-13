@@ -127,6 +127,7 @@ namespace valor {
         int    NptScan1 () const { if(fParseType & kParseFitMarg) return fNptScan1; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   DoMargMH () const { if(fParseType & kParseFitMarg) return fDoMargMH; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Hierarchy_marg () const { if(fParseType & kParseFitMarg) return fHierarchy_marg; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+        bool   DoMinimize () const { if(fParseType & kParseFitMarg) return fDoMinimize; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         TString TypeError () const { if(fParseType & kParseFitMarg) return fTypeError; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   DrawFullChisq () const { if(fParseType & kParseFitMarg) return fDrawFullChisq; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Teststat () const { if(fParseType & kParseFitMarg) return fTeststat; cerr << "kParseFitMarg not set" << endl; exit(-1); }
@@ -260,6 +261,9 @@ namespace valor {
         int fNptScan1;
         bool fDoMargMH;
         string fHierarchy_marg;
+
+        bool fDoMinimize; // use descent gradient
+	
         TString fTypeError;
         bool fDrawFullChisq;
         string fTeststat;

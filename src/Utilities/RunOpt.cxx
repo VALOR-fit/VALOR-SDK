@@ -185,6 +185,7 @@ void valor::RunOpt::Init(void)
   fNptScan1         = 1;
   fDoMargMH         = false;
   fHierarchy_marg   = "normal";
+  fDoMinimize       = true;
   fTypeError        = "";
   fDrawFullChisq    = true;
   fTeststat         = "rate+shape";
@@ -1085,6 +1086,18 @@ void valor::RunOpt::ReadFitMargOptions()
     exit(1);
   }
   
+  if(fParser->OptionExists("do-minimize")){
+    fDoMinimize = (bool) fParser->ArgAsInt("do-minimize");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't decide whether to minimize using descent gradient" << endl;
+    cerr << "Use --do-minimize (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
+
   if(fParser->OptionExists("type-error")){
     fTypeError = fParser->ArgAsString("type-error");
   }
@@ -1377,6 +1390,7 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
            << " - " << setw(w) << "Number of points of free parameter 1 for fit with marginalization:"  << fNptScan1 << endl
            << " - " << setw(w) << "Marginalization of mass hierarchy for input marginalization files:"  << ((fDoMargMH) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Mass hierarchy for input marginalization files:"  << fHierarchy_marg << endl
+           << " - " << setw(w) << "Use Minimization (descent-gradient):"  << ((fDoMinimize) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Error type for fit with marginalization:"  << fTypeError << endl
            << " - " << setw(w) << "Draw fill marginalized chisq:"  << ((fDrawFullChisq) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Test statistic for fit with marginalization:"  << fTeststat << endl
