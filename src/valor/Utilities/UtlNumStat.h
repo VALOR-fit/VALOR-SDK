@@ -77,6 +77,7 @@ namespace util {
   TVectorD CovarianceMatrixToErrorVector(const TMatrixD & cov_m);
   TMatrixD CorrelationAndErrorToCovarianceMatrix(const TMatrixD & corr, const TVectorD & one_sigma);
   TMatrixD MatrixPseudoInverted(const TMatrixD & m);
+  TMatrixDSym MatrixToSymMatrix(const TMatrixD & m);
 
   TVectorD ConcatenateTVectors  (const std::vector<const TVectorD *>  & tvecs );
   TMatrixD ConcatenateTMatrices (const std::vector<const TMatrixD *>  & tmats );

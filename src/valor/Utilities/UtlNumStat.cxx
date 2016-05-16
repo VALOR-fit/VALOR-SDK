@@ -933,6 +933,34 @@ TMatrixD valor::util::CorrelationAndErrorToCovarianceMatrix(const TMatrixD & cor
   return cov_m;
 }
 //____________________________________________________________________________
+TMatrixDSym valor::util::MatrixToSymMatrix(const TMatrixD & m)
+{
+  int n = m.GetNrows();
+  TMatrixDSym out (n);
+  if (n!=m.GetNcols()) {
+    LOG("UtlNumStat",pERROR)<<"Matrix is not square.";
+    util::Die(-1);
+    return out;
+  }
+  bool bad = false;
+  for (int ii = 0 ; ii < n; ii++) {
+    for (int jj = 0 ; jj <= ii; jj++) {
+      double v1 = m[ii][jj];
+      double v2 = m[jj][ii];
+      out[ii][jj] = v1;
+      out[jj][ii] = v2;
+      if (std::fabs(v1) > conv::kAVerySmallNum && (std::fabs(v1/v2 - v2/v1) > conv::kASmallNum)) {
+        bad = true;
+      }
+    }
+  }
+  if (bad) {
+    LOG("UtlNumStat",pERROR)<<"Matrix is not symmetric.";
+    util::Die(-1);
+  }
+  return out;
+}
+//____________________________________________________________________________
 TMatrixD valor::util::MatrixPseudoInverted(const TMatrixD & m)
 {
   TDecompSVD svd(m);
