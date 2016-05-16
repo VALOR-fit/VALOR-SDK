@@ -906,6 +906,33 @@ TMatrixD valor::util::CovarianceMatrixToCorrelationMatrix(const TMatrixD & cov_m
   return corr_m;
 }
 //____________________________________________________________________________
+TVectorD valor::util::CovarianceMatrixToErrorVector(const TMatrixD & cov_m)
+{
+  int n = cov_m.GetNrows();
+  TVectorD vec(n);
+  for (int ii = 0 ; ii < n; ii++) {
+    vec[ii] = std::sqrt(cov_m[ii][ii]);
+  }
+  return vec;
+}
+//____________________________________________________________________________
+TMatrixD valor::util::CorrelationAndErrorToCovarianceMatrix(const TMatrixD & corr, const TVectorD & one_sigma)
+{
+  int n = corr.GetNrows();
+  if (n!=one_sigma.GetNrows()) {
+    LOG("UtlNumStat",pERROR)<<"Matrix and vector dimensions do not match.";
+    util::Die(-1);
+    return TMatrixD();
+  }
+  TMatrixD cov_m(n,n);
+  for (int ii = 0 ; ii < n; ii++) {
+    for (int jj = 0 ; jj < n; jj++) {
+      cov_m[ii][jj] = corr[ii][jj] * one_sigma[ii] * one_sigma[jj];
+    }
+  }
+  return cov_m;
+}
+//____________________________________________________________________________
 TMatrixD valor::util::MatrixPseudoInverted(const TMatrixD & m)
 {
   TDecompSVD svd(m);
