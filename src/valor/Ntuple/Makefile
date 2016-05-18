@@ -11,10 +11,10 @@ MAKEFILE = Makefile
 include $(VALOR_FMWK)/make/Make.include
 
 PACKAGE           = ValorNtuple
-DICTIONARY        = undefined
+DICTIONARY        = _RootDict_$(PACKAGE)
 LIBNAME           = lib$(PACKAGE)
 
-all : lib lib-link
+all : rootcint lib lib-link
 
 # Include standard package makefile targets
 #
