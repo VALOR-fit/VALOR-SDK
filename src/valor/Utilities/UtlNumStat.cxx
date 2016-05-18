@@ -153,6 +153,11 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
   return TMath::Max(0.,chisq);
 }
 //____________________________________________________________________________
+TMatrixD valor::util::CholeskyDecomposition(const TMatrixDSym& cov_matrix)
+{
+  return util::CholeskyDecomposition(TMatrixD(cov_matrix));
+}
+//____________________________________________________________________________
 TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 {
 // Perform a Cholesky decomposition of the input covariance matrix and

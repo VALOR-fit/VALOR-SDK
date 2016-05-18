@@ -27,6 +27,7 @@
 #include <TTree.h>
 #include <TVectorD.h>
 #include <TMatrixD.h>
+#include <TMatrixDSym.h>
 #include <TH1D.h>
 #include <TSpline.h>
 
@@ -63,6 +64,7 @@ namespace util {
   //
 
   TMatrixD CholeskyDecomposition                     (const TMatrixD& cov);                 ///< Cholesky decomposition. Return lower triangular matrix.
+  TMatrixD CholeskyDecomposition                     (const TMatrixDSym& cov);                 ///< calls above with explicit conversion
   TVectorD CholeskyGenerateCorrelatedParams          (const TMatrixD& Lch, TVectorD& mean); ///< Generate a vector of correlated params
   TVectorD CholeskyGenerateCorrelatedParams          (const TMatrixD& Lch, TVectorD& mean, TVectorD& g_uncorrelated); ///< Generate a vector of correlated params
   TVectorD CholeskyGenerateCorrelatedParamVariations (const TMatrixD& Lch);                 ///< Generate a vector of correlated param variations
