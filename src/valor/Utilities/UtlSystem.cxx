@@ -18,6 +18,8 @@ ChangeLog:
 #include "TSystem.h"
 #include "TPRegexp.h"
 
+#include "valor/Messenger/Messenger.h"
+#include "valor/Utilities/Env.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Conventions/Opt.h"
@@ -75,5 +77,25 @@ std::vector<std::string> valor::util::GetLinkedLibraries(std::string executable_
   }
   gSystem->ClosePipe(f);
   return out_lines;
+}
+//____________________________________________________________________________
+std::string valor::util::CompleteConfigPath(std::string config_file)
+{
+  TString ts_file = config_file.c_str();
+  gSystem->ExpandPathName(ts_file);
+
+  // Check for config file.
+  // See if it works as a normal path
+  FileStat_t dummy;
+  if (gSystem->GetPathInfo(ts_file.Data(), dummy)) 
+  {
+    // If not, try the config folder
+    ts_file = TString::Format("%s/%s",Env::Instance()->TopLevelConfDir().c_str(),ts_file.Data());
+    if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
+      LOG("GenericSingleSampleFitModel",pERROR) << "Config file not found: "<<config_file;
+      util::Die(1); 
+    }
+  }
+  return std::string(ts_file.Data());
 }
 //____________________________________________________________________________

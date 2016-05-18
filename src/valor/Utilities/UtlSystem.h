@@ -31,6 +31,8 @@ namespace util {
   
   std::vector<std::string> GetLinkedLibraries(std::string executable_path, std::string pattern);
   
+  std::string CompleteConfigPath(std::string config_file);
+  
 } // util
 } // valor
 
