@@ -43,7 +43,7 @@ public:
   // Read inputs from XML file
   bool Read (TXMLEngine* xml, XMLNodePointer_t root_node);
 
-  // Get flux covariance matrix and cholesky decomposition of covariance matrix
+  // Get covariance matrix and cholesky decomposition of covariance matrix
   const TMatrixD & CovMatrix         (void) const { return *fCovMtrx;          }
   const TMatrixD & CovMatrixInv      (void) const { return *fCovMtrxInv;       }
   const TMatrixD & CovMatrixCholesky (void) const { return *fCovMtrxChoL;      }
@@ -110,6 +110,9 @@ public:
   void SetXMLNodeName(std::string xml_node_name);
   
   std::string GetXMLNodeName(void) const;
+
+  int  Param2Idx (conv::PhysParamId_t p) const;     ///< convert flux PhysParamId_t to a covariance matrix or vector index
+  conv::PhysParamId_t  Idx2Param (int index) const; ///< convert flux a covariance matrix or vector index to PhysParamId_t
     
 protected:
   CorrelatedSystematics();
@@ -118,9 +121,6 @@ protected:
   void CleanUp   (void);
   
   void FillParam2Idx(void);
-
-  int  Param2Idx (conv::PhysParamId_t p) const;     ///< convert flux PhysParamId_t to a covariance matrix or vector index
-  conv::PhysParamId_t  Idx2Param (int index) const; ///< convert flux a covariance matrix or vector index to PhysParamId_t
   
   void CholeskyDecomposeMatrix (void);          ///< Cholesky decompose the covariance matrix
   void InvertMatrix (void);
