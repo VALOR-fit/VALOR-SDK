@@ -45,7 +45,7 @@ std::string CompoundFitModel::Name() const
   return fName;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Read(string file, Option_t * /*opt*/)
+bool CompoundFitModel::Read(string file, Option_t * opt)
 {
   bool status = true;
   
@@ -84,7 +84,7 @@ bool CompoundFitModel::Read(string file, Option_t * /*opt*/)
       continue;
     }
     
-    status = curr_model->Read(config_path.Data());
+    status = curr_model->Read(config_path.Data(), opt);
     
     fSubModels.push_back(curr_model);
     
