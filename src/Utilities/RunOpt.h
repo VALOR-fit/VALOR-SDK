@@ -108,13 +108,12 @@ namespace valor {
         string Rootfile () const { if(fParseType & kParseFitMarg) return fRootfile; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   Using_xml_file () const { if(fParseType & kParseFitMarg) return fUsing_xml_file; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   DoToys () const { if(fParseType & kParseFitMarg) return fDoToys; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+        bool   ReadSKExp() const { if(fParseType & kParseFitMarg) return fReadSKExp; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Fit_param_list () const { if(fParseType & kParseFitMarg) return fFit_param_list; cerr << "kParseFitMarg not set" << endl; exit(-1); }
-      
         bool   DoFC () const { if(fParseType & kParseFitMarg) return fDoFC; cerr << "kParseFitMarg not set" << endl; exit(-1); }
-	string Infilename () const { if(fParseType & kParseFitMarg) return fInfilename; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+        string Infilename () const { if(fParseType & kParseFitMarg) return fInfilename; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Infilename_nh () const { if(fParseType & kParseFitMarg) return fInfilename_nh; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Infilename_ih () const { if(fParseType & kParseFitMarg) return fInfilename_ih; cerr << "kParseFitMarg not set" << endl; exit(-1); }
-
         int    Nfiles () const { if(fParseType & kParseFitMarg) return fNfiles; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         int    NtoysMarg () const { if(fParseType & kParseFitMarg) return fNtoysMarg; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Freeparname0 () const { if(fParseType & kParseFitMarg) return fFreeparname0; cerr << "kParseFitMarg not set" << endl; exit(-1); }
@@ -242,6 +241,7 @@ namespace valor {
         string fRootfile;
         bool fUsing_xml_file;
         bool fDoToys;
+        bool fReadSKExp;
         string fFit_param_list;
         string fInfilename;
 
@@ -249,7 +249,7 @@ namespace valor {
         string fInfilename_ih;
         bool fDoFC;
 
-	int fNfiles;
+        int fNfiles;
         int fNtoysMarg;
         string fFreeparname0;
         double fFreeparmin0;

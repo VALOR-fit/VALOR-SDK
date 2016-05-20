@@ -166,6 +166,7 @@ void valor::RunOpt::Init(void)
   fRootfile         = "";
   fUsing_xml_file   = false;
   fDoToys           = true;
+  fReadSKExp        = false;
   fFit_param_list   = "nuosc3f+nuisance";
 
   fInfilename       = "";
@@ -819,6 +820,18 @@ void valor::RunOpt::ReadFitMargOptions()
     exit(1);
   }
   
+  if(fParser->OptionExists("read-skexp")){
+    fReadSKExp = (bool)fParser->ArgAsInt("read-skexp");
+  }
+  else{
+    cerr << endl;
+    cerr << "FitMarg options:" << endl;
+    cerr << "You didn't enabled or disabled the reading SKExp from file" << endl;
+    cerr << "Use --read-skexp (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
+  
   if(fParser->OptionExists("use-xml-file")){
     fUsing_xml_file = (bool)fParser->ArgAsInt("use-xml-file");
   }
@@ -1366,6 +1379,7 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
 	   << " - " << setw(w) << "Use xml file for fakedata sets (if not use root file):"  << ((fUsing_xml_file) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Input xml file for fakedata sets:" << fXmlfile << endl
            << " - " << setw(w) << "Input root file for fakedata sets:" << fRootfile << endl
+          << " - " << setw(w) << "Read SKExp with data files:" << ((fReadSKExp) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Fit parameter list:"  << fFit_param_list << endl;
     
     
