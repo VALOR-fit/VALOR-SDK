@@ -659,10 +659,29 @@ void CorrelatedSystematics::InvertMatrix()
   fCovMtrxInv = new TMatrixD(cov);
   fCovMtrxInv->Invert(&det);
   LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (direct): " << det;
-#elif __matrix_invert_svd__
+#elif defined(__matrix_invert_svd__)
+  TMatrixD & cov = *fCovMtrx;
   // Use scalar value decomposition for matrix inverse
   fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
   LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (SVD): " << det;
 #endif
+
+#ifdef __check_inverse__
+  TMatrixD covTimesInverse = ( (*fCovMtrx) * (*fCovMtrxInv));
+  int np = fCovMtrx->GetNrows();
+  for (int ii = 0 ; ii < np ; ii++) {
+    for (int jj = 0 ; jj < np ; jj++) {
+      int target = (ii==jj);
+      if (fabs(covTimesInverse[ii][jj]-target) > 1E-9) {
+        LOG("CorrelatedSystematics",pERROR) 
+          << "Bad inversion of "<<this->GetName()<<" matrix - element differs from identity by: "
+          << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?" (on diagonal)":"");
+        fIsConfigured = false;
+      }
+    }
+  }
+  if (!fIsConfigured) {util::Die(1); return;}
+#endif // __check_inverse__
+
 }
 //________________________________________________________________________________________
