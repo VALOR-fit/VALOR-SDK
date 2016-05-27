@@ -391,7 +391,7 @@ template<typename numtype> VALORArrayT<numtype> VALORArrayT<numtype>::
   // Find out dimensions of new array
   int new_ndim = fNDim-1;
   int new_dims[new_ndim];
-  int new_dim_id[6] = {-1};
+  int new_dim_id[6] = {6,6,6,6,6,6}; // default index - will always have -1 in it, for unused dimensions
   int i_new_dim = 0;
   for (int idim = 0 ; idim < fNDim; idim++) {
     if (idim==dimension) {
@@ -414,14 +414,13 @@ template<typename numtype> VALORArrayT<numtype> VALORArrayT<numtype>::
     i_new_dim++;
   }
   
-  int old_address[6] = {};
-  
   // Handle default bin limits (-1 uses full range)
   min_bin = (min_bin<0 ? 0 : min_bin) ; max_bin = (max_bin<0 ? fDimensions[dimension]-1 : max_bin) ;
-    
+                       
   // Copy dimension contents.
   slice.SetAll(0);
   for (int i = 0 ; i < fSize ; i++) {
+    int old_address[7] = {-1,-1,-1,-1,-1,-1,-1}; // 7th address is for unused IDs
     this->InverseAddress(i, old_address);
     for (int bin = min_bin; bin <= max_bin ; bin++) {
       if (old_address[dimension]!=bin) continue;
