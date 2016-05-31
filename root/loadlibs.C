@@ -1,35 +1,43 @@
+void valor_load_lib(const char * lib)
+{
+  //~ std::cerr<<lib<<":\t"<<
+  gSystem->Load(lib);
+  //~ std::cerr<<std::endl
+}
+
+void loadlibs ()
 {
   TString vf_libs0 = gSystem->GetDynamicPath();
-  TString vf_libs  = libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib:/usr/lib64";
+  TString vf_libs  = vf_libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib:/usr/lib64";
   gSystem->SetDynamicPath(vf_libs.Data());
   
   TString features(gROOT->GetConfigFeatures());
 
   // extra ROOT libs
-  gSystem->Load("libGpad");
-  gSystem->Load("libPhysics");
-  gSystem->Load("libMatrix");
-  gSystem->Load("libHist");
-  gSystem->Load("libGraf");
-  gSystem->Load("libTree");
-  gSystem->Load("libRIO");
-  gSystem->Load("libXMLIO");
-  gSystem->Load("libMinuit");
-  gSystem->Load("libMinuit2");
-  if (features.Contains("mathmore")) {gSystem->Load("libMathMore"); }
+  valor_load_lib("libGpad");
+  valor_load_lib("libPhysics");
+  valor_load_lib("libMatrix");
+  valor_load_lib("libHist");
+  valor_load_lib("libGraf");
+  valor_load_lib("libTree");
+  valor_load_lib("libRIO");
+  valor_load_lib("libXMLIO");
+  valor_load_lib("libMinuit");
+  valor_load_lib("libMinuit2");
+  if (features.Contains("mathmore")) {valor_load_lib("libMathMore"); }
 
   // log4cpp lib
-  gSystem->Load("liblog4cpp");
+  valor_load_lib("liblog4cpp");
 
   // VALOR libs
-  gSystem->Load("libValorMesg.so");
-  gSystem->Load("libValorRegistry.so");
-  gSystem->Load("libValorConv.so");
-  gSystem->Load("libValorArray.so");
-  gSystem->Load("libValorFitCore.so");
-  gSystem->Load("libValorNtuple.so");
-  gSystem->Load("libValorOsc.so");
-  gSystem->Load("libValorUtil.so");
-  gSystem->Load("libValorCmdLine.so");
+  valor_load_lib("libValorMesg.so");
+  valor_load_lib("libValorRegistry.so");
+  valor_load_lib("libValorConv.so");
+  valor_load_lib("libValorArray.so");
+  valor_load_lib("libValorFitCore.so");
+  valor_load_lib("libValorNtuple.so");
+  valor_load_lib("libValorOsc.so");
+  valor_load_lib("libValorUtil.so");
+  valor_load_lib("libValorCmdLine.so");
 }
 
