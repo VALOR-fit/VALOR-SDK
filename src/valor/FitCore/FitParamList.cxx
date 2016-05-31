@@ -319,6 +319,13 @@ FitParamList * FitParamList::FreeParameterSubset(void)
     double step = fStepSize[ip];
     bool   nuis = fIsNuisance[ip];
     fparm->AddParam(ipc, p, init, min, max, step, false, nuis);
+    fparm->fBestFitValue[ipc] = this->fBestFitValue[ip];
+    fparm->fCurrValue   [ipc] = this->fCurrValue   [ip];
+    fparm->fMigradError [ipc] = this->fMigradError [ip];
+    fparm->fHesseError  [ipc] = this->fHesseError  [ip];
+    fparm->fPlusError   [ipc] = this->fPlusError   [ip];
+    fparm->fMinusError  [ipc] = this->fMinusError  [ip];
+    
     ipc++;
   }
   
