@@ -1,7 +1,7 @@
 {
-  TString libs0 = gSystem->GetDynamicPath();
-  TString libs  = libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib:/usr/lib64";
-  gSystem->SetDynamicPath(libs.Data());
+  TString vf_libs0 = gSystem->GetDynamicPath();
+  TString vf_libs  = libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib:/usr/lib64";
+  gSystem->SetDynamicPath(vf_libs.Data());
   
   TString features(gROOT->GetConfigFeatures());
 
