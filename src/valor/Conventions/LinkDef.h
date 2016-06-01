@@ -15,6 +15,7 @@
 #pragma link C++ enum  valor::conv::NuOscDmsqScheme_t;
 #pragma link C++ enum  valor::conv::NuOscMixParam_t;
 #pragma link C++ enum  valor::conv::NuOscOctant_t;
+#pragma link C++ enum  valor::conv::NuFlavour_t;
 #pragma link C++ enum  valor::conv::OscChannelId_t;
 
 #pragma link C++ enum  valor::conv::PhysParamId_t;
