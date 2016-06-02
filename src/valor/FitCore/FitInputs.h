@@ -20,7 +20,7 @@
 #ifndef _valor_fit_inputs_h_
 #define _valor_fit_inputs_h_
 
-#include <Minuit2/FCNBase.h>
+#include <Minuit2/FumiliFCNBase.h>
 #include <Math/IFunction.h>
 #include <Math/FitMethodFunction.h>
 #include <HFitInterface.h>

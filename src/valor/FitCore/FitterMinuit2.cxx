@@ -35,6 +35,7 @@
 #include <Minuit2/FunctionMinimum.h>
 #include <Minuit2/MnApplication.h>
 #include <Minuit2/MnMigrad.h>
+#include <Minuit2/MnFumiliMinimize.h>
 #include <Minuit2/MnHesse.h>
 #include <Minuit2/MnMinos.h>
 #include <Minuit2/MnPrint.h>
@@ -267,14 +268,10 @@ bool FitterMinuit2::RunOnce(void)
   vector<double> bestfit_free;
   vector<double> err_migrad_cov;
   vector<double> err_migrad_err;
-#ifdef __get_hesse_errors__
   vector<double> err_hesse_cov;
   vector<double> err_hesse_err;
-#endif
-#ifdef __get_minos_errors__
   vector<double> err_minosplus;
   vector<double> err_minosminus;
-#endif
 
   // Set fitter strategy
   // In general, low values of level mean fewer function calls and high values mean more reliable minimization.
@@ -312,7 +309,12 @@ bool FitterMinuit2::RunOnce(void)
 #endif
   }
   else {
-    assert(!"Fumili not fully implemented yet");
+    assert(!"Fumili still has issues");
+#ifdef __give_fitter_covariance_matrix__
+    //~ mnapp = new ROOT::Minuit2::MnFumiliMinimize(*fFitInputs, fUserParams, input_cov);
+#else
+    //~ mnapp = new ROOT::Minuit2::MnFumiliMinimize(*fFitInputs, fUserParams);
+#endif
   }
 
   // Run MINUIT's minimization step
@@ -321,7 +323,6 @@ bool FitterMinuit2::RunOnce(void)
 #endif
 
   //Minimise!
-  std::cerr<<"About to do the minimisation step!"<<std::endl;
   ROOT::Minuit2::FunctionMinimum  bestfit = (*mnapp)(fMaxNumCalls, fTol);
 
 #ifdef __show_fit_steps__
@@ -332,6 +333,8 @@ bool FitterMinuit2::RunOnce(void)
   cout << "FitterMinuit2/RunOnce >> Getting fit success status..." << endl;
 #endif
 
+  fMigradMinStatusCode = bestfit.UserState().CovarianceStatus();
+  
   // Done! Copy current --> best-fit values
   fFitInputs->FitParams().CopyCurrToBestFitValues();
   
@@ -379,54 +382,50 @@ bool FitterMinuit2::RunOnce(void)
 #endif
   }
   fFitInputs->FitParams().SetMigradErrors(err_migrad_err);
-
-#ifdef __get_hesse_errors__
-  //Get Hesse errors
+  
+  if (fCalcHesseErrors) {
+    //Get Hesse errors
 #ifdef __show_fit_steps__
-  cout << endl << "FitterMinuit2/RunOnce >> Getting Hesse errors..." << endl;
+    cout << endl << "FitterMinuit2/RunOnce >> Getting Hesse errors..." << endl;
 #endif
-  // argument is strategy
-  ROOT::Minuit2::MnHesse hesse(2);
-  // perform hesse error calculation
-  hesse(*fFitInputs, bestfit);
-  //Check if fit succeeded
-  GetStatusCode(bestfit);
+    // argument is strategy
+    ROOT::Minuit2::MnHesse hesse(2);
+    // perform hesse error calculation
+    ROOT::Minuit2::MnUserParameterState hesse_state = hesse(*fFitInputs, bestfit.UserState());
+    //Check if fit succeeded
+    fHesseErrStatusCode = hesse_state.CovarianceStatus();
 
-  // hesse covariance
-  if(bestfit.HasCovariance()) {
-    ROOT::Minuit2::MnUserCovariance cov_hesse(bestfit.UserCovariance());
+    // hesse covariance
+    if(bestfit.HasCovariance()) {
+      ROOT::Minuit2::MnUserCovariance cov_hesse(bestfit.UserCovariance());
 #ifdef __show_fit_steps_debug__
-    cout << cov_hesse << endl;
+      cout << cov_hesse << endl;
 #endif
-    for(unsigned int ip = 0; ip < nfreeparams && ip < cov_hesse.Nrow(); ip++) {
-      err_hesse_cov.push_back(sqrt(cov_hesse(ip,ip)));
+      for(unsigned int ip = 0; ip < nfreeparams && ip < cov_hesse.Nrow(); ip++) {
+        err_hesse_cov.push_back(sqrt(cov_hesse(ip,ip)));
 #ifdef __show_fit_steps_debug__
-      cout << "FitterMinuit2/RunOnce >> Hesse covariance for par#" << ip << " = " << bestfit_free[ip] << " +/- " << err_hesse_cov[ip] << endl;
+        cout << "FitterMinuit2/RunOnce >> Hesse covariance for par#" << ip << " = " << bestfit_free[ip] << " +/- " << err_hesse_cov[ip] << endl;
+#endif
+      }
+    }
+    err_hesse_err =  bestfit.UserParameters().Errors(); 
+    fFitInputs->FitParams().SetHesseErrors(err_hesse_err);
+    for(unsigned int ip = 0; ip < nparams; ip++) {
+#ifdef __show_fit_steps_debug__
+      cout << "FitterMinuit2/RunOnce >> Hesse error for par#" << ip << " = " << bestfit_free[ip] << " +/- " << err_hesse_err[ip] << endl;
 #endif
     }
-  }
+  } //hesse
 
-  // hesse error
-  err_hesse_err =  bestfit.UserParameters().Errors(); 
-  fFitInputs->FitParams().SetHesseErrors(err_hesse_err);
-  for(unsigned int ip = 0; ip < nparams; ip++) {
-#ifdef __show_fit_steps_debug__
-    cout << "FitterMinuit2/RunOnce >> Hesse error for par#" << ip << " = " << bestfit_free[ip] << " +/- " << err_hesse_err[ip] << endl;
-#endif
-  }
-  GetStatusCode(bestfit);
-#endif
-
-#ifdef __get_minos_errors__
 #ifdef __show_fit_steps__
   cout << endl << "FitterMinuit2/RunOnce >> Getting Minos errors..." << endl;
 #endif
 
   //Get Minos Errors
   ROOT::Minuit2::MnMinos minos(*fFitInputs,bestfit);
+  fMinosErrStatusCode = 0 ; // Need to work out proper error code.
   for(unsigned int ip = 0; ip < nparams; ip++) {
-    if(bestfit_params[ip].IsFixed())
-      continue;
+    if(bestfit_params[ip].IsFixed()) { continue; }
     double up = minos.Upper(ip);
     double lo = minos.Lower(ip);
     err_minosminus.push_back(lo);
@@ -436,7 +435,7 @@ bool FitterMinuit2::RunOnce(void)
 #endif
   }
   fFitInputs->FitParams().SetMinosErrors(err_minosplus, err_minosminus);
-#endif
+
 
   fFitInputs->FitParams().SetFitTime ( fFitTime );
   fFitInputs->FitParams().SetFitTries(fFitTries);
