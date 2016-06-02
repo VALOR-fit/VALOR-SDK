@@ -73,9 +73,9 @@ protected:
    bool        fCalcHesseErrors;     ///< calculate HESSE errors?
    bool        fCalcMinosErrors;     ///< calculate MINOS errors?
    double      fTol;                 ///< set tolerance
-   int         fStr;
+   int         fStr;                 ///< strategy
    int         fPrintLevel;
-   int         fMaxNumCalls;
+   int         fMaxNumCalls;         ///< Maximum number of evaluations of fit function
 };
 
 } // valor
