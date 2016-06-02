@@ -44,12 +44,12 @@ public:
 
    virtual bool       Configure     (const Registry & conf);
    virtual bool       DoTheFit      (void);
-   virtual int        FitStatusCode (Option_t * option = ""); // option: "migrad_min", "migrad_err", "hesse_err", "minos_err"
-   virtual double     FitTime       (void)              { return fFitTime;                    }
-   virtual int        FitNTries     (void)              { return fFitTries;                   }
-   virtual int        NDOF          (void)              { return fNFitBins - fNFreeFitParams; }
-   virtual int        NBinsInFit    (void)              { return fNFitBins;                   }
-   virtual int        NFitParams    (void)              { return fNFreeFitParams;             }
+   virtual int        FitStatusCode (Option_t * option = "") const; // option: "migrad_min", "migrad_err", "hesse_err", "minos_err"
+   virtual double     FitTime       (void) const        { return fFitTime;                    }
+   virtual int        FitNTries     (void) const        { return fFitTries;                   }
+   virtual int        NDOF          (void) const;
+   virtual int        NBinsInFit    (void) const        { return fNFitBins;                   }
+   virtual int        NFitParams    (void) const;
    virtual void       SetTol        (double tol)        { fTol  = tol ;                       }//Minuit targets an EDM of 0.001*tolerance for chisq dist
    virtual void       SetStr        (int str   )        { fStr  = str ;                       }
    virtual void       SetMaxCalls   (int ncalls)        { fMaxNumCalls = ncalls ;             }
@@ -72,7 +72,6 @@ protected:
    double      fFitTime;             ///< time taken to do the fit
    int         fFitTries;            ///< number of tries taken to do the fit
    int         fNFitBins;            ///< number of bins in fit
-   int         fNFreeFitParams;      ///< number of free params in fit
    bool        fCalcHesseErrors;     ///< calculate HESSE errors?
    bool        fCalcMinosErrors;     ///< calculate MINOS errors?
    double      fTol;                 ///< set tolerance

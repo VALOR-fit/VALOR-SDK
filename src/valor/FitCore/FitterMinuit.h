@@ -44,12 +44,12 @@ public:
 
    virtual bool       Configure     (const Registry & conf);
    virtual bool       DoTheFit      (void);
-   virtual int        FitStatusCode (Option_t * option = ""); // option: "migrad_min", "migrad_err", "hesse_err", "minos_err"
-   virtual double     FitTime       (void)              { return fFitTime;                    }
-   virtual int        FitNTries     (void)              { return fFitTries;                   }
-   virtual int        NDOF          (void)              { return fNFitBins - fNFreeFitParams; }
-   virtual int        NBinsInFit    (void)              { return fNFitBins;                   }
-   virtual int        NFitParams    (void)              { return fNFreeFitParams;             }
+   virtual int        FitStatusCode (Option_t * option = "") const; // option: "migrad_min", "migrad_err", "hesse_err", "minos_err"
+   virtual double     FitTime       (void) const        { return fFitTime;                    }
+   virtual int        FitNTries     (void) const        { return fFitTries;                   }
+   virtual int        NDOF          (void) const        { return fNFitBins - fNFreeFitParams; }
+   virtual int        NBinsInFit    (void) const        { return fNFitBins;                   }
+   virtual int        NFitParams    (void) const        { return fNFreeFitParams;             }
    virtual void       SetTol        (double tol)        { fTol  = tol ;                       }//Minuit targets an EDM of 0.001*tolerance for chisq dist
    virtual void       SetStr        (int str   )        { fStr  = str ;                       }
    virtual void       SetMaxCalls   (int ncalls)        { fMaxNumCalls = ncalls ;             }

@@ -28,16 +28,16 @@ class FitterABC
 public:
    virtual ~FitterABC();
 
-   virtual bool       Configure     (const Registry & conf)  = 0;
-   virtual bool       DoTheFit      (void)                   = 0; 
-   virtual int        FitStatusCode (Option_t * option = "") = 0; 
-   virtual double     FitTime       (void)                   = 0;
-   virtual int        FitNTries     (void)                   = 0;
-   virtual int        NDOF          (void)                   = 0;
-   virtual int        NBinsInFit    (void)                   = 0;
-   virtual int        NFitParams    (void)                   = 0;
-   virtual void       SetTol        (double tol)             = 0;
-   virtual void       SetStr        (int str   )             = 0;
+   virtual bool       Configure     (const Registry & conf)        = 0;
+   virtual bool       DoTheFit      (void)                         = 0; 
+   virtual int        FitStatusCode (Option_t * option = "") const = 0; 
+   virtual double     FitTime       (void) const                   = 0;
+   virtual int        FitNTries     (void) const                   = 0;
+   virtual int        NDOF          (void) const                   = 0;
+   virtual int        NBinsInFit    (void) const                   = 0;
+   virtual int        NFitParams    (void) const                   = 0;
+   virtual void       SetTol        (double tol)                   = 0;
+   virtual void       SetStr        (int str   )                   = 0;
 
 protected:
    FitterABC();

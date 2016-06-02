@@ -484,7 +484,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   return true;//(fMigradErrStatusCode == 3);
 }
 //____________________________________________________________________________ 
-int FitterMinuit::FitStatusCode (Option_t * option) 
+int FitterMinuit::FitStatusCode (Option_t * option) const
 { 
   if(!option) return 9999;
 

@@ -186,7 +186,7 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
   LOG("Minuit2", pINFO) 
        << "NDoF = " << this->NDOF()
        << " (Number of bins = " << this->NBinsInFit()
-       << ", Number of total parameters = " << this->NFitParams() << ")"
+       //~ << ", Number of total parameters = " << fit_params->Size() <<
        << ", Number of free parameters = " << n_free_params << ")";
   
 }
@@ -321,6 +321,7 @@ bool FitterMinuit2::RunOnce(void)
 #endif
 
   //Minimise!
+  std::cerr<<"About to do the minimisation step!"<<std::endl;
   ROOT::Minuit2::FunctionMinimum  bestfit = (*mnapp)(fMaxNumCalls, fTol);
 
 #ifdef __show_fit_steps__
@@ -462,7 +463,7 @@ bool FitterMinuit2::RunOnce(void)
   return (fMigradMinStatusCode == 0);
 }
 //____________________________________________________________________________ 
-int FitterMinuit2::FitStatusCode(Option_t * option) 
+int FitterMinuit2::FitStatusCode(Option_t * option) const
 {
   if(!option) return 9999;
 
@@ -474,5 +475,15 @@ int FitterMinuit2::FitStatusCode(Option_t * option)
   if ( opt.Contains("minos_err")  ) return fMinosErrStatusCode;
   
   return -999;
+}
+//____________________________________________________________________________ 
+int FitterMinuit2::NDOF() const
+{
+  return fNFitBins - fFitInputs->FitParams().GetNumberFreeParameters();
+}
+//____________________________________________________________________________ 
+int FitterMinuit2::NFitParams() const
+{
+  return fFitInputs->FitParams().GetNumberFreeParameters();
 }
 //____________________________________________________________________________ 
