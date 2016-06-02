@@ -526,7 +526,7 @@ void FitParamList::FromPhysParamList(valor::PhysParamList pl, Option_t * option,
   return;
 }
 //________________________________________________________________________________________
-int FitParamList::GetNumberFreeParameters(void)
+int FitParamList::GetNumberFreeParameters(void) const
 {
   int nparams = 0;
   
@@ -539,7 +539,7 @@ int FitParamList::GetNumberFreeParameters(void)
   return nparams;
 }
 //________________________________________________________________________________________
-int FitParamList::GetNumberParameters(void)
+int FitParamList::GetNumberParameters(void) const
 {
   int nparams = 0;
   

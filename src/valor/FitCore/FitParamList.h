@@ -167,8 +167,8 @@ namespace valor {
     void FromPhysParamList(valor::PhysParamList pl, Option_t * option, bool skip_osc_params = false); // skip_osc_params is deprecated. Use option "skiposc" instead.
     
     // Get number of free (not fixed) parameters
-    int GetNumberFreeParameters(void);
-    int GetNumberParameters(void);
+    int GetNumberFreeParameters(void) const;
+    int GetNumberParameters    (void) const;
     
     // Set and get other fit properties: statistic at best-fit point, fit time, status codes etc
     void   ClearStatusCodes    (void);
