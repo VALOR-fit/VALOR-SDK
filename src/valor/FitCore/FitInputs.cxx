@@ -96,16 +96,11 @@ double FitInputs::Statistic(Option_t * option) const
 //____________________________________________________________________________ 
 // MINUIT fit functions 
 //____________________________________________________________________________ 
-double FitInputs::operator() (const std::vector<double>& /*x*/) const 
+double FitInputs::operator() (const std::vector<double>& x) const 
 {
-// To be used with Minuit2
-/* 
  fFitParams->Sync(x);
 
- //return  this->Chisquare(fOpt.c_str());
- return  this->Chisquare(fMode);
-*/
-  return 0;
+ return this->Statistic("poisson");
 }
 //____________________________________________________________________________ 
 void valor::FitFunc (
@@ -164,10 +159,7 @@ double FitMethodFunc::operator() (const double * x) const
 double FitMethodFunc::DoEval(const double * x) const 
 {
   fFitInputs->FitParams().Sync(x);
-/* HACK
-  return fFitInputs->Chisquare("poisson");
-*/
-   	return 0;
+  return fFitInputs->Statistic("poisson");
 }
 ROOT::Math::BasicFitMethodFunction<ROOT::Math::IBaseFunctionMultiDim>::Type_t FitMethodFunc::Type(void) const
 {
