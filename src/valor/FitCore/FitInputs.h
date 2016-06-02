@@ -43,7 +43,7 @@ public:
   double DoEval(const double * x) const;
   //ROOT::Math::IBaseFunctionMultiDim * Clone(void) const;
   ROOT::Math::IMultiGenFunction * Clone(void) const;
-  unsigned int	NDim(void) const;
+  unsigned int NDim(void) const;
  private:
   FitInputs * fFitInputs;
 };

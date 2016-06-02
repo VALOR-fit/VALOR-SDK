@@ -8,10 +8,13 @@
 \author   Thomas Dealtry <thomas.dealtry \at physics.ox.ac.uk>
           STFC, Rutherford Appleton Laboratory
           Subdepartment of Particle Physics, University of Oxford
+          
+          Steve Dennis <s.r.dennis \at liverpool.ac.uk>
+          University of Liverpool
 
 \created  October 21, 2012 - major rewrite June 2016
 
-\copyright (c) 2010-2013, VaLOR group.
+\copyright (c) 2010-2016, VaLOR group.
 */
 //____________________________________________________________________________
 
@@ -50,6 +53,8 @@ public:
    virtual void       SetTol        (double tol)        { fTol  = tol ;                       }//Minuit targets an EDM of 0.001*tolerance for chisq dist
    virtual void       SetStr        (int str   )        { fStr  = str ;                       }
    virtual void       SetMaxCalls   (int ncalls)        { fMaxNumCalls = ncalls ;             }
+   // max number of function calls
+  // if zero, max_calls = 200 + 100 * npar + 5 * npar**2
 
 protected:
 
@@ -76,6 +81,7 @@ protected:
    TMatrixD    fCovMtrx;             ///< covariance matrix of all free parameters in the fit
 
    ROOT::Minuit2::MnUserParameters fUserParams;   ///< store the user parameters
+   bool fUseFumili;
 };
 
 

@@ -12,7 +12,7 @@
 #define __show_fit_steps__ 
 #define __show_fit_steps_debug__
 #define __show_fit_cpu_time__
-#define __give_fitter_covariance_matrix__
+//#define __give_fitter_covariance_matrix__
 
 #include <cassert> 
 #include <cstdlib> 
@@ -76,7 +76,6 @@ void FitterMinuit2::Init(void)
 {
   fFitInputs           = 0;
   fOption              = "";
-  fNFreeFitParams      = 0;
   fNFitBins            = 0;
   fCalcHesseErrors     = false;
   fCalcMinosErrors     = false;
@@ -89,6 +88,8 @@ void FitterMinuit2::Init(void)
   fMinosErrStatusCode  = -999; 
   fFitTime             = 0;
   fFitTries            = 0;
+  
+  fUseFumili = false;
 }
 //____________________________________________________________________________ 
 void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option) 
@@ -113,6 +114,9 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
   // calc HESSE or MINOS errors after fit
   fCalcHesseErrors  = fOption.Contains("hesse");
   fCalcMinosErrors  = fOption.Contains("minos");
+  
+  // Use FUMILI instead of migrad?
+  fUseFumili = fOption.Contains("fumili");
 
 #ifdef __show_fit_init_info__
   cout << "FitterMinuit2/Init >> Fit parameter list size = " 
@@ -174,15 +178,16 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
 
   // calculate degrees of freedom  
   fNFitBins       = fit_inputs->Observation().NumOfBins();
-  fNFreeFitParams = fit_params.GetNumberFreeParameters();
+  int n_free_params   = fit_params.GetNumberFreeParameters();
   
   assert(fNFitBins > 0);
-  assert(fNFreeFitParams >= 0);
+  assert(n_free_params >= 0);
 
   LOG("Minuit2", pINFO) 
        << "NDoF = " << this->NDOF()
        << " (Number of bins = " << this->NBinsInFit()
-       << ", Number of free parameters = " << this->NFitParams() << ")";
+       << ", Number of total parameters = " << this->NFitParams() << ")"
+       << ", Number of free parameters = " << n_free_params << ")";
   
 }
 //____________________________________________________________________________
@@ -204,10 +209,10 @@ void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
 {
   LOG("Minuit2",pDEBUG)<<"Constructing prior covariance matrix";
   
-  FitParamList & fp = fFitInputs->FitParams();
+  const FitParamList & fp = fFitInputs->FitParams();
   int num_of_params      = fp.GetNumberParameters();
   int num_of_free_params = fp.GetNumberFreeParameters();
-  fCovMtrx = TMatrixD(num_of_free_params,num_of_free_params);
+  fCovMtrx.ResizeTo(num_of_free_params,num_of_free_params);
   const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fFitInputs->Expectation());
   if (cm) {
     const TMatrixD & full_cov = cm->GetSystematics()->CovMatrix();
@@ -226,6 +231,7 @@ void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
   else {
     assert(!"Not supporting creating prior cov matrix without CFM model yet");
   }
+  fCovMtrx.Print();
   //~ LOG("Minuit2",pDEBUG)<<fCovMtrx;
 }
 //____________________________________________________________________________
@@ -254,9 +260,10 @@ bool FitterMinuit2::DoTheFit(void)
 //____________________________________________________________________________ 
 bool FitterMinuit2::RunOnce(void) 
 {
+  FitParamList & fp = fFitInputs->FitParams();
   // a few arrays to store parameters
-  unsigned int nfreeparams = (unsigned int)fNFreeFitParams;
-  unsigned int nparams     = (unsigned int)fFitInputs->FitParams().Size();
+  unsigned int nfreeparams = (unsigned int)fp.GetNumberFreeParameters();
+  unsigned int nparams     = (unsigned int)fp.GetNumberParameters();
   vector<double> bestfit_free;
   vector<double> err_migrad_cov;
   vector<double> err_migrad_err;
@@ -288,8 +295,6 @@ bool FitterMinuit2::RunOnce(void)
   cout << "FitterMinuit2/RunOnce >> Input covariance matrix:" << endl;
   cout << input_cov << endl;
 #endif
-#else
-  fCovMtrx = new TMatrixD(); // need to do this to make the destructor work. confusing...
 #endif
 
   // Get the fitter & pass it the inputs
@@ -297,28 +302,26 @@ bool FitterMinuit2::RunOnce(void)
   cout << "FitterMinuit2/RunOnce >> Getting the fitter & giving it inputs (data & pdf)..." << endl;
 #endif
 
+  ROOT::Minuit2::MnApplication * mnapp = NULL;
+
+  if (!fUseFumili) {
 #ifdef __give_fitter_covariance_matrix__
-  ROOT::Minuit2::MnMigrad migrad(*fFitInputs, fUserParams, input_cov);
+    mnapp = new ROOT::Minuit2::MnMigrad(*fFitInputs, fUserParams, input_cov);
 #else
-  ROOT::Minuit2::MnMigrad migrad(*fFitInputs, fUserParams);
+    mnapp = new ROOT::Minuit2::MnMigrad(*fFitInputs, fUserParams);
 #endif
+  }
+  else {
+    assert(!"Fumili not fully implemented yet");
+  }
 
   // Run MINUIT's minimization step
 #ifdef __show_fit_steps__
   cout << "FitterMinuit2/RunOnce >> Running MIGRAD..." << endl;
 #endif
 
-  // max number of function calls
-  // if zero, max_calls = 200 + 100 * npar + 5 * npar**2
-  int max_calls = 0;
-
-  // value used for terminating iteration procedure.
-  // For example, MIGRAD will stop iterating when edm (expected distance from minimum) will be:
-  // edm < tolerance * 10**-3
-  double tolerance = 0.1;
-
   //Minimise!
-  ROOT::Minuit2::FunctionMinimum bestfit = migrad(max_calls, tolerance);
+  ROOT::Minuit2::FunctionMinimum  bestfit = (*mnapp)(fMaxNumCalls, fTol);
 
 #ifdef __show_fit_steps__
   cout << "FitterMinuit2/RunOnce >> MIGRAD minimisation complete" << endl;
@@ -453,6 +456,8 @@ bool FitterMinuit2::RunOnce(void)
 #ifdef __show_fit_steps__
   cout << "FitterMinuit2/RunOnce >> Done" << endl;
 #endif
+
+  if (mnapp) {delete mnapp;}
 
   return (fMigradMinStatusCode == 0);
 }
