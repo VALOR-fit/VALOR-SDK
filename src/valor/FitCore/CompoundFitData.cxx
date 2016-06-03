@@ -98,8 +98,15 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
 bool CompoundFitData::Generate (FitModelABC * model, const PhysHypothesis & ph, bool stat_fluct)
 {
   bool status = true;
-  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    status = status && (*it)->Generate(model, ph, stat_fluct);
+  for (unsigned int i = 0 ; i < fSubData.size() ; i++) {
+    FitDataABC * data = fSubData[i];
+    CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+    if (cfm) {
+      status = status && data->Generate(cfm->GetSubModel(i), ph, stat_fluct);
+    }
+    else {
+      status = status && data->Generate(model, ph, stat_fluct);
+    }
   }
   return status;
 }
@@ -107,8 +114,15 @@ bool CompoundFitData::Generate (FitModelABC * model, const PhysHypothesis & ph, 
 bool CompoundFitData::Generate (FitModelABC * model, const FitParamList & fp, bool stat_fluct)
 {
   bool status = true;
-  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    status = status && (*it)->Generate(model, fp, stat_fluct);
+  for (unsigned int i = 0 ; i < fSubData.size() ; i++) {
+    FitDataABC * data = fSubData[i];
+    CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+    if (cfm) {
+      status = status && data->Generate(cfm->GetSubModel(i), fp, stat_fluct);
+    }
+    else {
+      status = status && data->Generate(model, fp, stat_fluct);
+    }
   }
   return status;
 }
@@ -116,8 +130,15 @@ bool CompoundFitData::Generate (FitModelABC * model, const FitParamList & fp, bo
 bool CompoundFitData::Generate (FitModelABC * model, bool stat_fluct)
 {
   bool status = true;
-  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    status = status && (*it)->Generate(model, stat_fluct);
+  for (unsigned int i = 0 ; i < fSubData.size() ; i++) {
+    FitDataABC * data = fSubData[i];
+    CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+    if (cfm) {
+      status = status && data->Generate(cfm->GetSubModel(i), stat_fluct);
+    }
+    else {
+      status = status && data->Generate(model, stat_fluct);
+    }
   }
   return status;
 }
