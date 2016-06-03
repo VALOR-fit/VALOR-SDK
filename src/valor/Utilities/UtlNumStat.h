@@ -31,19 +31,15 @@
 #include <TH1D.h>
 #include <TSpline.h>
 
-class TGraph;
-class TH1;
-class TH1F;
-class TH1D;
-class TH2D;
-class TAxis;
-
-#include "valor/Conventions/ConfLevel.h"
 #include "valor/Conventions/Build.h"
+#include "valor/Conventions/ConfLevel.h"
 #include "valor/Conventions/PhysParamId.h"
 
 using std::string;
 using std::vector;
+
+// mathmore forward decl
+namespace ROOT{ namespace Math { class Interpolator;}}
 
 namespace valor {
 namespace util {
@@ -133,6 +129,9 @@ namespace util {
   
   // Check if a spline is flat
   bool SplineIsFlat(const TSpline * spl);
+  
+  // Make a TSpline into a new GSL Spline
+  ROOT::Math::Interpolator * ConvertTSplineToGSL(const TSpline * spl, Option_t * opt = "");
   
 } // util
 } // valor

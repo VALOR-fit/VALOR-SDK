@@ -39,6 +39,7 @@ ChangeLog:
 #include <TSystem.h>
 #include <TDecompSVD.h>
 
+#include "valor/Conventions/Build.h"
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/Opt.h"
@@ -53,6 +54,9 @@ ChangeLog:
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_eigen.h>
+#include <gsl/gsl_errno.h>
+
+#include "Math/Interpolator.h"
 #endif
 
 using std::cout;
@@ -1082,4 +1086,27 @@ bool valor::util::SplineIsFlat(const TSpline * spl)
   }
   return flat;
 }
+//____________________________________________________________________________
+#ifdef __VALOR_FMWK_GSL_ENABLED__
+ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline * spl, Option_t * /*type*/)
+{
+  // Force cubic for now - could read extra types from option argument later
+  ROOT::Math::Interpolation::Type type = ROOT::Math::Interpolation::kCSPLINE;
+  int n_knots = spl->GetNp();
+  Double_t * x = new Double_t[n_knots];
+  Double_t * y = new Double_t[n_knots];
+  for (int i = 0 ; i < n_knots; i++) {
+    spl->GetKnot(i,x[i],y[i]);
+  }
+  ROOT::Math::Interpolator * out_interp = new ROOT::Math::Interpolator(n_knots,type);
+  out_interp->SetData(n_knots,x,y);
+  return out_interp;
+}
+#else
+ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline * /*spl*/, Option_t * /*type*/)
+{
+  assert(!"ConvertTSplineToGSL not available without GSL!");
+  return NULL;
+}
+#endif
 //____________________________________________________________________________
