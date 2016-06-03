@@ -1088,22 +1088,22 @@ bool valor::util::SplineIsFlat(const TSpline * spl)
 }
 //____________________________________________________________________________
 #ifdef __VALOR_FMWK_GSL_ENABLED__
-ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline * spl, Option_t * /*type*/)
+ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl, Option_t * /*type*/)
 {
   // Force cubic for now - could read extra types from option argument later
   ROOT::Math::Interpolation::Type type = ROOT::Math::Interpolation::kCSPLINE;
-  int n_knots = spl->GetNp();
+  int n_knots = spl.GetNp();
   Double_t * x = new Double_t[n_knots];
   Double_t * y = new Double_t[n_knots];
   for (int i = 0 ; i < n_knots; i++) {
-    spl->GetKnot(i,x[i],y[i]);
+    spl.GetKnot(i,x[i],y[i]);
   }
   ROOT::Math::Interpolator * out_interp = new ROOT::Math::Interpolator(n_knots,type);
   out_interp->SetData(n_knots,x,y);
   return out_interp;
 }
 #else
-ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline * /*spl*/, Option_t * /*type*/)
+ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & /*spl*/, Option_t * /*type*/)
 {
   assert(!"ConvertTSplineToGSL not available without GSL!");
   return NULL;
