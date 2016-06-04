@@ -83,6 +83,7 @@ void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, co
   
   // Build this object's supermatrix.
   this->Init(total_elements, params, xml_node_name);
+  delete params;
   
   // Copy vectors and matrices
   fCovMtrx = new TMatrixD(util::ConcatenateTMatrices(all_cov_matrices));
@@ -115,6 +116,5 @@ void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, co
 //________________________________________________________________________________________
 CompoundCorrelatedSystematics::~CompoundCorrelatedSystematics()
 {
-  
 }
 //________________________________________________________________________________________

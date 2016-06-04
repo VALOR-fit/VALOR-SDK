@@ -1091,10 +1091,11 @@ bool valor::util::SplineIsFlat(const TSpline * spl)
 ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl, Option_t * /*type*/)
 {
   // Force cubic for now - could read extra types from option argument later
-  ROOT::Math::Interpolation::Type type = ROOT::Math::Interpolation::kCSPLINE;
+  static ROOT::Math::Interpolation::Type type = ROOT::Math::Interpolation::kCSPLINE;
+  static Double_t x[100];
+  static Double_t y[100];
   int n_knots = spl.GetNp();
-  Double_t * x = new Double_t[n_knots];
-  Double_t * y = new Double_t[n_knots];
+  assert(n_knots<100);
   for (int i = 0 ; i < n_knots; i++) {
     spl.GetKnot(i,x[i],y[i]);
   }
