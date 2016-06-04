@@ -17,7 +17,7 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    --prefix          installation location (for 'make install')                  /usr/local/\n";
   print "\n enable/disable options with either --enable- or --disable- (eg --enable-lhapdf --disable-flux-drivers)\n\n";
   print "    debug             Adds -g in the compiler options to request debug info       default: disabled \n";
-  print "    gsl               Enables GSL fitters. Requires ROOT MathMore library         default: disabled \n";
+  print "    gsl               Enables GSL fitters. Requires ROOT MathMore library         default: enabled if MathMore available \n";
   print "    asan              Build and link against AddressSanitizer.                    default: disabled \n";
   print "\n options for 3rd party software, prefix with --with- (eg --with-lhapdf-lib=/some/path/)\n\n";
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
@@ -103,6 +103,9 @@ my $opt_enable_asan       = "NO";
 if(($match = grep(/--enable-debug/i,   @ARGV)) > 0) { $opt_enable_debug  = "YES"; }
 if(($match = grep(/--enable-gsl/i,     @ARGV)) > 0) { $opt_enable_gsl    = "YES"; }
 if(($match = grep(/--enable-asan/i,    @ARGV)) > 0) { $opt_enable_asan   = "YES"; }
+
+# Just enable GSL if available
+if (`root-config --features` =~ m/mathmore/) { $opt_enable_gsl    = "YES"; }
 
 my $opt_with_cxx_debug_flag="";
 if($opt_enable_debug eq "YES") { $opt_with_cxx_debug_flag = "-g"; }
