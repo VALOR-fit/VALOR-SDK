@@ -10,9 +10,9 @@
 //#define __show_fit_cov_matrix_debug__
 #define __show_fit_result__ 
 #define __show_fit_steps__ 
-#define __show_fit_steps_debug__
+//~ #define __show_fit_steps_debug__
 #define __show_fit_cpu_time__
-//#define __give_fitter_covariance_matrix__
+//~ #define __give_fitter_covariance_matrix__
 
 #include <cassert> 
 #include <cstdlib> 
@@ -232,7 +232,6 @@ void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
   else {
     assert(!"Not supporting creating prior cov matrix without CFM model yet");
   }
-  fCovMtrx.Print();
   //~ LOG("Minuit2",pDEBUG)<<fCovMtrx;
 }
 //____________________________________________________________________________
@@ -276,7 +275,7 @@ bool FitterMinuit2::RunOnce(void)
   // Set fitter strategy
   // In general, low values of level mean fewer function calls and high values mean more reliable minimization.
   // Currently allowed values are 0 (low), 1 (default), and 2 (high).
-  ROOT::Minuit2::MnStrategy strategy(1);
+  ROOT::Minuit2::MnStrategy strategy(fStr);
 
 #ifdef __give_fitter_covariance_matrix__
   // We have a TMatrixD covariance matrix, need to translate it into
@@ -334,15 +333,15 @@ bool FitterMinuit2::RunOnce(void)
 #endif
 
   fMigradMinStatusCode = bestfit.UserState().CovarianceStatus();
+  fMigradErrStatusCode = bestfit.UserState().CovarianceStatus();
+  
+  if (fMigradMinStatusCode <2) {
+    LOG("FitterMinuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
+  }
   
   // Done! Copy current --> best-fit values
   fFitInputs->FitParams().CopyCurrToBestFitValues();
   
-  if(fMigradMinStatusCode !=4 ) {
-    LOG("Minuit2",pERROR) << "Fit failed. Returning...";
-    return false;
-  }
-
   //get the best fit vector, for use in this function
   std::vector<ROOT::Minuit2::MinuitParameter> bestfit_params = bestfit.UserParameters().Parameters();
   for(unsigned int ip = 0; ip < bestfit_params.size(); ip++) {
@@ -362,16 +361,7 @@ bool FitterMinuit2::RunOnce(void)
   // migrad covariance
   if(bestfit.HasCovariance()) {
     ROOT::Minuit2::MnUserCovariance cov_migrad(bestfit.UserCovariance());
-#ifdef __show_fit_steps_debug__
-    cout << cov_migrad << endl;
-#endif
-    for(unsigned int ip = 0; ip < nfreeparams; ip++) {
-      double tmp = sqrt(cov_migrad(ip,ip));
-      err_migrad_cov.push_back(tmp);
-#ifdef __show_fit_steps_debug__
-      cout << "FitterMinuit2/RunOnce >> Migrad covariance for par#" << ip << " = " << bestfit_free[ip] << " +/- " << err_migrad_cov[ip] << endl;
-#endif
-    }
+    this->CopyCovarianceToFPL(cov_migrad);
   }
 
   // migrad error
@@ -385,9 +375,7 @@ bool FitterMinuit2::RunOnce(void)
   
   if (fCalcHesseErrors) {
     //Get Hesse errors
-#ifdef __show_fit_steps__
-    cout << endl << "FitterMinuit2/RunOnce >> Getting Hesse errors..." << endl;
-#endif
+    LOG("FitterMinuit2",pINFO) << "Getting Hesse errors...";
     // argument is strategy
     ROOT::Minuit2::MnHesse hesse(2);
     // perform hesse error calculation
@@ -398,15 +386,7 @@ bool FitterMinuit2::RunOnce(void)
     // hesse covariance
     if(bestfit.HasCovariance()) {
       ROOT::Minuit2::MnUserCovariance cov_hesse(bestfit.UserCovariance());
-#ifdef __show_fit_steps_debug__
-      cout << cov_hesse << endl;
-#endif
-      for(unsigned int ip = 0; ip < nfreeparams && ip < cov_hesse.Nrow(); ip++) {
-        err_hesse_cov.push_back(sqrt(cov_hesse(ip,ip)));
-#ifdef __show_fit_steps_debug__
-        cout << "FitterMinuit2/RunOnce >> Hesse covariance for par#" << ip << " = " << bestfit_free[ip] << " +/- " << err_hesse_cov[ip] << endl;
-#endif
-      }
+      this->CopyCovarianceToFPL(cov_hesse);
     }
     err_hesse_err =  bestfit.UserParameters().Errors(); 
     fFitInputs->FitParams().SetHesseErrors(err_hesse_err);
@@ -417,24 +397,23 @@ bool FitterMinuit2::RunOnce(void)
     }
   } //hesse
 
-#ifdef __show_fit_steps__
-  cout << endl << "FitterMinuit2/RunOnce >> Getting Minos errors..." << endl;
-#endif
-
-  //Get Minos Errors
-  ROOT::Minuit2::MnMinos minos(*fFitInputs,bestfit);
-  fMinosErrStatusCode = 0 ; // Need to work out proper error code.
-  for(unsigned int ip = 0; ip < nparams; ip++) {
-    if(bestfit_params[ip].IsFixed()) { continue; }
-    double up = minos.Upper(ip);
-    double lo = minos.Lower(ip);
-    err_minosminus.push_back(lo);
-    err_minosplus. push_back(up);
+  if (fCalcMinosErrors) {
+    LOG("FitterMinuit2",pINFO) << "Getting Minos errors...";
+    //Get Minos Errors
+    ROOT::Minuit2::MnMinos minos(*fFitInputs,bestfit);
+    fMinosErrStatusCode = 0;  // Need to work out proper error code.
+    for(unsigned int ip = 0; ip < nparams; ip++) {
+      if(bestfit_params[ip].IsFixed()) { continue; }
+      double up = minos.Upper(ip);
+      double lo = minos.Lower(ip);
+      err_minosminus.push_back(lo);
+      err_minosplus. push_back(up);
 #ifdef __show_fit_steps_debug__
-    cout << "FitterMinuit2/RunOnce >> par#" << ip << " = " << bestfit_params[ip].Value() << " +" << up << " -" << lo << " (minos)" << endl;
+      cout << "FitterMinuit2/RunOnce >> par#" << ip << " = " << bestfit_params[ip].Value() << " +" << up << " -" << lo << " (minos)" << endl;
 #endif
-  }
-  fFitInputs->FitParams().SetMinosErrors(err_minosplus, err_minosminus);
+    }
+    fFitInputs->FitParams().SetMinosErrors(err_minosplus, err_minosminus);
+  } // minos
 
 
   fFitInputs->FitParams().SetFitTime ( fFitTime );
@@ -449,8 +428,14 @@ bool FitterMinuit2::RunOnce(void)
 #endif
   cout << "FitterMinuit2/RunOnce >> fcn =  " << bestfit.Fval() << endl;
   cout << "FitterMinuit2/RunOnce >> chi2 = " << fFitInputs->Statistic() << endl;
-  cout << bestfit << endl;
+  //~ cout << bestfit << endl;
   cout << "FitterMinuit2/RunOnce >> migrad status code = " << fMigradMinStatusCode << endl;
+  if (fCalcHesseErrors) {
+    cout << "FitterMinuit2/RunOnce >> hesse status code = " << fHesseErrStatusCode << endl;
+  }
+  if (fCalcMinosErrors) {
+    cout << "FitterMinuit2/RunOnce >> minos status code = " << fMinosErrStatusCode << endl;
+  }
 #endif
 
 #ifdef __show_fit_steps__
@@ -459,7 +444,7 @@ bool FitterMinuit2::RunOnce(void)
 
   if (mnapp) {delete mnapp;}
 
-  return (fMigradMinStatusCode == 0);
+  return true;
 }
 //____________________________________________________________________________ 
 int FitterMinuit2::FitStatusCode(Option_t * option) const
@@ -484,5 +469,40 @@ int FitterMinuit2::NDOF() const
 int FitterMinuit2::NFitParams() const
 {
   return fFitInputs->FitParams().GetNumberFreeParameters();
+}
+//____________________________________________________________________________ 
+void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & mncov)
+{
+  FitParamList & fp = fFitInputs->FitParams();
+  int num_of_params      = fp.GetNumberParameters();
+  // Copy errors from HESSE for free parameters
+  TMatrixDSym cov(num_of_params);
+  int ifree = 0;
+  int jfree = 0;
+  for(int i = 0; i<num_of_params; i++) {
+    if (!fp.IsFixedByIndex(i)) {
+      for(int j = 0; j<num_of_params; j++) {
+        // Put unfixed errors in the matrix
+        if (!fp.IsFixedByIndex(j)) {
+          double scaling = fp.ParameterScalingByIndex(i)*fp.ParameterScalingByIndex(j);
+          cov[i][j] = mncov(ifree,jfree)/scaling;
+          jfree++;
+        }
+      }
+      jfree = 0;
+      ifree++;
+    }
+  }
+  // Copy prior errors along diagonal for unfixed
+  const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fFitInputs->Expectation());
+  if (cm) {
+    for (int i = 0; i < num_of_params; i++) {
+      if (!fp.IsFixedByIndex(i)) {continue;}
+      PhysParamId_t p = fp.WhichParam(i);
+      cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
+    }
+  }
+  fp.SetCovMatrix(cov);
+  return;
 }
 //____________________________________________________________________________ 

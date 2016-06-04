@@ -62,6 +62,8 @@ protected:
    void  Init    (FitInputs * fit_inputs, Option_t * option = "minuit2");
    bool  RunOnce (void);
    void  FillPriorCovMatrix(Option_t * opt = "");
+   
+   void CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & mncov);
 
    FitInputs*  fFitInputs;        ///< fit inputs
    TString     fOption;           ///< fit option
