@@ -12,7 +12,7 @@
 #define __show_fit_steps__ 
 //~ #define __show_fit_steps_debug__
 #define __show_fit_cpu_time__
-//~ #define __give_fitter_covariance_matrix__
+#define __give_fitter_covariance_matrix__
 
 #include <cassert> 
 #include <cstdlib> 
@@ -360,7 +360,7 @@ bool FitterMinuit2::RunOnce(void)
 
   // migrad covariance
   if(bestfit.HasCovariance()) {
-    ROOT::Minuit2::MnUserCovariance cov_migrad(bestfit.UserCovariance());
+    ROOT::Minuit2::MnUserCovariance cov_migrad(bestfit.UserState().Covariance());
     this->CopyCovarianceToFPL(cov_migrad);
   }
 
@@ -379,13 +379,13 @@ bool FitterMinuit2::RunOnce(void)
     // argument is strategy
     ROOT::Minuit2::MnHesse hesse(2);
     // perform hesse error calculation
-    ROOT::Minuit2::MnUserParameterState hesse_state = hesse(*fFitInputs, bestfit.UserState());
+    ROOT::Minuit2::MnUserParameterState hesse_state = hesse(*fFitInputs, bestfit.UserState(),fMaxNumCalls);
     //Check if fit succeeded
     fHesseErrStatusCode = hesse_state.CovarianceStatus();
 
     // hesse covariance
-    if(bestfit.HasCovariance()) {
-      ROOT::Minuit2::MnUserCovariance cov_hesse(bestfit.UserCovariance());
+    if(hesse_state.HasCovariance()) {
+      ROOT::Minuit2::MnUserCovariance cov_hesse(hesse_state.Covariance());
       this->CopyCovarianceToFPL(cov_hesse);
     }
     err_hesse_err =  bestfit.UserParameters().Errors(); 
