@@ -240,7 +240,7 @@ if($opt_enable_gsl eq "YES") {
 }
 # Slack info
 if($opt_slack) {
-  print BLD_HEADER_FILE   "#define __VALOR_SLACK_TOKEN__ ".$opt_slack."\n"; 
+  print BLD_HEADER_FILE   "#define __VALOR_SLACK_TOKEN__ \"".$opt_slack."\"\n"; 
 } else {
   print BLD_HEADER_FILE "//#define __VALOR_SLACK_TOKEN__ DISABLED\n"; 
 }
