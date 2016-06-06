@@ -60,6 +60,24 @@ LOG_INCLUDES  := -I$(LOG_INC_DIR)
 LOG_LIBRARIES := -L$(LOG_LIB_DIR) -llog4cpp
 
 #-------------------------------------------------------------------
+#                             GSL
+#-------------------------------------------------------------------
+
+# GSL libraries and headers
+
+ifeq ($(strip $(OPT_WITH_GSL_INC)),undefined)
+  GSL_INCLUDES  := -I$(OPT_WITH_GSL_INC)
+else
+  GSL_INCLUDES  := 
+endif
+
+ifeq ($(strip $(OPT_WITH_GSL_LIB)),undefined)
+  GSL_LIBRARIES  := -L$(OPT_WITH_GSL_LIB)
+else
+  GSL_LIBRARIES  := 
+endif
+
+#-------------------------------------------------------------------
 #                   PROFILING / DEBUGING OPTIONS
 #-------------------------------------------------------------------
 # Linking in the Google Profiling Tool library
@@ -292,12 +310,14 @@ endif
 INCLUDES  := $(VALOR_INCLUDES) \
 	     $(LOG_INCLUDES) \
 	     $(ROOT_INCLUDES) \
-	     $(LINUX_SYS_INCLUDES)
+	     $(LINUX_SYS_INCLUDES)\
+	     $(GSL_INCLUDES)
 
 LIBRARIES := $(SYSLIBS) \
 	     $(LOG_LIBRARIES) \
 	     $(ROOT_LIBRARIES) \
 	     $(GPROF_LIBRARIES) \
+	     $(GSL_LIBRARIES) \
 	     $(OPT_WITH_MISC_LIBS)
 
 # Default compiler and preprocessor flags

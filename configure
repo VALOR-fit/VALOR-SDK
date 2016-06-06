@@ -180,6 +180,15 @@ if(! -d $opt_with_log4cpp_lib) {
   exit 1;
 }
 
+# Find GSL include and library paths
+my $gsl_libdir = "";
+my $gsl_incdir = "";
+$root_config = `root-config --config`;
+$root_config =~m /--with-gsl-libdir=(\S*)/;
+$gsl_libdir = $1 unless not defined $1;
+$root_config =~m /--with-gsl-incdir=(\S*)/;
+$gsl_incdir = $1 unless not defined $1;
+
 print "\n";
 
 # 
@@ -290,6 +299,8 @@ print MKCONF "OPT_WITH_CXX_OPTIMIZ_FLAG=-$opt_with_cxx_optimiz_flag\n";
 print MKCONF "OPT_WITH_CXX_MISC_FLAGS=$opt_with_cxx_misc_flags\n";
 print MKCONF "OPT_WITH_MISC_LIBS=$opt_with_cxx_misc_libs\n";
 print MKCONF "OPT_ENABLE_GSL=$opt_enable_gsl\n";
+print MKCONF "OPT_WITH_GSL_INC=$opt_with_gsl_inc\n";
+print MKCONF "OPT_WITH_GSL_LIB=$opt_with_gsl_lib\n";
 print MKCONF "OPT_WITH_LOG4CPP_INC=$opt_with_log4cpp_inc\n";
 print MKCONF "OPT_WITH_LOG4CPP_LIB=$opt_with_log4cpp_lib\n";
 print MKCONF "OPT_WITH_COMPILER=$opt_with_compiler\n";
