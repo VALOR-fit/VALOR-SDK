@@ -18,9 +18,11 @@
 #ifndef _valor_print_utils_h_
 #define _valor_print_utils_h_
 
+#include <iostream>
+#include <string>
+
 #include "TVector.h"
 #include "TMatrixD.h"
-#include <iostream>
 
 namespace valor {
 namespace util {
@@ -35,6 +37,9 @@ namespace util {
   void PrintVector     (const TVectorD & v, const conv::PhysParamId_t * params, int w=15, int prec=9, Option_t * opt="", std::ostream & stream = std::cout);
   void PrintVectorPair (const TVectorD & current, const TVectorD & nominal, const conv::PhysParamId_t * params,
                         int w, int prec, Option_t * option = "", std::ostream & stream = std::cout);
+  
+  // Writes to the VALOR slack channel (if enabled)
+  void NotifySlack (std::string message, std::string channel, std::string username);
   
 } // util
 } // valor

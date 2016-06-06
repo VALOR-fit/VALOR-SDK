@@ -13,7 +13,9 @@ ChangeLog:
 
 #include <iomanip>
 #include <cmath>
+#include <cstdlib>
 
+#include "valor/Conventions/Build.h"
 #include "valor/Conventions/Constants.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlPrint.h"
@@ -137,3 +139,24 @@ void valor::util::PrintVectorPair(
   stream.unsetf( ios::basefield | ios::floatfield);
 }
 //___________________________________________________________________________
+#ifdef __VALOR_SLACK_TOKEN__
+void valor::util::NotifySlack (std::string message, std::string channel, std::string username)
+{
+  static const TString request_pattern("curl -X POST --data-urlencode \
+  \'payload={\"channel\": \"[CHANNEL]\", \"username\": \"[USERNAME]\", \"text\": \"[MESSAGE]\"}\' \
+  https://hooks.slack.com/services/[TOKEN]");
+  
+  TString escaped_message(message);
+  escaped_message.ReplaceAll("'","'\\''");
+  
+  TString request = request_pattern;
+  request = request.ReplaceAll("[MESSAGE]" ,escaped_message.Data());
+  request = request.ReplaceAll("[CHANNEL]" ,channel .c_str());
+  request = request.ReplaceAll("[USERNAME]",username.c_str());
+  request = request.ReplaceAll("[TOKEN]"   ,__VALOR_SLACK_TOKEN__);
+  std::cerr<<request<<std::endl;
+  system(request.Data());
+}
+#else
+void valor::util::NotifySlack (std::string , std::string , std::string ) {}
+#endif // __VALOR_SLACK_TOKEN__
