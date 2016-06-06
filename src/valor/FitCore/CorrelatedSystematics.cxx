@@ -11,7 +11,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 //~ #define __show_init_mesg_debug__   
 //~ #define __show_cholesky_mesg_info__
 //~ #define __show_cholesky_mesg_debug__
-//~ #define __show_tweak_mesg_debug__
+#define __show_tweak_mesg_debug__
 //~ #define __show_update_correlated_mesg_debug__
 //~ #define __show_chisqpenalty_mesg_debug__
 //~ #define __show_chisqpenalty_mesg_debug2__
@@ -258,6 +258,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   {
      LOG("CorrelatedSystematics",pFATAL)
         << "\n Syst covariance matrix for "<<this->GetName()<<" has unexpected size!"
+        << "\n Reading from: " << fCovMtrx->GetName()
         << "\n Expecting: " <<  np << " x " << np << " matrix"
         << "\n Found: " << cov.GetNrows() << " x " <<  cov.GetNcols() << " matrix";
      util::Die(1); return false;
@@ -377,7 +378,7 @@ void CorrelatedSystematics::Tweak(
 {
   
 #ifdef __show_tweak_mesg_debug__
-  LOG("CorrelatedSystematics",pDEBUG)  << "Tweaking syst parameters";
+  LOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
 #endif
 
   // Switch flags
@@ -417,6 +418,9 @@ void CorrelatedSystematics::Tweak(
         LOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
 #endif
         const TVectorD & vec = *input_vec;
+        LOG("CorrelatedSystematics",pDEBUG) << this->GetName() << "\n"
+                                            << "Vector number of elements: "       << vec.GetNoElements() << "\n"
+                                            << "Number of systematic parameters: " << (int)fNSystParameters ;
         assert(vec.GetNoElements() == (int)fNSystParameters);
         current_values = vec;
      }
@@ -433,6 +437,77 @@ void CorrelatedSystematics::Tweak(
 #endif
      const TMatrixD & L = *fCovMtrxChoL;
      TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
+     current_values = vec;
+  }
+  return;
+}
+//________________________________________________________________________________________
+void CorrelatedSystematics::Tweak(
+  bool       force_inputs, // force the input params or generate random ones internally  
+  TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
+  bool     (* use_twk_param)(PhysParamId_t)
+)
+{
+  
+#ifdef __show_tweak_mesg_debug__
+  LOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
+#endif
+
+  // Switch flags
+  fIsTweaked         = true;
+  
+  //
+  // Get best-fit and current syst params
+  //
+  
+  TVectorD & initial_values = *fInitialValues;
+  TVectorD & current_values = *fCurrentValues;
+
+  //
+  // Force the input parameters
+  //
+  if(force_inputs) 
+  {
+     // Input vector is NULL.
+     // This resets the input params to their best-fit values.
+     if(input_vec==0) {
+#ifdef __show_tweak_mesg_debug__
+        LOG("CorrelatedSystematics",pDEBUG) << "Reset input params to best-fit values.";
+#endif
+        fIsTweaked = false;
+        current_values = initial_values;
+        return;
+     }
+     else     
+     {
+#ifdef __show_tweak_mesg_debug__
+        LOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
+#endif
+        TVectorD & vec = *input_vec;
+        assert(vec.GetNoElements() == (int)fNSystParameters);
+        for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
+          PhysParamId_t p = this->Idx2Param(ip);
+          if (use_twk_param(p)) {vec[ip]=current_values[ip];};
+        }
+        current_values = vec;
+     }
+  }//force_inputs?
+
+  //
+  // If the tweaking dials were not forced, generate correlated tweaking dials
+  // using the Cholesky method
+  //
+  else
+  {
+#ifdef __show_tweak_mesg_debug__
+     LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
+#endif
+     const TMatrixD & L = *fCovMtrxChoL;
+     TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
+     for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
+       PhysParamId_t p = this->Idx2Param(ip);
+       if (use_twk_param(p)) {vec[ip]=current_values[ip];};
+     }
      current_values = vec;
   }
   return;
@@ -509,7 +584,7 @@ void CorrelatedSystematics::PrintSystematicVariations(std::ostream & stream) con
 {
   for (int i = 0 ; i < fCurrentValues->GetNoElements(); i++) {
     PhysParamId_t p = fSystParameters[i];
-    stream << NameRegistry::Instance()->AsString(p) << "\t" << (*fCurrentValues)[i] << endl;
+    stream << (*fCurrentValues)[i] << "\t" << NameRegistry::Instance()->AsString(p) << endl;
   }
 }
 //________________________________________________________________________________________
@@ -519,7 +594,7 @@ int CorrelatedSystematics::Param2Idx(PhysParamId_t p) const
   int idx = fParam2Idx[p];
 #ifdef __VALOR_FMWK_DEBUG_ENABLED__
   if (idx < 0 || idx > (int)fNSystParameters) {
-    LOG("CorrelatedSysteatics",pFATAL)<<this->GetName()<<" got bad index "<<idx<<" for param "<<util::NameRegistry::Instance()->AsString(p);
+    LOG("CorrelatedSystematics",pFATAL)<<this->GetName()<<" got bad index "<<idx<<" for param "<<util::NameRegistry::Instance()->AsString(p);
     util::Die(-1);
   }
 #endif

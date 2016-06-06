@@ -44,13 +44,13 @@ public:
   bool Read (TXMLEngine* xml, XMLNodePointer_t root_node);
 
   // Get covariance matrix and cholesky decomposition of covariance matrix
-  const TMatrixD & CovMatrix         (void) const { return *fCovMtrx;          }
-  const TMatrixD & CovMatrixInv      (void) const { return *fCovMtrxInv;       }
-  const TMatrixD & CovMatrixCholesky (void) const { return *fCovMtrxChoL;      }
+  const TMatrixD & CovMatrix         (void) const { return *fCovMtrx;     }
+  const TMatrixD & CovMatrixInv      (void) const { return *fCovMtrxInv;  }
+  const TMatrixD & CovMatrixCholesky (void) const { return *fCovMtrxChoL; }
   
-  const TVectorD & UntunedValues (void) const { return *fUntunedValues;}
-  const TVectorD & InitialValues (void) const { return *fInitialValues;}
-  const TVectorD & CurrentValues (void) const { return *fCurrentValues;}
+  const TVectorD & UntunedValues (void) const { return *fUntunedValues; }
+  const TVectorD & InitialValues (void) const { return *fInitialValues; }
+  const TVectorD & CurrentValues (void) const { return *fCurrentValues; }
   
   double OneSigmaError(conv::PhysParamId_t p) const;
   double OneSigmaErrorByIndex(int idx) const;
@@ -64,6 +64,7 @@ public:
   
   // Tweak all the systematics, either to a specific vector or randomly with correlations.
   void Tweak(bool force_inputs, TVectorD * input_vec, Option_t * opt = 0);
+  void Tweak(bool force_inputs, TVectorD * input_vec, bool (* use_twk_param)(conv::PhysParamId_t));
   
   // Access vector values
   double CurrentValueByIndex(int idx) const;
