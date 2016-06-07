@@ -181,13 +181,13 @@ if(! -d $opt_with_log4cpp_lib) {
 }
 
 # Find GSL include and library paths
-my $gsl_libdir = "";
-my $gsl_incdir = "";
+my $opt_with_gsl_lib = "";
+my $opt_with_gsl_inc = "";
 $root_config = `root-config --config`;
 $root_config =~m /--with-gsl-libdir=(\S*)/;
-$gsl_libdir = $1 unless not defined $1;
+$opt_with_gsl_lib = $1 unless not defined $1;
 $root_config =~m /--with-gsl-incdir=(\S*)/;
-$gsl_incdir = $1 unless not defined $1;
+$opt_with_gsl_inc = $1 unless not defined $1;
 
 print "\n";
 
@@ -327,8 +327,9 @@ if(-e $MKCONF_FILENAME) {
 sub auto_detect {
   
   # First place to look when autodetecting is in the directories in LD_LIBRARY_PATH
-  my @libdirs  = split(":",$ENV{LD_LIBRARY_PATH});
-  push (@libdirs,split(":",$ENV{DYLD_LIBRARY_PATH})); #and the mac equivalent
+  my @libdirs = ( );
+  push (@libdirs,split(":",$ENV{LD_LIBRARY_PATH}))    if defined $ENV{LD_LIBRARY_PATH};  
+  push (@libdirs,split(":",$ENV{DYLD_LIBRARY_PATH}))  if defined $ENV{DYLD_LIBRARY_PATH}; #and the mac equivalent
   my @search_dir = ();
   foreach my $libdir (unique_entries(@libdirs)) {
     chomp($libdir);
