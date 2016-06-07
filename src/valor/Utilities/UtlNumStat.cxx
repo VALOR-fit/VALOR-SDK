@@ -1088,6 +1088,25 @@ bool valor::util::SplineIsFlat(const TSpline * spl)
 }
 //____________________________________________________________________________
 #ifdef __VALOR_FMWK_GSL_ENABLED__
+bool valor::util::SplineIsFlat(const ROOT::Math::Interpolator * spl)
+{
+  bool flat = true;
+  // Bit of a hack. No way to check limits/knots, so just evaluate at random values over wide range
+  static const double x[6] = {-389931,-3E-2,0.,1.,7.,123210.};
+  for (int i = 0 ; i < 6; i++) {
+    double y = spl->Eval(x[i]);
+    if (std::fabs(y-1) > conv::kASmallNum) {flat = false;}
+  }
+  return flat;
+}
+#else
+bool valor::util::SplineIsFlat(const ROOT::Math::Interpolator * /*spl*/)
+{
+  return true;
+}
+#endif
+//____________________________________________________________________________
+#ifdef __VALOR_FMWK_GSL_ENABLED__
 ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl, Option_t * type)
 {
   int n_knots = spl.GetNp();

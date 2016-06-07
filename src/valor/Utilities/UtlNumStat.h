@@ -129,6 +129,7 @@ namespace util {
   
   // Check if a spline is flat
   bool SplineIsFlat(const TSpline * spl);
+  bool SplineIsFlat(const ROOT::Math::Interpolator * spl);
   
   // Make a TSpline into a new GSL Spline
   ROOT::Math::Interpolator * ConvertTSplineToGSL(const TSpline & spl, Option_t * opt = "");
