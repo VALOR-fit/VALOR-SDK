@@ -1088,18 +1088,24 @@ bool valor::util::SplineIsFlat(const TSpline * spl)
 }
 //____________________________________________________________________________
 #ifdef __VALOR_FMWK_GSL_ENABLED__
-ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl, Option_t * /*type*/)
+ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl, Option_t * type)
 {
-  // Force cubic for now - could read extra types from option argument later
-  static ROOT::Math::Interpolation::Type type = ROOT::Math::Interpolation::kCSPLINE;
+  int n_knots = spl.GetNp();
+  
+  // Get spline type. Assume cubic if not specified
+  TString type_ts(type);
+  ROOT::Math::Interpolation::Type spl_type = ROOT::Math::Interpolation::kCSPLINE;
+  if (type_ts.Contains("akima")) {
+    spl_type = ROOT::Math::Interpolation::kAKIMA;
+    assert(n_knots>=5);
+  }
   static Double_t x[100];
   static Double_t y[100];
-  int n_knots = spl.GetNp();
   assert(n_knots<100);
   for (int i = 0 ; i < n_knots; i++) {
     spl.GetKnot(i,x[i],y[i]);
   }
-  ROOT::Math::Interpolator * out_interp = new ROOT::Math::Interpolator(n_knots,type);
+  ROOT::Math::Interpolator * out_interp = new ROOT::Math::Interpolator(n_knots,spl_type);
   out_interp->SetData(n_knots,x,y);
   return out_interp;
 }
