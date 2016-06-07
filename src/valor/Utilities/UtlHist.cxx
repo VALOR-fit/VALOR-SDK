@@ -20,9 +20,14 @@ ChangeLog:
 #include <TGraph.h>
 #include <TMath.h>
 
+#include "valor/Conventions/Build.h"
 #include "valor/Utilities/UtlHist.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/PhysParamId.h"
+
+#ifdef __VALOR_FMWK_GSL_ENABLED__
+#include "Math/Interpolator.h"
+#endif
 
 using std::cout;
 using std::cerr;
@@ -208,4 +213,23 @@ TH1 * valor::util::MakeFittedHistogramShowingFittedValues(const TH1* hist, const
   }
   return fitted_hist;
 }
+//___________________________________________________________________________
+#ifdef __VALOR_FMWK_GSL_ENABLED__
+TH1D valor::util::MakeHistFromGSLSpline(const ROOT::Math::Interpolator * spl, int n_points, double min_x , double max_x)
+{
+  TH1D h_spl("h_spl","Spline histogram",n_points,min_x,max_x);
+  for (int i = 0 ; i < n_points ; i++) {
+    double x = min_x + i*(max_x-min_x)/n_points;
+    h_spl.Fill(x,spl->Eval(x));
+  }
+  return h_spl;
+}
+#else
+TH1D valor::util::MakeHistFromGSLSpline(const ROOT::Math::Interpolator *, int, double, double)
+{
+  assert(!"GSL Must be enabled for this function!");
+  TH1D h;
+  return h;
+}
+#endif
 //___________________________________________________________________________

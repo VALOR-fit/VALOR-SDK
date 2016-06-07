@@ -28,6 +28,9 @@
 
 #include "valor/VArray/VALORArray.h"
 
+// mathmore forward decl
+namespace ROOT{ namespace Math { class Interpolator;}}
+
 namespace valor {
 namespace util {
   // Returns a 1D histogram representing the VALORArray. If array is not 1D, integrates out other dimensions.
@@ -41,6 +44,8 @@ namespace util {
   
   // Use a TF1* to make a cloned version of a TH1* containing the values of that function (with correct normalisation) 
   TH1 * MakeFittedHistogramShowingFittedValues(const TH1* hist, const TF1* func, int npoints = 1000);
+  
+  TH1D MakeHistFromGSLSpline(const ROOT::Math::Interpolator * spl, int n_points = 1000, double min_x = 0 , double max_x = 2);
 
 } // util
 } // valor
