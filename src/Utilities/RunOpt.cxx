@@ -193,6 +193,9 @@ void valor::RunOpt::Init(void)
   fStoreLikeWeights = false;
   fPenaltyTerm0     = false;
   fPenaltyTerm1     = false;
+  kScale_toys_based_on_samples = false;
+  fScale_toys_based_on_samples_scale = 1;
+
 }
 //____________________________________________________________________________
 void valor::RunOpt::InitOscParams(double value)
@@ -1193,6 +1196,15 @@ void valor::RunOpt::ReadFitMargOptions()
     cerr << "Use --penalty-freepar1 (0 or 1)" << endl;
     cerr << endl;
     exit(1);
+  }
+  
+  if(fParser->OptionExists("scale-gentoys")){
+    kScale_toys_based_on_samples = (bool) fParser->ArgAsInt("scale-gentoys");
+
+    if(fParser->OptionExists("scale-gentoys-scale")){
+      fScale_toys_based_on_samples_scale = (double) fParser->ArgAsDouble("scale-gentoys-scale");
+    }
+
   }
   
 }

@@ -133,7 +133,9 @@ namespace valor {
         bool StoreLikeWeights () const { if(fParseType & kParseFitMarg) return fStoreLikeWeights; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   PenaltyTerm0 () const { if(fParseType & kParseFitMarg) return fPenaltyTerm0; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   PenaltyTerm1 () const { if(fParseType & kParseFitMarg) return fPenaltyTerm1; cerr << "kParseFitMarg not set" << endl; exit(-1); }
-        
+        bool Scale_toys_based_on_samples () const { if(fParseType & kParseFitMarg) return kScale_toys_based_on_samples; cerr << "kScale_toys_based_on_samples not set" << endl; exit(-1); }
+        double Scale_toys_based_on_samples_scale () const { if(fParseType & kParseFitMarg) return fScale_toys_based_on_samples_scale; cerr << "fScale_toys_based_on_samples_scale not set" << endl; exit(-1); }
+
         // Print
         virtual void   Print (ostream & stream, const int w = 30) const;
         friend ostream & operator << (ostream & stream, const RunOpt & opt);
@@ -271,7 +273,9 @@ namespace valor {
         bool fStoreLikeWeights;
         bool fPenaltyTerm0; // penalty term for param0
         bool fPenaltyTerm1; // penalty term for param1
-        
+        bool kScale_toys_based_on_samples;
+        double fScale_toys_based_on_samples_scale;
+      
         //conv::PhysParamId_t fFreepar0;
         //conv::PhysParamId_t fFreepar1;
         //
