@@ -8,7 +8,7 @@ void valor_load_lib(const char * lib)
 void loadlibs ()
 {
   TString vf_libs0 = gSystem->GetDynamicPath();
-  TString vf_libs  = vf_libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib:/usr/lib64";
+  TString vf_libs  = vf_libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib:/usr/lib64:$VALOR_FMWK/lib";
   gSystem->SetDynamicPath(vf_libs.Data());
   
   TString features(gROOT->GetConfigFeatures());
