@@ -10,6 +10,8 @@ ChangeLog:
 
 #include "valor/Utilities/VThreadPool.h"
 
+#if __cplusplus > 199711L
+
 using namespace valor;
 
 //____________________________________________________________________________
@@ -132,3 +134,6 @@ void util::VThreadPool::Wait()
   }
 }
 //____________________________________________________________________________
+
+
+#endif //__cplusplus > 199711L
