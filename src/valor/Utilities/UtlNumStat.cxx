@@ -1109,8 +1109,8 @@ bool valor::util::SplineIsFlat(const ROOT::Math::Interpolator * /*spl*/)
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl, Option_t * type)
 {
+  LOG("UtlNumStat",pINFO)<<"Converting spline to GSL: "<<spl.GetName();
   int n_knots = spl.GetNp();
-  
   // Get spline type. Assume cubic if not specified
   TString type_ts(type);
   ROOT::Math::Interpolation::Type spl_type = ROOT::Math::Interpolation::kCSPLINE;
