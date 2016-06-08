@@ -120,12 +120,27 @@ void valor::RunOpt::Init(void)
   fSeedToyMCosc  = 0;
   fSeedFitter    = 0;
   fSeedOther     = 0;
+
+
+
   
-  
+  // Posterior predictive
+
+  // External inputs
+  fUseFileData   = false;
+  fPathFileData  = "";
+
+  // for(int is = 0; is < kns; is++) {
+  //   SuperkSample_t s = conv::kSKSamples[is];
+  //   if (s == conv::kSKsUndefined) continue;
+  //   fUseSKsample[is] = false;
+  // }//is
+  /////
+
+
+
   // Priors
-  
   fPriorId = conv::kBadResult;
-  
   fPriorsFile = ""; //use this for default OFF
   //fPriorsFile = util::FormFilePath("priors/joint_T2Kreact_run14/Priors_T2Kreact_run14_Mach3_22Maj15.root", "inputs"); //use this for default ON
   
@@ -337,6 +352,24 @@ void valor::RunOpt::ReadCommonOptions()
     fSeedOther = 0;
   }
   
+
+
+
+
+  // Posterior predictive
+  
+  if (fParser->OptionExists("file-data")){
+    fPathFileData = fParser->ArgAsString("file-data");
+    fUseFileData = true;
+  }
+  
+  // if (fParser->OptionExists("Use-1Re")){
+  //   fUseSKsample[] = true;
+  // }
+
+  //////
+
+
   // Should this be done here? Or in macro code.
   Rnd::Instance()->SetSeeds(fSeedToyMCstat,fSeedToyMCsyst,fSeedToyMCosc,fSeedFitter,fSeedOther);
   
@@ -1220,10 +1253,11 @@ void valor::RunOpt::Usage(const int w)
   
   if(fParseType & kParseCommon) {
     cout << "Common running options:" << endl
-    << " " << setw(w) << "--config-file VALUE"      << "analysis configuration file to use (in $T2KOSCANA/config/)" << endl
-    << " " << setw(w) << "--file-tag VALUE"         << "tag for output file(s)" << endl
-    << " " << setw(w) << "--run VALUE"              << "job number for output file(s)" << endl
-    << endl;
+	 << " " << setw(w) << "--config-file VALUE"      << "analysis configuration file to use (in $T2KOSCANA/config/)" << endl
+	 << " " << setw(w) << "--file-tag VALUE"         << "tag for output file(s)" << endl
+	 << " " << setw(w) << "--run VALUE"              << "job number for output file(s)" << endl
+	 << " " << setw(w) << "--file-data"              << "input file that contains the data set" << endl         
+	 << endl;
   }//kParseCommon
   if(fParseType & kParseToys) {
     cout << "Toy running options:" << endl
@@ -1329,7 +1363,12 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
            << " - " << setw(w) << "Verbosity file:"  << fVerbosityFile << endl
            << " - " << setw(w) << "Output file tag:" << fFileTag       << endl
            << " - " << setw(w) << "Run number:"      << fRun           << endl
-           << " - " << setw(w) << "Seed (stat):   "  << seedToyMCstat  << endl
+
+           << " - " << setw(w) << "Using data file:" << ((fUseFileData) ? "YES " : "NO") << endl;
+    if(fUseFileData) cout << " - " << setw(w) << " --> " << fPathFileData;
+    cout << endl;
+
+    stream << " - " << setw(w) << "Seed (stat):   "  << seedToyMCstat  << endl
            << " - " << setw(w) << "Seed (syst):   "  << seedToyMCsyst  << endl
            << " - " << setw(w) << "Seed (osc):    "  << seedToyMCosc   << endl
            << " - " << setw(w) << "Seed (fitter): "  << seedFitter     << endl

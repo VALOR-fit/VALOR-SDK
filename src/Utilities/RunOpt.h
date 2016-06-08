@@ -76,7 +76,9 @@ namespace valor {
         string VerbosityFile   () const { if(fParseType & kParseCommon) return fVerbosityFile; cerr << "kParseCommon not set" << endl; exit(-1); }
         string FileTag         () const { if(fParseType & kParseCommon) return fFileTag;       cerr << "kParseCommon not set" << endl; exit(-1); }
         int    Run             () const { if(fParseType & kParseCommon) return fRun;           cerr << "kParseCommon not set" << endl; exit(-1); }
-        
+	string PathFileData    () const { if(fParseType & kParseCommon) return fPathFileData;  cerr << "kParseCommon not set" << endl; exit(-1); }
+	bool   UseFileData     () const { if(fParseType & kParseCommon) return fUseFileData;   cerr << "kParseCommon not set" << endl; exit(-1); }
+
         UInt_t RndSeedToyMCstat() const {return fSeedToyMCstat;}
         UInt_t RndSeedToyMCsyst() const {return fSeedToyMCsyst;}
         UInt_t RndSeedToyMCosc () const {return fSeedToyMCosc; }
@@ -89,9 +91,11 @@ namespace valor {
         string GlobalMixParamScheme() const { if(fParseType & kParseGlobal) return fGlobalMixParamScheme; cerr << "kParseGlobal not set" << endl; exit(-1); }
         string GlobalMixParamOctant() const { if(fParseType & kParseGlobal) return fGlobalMixParamOctant; cerr << "kParseGlobal not set" << endl; exit(-1); }
         string GlobalCPVPhaseScheme() const { if(fParseType & kParseGlobal) return fGlobalCPVPhaseScheme; cerr << "kParseGlobal not set" << endl; exit(-1); }
-        // 3f osc options
+        
+	// 3f osc options
         string Hypothesis   () const { if(fParseType & kParse3FOscParams ) return fHypothesis; cerr << "kParse3FOscParams or kParse3FOscBarParams not set" << endl; exit(-1); }
         
+	
         // toy or fit marginalization options
         int    FirstExperiment     () const { if(fParseType & (kParseToys | kParseFitMarg)) return fFirstExperiment;     cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
         int    LastExperiment      () const { if(fParseType & (kParseToys | kParseFitMarg)) return fLastExperiment;      cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
@@ -168,6 +172,12 @@ namespace valor {
         string fVerbosityFile;
         string fFileTag;
         int    fRun;
+	
+	// Posterior predictive
+	bool   fUseFileData;
+       	string fPathFileData;
+	//bool   fUseSKsample[conv::kns];
+	
         // toy options
         int  fFirstExperiment;
         int  fLastExperiment;
@@ -182,8 +192,8 @@ namespace valor {
         string fGlobalMassHierarchy;
         string fGlobalMixParamScheme;
         string fGlobalMixParamOctant;
-        string fGlobalCPVPhaseScheme;
-        
+        string fGlobalCPVPhaseScheme;   
+
         // Random seeds
         UInt_t fSeedToyMCstat;      ///< initial seeds for RNG - stat fluctuations
         UInt_t fSeedToyMCsyst;      ///< initial seeds for RNG - syst fluctuations
