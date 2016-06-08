@@ -11,7 +11,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 //~ #define __show_init_mesg_debug__   
 //~ #define __show_cholesky_mesg_info__
 //~ #define __show_cholesky_mesg_debug__
-#define __show_tweak_mesg_debug__
+//~ #define __show_tweak_mesg_debug__
 //~ #define __show_update_correlated_mesg_debug__
 //~ #define __show_chisqpenalty_mesg_debug__
 //~ #define __show_chisqpenalty_mesg_debug2__
@@ -487,7 +487,11 @@ void CorrelatedSystematics::Tweak(
         assert(vec.GetNoElements() == (int)fNSystParameters);
         for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
           PhysParamId_t p = this->Idx2Param(ip);
-          if (use_twk_param(p)) {vec[ip]=current_values[ip];};
+          if (!use_twk_param(p)) {
+            // LOG("CorrelatedSystematics", pNOTICE)
+            //   << "Adding to tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
+            vec[ip]=current_values[ip];
+          }
         }
         current_values = vec;
      }
@@ -506,7 +510,11 @@ void CorrelatedSystematics::Tweak(
      TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
      for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
        PhysParamId_t p = this->Idx2Param(ip);
-       if (use_twk_param(p)) {vec[ip]=current_values[ip];};
+       if (!use_twk_param(p)) {
+         // LOG("CorrelatedSystematics", pNOTICE)
+         //   << "Adding to Chol tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
+         vec[ip]=current_values[ip];
+       }
      }
      current_values = vec;
   }
