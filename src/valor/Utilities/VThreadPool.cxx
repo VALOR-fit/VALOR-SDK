@@ -8,6 +8,8 @@ ChangeLog:
 */
 //________________________________________________________________________________________
 
+#include <iostream>
+
 #include "valor/Utilities/VThreadPool.h"
 
 #if __cplusplus > 199711L
@@ -42,6 +44,7 @@ valor::util::VThreadPool * valor::util::VThreadPool::Instance()
 valor::util::VThreadPool::~VThreadPool()
 {
   fAbort = true;
+  fJobAvailable.notify_all();
   for( auto &t : fThreads ) {
     if( t.joinable() ) {t.join();}
   }
@@ -55,7 +58,8 @@ void valor::util::VThreadPool::AddThread()
 void valor::util::VThreadPool::ThreadBody(void)
 {
   while( !fAbort ) {
-    this->GetTask()();
+    std::function<void(void)> f = this->GetTask();
+    f();
     fQueueJobs--;
     fWaitVar.notify_one();
   }
@@ -68,7 +72,7 @@ std::function<void(void)> valor::util::VThreadPool::GetTask()
   // Wait for job to become available
   fJobAvailable.wait( job_lock, [this]{ return (fAbort || fQueue.size()); });
   
-  std::function<void(void)> f;
+  std::function<void(void)> f = []{};
   if (!fAbort) {
     f = fQueue.front();
     fQueue.pop_front();
@@ -90,19 +94,21 @@ unsigned int util::VThreadPool::GetNThreads(void) const
 void util::VThreadPool::SetNThreads(unsigned int n)
 {
   if (n < fNThreads) {
+    fJobAvailable.notify_all();
     // Clear the threads if we have too many
     fAbort = true;
     for( auto &t : fThreads ) {
       if( t.joinable() ) {t.join();}
     }
   }
+  fThreads.clear();
+  
   // Initialise any required new threads
   fAbort = false;
   fNThreads = n;
   while (fThreads.size() < fNThreads) {
     this->AddThread();
   }
-    
 }
 //____________________________________________________________________________
 void util::VThreadPool::AddTask(std::function<void(void)> work)
