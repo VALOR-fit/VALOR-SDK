@@ -45,7 +45,8 @@ class VThreadPool {
     
     unsigned int fNThreads;
     std::atomic_bool        fAbort;
-    std::atomic_int         fQueueJobs;
+    std::atomic_int         fNQueuedJobs;
+    std::atomic_int         fNRunningJobs;
     std::condition_variable fJobAvailable;
     std::condition_variable fWaitVar;
     std::mutex              fWaitMutex;

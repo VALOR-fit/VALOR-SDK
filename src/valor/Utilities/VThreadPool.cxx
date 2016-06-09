@@ -23,7 +23,8 @@ valor::util::VThreadPool::VThreadPool()
 :
   fNThreads(std::thread::hardware_concurrency()),
   fAbort(false),
-  fQueueJobs(0)
+  fNQueuedJobs(0),
+  fNRunningJobs(0)
 {
   fInstance = 0;
   while (fThreads.size() < fNThreads) {
@@ -59,8 +60,9 @@ void valor::util::VThreadPool::ThreadBody(void)
 {
   while( !fAbort ) {
     std::function<void(void)> f = this->GetTask();
+    fNRunningJobs++;
     f();
-    fQueueJobs--;
+    fNRunningJobs--;
     fWaitVar.notify_one();
   }
 }
@@ -76,6 +78,7 @@ std::function<void(void)> valor::util::VThreadPool::GetTask()
   if (!fAbort) {
     f = fQueue.front();
     fQueue.pop_front();
+    fNQueuedJobs--;
   }
   return f;
 }
@@ -115,7 +118,7 @@ void util::VThreadPool::AddTask(std::function<void(void)> work)
 {
   std::lock_guard<std::mutex> lock( fQueueMutex );
   fQueue.emplace_back( work );
-  fQueueJobs++;
+  fNQueuedJobs++;
   fJobAvailable.notify_one();
 }
 //____________________________________________________________________________
@@ -134,9 +137,10 @@ void util::VThreadPool::DoTasks(std::vector<std::function<void(void)> > work)
 //____________________________________________________________________________
 void util::VThreadPool::Wait()
 {
-  if( fQueueJobs > 0 ) {
+  if( fNQueuedJobs > 0 ) {
     std::unique_lock<std::mutex> lock( fWaitMutex );
-    fWaitVar.wait( lock, [this]{ return this->fQueueJobs == 0; } );
+    fWaitVar.wait( lock, [this]{ return this->fNQueuedJobs == 0 && this->fNRunningJobs == 0; } );
+    lock.unlock();
   }
 }
 //____________________________________________________________________________
