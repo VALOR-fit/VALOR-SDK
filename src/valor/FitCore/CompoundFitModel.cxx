@@ -15,9 +15,11 @@ ChangeLog:
 #include "TObjArray.h"
 #include "TSystem.h"
 
+#include "valor/Conventions/Build.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
+#include "valor/Utilities/VThreadPool.h"
 #include "valor/FitCore/CompoundFitModel.h"
 
 using namespace valor;
@@ -98,9 +100,20 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
 bool CompoundFitModel::Generate (const PhysHypothesis & ph, Option_t * opt)
 {
   bool status = true;
+#ifdef __VALOR_FMWK_PARALLEL__
+  std::atomic_bool astat(status);
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+    FitModelABC & m = **it;
+    std::function<void(void)> f = [&]{astat = astat && m.Generate(ph,opt);};
+    util::VThreadPool::Instance()->AddTask(f);
+  }
+  util::VThreadPool::Instance()->Wait();
+  status = astat;
+#else
   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
     status = status && (*it)->Generate(ph,opt);
   }
+#endif //__VALOR_FMWK_PARALLEL__
   return status;
 }
 //________________________________________________________________________________________
@@ -112,9 +125,20 @@ bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
     status = this->Generate(PhysHypothesis(fp),opt);
   }
   else {
+#ifdef __VALOR_FMWK_PARALLEL__
+    std::atomic_bool astat(status);
+    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      FitModelABC & m = **it;
+      std::function<void(void)> f = [&]{astat = astat && m.Generate(fp,opt);};
+      util::VThreadPool::Instance()->AddTask(f);
+    }
+    util::VThreadPool::Instance()->Wait();
+    status = astat;
+#else
     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
       status = status && (*it)->Generate(fp,opt);
     }
+#endif //__VALOR_FMWK_PARALLEL__
   }
   return status;
 }

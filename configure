@@ -20,6 +20,7 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "\n enable/disable options with either --enable- or --disable- (eg --enable-lhapdf --disable-flux-drivers)\n\n";
   print "    debug             Adds -g in the compiler options to request debug info       default: disabled \n";
   print "    asan              Build and link against AddressSanitizer.                    default: disabled \n";
+  print "    parallel          Use N threads for updating the templates (requires C++11)   default: disabled \n";
   print "\n options for 3rd party software, prefix with --with- (eg --with-lhapdf-lib=/some/path/)\n\n";
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
   print "    log4cpp-inc       Path to log4cpp includes                                    default: - (auto-detection enabled) \n";
@@ -107,11 +108,13 @@ if( $options=~m/--with-compiler=(\S*)/i ) {
 my $opt_enable_debug      = "NO";
 my $opt_enable_gsl        = "NO";
 my $opt_enable_asan       = "NO";
+my $opt_enable_parallel   = "NO";
 
 # Check configure's command line arguments for non-default values
 #
-if(($match = grep(/--enable-debug/i,   @ARGV)) > 0) { $opt_enable_debug  = "YES"; }
-if(($match = grep(/--enable-asan/i,    @ARGV)) > 0) { $opt_enable_asan   = "YES"; }
+if(($match = grep(/--enable-debug/i,    @ARGV)) > 0) { $opt_enable_debug    = "YES"; }
+if(($match = grep(/--enable-asan/i,     @ARGV)) > 0) { $opt_enable_asan     = "YES"; }
+if(($match = grep(/--enable-parallel/i, @ARGV)) > 0) { $opt_enable_parallel = "YES"; }
 
 # Just enable GSL if available
 if (`root-config --features` =~ m/mathmore/) { $opt_enable_gsl    = "YES"; }
@@ -244,6 +247,12 @@ if($opt_enable_gsl eq "YES") {
   print BLD_HEADER_FILE   "#define __VALOR_FMWK_GSL_ENABLED__\n"; 
 } else {
   print BLD_HEADER_FILE "//#define __VALOR_FMWK_GSL_ENABLED__\n"; 
+}
+# Parallelisation info
+if($opt_enable_parallel eq "YES") { 
+  print BLD_HEADER_FILE   "#define __VALOR_FMWK_PARALLEL__\n"; 
+} else {
+  print BLD_HEADER_FILE "//#define __VALOR_FMWK_PARALLEL__\n"; 
 }
 # Slack info
 if($opt_slack) {
