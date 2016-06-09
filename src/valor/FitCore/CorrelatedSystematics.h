@@ -86,6 +86,7 @@ public:
   // Find out which parameters are at which indices
   unsigned int Size(void) const;
   conv::PhysParamId_t WhichParam(int idx) const;
+  const conv::PhysParamId_t * GetParameters() const {return fSystParameters;}
 
   // Get flags
   bool IsTweaked   (void) const { return fIsTweaked;   } 
