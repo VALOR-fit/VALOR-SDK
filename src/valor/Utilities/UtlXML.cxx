@@ -324,9 +324,9 @@ TFile * valor::util::XML2TFile(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile * file = new TFile(full_filename,"read");
+  TFile * file = new TFile(full_filename.Data(),"read");
   if(!file) {
     LOG("XML",pFATAL) << "No file: " << full_filename << " found";
     exit(1);
@@ -354,7 +354,7 @@ TH1F * valor::util::XML2TH1F(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   TFile file(full_filename,"read");
   TH1F * h = (TH1F*)file.Get(objname.c_str());
@@ -387,7 +387,7 @@ TGraph * valor::util::XML2TGraph(
         used_base_dir = Env::Instance()->TopLevelDataDir();
     }
     
-    const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+    TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
     
     TFile file(full_filename,"read");
     TGraph * h = (TGraph*)file.Get(objname.c_str());
@@ -419,7 +419,7 @@ TH1D * valor::util::XML2TH1D(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   TFile file(full_filename,"read");
   TH1D * h = (TH1D*)file.Get(objname.c_str());
@@ -453,7 +453,7 @@ TH2D * valor::util::XML2TH2D(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   TFile file(full_filename,"read");
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
@@ -487,7 +487,7 @@ TH3D * valor::util::XML2TH3D(
         used_base_dir = Env::Instance()->TopLevelDataDir();
     }
     
-    const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+    TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
     
     TFile file(full_filename,"read");
     TH3D * h2 = (TH3D*)file.Get(objname.c_str());
@@ -521,9 +521,9 @@ TTree * valor::util::XML2TTree(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile * file = new TFile(full_filename,"read");
+  TFile * file = new TFile(full_filename.Data(),"read");
   TTree * tree = (TTree*)file->Get(objname.c_str());
   if(!tree) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -552,7 +552,7 @@ TVectorD * valor::util::XML2TVectorD(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   TFile file(full_filename,"read");
   TVectorD * vec = (TVectorD*)file.Get(objname.c_str());
@@ -584,7 +584,7 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   TFile file(full_filename,"read");
   TMatrixDSym * matrix = (TMatrixDSym*)file.Get(objname.c_str());
@@ -618,9 +618,9 @@ TMatrixD * valor::util::XML2TMatrixD(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile * file = new TFile(full_filename,"read"); 
+  TFile * file = new TFile(full_filename.Data(),"read"); 
   TMatrixD * matrix = (TMatrixD*) file->Get(objname.c_str());
   if(!matrix) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -650,9 +650,9 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile file(full_filename,"read");
+  TFile file(full_filename.Data(),"read");
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -689,9 +689,9 @@ TSpline3 * valor::util::XML2TSpline3(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  const char * full_filename = Form("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile file(full_filename,"read"); 
+  TFile file(full_filename.Data(),"read"); 
   TSpline3 * spl = (TSpline3*) file.Get(objname.c_str());
   if(!spl) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;

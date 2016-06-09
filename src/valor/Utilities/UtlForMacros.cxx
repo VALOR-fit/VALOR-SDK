@@ -37,7 +37,7 @@ using namespace valor::conv;
 std::string valor::util::FormFilePath(const char * file, const char * dir)
 {
   FileStat_t dummy;
-  string filename(Form("%s/%s/%s", Env::Instance()->TopLevelDir().c_str(), dir, file));
+  string filename(TString::Format("%s/%s/%s", Env::Instance()->TopLevelDir().c_str(), dir, file).Data());
   if(gSystem->GetPathInfo(filename.c_str(), dummy)) {
     cerr << "Utils/UtilForMacros/FormFilePath >> File not found: " << filename << endl;
     exit(-1);

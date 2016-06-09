@@ -46,8 +46,8 @@ TH1D util::Make1DHistogramFromArray(const VALORArray & va, const double * bin_ed
   string name (va.GetName());
   string title(va.GetTitle());
   if (va.GetNDim() > 1) {
-    name  += Form("_%d",dimension);
-    title += Form("_%d",dimension);
+    name  += TString::Format("_%d",dimension).Data();
+    title += TString::Format("_%d",dimension).Data();
   }
   
   int nbins = va.GetSize(dimension);
@@ -86,8 +86,8 @@ TH2D util::Make2DHistogramFromArray(const VALORArray & va, double * const bin_ed
   string name (va.GetName());
   string title(va.GetTitle());
   if (va.GetNDim() > 2) {
-    name  += Form("_%d_%d",dimension_x, dimension_y);
-    title += Form("_%d_%d",dimension_x, dimension_y);
+    name  += TString::Format("_%d_%d",dimension_x, dimension_y).Data();
+    title += TString::Format("_%d_%d",dimension_x, dimension_y).Data();
   }
   
   int nbins_x = va.GetSize(dimension_x);
@@ -177,10 +177,10 @@ TObjArray * valor::util::MakeHistogramsOfParameterValues(int n_entries, const Ph
   // Then loop over params again to make histograms
   for (ip = 0 ; ip < n_params ; ip++) {
     conv::PhysParamId_t p = params[ip];
-    string hname (Form("param_values_%s",util::RawParamAsString(p).c_str()));
-    string htitle(Form("%s Values",util::RawParamAsString(p).c_str()));
+    TString hname  = TString::Format("param_values_%s",util::RawParamAsString(p).c_str());
+    TString htitle = TString::Format("%s Values",util::RawParamAsString(p).c_str());
     
-    out_arr->AddAt(new TH1D(hname.c_str(),htitle.c_str(),n_bins,param_mins[ip],param_maxs[ip]),ip);
+    out_arr->AddAt(new TH1D(hname.Data(),htitle.Data(),n_bins,param_mins[ip],param_maxs[ip]),ip);
   }
   
   // Now loop over the PhysParamLists to fill the histograms
@@ -219,7 +219,7 @@ TH1D valor::util::MakeHistFromGSLSpline(const ROOT::Math::Interpolator * spl, in
 {
   TH1D h_spl("h_spl","Spline histogram",n_points,min_x,max_x);
   for (int i = 0 ; i < n_points ; i++) {
-    double x = min_x + i*(max_x-min_x)/n_points;
+    double x = min_x + (i+0.5)*(max_x-min_x)/n_points;
     h_spl.Fill(x,spl->Eval(x));
   }
   return h_spl;
