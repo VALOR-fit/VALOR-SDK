@@ -130,19 +130,19 @@ string util::AsString (
     {
       out << mixparam << "[";
       if(show_mix12) {
-        out << "12_" << Form("%.3f",mix12);
+        out << "12_" << TString::Format("%.3f",mix12);
       }
       if(show_mix13) {
         if(show_mix12) {
           out << ",";
         }
-        out << "13_" << Form("%.3f",mix13);
+        out << "13_" << TString::Format("%.3f",mix13);
       }
       if(show_mix23) {
         if(show_mix13 || (!show_mix13 && show_mix12)) {
           out << ",";
         }
-        out << "23_" << Form("%.3f",mix23);
+        out << "23_" << TString::Format("%.3f",mix23);
       }
       out << "]";
     }
@@ -154,7 +154,7 @@ string util::AsString (
     
     if(show_deltacp)
     {
-      out << "dcp_" << Form("%.3f",deltacp);
+      out << "dcp_" << TString::Format("%.3f",deltacp);
     }
     
     if(show_deltacp && show_dmsq)
@@ -166,13 +166,13 @@ string util::AsString (
     {
       out << "dmsq_" << util::AsString(Opt::Instance()->gMassHierarchyAssumed) << "[";
       if(show_dm12sq) {
-        out << "12_" << Form("%.8f",dm12sq);
+        out << "12_" << TString::Format("%.8f",dm12sq);
       }
       if(show_dm23sq) {
         if(show_dm12sq) {
           out << ",";
         }
-        out << "23_" << Form("%.6f",dm23sq);
+        out << "23_" << TString::Format("%.6f",dm23sq);
       }
       out << "]eV2";
     }
@@ -252,19 +252,19 @@ string util::AsString (
     {
       out << mixparam << "[";
       if(show_mix12) {
-        out << "12_" << Form("%.3f",mix12);
+        out << "12_" << TString::Format("%.3f",mix12);
       }
       if(show_mix13) {
         if(show_mix12) {
           out << ",";
         }
-        out << "13_" << Form("%.3f",mix13);
+        out << "13_" << TString::Format("%.3f",mix13);
       }
       if(show_mix23) {
         if(show_mix13 || (!show_mix13 && show_mix12)) {
           out << ",";
         }
-        out << "23_" << Form("%.3f",mix23);
+        out << "23_" << TString::Format("%.3f",mix23);
       }
       out << "]";
     }
@@ -276,7 +276,7 @@ string util::AsString (
     
     if(show_deltacp)
     {
-      out << "dcp_" << Form("%.3f",deltacp);
+      out << "dcp_" << TString::Format("%.3f",deltacp);
     }
     
     if(show_deltacp && show_dmsq)
@@ -288,13 +288,13 @@ string util::AsString (
     {
       out << "dmsq_" << util::AsString(Opt::Instance()->gMassHierarchyAssumed) << "[";
       if(show_dm12sq) {
-        out << "12_" << Form("%.8f",dm12sq);
+        out << "12_" << TString::Format("%.8f",dm12sq);
       }
       if(show_dm23sq) {
         if(show_dm12sq) {
           out << ",";
         }
-        out << "23_" << Form("%.6f",dm23sq);
+        out << "23_" << TString::Format("%.6f",dm23sq);
       }
       out << "]eV2";
     }
@@ -324,25 +324,25 @@ string util::AsString (
     {
       out << mixparam << "[";
       if(show_mix12) {
-        out << "12_" << Form("%.3f",mix12);
+        out << "12_" << TString::Format("%.3f",mix12);
       }
       if(show_mix13) {
         if(show_mix12) {
           out << ",";
         }
-        out << "13_" << Form("%.3f",mix13);
+        out << "13_" << TString::Format("%.3f",mix13);
       }
       if(show_mix23) {
         if(show_mix13 || (!show_mix13 && show_mix12)) {
           out << ",";
         }
-        out << "23_" << Form("%.3f",mix23);
+        out << "23_" << TString::Format("%.3f",mix23);
       }
       if(show_mix23bar) {
         if(show_mix23) {
           out << ",";
         }
-        out << ",23bar_" << Form("%.3f",mix23bar);
+        out << ",23bar_" << TString::Format("%.3f",mix23bar);
       }
       
       
@@ -356,7 +356,7 @@ string util::AsString (
     
     if(show_deltacp)
     {
-      out << "dcp_" << Form("%.3f",deltacp);
+      out << "dcp_" << TString::Format("%.3f",deltacp);
     }
     
     if(show_deltacp && show_dmsq)
@@ -368,19 +368,19 @@ string util::AsString (
     {
       out << "dmsq_" << util::AsString(Opt::Instance()->gMassHierarchyAssumed) << "[";
       if(show_dm12sq) {
-        out << "12_" << Form("%.8f",dm12sq);
+        out << "12_" << TString::Format("%.8f",dm12sq);
       }
       if(show_dm23sq) {
         if(show_dm12sq) {
           out << ",";
         }
-        out << "23_" << Form("%.6f",dm23sq);
+        out << "23_" << TString::Format("%.6f",dm23sq);
       }
       if(show_dm23sqbar) {
         if(show_dm23sq) {
           out << ",";
         }
-        out << ",23bar_" << Form("%.6f",dm23sqbar);
+        out << ",23bar_" << TString::Format("%.6f",dm23sqbar);
       }
       out << "]eV2";
       
@@ -416,7 +416,7 @@ string util::AsString (
     //
     if( hyp == valor::conv::kHypNuMuDisapp2F)
     {
-      out << mixparam << "23_" << Form("%.3f",mix23) << ",dm23sq_" << Form("%.5f",dm23sq) << "eV2";
+      out << mixparam << "23_" << TString::Format("%.3f",mix23) << ",dm23sq_" << TString::Format("%.5f",dm23sq) << "eV2";
     }
     
     return out.str();
@@ -441,19 +441,19 @@ string util::AsString (
    {
    out << mixparam << "[";
    if(show_mix12) {
-   out << "12_" << Form("%.3f",mix12);
+   out << "12_" << TString::Format("%.3f",mix12);
    }
    if(show_mix13) {
    if(show_mix12) {
    out << ",";
    }
-   out << "13_" << Form("%.3f",mix13);
+   out << "13_" << TString::Format("%.3f",mix13);
    }
    if(show_mix23) {
    if(show_mix13 || (!show_mix13 && show_mix12)) {
    out << ",";
    }
-   out << "23_" << Form("%.3f",mix23);
+   out << "23_" << TString::Format("%.3f",mix23);
    }
    out << "]";
    }
@@ -465,7 +465,7 @@ string util::AsString (
    
    if(show_deltacp)
    {
-   out << "dcp_" << Form("%.3f",deltacp);
+   out << "dcp_" << TString::Format("%.3f",deltacp);
    }
    
    if(show_deltacp && show_dmsq)
@@ -477,20 +477,20 @@ string util::AsString (
    {
    out << "dmsq_" << util::AsString(Opt::Instance()->gMassHierarchyAssumed) << "[";
    if(show_dm12sq) {
-   out << "12_" << Form("%.8f",dm12sq);
+   out << "12_" << TString::Format("%.8f",dm12sq);
    }
    if(show_dm23sq) {
    if(show_dm12sq) {
    out << ",";
    }
-   out << "23_" << Form("%.6f",dm23sq);
+   out << "23_" << TString::Format("%.6f",dm23sq);
    }
    out << "]eV2";
    }
    
    if(show_betabar)
    {
-   out << ",betabar_" << Form("%.3f",betabar);
+   out << ",betabar_" << TString::Format("%.3f",betabar);
    }
    
    }//3f_oscbar_normbar
@@ -516,19 +516,19 @@ string util::AsString (
     {
       out << mixparam << "[";
       if(show_mix12) {
-        out << "12_" << Form("%.3f",mix12);
+        out << "12_" << TString::Format("%.3f",mix12);
       }
       if(show_mix13) {
         if(show_mix12) {
           out << ",";
         }
-        out << "13_" << Form("%.3f",mix13);
+        out << "13_" << TString::Format("%.3f",mix13);
       }
       if(show_mix23) {
         if(show_mix13 || (!show_mix13 && show_mix12)) {
           out << ",";
         }
-        out << "23_" << Form("%.3f",mix23);
+        out << "23_" << TString::Format("%.3f",mix23);
       }
       out << "]";
     }
@@ -540,7 +540,7 @@ string util::AsString (
     
     if(show_deltacp)
     {
-      out << "dcp_" << Form("%.3f",deltacp);
+      out << "dcp_" << TString::Format("%.3f",deltacp);
     }
     
     if(show_deltacp && show_dmsq)
@@ -552,20 +552,20 @@ string util::AsString (
     {
       out << "dmsq_" << util::AsString(Opt::Instance()->gMassHierarchyAssumed) << "[";
       if(show_dm12sq) {
-        out << "12_" << Form("%.8f",dm12sq);
+        out << "12_" << TString::Format("%.8f",dm12sq);
       }
       if(show_dm23sq) {
         if(show_dm12sq) {
           out << ",";
         }
-        out << "23_" << Form("%.6f",dm23sq);
+        out << "23_" << TString::Format("%.6f",dm23sq);
       }
       out << "]eV2";
     }
     
     if(show_betabar)
     {
-      out << ",betabar_" << Form("%.3f",betabar);
+      out << ",betabar_" << TString::Format("%.3f",betabar);
     }
     
   }//3f_normbar
@@ -588,7 +588,7 @@ string util::AsString (
   //
   if( hyp == valor::conv::kHypNuMuDisapp2F)
   {
-    out << mixparam << "23_" << Form("%.3f",mix23) << ",dm23sq_" << Form("%.5f",dm23sq) << "eV2";
+    out << mixparam << "23_" << TString::Format("%.3f",mix23) << ",dm23sq_" << TString::Format("%.5f",dm23sq) << "eV2";
   }
   
   return out.str();

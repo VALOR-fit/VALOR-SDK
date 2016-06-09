@@ -31,9 +31,9 @@ string util::AsString(conv::NuOscDmsqScheme_t dmsqs)
     break;
   case(kNuDmsqAuto ) :
     if (Opt::Instance()->gMassHierarchyAssumed==kNmhInverted) {
-      return std::string(Form("%s (auto)",util::AsString(kNuDmsq12andAbs31).c_str()));
+      return std::string(TString::Format("%s (auto)",util::AsString(kNuDmsq12andAbs31).c_str()).Data());
     }
-    return std::string(Form("%s (auto)",util::AsString(kNuDmsq12andAbs23).c_str()));
+    return std::string(TString::Format("%s (auto)",util::AsString(kNuDmsq12andAbs23).c_str()).Data());
   default :
     return "Undefined";
     break;

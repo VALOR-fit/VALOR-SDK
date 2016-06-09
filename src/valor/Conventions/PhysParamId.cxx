@@ -249,7 +249,7 @@ string util::RawParamAsStringRaw(PhysParamId_t p)
   }//switch
   
   if (p >= kNuis000 && p< kLastNuisParam) {
-    string out(Form("nuis%03d",p-kNuis000));
+    string out(TString::Format("nuis%03d",p-kNuis000).Data());
     return out;
   }
   
@@ -489,7 +489,7 @@ string util::RawParamAsString(PhysParamId_t p)
   }//switch
   
   if (p >= kNuis000 && p< kLastNuisParam) {
-    string out(Form("nuis%03d",p-kNuis000));
+    string out(TString::Format("nuis%03d",p-kNuis000).Data());
     return out;
   }
   
