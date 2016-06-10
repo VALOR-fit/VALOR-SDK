@@ -1,3 +1,20 @@
+//____________________________________________________________________________
+/*!
+
+\class     valor::util::VThreadPool
+
+\brief     Holds a pool of threads which can be assigned individual blocks of work. Blocks are processed in order.
+
+\author    Steve Dennis <s.r.dennis \at liverpool.ac.uk>
+           University of Liverpool
+          
+\created   June 2016
+
+\copyright (c) 2010-2016, The VALOR group
+
+*/
+//____________________________________________________________________________
+
 #ifndef VALOR_THREADPOOL_H
 #define VALOR_THREADPOOL_H
 
