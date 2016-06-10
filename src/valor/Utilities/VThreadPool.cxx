@@ -9,6 +9,7 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <iostream>
+#include <chrono>
 
 #include "valor/Utilities/VThreadPool.h"
 
@@ -72,7 +73,7 @@ std::function<void(void)> valor::util::VThreadPool::GetTask()
   std::unique_lock<std::mutex> job_lock( fQueueMutex );
 
   // Wait for job to become available
-  fJobAvailable.wait( job_lock, [this]{ return (fAbort || fQueue.size()); });
+  fJobAvailable.wait( job_lock, [this]{ return (fAbort || fNQueuedJobs); });
   
   std::function<void(void)> f = []{};
   if (!fAbort) {
@@ -85,8 +86,7 @@ std::function<void(void)> valor::util::VThreadPool::GetTask()
 //____________________________________________________________________________
 unsigned int util::VThreadPool::GetNTasksInQueue(void)
 {
-  std::lock_guard<std::mutex> lock( fQueueMutex );
-  return fQueue.size();
+  return fNQueuedJobs;
 }
 //____________________________________________________________________________
 unsigned int util::VThreadPool::GetNThreads(void) const
@@ -97,8 +97,9 @@ unsigned int util::VThreadPool::GetNThreads(void) const
 void util::VThreadPool::SetNThreads(unsigned int n)
 {
   if (n < fNThreads) {
-    fJobAvailable.notify_all();
     // Clear the threads if we have too many
+    fJobAvailable.notify_all();
+    this->Wait();
     fAbort = true;
     for( auto &t : fThreads ) {
       if( t.joinable() ) {t.join();}
@@ -135,11 +136,12 @@ void util::VThreadPool::DoTasks(std::vector<std::function<void(void)> > work)
   this->Wait();
 }
 //____________________________________________________________________________
-void util::VThreadPool::Wait()
+void util::VThreadPool::Wait(bool finish)
 {
-  if( fNQueuedJobs > 0 ) {
+  std::function<bool(void)> finished =[&]{ return !(fNQueuedJobs||(finish&&fNRunningJobs));};
+  while(!finished()) {
     std::unique_lock<std::mutex> lock( fWaitMutex );
-    fWaitVar.wait( lock, [this]{ return this->fNQueuedJobs == 0 && this->fNRunningJobs == 0; } );
+    fWaitVar.wait_for( lock, std::chrono::seconds(10), finished);
     lock.unlock();
   }
 }

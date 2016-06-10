@@ -23,7 +23,7 @@ class VThreadPool {
     void SetNThreads(unsigned int n); // Will wait if deleting existing threads
     unsigned int GetNThreads(void) const;
     
-    void Wait(); // Wait for all jobs to complete
+    void Wait(bool finish = true); // Wait for all jobs to start, and optionally finish
     
     void AddTask(std::function<void(void)> work); // Add one job
     void AddTasks(std::vector<std::function<void(void)> > work); // Add many jobs
