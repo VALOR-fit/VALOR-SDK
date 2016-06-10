@@ -9,7 +9,6 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <iostream>
-#include <chrono>
 
 #include "valor/Utilities/VThreadPool.h"
 
