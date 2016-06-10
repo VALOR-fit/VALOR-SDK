@@ -1118,18 +1118,50 @@ ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl,
     spl_type = ROOT::Math::Interpolation::kAKIMA;
     assert(n_knots>=5);
   }
-  static Double_t x[100];
-  static Double_t y[100];
-  assert(n_knots<100);
+  vector<double> x(n_knots);
+  vector<double> y(n_knots);
   for (int i = 0 ; i < n_knots; i++) {
     spl.GetKnot(i,x[i],y[i]);
   }
   ROOT::Math::Interpolator * out_interp = new ROOT::Math::Interpolator(n_knots,spl_type);
-  out_interp->SetData(n_knots,x,y);
+  out_interp->SetData(n_knots,x.data(),y.data());
+  return out_interp;
+}
+//____________________________________________________________________________
+ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl,
+  double xmin, double xmax, Option_t * type)
+{
+  LOG("UtlNumStat",pINFO)<<"Converting spline to GSL: "<<spl.GetName()<<" with padding knots.";
+  int n_knots = spl.GetNp();
+  // Get spline type. Assume cubic if not specified
+  TString type_ts(type);
+  ROOT::Math::Interpolation::Type spl_type = ROOT::Math::Interpolation::kCSPLINE;
+  if (type_ts.Contains("akima")) {
+    spl_type = ROOT::Math::Interpolation::kAKIMA;
+    assert(n_knots>=3);
+  }
+  vector<double> x(n_knots+2);
+  vector<double> y(n_knots+2);
+  for (int i = 0 ; i < n_knots; i++) {
+    spl.GetKnot(i,x[i+1],y[i+1]);
+  }
+  // Padding knots
+  x.front() = xmin;
+  y.front() = y[1];
+  x.back()  = xmax;
+  y.back()  = y[n_knots];
+  
+  ROOT::Math::Interpolator * out_interp = new ROOT::Math::Interpolator(n_knots,spl_type);
+  out_interp->SetData(n_knots+2,x.data(),y.data());
   return out_interp;
 }
 #else
 ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & /*spl*/, Option_t * /*type*/)
+{
+  assert(!"ConvertTSplineToGSL not available without GSL!");
+  return NULL;
+}
+ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & /*spl*/, double, double, Option_t * /*type*/)
 {
   assert(!"ConvertTSplineToGSL not available without GSL!");
   return NULL;

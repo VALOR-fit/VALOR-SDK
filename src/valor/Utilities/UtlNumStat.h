@@ -133,6 +133,7 @@ namespace util {
   
   // Make a TSpline into a new GSL Spline
   ROOT::Math::Interpolator * ConvertTSplineToGSL(const TSpline & spl, Option_t * opt = "");
+  ROOT::Math::Interpolator * ConvertTSplineToGSL(const TSpline & spl, double xmin, double xmax, Option_t * opt = "");
   
 } // util
 } // valor
