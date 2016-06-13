@@ -9,8 +9,9 @@
 
 
 # Setup LArSoft. This gives us g++4.9, ROOT and GENIE
-. /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup
-setup "larsoft" "v05_10_00" -q "e9:prof"
+# The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
+. /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
+setup "larsoft" "v05_10_00" -q "e9:prof" && retval="$?"
 
 if [ -z "$VALOR_FMWK" ]; then
     source="$( readlink -m "${BASH_SOURCE[0]}" )"
