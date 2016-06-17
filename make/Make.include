@@ -67,12 +67,16 @@ LOG_LIBRARIES := -L$(LOG_LIB_DIR) -llog4cpp
 
 # GSL libraries and headers
 
-ifeq ($(strip $(OPT_ENABLE_GSL)),YES)
+ifneq ($(strip $(OPT_WITH_GSL_INC)),)
   GSL_INCLUDES  := -I$(OPT_WITH_GSL_INC)
-  GSL_LIBRARIES := -L$(OPT_WITH_GSL_LIB)
 else
   GSL_INCLUDES  := 
-  GSL_LIBRARIES := 
+endif
+
+ifneq ($(strip $(OPT_WITH_GSL_LIB)),)
+  GSL_LIBRARIES  := -L$(OPT_WITH_GSL_LIB)
+else
+  GSL_LIBRARIES  := 
 endif
 
 #-------------------------------------------------------------------
