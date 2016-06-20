@@ -91,18 +91,9 @@ void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, co
   (*fInitialValues) = util::ConcatenateTVectors(all_initial_vectors);
   (*fCurrentValues) = util::ConcatenateTVectors(all_current_vectors);
   
-  
-  // Do Cholesky decomposition
-  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of syst covariance matrix ";
   this->CholeskyDecomposeMatrix();
-  double det;
-  
-  // Calculate matrix inversion using Cholesky triangular matrices - should be most accurate.
-  TMatrixD cholInv(*fCovMtrxChoL);
-  cholInv.Invert(&det);
-  LOG("CorrelatedSystematics",pINFO) << "Syst covariance matrix decomposition determinant: " << det;
-  TMatrixD cholInvT(TMatrixD::kTransposed,cholInv);
-  fCovMtrxInv = new TMatrixD(cholInvT * cholInv);
+    
+  this->InvertMatrices();
   
   // Set the names
   fXMLNodeName = xml_node_name;

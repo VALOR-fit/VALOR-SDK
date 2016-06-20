@@ -44,9 +44,10 @@ public:
   bool Read (TXMLEngine* xml, XMLNodePointer_t root_node);
 
   // Get covariance matrix and cholesky decomposition of covariance matrix
-  const TMatrixD & CovMatrix         (void) const { return *fCovMtrx;     }
-  const TMatrixD & CovMatrixInv      (void) const { return *fCovMtrxInv;  }
-  const TMatrixD & CovMatrixCholesky (void) const { return *fCovMtrxChoL; }
+  const TMatrixD & CovMatrix           (void) const { return *fCovMtrx;     }
+  const TMatrixD & CovMatrixInv        (void) const { return *fCovMtrxInv;  }
+  const TMatrixD & CovMatrixCholesky   (void) const { return *fCovMtrxChoL; }
+  const TMatrixD & CovMatrixCholeskyInv(void) const { return *fCovMtrxChoLInv; }
   
   const TVectorD & UntunedValues (void) const { return *fUntunedValues; }
   const TVectorD & InitialValues (void) const { return *fInitialValues; }
@@ -125,7 +126,7 @@ protected:
   void FillParam2Idx(void);
   
   void CholeskyDecomposeMatrix (void);          ///< Cholesky decompose the covariance matrix
-  void InvertMatrix (void);
+  void InvertMatrices (void); ///< Invert the cov and chol matrices
   
   TVectorD *  fDefaultValues;     ///< Default values of the systematic parameters (all 1 unless subclass alters one. Used only when XML vectors not specified).
   TVectorD *  fUntunedValues;     ///< Untuned values of the systematic parameters, read from XML if possible.
@@ -134,6 +135,7 @@ protected:
   TMatrixD *  fCovMtrx;           ///< Covariance matrix, read from XML.
   TMatrixD *  fCovMtrxInv;        ///< Inverse covariance matrix
   TMatrixD *  fCovMtrxChoL;       ///< Triangular matrix obtained from Cholesky decomposition of covariance matrix
+  TMatrixD *  fCovMtrxChoLInv;    ///< Inverse Cholesky matrix
   bool        fIsTweaked;         ///< Were params tweaked?
   
   double * fUntunedArray; //! ///< Pointer to the actual memory location of the untuned values

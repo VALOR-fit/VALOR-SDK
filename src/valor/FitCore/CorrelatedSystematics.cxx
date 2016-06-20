@@ -7,7 +7,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 //________________________________________________________________________________________
 
 #define __show_init_mesg_info__  
-//~ #define __init_check_inverse__
+//~ #define __check_inverse__
 //~ #define __show_init_mesg_debug__   
 //~ #define __show_cholesky_mesg_info__
 //~ #define __show_cholesky_mesg_debug__
@@ -63,6 +63,7 @@ fCurrentValues    (NULL),
 fCovMtrx          (NULL),
 fCovMtrxInv       (NULL),
 fCovMtrxChoL      (NULL),
+fCovMtrxChoLInv   (NULL),
 fSystParameters   (NULL),
 fIsConfigured     (false)
 {
@@ -79,6 +80,7 @@ fCurrentValues    (NULL),
 fCovMtrx          (NULL),
 fCovMtrxInv       (NULL),
 fCovMtrxChoL      (NULL),
+fCovMtrxChoLInv   (NULL),
 fSystParameters   (NULL),
 fIsConfigured     (false)
 {
@@ -107,6 +109,7 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
   fCovMtrx              = 0;
   fCovMtrxInv           = 0;
   fCovMtrxChoL          = 0; 
+  fCovMtrxChoLInv       = 0; 
   fIsTweaked            = false;
   
   fUntunedArray = fUntunedValues->GetMatrixArray();
@@ -167,13 +170,14 @@ void CorrelatedSystematics::FillParam2Idx(void)
 //________________________________________________________________________________________
 void CorrelatedSystematics::CleanUp(void)
 {
-  if ( fDefaultValues ) { delete fDefaultValues ; fDefaultValues = NULL;}
-  if ( fUntunedValues ) { delete fUntunedValues ; fUntunedValues = NULL;}
-  if ( fInitialValues ) { delete fInitialValues ; fInitialValues = NULL;}
-  if ( fCurrentValues ) { delete fCurrentValues ; fCurrentValues = NULL;}
-  if ( fCovMtrx       ) { delete fCovMtrx       ; fCovMtrx       = NULL;}
-  if ( fCovMtrxInv    ) { delete fCovMtrxInv    ; fCovMtrxInv    = NULL;}
-  if ( fCovMtrxChoL   ) { delete fCovMtrxChoL   ; fCovMtrxChoL   = NULL;}
+  if ( fDefaultValues  ) { delete fDefaultValues  ; fDefaultValues  = NULL;}
+  if ( fUntunedValues  ) { delete fUntunedValues  ; fUntunedValues  = NULL;}
+  if ( fInitialValues  ) { delete fInitialValues  ; fInitialValues  = NULL;}
+  if ( fCurrentValues  ) { delete fCurrentValues  ; fCurrentValues  = NULL;}
+  if ( fCovMtrx        ) { delete fCovMtrx        ; fCovMtrx        = NULL;}
+  if ( fCovMtrxInv     ) { delete fCovMtrxInv     ; fCovMtrxInv     = NULL;}
+  if ( fCovMtrxChoL    ) { delete fCovMtrxChoL    ; fCovMtrxChoL    = NULL;}
+  if ( fCovMtrxChoLInv ) { delete fCovMtrxChoLInv ; fCovMtrxChoLInv = NULL;}
   
   if ( fSystParameters) { delete[] fSystParameters; fSystParameters = NULL;}
   
@@ -268,7 +272,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();
   
-  this->InvertMatrix();
+  this->InvertMatrices();
   
   // Say we're configured
   fIsConfigured = true;
@@ -583,9 +587,7 @@ double CorrelatedSystematics::FitStatisticPenalty(Option_t * /*opt*/) const
     LOG("CorrelatedSystematics",pDEBUG) << "ChisqPenalty = " << chisq_penalty;
 #endif
 
-    if(chisq_penalty) return chisq_penalty;
-    //}//all_syst
-  return 0;
+  return chisq_penalty;
 }
 //________________________________________________________________________________________ 
 void CorrelatedSystematics::PrintSystematicVariations(std::ostream & stream) const
@@ -721,19 +723,20 @@ void CorrelatedSystematics::SetCovMatrix(const TMatrixD & matr)
   LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();
   
-  this->InvertMatrix();
+  this->InvertMatrices();
 }
 //________________________________________________________________________________________
-void CorrelatedSystematics::InvertMatrix()
+void CorrelatedSystematics::InvertMatrices()
 {
-  if (fCovMtrxInv) {delete fCovMtrxInv; fCovMtrxInv = NULL;}
+  if (fCovMtrxInv    ) {delete fCovMtrxInv    ; fCovMtrxInv     = NULL;}
+  if (fCovMtrxChoLInv) {delete fCovMtrxChoLInv; fCovMtrxChoLInv = NULL;}
   double det;
   // Calculate matrix inversion using Cholesky triangular matrices - should be most accurate.
-  TMatrixD cholInv(*fCovMtrxChoL);
-  cholInv.Invert(&det);
+  fCovMtrxChoLInv = new TMatrixD(*fCovMtrxChoL);
+  fCovMtrxChoLInv->Invert(&det);
   LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix decomposition determinant: " << det;
-  TMatrixD cholInvT(TMatrixD::kTransposed,cholInv);
-  fCovMtrxInv = new TMatrixD(cholInvT * cholInv);
+  TMatrixD cholInvT(TMatrixD::kTransposed,*fCovMtrxChoLInv);
+  fCovMtrxInv = new TMatrixD(cholInvT * (*fCovMtrxChoLInv));
   
   // Other matrix inversion methods - not used.
 #ifdef __matrix_invert_direct__
@@ -750,6 +753,7 @@ void CorrelatedSystematics::InvertMatrix()
 #endif
 
 #ifdef __check_inverse__
+  bool inv_ok = true;
   TMatrixD covTimesInverse = ( (*fCovMtrx) * (*fCovMtrxInv));
   int np = fCovMtrx->GetNrows();
   for (int ii = 0 ; ii < np ; ii++) {
@@ -759,12 +763,13 @@ void CorrelatedSystematics::InvertMatrix()
         LOG("CorrelatedSystematics",pERROR) 
           << "Bad inversion of "<<this->GetName()<<" matrix - element differs from identity by: "
           << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?" (on diagonal)":"");
-        fIsConfigured = false;
+        inv_ok = false;
       }
     }
   }
-  if (!fIsConfigured) {util::Die(1); return;}
+  if (!inv_ok) {util::Die(1); return;}
+  fIsConfigured = fIsConfigured && inv_ok;
 #endif // __check_inverse__
-
+  return;
 }
 //________________________________________________________________________________________
