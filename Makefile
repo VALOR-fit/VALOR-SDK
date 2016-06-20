@@ -106,6 +106,11 @@ make-bin-lib-dir: FORCE
 	[ -d bin ] || mkdir bin; chmod 755 bin;\
 	[ -d lib ] || mkdir lib; chmod 755 lib;
 
+static: FORCE
+	@echo " "
+	@echo "** Creating static library of the VALOR framework..."
+	./make/build_static_object_list.sh | xargs ./make/build_static_lib.sh 
+
 color:
 	$(MAKE) -C "${VALOR_FMWK}/external/color"
 
@@ -145,9 +150,10 @@ clean-files: FORCE
 	cd CmdLine;                 make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
 	cd $(VALOR_FMWK);\
-        [ ! -d ./bin ] || rm ./bin/*;\
-        [ ! -d ./lib ] || rm ./lib/*_rdict.pcm;\
-	cd $(VALOR_FMWK)
+        [ ! -d ./bin ] || rm -f ./bin/*;\
+        [ ! -d ./lib ] || rm -f ./lib/*_rdict.pcm;\
+        [ ! -d ./lib ] || rm -f ./lib/*a;\
+cd $(VALOR_FMWK)
 
 clean-dir: FORCE
 	@echo "Deleting VALOR framework lib and bin directories...";\
