@@ -4,13 +4,13 @@
 # Adapted by Costas Andreopoulos from $ROOTSYS/build/unix/makestaticlib.sh
 # Original Author: Fons Rademakers, 21/01/2001
 
-STATICOBJECTLIST=$1
-
 VALORALIB=$VALOR_FMWK/lib/libValor.a
-
 rm -f $VALORALIB
 
-objs=`$STATICOBJECTLIST`
+#STATICOBJECTLIST=$1
+STATICOBJECTLIST=$@
+#objs=`$STATICOBJECTLIST`
+objs=$STATICOBJECTLIST
 echo $objs
 
 echo "Making $VALORALIB..."
