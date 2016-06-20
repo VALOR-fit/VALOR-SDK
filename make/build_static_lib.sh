@@ -4,22 +4,31 @@
 # Adapted by Costas Andreopoulos from $ROOTSYS/build/unix/makestaticlib.sh
 # Original Author: Fons Rademakers, 21/01/2001
 
-VALORALIB=$VALOR_FMWK/lib/libValor.a
-rm -f $VALORALIB
+version=$(awk 'NR==1' $VALOR_FMWK/VERSION)
+echo "VALOR version: $version"
 
-#STATICOBJECTLIST=$1
+VALORALIB=$VALOR_FMWK/lib/libValor-$version.a
+VALORALIB_SYMLINK=$VALOR_FMWK/lib/libValor.a
+
+rm -f $VALORALIB
+rm -f $VALORALIB_SYMLINK
+
 STATICOBJECTLIST=$@
-#objs=`$STATICOBJECTLIST`
 objs=$STATICOBJECTLIST
 echo $objs
 
-echo "Making $VALORALIB..."
+echo "Building $VALORALIB..."
 echo ar rv $VALORALIB $objs
 ar rv $VALORALIB $objs > /dev/null 2>&1
+
+echo "Adding $VALORALIB_SYMLINK symbolic link..."
+ln -sf $VALORALIB $VALORALIB_SYMLINK
 
 arstat=$?
 if [ $arstat -ne 0 ]; then
    exit $arstat
 fi
+
+
 
 exit 0
