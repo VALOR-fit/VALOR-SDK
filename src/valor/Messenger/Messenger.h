@@ -33,8 +33,6 @@
 
 //#include "valor/Conventions/GBuild.h"
 
-using std::string;
-
 // comment defined priority levels for the document generator
 /*! \def pFATAL  \brief Defines the FATAL priority level */
 /*! \def pALERT  \brief Defines the ALERT priority level */
@@ -56,8 +54,8 @@ using std::string;
 
 /*! \def ENDL  \brief A shortcut for log4cpp's CategoryStream::ENDLINE or std manipulators*/
 
-#ifdef __GENIE_USES_LOG4CPP_VERSION__
-  #if __GENIE_USES_LOG4CPP_VERSION__==0
+#ifdef __VALOR_FMWK_USES_LOG4CPP_VERSION__
+  #if __VALOR_FMWK_USES_LOG4CPP_VERSION__==0
     #define ENDL log4cpp::CategoryStream::ENDLINE
   #else
     #define ENDL std::endl
@@ -218,8 +216,9 @@ public:
 
   log4cpp::Category & operator () (const char * stream);
   void SetPriorityLevel(const char * stream, log4cpp::Priority::Value p);
+  void SetPriorityLevel(std::string stream, std::string priority);
 
-  bool Configure(string filename);
+  bool Configure(std::string filename);
 
 private:
   Messenger();
@@ -228,7 +227,7 @@ private:
 
   static Messenger * fInstance;
 
-  log4cpp::Priority::Value PriorityFromString(string priority);
+  log4cpp::Priority::Value PriorityFromString(std::string priority);
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }

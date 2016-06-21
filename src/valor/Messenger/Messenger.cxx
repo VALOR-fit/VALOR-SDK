@@ -24,6 +24,7 @@ using std::setfill;
 using std::cout;
 using std::endl;
 using std::vector;
+using std::string;
 
 using namespace valor;
 
@@ -74,6 +75,14 @@ void Messenger::SetPriorityLevel(
    const char * stream, log4cpp::Priority::Value priority)
 {
   log4cpp::Category & MSG = log4cpp::Category::getInstance(stream);
+  MSG.setPriority(priority);
+}
+//____________________________________________________________________________
+void Messenger::SetPriorityLevel(
+   std::string stream, std::string priority_name)
+{
+  log4cpp::Priority::Value priority = this->PriorityFromString(priority_name);
+  log4cpp::Category & MSG = log4cpp::Category::getInstance(stream.c_str());
   MSG.setPriority(priority);
 }
 //____________________________________________________________________________
