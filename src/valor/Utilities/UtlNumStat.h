@@ -117,7 +117,11 @@ namespace util {
   // eigenvectors_out is pointer to (assigned) memory in same format
   // eigenvalues_out is pointer to double[n]
   int DiagonaliseGSL(int ndim, double * matrix_in, double * eigenvectors_out, double * eigenvalues_out);
-
+  
+  // Differentiate to get a hessian matrix
+  typedef void (*MinuitFunction_t)(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t iflag);
+  TMatrixDSym HessianMatrix(MinuitFunction_t fitfunc, const double * point, int nparams, const double * step_vector);
+  
   //
   // Etc
   //

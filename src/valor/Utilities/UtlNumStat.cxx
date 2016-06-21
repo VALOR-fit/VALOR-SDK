@@ -1168,3 +1168,48 @@ ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & /*sp
 }
 #endif
 //____________________________________________________________________________
+TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * point, int nparams, const double * step_vector)
+{
+  TMatrixDSym hessian_matrix(nparams);
+  // Elements are:
+  //f(x + d_j e_j + d_k e_k) - f(x + d_j e_j - d_k e_k)) -  (f(x - d_j e_j - d_k e_k) - f(x - d_j e_j + d_k e_k)) / (4 d_j d_k)
+  double * eval = new double[nparams];
+  int dummy;
+  int flag = 0;
+  for (int j = 0 ; j < nparams ; j++) {
+    double d_j = step_vector[j];
+    
+    for (int k = 0 ; k <= j ; k++) {
+      double d_k = step_vector[k];
+      double f1,f2,f3,f4;
+      for (int ip = 0; ip < nparams; ip++) {
+        eval[ip] = point[ip];
+      }
+      eval[j] += d_j;
+      eval[k] += d_k;
+      (*fitfunc)(dummy,0,f1,eval,flag);
+      
+      eval[k] -= 2*d_k;
+      (*fitfunc)(dummy,0,f2,eval,flag);
+      
+      eval[j] -= 2*d_j;
+      (*fitfunc)(dummy,0,f3,eval,flag);
+      
+      eval[k] += 2*d_k;
+      (*fitfunc)(dummy,0,f4,eval,flag);
+      
+      double denominator = 4*d_j*d_k;
+      double numerator = f1+f2+f3+f4;
+      
+      double element = 0;
+      if (std::fabs(denominator)>1E-50) {
+        element = numerator/denominator;
+      }
+      
+      hessian_matrix(j,k) = element;
+      hessian_matrix(k,j) = element;
+    }
+  }
+  delete eval;
+  return hessian_matrix;
+}
