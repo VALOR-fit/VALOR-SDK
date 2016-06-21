@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <fstream>
+#include <stdlib.h>
 
 #include <TSystem.h>
 

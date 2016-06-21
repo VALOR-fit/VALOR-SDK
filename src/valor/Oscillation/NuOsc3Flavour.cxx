@@ -136,6 +136,7 @@ void NuOsc3Flavour::SetOscParameters(
   double c13 = sqrt(1 - s13 * s13);
   double c23 = sqrt(1 - s23 * s23);
 
+  /*
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -179,6 +180,9 @@ void NuOsc3Flavour::SetOscParameters(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cos(deltaCP)) * dmsq12
                                + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
+  */
+
+  CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
 
   useEquations12 = true;
   if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) || fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) && sinsq2theta13 > 1.0e-8)
@@ -253,6 +257,7 @@ void NuOsc3Flavour::SetOscParametersSinSqTAll(
   double c13 = sqrt(1 - s13 * s13);
   double c23 = sqrt(1 - s23 * s23);
 
+  /*
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -296,6 +301,9 @@ void NuOsc3Flavour::SetOscParametersSinSqTAll(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cos(deltaCP)) * dmsq12
     + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
+  */
+
+  CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
 
   useEquations12 = true;
   if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) || fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
@@ -371,6 +379,25 @@ void NuOsc3Flavour::SetOscParametersSinSqTAllSinDeltaCP(
   // WARNING: only positive solution for cosdeltaCP is now taken into account
   double cosdeltaCP = sqrt(1-sindeltaCP*sindeltaCP);
 
+  PMNSVacuum[0][0][re] = c12*c13;
+  PMNSVacuum[0][0][im] = 0.0;
+  PMNSVacuum[0][1][re] = c13*s12;
+  PMNSVacuum[0][1][im] = 0.0;
+  PMNSVacuum[0][2][re] = s13*cosdeltaCP;
+  PMNSVacuum[0][2][im] = s13*sindeltaCP;
+  PMNSVacuum[1][0][re] = -s12*c23 - c12*s23*s13*cosdeltaCP;
+  PMNSVacuum[1][0][im] = -s12*c23 - c12*s23*s13*sindeltaCP;
+  PMNSVacuum[1][1][re] = c12*c23 - s12*s23*s13*cosdeltaCP;
+  PMNSVacuum[1][1][im] = c12*c23 - s12*s23*s13*sindeltaCP;
+  PMNSVacuum[1][2][re] = s23*c13;
+  PMNSVacuum[1][2][im] = 0.0;
+  PMNSVacuum[2][0][re] = s12*s23 - s13*c12*c23*cosdeltaCP;
+  PMNSVacuum[2][0][im] = s12*s23 - s13*c12*c23*sindeltaCP;
+  PMNSVacuum[2][1][re] = -s23*c12 - s12*c23*s13*cosdeltaCP;
+  PMNSVacuum[2][1][im] = -s23*c12 - s12*c23*s13*sindeltaCP;
+  PMNSVacuum[2][2][re] = c13*c23;
+  PMNSVacuum[2][2][im] = 0.0;
+
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -414,9 +441,9 @@ void NuOsc3Flavour::SetOscParametersSinSqTAllSinDeltaCP(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cosdeltaCP) * dmsq12
     + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
-
+  
   useEquations12 = true;
-  //  if(((fabsdeltaCP > 3.10 && fabsdeltaCP < 3.18) || fabsdeltaCP < 0.01 || fabs(fabsdeltaCP - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
+  //if(((fabsdeltaCP > 3.10 && fabsdeltaCP < 3.18) || fabsdeltaCP < 0.01 || fabs(fabsdeltaCP - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
   //useEquations12 = false;
 
   //if 2 mixing angles are very small, treat it as a 2-flavour calculation   
@@ -491,6 +518,7 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
   double c13 = sqrt(1 - s13 * s13);
   double c23 = sqrt(1 - s23 * s23);
 
+  /*
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -534,6 +562,9 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cos(deltaCP)) * dmsq12
     + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
+  */
+
+  CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
 
   useEquations12 = true;
   if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) || fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) && sinsq2theta13 > 1.0e-8)
@@ -607,6 +638,7 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
   double c13 = sqrt(1 - s13 * s13);
   double c23 = sqrt(1 - s23 * s23);
 
+  /*
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -650,6 +682,9 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cos(deltaCP)) * dmsq12
     + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
+  */
+
+  CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
 
   useEquations12 = true;
   if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) || fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
@@ -723,6 +758,25 @@ void NuOsc3Flavour::SetOscParametersDmsqAtmSolSinDeltaCP(
   // WARNING: only positive solution for cosdeltaCP is now taken into account
   double cosdeltaCP = sqrt(1-sindeltaCP*sindeltaCP);
 
+  PMNSVacuum[0][0][re] = c12*c13;
+  PMNSVacuum[0][0][im] = 0.0;
+  PMNSVacuum[0][1][re] = c13*s12;
+  PMNSVacuum[0][1][im] = 0.0;
+  PMNSVacuum[0][2][re] = s13*cosdeltaCP;
+  PMNSVacuum[0][2][im] = s13*sindeltaCP;
+  PMNSVacuum[1][0][re] = -s12*c23 - c12*s23*s13*cosdeltaCP;
+  PMNSVacuum[1][0][im] = -s12*c23 - c12*s23*s13*sindeltaCP;
+  PMNSVacuum[1][1][re] = c12*c23 - s12*s23*s13*cosdeltaCP;
+  PMNSVacuum[1][1][im] = c12*c23 - s12*s23*s13*sindeltaCP;
+  PMNSVacuum[1][2][re] = s23*c13;
+  PMNSVacuum[1][2][im] = 0.0;
+  PMNSVacuum[2][0][re] = s12*s23 - s13*c12*c23*cosdeltaCP;
+  PMNSVacuum[2][0][im] = s12*s23 - s13*c12*c23*sindeltaCP;
+  PMNSVacuum[2][1][re] = -s23*c12 - s12*c23*s13*cosdeltaCP;
+  PMNSVacuum[2][1][im] = -s23*c12 - s12*c23*s13*sindeltaCP;
+  PMNSVacuum[2][2][re] = c13*c23;
+  PMNSVacuum[2][2][im] = 0.0;
+
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -766,9 +820,9 @@ void NuOsc3Flavour::SetOscParametersDmsqAtmSolSinDeltaCP(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cosdeltaCP) * dmsq12
     + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
-
+  
   useEquations12 = true;
-  //  if(((fabsdeltaCP > 3.10 && fabsdeltaCP < 3.18) || fabsdeltaCP < 0.01 || fabs(fabsdeltaCP - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
+  //if(((fabsdeltaCP > 3.10 && fabsdeltaCP < 3.18) || fabsdeltaCP < 0.01 || fabs(fabsdeltaCP - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
   //useEquations12 = false;
 
   //if 2 mixing angles are very small, treat it as a 2-flavour calculation   
@@ -846,6 +900,7 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmsq13(
   double c13 = sqrt(1 - s13 * s13);
   double c23 = sqrt(1 - s23 * s23);
 
+  /*
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -889,6 +944,9 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmsq13(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cos(deltaCP)) * dmsq12
     + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
+  */
+
+  CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
 
   useEquations12 = true;
   if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) || fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) && sinsq2theta13 > 1.0e-8)
@@ -962,6 +1020,7 @@ void NuOsc3Flavour::SetOscParametersDmsq13(
   double c13 = sqrt(1 - s13 * s13);
   double c23 = sqrt(1 - s23 * s23);
 
+  /*
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -1005,6 +1064,9 @@ void NuOsc3Flavour::SetOscParametersDmsq13(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cos(deltaCP)) * dmsq12
     + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
+  */
+
+  CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
 
   useEquations12 = true;
   if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) || fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
@@ -1077,6 +1139,25 @@ void NuOsc3Flavour::SetOscParametersDmsq13SinDeltaCP(
   // WARNING: only positive solution for cosdeltaCP is now taken into account
   double cosdeltaCP = sqrt(1-sindeltaCP*sindeltaCP);
 
+  PMNSVacuum[0][0][re] = c12*c13;
+  PMNSVacuum[0][0][im] = 0.0;
+  PMNSVacuum[0][1][re] = c13*s12;
+  PMNSVacuum[0][1][im] = 0.0;
+  PMNSVacuum[0][2][re] = s13*cosdeltaCP;
+  PMNSVacuum[0][2][im] = s13*sindeltaCP;
+  PMNSVacuum[1][0][re] = -s12*c23 - c12*s23*s13*cosdeltaCP;
+  PMNSVacuum[1][0][im] = -s12*c23 - c12*s23*s13*sindeltaCP;
+  PMNSVacuum[1][1][re] = c12*c23 - s12*s23*s13*cosdeltaCP;
+  PMNSVacuum[1][1][im] = c12*c23 - s12*s23*s13*sindeltaCP;
+  PMNSVacuum[1][2][re] = s23*c13;
+  PMNSVacuum[1][2][im] = 0.0;
+  PMNSVacuum[2][0][re] = s12*s23 - s13*c12*c23*cosdeltaCP;
+  PMNSVacuum[2][0][im] = s12*s23 - s13*c12*c23*sindeltaCP;
+  PMNSVacuum[2][1][re] = -s23*c12 - s12*c23*s13*cosdeltaCP;
+  PMNSVacuum[2][1][im] = -s23*c12 - s12*c23*s13*sindeltaCP;
+  PMNSVacuum[2][2][re] = c13*c23;
+  PMNSVacuum[2][2][im] = 0.0;
+
   modUe1sq = c12*c12*c13*c13;
   modUe2sq = c13*c13*s12*s12;
   modUe3sq = s13*s13;
@@ -1120,9 +1201,9 @@ void NuOsc3Flavour::SetOscParametersDmsq13SinDeltaCP(
   UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cosdeltaCP) * dmsq12
     + c13*c13*c23*c23*dmsq13;
   UMassUdaggerVacuum[2][2][im] = 0.0;
-
+  
   useEquations12 = true;
-  //  if(((fabsdeltaCP > 3.10 && fabsdeltaCP < 3.18) || fabsdeltaCP < 0.01 || fabs(fabsdeltaCP - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
+  //if(((fabsdeltaCP > 3.10 && fabsdeltaCP < 3.18) || fabsdeltaCP < 0.01 || fabs(fabsdeltaCP - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
   //useEquations12 = false;
 
   //if 2 mixing angles are very small, treat it as a 2-flavour calculation 
@@ -1138,7 +1219,79 @@ void NuOsc3Flavour::SetOscParametersDmsq13SinDeltaCP(
   if(sinsqtheta12 < 3.0e-7 && sinsqtheta13 < 3.0e-7 && sinsqtheta23 < 3.0e-7)
     nFlavourIndex = 0;
 }
+//________________________________________________________________________________________
+void NuOsc3Flavour::CalcPMNSElements(double s12, double c12, double s13, double c13, double s23, double c23, double dmsq21, double dmsq31, double deltaCP)
+{
+  PMNSVacuum[0][0][re] = c12*c13;
+  PMNSVacuum[0][0][im] = 0.0;
+  PMNSVacuum[0][1][re] = c13*s12;
+  PMNSVacuum[0][1][im] = 0.0;
+  PMNSVacuum[0][2][re] = s13*cos(deltaCP);
+  PMNSVacuum[0][2][im] = s13*sin(deltaCP);
+  PMNSVacuum[1][0][re] = -s12*c23 - c12*s23*s13*cos(deltaCP);
+  PMNSVacuum[1][0][im] = -s12*c23 - c12*s23*s13*sin(deltaCP);
+  PMNSVacuum[1][1][re] = c12*c23 - s12*s23*s13*cos(deltaCP);
+  PMNSVacuum[1][1][im] = c12*c23 - s12*s23*s13*sin(deltaCP);
+  PMNSVacuum[1][2][re] = s23*c13;
+  PMNSVacuum[1][2][im] = 0.0;
+  PMNSVacuum[2][0][re] = s12*s23 - s13*c12*c23*cos(deltaCP);
+  PMNSVacuum[2][0][im] = s12*s23 - s13*c12*c23*sin(deltaCP);
+  PMNSVacuum[2][1][re] = -s23*c12 - s12*c23*s13*cos(deltaCP);
+  PMNSVacuum[2][1][im] = -s23*c12 - s12*c23*s13*sin(deltaCP);
+  PMNSVacuum[2][2][re] = c13*c23;
+  PMNSVacuum[2][2][im] = 0.0;
 
+  modUe1sq = c12*c12*c13*c13;
+  modUe2sq = c13*c13*s12*s12;
+  modUe3sq = s13*s13;
+  modUmu1sq = s12*s12*c23*c23 + 2*s12*c23*c12*s23*s13*cos(deltaCP) + c12*c12*s23*s23*s13*s13;
+  modUmu2sq = c12*c12*c23*c23 - 2*c12*c23*s12*s23*s13*cos(deltaCP) + s12*s12*s23*s23*s13*s13;
+  modUmu3sq = s23*s23*c13*c13;
+  modUtau1sq = s12*s12*s23*s23 - 2*s12*s23*s13*c12*c23*cos(deltaCP) + s13*s13*c12*c12*c23*c23;
+  modUtau2sq = s23*s23*c12*c12 + 2*s23*c12*s12*c23*s13*cos(deltaCP) + s12*s12*c23*c23*s13*s13;
+  modUtau3sq = c13*c13*c23*c23;
+
+  Re12 = c13*c13*s12*c12*(-c12*c23*c23*s12 + s12*s13*s13*s23*s23*c12 + (s12*s12*s13*s23*c23 - c12*c23*s13*s23*c12) * cos(deltaCP));
+  Im12 = -c13*c13*s12*c12*c23*s13*s23*sin(deltaCP);
+  arg12 = atan2(Im12, Re12);
+  Re13 = -s13*c13*c13*s23*s23*c12*s13*c12 - s13*c13*c13*s23*c23*s12*c12*cos(deltaCP);
+  Im13 = s13*c13*c13*s23*c23*s12*c12*sin(deltaCP);
+  arg13 = atan2(Im13, Re13);
+  Re23 = -s13*s13*c13*c13*s23*s23*s12*s12 + s13*c13*c13*s23*s12*c12*c23*cos(deltaCP);
+  Im23 = -s13*c13*c13*s23*s12*c12*c23*sin(deltaCP);
+  arg23 = atan2(Im23, Re23);
+
+  UMassUdaggerVacuum[0][0][re] = c13*c13*s12*s12*dmsq21 + s13*s13*dmsq31;
+  UMassUdaggerVacuum[0][0][im] = 0.0;
+  UMassUdaggerVacuum[0][1][re] = c13*s12*(c12*c23 - s12*s13*s23*cos(deltaCP))*dmsq21 + s13*c13*s23*cos(deltaCP)*dmsq31;
+  UMassUdaggerVacuum[0][1][im] = c13*s12*s12*s13*s23*sin(deltaCP)*dmsq21 - s13*c13*s23*sin(deltaCP)*dmsq31;
+  UMassUdaggerVacuum[0][2][re] = c13*s12*(-s23*c12 - s12*c23*s13*cos(deltaCP))*dmsq21 + s13*c13*c23*cos(deltaCP)*dmsq31;
+  UMassUdaggerVacuum[0][2][im] = c13*s12*s12*c23*s13*sin(deltaCP)*dmsq21 - s13*c13*c23*sin(deltaCP)*dmsq31;
+  UMassUdaggerVacuum[1][0][re] = c13*s12*(c12*c23 - s12*s13*s23*cos(deltaCP))*dmsq21 + s13*c13*s23*cos(deltaCP)*dmsq31;
+  UMassUdaggerVacuum[1][0][im] = -c13*s12*s12*s13*s23*sin(deltaCP)*dmsq21 + s13*c13*s23*sin(deltaCP)*dmsq31;
+  UMassUdaggerVacuum[1][1][re] = (c12*c12*c23*c23 + s12*s12*s13*s13*s23*s23 - 2.0*c12*c23*s12*s13*s23*cos(deltaCP))*dmsq21
+    + c13*c13*s23*s23*dmsq31;
+  UMassUdaggerVacuum[1][1][im] = 0.0;
+  UMassUdaggerVacuum[1][2][re] = (-c12*c23*s23*c12 + s12*s12*c23*s13*s13*s23 + s23*c12*s12*s13*s23*cos(deltaCP)
+                                  -c12*c23*s12*c23*s13*cos(deltaCP)) * dmsq21 + c13*c13*s23*c23*dmsq31;
+  UMassUdaggerVacuum[1][2][im] = (s23*c12*s12*s13*s23*sin(deltaCP) + c12*c23*s12*c23*s13*sin(deltaCP)) * dmsq21;
+  UMassUdaggerVacuum[2][0][re] = c13*s12*(-s23*c12 - s12*c23*s13*cos(deltaCP))*dmsq21
+    + s13*c13*c23*cos(deltaCP)*dmsq31;
+  UMassUdaggerVacuum[2][0][im] = -c13*s12*s12*c23*s13*sin(deltaCP)*dmsq21 + s13*c13*c23*sin(deltaCP)*dmsq31;
+  UMassUdaggerVacuum[2][1][re] = (-c12*c23*s23*c12 + s12*s12*s13*s13*s23*c23 - c12*c23*s12*c23*s13*cos(deltaCP)
+                                  +s23*s23*c12*s12*s13*cos(deltaCP)) * dmsq21 + c13*c13*s23*c23*dmsq31;
+  UMassUdaggerVacuum[2][1][im] = (-c12*c23*s12*c23*s13*sin(deltaCP) - s23*s23*c12*s12*s13*sin(deltaCP)) * dmsq21;
+  UMassUdaggerVacuum[2][2][re] = (s23*s23*c12*c12 + s12*s12*c23*c23*s13*s13 + 2.0*s23*c12*s12*c23*s13*cos(deltaCP)) * dmsq21
+    + c13*c13*c23*c23*dmsq31;
+  UMassUdaggerVacuum[2][2][im] = 0.0;
+}
+//________________________________________________________________________________________
+std::complex<double> NuOsc3Flavour::GetPMNSElement(int row, int column)
+{
+  std::complex<double> element(PMNSVacuum[row][column][re], PMNSVacuum[row][column][im]);
+
+  return element;
+}
 //________________________________________________________________________________________
 double NuOsc3Flavour::CalcVacuumOscProb(int nu_start, int nu_end, double energy)
 {
@@ -1991,7 +2144,7 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
 
   //the mass squared matrix has diagonal elements 0, dmsq12, dmsq13; all off-diagonal elements are zero
   //UMassUdagger is the product of the PMNS matrix, the mass squared matrix, and the dagger of the PMNS matrix 
-  double UMassUdagger[2][2][2];
+  double UMassUdagger[2][2][2] = {};
   if(index == 12)
     {
     for(int i=0; i<2; i++)

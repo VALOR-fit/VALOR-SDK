@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <complex>
 
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/OscChannelId.h"
@@ -125,6 +126,10 @@ public:
  void CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs_out[3][3]);
  
  valor::conv::NuMassHierarchy_t GetMassHierarchy(void) const;
+
+ void CalcPMNSElements(double s12, double c12, double s13, double c13, double s23, double c23, double dmsq21, double dmsq31, double deltaCP);
+
+ std::complex<double> GetPMNSElement(int row, int column);
  
 private:
 
@@ -144,6 +149,9 @@ private:
  double dmsq12;    //< eV^2
  double dmsq13;    //< eV^2 
  double dmsqAtm;   //< eV^2
+
+ //PMNSMatrix in vacuum (this has 3x3 complex elements)
+ double PMNSVacuum[3][3][2];
 
  // Moduli squared of PMNS matrix elements
  double modUe1sq;
