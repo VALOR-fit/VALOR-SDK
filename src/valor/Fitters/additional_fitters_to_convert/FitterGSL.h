@@ -8,8 +8,8 @@
           ....................................................................
            Algorithm name                                 | GSL fitter option
           ....................................................................
-	   Simulated annealing                            | SimAnneal
-	   Levemberg-Marquardt                            | LevMarq
+           Simulated annealing                            | SimAnneal
+           Levemberg-Marquardt                            | LevMarq
            Fletcher-Reeves conjugate gradient             | ConjugateFR
            Polak-Ribiere conjugate gradient               | ConjugatePR
            Vector Broyden-Fletcher-Goldfarb-Shanno (BFGS) | VectorBFGS
@@ -30,19 +30,17 @@
 #ifndef _valor_fitter_gsl_h_
 #define _valor_fitter_gsl_h_
 
-//#include "Build.h"
-#define __GSL_ENABLED__
+#include "valor/Conventions/Build.h"
 
 #include <TString.h>
 #include <TObject.h>
 #include <TMatrixD.h>
 
-#ifdef __GSL_ENABLED__
+#ifdef __VALOR_FMWK_GSL_ENABLED__
 #include <Math/Minimizer.h>
 #include <Math/IFunction.h>
 #endif
 
-//#include "valor/Conventions.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/FitInputs.h"
 
@@ -55,16 +53,18 @@ public:
    FitterGSL(FitInputs * inputs, Option_t * option);
    virtual ~FitterGSL();
 
+   virtual bool       Configure     (const Registry & /*conf*/) {return true;}
    virtual bool       DoTheFit      (void);
-   virtual int        FitStatusCode (Option_t *)  { return fStatusCode;                 }
-   virtual double     FitTime       (void)        { return fFitTime;                    }
-   virtual int        FitNTries     (void)        { return fFitTries;                   }
-   virtual int        NDOF          (void)        { return fNFitBins - fNFreeFitParams; }
-   virtual int        NBinsInFit    (void)        { return fNFitBins;                   }
-   virtual int        NFitParams    (void)        { return fNFreeFitParams;             }
-   virtual void       SetTol        (double /*tol*/ )  {}
-   virtual void       SetStr        (int    /*str*/ )  {}
-
+   virtual int        FitStatusCode (Option_t * /*option*/ = "") const {return -999;}
+   virtual double     FitTime       (void) const        { return fFitTime;                    }
+   virtual int        FitNTries     (void) const        { return fFitTries;                   }
+   virtual int        NDOF          (void) const        { return fNFitBins - fNFreeFitParams; }
+   virtual int        NBinsInFit    (void) const        { return fNFitBins;                   }
+   virtual int        NFitParams    (void) const        { return fNFreeFitParams;             }
+   virtual void       SetTol        (double tol)        { fTolerance  = tol ;                 }//Minuit targets an EDM of 0.001*tolerance for chisq dist
+   virtual void       SetMaxCalls   (int ncalls)        { fMaxNumCalls = ncalls ;             }
+   virtual void       SetStr        (int /*str*/)       { }
+   
 protected:
 
    void Init  (void);
@@ -74,11 +74,13 @@ protected:
    TString     fOption;           ///< fit option
    int         fStatusCode;       ///< fit status code
    double      fFitTime;          ///< fit time
-   int         fFitTries;          ///< fit time
+   int         fFitTries;         ///< fit time
    int         fNFitBins;         ///< number of bins in fit
    int         fNFreeFitParams;   ///< number of free params in fit
+   double      fTolerance;        ///< Fit tolerance
+   int         fMaxNumCalls;      ///< Max number of calls
 
-#ifdef __GSL_ENABLED__
+#ifdef __VALOR_FMWK_GSL_ENABLED__
    ROOT::Math::IMultiGenFunction * fFunc;
    ROOT::Math::FitMethodFunction * fFitMethodFunc;
    ROOT::Math::Minimizer *         fMinimizer;

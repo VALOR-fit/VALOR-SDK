@@ -16,19 +16,20 @@
 #include <iostream> 
 #include <sstream>
 
-//#include "Build.h"
-
+#include <TFile.h>
 #include <TStopwatch.h>
 
-#ifdef __GSL_ENABLED__
+#include "valor/Conventions/Build.h"
+#include "valor/FitCore/FitterGSL.h" 
+#include "valor/FitCore/FitInputs.h" 
+#include "valor/FitCore/FitParamList.h" 
+#include "valor/FitCore/FitDataABC.h" 
+
+#ifdef __VALOR_FMWK_GSL_ENABLED__
 #include <Math/GSLMinimizer.h>
 #include <Math/GSLNLSMinimizer.h>
 #include <Math/GSLSimAnMinimizer.h>
 #endif
-
-#include "valor/FitCore/FitterGSL.h" 
-#include "valor/FitCore/FitInputs.h" 
-#include "valor/FitCore/FitParamList.h" 
 
 using std::cerr; 
 using std::cout; 
@@ -64,7 +65,7 @@ void FitterGSL::Init(void)
   fNFreeFitParams = 0;
   fNFitBins       = 0;
   fFitTries       = 0;
-#ifdef __GSL_ENABLED__
+#ifdef __VALOR_FMWK_GSL_ENABLED__
   fFunc           = 0;
   fMinimizer      = 0;
 #endif
@@ -94,7 +95,7 @@ void FitterGSL::Init(FitInputs * fit_inputs, Option_t * option)
        << param_list_size << endl;
 #endif
 
-#ifdef __GSL_ENABLED__
+#ifdef __VALOR_FMWK_GSL_ENABLED__
   if(fOption.Contains("SimAnneal")) {
     fMinimizer = new ROOT::Math::GSLSimAnMinimizer;
   }
@@ -151,7 +152,7 @@ void FitterGSL::Init(FitInputs * fit_inputs, Option_t * option)
 //____________________________________________________________________________ 
 bool FitterGSL::DoTheFit(void) 
 {
-#ifdef __GSL_ENABLED__
+#ifdef __VALOR_FMWK_GSL_ENABLED__
 
 #ifdef __show_fit_cpu_time__
   TStopwatch w;
@@ -183,10 +184,18 @@ bool FitterGSL::DoTheFit(void)
 #endif
   
   fFitInputs->FitParams().CopyCurrToBestFitValues();
-  return true;
   
   fFitInputs->FitParams().SetFitTime ( fFitTime );
-  fFitInputs->FitParams().SetBestFitChisq ( fFitInputs->BestFitChisquare());
+  fFitInputs->FitParams().SetBestFitStatistic ( fFitInputs->Statistic());
+  
+  if(fMinimizer->ProvidesError()) {
+
+    TMatrixD cov(fNFreeFitParams,fNFreeFitParams);
+    fMinimizer->GetCovMatrix(cov.GetMatrixArray());
+    // Put in FPL
+  }
+  
+  return true;
   
 
 #endif // GSL
