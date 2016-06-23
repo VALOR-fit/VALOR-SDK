@@ -22,6 +22,7 @@ ChangeLog:
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <algorithm>
 
 #include <TROOT.h>
 #include <TMath.h>
@@ -235,13 +236,13 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParams (
-    const TMatrixD& cholesky_triangular, TVectorD& mean_params) 
+    const TMatrixD& cholesky_triangular, TVectorD& meanparams) 
 {
 // Generate a vector of correlated params
 
   int ncols = cholesky_triangular.GetNcols();
   int nrows = cholesky_triangular.GetNrows();
-  int npars = mean_params.GetNrows();
+  int npars = meanparams.GetNrows();
 
   if(ncols != nrows) {
     cerr << "util::CholeskyGenerateCorrelatedParams >> Number of columns " << ncols << " & rows " << nrows << " disagree. Exiting..." << endl;
@@ -274,7 +275,7 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams (
   // add the mean value offsets and store the results
   TVectorD correlated_params(n);
   for (int i = 0; i < n; ++i) {
-     double v = mean_params[i];
+     double v = meanparams[i];
      v += g(i);
      correlated_params[i] = v;
   }
@@ -292,13 +293,13 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams (
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParams (
- const TMatrixD& cholesky_triangular, TVectorD& mean_params, TVectorD& g_uncorrelated) 
+ const TMatrixD& cholesky_triangular, TVectorD& meanparams, TVectorD& g_uncorrelated) 
 {
 // Generate a vector of correlated params
 
   int ncols = cholesky_triangular.GetNcols();
   int nrows = cholesky_triangular.GetNrows();
-  int npars = mean_params.GetNrows();
+  int npars = meanparams.GetNrows();
   int nunco = g_uncorrelated.GetNrows();
 
   if(ncols != nrows) {
@@ -332,7 +333,7 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams (
   // add the mean value offsets and store the results
   TVectorD correlated_params(n);
   for (int i = 0; i < n; ++i) {
-     double v = mean_params[i];
+     double v = meanparams[i];
      v += g_uncorrelated(i);
      correlated_params[i] = v;
   }
@@ -1168,48 +1169,334 @@ ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & /*sp
 }
 #endif
 //____________________________________________________________________________
-TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * point, int nparams, const double * step_vector)
+TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * point, int nparams, int max_iterations)
 {
+  // Uses iterative method from here: https://arxiv.org/abs/hep-ph/0008191
+  // Based heavily off the FORTRAN here: http://www.pa.msu.edu/~pumplin/iterate/
   TMatrixDSym hessian_matrix(nparams);
-  // Elements are:
-  //f(x + d_j e_j + d_k e_k) - f(x + d_j e_j - d_k e_k)) -  (f(x - d_j e_j - d_k e_k) - f(x - d_j e_j + d_k e_k)) / (4 d_j d_k)
   double * eval = new double[nparams];
-  int dummy;
-  int flag = 0;
-  for (int j = 0 ; j < nparams ; j++) {
-    double d_j = step_vector[j];
-    
-    for (int k = 0 ; k <= j ; k++) {
-      double d_k = step_vector[k];
-      double f1,f2,f3,f4;
-      for (int ip = 0; ip < nparams; ip++) {
-        eval[ip] = point[ip];
-      }
-      eval[j] += d_j;
-      eval[k] += d_k;
-      (*fitfunc)(dummy,0,f1,eval,flag);
-      
-      eval[k] -= 2*d_k;
-      (*fitfunc)(dummy,0,f2,eval,flag);
-      
-      eval[j] -= 2*d_j;
-      (*fitfunc)(dummy,0,f3,eval,flag);
-      
-      eval[k] += 2*d_k;
-      (*fitfunc)(dummy,0,f4,eval,flag);
-      
-      double denominator = 4*d_j*d_k;
-      double numerator = f1+f2+f3+f4;
-      
-      double element = 0;
-      if (std::fabs(denominator)>1E-50) {
-        element = numerator/denominator;
-      }
-      
-      hessian_matrix(j,k) = element;
-      hessian_matrix(k,j) = element;
-    }
+  int dummy=0, flag = 0; // Used in calling the function
+  
+  const double aimsag = 1;
+  const int ncyc = 20; // max number of refinements to step size (per iteration)
+  
+  vector<double> x0best(nparams); // Location of the minimum
+  double best_chisq;
+  
+  TMatrixD q(nparams,nparams);
+  TMatrixD v(nparams,nparams);
+  TMatrixD u(nparams,nparams); // Should converge to v
+  vector<double> t (nparams); // Should converge to 1/sqrt(eigenvalues)
+  vector<double> xi(nparams); // Should converge z, which sum squared to dchisq
+  vector<double> y (nparams);
+  
+  vector<double> t1   (nparams);
+  vector<double> dmove(nparams);
+  
+  vector<double> s (nparams); //
+  vector<double> g11(nparams); // Estimate of first derivative
+  vector<double> g22(nparams); // Estimate of second derivative
+  vector<double> vh( (nparams*(nparams+1))/2);
+  
+  // Initial values
+  for (int i = 0 ; i < nparams; i++) {
+    u[i][i] = 1;
+    t[i] = 1.;
+    x0best[i] = point[i];
+    xi    [i] = point[i];
+    eval  [i] = point[i];
   }
+  
+  // Get initial point chisq
+  (*fitfunc)(dummy,0,best_chisq,eval,flag);
+  double init_chisq = best_chisq;
+  
+  for (int iteration = 0 ; iteration < max_iterations ; iteration++) {
+    // Calculate t
+    for (int i = 0 ; i < nparams; i++) {
+      double sum = 0;
+      for (int j = 0 ; j < nparams ; j++) {
+        double el = u(j,i);
+        sum += el;
+      }
+      t[i] = sqrt(sum);
+    }
+    // Then v
+    for (int i = 0 ; i < nparams; i++) {
+      for (int j = 0 ; j < nparams ; j++) {
+        v(i,j) = u(i,j) / t[j];
+      }
+    }
+    // Check v orthogonal
+    double errmax = 0;
+    for (int i = 0 ; i < nparams; i++) {
+      for (int j = 0 ; j < nparams ; j++) {
+        double sum1 = 0;
+        double sum2 = 0;
+        for (int k = 0 ; k < nparams ; k++) {
+          sum1 += v(k,i) * v(k,j);
+          sum2 += v(i,j) * v(j,k);
+        }
+        double expected = (i==j);
+        double err1 = std::fabs(sum1-expected);
+        double err2 = std::fabs(sum2-expected);
+        if (err1 > errmax) {errmax = err1;}
+        if (err2 > errmax) {errmax = err2;}
+      }
+    }
+    if (std::fabs(errmax) > 1E-5) {
+      LOG("UtlNumStat",pERROR)<<"VTMatrix not orthogonal";
+    }
+    
+    // Done with that bit - time to calculate the derivative
+    // We won't do this on the first try
+    if (iteration!=0) {
+      
+      double dstep = std::sqrt(aimsag);
+      
+      // Get diagonal second deriatives
+      double fs1,fs2;
+      for (int i = 0 ; i < nparams ; i++) {
+        for (int j = 0 ; j < nparams ; j++) {
+          eval[j] = x0best[j] + u(j,i) * dstep;
+        }
+        (*fitfunc)(dummy,0,fs1,eval,flag);
+        for (int j = 0 ; j < nparams ; j++) {
+          eval[j] = x0best[j] - u(j,i) * dstep;
+        }
+        (*fitfunc)(dummy,0,fs2,eval,flag);
+        double sag = 0.5 * (fs1+fs2 - 2.*best_chisq);
+        g22[i] = 2. * sag / (dstep * dstep);
+        g11[i] = (fs1-fs2)/(2*dstep);
+        
+        double sum = 0.;
+        for (int j = 0 ; j < nparams ; j++) {
+          double elem = u(j,i);
+          sum += elem*elem;
+        }
+        //~ double step = dstep * sqrt(sum);
+        
+        int ndex = i*(i+1)/2;
+        vh[ndex] = g22[i];
+      }
+      
+      double cormax = -9E99;
+      double cormin =  9E99;
+      
+      double fs3,fs4;
+      // Get off-diagonal second derivatives.
+      for (int i = 1 ; i < nparams; i++) {
+        for (int j = 0 ; j < nparams-1; j++) {
+          double cmult = dstep/TMath::Sqrt2();
+          // Evaluate at 4 corners of square around minimum
+          for (int k = 0 ; k < nparams; k++) {
+            eval[k]= point[k] + cmult * (u(k,i) + u(k,j));
+          }
+          (*fitfunc)(dummy,0,fs1,eval,flag);
+          for (int k = 0 ; k < nparams; k++) {
+            eval[k]= point[k] - cmult * (u(k,i) + u(k,j));
+          }
+          (*fitfunc)(dummy,0,fs2,eval,flag);
+          for (int k = 0 ; k < nparams; k++) {
+            eval[k]= point[k] + cmult * (u(k,i) + u(k,j));
+          }
+          (*fitfunc)(dummy,0,fs3,eval,flag);
+          for (int k = 0 ; k < nparams; k++) {
+            eval[k]= point[k] - cmult * (u(k,i) - u(k,j));
+          }
+          (*fitfunc)(dummy,0,fs4,eval,flag);
+          
+          double slow = (fs1+fs2+fs3+fs4)/(4.*cmult*cmult);
+          double cmax = std::max(fs1-best_chisq,fs2-best_chisq);
+          cmax = std::max(cmax,fs3-best_chisq);
+          cmax = std::max(cmax,fs4-best_chisq);
+          double cmin = std::min(fs1-best_chisq,fs2-best_chisq);
+          cmin = std::min(cmin,fs3-best_chisq);
+          cmin = std::min(cmin,fs4-best_chisq);
+          
+          int ndex = (i*(i-1))/2 + j;
+          vh[ndex] = slow;
+          
+          cormax = std::max(cormax,cmax);
+          cormin = std::min(cormin,cmin);
+        }
+      }
+      
+      // get qmat: hessian matrix in y
+      for (int i = 0 ; i < nparams ; i++) {
+        for (int j = 0 ; j < nparams ; j++) {
+          int ndex = (i*(i-1))/2 + j;
+          q(i,j) = vh[ndex];
+          q(j,i) = vh[ndex];
+        }
+      }
+      
+      // See how close q(i,j) is to the desired 2*(identity matrix)
+      double diamin = q(0,0);
+      double diamax = q(0,0);
+      for (int i = 1 ; i < nparams ; i++) {
+        diamin = std::min(q(i,i),diamin);
+        diamax = std::max(q(i,i),diamax);
+      }
+      
+      // Skip offdiag min/max checks here
+      
+      TMatrixD P(nparams,nparams);
+      // get P = the hessian matrix in x
+      for (int i = 0 ; i < nparams ; i++) {
+        for (int j = 0 ; j < i ; j++) {
+          double sum = 0.;
+          for (int m = 0 ; m < nparams ; m++) {
+            for (int n = 0 ; n < i ; n++) {
+              sum += q(m,n) * v(i,m) * v(j,n) / (t[m] * t[n]);
+            }
+          }
+          P(i,j) = sum;
+          P(j,i) = sum;
+        }
+      }
+      
+      TVectorD eigenvalues(nparams);
+      TMatrixD eigenvectors = P.EigenVectors(eigenvalues);
+      double min_eig = eigenvalues[0];
+      double max_eig = eigenvalues[0];
+      for (int i = 1 ; i < nparams ; i++) {
+        min_eig = std::min(eigenvalues[i],min_eig);
+        max_eig = std::max(eigenvalues[i],max_eig);
+      }
+      // if notion of hessian is not positive definite, add a constant to all
+      // of the negative ones to fix it.
+      if (min_eig <= 0.) {
+        int nneg = 0;
+        for (int i = 0 ; i < nparams ; i++) {
+          if (eigenvalues[i] <= 0) {
+            nneg++;
+          }
+          eigenvalues[i] -= 2*min_eig;
+        }
+      }
+      // compute new estimate of location of the minimum...
+      for (int i = 0 ; i < nparams ; i++) {
+        double sum = 0.;
+        for (int j = 0 ; j < nparams ; j++) {
+          sum += v(i,j) * g11[j]/t[j];
+        }
+        s[i] = sum;
+      }
+      for (int i = 0 ; i < nparams ; i++) {
+        double sum = 0.;
+        for (int j = 0 ; j < nparams ; j++) {
+          sum += P(j,i)*s[j];
+        }
+        t1[i] = -sum/eigenvalues[i];
+      }
+      for (int i = 0 ; i < nparams ; i++) {
+        double sum = 0.;
+        for (int j = 0 ; j < nparams ; j++) {
+          sum += P(i,j) * t1[j];
+        }
+        dmove[i] = sum;
+      }
+      // find the displacement in new coordinates
+      for (int i = 0 ; i < nparams ; i++) {
+        double sum = 0.;
+        for (int j = 0 ; j < nparams ; j++) {
+          sum+= v(j,i)*dmove[j];
+        }
+        y[i] = sum/t[i];
+      }
+      
+      
+      // Improve minimum by steps
+      int nsteps = 1;
+      double stmax = 1.;
+      // it may not be safe to move far from the region where the derivatives
+      // have been estimated, so see how far that is
+      double rmax = 0;
+      for (int i = 0 ; i < nparams ; i++) {
+        rmax = std::max(rmax,abs(y[i])/dstep);
+      }
+      static const double rmaxc = 1.; // threshold for testing by steps
+      if (rmax > rmaxc) {
+        nsteps = 50;
+        stmax = 5.;
+      }
+      
+      double fbest = best_chisq;
+      for (int istep = 0 ; istep < nsteps; istep++) {
+        double step = (stmax*(istep+1))/nsteps;
+        for (int i = 0 ; i < nparams ; i++) {
+          eval[i] = x0best[i] + step * dmove[i];
+        }
+        (*fitfunc)(dummy,0,fs1,eval,flag);
+        if (step > 1. && fs1 > fbest) {break;}
+        
+        // Use the new minmum if it's better
+        if (fs1 < fbest) {
+          fbest = fs1;
+          //~ stbest = step;
+          for (int i = 0 ; i < nparams ; i++) {
+            x0best[i] = eval[i];
+            //~ x[i] = eval[i];
+          }
+          best_chisq = fbest;
+        }
+      } // step
+      
+      
+      // get the new version of the transform
+      // The fortran here has to reverse the eigenvectors, but ours are already in that order
+      for (int i = 0 ; i < nparams ; i++) {
+        t[i] = sqrt(2. / eigenvalues[i]);
+      }
+      
+      // To make the answer unique, multiply eigenvectors by -1 as
+      // necessary to make the largest component of each vector positive
+      for (int i = 0 ; i < nparams ; i++) {
+        double tmp = v(0,i);
+        for (int j = 0 ; j < nparams ; j++) {
+          if (std::fabs(v(j,i)) > std::fabs(tmp)) {tmp = v(j,i);}
+        }
+        if (tmp < 0) {
+          for (int j = 0 ; j < nparams ; j++) {
+            v(j,i) *= -1;
+          }
+        }
+      }
+      for (int i = 0 ; i < nparams ; i++) {
+        for (int j = 0 ; j < nparams ; j++) {
+          u(i,j) = v(i,j) * t[j];
+        }
+      }
+    }// not first iteration
+    
+    // adjust step sizes for each direction to make the increases in Chisqr 
+    // to be approximately equal to the desired value
+    for (int ipar = 0 ; ipar < nparams ; ipar++) {
+      // For first few iterations, use faster, less accurate method
+      if (iteration < 4) {
+        double fs1,fs2;
+        for (int isize = 0 ; isize < ncyc ; isize++) {
+          for (int j = 0 ; j < nparams ; j++) {
+            eval[j] = point[j] + u(j,ipar)*sqrt(aimsag);
+          }
+          (*fitfunc)(dummy,0,fs1,eval,flag);
+          for (int j = 0 ; j < nparams ; j++) {
+            eval[j] = point[j] - u(j,ipar)*sqrt(aimsag);
+          }
+          (*fitfunc)(dummy,0,fs2,eval,flag);
+          
+          double rat1 = (std::max(fs1,fs2)-best_chisq)/aimsag;
+          double rat2 = (std::min(fs1,fs2)-best_chisq)/aimsag;
+          
+          //L760
+        }
+      }
+    }
+
+    
+  } // iterations
+      
   delete eval;
   return hessian_matrix;
 }
