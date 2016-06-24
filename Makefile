@@ -109,7 +109,7 @@ make-bin-lib-dir: FORCE
 static: FORCE
 	@echo " "
 	@echo "** Creating static library of the VALOR framework..."
-	./make/build_static_object_list.sh | xargs ./make/build_static_lib.sh 
+	./make/build_static_object_list.sh --source-path=${VALOR_FMWK}/src/valor | xargs ./make/build_static_lib.sh 
 
 color:
 	$(MAKE) -C "${VALOR_FMWK}/external/color"

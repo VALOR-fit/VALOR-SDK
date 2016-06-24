@@ -8,16 +8,34 @@
 # Original author: Fons Rademakers, 13/12/2010
 #
 
-#in case called with argument -d then return only the dictionary object files (_RootDict_*.o) (G__*.o).
-if [ "$1" = "-d" ]; then
-   dictonly="yes"
-fi
+for arg in "$@"
+do
+case $arg in
+        # Optional -d or --dictionary-only argument
+        # in case called with this argument then return only the dictionary object files (_RootDict_*.o).
+        -d|--dictionary-only)
+        dictonly="yes"
+        shift	
+        ;;
+        # Mandatory -s=/path or --source-path=/path argument
+        # Script will search for .o files within the input path (including sub-directories)
+        -s=*|--source-path=*)
+        path="${arg#*=}"
+	shift
+	;;
+        # Uknown option
+	*)
+	;;
+esac
+done
 
+# Exclude (Empty for now, but plugged-in in the code below. Could be promoted to command-line argument)
 excl=""
 
 objs=""
 gobjs=""
-for i in $VALOR_FMWK/src/valor/* ; do
+#for i in $VALOR_FMWK/src/valor/* ; do
+for i in $path/* ; do
    inc=$i
 #  echo $inc;
    for j in $excl ; do
