@@ -45,6 +45,7 @@ ChangeLog:
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/Utilities/UtlNumStat.h"
+#include "valor/Utilities/UtlPrint.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Messenger/Messenger.h"
@@ -1198,13 +1199,15 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   vector<double> s (nparams); //
   vector<double> g11(nparams); // Estimate of first derivative
   vector<double> g22(nparams); // Estimate of second derivative
-  vector<double> vh( (nparams*(nparams+1))/2);
+  vector<double> vh( (nparams*(nparams+1))/2 + 1);
   
   const double * x0 = point; // Alias for fortran
   
   // Initial values
   for (int i = 0 ; i < nparams; i++) {
-    u[i][i] = 1;
+    u[i][i] = 0.01;
+    q[i][i] = 1;
+    v[i][i] = 1;
     t[i] = 1.;
     x0best[i] = point[i];
     xi    [i] = point[i];
@@ -1215,7 +1218,9 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   (*fitfunc)(dummy,0,best_chisq,eval,flag);
   double init_chisq = best_chisq;
   
-  for (int iteration = 0 ; iteration < max_iterations ; iteration++) {
+  bool terminate = false; // second way out of this loop
+  
+  for (int iteration = 0 ; iteration < max_iterations && !terminate ; iteration++) {
     // Calculate t
     for (int i = 0 ; i < nparams; i++) {
       double sum = 0;
@@ -1280,7 +1285,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
         }
         //~ double step = dstep * sqrt(sum);
         
-        int ndex = i*(i+1)/2;
+        int ndex = ((i+1)*(i+2))/2;
         vh[ndex] = g22[i];
       }
       
@@ -1290,7 +1295,25 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       double fs3,fs4;
       // Get off-diagonal second derivatives.
       for (int i = 1 ; i < nparams; i++) {
-        for (int j = 0 ; j < nparams-1; j++) {
+        for (int j = 0 ; j <= i-1; j++) {
+// ******************************************************************************
+// evaluate the fcn at 4 new points: (a,b), (-a,-b), (a, -b), (-a, b).
+// Minuit's Hesse uses just one new point (a,b), and combines with the already
+// known values at (0,0), (a,0), (0,b) to get an approximation that is accurate
+// to first order.  If take instead two new points, e.g., (a,b) and (-a,-b),
+// can combine with the known diagonal points to get a formula that is accurate
+// to second order.  Using 4 points is still formally only accurate to second
+// order, but the error contributions from the derivatives F13 and F31 are only
+// half is big, and the error contribution from the derivative F22 is completely
+// cancelled; so it is worth doing this even though it requires 4 function calls
+// for each of the npar*(npar-1)/2 off-diagonal elements of the matrix.
+// ******************************************************************************
+//
+// Steps for off-diagonal elements are taken to be smaller than
+// the steps for diagonal elements by factor 1/sqrt(2), so that when
+// convergence is achieved, they will correspond to raising the function
+// by aimsag, just like the diagonal computations.
+
           double cmult = dstep/TMath::Sqrt2();
           // Evaluate at 4 corners of square around minimum
           for (int k = 0 ; k < nparams; k++) {
@@ -1318,7 +1341,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           cmin = std::min(cmin,fs3-best_chisq);
           cmin = std::min(cmin,fs4-best_chisq);
           
-          int ndex = (i*(i-1))/2 + j;
+          int ndex =  ((i+1)*i)/2 + j;
           vh[ndex] = slow;
           
           cormax = std::max(cormax,cmax);
@@ -1328,8 +1351,8 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       
       // get qmat: hessian matrix in y
       for (int i = 0 ; i < nparams ; i++) {
-        for (int j = 0 ; j < nparams ; j++) {
-          int ndex = (i*(i-1))/2 + j;
+        for (int j = 0 ; j <= i ; j++) {
+          int ndex =  ((i+1)*i)/2 + j;
           q(i,j) = vh[ndex];
           q(j,i) = vh[ndex];
         }
@@ -1348,7 +1371,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       TMatrixD P(nparams,nparams);
       // get P = the hessian matrix in x
       for (int i = 0 ; i < nparams ; i++) {
-        for (int j = 0 ; j < i ; j++) {
+        for (int j = 0 ; j <= i ; j++) {
           double sum = 0.;
           for (int m = 0 ; m < nparams ; m++) {
             for (int n = 0 ; n < i ; n++) {
@@ -1433,9 +1456,11 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           eval[i] = x0best[i] + step * dmove[i];
         }
         (*fitfunc)(dummy,0,fs1,eval,flag);
+       // once we have stepped as far as the calculated position of minimum,
+       // continue stepping only so long as each new step gives a new best value...
+       
         if (step > 1. && fs1 > fbest) {break;}
-        
-        // Use the new minmum if it's better
+
         if (fs1 < fbest) {
           fbest = fs1;
           //~ stbest = step;
@@ -1484,16 +1509,16 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
     // to be approximately equal to the desired value
     for (int ipar = 0 ; ipar < nparams ; ipar++) {
       // For first few iterations, use faster, less accurate method
-      if (iteration < 4) {
+      if (iteration < 5) {
         double tmpst1 = 2.,tmpst2 = 2.;
         double fs1,fs2;
         for (int isize = 0 ; isize < ncyc ; isize++) {
           for (int j = 0 ; j < nparams ; j++) {
-            eval[j] = point[j] + u(j,ipar)*sqrt(aimsag);
+            eval[j] = x0[j] + u(j,ipar)*sqrt(aimsag);
           }
           (*fitfunc)(dummy,0,fs1,eval,flag);
           for (int j = 0 ; j < nparams ; j++) {
-            eval[j] = point[j] - u(j,ipar)*sqrt(aimsag);
+            eval[j] = x0[j] - u(j,ipar)*sqrt(aimsag);
           }
           (*fitfunc)(dummy,0,fs2,eval,flag);
           
@@ -1502,11 +1527,11 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           
           // ideally, rat1 and rat2 would both be 1.0; scale the step size to approximate that...
           // (in bizarre case that rat2 is negative, instead increase step size.)
-          double tmp = 2.;
+          double tmp = sqrt(2./(rat1+rat2));
           if (rat2 < 0) {
-            if (isize > 2) {
-              if (tmpst1 > 1) {tmp = std::min(tmp,tmpst1);}
-              if (tmpst1 > 2) {tmp = std::min(tmp,tmpst2);}
+            if (isize > 1) {
+              if (tmpst1 > 1.) {tmp = std::min(tmp,tmpst1);}
+              if (tmpst2 > 1.) {tmp = std::min(tmp,tmpst2);}
             }
           }
           else {
@@ -1522,15 +1547,16 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           }
           
           // terminate iterations if last few multipliers were close to 1...
-          if(isize > 2.) {
+          if(isize > 1) {
             double tmpmax = std::max(std::fabs(tmp   -1.),std::fabs(tmpst1-1.));
-            if (std::max(tmpmax,std::fabs(tmpst2-1.)) > 0.1) {
-              break; // CHECK THIS
+            if (std::max(tmpmax,std::fabs(tmpst2-1.)) < 0.1) {
+              //~ LOG("UtlNumStat",pINFO) << "Last few multipliers close to one. Terminating iterations.";
+              //~ terminate = true;
             }
           }
           
           // store the previous multipliers...
-          if(isize > 1) {
+          if(isize > 0) {
             tmpst2 = tmpst1;
             tmpst1 = tmp;
           }
@@ -1544,8 +1570,8 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
         int igood = 0;
         double tbest = 0, dbest = 0;
         double xmult = 1;
-        double tmvec[2] = {0,0};
-        double tmult;
+        double tmvec[2] = {0.,0.};
+        double tmult = sqrt(aimsag);
         for (int idir = 0; idir < 2; idir++) {
           tmult = sqrt(aimsag);
           if (idir == 1) {
@@ -1574,10 +1600,10 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
             // go if convergence good enough...
             // *** sets desired accuracy ***
             if (std::fabs(del-aimsag) > accu*aimsag) {
-              igood = igood+idir;
+              igood = igood+idir+1; // Need a +1 here to match the fortran indices
               converged = true;
               tmvec[idir] = tmult;
-              break; // CHECK THIS, it's replacing a goto
+              break;
             }
             if (itry == 0) {
               tbest = tmult;
@@ -1596,7 +1622,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
                 dbestl = del;
               }
             }
-            if (del < 0.) {
+            if (del <= 0.) {
               // del should always be positive, because amin should be the local minimum;
               // bail out if it isn't.
               LOG("UtlNumStat",pERROR) << "Function evaluation "<<fs1<<" below presumed minimum at "<<best_chisq;
@@ -1604,7 +1630,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
             }
             // first time, calculate the multiplier by assuming chisqr is a quadratic 
             // function of the displacement, as it is expected to be near a local minimum...
-            if (itry ==0 ) {
+            if (itry == 0 ) {
               xmult = sqrt(aimsag/del);
               // force the multiplier to be not too far from 1; but 
               // if it is already close to 1, leave it nearly as is...
@@ -1662,13 +1688,15 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           tmult = 1E-3;
           LOG("UtlNumStat",pINFO) << "Neither direction converged, use tmult = "<<tmult;
         }
+        
+        
         // update u...
         for (int j = 0 ; j < nparams ; j++) {
           u(j,ipar) = u(j,ipar)*tmult/sqrt(aimsag);
         }
       } // End of alterantive procedure
       
-    } //ipar
+    } // end of loop over eigenvector directions ipar
     
     // See how much have the eigenvector directions have changed from the previous iteration...
     if (iteration >= 0) { // Copied from fortran - but I think this should probably be > rather than >=
@@ -1687,11 +1715,11 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   
   // calculate the final notion of the hessian and the error matrix...
   for (int i = 0 ; i < nparams ; i++) {
-    for (int j = 0 ; j < i ; j++) {
+    for (int j = 0 ; j <= i ; j++) {
       double sum1 = 0.;
       double sum2 = 0.;
       for (int k = 0 ; k < nparams ; k++) {
-         double tmp = t[k]*t[k] / 2.0;
+         double tmp = t[k]*t[k] / 2.;
          sum1 = sum1 + v(i,k)*v(j,k)/tmp;
          sum2 = sum2 + v(i,k)*v(j,k)*tmp;
       } //k
@@ -1705,6 +1733,6 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   } //i
     
       
-  delete eval;
+  delete[] eval;
   return hessian_matrix;
 }
