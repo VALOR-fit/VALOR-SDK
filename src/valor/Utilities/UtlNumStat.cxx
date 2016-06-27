@@ -1174,6 +1174,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   // Uses iterative method from here: https://arxiv.org/abs/hep-ph/0008191
   // Based heavily off the FORTRAN here: http://www.pa.msu.edu/~pumplin/iterate/
   TMatrixDSym hessian_matrix(nparams);
+  TMatrixDSym error_matrix  (nparams);
   double * eval = new double[nparams];
   int dummy=0, flag = 0; // Used in calling the function
   
@@ -1183,9 +1184,10 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   vector<double> x0best(nparams); // Location of the minimum
   double best_chisq;
   
-  TMatrixD q(nparams,nparams);
-  TMatrixD v(nparams,nparams);
-  TMatrixD u(nparams,nparams); // Should converge to v
+  TMatrixD q   (nparams,nparams);
+  TMatrixD v   (nparams,nparams);
+  TMatrixD vold(nparams,nparams); // Last iteration's v
+  TMatrixD u   (nparams,nparams); // Should converge to v
   vector<double> t (nparams); // Should converge to 1/sqrt(eigenvalues)
   vector<double> xi(nparams); // Should converge z, which sum squared to dchisq
   vector<double> y (nparams);
@@ -1197,6 +1199,8 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   vector<double> g11(nparams); // Estimate of first derivative
   vector<double> g22(nparams); // Estimate of second derivative
   vector<double> vh( (nparams*(nparams+1))/2);
+  
+  const double * x0 = point; // Alias for fortran
   
   // Initial values
   for (int i = 0 ; i < nparams; i++) {
@@ -1216,8 +1220,8 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
     for (int i = 0 ; i < nparams; i++) {
       double sum = 0;
       for (int j = 0 ; j < nparams ; j++) {
-        double el = u(j,i);
-        sum += el;
+        double elem = u(j,i);
+        sum += elem*elem;
       }
       t[i] = sqrt(sum);
     }
@@ -1235,7 +1239,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
         double sum2 = 0;
         for (int k = 0 ; k < nparams ; k++) {
           sum1 += v(k,i) * v(k,j);
-          sum2 += v(i,j) * v(j,k);
+          sum2 += v(i,k) * v(j,k);
         }
         double expected = (i==j);
         double err1 = std::fabs(sum1-expected);
@@ -1258,16 +1262,16 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       double fs1,fs2;
       for (int i = 0 ; i < nparams ; i++) {
         for (int j = 0 ; j < nparams ; j++) {
-          eval[j] = x0best[j] + u(j,i) * dstep;
+          eval[j] = x0[j] + u(j,i) * dstep;
         }
         (*fitfunc)(dummy,0,fs1,eval,flag);
         for (int j = 0 ; j < nparams ; j++) {
-          eval[j] = x0best[j] - u(j,i) * dstep;
+          eval[j] = x0[j] - u(j,i) * dstep;
         }
         (*fitfunc)(dummy,0,fs2,eval,flag);
         double sag = 0.5 * (fs1+fs2 - 2.*best_chisq);
         g22[i] = 2. * sag / (dstep * dstep);
-        g11[i] = (fs1-fs2)/(2*dstep);
+        g11[i] = (fs1-fs2)/(2.*dstep);
         
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
@@ -1290,19 +1294,19 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           double cmult = dstep/TMath::Sqrt2();
           // Evaluate at 4 corners of square around minimum
           for (int k = 0 ; k < nparams; k++) {
-            eval[k]= point[k] + cmult * (u(k,i) + u(k,j));
+            eval[k]= x0[k] + cmult * (u(k,i) + u(k,j));
           }
           (*fitfunc)(dummy,0,fs1,eval,flag);
           for (int k = 0 ; k < nparams; k++) {
-            eval[k]= point[k] - cmult * (u(k,i) + u(k,j));
+            eval[k]= x0[k] - cmult * (u(k,i) + u(k,j));
           }
           (*fitfunc)(dummy,0,fs2,eval,flag);
           for (int k = 0 ; k < nparams; k++) {
-            eval[k]= point[k] + cmult * (u(k,i) + u(k,j));
+            eval[k]= x0[k] + cmult * (u(k,i) + u(k,j));
           }
           (*fitfunc)(dummy,0,fs3,eval,flag);
           for (int k = 0 ; k < nparams; k++) {
-            eval[k]= point[k] - cmult * (u(k,i) - u(k,j));
+            eval[k]= x0[k] - cmult * (u(k,i) - u(k,j));
           }
           (*fitfunc)(dummy,0,fs4,eval,flag);
           
@@ -1450,6 +1454,12 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
         t[i] = sqrt(2. / eigenvalues[i]);
       }
       
+      // Save the old matrix
+      vold = v;
+      // And get the new one. The fortran here has to reverse the eigenvectors, but ours are already in that order
+      v = eigenvectors;
+        
+      
       // To make the answer unique, multiply eigenvectors by -1 as
       // necessary to make the largest component of each vector positive
       for (int i = 0 ; i < nparams ; i++) {
@@ -1475,6 +1485,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
     for (int ipar = 0 ; ipar < nparams ; ipar++) {
       // For first few iterations, use faster, less accurate method
       if (iteration < 4) {
+        double tmpst1 = 2.,tmpst2 = 2.;
         double fs1,fs2;
         for (int isize = 0 ; isize < ncyc ; isize++) {
           for (int j = 0 ; j < nparams ; j++) {
@@ -1489,13 +1500,210 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           double rat1 = (std::max(fs1,fs2)-best_chisq)/aimsag;
           double rat2 = (std::min(fs1,fs2)-best_chisq)/aimsag;
           
-          //L760
+          // ideally, rat1 and rat2 would both be 1.0; scale the step size to approximate that...
+          // (in bizarre case that rat2 is negative, instead increase step size.)
+          double tmp = 2.;
+          if (rat2 < 0) {
+            if (isize > 2) {
+              if (tmpst1 > 1) {tmp = std::min(tmp,tmpst1);}
+              if (tmpst1 > 2) {tmp = std::min(tmp,tmpst2);}
+            }
+          }
+          else {
+            tmp = sqrt(2./(rat1+rat2));
+          }
+          // force the scale change to lie between 0.5 and 2.0, so very large
+          // changes are avoided...
+          if (tmp > 1.5) {
+            tmp = 2.-(0.75/tmp);
+          }
+          else if (tmp < 0.7) {
+            tmp = 0.5 + (2./7.*tmp);
+          }
+          
+          // terminate iterations if last few multipliers were close to 1...
+          if(isize > 2.) {
+            double tmpmax = std::max(std::fabs(tmp   -1.),std::fabs(tmpst1-1.));
+            if (std::max(tmpmax,std::fabs(tmpst2-1.)) > 0.1) {
+              break; // CHECK THIS
+            }
+          }
+          
+          // store the previous multipliers...
+          if(isize > 1) {
+            tmpst2 = tmpst1;
+            tmpst1 = tmp;
+          }
+          for (int j = 0 ; j < nparams ; j++) {
+             u(j,ipar) = tmp*u(j,ipar);
+          }
+        } // isize
+      } // iterations < 4
+      else {
+        // Alternative procedure for higher iterations
+        int igood = 0;
+        double tbest = 0, dbest = 0;
+        double xmult = 1;
+        double tmvec[2] = {0,0};
+        double tmult;
+        for (int idir = 0; idir < 2; idir++) {
+          tmult = sqrt(aimsag);
+          if (idir == 1) {
+            tmult *= -1;
+          }
+          // loop over iterations to find the displacement that 
+          // gives the desired increase of aimsag in chisqr...
+          // (This scheme avoids using derivatives -- it is 
+          // intended to be robust in the face of discontinuities in 
+          // FCN which can be present due to numerical integration noise.)
+          int ntry = 50;
+          double dbesth = -9E99;
+          double dbestl =  9E99;
+          double tbesth = 1.;
+          double tbestl = 1.;
+          bool converged = false;
+          double fs1 = 0;
+          for (int itry = 0 ; itry < ntry; itry++) {
+            for (int j = 0 ; j < nparams ; j++) {
+              eval[j] = x0[j] + u(j,ipar) * tmult;
+            }
+            (*fitfunc)(dummy,0,fs1,eval,flag);
+            double del = fs1 - best_chisq;
+            
+            const double accu = 1E-3;
+            // go if convergence good enough...
+            // *** sets desired accuracy ***
+            if (std::fabs(del-aimsag) > accu*aimsag) {
+              igood = igood+idir;
+              converged = true;
+              tmvec[idir] = tmult;
+              break; // CHECK THIS, it's replacing a goto
+            }
+            if (itry == 0) {
+              tbest = tmult;
+              dbest = del;
+            }
+            //keep track of best above and best below...
+            if (del >= aimsag) {
+              if (std::fabs(del-aimsag) < std::fabs(dbesth-aimsag)) {
+               tbesth = tmult;
+               dbesth = del;
+              }
+            }
+            if (del <= aimsag) {
+              if (std::fabs(del-aimsag) < std::fabs(dbestl-aimsag)) {
+                tbestl = tmult;
+                dbestl = del;
+              }
+            }
+            if (del < 0.) {
+              // del should always be positive, because amin should be the local minimum;
+              // bail out if it isn't.
+              LOG("UtlNumStat",pERROR) << "Function evaluation "<<fs1<<" below presumed minimum at "<<best_chisq;
+              break;
+            }
+            // first time, calculate the multiplier by assuming chisqr is a quadratic 
+            // function of the displacement, as it is expected to be near a local minimum...
+            if (itry ==0 ) {
+              xmult = sqrt(aimsag/del);
+              // force the multiplier to be not too far from 1; but 
+              // if it is already close to 1, leave it nearly as is...
+              double ascale = 0.3;
+              xmult = 1.+ ascale * TMath::ATan((xmult-1.)/ascale);
+            }
+            else {
+              // keep track of best found so far...
+              if (std::fabs(del-aimsag) < std::fabs(dbest-aimsag)) {
+                tbest = tmult;
+                dbest = del;
+              }
+              // reduce step size if have stepped to the other side of the desired value...
+              if ( (xmult > 1. && del >= aimsag) ||
+                   (xmult < 1. && del <= aimsag) ) {
+                tmult = tbest;
+                del = dbest;
+                xmult = sqrt(xmult);//makes step factor closer to 1.0, i.e., smaller step size
+              }
+              if ( (xmult > 1. && del >= aimsag) ||
+                   (xmult < 1. && del <= aimsag) ) {
+                xmult = 1./xmult;
+              }
+            } // 850
+            tmult *= xmult;
+          } // itry
+          
+          // here it didn't converge.  This appears to happen only if the function is not 
+          // monotonic.  In that case, go back to the best result found...
+          if (!converged) {
+            tmult = tbest;
+            for (int j = 0 ; j < nparams ; j++) {
+                eval[j] = x0[j] + u(j,ipar) * tmult;
+            }
+            (*fitfunc)(dummy,0,fs1,eval,flag);
+            LOG("UtlNumStat",pERROR) << "Poor convergence - chisquare "<<fs1<<" with presumed minimum at "<<best_chisq;
+          }
+          tmvec[idir] = tmult;
+        }//idir
+        // get an "average" tmult, based on assuming a quadratic + cubic form...
+        // NOTE, tmvec[1] is negative.
+        if (igood == 3) {
+          double tmp = 1./(tmvec[0]*tmvec[0]) + 1./(tmvec[1]*tmvec[1]) + 1./(tmvec[0]*tmvec[1]);
+          tmult = 1./sqrt(tmp);
+        }
+        else if (igood == 1) {
+          tmult = std::abs(tmvec[0]);
+          LOG("UtlNumStat",pINFO) << "Only idir=0 converged, use tmult = "<<tmult;
+        }
+        else if (igood == 2) {
+          tmult = std::abs(tmvec[1]);
+          LOG("UtlNumStat",pINFO) << "Only idir=1 converged, use tmult = "<<tmult;
+        }
+        else {
+          tmult = 1E-3;
+          LOG("UtlNumStat",pINFO) << "Neither direction converged, use tmult = "<<tmult;
+        }
+        // update u...
+        for (int j = 0 ; j < nparams ; j++) {
+          u(j,ipar) = u(j,ipar)*tmult/sqrt(aimsag);
+        }
+      } // End of alterantive procedure
+      
+    } //ipar
+    
+    // See how much have the eigenvector directions have changed from the previous iteration...
+    if (iteration >= 0) { // Copied from fortran - but I think this should probably be > rather than >=
+      for (int i = 0 ; i < nparams ; i++) {
+        double sum = 0.;
+        for (int j = 0 ; j < nparams ; j++) {
+          sum += v(j,i) * vold(j,i);
         }
       }
     }
-
     
   } // iterations
+  
+  // replace the location of the minimum by any accidentally discovered improvement...
+  // VALOR - we're not doing this bit yet
+  
+  // calculate the final notion of the hessian and the error matrix...
+  for (int i = 0 ; i < nparams ; i++) {
+    for (int j = 0 ; j < i ; j++) {
+      double sum1 = 0.;
+      double sum2 = 0.;
+      for (int k = 0 ; k < nparams ; k++) {
+         double tmp = t[k]*t[k] / 2.0;
+         sum1 = sum1 + v(i,k)*v(j,k)/tmp;
+         sum2 = sum2 + v(i,k)*v(j,k)*tmp;
+      } //k
+    
+      hessian_matrix(i,j) = sum1;
+      hessian_matrix(j,i) = sum1;
+      
+      error_matrix(i,j) = sum2;
+      error_matrix(j,i) = sum2;
+    } // j
+  } //i
+    
       
   delete eval;
   return hessian_matrix;
