@@ -1444,7 +1444,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       // have been estimated, so see how far that is
       double rmax = 0;
       for (int i = 0 ; i < nparams ; i++) {
-        rmax = std::max(rmax,abs(y[i])/dstep);
+        rmax = std::max(rmax,std::fabs(y[i])/dstep);
       }
       static const double rmaxc = 1.; // threshold for testing by steps
       if (rmax > rmaxc) {
@@ -1679,11 +1679,11 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           tmult = 1./sqrt(tmp);
         }
         else if (igood == 1) {
-          tmult = std::abs(tmvec[0]);
+          tmult = std::fabs(tmvec[0]);
           LOG("UtlNumStat",pINFO) << "Only idir=0 converged, use tmult = "<<tmult;
         }
         else if (igood == 2) {
-          tmult = std::abs(tmvec[1]);
+          tmult = std::fabs(tmvec[1]);
           LOG("UtlNumStat",pINFO) << "Only idir=1 converged, use tmult = "<<tmult;
         }
         else {
