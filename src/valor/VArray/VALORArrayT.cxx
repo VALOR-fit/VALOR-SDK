@@ -437,7 +437,7 @@ template<typename numtype> VALORArrayT<numtype> VALORArrayT<numtype>::
 template<typename numtype> numtype VALORArrayT<numtype>::
   Integral() const
 {
-  if (fNDim) return std::accumulate(fArray,fArray+fSize, 0.);
+  if (fNDim) return std::accumulate(fArray,fArray+fSize, numtype(0));
   return 0;
 }
 //________________________________________________________________________________________
