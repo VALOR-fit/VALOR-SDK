@@ -1227,7 +1227,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
     for (int i = 0 ; i < nparams; i++) {
       double sum = 0;
       for (int j = 0 ; j < nparams ; j++) {
-        double elem = u(j,i);
+        double elem = u(i,j);
         sum += elem*elem;
       }
       t[i] = sqrt(sum);
@@ -1235,7 +1235,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
     // Then v
     for (int i = 0 ; i < nparams; i++) {
       for (int j = 0 ; j < nparams ; j++) {
-        v(i,j) = u(i,j) / t[j];
+        v(j,i) = u(j,i) / t[j];
       }
     }
     // Check v orthogonal
@@ -1245,8 +1245,8 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
         double sum1 = 0;
         double sum2 = 0;
         for (int k = 0 ; k < nparams ; k++) {
-          sum1 += v(k,i) * v(k,j);
-          sum2 += v(i,k) * v(j,k);
+          sum1 += v(i,k) * v(j,k);
+          sum2 += v(k,i) * v(k,j);
         }
         double expected = (i==j);
         double err1 = std::fabs(sum1-expected);
@@ -1269,11 +1269,11 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       double fs1,fs2;
       for (int i = 0 ; i < nparams ; i++) {
         for (int j = 0 ; j < nparams ; j++) {
-          eval[j] = x0[j] + u(j,i) * dstep;
+          eval[j] = x0[j] + u(i,j) * dstep;
         }
         (*fitfunc)(dummy,0,fs1,eval,flag);
         for (int j = 0 ; j < nparams ; j++) {
-          eval[j] = x0[j] - u(j,i) * dstep;
+          eval[j] = x0[j] - u(i,j) * dstep;
         }
         (*fitfunc)(dummy,0,fs2,eval,flag);
         double sag = 0.5 * (fs1+fs2 - 2.*best_chisq);
@@ -1282,7 +1282,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
         
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
-          double elem = u(j,i);
+          double elem = u(i,j);
           sum += elem*elem;
         }
         //~ double step = dstep * sqrt(sum);
@@ -1319,19 +1319,19 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           double cmult = dstep/TMath::Sqrt2();
           // Evaluate at 4 corners of square around minimum
           for (int k = 0 ; k < nparams; k++) {
-            eval[k]= x0[k] + cmult * (u(k,i) + u(k,j));
+            eval[k]= x0[k] + cmult * (u(i,k) + u(j,k));
           }
           (*fitfunc)(dummy,0,fs1,eval,flag);
           for (int k = 0 ; k < nparams; k++) {
-            eval[k]= x0[k] - cmult * (u(k,i) + u(k,j));
+            eval[k]= x0[k] - cmult * (u(i,k) + u(j,k));
           }
           (*fitfunc)(dummy,0,fs2,eval,flag);
           for (int k = 0 ; k < nparams; k++) {
-            eval[k]= x0[k] + cmult * (u(k,i) + u(k,j));
+            eval[k]= x0[k] + cmult * (u(i,k) + u(j,k));
           }
           (*fitfunc)(dummy,0,fs3,eval,flag);
           for (int k = 0 ; k < nparams; k++) {
-            eval[k]= x0[k] - cmult * (u(k,i) - u(k,j));
+            eval[k]= x0[k] - cmult * (u(i,k) - u(j,k));
           }
           (*fitfunc)(dummy,0,fs4,eval,flag);
           
@@ -1355,8 +1355,8 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       for (int i = 0 ; i < nparams ; i++) {
         for (int j = 0 ; j <= i ; j++) {
           int ndex =  ((i+1)*i)/2 + j;
-          q(i,j) = vh[ndex];
           q(j,i) = vh[ndex];
+          q(i,j) = vh[ndex];
         }
       }
       
@@ -1377,7 +1377,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           double sum = 0.;
           for (int m = 0 ; m < nparams ; m++) {
             for (int n = 0 ; n < i ; n++) {
-              sum += q(m,n) * v(i,m) * v(j,n) / (t[m] * t[n]);
+              sum += q(n,m) * v(m,i) * v(n,j) / (t[m] * t[n]);
             }
           }
           P(i,j) = sum;
@@ -1409,21 +1409,21 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       for (int i = 0 ; i < nparams ; i++) {
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
-          sum += v(i,j) * g11[j]/t[j];
+          sum += v(j,i) * g11[j]/t[j];
         }
         s[i] = sum;
       }
       for (int i = 0 ; i < nparams ; i++) {
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
-          sum += P(j,i)*s[j];
+          sum += P(i,j)*s[j];
         }
         t1[i] = -sum/eigenvalues[i];
       }
       for (int i = 0 ; i < nparams ; i++) {
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
-          sum += P(i,j) * t1[j];
+          sum += P(j,i) * t1[j];
         }
         dmove[i] = sum;
       }
@@ -1431,7 +1431,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       for (int i = 0 ; i < nparams ; i++) {
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
-          sum+= v(j,i)*dmove[j];
+          sum+= v(i,j)*dmove[j];
         }
         y[i] = sum/t[i];
       }
@@ -1481,7 +1481,6 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       for (int i = 0 ; i < nparams ; i++) {
         t[i] = sqrt(2. / eigenvalues[i]);
       }
-      
       // Save the old matrix
       vold = v;
       // And get the new one. The fortran here has to reverse the eigenvectors, but ours are already in that order
@@ -1491,19 +1490,19 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       // To make the answer unique, multiply eigenvectors by -1 as
       // necessary to make the largest component of each vector positive
       for (int i = 0 ; i < nparams ; i++) {
-        double tmp = v(0,i);
+        double tmp = v(i,0);
         for (int j = 0 ; j < nparams ; j++) {
-          if (std::fabs(v(j,i)) > std::fabs(tmp)) {tmp = v(j,i);}
+          if (std::fabs(v(i,j)) > std::fabs(tmp)) {tmp = v(i,j);}
         }
         if (tmp < 0) {
           for (int j = 0 ; j < nparams ; j++) {
-            v(j,i) *= -1;
+            v(i,j) *= -1;
           }
         }
       }
       for (int i = 0 ; i < nparams ; i++) {
         for (int j = 0 ; j < nparams ; j++) {
-          u(i,j) = v(i,j) * t[j];
+          u(j,i) = v(j,i) * t[j];
         }
       }
     }// not first iteration
@@ -1517,11 +1516,11 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
         double fs1,fs2;
         for (int isize = 0 ; isize < ncyc ; isize++) {
           for (int j = 0 ; j < nparams ; j++) {
-            eval[j] = x0[j] + u(j,ipar)*sqrt(aimsag);
+            eval[j] = x0[j] + u(ipar,j)*sqrt(aimsag);
           }
           (*fitfunc)(dummy,0,fs1,eval,flag);
           for (int j = 0 ; j < nparams ; j++) {
-            eval[j] = x0[j] - u(j,ipar)*sqrt(aimsag);
+            eval[j] = x0[j] - u(ipar,j)*sqrt(aimsag);
           }
           (*fitfunc)(dummy,0,fs2,eval,flag);
           
@@ -1564,7 +1563,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
             tmpst1 = tmp;
           }
           for (int j = 0 ; j < nparams ; j++) {
-             u(j,ipar) = tmp*u(j,ipar);
+             u(ipar,j) = tmp*u(ipar,j);
           }
         } // isize
       } // iterations < 4
@@ -1594,7 +1593,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           double fs1 = 0;
           for (int itry = 0 ; itry < ntry; itry++) {
             for (int j = 0 ; j < nparams ; j++) {
-              eval[j] = x0[j] + u(j,ipar) * tmult;
+              eval[j] = x0[j] + u(ipar,j) * tmult;
             }
             (*fitfunc)(dummy,0,fs1,eval,flag);
             double del = fs1 - best_chisq;
@@ -1666,7 +1665,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
           if (!converged) {
             tmult = tbest;
             for (int j = 0 ; j < nparams ; j++) {
-                eval[j] = x0[j] + u(j,ipar) * tmult;
+                eval[j] = x0[j] + u(ipar,j) * tmult;
             }
             (*fitfunc)(dummy,0,fs1,eval,flag);
             LOG("UtlNumStat",pERROR) << "Poor convergence - chisquare "<<fs1<<" with presumed minimum at "<<best_chisq;
@@ -1695,7 +1694,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
         
         // update u...
         for (int j = 0 ; j < nparams ; j++) {
-          u(j,ipar) = u(j,ipar)*tmult/sqrt(aimsag);
+          u(ipar,j) = u(ipar,j)*tmult/sqrt(aimsag);
         }
       } // End of alterantive procedure
       
@@ -1706,7 +1705,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       for (int i = 0 ; i < nparams ; i++) {
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
-          sum += v(j,i) * vold(j,i);
+          sum += v(i,j) * vold(i,j);
         }
       }
     }
@@ -1723,8 +1722,8 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       double sum2 = 0.;
       for (int k = 0 ; k < nparams ; k++) {
          double tmp = t[k]*t[k] / 2.;
-         sum1 = sum1 + v(i,k)*v(j,k)/tmp;
-         sum2 = sum2 + v(i,k)*v(j,k)*tmp;
+         sum1 = sum1 + v(k,i)*v(k,j)/tmp;
+         sum2 = sum2 + v(k,i)*v(k,j)*tmp;
       } //k
     
       hessian_matrix(i,j) = sum1;
