@@ -79,6 +79,9 @@ namespace util {
 
   TVectorD ConcatenateTVectors  (const std::vector<const TVectorD *>  & tvecs );
   TMatrixD ConcatenateTMatrices (const std::vector<const TMatrixD *>  & tmats );
+  
+  // Sorts both the vector and matr arguments in according to the vector's values in place
+  void ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, bool descending = false); 
 
   //
   // Functions randomizing oscillation params (for use when params are marginalized)

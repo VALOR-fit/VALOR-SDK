@@ -71,6 +71,8 @@ using std::scientific;
 using std::setprecision;
 using std::ofstream;
 using std::ostringstream;
+using std::vector;
+using std::pair;
 
 using namespace valor;
 using namespace valor::conv;
@@ -1205,9 +1207,9 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   
   // Initial values
   for (int i = 0 ; i < nparams; i++) {
-    u[i][i] = 0.01;
-    q[i][i] = 1;
-    v[i][i] = 1;
+    u(i,i) = 0.01;
+    q(i,i) = 1;
+    v(i,i) = 1;
     t[i] = 1.;
     x0best[i] = point[i];
     xi    [i] = point[i];
@@ -1385,6 +1387,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       
       TVectorD eigenvalues(nparams);
       TMatrixD eigenvectors = P.EigenVectors(eigenvalues);
+      util::ReorderMatrixAndVector(eigenvalues,eigenvectors,true);
       double min_eig = eigenvalues[0];
       double max_eig = eigenvalues[0];
       for (int i = 1 ; i < nparams ; i++) {
@@ -1736,3 +1739,37 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   delete[] eval;
   return hessian_matrix;
 }
+//____________________________________________________________________________
+bool pair_compare_by_first(const pair<double,int> & lhs, const pair<double,int> & rhs)
+  {return lhs.first < rhs.first;}
+//____________________________________________________________________________
+void valor::util::ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, bool descending)
+{
+  if ((sort_by.GetNoElements() != matr.GetNrows()) &&
+      (sort_by.GetNoElements() != matr.GetNcols()) ) {
+    LOG("UtlNumStat",pWARN) << "Non-matching numbers of elements. Doing nothing.";
+    return;
+  }
+  TMatrixD matcopy(matr);
+  
+  vector<pair<double,int> > vec_indices;
+  for (int i = 0 ; i < sort_by.GetNoElements(); i++) {
+    vec_indices.push_back(std::make_pair<double,int>(sort_by[i],i));
+  }
+  if (descending) {
+    std::sort(vec_indices.rbegin(),vec_indices.rend(),pair_compare_by_first);
+  }
+  else {
+    std::sort(vec_indices.begin(),vec_indices.end(),pair_compare_by_first);
+  }
+  for (unsigned int i = 0 ; i < vec_indices.size() ; i++) {
+    int orig_i = vec_indices[i].second;
+    sort_by[i] = vec_indices[i].first;
+    for (unsigned int j = 0 ; j < vec_indices.size() ; j++) {
+      int orig_j = vec_indices[j].second;
+      matr(i,j) = matcopy(orig_i,orig_j);
+    }
+  }
+  return;
+}
+//____________________________________________________________________________
