@@ -1192,7 +1192,6 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
   TMatrixD vold(nparams,nparams); // Last iteration's v
   TMatrixD u   (nparams,nparams); // Should converge to v
   vector<double> t (nparams); // Should converge to 1/sqrt(eigenvalues)
-  vector<double> xi(nparams); // Should converge z, which sum squared to dchisq
   vector<double> y (nparams);
   
   vector<double> t1   (nparams);
@@ -1212,7 +1211,6 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
     v(i,i) = 1;
     t[i] = 1.;
     x0best[i] = point[i];
-    xi    [i] = point[i];
     eval  [i] = point[i];
   }
   
@@ -1370,7 +1368,7 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       
       // Skip offdiag min/max checks here
       
-      TMatrixD P(nparams,nparams);
+      TMatrixD HessX(nparams,nparams); // The first use of P in the Fortran
       // get P = the hessian matrix in x
       for (int i = 0 ; i < nparams ; i++) {
         for (int j = 0 ; j <= i ; j++) {
@@ -1380,13 +1378,14 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
               sum += q(n,m) * v(m,i) * v(n,j) / (t[m] * t[n]);
             }
           }
-          P(i,j) = sum;
-          P(j,i) = sum;
+          HessX(i,j) = sum;
+          HessX(j,i) = sum;
         }
       }
       
       TVectorD eigenvalues(nparams);
-      TMatrixD eigenvectors = P.EigenVectors(eigenvalues);
+      TMatrixD eigenvectors = HessX.EigenVectors(eigenvalues);
+      // Eigenvectors is the second use of P in the fortran
       util::ReorderMatrixAndVector(eigenvalues,eigenvectors,true);
       double min_eig = eigenvalues[0];
       double max_eig = eigenvalues[0];
@@ -1416,14 +1415,14 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
       for (int i = 0 ; i < nparams ; i++) {
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
-          sum += P(i,j)*s[j];
+          sum += eigenvectors(i,j)*s[j];
         }
         t1[i] = -sum/eigenvalues[i];
       }
       for (int i = 0 ; i < nparams ; i++) {
         double sum = 0.;
         for (int j = 0 ; j < nparams ; j++) {
-          sum += P(j,i) * t1[j];
+          sum += eigenvectors(j,i) * t1[j];
         }
         dmove[i] = sum;
       }
@@ -1742,7 +1741,8 @@ TMatrixDSym valor::util::HessianMatrix(MinuitFunction_t fitfunc, const double * 
 bool pair_compare_by_first(const pair<double,int> & lhs, const pair<double,int> & rhs)
   {return lhs.first < rhs.first;}
 //____________________________________________________________________________
-void valor::util::ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, bool descending)
+void valor::util::ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, bool descending,
+ bool reorder_rows, bool reorder_cols)
 {
   if ((sort_by.GetNoElements() != matr.GetNrows()) &&
       (sort_by.GetNoElements() != matr.GetNcols()) ) {
@@ -1766,7 +1766,9 @@ void valor::util::ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, b
     sort_by[i] = vec_indices[i].first;
     for (unsigned int j = 0 ; j < vec_indices.size() ; j++) {
       int orig_j = vec_indices[j].second;
-      matr(i,j) = matcopy(orig_i,orig_j);
+      int ind_i = (reorder_rows ? orig_i : i);
+      int ind_j = (reorder_cols ? orig_j : j);
+      matr(i,j) = matcopy(ind_i,ind_j);
     }
   }
   return;
