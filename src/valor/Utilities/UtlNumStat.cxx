@@ -1754,7 +1754,8 @@ void valor::util::ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, b
   
   vector<pair<double,int> > vec_indices;
   for (int i = 0 ; i < sort_by.GetNoElements(); i++) {
-    vec_indices.push_back(std::make_pair<double,int>(sort_by[i],i));
+    double entry = sort_by[i];
+    vec_indices.push_back(std::make_pair<double,int>(entry,i));
   }
   if (descending) {
     std::sort(vec_indices.rbegin(),vec_indices.rend(),pair_compare_by_first);
