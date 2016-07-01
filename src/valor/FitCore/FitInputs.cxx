@@ -76,22 +76,29 @@ FitParamList & FitInputs::FitParams(void)
 //________________________________________________________________________________________
 double FitInputs::Statistic(Option_t * option) const
 {
-  double statistic = 0;
+  double total_statistic = 0;
+  double data_statistic  = 0;
+  double syst_penalty    = 0;
+  double phys_penalty    = 0;
   if (option || fGoodnessOfFit) {
     const char * s = fGoodnessOfFit ? "%s gof" : "%s";
     TString newopt =  TString::Format(s,option);
-    statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt.Data());
+    data_statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt.Data());
   }
   else {
-    statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL);
+    data_statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL);
   }
-  double syst_penalty = fExp->GetFitStatisticPenalty(option);
-  double phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);
+  total_statistic += data_statistic;
+  TString option_ts(option);
+  if (! option_ts.Contains("nopenalty")) {
+    syst_penalty = fExp->GetFitStatisticPenalty(option);
+    phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);
+    total_statistic += syst_penalty + phys_penalty;
+  }
   
-  double total_stat = statistic + syst_penalty + phys_penalty;
-  LOG("FitInputs",pINFO)<<"Statistic = "<<total_stat<<" (data/MC="<<statistic
+  LOG("FitInputs",pINFO)<<"Statistic = "<<total_statistic<<" (data/MC="<<data_statistic
     <<", syst penalty="<<syst_penalty<<", phys penalty="<<phys_penalty<<")";
-  return total_stat;
+  return total_statistic;
 }
 //____________________________________________________________________________ 
 // MINUIT fit functions 
