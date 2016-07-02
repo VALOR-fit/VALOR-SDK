@@ -312,8 +312,8 @@ string util::AsString (
     bool show_mix12     = (mix12      > rndmz);
     bool show_mix13     = (mix13      > rndmz);
     bool show_mix23     = (mix23      > rndmz);
-    bool show_mix23bar  = (mix23      > rndmz);
-    bool show_mix       = show_mix12 || show_mix13 || show_mix23;
+    bool show_mix23bar  = (mix23bar   > rndmz);
+    bool show_mix       = show_mix12 || show_mix13 || show_mix23 || show_mix23bar;
     bool show_deltacp   = (deltacp    > rndmz);
     bool show_dm12sq    = (dm12sq     > rndmz);
     bool show_dm23sq    = (dm23sq     > rndmz);
