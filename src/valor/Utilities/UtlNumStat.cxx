@@ -975,6 +975,25 @@ TMatrixDSym valor::util::MatrixToSymMatrix(const TMatrixD & m)
   return out;
 }
 //____________________________________________________________________________
+TMatrixDSym valor::util::LowerTriangularMatrixToSymMatrix(const TMatrixD & m)
+{
+  int n = m.GetNrows();
+  TMatrixDSym out (n);
+  if (n!=m.GetNcols()) {
+    LOG("UtlNumStat",pERROR)<<"Matrix is not square.";
+    util::Die(-1);
+    return out;
+  }
+  for (int ii = 0 ; ii < n; ii++) {
+    for (int jj = 0 ; jj <= ii; jj++) {
+      double v1 = m[ii][jj];
+      out[ii][jj] = v1;
+      out[jj][ii] = v1;
+    }
+  }
+  return out;
+}
+//____________________________________________________________________________
 TMatrixD valor::util::MatrixPseudoInverted(const TMatrixD & m)
 {
   TDecompSVD svd(m);
