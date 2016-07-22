@@ -18,8 +18,13 @@
 #ifndef _valor_fitter_utilities_h_
 #define _valor_fitter_utilities_h_
 
+#include <vector>
+#include <TMatrixD.h>
+#include <TMatrixDSym.h>
+
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/PhysParamList.h"
 
 namespace valor {
 namespace util {
@@ -36,6 +41,17 @@ namespace util {
 //   - SteepestDescent
 //
 FitterABC * GetFitter (FitInputs * inputs, Option_t * option);
+
+  // Randomise the parameters in an FPL  using accept/reject with the chi-square probability
+  double RandomiseParametersByAcceptance(FitInputs & fi, const TMatrixD * cholesky_for_throws = 0,
+      int max_attempts = 100000, double scaling_factor = 1.);
+  // WARNING - version with no cholesky matrix given is not properly validated
+  // Also, scales very badly with num of parameters. Unusably slow with high dimensions
+  // Should replace with eg MCMC
+  
+  // Take a vector of parameter sets, and generate a covariance matrix
+  TMatrixDSym CalculateCovariance(std::vector<valor::PhysParamList> param_sets,
+      const CorrelatedSystematics & example_format);
 
 } // util
 } // valor

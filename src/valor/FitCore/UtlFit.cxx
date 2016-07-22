@@ -9,9 +9,21 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <iostream>
+#include <cmath>
 
+#include <TMath.h>
 #include <TString.h>
+#include <TRandom3.h>
+#include <TVectorD.h>
+#include <TPrincipal.h>
 
+#include "valor/Conventions/Constants.h"
+#include "valor/Messenger/Messenger.h"
+#include "valor/Utilities/Rnd.h"
+#include "valor/Utilities/UtlNumStat.h"
+
+#include "valor/FitCore/FitParamList.h"
+#include "valor/FitCore/FitInputs.h"
 #include "valor/FitCore/FitterABC.h"
 //#include "valor/FitCore/FitterGSL.h"
 #include "valor/FitCore/FitterMinuit.h"
@@ -58,5 +70,74 @@ FitterABC * valor::util::GetFitter (FitInputs * inputs, Option_t * option)
   cerr << "Fitter >> No fitter was instantiated. Input fitter option was: " << option << endl; 
   return 0;
 }
-
-
+//______________________________________________________________________________
+double valor::util::RandomiseParametersByAcceptance(FitInputs & fitinputs,
+  const TMatrixD * cholesky_for_throws, int max_attempts, double scaling_factor)
+{
+  TRandom3 & rnd = Rnd::Instance()->RndOther();
+  // For now we don't respect parameters fixed in the fit. Should we?
+  FitParamList & fp = fitinputs.FitParams();
+  double chisqmin = fp.GetBestFitStatistic();
+  int np = fp.Size();
+  
+  for (int i_attempt = 0; i_attempt < max_attempts; i_attempt++) {
+    
+    double acceptance_chisq = -2. * std::log(rnd.Uniform(0,1));
+    double throw_chisq = 0;
+    // Randomise the parameters
+    if (cholesky_for_throws) {
+      TVectorD throwvec(np);
+      for (int ip = 0 ; ip <np; ip++) {
+        double x = rnd.Gaus();
+        throw_chisq += x*x;
+        throwvec[ip] = x;
+      }
+      // Correlate the throws
+      throwvec *= (*cholesky_for_throws);
+      for (int ip = 0 ; ip <np; ip++) {
+        double mean  = fp.BestFitValueByIndex(ip);
+        double val = throwvec[ip] + mean;;
+        val = std::min(val,fp.MaxValueByIndex(ip));
+        val = std::max(val,fp.MinValueByIndex(ip));
+        fp.SetCurrentValueByIndex(ip,val);
+      }
+    }
+    else {
+      for (int ip = 0 ; ip <np; ip++) {
+        double mean  = fp.BestFitValueByIndex(ip);
+        double sigma = fp.MigradErrorByIndex(ip);
+        double x = rnd.Gaus(mean,sigma);
+        double var = (x-mean)/sigma;
+        throw_chisq += var*var;
+      }
+    }
+    
+    double chisq = fitinputs.Statistic();
+    double dchisq = chisq - chisqmin;
+    std::cerr<<dchisq<<"\t"<<throw_chisq<<std::endl;
+    double final_chisq = dchisq-throw_chisq;
+    
+    if (final_chisq < acceptance_chisq - std::log(scaling_factor)) {
+      return final_chisq;
+    }
+  }
+  
+  LOG("UtlNumStat",pERROR)<<"Failed to properly randomise the parameters";
+    
+  return conv::kBadResult;
+}
+//______________________________________________________________________________
+TMatrixDSym valor::util::CalculateCovariance(std::vector<PhysParamList> param_sets,
+  const CorrelatedSystematics & example_format)
+{
+  int nvar = param_sets[0].NParams();
+  std::vector<TVectorD> all_vec;
+  TPrincipal pca(nvar);
+  for (unsigned int i = 0; i < param_sets.size(); i++) {
+    all_vec.push_back(param_sets[i].AsTVector(&example_format));
+    pca.AddRow(all_vec.back().GetMatrixArray());
+  }
+  TMatrixD lower_triangle_cov(*(pca.GetCovarianceMatrix()));
+  return util::LowerTriangularMatrixToSymMatrix(lower_triangle_cov);
+}
+//______________________________________________________________________________
