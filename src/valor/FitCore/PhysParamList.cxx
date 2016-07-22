@@ -12,10 +12,12 @@ ChangeLog:
 #include <cstdlib>
 
 #include "valor/Messenger/Messenger.h"
+#include "valor/FitCore/CorrelatedSystematics.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/Conventions/PhysParamId.h"
 
 #include "valor/Utilities/NameRegistry.h"
+#include "valor/Utilities/UtlSystem.h"
 
 using std::cout;
 using std::cerr;
@@ -153,5 +155,20 @@ void PhysParamList::MergeFrom(const PhysParamList & ppl, Option_t * opt)
     }
     this->SetValue(p,v);
   }
+}
+//________________________________________________________________________________________
+TVectorD PhysParamList::AsTVector(const CorrelatedSystematics * ordering)
+{
+  if (!ordering) {
+    LOG("PhysParamList",pFATAL) << "CorrelatedSystematics is null.";
+    util::Die(-1);
+  }
+  int npar = ordering->Size();
+  TVectorD vec(npar);
+  for (int i = 0 ; i < npar ; i++) {
+    PhysParamId_t p = ordering->WhichParam(i);
+    vec[i] = this->Value(p);
+  }
+  return vec;
 }
 //________________________________________________________________________________________

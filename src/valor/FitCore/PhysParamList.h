@@ -23,6 +23,7 @@
 #include <map>
 
 #include <TNamed.h>
+#include <TVectorD.h>
 
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/FitCore/FitParamList.h"
@@ -32,6 +33,8 @@ using std::string;
 using std::map;
 
 namespace valor {
+  
+class CorrelatedSystematics;
 
 class PhysParamList: public TNamed
 {
@@ -60,6 +63,9 @@ public:
    // Get the contents of another PPL.
    void CopyFrom(const PhysParamList & ppl); // Wipes current contents
    void MergeFrom(const PhysParamList & ppl, Option_t * opt = 0); // Keeps current contents
+   
+   // Copy to other formats
+   TVectorD AsTVector(const CorrelatedSystematics * ordering);
 
 private:
 
