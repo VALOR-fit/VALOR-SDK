@@ -166,6 +166,9 @@ namespace valor {
     valor::PhysParamList AsPhysParamList(Option_t * option = "current") const;
     void FromPhysParamList(valor::PhysParamList pl, Option_t * option, bool skip_osc_params = false); // skip_osc_params is deprecated. Use option "skiposc" instead.
     
+    // copy initial, current or best-fit values to a TVectorD
+    TVectorD AsTVector(Option_t * option = "current") const;
+    
     // Get number of free (not fixed) parameters
     int GetNumberFreeParameters(void) const;
     int GetNumberParameters    (void) const;

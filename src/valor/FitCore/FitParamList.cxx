@@ -17,6 +17,7 @@
 
 #include <TSystem.h>
 
+#include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Conventions/Opt.h"
@@ -483,6 +484,20 @@ PhysParamList FitParamList::AsPhysParamList(Option_t * option) const
     pl.SetValue(p,v);
   }
   return pl;
+}
+//________________________________________________________________________________________
+TVectorD FitParamList::AsTVector(Option_t * option) const
+{
+  TString opt(option);
+  double * values;
+  if      ( opt.Contains("initial")  ) { values = fInitValue    ; }
+  else if ( opt.Contains("current")  ) { values = fCurrValue    ; }
+  else if ( opt.Contains("best-fit") ) { values = fBestFitValue ; }
+  else {
+    LOG("FitParamList",pERROR) << "Option string invalid. Returning empty string";
+    return TVectorD();
+  }
+  return TVectorD(fNParams,values);
 }
 //________________________________________________________________________________________
 void FitParamList::FromPhysParamList(valor::PhysParamList pl, Option_t * option, bool skip_osc_params)
