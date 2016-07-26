@@ -49,6 +49,10 @@ FitterABC * GetFitter (FitInputs * inputs, Option_t * option);
   // Also, scales very badly with num of parameters. Unusably slow with high dimensions
   // Should replace with eg MCMC
   
+  // Tweak the parameters in an FPL  using MCMC with the chi-square probability
+  bool AttemptMCMCStep(FitInputs & fitinputs, double & current_chisq,
+    double step_size_factor, TMatrixD * cholesky_for_throws = NULL, int max_attempts = 1000);
+  
   // Take a vector of parameter sets, and generate a covariance matrix
   TMatrixDSym CalculateCovariance(std::vector<valor::PhysParamList> param_sets,
       const CorrelatedSystematics & example_format);

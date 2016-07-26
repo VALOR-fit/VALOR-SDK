@@ -109,12 +109,12 @@ double valor::util::RandomiseParametersByAcceptance(FitInputs & fitinputs,
         double x = rnd.Gaus(mean,sigma);
         double var = (x-mean)/sigma;
         throw_chisq += var*var;
+        fp.SetCurrentValueByIndex(ip,x);
       }
     }
     
     double chisq = fitinputs.Statistic();
     double dchisq = chisq - chisqmin;
-    std::cerr<<dchisq<<"\t"<<throw_chisq<<std::endl;
     double final_chisq = dchisq-throw_chisq;
     
     if (final_chisq < acceptance_chisq - std::log(scaling_factor)) {
@@ -139,5 +139,65 @@ TMatrixDSym valor::util::CalculateCovariance(std::vector<PhysParamList> param_se
   }
   TMatrixD lower_triangle_cov(*(pca.GetCovarianceMatrix()));
   return util::LowerTriangularMatrixToSymMatrix(lower_triangle_cov);
+}
+//______________________________________________________________________________
+bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
+  double & current_chisq, double step_size_factor, TMatrixD * cholesky_for_throws, int max_attempts)
+{
+  TRandom3 & rnd = Rnd::Instance()->RndOther();
+  const bool respect_fixed = true;
+  FitParamList & fp = fitinputs.FitParams();
+  
+  int np = fp.Size();
+  TVectorD start_values(fp.AsTVector("current"));
+  
+  for (int i_attempt = 0; i_attempt < max_attempts; i_attempt++) {
+    
+    // Randomise the parameters
+    if (cholesky_for_throws) {
+      TVectorD throwvec(np);
+      for (int ip = 0 ; ip <np; ip++) {
+        throwvec[ip] = rnd.Gaus();
+      }
+      // Correlate the throws
+      throwvec *= (*cholesky_for_throws);
+      for (int ip = 0 ; ip <np; ip++) {
+        double current  = start_values[ip];
+        double val = step_size_factor * throwvec[ip] + current;;
+        val = std::min(val,fp.MaxValueByIndex(ip));
+        val = std::max(val,fp.MinValueByIndex(ip));
+        if (!(fp.IsFixedByIndex(ip)) || !respect_fixed) {
+          fp.SetCurrentValueByIndex(ip,val);
+        }
+      }
+    }
+    else {
+      for (int ip = 0 ; ip <np; ip++) {
+        double current  = start_values[ip];
+        double sigma = step_size_factor * fp.MigradErrorByIndex(ip);
+        double x = rnd.Gaus(current,sigma);
+        if (!(fp.IsFixedByIndex(ip)) || !respect_fixed) {
+          fp.SetCurrentValueByIndex(ip,x);
+        }
+      }
+    }
+    
+    double step_chisq = fitinputs.Statistic();
+    double step_prob = std::exp( -(step_chisq-current_chisq)/2. );
+    double acceptance_prob = rnd.Uniform();
+    //~ std::cerr<<step_prob<<"\t"<<acceptance_prob<<std::endl;
+    if (step_prob > acceptance_prob) {
+      current_chisq = step_chisq;
+      //~ std::cerr<<"Made step!"<<std::endl;
+      return true;
+    }
+  }
+  
+  LOG("UtlNumStat",pERROR)<<"Failed to successfully make a step";
+  for (int ip = 0 ; ip < np; ip++) {
+    fp.SetCurrentValueByIndex(ip,start_values[ip]);
+  }
+    
+  return false;
 }
 //______________________________________________________________________________
