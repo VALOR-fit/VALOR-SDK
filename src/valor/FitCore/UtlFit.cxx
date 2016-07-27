@@ -153,8 +153,10 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
   
   for (int i_attempt = 0; i_attempt < max_attempts; i_attempt++) {
     
+    bool bad_throw = false;
+    
     // Randomise the parameters
-    if (cholesky_for_throws) {
+    if (cholesky_for_throws) { // propose based on correlations
       TVectorD throwvec(np);
       for (int ip = 0 ; ip <np; ip++) {
         throwvec[ip] = rnd.Gaus();
@@ -162,31 +164,51 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
       // Correlate the throws
       throwvec *= (*cholesky_for_throws);
       for (int ip = 0 ; ip <np; ip++) {
-        double current  = start_values[ip];
-        double val = step_size_factor * throwvec[ip] + current;;
-        val = std::min(val,fp.MaxValueByIndex(ip));
-        val = std::max(val,fp.MinValueByIndex(ip));
-        if (!(fp.IsFixedByIndex(ip)) || !respect_fixed) {
-          fp.SetCurrentValueByIndex(ip,val);
+        if (fp.IsFixedByIndex(ip) && respect_fixed) {
+          continue;
         }
+        double current  = start_values[ip];
+        double val = step_size_factor * throwvec[ip] + current;
+        
+        // Reject the throw if we go outside the limits
+        if (val > fp.MaxValueByIndex(ip) || val < fp.MinValueByIndex(ip)) {
+          bad_throw = true;
+          //~ cerr<<fp.NameByIndex(ip)<<"\t"<<val<<"\t"<<fp.MinValueByIndex(ip)<<"\t"<<fp.MaxValueByIndex(ip)<<std::endl;
+          break;
+        }
+        fp.SetCurrentValueByIndex(ip,val);
       }
     }
-    else {
+    else { //random walk
       for (int ip = 0 ; ip <np; ip++) {
+        if (fp.IsFixedByIndex(ip) && respect_fixed) {
+          continue;
+        }
         double current  = start_values[ip];
         double sigma = step_size_factor * fp.MigradErrorByIndex(ip);
-        double x = rnd.Gaus(current,sigma);
-        if (!(fp.IsFixedByIndex(ip)) || !respect_fixed) {
-          fp.SetCurrentValueByIndex(ip,x);
+        double val = rnd.Gaus(current,sigma);
+        if (val > fp.MaxValueByIndex(ip) || val < fp.MinValueByIndex(ip)) {
+          bad_throw = true;
+          //~ cerr<<fp.NameByIndex(ip)<<"\t"<<val<<"\t"<<fp.MinValueByIndex(ip)<<"\t"<<fp.MaxValueByIndex(ip)<<std::endl;
+          break;
         }
+        fp.SetCurrentValueByIndex(ip,val);
       }
     }
     
+    // If our throw was bad, don't evaluate the likelihood, and thus don't count as an attempt
+    if (bad_throw) {
+      i_attempt--;
+      continue;
+    }
+    
     double step_chisq = fitinputs.Statistic();
+    // We're using a symmetric proposal function
+    // So q(x_i|x_i-1) / q(x_i-1 | x_i) = 1 and not included here
     double step_prob = std::exp( -(step_chisq-current_chisq)/2. );
-    double acceptance_prob = rnd.Uniform();
-    //~ std::cerr<<step_prob<<"\t"<<acceptance_prob<<std::endl;
-    if (step_prob > acceptance_prob) {
+    double rand_prob = rnd.Uniform();
+    //~ std::cerr<<step_prob<<"\t"<<rand_prob<<std::endl;
+    if (step_prob > rand_prob) {
       current_chisq = step_chisq;
       //~ std::cerr<<"Made step!"<<std::endl;
       return true;
