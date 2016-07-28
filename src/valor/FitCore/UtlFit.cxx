@@ -142,13 +142,14 @@ TMatrixDSym valor::util::CalculateCovariance(std::vector<PhysParamList> param_se
 }
 //______________________________________________________________________________
 bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
-  double & current_chisq, double step_size_factor, TMatrixD * cholesky_for_throws, int max_attempts)
+  double & current_chisq, int & n_attempts_output, double step_size_factor, TMatrixD * cholesky_for_throws, int max_attempts)
 {
   TRandom3 & rnd = Rnd::Instance()->RndOther();
   const bool respect_fixed = true;
   FitParamList & fp = fitinputs.FitParams();
   
-  int np = fp.Size();
+  int npar = fp.Size();
+  //~ int nparfree = fp.GetNumberFreeParameters();
   TVectorD start_values(fp.AsTVector("current"));
   
   for (int i_attempt = 0; i_attempt < max_attempts; i_attempt++) {
@@ -157,18 +158,21 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
     
     // Randomise the parameters
     if (cholesky_for_throws) { // propose based on correlations
-      TVectorD throwvec(np);
-      for (int ip = 0 ; ip <np; ip++) {
+      TVectorD throwvec(npar);
+      for (int ip = 0 ; ip <npar; ip++) {
         throwvec[ip] = rnd.Gaus();
       }
       // Correlate the throws
-      throwvec *= (*cholesky_for_throws);
-      for (int ip = 0 ; ip <np; ip++) {
+      TVectorD correlated_throws(throwvec);
+      correlated_throws *= (*cholesky_for_throws);
+      for (int ip = 0 ; ip <npar; ip++) {
         if (fp.IsFixedByIndex(ip) && respect_fixed) {
           continue;
         }
         double current  = start_values[ip];
-        double val = step_size_factor * throwvec[ip] + current;
+        double corr_step = step_size_factor * correlated_throws[ip];
+        //~ double unco_step = step_size_factor * throwvec[ip];
+        double val = corr_step + current;
         
         // Reject the throw if we go outside the limits
         if (val > fp.MaxValueByIndex(ip) || val < fp.MinValueByIndex(ip)) {
@@ -179,8 +183,8 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
         fp.SetCurrentValueByIndex(ip,val);
       }
     }
-    else { //random walk
-      for (int ip = 0 ; ip <np; ip++) {
+    else { // random walk based on MIGRAD error
+      for (int ip = 0 ; ip < npar; ip++) {
         if (fp.IsFixedByIndex(ip) && respect_fixed) {
           continue;
         }
@@ -203,23 +207,23 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
     }
     
     double step_chisq = fitinputs.Statistic();
-    // We're using a symmetric proposal function
-    // So q(x_i|x_i-1) / q(x_i-1 | x_i) = 1 and not included here
+    // The acceptance probability is: A = (P(curr) * q(curr) / (P(step) * q(step))
+    // We're using a symmetric proposal so q(curr)==q(step)
     double step_prob = std::exp( -(step_chisq-current_chisq)/2. );
     double rand_prob = rnd.Uniform();
-    //~ std::cerr<<step_prob<<"\t"<<rand_prob<<std::endl;
     if (step_prob > rand_prob) {
       current_chisq = step_chisq;
       //~ std::cerr<<"Made step!"<<std::endl;
+      n_attempts_output = i_attempt+1;
       return true;
     }
   }
   
   LOG("UtlNumStat",pERROR)<<"Failed to successfully make a step";
-  for (int ip = 0 ; ip < np; ip++) {
+  for (int ip = 0 ; ip < npar; ip++) {
     fp.SetCurrentValueByIndex(ip,start_values[ip]);
   }
-    
+  n_attempts_output = max_attempts;
   return false;
 }
 //______________________________________________________________________________
