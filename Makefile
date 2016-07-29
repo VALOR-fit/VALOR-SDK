@@ -26,6 +26,7 @@ BUILD_TARGETS =    print-make-info     \
 		   build-registry      \
 		   build-cmdline       \
 		   build-core-fitter   \
+                   build-marginalisation \
 		   copy-rootdict-to-lib
 
 # define targets
@@ -92,6 +93,11 @@ build-core-fitter: make-bin-lib-dir FORCE
 	@echo "** Building FitCore package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/FitCore"
 
+build-marginalisation: make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building Marginalisation package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Marginalisation"
+
 copy-rootdict-to-lib: make-bin-lib-dir FORCE
 	@echo " "
 	@echo -n "** Copying ROOT dictionary PCM files to ${VALOR_FMWK}/lib ..."
@@ -131,6 +137,7 @@ purge: FORCE
 	cd Registry;                  make purge; cd ..; \
 	cd CmdLine;                   make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
+        cd Marginalisation;           make purge; cd ..; \
 	cd ${VALOR_FMWK}
 
 clean: clean-files clean-dir clean-etc
@@ -149,6 +156,7 @@ clean-files: FORCE
 	cd Registry;                make clean; cd ..; \
 	cd CmdLine;                 make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
+        cd Marginalisation;         make clean; cd ..; \
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm -f ./bin/*;\
         [ ! -d ./lib ] || rm -f ./lib/*_rdict.pcm;\
