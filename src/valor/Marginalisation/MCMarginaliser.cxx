@@ -45,7 +45,20 @@ void MCMarginaliser::RandomizeNuisance()
 {
    Rnd::Instance()->SetSeeds(*fArg);
 
-   // Do randomisation here   
+   FitModelABC& model = fFitInputs->Expectation();
+   FitParamList& fp = fFitInputs->FitParams();
+   TString options(fArg->GetString("param-values-option"));
+
+   // Loop until all parameters are within physical limits
+   // Currently the loop is short-circuited to assume all is well
+   do
+   {
+      model.ResetSystematics("all");
+      model.RandomizeSystematics(options.Data());
+      PhysParamList tweaks = model.Tweaks();
+      fp.FromPhysParamList(tweaks, "current");
+   }
+   while(false);
 }
 
 }
