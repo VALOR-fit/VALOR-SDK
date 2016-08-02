@@ -1,8 +1,10 @@
 #ifndef MCMARGINALISER_H
 #define MCMARGINALISER_H
 
+#include "valor/Conventions/PhysParamId.h"
 #include "valor/Marginalisation/MarginaliserABC.h"
 #include "valor/FitCore/FitInputs.h"
+#include "valor/VArray/VALORArrayD.h"
 
 namespace valor
 {
@@ -12,7 +14,8 @@ namespace marginalisation
    {
    public:
       MCMarginaliser(FitInputs* fitInputs);
-      virtual ~MCMarginaliser() {};
+      MCMarginaliser(const MCMarginaliser& original);
+      virtual ~MCMarginaliser();
 
       /**
          Marginalises over nuisance parameters.
@@ -31,11 +34,17 @@ namespace marginalisation
 
    private:
       void RandomizeNuisance();
+      double Marginalise1D();
+      double Marginalise2D();
+      conv::PhysParamId_t GetPhysParamId(const std::string& name);
 
    private:
-      bool fFirstRun;
       int fNumToys;
+      int fNumDimensions;
+      conv::PhysParamId_t fParam0;
+      conv::PhysParamId_t fParam1;
       FitInputs* fFitInputs;
+      VALORArrayD* fLikelihood;
    };
 }
 }
