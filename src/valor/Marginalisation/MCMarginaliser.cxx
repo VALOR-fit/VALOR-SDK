@@ -5,6 +5,7 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Utilities/NameRegistry.h"
 
 namespace valor
 {
@@ -35,6 +36,7 @@ MCMarginaliser::~MCMarginaliser()
 
 double MCMarginaliser::Marginalise()
 {
+   LOG("MCMarginalisser", pNOTICE) << "Performing " << fNumDimensions << "D fit.";
    if(fNumDimensions == 1)
    {
       return Marginalise1D();
@@ -47,16 +49,31 @@ double MCMarginaliser::Marginalise()
 
 double MCMarginaliser::Marginalise1D()
 {
+//   LOG("MCMarginaliser", pNOTICE) << "Pre observation";
    FitDataABC& data = fFitInputs->Observation();
+//   LOG("MCMarginaliser", pNOTICE) << "Post observation";
    FitModelABC& model = fFitInputs->Expectation();
+//   LOG("MCMarginaliser", pNOTICE) << "Post expectation";
    FitParamList& fp = fFitInputs->FitParams();
-   //data.Generate(&model, fp); 
+//   LOG("MCMarginaliser", pNOTICE) << "Post fit params";
+//   data.Generate(&model, fp); 
+//   LOG("MCMarginaliser", pNOTICE) << "Post generate";
 
    double minValue = fp.MinValue(fParam0);
    double maxValue = fp.MaxValue(fParam0);
    // Quick hack for testing purposes
    double stepSize = (maxValue - minValue) / 4.0;
    // double step_size = fitInputs->FitParams().StepSize(fParam0);
+   LOG("MCMarginaliser", pNOTICE) << "Param " <<
+      util::NameRegistry::Instance()->AsString(fParam0) <<
+      " has range [" << minValue  << "," << maxValue << "] with step " <<
+      stepSize;
+
+   for(int i = 0; i < fp.Size(); ++i)
+   {
+      conv::PhysParamId_t p = fp.WhichParam(i);
+      fp.SetNuisance(p, (p == fParam0) ? false : true);
+   }
 
    int numBins = 1 + static_cast<int>((maxValue - minValue) / stepSize);
    fLikelihood = new VALORArray(numBins);
@@ -70,8 +87,9 @@ double MCMarginaliser::Marginalise1D()
       double totalLikelihood = 0.0;
       for(int n = 0; n < fNumToys; ++n)
       {
+         LOG("MCMarginaliser", pNOTICE) << "Fitting toy " << n;
          double chi2 = data.GetFitStatistic(&model, fp, NULL);
-         LOG("valor_dune", pNOTICE) << "Chi2 (" << n << ": " << value <<
+         LOG("MCMarginaliser", pNOTICE) << "Chi2 (" << n << ": " << value <<
             ") = " << chi2;
          totalLikelihood += exp(-chi2 / 2);
       }
@@ -95,6 +113,12 @@ double MCMarginaliser::Marginalise2D()
    double maxValue1 = fp.MaxValueByIndex(fParam1);
    double stepSize1 = fp.StepSizeByIndex(fParam1);
 
+   for(int i = 0; i < fp.Size(); ++i)
+   {
+      conv::PhysParamId_t p = fp.WhichParam(i);
+      fp.SetNuisance(p, (p == fParam0 || p == fParam1) ? false : true);
+   }
+
    for(double value0 = minValue0; value0 <= maxValue0; value0 += stepSize0)
    {
       fp.SetCurrentValue(fParam0, value0);
@@ -109,7 +133,7 @@ double MCMarginaliser::Marginalise2D()
             totLikelihood += exp(-data.GetFitStatistic(&model, fp, NULL) / 2);
          }
          double likelihood = totLikelihood / fNumToys;
-         LOG("valor_dune", pNOTICE) << "Likelihood (" << value0 << "," <<
+         LOG("MCMarginaliser", pNOTICE) << "Likelihood (" << value0 << "," <<
             value1 << ") = " << likelihood;
       }
    }
@@ -123,7 +147,7 @@ void MCMarginaliser::Configure(const CmdLnArgList& arg)
    fNumToys = arg.GetInt("num-marginalisation-toys");
    if(fNumToys <= 0)
    {
-      LOG("valor_dune", pERROR) <<
+      LOG("MCMarginaliser", pERROR) <<
          "Number of marginalisation toys must be positive";   
    }
 
@@ -212,7 +236,7 @@ conv::PhysParamId_t MCMarginaliser::GetPhysParamId(const std::string& name)
    }
    else
    {
-      LOG("valor_dune", pNOTICE) << "Parameter \'" << name <<
+      LOG("MCMarginaliser", pERROR) << "Parameter \'" << name <<
          "\' does not exist";
       valor::util::Die(-1);
    }
