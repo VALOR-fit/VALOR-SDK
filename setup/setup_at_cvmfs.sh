@@ -10,17 +10,19 @@
 
 # Setup LArSoft. This gives us g++4.9, ROOT and GENIE
 # The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
-. /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
-setup "larsoft" "v05_10_00" -q "e9:prof" && retval="$?"
+if [ -z "$SETUP_LARSOFT" ] ; then
+  . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
+  setup "larsoft" "v05_10_00" -q "e9:prof" && retval="$?"
+fi
 
 if [ -z "$VALOR_FMWK" ]; then
-    source="$( readlink -m "${BASH_SOURCE[0]}" )"
-      export VALOR_FMWK="$( dirname "$( dirname "${source}" )" )/" # Directory above the one containing this file
+  source="$( readlink -e "${BASH_SOURCE[0]}" )"
+  export VALOR_FMWK="$( dirname "$( dirname "${source}" )" )/" # Directory above the one containing this file
 fi
 
 
 export LD_LIBRARY_PATH="${VALOR_FMWK}/lib:${LD_LIBRARY_PATH}"
-export PATH=${VALOR_FMWK}/bin:${ROOTSYS}/bin:${PATH}
+export PATH="${VALOR_FMWK}/bin:${PATH}"
 
 # To resolve bugs with Python - investigate why this helps
 unset PYTHONHOME
