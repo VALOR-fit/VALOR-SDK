@@ -20,10 +20,6 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
 #include "valor/Utilities/UtlSystem.h"
 
-using std::cout;
-using std::cerr;
-using std::endl;
-
 using namespace valor;
 using namespace valor::conv;
 
@@ -68,16 +64,14 @@ void NuOsc3Flavour::SetDensity(double density)
 //________________________________________________________________________________________
 void NuOsc3Flavour::SetMassHierarchy(NuMassHierarchy_t h)
 {
-  //LOG("NuOsc3Flavour",pINFO) << "Mass hierarchy selected: " << util::AsString(h);
+   if(h==kNmhUndefined)
+   {
+      LOG("NuOsc3Flavour", pERROR) << "The Mass Hierarchy is not defined";
+      util::Die(-1);
+      return;
+   }
 
-  if(h==kNmhUndefined){
-    cerr << "NuOsc3Flavour::SetMassHierarchy" << endl;
-    cerr << "The Mass Hierarchy is not defined" << endl;
-    util::Die(-1);
-    return;
-  }
-
-  fMassHierarchy = h;
+   fMassHierarchy = h;
 }
 //________________________________________________________________________________________
 void NuOsc3Flavour::SetOscParameters(
@@ -85,56 +79,77 @@ void NuOsc3Flavour::SetOscParameters(
   double dmsq12_in, double dmsq23_in, 
   double deltaCP)
 {
-  dmsq12 = dmsq12_in;
-  dmsq23 = dmsq23_in;
+   dmsq12 = dmsq12_in;
+   dmsq23 = dmsq23_in;
 
-  if(dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-6 eV^2/c^4"<<endl;
-  if(dmsq12 > 5.0e-3)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsq23 < 2.0e-4)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq23 > 4.0e-2)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-6 eV^2/c^4";
+   }
+   if(dmsq12 > 5.0e-3)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-3 eV^2/c^4";
+   }
+   if(dmsq23 < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm32sq| is" <<
+         " restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4," <<
+         " changing it to 2.0E-4 eV^2/c^4";
+   }
+   if(dmsq23 > 4.0e-2)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm32sq| is" <<
+         " restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 4.0E-2 eV^2/c^4";
+   }
 
-  dmsq12 = TMath::Min(dmsq12, 5.0e-3);
-  dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsq23 = TMath::Min(dmsq23, 4.0e-2);
-  dmsq23 = TMath::Max(dmsq23, 2.0e-4);
+   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
+   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
+   dmsq23 = TMath::Min(dmsq23, 4.0e-2);
+   dmsq23 = TMath::Max(dmsq23, 2.0e-4);
 
-  // Note: The input value of dmsq23 is the absolute one. The sign of dmsq23 depends on 
-  // the mass hierarchy. In the normal mass hierarchy, dmsq23 is positive. In the inverted
-  // mass hierarchy, dmsq23 is NEGATIVE. Set the appropriate sign.
-  if(fMassHierarchy == kNmhInverted) {
-   dmsq23 = -dmsq23;
-  }
+   // Note: The input value of dmsq23 is the absolute one.
+   // The sign of dmsq23 depends on 
+   // the mass hierarchy. In the normal mass hierarchy, dmsq23 is positive.
+   // In the inverted mass hierarchy, dmsq23 is NEGATIVE.
+   // Set the appropriate sign.
+   if(fMassHierarchy == kNmhInverted)
+   {
+      dmsq23 = -dmsq23;
+   }
 
-  // The input values of dmsq23 and dmsq12  uniquely define the value of dmsq13
-  dmsq13 = dmsq12 + dmsq23;
+   // The input values of dmsq23 and dmsq12  uniquely define the value of dmsq13
+   dmsq13 = dmsq12 + dmsq23;
 
-  //  cout << "  dmsq12=" << dmsq12 << "  dmsq23=" << dmsq23 << " and dmsq13=" << dmsq13 << endl;
-
-  // Code returns NaN if sin^2(mixing angle) is unphysical.
-  // Don't let sin^2(mixing angle) be below 0 or above 1.
-  sinsq2theta12 = TMath::Min(1.,sinsq2theta12);
-  sinsq2theta12 = TMath::Max(0.,sinsq2theta12);
-  sinsq2theta13 = TMath::Min(1.,sinsq2theta13);
-  sinsq2theta13 = TMath::Max(0.,sinsq2theta13);
-  sinsq2theta23 = TMath::Min(1.,sinsq2theta23);
-  sinsq2theta23 = TMath::Max(0.,sinsq2theta23);
+   // Code returns NaN if sin^2(mixing angle) is unphysical.
+   // Don't let sin^2(mixing angle) be below 0 or above 1.
+   sinsq2theta12 = TMath::Min(1.,sinsq2theta12);
+   sinsq2theta12 = TMath::Max(0.,sinsq2theta12);
+   sinsq2theta13 = TMath::Min(1.,sinsq2theta13);
+   sinsq2theta13 = TMath::Max(0.,sinsq2theta13);
+   sinsq2theta23 = TMath::Min(1.,sinsq2theta23);
+   sinsq2theta23 = TMath::Max(0.,sinsq2theta23);
  
-  // Calculate sin(mixingAngle) from sin^2(2*mixingAngle) 
-  double s12 = sqrt(0.5 * (1 - sqrt(1 - sinsq2theta12)));
-  double s13 = sqrt(0.5 * (1 - sqrt(1 - sinsq2theta13)));
-  double s23 = 0;
-  if(Opt::Instance()->gOscOctantChoice == conv::kNuOctantOne)
-    s23 = sqrt(0.5 * (1 - sqrt(1 - sinsq2theta23)));
-  else if(Opt::Instance()->gOscOctantChoice == conv::kNuOctantTwo)
-    s23 = sqrt(1 - (0.5 * (1 - sqrt(1 - sinsq2theta23))));
-  // Calculate cos(mixingAngle) from sin(mixingAngle)     
-  double c12 = sqrt(1 - s12 * s12);
-  double c13 = sqrt(1 - s13 * s13);
-  double c23 = sqrt(1 - s23 * s23);
+   // Calculate sin(mixingAngle) from sin^2(2*mixingAngle) 
+   double s12 = sqrt(0.5 * (1 - sqrt(1 - sinsq2theta12)));
+   double s13 = sqrt(0.5 * (1 - sqrt(1 - sinsq2theta13)));
+   double s23 = 0;
+   if(Opt::Instance()->gOscOctantChoice == conv::kNuOctantOne)
+   {
+      s23 = sqrt(0.5 * (1 - sqrt(1 - sinsq2theta23)));
+   }
+   else if(Opt::Instance()->gOscOctantChoice == conv::kNuOctantTwo)
+   {
+      s23 = sqrt(1 - (0.5 * (1 - sqrt(1 - sinsq2theta23))));
+   }
+   // Calculate cos(mixingAngle) from sin(mixingAngle)     
+   double c12 = sqrt(1 - s12 * s12);
+   double c13 = sqrt(1 - s13 * s13);
+   double c23 = sqrt(1 - s23 * s23);
 
   /*
   modUe1sq = c12*c12*c13*c13;
@@ -182,25 +197,42 @@ void NuOsc3Flavour::SetOscParameters(
   UMassUdaggerVacuum[2][2][im] = 0.0;
   */
 
-  CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
+   CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
 
-  useEquations12 = true;
-  if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) || fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) && sinsq2theta13 > 1.0e-8)
-    useEquations12 = false;
+   useEquations12 = true;
+   if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) ||
+            fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) &&
+         sinsq2theta13 > 1.0e-8)
+   {
+      useEquations12 = false;
+   }
 
-  //if 2 mixing angles are very small, treat it as a 2-flavour calculation 
-  if(sinsq2theta13 < 1.0e-5 && sinsq2theta23 < 1.0e-5 && sinsq2theta12 >= 1.0e-6)
-    nFlavourIndex = 12;
-  else if(sinsq2theta12 < 1.0e-4 && sinsq2theta23 < 1.0e-6 && sinsq2theta13 >= 1.0e-6)
-    nFlavourIndex = 13;
-  else if(sinsq2theta12 < 1.0e-4 && sinsq2theta13 < 1.0e-4 && sinsq2theta23 >= 1.0e-6)
-    nFlavourIndex = 23;
-  else
-    nFlavourIndex = -1;
-  //if all 3 mixing angles are very small, take it that there are no oscillations
-  if(sinsq2theta12 < 1.0e-6 && sinsq2theta13 < 1.0e-6 && sinsq2theta23 < 1.0e-6)
-    nFlavourIndex = 0;
-
+   //if 2 mixing angles are very small, treat it as a 2-flavour calculation 
+   if(sinsq2theta13 < 1.0e-5 && sinsq2theta23 < 1.0e-5 &&
+         sinsq2theta12 >= 1.0e-6)
+   {
+      nFlavourIndex = 12;
+   }
+   else if(sinsq2theta12 < 1.0e-4 && sinsq2theta23 < 1.0e-6 &&
+         sinsq2theta13 >= 1.0e-6)
+   {
+      nFlavourIndex = 13;
+   }
+   else if(sinsq2theta12 < 1.0e-4 && sinsq2theta13 < 1.0e-4 &&
+         sinsq2theta23 >= 1.0e-6)
+   {
+      nFlavourIndex = 23;
+   }
+   else
+   {
+      nFlavourIndex = -1;
+   }
+   //if all 3 mixing angles are very small, take it that there are no oscillations
+   if(sinsq2theta12 < 1.0e-6 && sinsq2theta13 < 1.0e-6 &&
+         sinsq2theta23 < 1.0e-6)
+   {
+      nFlavourIndex = 0;
+   }
 }
 
 //________________________________________________________________________________________   
@@ -212,50 +244,69 @@ void NuOsc3Flavour::SetOscParametersSinSqTAll(
   dmsq12 = dmsq12_in;
   dmsq23 = dmsq23_in;
 
-  if(dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-6 eV^2/c^4"<<endl;
-  if(dmsq12 > 5.0e-3)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsq23 < 2.0e-4)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq23 > 4.0e-2)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-6 eV^2/c^4";
+   }
+   if(dmsq12 > 5.0e-3)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-3 eV^2/c^4";
+   }
+   if(dmsq23 < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm32sq| is" <<
+         " restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 2.0E-4 eV^2/c^4";
+   }
+   if(dmsq23 > 4.0e-2)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm32sq| is" <<
+         " restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 4.0E-2 eV^2/c^4";
+   }
 
-  dmsq12 = TMath::Min(dmsq12, 5.0e-3);
-  dmsq12 = TMath::Max(dmsq12, 5.0e-6);
-  dmsq23 = TMath::Min(dmsq23, 4.0e-2);
-  dmsq23 = TMath::Max(dmsq23, 2.0e-4);
+   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
+   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
+   dmsq23 = TMath::Min(dmsq23, 4.0e-2);
+   dmsq23 = TMath::Max(dmsq23, 2.0e-4);
 
-  // Note: The input value of dmsq23 is the absolute one. The sign of dmsq23 depends on  
-  // the mass hierarchy. In the normal mass hierarchy, dmsq23 is positive. In the inverted 
-  // mass hierarchy, dmsq23 is NEGATIVE. Set the appropriate sign.  
-  if(fMassHierarchy == kNmhInverted) {
-    dmsq23 = -dmsq23;
-  }
+   // Note: The input value of dmsq23 is the absolute one.
+   // The sign of dmsq23 depends on the mass hierarchy.
+   // In the normal mass hierarchy, dmsq23 is positive. In the inverted 
+   // mass hierarchy, dmsq23 is NEGATIVE. Set the appropriate sign.  
+   if(fMassHierarchy == kNmhInverted)
+   {
+      dmsq23 = -dmsq23;
+   }
 
-  // The input values of dmsq23 and dmsq12  uniquely define the value of dmsq13 
-  dmsq13 = dmsq12 + dmsq23;
+   // The input values of dmsq23 and dmsq12 uniquely define dmsq13 
+   dmsq13 = dmsq12 + dmsq23;
 
-  // Code returns NaN if sin^2(mixing angle) is unphysical. 
-  // Don't let sin^2(mixing angle) be below 0 or above 1. 
-  // Oscillation probability can be nan if sinsqtheta13 = 1.0 exactly
-  // This is because UMassUdaggerMinusEv has one row of all zeroes for both real and imaginary parts
-  // To avoid this, restrict sinsq of all mixing angles to be < 0.99999
-  sinsqtheta12 = TMath::Min(0.99999,sinsqtheta12);
-  sinsqtheta12 = TMath::Max(0.,sinsqtheta12);
-  sinsqtheta13 = TMath::Min(0.99999,sinsqtheta13);
-  sinsqtheta13 = TMath::Max(0.,sinsqtheta13);
-  sinsqtheta23 = TMath::Min(0.99999,sinsqtheta23);
-  sinsqtheta23 = TMath::Max(0.,sinsqtheta23);
+   // Code returns NaN if sin^2(mixing angle) is unphysical. 
+   // Don't let sin^2(mixing angle) be below 0 or above 1. 
+   // Oscillation probability can be nan if sinsqtheta13 = 1.0 exactly
+   // This is because UMassUdaggerMinusEv has one row of all zeroes for
+   // both real and imaginary parts
+   // To avoid this, restrict sinsq of all mixing angles to be < 0.99999
+   sinsqtheta12 = TMath::Min(0.99999,sinsqtheta12);
+   sinsqtheta12 = TMath::Max(0.,sinsqtheta12);
+   sinsqtheta13 = TMath::Min(0.99999,sinsqtheta13);
+   sinsqtheta13 = TMath::Max(0.,sinsqtheta13);
+   sinsqtheta23 = TMath::Min(0.99999,sinsqtheta23);
+   sinsqtheta23 = TMath::Max(0.,sinsqtheta23);
 
-  // Calculate sin(mixingAngle) from sin^2(mixingAngle) 
-  double s12 = sqrt(sinsqtheta12);
-  double s13 = sqrt(sinsqtheta13);
-  double s23 = sqrt(sinsqtheta23);
-  // Calculate cos(mixingAngle) from sin(mixingAngle) 
-  double c12 = sqrt(1 - s12 * s12);
-  double c13 = sqrt(1 - s13 * s13);
-  double c23 = sqrt(1 - s23 * s23);
+   // Calculate sin(mixingAngle) from sin^2(mixingAngle) 
+   double s12 = sqrt(sinsqtheta12);
+   double s13 = sqrt(sinsqtheta13);
+   double s23 = sqrt(sinsqtheta23);
+   // Calculate cos(mixingAngle) from sin(mixingAngle) 
+   double c12 = sqrt(1 - s12 * s12);
+   double c13 = sqrt(1 - s13 * s13);
+   double c23 = sqrt(1 - s23 * s23);
 
   /*
   modUe1sq = c12*c12*c13*c13;
@@ -303,25 +354,43 @@ void NuOsc3Flavour::SetOscParametersSinSqTAll(
   UMassUdaggerVacuum[2][2][im] = 0.0;
   */
 
-  CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
+   CalcPMNSElements(s12, c12, s13, c13, s23, c23, dmsq12, dmsq13, deltaCP);
 
-  useEquations12 = true;
-  if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) || fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) && sinsqtheta13 > 3.0e-9)
-    useEquations12 = false;
+   useEquations12 = true;
+   if(((fabs(deltaCP) > 3.10 && fabs(deltaCP) < 3.18) ||
+            fabs(deltaCP) < 0.01 || fabs(fabs(deltaCP) - 6.2832) < 0.01) &&
+         sinsqtheta13 > 3.0e-9)
+   {
+      useEquations12 = false;
+   }
 
-  //if 2 mixing angles are very small, treat it as a 2-flavour calculation 
-  if(sinsqtheta13 < 3.0e-6 && sinsqtheta23 < 3.0e-6 && sinsqtheta12 >= 3.0e-7)
-    nFlavourIndex = 12;
-  else if(sinsqtheta12 < 3.0e-5 && sinsqtheta23 < 3.0e-7 && sinsqtheta13 >= 3.0e-7)
-    nFlavourIndex = 13;
-  else if(sinsqtheta12 < 3.0e-5 && sinsqtheta13 < 3.0e-5 && sinsqtheta23 >= 3.0e-7)
-    nFlavourIndex = 23;
-  else
-    nFlavourIndex = -1;
-  //if all 3 mixing angles are very small, take it that there are no oscillations 
-  if(sinsqtheta12 < 3.0e-7 && sinsqtheta13 < 3.0e-7 && sinsqtheta23 < 3.0e-7)
-    nFlavourIndex = 0;
-
+   //if 2 mixing angles are very small, treat it as a 2-flavour calculation 
+   if(sinsqtheta13 < 3.0e-6 && sinsqtheta23 < 3.0e-6 &&
+         sinsqtheta12 >= 3.0e-7)
+   {
+      nFlavourIndex = 12;
+   }
+   else if(sinsqtheta12 < 3.0e-5 && sinsqtheta23 < 3.0e-7 &&
+         sinsqtheta13 >= 3.0e-7)
+   {
+      nFlavourIndex = 13;
+   }
+   else if(sinsqtheta12 < 3.0e-5 && sinsqtheta13 < 3.0e-5 &&
+         sinsqtheta23 >= 3.0e-7)
+   {
+      nFlavourIndex = 23;
+   }
+   else
+   {
+      nFlavourIndex = -1;
+   }
+   //if all 3 mixing angles are very small, take it that there are no
+   //oscillations 
+   if(sinsqtheta12 < 3.0e-7 && sinsqtheta13 < 3.0e-7 &&
+         sinsqtheta23 < 3.0e-7)
+   {
+      nFlavourIndex = 0;
+   }
 }
 //________________________________________________________________________________________  
 void NuOsc3Flavour::SetOscParametersSinSqTAllSinDeltaCP(
@@ -332,14 +401,30 @@ void NuOsc3Flavour::SetOscParametersSinSqTAllSinDeltaCP(
   dmsq12 = dmsq12_in;
   dmsq23 = dmsq23_in;
 
-  if(dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-6 eV^2/c^4"<<endl;
-  if(dmsq12 > 5.0e-3)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsq23 < 2.0e-4)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq23 > 4.0e-2)
-    cerr<<"The input value of |dm32sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-6 eV^2/c^4";
+   }
+   if(dmsq12 > 5.0e-3)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-3 eV^2/c^4";
+   }
+   if(dmsq23 < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm32sq| is" <<
+         " restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 2.0E-4 eV^2/c^4";
+   }
+   if(dmsq23 > 4.0e-2)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm32sq| is" <<
+         " restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 4.0E-2 eV^2/c^4";
+   }
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
@@ -471,14 +556,30 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
   dmsq12 = dmsq12_in;
   dmsqAtm = dmsqAtm_in;
 
-  if(dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-6 eV^2/c^4"<<endl;
-  if(dmsq12 > 5.0e-3)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsqAtm < 2.0e-4)
-    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsqAtm > 4.0e-2)
-    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq" <<
+         " is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-6 eV^2/c^4";
+   }
+   if(dmsq12 > 5.0e-3)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq" <<
+         " is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-3 eV^2/c^4";
+   }
+   if(dmsqAtm < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of the Fogli-Lisi" <<
+         " |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4," <<
+         " changing it to 2.0E-4 eV^2/c^4";
+   }
+   if(dmsqAtm > 4.0e-2)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of the Fogli-Lisi" <<
+         " |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 4.0E-2 eV^2/c^4";
+   }
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
@@ -592,14 +693,30 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmAtmSol(
   dmsq12 = dmsq12_in;
   dmsqAtm = dmsqAtm_in;
 
-  if(dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-6 eV^2/c^4"<<endl;
-  if(dmsq12 > 5.0e-3)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsqAtm < 2.0e-4)
-    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsqAtm > 4.0e-2)
-    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-6 eV^2/c^4";
+   }
+   if(dmsq12 > 5.0e-3)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" << 
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-3 eV^2/c^4";
+   }
+   if(dmsqAtm < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of the Fogli-Lisi" <<
+         " |dmsq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4," <<
+         " changing it to 2.0E-4 eV^2/c^4";
+   }
+   if(dmsqAtm > 4.0e-2)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of the Fogli-Lisi" <<
+         " |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 4.0E-2 eV^2/c^4";
+   }
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
@@ -713,10 +830,16 @@ void NuOsc3Flavour::SetOscParametersDmsqAtmSolSinDeltaCP(
   dmsq12 = dmsq12_in;
   dmsqAtm = dmsqAtm_in;
 
-  if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsqAtm > 4.0e-2 || dmsqAtm < 2.0e-4)
-    cerr<<"The input value of the Fogli-Lisi |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4";
+   }
+   if(dmsqAtm > 4.0e-2 || dmsqAtm < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of the Fogli-Lisi" <<
+         " |dmsq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4";
+   }
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
@@ -849,24 +972,46 @@ void NuOsc3Flavour::SetOscParametersSSq2TDmsq13(
   dmsq12 = dmsq12_in;
   dmsq13 = dmsq13_in;
 
-  if(dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-6 eV^2/c^4"<<endl;
-  if(dmsq12 > 5.0e-3)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsq13 < 2.0e-4)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq13 > 4.0e-2)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-6 eV^2/c^4";
+   }
+   if(dmsq12 > 5.0e-3)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-3 eV^2/c^4";
+   }
+   if(dmsq13 < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm31sq| is" <<
+         " restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4," <<
+         " changing it to 2.0E-4 eV^2/c^4";
+   }
+   if(dmsq13 > 4.0e-2)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm31sq| is" <<
+         " restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 4.0E-2 eV^2/c^4";
+   }
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
   dmsq13 = TMath::Min(dmsq13, 4.0e-2);
   dmsq13 = TMath::Max(dmsq13, 2.0e-4);
 
-  if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsq13 > 2.0e-2 || dmsq13 < 2.0e-4)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4";
+   }
+   if(dmsq13 > 2.0e-2 || dmsq13 < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm31sq| is" <<
+         " restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4";
+   }
 
   // Note: The input value of dmsq13 is the absolute one. The sign of dmsq13 depends on  
   // the mass hierarchy. In the normal mass hierarchy, dmsq13 is positive. In the inverted 
@@ -975,14 +1120,30 @@ void NuOsc3Flavour::SetOscParametersDmsq13(
   dmsq12 = dmsq12_in;
   dmsq13 = dmsq13_in;
 
-  if(dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-6 eV^2/c^4"<<endl;
-  if(dmsq12 > 5.0e-3)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4, changing it to 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsq13 < 2.0e-4)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4, changing it to 2.0E-4 eV^2/c^4"<<endl;
-  if(dmsq13 > 4.0e-2)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4, changing it to 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-6 eV^2/c^4";
+   }
+   if(dmsq12 > 5.0e-3)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4," <<
+         " changing it to 5.0E-3 eV^2/c^4";
+   }
+   if(dmsq13 < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm31sq| is" <<
+         " restricted to the range 2.0E-4 - 2.0E-2 eV^2/c^4," <<
+         " changing it to 2.0E-4 eV^2/c^4";
+   }
+   if(dmsq13 > 4.0e-2)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm31sq| is" <<
+         " restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4," <<
+         " changing it to 4.0E-2 eV^2/c^4";
+   }
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
@@ -1095,10 +1256,16 @@ void NuOsc3Flavour::SetOscParametersDmsq13SinDeltaCP(
   dmsq12 = dmsq12_in;
   dmsq13 = dmsq13_in;
 
-  if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
-    cerr<<"The input value of dm21sq is restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4"<<endl;
-  if(dmsq13 > 4.0e-2 || dmsq13 < 2.0e-4)
-    cerr<<"The input value of |dm31sq| is restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4"<<endl;
+   if(dmsq12 > 5.0e-3 || dmsq12 < 5.0e-6)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of dm21sq is" <<
+         " restricted to the range 5.0E-6 - 5.0E-3 eV^2/c^4";
+   }
+   if(dmsq13 > 4.0e-2 || dmsq13 < 2.0e-4)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "The input value of |dm31sq| is" <<
+         " restricted to the range 2.0E-4 - 4.0E-2 eV^2/c^4";
+   }
 
   dmsq12 = TMath::Min(dmsq12, 5.0e-3);
   dmsq12 = TMath::Max(dmsq12, 5.0e-6);
@@ -1301,11 +1468,12 @@ double NuOsc3Flavour::CalcVacuumOscProb(int nu_start, int nu_end, double energy)
 
   OscChannelId_t osch = util::GetOscChannel(nu_start, nu_end);
 
-  if(osch == kOscUndefined) {
-    cerr << "NuOsc3Flavour: Not allowing (neutrino = " << nu_start << ") --> "
-         << "(neutrino = " << nu_end << ") oscillations" << endl;
-    return 0.;
-  }
+   if(osch == kOscUndefined)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "Not allowing (neutrino = " <<
+         nu_start << ") --> " << "(neutrino = " << nu_end << ") oscillations";
+      return 0.;
+   }
 
   double oscProb = 0.0;
   
@@ -1416,11 +1584,12 @@ double NuOsc3Flavour::CalcVacuumOscProbPDG(int nu_start, int nu_end, double ener
 
   OscChannelId_t osch = util::GetOscChannel(nu_start, nu_end);
 
-  if(osch == kOscUndefined) {
-    cerr << "NuOsc3Flavour: Not allowing (neutrino = " << nu_start << ") --> "
-         << "(neutrino = " << nu_end << ") oscillations" << endl;
-    return 0.;
-  }
+   if(osch == kOscUndefined)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "Not allowing (neutrino = " <<
+         nu_start << ") --> " << "(neutrino = " << nu_end << ") oscillations";
+      return 0.;
+   }
 
   double oscProb = 0.0;
   
@@ -1589,11 +1758,12 @@ double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
 
   OscChannelId_t osch = util::GetOscChannel(nu_start, nu_end);
 
-  if(osch == kOscUndefined) {
-    cerr << "NuOsc3Flavour: Not allowing (neutrino = " << nu_start << ") --> "
-         << "(neutrino = " << nu_end << ") oscillations" << endl;
-    return 0.;
-  }
+   if(osch == kOscUndefined)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "Not allowing (neutrino = " <<
+         nu_start << ") --> " << "(neutrino = " << nu_end << ") oscillations";
+      return 0.;
+   }
 
   double oscProb = 0.;
 
@@ -1721,11 +1891,12 @@ double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
   double eigenvalueSum = eigenvalues[0] + eigenvalues[1] + eigenvalues[2];
   double trace = UMassUdagger[0][0][re] + UMassUdagger[1][1][re] + UMassUdagger[2][2][re];
 
-  if(fabs((eigenvalueSum - trace) / trace) > 1.0e-4) 
-  {
-    cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : fractional difference between sum of eigenvalues and trace of matrix = "
-	 << fabs((eigenvalueSum - trace) / trace) << "." << endl;
-  }
+   if(fabs((eigenvalueSum - trace) / trace) > 1.0e-4) 
+   {
+      LOG("NuOsc3Flavour", pWARN) << "fractional difference between" <<
+         " sum of eigenvalues and trace of matrix = " <<
+         fabs((eigenvalueSum - trace) / trace) << ".";
+   }
 #endif //__show_warning__
 
 
@@ -1861,19 +2032,19 @@ double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
 
 
 #ifdef __show_warning__
- for(int i=0; i<3; i++) 
- {
-   if(fabs(eigenvectorCheck[i][re]) > 1.0e-8) 
+   for(int i=0; i<3; i++) 
    {
-     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : real part of eigenvector check = "
-          << eigenvectorCheck[i][re] <<"." << endl;
-   }
-   if(fabs(eigenvectorCheck[i][im]) > 1.0e-8) 
-   {
-     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : imaginary part of eigenvector check = "
-          << eigenvectorCheck[i][im] << "." << endl;
-   }
- }//end of for(int i=0; i<3; i++)
+      if(fabs(eigenvectorCheck[i][re]) > 1.0e-8) 
+      {
+         LOG("NuOsc3Flavour", pWARN) << "real part of eigenvector check = " <<
+            eigenvectorCheck[i][re] << ".";
+      }
+      if(fabs(eigenvectorCheck[i][im]) > 1.0e-8) 
+      {
+         LOG("NuOsc3Flavour", pWARN) << "imaginary part of eigenvector" <<
+            " check = " << eigenvectorCheck[i][im] << ".";
+      }
+   }//end of for(int i=0; i<3; i++)
 #endif //__show_warning__
 
 
@@ -1909,19 +2080,21 @@ double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
                            + UMatter[j][0][im] * UMatter[j][2][re];
  }
 
- for(int i=0; i<3; i++)
- {
-   if(fabs(scalarProduct[i][re]) > 1.0e-4)
+   for(int i=0; i<3; i++)
    {
-     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in eigenvector orthogonality check, real part of scalar product = "
-          << scalarProduct[i][re] << "." << endl;
-   }        
-   if(fabs(scalarProduct[i][im]) > 1.0e-4)
-   {
-     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in eigenvector orthogonality check, imaginary part of scalar product = "
-          << scalarProduct[i][im] << "." << endl;
-   }
- }//end of for(int i=0; i<3; i++)
+      if(fabs(scalarProduct[i][re]) > 1.0e-4)
+      {
+         LOG("NuOsc3Flavour", pWARN) << "in eigenvector orthogonality" <<
+            " check, real part of scalar product = " <<
+            scalarProduct[i][re] << ".";
+      }        
+      if(fabs(scalarProduct[i][im]) > 1.0e-4)
+      {
+         LOG("NuOsc3Flavour", pWARN) << "in eigenvector orthogonality" <<
+            " check, imaginary part of scalar product = " <<
+            scalarProduct[i][im] << ".";
+      }
+   }//end of for(int i=0; i<3; i++)
 #endif //__show_warning__
 
  double UMatterDagger[3][3][2];
@@ -1961,38 +2134,46 @@ double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
      }
    }
 
- for(int i=0; i<3; i++)
- {
-   for(int j=0; j<3; j++)
+   for(int i=0; i<3; i++)
    {
-     if(i == j)
-       {
-       if(fabs(inverseCheck[i][j][re] - 1.0) > 1.0e-4)
-       {
-         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, real part of diagonal element - 1.0 = "
-              << fabs(inverseCheck[i][j][re] - 1.0) << "." << endl;
-       }
-       if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
-       {
-         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, imaginary part of diagonal element = "
-              << inverseCheck[i][j][im] << "." << endl;
-       }      
-     }
-     else
-     {
-       if(fabs(inverseCheck[i][j][re]) > 1.0e-4)
-       {
-         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, real part of off-diagonal element = "
-              << inverseCheck[i][j][re] << "." << endl;
-       }
-       if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
-       {
-         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, imaginary part of off-diagonal element = "
-              << inverseCheck[i][j][im] << "." << endl;
-       }              
-     }  
-   }//end of for(int j=0; j<3; j++)
- }//end of for(int i=0; i<3; i++)
+      for(int j=0; j<3; j++)
+      {
+         if(i == j)
+         {
+            if(fabs(inverseCheck[i][j][re] - 1.0) > 1.0e-4)
+            {
+               LOG("NuOsc3Flavour", pWARN) << "in product of matter" <<
+                  " mixing matrix and its Hermitian conjugate, real" <<
+                  " part of diagonal element - 1.0 = " <<
+                  fabs(inverseCheck[i][j][re] - 1.0) << ".";
+            }
+            if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
+            {
+               LOG("NuOsc3Flavour", pWARN) << "in product of matter" <<
+                  " mixing matrix and its Hermitian conjugate," <<
+                  " imaginary part of diagonal element = " <<
+                  inverseCheck[i][j][im] << ".";
+            }      
+         }
+         else
+         {
+            if(fabs(inverseCheck[i][j][re]) > 1.0e-4)
+            {
+               LOG("NuOsc3Flavour", pWARN) << "in product of matter" <<
+                  " mixing matrix and its Hermitian conjugate," <<
+                  " real part of off-diagonal element = " <<
+                  inverseCheck[i][j][re] << ".";
+            }
+            if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
+            {
+               LOG("NuOsc3Flavour", pWARN) << "in product of matter" <<
+                  " mixing matrix and its Hermitian conjugate," <<
+                  " imaginary part of off-diagonal element = " <<
+                  inverseCheck[i][j][im] << ".";
+            }              
+         }  
+      }//end of for(int j=0; j<3; j++)
+   }//end of for(int i=0; i<3; i++)
 #endif //__show_warning__
 
  double initialFlavourState[3][2];
@@ -2109,11 +2290,13 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
 
   OscChannelId_t osch = util::GetOscChannel(nu_start, nu_end);
 
-  if(osch == kOscUndefined) {
-    cerr << "NuOsc3Flavour: Not allowing (neutrino = " << nu_start << ") --> "
-         << "(neutrino = " << nu_end << ") oscillations" << endl;
-    return 0.;
-  }
+   if(osch == kOscUndefined)
+   {
+      LOG("NuOsc3Flavour", pINFO) << "Not allowing (neutrino = " <<
+         nu_start << ") --> " << "(neutrino = " << nu_end <<
+         ") oscillations";
+      return 0.;
+   }
 
   if(index == 12)
     {
@@ -2499,13 +2682,13 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
   double eigenvalueSum = eigenvalues[0] + eigenvalues[1] + eigenvalues[2];
   double trace = UMassUdagger[0][0][re] + UMassUdagger[1][1][re] + UMassUdagger[2][2][re];
 
-  if(fabs((eigenvalueSum - trace) / trace) > 1.0e-4) 
-  {
-    cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : fractional difference between sum of eigenvalues and trace of matrix = "
-         << fabs((eigenvalueSum - trace) / trace) << "." << endl;
-  }
+   if(fabs((eigenvalueSum - trace) / trace) > 1.0e-4) 
+   {
+      LOG("NuOsc3Flavour", pWARN) << "fractional difference between sum" <<
+         " of eigenvalues and trace of matrix = " <<
+         fabs((eigenvalueSum - trace) / trace) << ".";
+   }
 #endif //__show_warning__
-
 
   double UMassUdaggerMinusEv[3][3][2];
   for(int i=0; i<3; i++)
@@ -2638,19 +2821,19 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
 
 
 #ifdef __show_warning__
- for(int i=0; i<3; i++) 
- {
-   if(fabs(eigenvectorCheck[i][re]) > 1.0e-8) 
+   for(int i=0; i<3; i++) 
    {
-     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : real part of eigenvector check = "
-          << eigenvectorCheck[i][re] <<"." << endl;
-   }
-   if(fabs(eigenvectorCheck[i][im]) > 1.0e-8) 
-   {
-     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : imaginary part of eigenvector check = "
-          << eigenvectorCheck[i][im] << "." << endl;
-   }
- }//end of for(int i=0; i<3; i++)
+      if(fabs(eigenvectorCheck[i][re]) > 1.0e-8) 
+      {
+         LOG("NuOsc3Flavour", pWARN) << "real part of eigenvector check = " <<
+            eigenvectorCheck[i][re] << ".";
+      }
+      if(fabs(eigenvectorCheck[i][im]) > 1.0e-8) 
+      {
+         LOG("NuOsc3Flavour", pWARN) << "imaginary part of eigenvector" <<
+            " check = " << eigenvectorCheck[i][im] << ".";
+      }
+   }//end of for(int i=0; i<3; i++)
 #endif //__show_warning__
 
 
@@ -2686,19 +2869,21 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
                            + UMatter[j][0][im] * UMatter[j][2][re];
  }
 
- for(int i=0; i<3; i++)
- {
-   if(fabs(scalarProduct[i][re]) > 1.0e-4)
+   for(int i=0; i<3; i++)
    {
-     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in eigenvector orthogonality check, real part of scalar product = "
-          << scalarProduct[i][re] << "." << endl;
-   }        
-   if(fabs(scalarProduct[i][im]) > 1.0e-4)
-   {
-     cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in eigenvector orthogonality check, imaginary part of scalar product = "
-          << scalarProduct[i][im] << "." << endl;
-   }
- }//end of for(int i=0; i<3; i++)
+      if(fabs(scalarProduct[i][re]) > 1.0e-4)
+      {
+         LOG("NuOsc3Flavour", pWARN) << "in eigenvector orthogonality" <<
+            " check, real part of scalar product = " <<
+            scalarProduct[i][re] << ".";
+      }
+      if(fabs(scalarProduct[i][im]) > 1.0e-4)
+      {
+         LOG("NuOsc3Flavour", pWARN) << "in eigenvector orthogonality" <<
+            " check, imaginary part of scalar product = " <<
+            scalarProduct[i][im] << ".";
+      }
+   }//end of for(int i=0; i<3; i++)
 #endif //__show_warning__
 
  double UMatterDagger[3][3][2];
@@ -2738,38 +2923,44 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
      }
    }
 
- for(int i=0; i<3; i++)
- {
-   for(int j=0; j<3; j++)
+   for(int i=0; i<3; i++)
    {
-     if(i == j)
-       {
-       if(fabs(inverseCheck[i][j][re] - 1.0) > 1.0e-4)
-       {
-         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, real part of diagonal element - 1.0 = "
-              << fabs(inverseCheck[i][j][re] - 1.0) << "." << endl;
-       }
-       if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
-       {
-         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, imaginary part of diagonal element = "
-              << inverseCheck[i][j][im] << "." << endl;
-       }      
-     }
-     else
-     {
-       if(fabs(inverseCheck[i][j][re]) > 1.0e-4)
-       {
-         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, real part of off-diagonal element = "
-              << inverseCheck[i][j][re] << "." << endl;
-       }
-       if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
-       {
-         cerr << "Warning in NuOsc3Flavour::CalcMatterOscProb() : in product of matter mixing matrix and its Hermitian conjugate, imaginary part of off-diagonal element = "
-              << inverseCheck[i][j][im] << "." << endl;
-       }              
-     }  
-   }//end of for(int j=0; j<3; j++)
- }//end of for(int i=0; i<3; i++)
+      for(int j=0; j<3; j++)
+      {
+         if(i == j)
+         {
+            if(fabs(inverseCheck[i][j][re] - 1.0) > 1.0e-4)
+            {
+               LOG("NuOsc3Flavour", pWARN) << "in product of matter mixing" <<
+                  " matrix and its Hermitian conjugate, real part of" <<
+                  " diagonal element - 1.0 = " <<
+                  fabs(inverseCheck[i][j][re] - 1.0) << ".";
+            }
+            if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
+            {
+               LOG("NuOsc3Flavour", pWARN) << "in product of matter mixing" <<
+                  " matrix and its Hermitian conjugate, imaginary part of" <<
+                  " diagonal element = " << inverseCheck[i][j][im] << ".";
+            }
+         }
+         else
+         {
+            if(fabs(inverseCheck[i][j][re]) > 1.0e-4)
+            {
+               LOG("NuOsc3Flavour", pWARN) << "in product of matter mixing" <<
+                  " matrix and its Hermitian conjugate, real part of" <<
+                  " off-diagonal element = " << inverseCheck[i][j][re] << ".";
+            }
+            if(fabs(inverseCheck[i][j][im]) > 1.0e-4)
+            {
+               LOG("NuOsc3Flavour", pWARN) << "in product of matter mixing" <<
+                  " matrix and its Hermitian conjugate, imaginary part" <<
+                  " of off-diagonal element = " << inverseCheck[i][j][im] <<
+                  ".";
+            }              
+         }  
+      }//end of for(int j=0; j<3; j++)
+   }//end of for(int i=0; i<3; i++)
 #endif //__show_warning__
  
   for (int i_initflav = 0 ; i_initflav < nFlav ; i_initflav++) {

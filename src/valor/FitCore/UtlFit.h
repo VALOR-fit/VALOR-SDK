@@ -50,7 +50,7 @@ FitterABC * GetFitter (FitInputs * inputs, Option_t * option);
   // Should replace with eg MCMC
   
   // Tweak the parameters in an FPL  using MCMC with the chi-square probability
-  bool AttemptMCMCStep(FitInputs & fitinputs, double & current_chisq,
+  bool AttemptMCMCStep(FitInputs & fitinputs, double & current_chisq, int & n_attempts_out,
     double step_size_factor, TMatrixD * cholesky_for_throws = NULL, int max_attempts = 1000);
   
   // Take a vector of parameter sets, and generate a covariance matrix

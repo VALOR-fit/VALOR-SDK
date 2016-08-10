@@ -1171,9 +1171,9 @@ ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl,
   }
   // Padding knots
   x.front() = xmin;
-  y.front() = y[1];
+  y.front() = spl.Eval(xmin);
   x.back()  = xmax;
-  y.back()  = y[n_knots];
+  y.back()  = spl.Eval(xmax);
   
   ROOT::Math::Interpolator * out_interp = new ROOT::Math::Interpolator(n_knots,spl_type);
   out_interp->SetData(n_knots+2,x.data(),y.data());

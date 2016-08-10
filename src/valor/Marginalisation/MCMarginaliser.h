@@ -34,6 +34,7 @@ namespace marginalisation
 
    private:
       void RandomizeNuisance();
+      void RandomizeOscillation();
       double Marginalise1D();
       double Marginalise2D();
       conv::PhysParamId_t GetPhysParamId(const std::string& name);

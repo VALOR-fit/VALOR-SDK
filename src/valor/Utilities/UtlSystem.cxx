@@ -92,7 +92,7 @@ std::string valor::util::CompleteConfigPath(std::string config_file)
     // If not, try the config folder
     ts_file = TString::Format("%s/%s",Env::Instance()->TopLevelConfDir().c_str(),ts_file.Data());
     if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-      LOG("GenericSingleSampleFitModel",pERROR) << "Config file not found: "<<config_file;
+      LOG("UtlSystem",pERROR) << "Config file not found: "<<config_file;
       util::Die(1); 
     }
   }
