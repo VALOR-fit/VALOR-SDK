@@ -38,6 +38,7 @@ namespace marginalisation
       double Marginalise1D();
       double Marginalise2D();
       conv::PhysParamId_t GetPhysParamId(const std::string& name);
+      bool AllParametersWithinBounds();
 
    private:
       int fNumToys;

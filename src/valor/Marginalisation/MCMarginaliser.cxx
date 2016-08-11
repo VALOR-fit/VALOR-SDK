@@ -49,25 +49,16 @@ double MCMarginaliser::Marginalise()
 
 double MCMarginaliser::Marginalise1D()
 {
-//   LOG("MCMarginaliser", pNOTICE) << "Pre observation";
    FitDataABC& data = fFitInputs->Observation();
-//   LOG("MCMarginaliser", pNOTICE) << "Post observation";
    FitModelABC& model = fFitInputs->Expectation();
-//   LOG("MCMarginaliser", pNOTICE) << "Post expectation";
    FitParamList& fp = fFitInputs->FitParams();
-//   LOG("MCMarginaliser", pNOTICE) << "Post fit params";
    data.Generate(&model, fp, false); 
-//   LOG("MCMarginaliser", pNOTICE) << "Post generate";
 
    double minValue = fp.MinValue(fParam0);
    double maxValue = fp.MaxValue(fParam0);
    // Quick hack for testing purposes
    double stepSize = (maxValue - minValue) / 1.0;
    // double step_size = fitInputs->FitParams().StepSize(fParam0);
-   LOG("MCMarginaliser", pNOTICE) << "Param " <<
-      util::NameRegistry::Instance()->AsString(fParam0) <<
-      " has range [" << minValue  << "," << maxValue << "] with step " <<
-      stepSize;
 
    for(int i = 0; i < fp.Size(); ++i)
    {
@@ -89,12 +80,15 @@ double MCMarginaliser::Marginalise1D()
       for(int n = 0; n < fNumToys; ++n)
       {
          RandomizeNuisance();
+         LOG("MCMarginaliser", pNOTICE) << "Toy " << n;// << "\n" << fp;
          double chi2 = data.GetFitStatistic(&model, fp, NULL);
-         LOG("MCMarginaliser", pNOTICE) << "Chi2 (" << n << ": " << value <<
-            ") = " << chi2;
          totalLikelihood += exp(-chi2 / 2);
+         LOG("MCMarginaliser", pNOTICE) << "Chi2 (" << n << ": " << value <<
+            ") = " << chi2 << "   L = " << totalLikelihood;
       }
       fLikelihood->SetEntry(totalLikelihood / fNumToys, i);
+      LOG("MCMarginaliser", pNOTICE) << "L(" << value << ") = " <<
+         (totalLikelihood / fNumToys);
    }
 
    return 0.0;
@@ -166,78 +160,62 @@ void MCMarginaliser::RandomizeNuisance()
    TString options(fArg->GetString("param-values-option"));
 
    // Loop until all parameters are within physical limits
-   // Currently the loop is short-circuited to assume all is well
-   int throws = 0;
    do
    {
       model.ResetSystematics("all");
       model.RandomizeSystematics(options.Data());
       PhysParamList tweaks = model.Tweaks();
       fp.FromPhysParamList(tweaks, "current");
-      ++throws;
    }
-   while(false);
-   RandomizeOscillation();
-   LOG("MCMarginaliser", pNOTICE) << "Throws for physical params " << throws;
+   while(!AllParametersWithinBounds());
+   do
+   {
+      RandomizeOscillation();
+   }
+   while(!AllParametersWithinBounds());
 }
 
 void MCMarginaliser::RandomizeOscillation()
 {
    FitParamList& fp = fFitInputs->FitParams();
-   conv::PhysParamId_t oscParams[6] = {
-      conv::kPhypMixing23,
-      conv::kPhypMixing13,
-      conv::kPhypMixing12,
-      conv::kPhypCPV,
-      conv::kPhypDm23sq,
-      conv::kPhypDm12sq
-   };
-   LOG("MCMarginaliser", pWARN) << "This is a hack for randomizing" <<
-      " oscillation parameters. It is not robust, it handles only nu mode" <<
-      " running in sinsqth mode and does not take account of priors";
-   for(int i = 0; i < 6; ++i)
+   LOG("MCMarginaliser", pWARN) <<
+      "No account taken of sinsqth or sinsq2th modes";
+   for(int i = 0; i < fp.Size(); ++i)
    {
-      if(fParam0 != oscParams[i] && fParam1 != oscParams[i])
+      conv::PhysParamId_t p = fp.WhichParam(i);
+      if(p!= fParam0 && p != fParam1)
       {
-         double min = fp.MinValue(oscParams[i]);
-         double max = fp.MaxValue(oscParams[i]);
-         double val = Rnd::Instance()->RndToyMCosc().Uniform(min, max);
-         fp.SetCurrentValue(oscParams[i], val);
+         if(!util::IsSystematic(p) && !util::IsNormalization(p))
+         {
+            std::string prior = fp.GetPriorModeName(p);
+            if(prior == "flat")
+            {
+               double min = fp.GetMinValueFlat(p);
+               double max = fp.GetMaxValueFlat(p);
+               double val = Rnd::Instance()->RndToyMCosc().Uniform(min, max);
+               fp.SetCurrentValue(p, val);
+            }
+            else if(prior == "gaus")
+            {
+               double mean = fp.GetMeanGaus(p);
+               double sigma = fp.GetSigmaGaus(p);
+               double val = Rnd::Instance()->RndToyMCosc().Gaus(mean, sigma);
+               fp.SetCurrentValue(p, val);
+            }
+            else if(prior == "user")
+            {
+               double val = fp.GetPriorHisto(p)->GetRandom();
+               fp.SetCurrentValue(p, val);
+            }
+            else
+            {
+               LOG("MCMarginaliser", pFATAL) << "Undefined prior for " <<
+                  util::NameRegistry::Instance()->AsString(p) << ": " << prior;
+               exit(1);
+            }
+         }
       }
    }
-/*   for(int i = 0; i < 6; ++i)
-   {
-      if(fParam0 != oscParams[i] && fParam1 != oscParams[i])
-      {
-         std::string prior = fp.GetPriorModeName(oscParams[i]);
-         if(prior == "flat")
-         {
-            double min = fp.GetMinValueFlat(oscParams[i]);
-            double max = fp.GetMaxValueFlat(oscParams[i]);
-            double val = Rnd::Instance()->RndToyMCosc().Uniform(min, max);
-            fp.SetCurrentValue(oscParams[i], val);
-         }
-         else if(prior == "gaus")
-         {
-            double mean = fp.GetMeanGaus(oscParams[i]);
-            double sigma = fp.GetSigmaGaus(oscParams[i]);
-            double val = Rnd::Instance()->RndToyMCosc().Gaus(mean, sigma);
-            fp.SetCurrentValue(oscParams[i], val);
-         }
-         else if(prior == "user")
-         {
-            double val = fp.GetPriorHisto(oscParams[i])->GetRandom();
-            fp.SetCurrentValue(oscParams[i], val);
-         }
-         else
-         {
-            LOG("MCMarginaliser", pFATAL) << "Undefined prior for " <<
-               util::NameRegistry::Instance()->AsString(oscParams[i]) <<
-               ": " << prior;
-            exit(1);
-         }
-      }
-   }*/
 }
 
 conv::PhysParamId_t MCMarginaliser::GetPhysParamId(const std::string& name)
@@ -307,6 +285,25 @@ conv::PhysParamId_t MCMarginaliser::GetPhysParamId(const std::string& name)
 
    return conv::kPhypUndefined;
 }
+
+bool MCMarginaliser::AllParametersWithinBounds()
+{
+   FitParamList& fp = fFitInputs->FitParams();
+   for(int i = 0; i < fp.Size(); ++i)
+   {
+      conv::PhysParamId_t p = fp.WhichParam(i);
+      if(p != fParam0 && p != fParam1)
+      {
+         if(fp.CurrValue(p) > fp.MaxValue(p) ||
+               fp.CurrValue(p) < fp.MinValue(p))
+         {
+            return false;
+         }
+      }
+   }
+
+   return true;
+} 
 
 }
 }
