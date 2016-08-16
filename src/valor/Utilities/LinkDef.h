@@ -12,6 +12,7 @@
 #pragma link C++ class valor::Rnd+;
 
 #pragma link C++ class valor::util::NameRegistry+;
+#pragma link C++ class valor::util::Interpolator+;
 
 
 #endif
