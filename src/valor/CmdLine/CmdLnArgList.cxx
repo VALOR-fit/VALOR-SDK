@@ -81,6 +81,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
     ifstream file;     
     file.open(filename.c_str());
     if (! file.is_open() ) {
+      LOG("CmdLnArgList",pERROR) << "Could not open file: "<<filename;
       continue;
     }
     // read file one line at a time
