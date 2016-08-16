@@ -52,7 +52,6 @@ double MCMarginaliser::Marginalise1D()
    FitDataABC& data = fFitInputs->Observation();
    FitModelABC& model = fFitInputs->Expectation();
    FitParamList& fp = fFitInputs->FitParams();
-   data.Generate(&model, fp, false); 
 
    double minValue = fp.MinValue(fParam0);
    double maxValue = fp.MaxValue(fParam0);
@@ -60,11 +59,27 @@ double MCMarginaliser::Marginalise1D()
    double stepSize = (maxValue - minValue) / 1.0;
    // double step_size = fitInputs->FitParams().StepSize(fParam0);
 
+   fp.SetCurrentValue(fParam0, minValue);
+   Rnd::Instance()->SetSeeds(*fArg);
+   data.Generate(&model, fp, false);
+
    for(int i = 0; i < fp.Size(); ++i)
    {
-      conv::PhysParamId_t p = fp.WhichParam(i);
-      fp.SetNuisance(p, (p == fParam0) ? false : true);
-   }
+       conv::PhysParamId_t p = fp.WhichParam(i);
+      if(p == fParam0)
+      {
+         fp.SetNuisance(p, false);
+         fp.FreeParameter(p);
+      }
+      else
+      {
+         // Need to determine appropriate combination for free/fixed and
+         // nuisance/marginalisation parameters
+         fp.SetNuisance(p, true);
+         fp.SetDoMarg(p, true);
+         fp.FixParameter(p);
+      }
+  }
 
    int numBins = 1 + static_cast<int>((maxValue - minValue) / stepSize);
    fLikelihood = new VALORArray(numBins);
@@ -75,16 +90,18 @@ double MCMarginaliser::Marginalise1D()
       // Ensure that each set of toys is equivalent to the last set
       Rnd::Instance()->SetSeeds(*fArg);
       fp.SetCurrentValue(fParam0, value);
+      data.Generate(&model, fp, false);
       // Marginalise for this value
       double totalLikelihood = 0.0;
       for(int n = 0; n < fNumToys; ++n)
       {
          RandomizeNuisance();
          LOG("MCMarginaliser", pNOTICE) << "Toy " << n;// << "\n" << fp;
+         int ndof = data.NumOfBins() - fp.GetNumberFreeParameters();
          double chi2 = data.GetFitStatistic(&model, fp, NULL);
          totalLikelihood += exp(-chi2 / 2);
-         LOG("MCMarginaliser", pNOTICE) << "Chi2 (" << n << ": " << value <<
-            ") = " << chi2 << "   L = " << totalLikelihood;
+         LOG("MCMarginaliser", pNOTICE) << "Chi2[" << ndof << "] (" << n <<
+            ": " << value << ") = " << chi2 << "   L = " << totalLikelihood;
       }
       fLikelihood->SetEntry(totalLikelihood / fNumToys, i);
       LOG("MCMarginaliser", pNOTICE) << "L(" << value << ") = " <<
@@ -99,7 +116,6 @@ double MCMarginaliser::Marginalise2D()
    FitDataABC& data = fFitInputs->Observation();
    FitModelABC& model = fFitInputs->Expectation();
    FitParamList& fp = fFitInputs->FitParams();
-   data.Generate(&model, fp);
 
    double minValue0 = fp.MinValueByIndex(fParam0);
    double maxValue0 = fp.MaxValueByIndex(fParam0);
@@ -108,10 +124,27 @@ double MCMarginaliser::Marginalise2D()
    double maxValue1 = fp.MaxValueByIndex(fParam1);
    double stepSize1 = fp.StepSizeByIndex(fParam1);
 
+   fp.SetCurrentValue(fParam0, minValue0);
+   fp.SetCurrentValue(fParam1, minValue1);
+   Rnd::Instance()->SetSeeds(*fArg);
+   data.Generate(&model, fp);
+
    for(int i = 0; i < fp.Size(); ++i)
    {
       conv::PhysParamId_t p = fp.WhichParam(i);
-      fp.SetNuisance(p, (p == fParam0 || p == fParam1) ? false : true);
+      if(p == fParam0 || p == fParam1)
+      {
+         fp.SetNuisance(p, false);
+         fp.FreeParameter(p);
+      }
+      else
+      {
+         // Need to determine appropriate combination for free/fixed and
+         // nuisance/marginalisation parameters
+         fp.SetNuisance(p, true);
+         fp.SetDoMarg(p, true);
+         fp.FixParameter(p);
+      }
    }
 
    for(double value0 = minValue0; value0 <= maxValue0; value0 += stepSize0)
@@ -160,14 +193,14 @@ void MCMarginaliser::RandomizeNuisance()
    TString options(fArg->GetString("param-values-option"));
 
    // Loop until all parameters are within physical limits
-   do
+/*   do
    {
       model.ResetSystematics("all");
       model.RandomizeSystematics(options.Data());
       PhysParamList tweaks = model.Tweaks();
       fp.FromPhysParamList(tweaks, "current");
    }
-   while(!AllParametersWithinBounds());
+   while(!AllParametersWithinBounds());*/
    do
    {
       RandomizeOscillation();
@@ -178,8 +211,6 @@ void MCMarginaliser::RandomizeNuisance()
 void MCMarginaliser::RandomizeOscillation()
 {
    FitParamList& fp = fFitInputs->FitParams();
-   LOG("MCMarginaliser", pWARN) <<
-      "No account taken of sinsqth or sinsq2th modes";
    for(int i = 0; i < fp.Size(); ++i)
    {
       conv::PhysParamId_t p = fp.WhichParam(i);
