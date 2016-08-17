@@ -46,6 +46,9 @@ namespace util {
   TH1 * MakeFittedHistogramShowingFittedValues(const TH1* hist, const TF1* func, int npoints = 1000);
   
   TH1D MakeHistFromGSLSpline(const ROOT::Math::Interpolator * spl, int n_points = 1000, double min_x = 0 , double max_x = 2);
+  
+  // Convert a histogram into a TMatrix
+  TMatrixD TH2ToTMatrix(const TH2 * hist);
 
 } // util
 } // valor

@@ -233,3 +233,17 @@ TH1D valor::util::MakeHistFromGSLSpline(const ROOT::Math::Interpolator *, int, d
 }
 #endif
 //___________________________________________________________________________
+TMatrixD valor::util::TH2ToTMatrix(const TH2 * hist)
+{
+  const int nrows = hist->GetNbinsX();
+  const int ncols = hist->GetNbinsY();
+
+  TMatrixD m(nrows,ncols);
+  for(int i = 1; i <= nrows; i++) {
+    for(int j = 1; j <= ncols; j++) {
+      m(i-1,j-1) = hist->GetBinContent(i,j);
+    }
+  }
+  return m;
+}
+//___________________________________________________________________________
