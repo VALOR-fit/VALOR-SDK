@@ -90,7 +90,6 @@ double MCMarginaliser::Marginalise1D()
       // Ensure that each set of toys is equivalent to the last set
       Rnd::Instance()->SetSeeds(*fArg);
       fp.SetCurrentValue(fParam0, value);
-      data.Generate(&model, fp, false);
       // Marginalise for this value
       double totalLikelihood = 0.0;
       for(int n = 0; n < fNumToys; ++n)
@@ -193,14 +192,17 @@ void MCMarginaliser::RandomizeNuisance()
    TString options(fArg->GetString("param-values-option"));
 
    // Loop until all parameters are within physical limits
-/*   do
+   long throws = 0;
+   do
    {
       model.ResetSystematics("all");
       model.RandomizeSystematics(options.Data());
       PhysParamList tweaks = model.Tweaks();
       fp.FromPhysParamList(tweaks, "current");
+      throws++;
+      //LOG("MCMarginaliser", pNOTICE) << "Throw " << throws;
    }
-   while(!AllParametersWithinBounds());*/
+   while(!AllParametersWithinBounds());
    do
    {
       RandomizeOscillation();
@@ -328,6 +330,10 @@ bool MCMarginaliser::AllParametersWithinBounds()
          if(fp.CurrValue(p) > fp.MaxValue(p) ||
                fp.CurrValue(p) < fp.MinValue(p))
          {
+/*            LOG("MCMarginaliser", pNOTICE) <<
+               util::NameRegistry::Instance()->AsString(p) <<
+               " out of bounds. Has value " << fp.CurrValue(p) <<
+               " require " << fp.MinValue(p) << "-" << fp.MaxValue(p);*/
             return false;
          }
       }
