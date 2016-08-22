@@ -118,6 +118,16 @@ colorclean:
 	rm ./bin/g++ ./bin/gcc ./bin/c++ ./bin/cc 2>/dev/null || true
 	$(MAKE) -C "${VALOR_FMWK}/external/color" clean
 
+python:
+	@echo "Building python dependencies for VALOR"
+	cd "${VALOR_FMWK}/external/python" && . "${VALOR_FMWK}/external/python/build_pyenv.sh" && cd ${VALOR_FMWK}
+
+pythonclean:
+	rm -r "${VALOR_FMWK}/external/python/valor" \
+		    "${VALOR_FMWK}/external/python/bin" \
+				"${VALOR_FMWK}/external/python/lib" \
+				"${VALOR_FMWK}/external/python/get-pip.py" 2>/dev/null || true
+
 purge: FORCE
 	@echo " "
 	@echo "** Purging..."
