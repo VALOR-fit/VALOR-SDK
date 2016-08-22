@@ -59,12 +59,19 @@ namespace util {
   // Cholesky decomposition
   //
 
-  TMatrixD CholeskyDecomposition                     (const TMatrixD& cov);                 ///< Cholesky decomposition. Return lower triangular matrix.
-  TMatrixD CholeskyDecomposition                     (const TMatrixDSym& cov);                 ///< calls above with explicit conversion
-  TVectorD CholeskyGenerateCorrelatedParams          (const TMatrixD& Lch, TVectorD& mean); ///< Generate a vector of correlated params
-  TVectorD CholeskyGenerateCorrelatedParams          (const TMatrixD& Lch, TVectorD& mean, TVectorD& g_uncorrelated); ///< Generate a vector of correlated params
-  TVectorD CholeskyGenerateCorrelatedParamVariations (const TMatrixD& Lch);                 ///< Generate a vector of correlated param variations
-  TVectorD CholeskyCalculateCorrelatedParamVariations(const TMatrixD& Lch, TVectorD& g);    ///<
+  /// Cholesky decomposition. Return lower triangular matrix.
+  TMatrixD CholeskyDecomposition(const TMatrixD& cov);
+  /// calls above with explicit conversion
+  TMatrixD CholeskyDecomposition(const TMatrixDSym& cov);
+  /// Generate a vector of correlated params
+  TVectorD CholeskyGenerateCorrelatedParams(const TMatrixD& Lch, TVectorD& mean);
+  TVectorD CholeskyGenerateCorrelatedParams(const TMatrixD& cholesky,
+        TVectorD& mean, double sigma, const TMatrixD& invCholesky,
+        const TMatrixD& covar);
+  TVectorD CholeskyGenerateCorrelatedParams(const TMatrixD& Lch, TVectorD& mean, TVectorD& g_uncorrelated);
+  /// Generate a vector of correlated param variations
+  TVectorD CholeskyGenerateCorrelatedParamVariations(const TMatrixD& Lch);
+  TVectorD CholeskyCalculateCorrelatedParamVariations(const TMatrixD& Lch, TVectorD& g);
 
   // Simple maths
   double SingleAngleToDoubleAngle(double sinsqtheta);

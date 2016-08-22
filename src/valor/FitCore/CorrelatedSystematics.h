@@ -80,6 +80,9 @@ public:
   // Change vector values
   void SetCurrentValueByIndex(int idx, double value);
   void SetCurrentValue(conv::PhysParamId_t p, double value);
+
+  void SetRethrowUnphysical(const bool rethrow);
+  void SetNSigmaLimit(const double nSigma);
   
   // Replace the covariance matrix
   void SetCovMatrix(const TMatrixD & matr);
@@ -141,13 +144,16 @@ protected:
   double * fUntunedArray; //! ///< Pointer to the actual memory location of the untuned values
   double * fInitialArray; //! ///< Pointer to the actual memory location of the initial values
   double * fCurrentArray; //! ///< Pointer to the actual memory location of the current values
-  
+ 
   int fParam2Idx[conv::knppmax];
   
   unsigned int fNSystParameters;
   conv::PhysParamId_t * fSystParameters; //[fNSystParameters]
   
   std::string fXMLNodeName;
+
+  bool fRethrowUnphysical;
+  double fNSigma;
   
   bool fIsConfigured;
   

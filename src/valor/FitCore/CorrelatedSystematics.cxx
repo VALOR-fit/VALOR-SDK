@@ -46,10 +46,6 @@ using namespace valor;
 using namespace valor::conv;
 using namespace valor::util;
 
-#ifndef NSIGMA_LIMIT
-#define NSIGMA_LIMIT 5
-#endif
-
 ClassImp(CorrelatedSystematics)
 
 //________________________________________________________________________________________
@@ -65,6 +61,8 @@ fCovMtrxInv       (NULL),
 fCovMtrxChoL      (NULL),
 fCovMtrxChoLInv   (NULL),
 fSystParameters   (NULL),
+fRethrowUnphysical(false),
+fNSigma           (5.0),
 fIsConfigured     (false)
 {
   this->Init(n_syst,syst_params,xml_node_name);
@@ -82,6 +80,8 @@ fCovMtrxInv       (NULL),
 fCovMtrxChoL      (NULL),
 fCovMtrxChoLInv   (NULL),
 fSystParameters   (NULL),
+fRethrowUnphysical(false),
+fNSigma           (5.0),
 fIsConfigured     (false)
 {
   this->Init(0,nullptr);
@@ -273,7 +273,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   this->CholeskyDecomposeMatrix();
   
   this->InvertMatrices();
-  
+
   // Say we're configured
   fIsConfigured = true;
 
@@ -440,8 +440,19 @@ void CorrelatedSystematics::Tweak(
      LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
 #endif
      const TMatrixD & L = *fCovMtrxChoL;
-     TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
-     current_values = vec;
+     if(!fRethrowUnphysical)
+     {
+        TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
+        current_values = vec;
+     }
+     else
+     {
+        const TMatrixD& invCholesky = *fCovMtrxChoLInv;
+        const TMatrixD& covar = *fCovMtrx;
+        TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values,
+              fNSigma, invCholesky, covar);
+        current_values = vec;
+     }
   }
   return;
 }
@@ -510,17 +521,36 @@ void CorrelatedSystematics::Tweak(
 #ifdef __show_tweak_mesg_debug__
      LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
 #endif
-     const TMatrixD & L = *fCovMtrxChoL;
-     TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
-     for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
-       PhysParamId_t p = this->Idx2Param(ip);
-       if (!use_twk_param(p)) {
-         // LOG("CorrelatedSystematics", pNOTICE)
-         //   << "Adding to Chol tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
-         vec[ip]=current_values[ip];
-       }
-     }
-     current_values = vec;
+      const TMatrixD & L = *fCovMtrxChoL;
+      if(!fRethrowUnphysical)
+      {
+         TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
+         for (int ip = 0; ip < vec.GetNoElements() ; ip++)
+         {
+            PhysParamId_t p = this->Idx2Param(ip);
+            if (!use_twk_param(p))
+            {
+               vec[ip]=current_values[ip];
+            }
+         }
+         current_values = vec;
+      }
+      else
+      {
+         const TMatrixD& invCholesky = *fCovMtrxChoLInv;
+         const TMatrixD& covar = *fCovMtrx;
+         TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values,
+               fNSigma, invCholesky, covar);
+         for (int ip = 0; ip < vec.GetNoElements() ; ip++)
+         {
+            PhysParamId_t p = this->Idx2Param(ip);
+            if (!use_twk_param(p))
+            {
+               vec[ip]=current_values[ip];
+            }
+         }
+         current_values = vec;
+      }
   }
   return;
 }
@@ -708,8 +738,8 @@ bool CorrelatedSystematics::AppendParamsTo(valor::FitParamList & fpl) const
     PhysParamId_t p = fSystParameters[i];
     double one_sig = this->OneSigmaError(p);
     double central = fInitialArray[i];
-    double pmin    = central - NSIGMA_LIMIT*one_sig;
-    double pmax    = central + NSIGMA_LIMIT*one_sig;
+    double pmin    = central - fNSigma * one_sig;
+    double pmax    = central + fNSigma * one_sig;
     double step    = 0.1 * one_sig;
     fpl.AddParam(-999,p,central,pmin,pmax,step,false,true);
   }
@@ -725,6 +755,7 @@ void CorrelatedSystematics::SetCovMatrix(const TMatrixD & matr)
   
   this->InvertMatrices();
 }
+
 //________________________________________________________________________________________
 void CorrelatedSystematics::InvertMatrices()
 {
@@ -773,3 +804,14 @@ void CorrelatedSystematics::InvertMatrices()
   return;
 }
 //________________________________________________________________________________________
+
+void CorrelatedSystematics::SetRethrowUnphysical(const bool rethrow)
+{
+   fRethrowUnphysical = rethrow;
+}
+
+void CorrelatedSystematics::SetNSigmaLimit(const double nSigma)
+{
+   fNSigma = TMath::Abs(nSigma);
+}
+

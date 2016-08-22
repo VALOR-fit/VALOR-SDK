@@ -51,6 +51,8 @@ ChangeLog:
 #include "valor/Utilities/Rnd.h"
 #include "valor/Messenger/Messenger.h"
 
+#include "valor/Marginalisation/NormInv.h"
+
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
@@ -77,6 +79,7 @@ using std::pair;
 
 using namespace valor;
 using namespace valor::conv;
+using namespace valor::marginalisation;
 
 //____________________________________________________________________________
 double valor::util::DeltaChisquare(
@@ -239,61 +242,128 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
   return LT;
 }
 //____________________________________________________________________________
-TVectorD valor::util::CholeskyGenerateCorrelatedParams (
-    const TMatrixD& cholesky_triangular, TVectorD& meanparams) 
+TVectorD valor::util::CholeskyGenerateCorrelatedParams(const TMatrixD& cholesky,
+      TVectorD& meanparams) 
 {
-// Generate a vector of correlated params
+  // Generate a vector of correlated params
+   int ncols = cholesky.GetNcols();
+   int nrows = cholesky.GetNrows();
+   int npars = meanparams.GetNrows();
 
-  int ncols = cholesky_triangular.GetNcols();
-  int nrows = cholesky_triangular.GetNrows();
-  int npars = meanparams.GetNrows();
+   if(ncols != nrows)
+   {
+      LOG("UtlNumStat", pERROR) << "Number of columns " << ncols <<
+         " & rows " << nrows << " disagree. Exiting...";
+      util::Die(1);
+   }
+   if(npars != nrows)
+   {
+      LOG("UtlNumStat", pERROR) << "Number of parameters " << npars <<
+         " & rows " << nrows << " disagree. Exiting...";
+      util::Die(1);
+   }
 
-  if(ncols != nrows) {
-    cerr << "util::CholeskyGenerateCorrelatedParams >> Number of columns " << ncols << " & rows " << nrows << " disagree. Exiting..." << endl;
-    util::Die(1);
-  }
-  if(npars != nrows) {
-    cerr << "util::CholeskyGenerateCorrelatedParams >> Number of parameters " << npars << " & rows " << nrows << " disagree. Exiting..." << endl;
-    util::Die(1);
-  }
+   int n = nrows;
+   TVectorD g(n);
+   for(int k = 0; k < n; ++k)
+   {
+      g(k) = Rnd::Instance()->RndOther().Gaus();
+   }
+   g *= cholesky;
 
-  int n = nrows;
+   #ifdef __show_cholesky_gen_corr_param_variations_mesg_debug__
+   ofstream foutp1("cholesky_uncorrelated_params.txt",fstream::app);
+   for(int i = 0; i < n; ++i)
+   {
+      foutp1 << g[i] << "\t";
+   }
+   foutp1 << endl;
+   foutp1.close();
+   #endif
 
-  // create a vector of unit Gaussian variables
-  // and multiply by Lt to introduce the appropriate correlations
-  TVectorD g(n);
-  for (int k = 0; k < n; ++k) {
-    g(k) = Rnd::Instance()->RndOther().Gaus();
-  }
-  g *= cholesky_triangular;
+   // add the mean value offsets and store the results
+   TVectorD correlated_params(n);
+   for(int i = 0; i < n; ++i)
+   {
+      double v = meanparams[i];
+      v += g(i);
+      correlated_params[i] = v;
+   }
 
-#ifdef __show_cholesky_gen_corr_param_variations_mesg_debug__
-  ofstream foutp1("cholesky_uncorrelated_params.txt",fstream::app);
-  for (int i = 0; i < n; ++i) {
-    foutp1 << g[i] << "\t";
-  }
-  foutp1 << endl;
-  foutp1.close();
-#endif
+   #ifdef __show_cholesky_gen_corr_param_variations_mesg_debug__
+   ofstream foutp2("cholesky_correlated_params.txt",fstream::app);
+   for (int i = 0; i < n; ++i)
+   {
+      foutp2 << correlated_params[i] << "\t";
+   }
+   foutp2 << endl;
+   foutp2.close();
+   #endif
 
-  // add the mean value offsets and store the results
-  TVectorD correlated_params(n);
-  for (int i = 0; i < n; ++i) {
-     double v = meanparams[i];
-     v += g(i);
-     correlated_params[i] = v;
-  }
+   return correlated_params;
+}
 
-#ifdef __show_cholesky_gen_corr_param_variations_mesg_debug__
-  ofstream foutp2("cholesky_correlated_params.txt",fstream::app);
-  for (int i = 0; i < n; ++i) {
-    foutp2 << correlated_params[i] << "\t";
-  }
-  foutp2 << endl;
-  foutp2.close();
-#endif
+TVectorD valor::util::CholeskyGenerateCorrelatedParams(const TMatrixD& cholesky,
+      TVectorD& meanparams, double sigma, const TMatrixD& invCholesky,
+      const TMatrixD& covar) 
+{
+  // Generate a vector of correlated params
+   int ncols = cholesky.GetNcols();
+   int nrows = cholesky.GetNrows();
+   int npars = meanparams.GetNrows();
 
-  return correlated_params;
+   if(ncols != nrows)
+   {
+      LOG("UtlNumStat", pERROR) << "Number of columns " << ncols <<
+         " & rows " << nrows << " disagree. Exiting...";
+      util::Die(1);
+   }
+   if(npars != nrows)
+   {
+      LOG("UtlNumStat", pERROR) << "Number of parameters " << npars <<
+         " & rows " << nrows << " disagree. Exiting...";
+      util::Die(1);
+   }
+
+   int n = nrows;
+   TVectorD g(n);
+   double upper = NormInvCDF::NormalDistribution(TMath::Abs(sigma), 0, 1);
+   double lower = 1.0 - NormInvCDF::NormalDistribution(TMath::Abs(sigma), 0, 1);
+   TVectorD cor_upp(n);
+   TVectorD cor_low(n);
+   for(int i = 0; i < n; ++i)
+   {
+      cor_upp[i] = upper;
+      cor_low[i] = lower;
+   }
+  
+   TVectorD uncor_low(cor_low);
+   TVectorD uncor_upp(cor_upp);
+   uncor_low *= invCholesky;
+   uncor_upp *= invCholesky;
+
+   for(int k = 0; k < n; ++k)
+   {
+      g(k) = Rnd::Instance()->RndOther().Uniform();
+      // Normalise to uncorrelated bounds
+      g(k) *= (uncor_upp(k) - uncor_low(k));
+      g(k) += uncor_low(k);
+   }
+   g *= cholesky;
+   for (int k = 0; k < n; ++k)
+   {
+      g(k) = NormInvCDF::NormInv(g[k]);
+   }
+   // Having retrieved the z value of the random throw, multiply this value by
+   // the square root of the diagonal covariance values and perturb the mean
+   // value of the systematic by this quantity.
+   TVectorD correlated_params(n);
+   for(int i = 0; i < n; ++i)
+   {
+      correlated_params(i) = meanparams(i) + g(i) * TMath::Sqrt(covar[i][i]);
+   }
+
+   return correlated_params;
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParams (

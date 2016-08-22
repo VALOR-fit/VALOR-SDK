@@ -95,11 +95,11 @@ double MCMarginaliser::Marginalise1D()
       for(int n = 0; n < fNumToys; ++n)
       {
          RandomizeNuisance();
-         LOG("MCMarginaliser", pNOTICE) << "Toy " << n;// << "\n" << fp;
+         LOG("MCMarginaliser", pDEBUG) << "Toy " << n;
          int ndof = data.NumOfBins() - fp.GetNumberFreeParameters();
          double chi2 = data.GetFitStatistic(&model, fp, NULL);
          totalLikelihood += exp(-chi2 / 2);
-         LOG("MCMarginaliser", pNOTICE) << "Chi2[" << ndof << "] (" << n <<
+         LOG("MCMarginaliser", pDEBUG) << "Chi2[" << ndof << "] (" << n <<
             ": " << value << ") = " << chi2 << "   L = " << totalLikelihood;
       }
       fLikelihood->SetEntry(totalLikelihood / fNumToys, i);
@@ -192,15 +192,12 @@ void MCMarginaliser::RandomizeNuisance()
    TString options(fArg->GetString("param-values-option"));
 
    // Loop until all parameters are within physical limits
-   long throws = 0;
    do
    {
       model.ResetSystematics("all");
       model.RandomizeSystematics(options.Data());
       PhysParamList tweaks = model.Tweaks();
       fp.FromPhysParamList(tweaks, "current");
-      throws++;
-      //LOG("MCMarginaliser", pNOTICE) << "Throw " << throws;
    }
    while(!AllParametersWithinBounds());
    do
