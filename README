@@ -1,0 +1,8 @@
+
+VALOR Framework readme [ WORK IN PROGRESS ] 
+
+run ./configure and then make to build the framework
+
+External dependency setup:
+ "make color" installs colorgcc if you want it. It makes g++ output more readable (like Clang's is). "make colorclean" to delete
+ "make python" build a python virtualenv, with ipython and numpy. This should ensure support for the VALOR python scripts. "make pythonclean" to delete
