@@ -51,7 +51,8 @@ ChangeLog:
 #include "valor/Utilities/Rnd.h"
 #include "valor/Messenger/Messenger.h"
 
-#include "valor/Marginalisation/NormInv.h"
+#include "Math/ProbFuncMathCore.h"
+#include "Math/QuantFuncMathCore.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 #include <gsl/gsl_complex.h>
@@ -79,7 +80,6 @@ using std::pair;
 
 using namespace valor;
 using namespace valor::conv;
-using namespace valor::marginalisation;
 
 //____________________________________________________________________________
 double valor::util::DeltaChisquare(
@@ -327,8 +327,8 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams(const TMatrixD& cholesky,
 
    int n = nrows;
    TVectorD g(n);
-   double upper = NormInvCDF::NormalDistribution(TMath::Abs(sigma), 0, 1);
-   double lower = 1.0 - NormInvCDF::NormalDistribution(TMath::Abs(sigma), 0, 1);
+   double upper = ROOT::Math::normal_cdf(TMath::Abs(sigma));
+   double lower = 1.0 - upper;
    TVectorD cor_upp(n);
    TVectorD cor_low(n);
    for(int i = 0; i < n; ++i)
@@ -352,7 +352,7 @@ TVectorD valor::util::CholeskyGenerateCorrelatedParams(const TMatrixD& cholesky,
    g *= cholesky;
    for (int k = 0; k < n; ++k)
    {
-      g(k) = NormInvCDF::NormInv(g[k]);
+      g(k) = ROOT::Math::normal_quantile(g[k], 1.0);
    }
    // Having retrieved the z value of the random throw, multiply this value by
    // the square root of the diagonal covariance values and perturb the mean
