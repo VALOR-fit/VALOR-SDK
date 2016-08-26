@@ -27,6 +27,10 @@
 
 #include "valor/FitCore/FitParamList.h"
 
+#include "valor/Marginalisation/MarginaliserABC.h"
+
+using namespace valor::marginalisation;
+
 namespace valor {
   
 class FitDataABC;
@@ -73,12 +77,15 @@ class FitMethodFunc : public ROOT::Math::FitMethodFunction
 class FitInputs: public ROOT::Minuit2::FCNBase, public TObject
 {
 public :
-  FitInputs(FitDataABC * o, FitModelABC * e, FitParamList * p, string opt = "poisson", double errdef = 1, bool goodnessoffit = false);
+  FitInputs(FitDataABC* o, FitModelABC* e, FitParamList* p,
+        MarginaliserABC* m = NULL, string opt = "poisson", double errdef = 1,
+        bool goodnessoffit = false);
   ~FitInputs();
   
-  FitDataABC &    Observation (void);
-  FitModelABC &   Expectation (void);
-  FitParamList &  FitParams   (void);
+  FitDataABC &      Observation  (void);
+  FitModelABC &     Expectation  (void);
+  FitParamList &    FitParams    (void);
+  MarginaliserABC & Marginaliser (void);
 
   void UpdateParamList(FitParamList * fpar);
   
@@ -112,6 +119,7 @@ private:
   FitDataABC *            fObs;
   mutable FitModelABC *   fExp;
   mutable FitParamList *  fFitParams;
+  MarginaliserABC *       fMarginaliser;
   string                  fOpt;
   int                     fMode;
   double                  fErrDef;
@@ -127,6 +135,7 @@ private:
 //
 
 void FitFunc (Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t iflag);
+void MarginalFitFunc(Int_t&, Double_t*, Double_t& f, Double_t* par, Int_t iflag);
 
 } // valor
 

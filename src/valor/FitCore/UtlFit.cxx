@@ -28,6 +28,7 @@ ChangeLog:
 //#include "valor/FitCore/FitterGSL.h"
 #include "valor/FitCore/FitterMinuit.h"
 #include "valor/FitCore/FitterMinuit2.h"
+#include "valor/FitCore/FitterMarginal.h"
 #include "valor/FitCore/UtlFit.h"
 
 using namespace valor;
@@ -52,7 +53,8 @@ FitterABC * valor::util::GetFitter (FitInputs * inputs, Option_t * option)
   if ( opt.Contains("minuit") ) 
   {
      cout << "Fitter >> Instantianting MINUIT fitter with option: " << option << endl; 
-     return new FitterMinuit(inputs,option);
+     //return new FitterMinuit(inputs,option);
+     return new FitterMarginal(inputs, option);
   }
 /*
   if ( opt.Contains("SimAnneal")   ||

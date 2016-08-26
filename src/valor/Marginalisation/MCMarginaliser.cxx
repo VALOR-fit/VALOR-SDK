@@ -12,18 +12,28 @@ namespace valor
 namespace marginalisation
 {
 
-MCMarginaliser::MCMarginaliser(FitInputs* fitInputs):
+MCMarginaliser::MCMarginaliser(FitDataABC* data, FitModelABC* model,
+      FitParamList* parameters):
    fNumToys(0), fNumDimensions(1), fParam0(conv::kPhypUndefined),
-   fParam1(conv::kPhypUndefined), fFitInputs(fitInputs), fLikelihood(0)
+   fParam1(conv::kPhypUndefined), fData(data), fModel(model),
+   fParams(parameters), fLikelihood(0), fAvgLikelihood1D(0), fAvgLikelihood2D(0)
 {
 }
 
 MCMarginaliser::MCMarginaliser(const MCMarginaliser& original):
    fNumToys(original.fNumToys), fNumDimensions(original.fNumDimensions),
    fParam0(original.fParam0), fParam1(original.fParam1),
-   fFitInputs(original.fFitInputs)
+   fData(original.fData), fModel(original.fModel), fParams(original.fParams)
 {
    fLikelihood = new VALORArrayD(*original.fLikelihood);
+   if(fAvgLikelihood1D)
+   {
+      fAvgLikelihood1D = dynamic_cast<TH1D*>(original.fAvgLikelihood1D->Clone());
+   }
+   if(fAvgLikelihood2D)
+   {
+      fAvgLikelihood2D = dynamic_cast<TH2D*>(original.fAvgLikelihood2D->Clone());
+   }
 }
 
 MCMarginaliser::~MCMarginaliser()
@@ -32,142 +42,131 @@ MCMarginaliser::~MCMarginaliser()
    {
       delete fLikelihood;
    }
+   if(fAvgLikelihood1D)
+   {
+      delete fAvgLikelihood1D;
+   }
+   if(fAvgLikelihood2D)
+   {
+      delete fAvgLikelihood2D;
+   }
 }
 
-double MCMarginaliser::Marginalise()
+void MCMarginaliser::Marginalise()
 {
    LOG("MCMarginaliser", pNOTICE) << "Performing " << fNumDimensions << "D fit.";
    if(fNumDimensions == 1)
    {
-      return Marginalise1D();
+      Marginalise1D();
    }
    else
    {
-      return Marginalise2D();
+      Marginalise2D();
    }
 }
 
-double MCMarginaliser::Marginalise1D()
+TH1D* MCMarginaliser::GetAverageLikelihood1D()
 {
-   FitDataABC& data = fFitInputs->Observation();
-   FitModelABC& model = fFitInputs->Expectation();
-   FitParamList& fp = fFitInputs->FitParams();
+   return fAvgLikelihood1D;
+}
 
-   double minValue = fp.MinValue(fParam0);
-   double maxValue = fp.MaxValue(fParam0);
+TH2D* MCMarginaliser::GetAverageLikelihood2D()
+{
+   return fAvgLikelihood2D;
+}
+
+void MCMarginaliser::Marginalise1D()
+{
+   LOG("MCMarginaliser", pNOTICE) << "1";
+   double minValue = fParams->MinValue(fParam0);
+   double maxValue = fParams->MaxValue(fParam0);
    // Quick hack for testing purposes
-   double stepSize = (maxValue - minValue) / 1.0;
+   double stepSize = (maxValue - minValue) / 99.0;
    // double step_size = fitInputs->FitParams().StepSize(fParam0);
-
-   fp.SetCurrentValue(fParam0, minValue);
+   LOG("MCMarginaliser", pNOTICE) << "2";
+   
+   fParams->SetCurrentValue(fParam0, minValue);
+   LOG("MCMarginaliser", pNOTICE) << "3";
    Rnd::Instance()->SetSeeds(*fArg);
-   data.Generate(&model, fp, false);
-
-   for(int i = 0; i < fp.Size(); ++i)
-   {
-       conv::PhysParamId_t p = fp.WhichParam(i);
-      if(p == fParam0)
-      {
-         fp.SetNuisance(p, false);
-         fp.FreeParameter(p);
-      }
-      else
-      {
-         // Need to determine appropriate combination for free/fixed and
-         // nuisance/marginalisation parameters
-         fp.SetNuisance(p, true);
-         fp.SetDoMarg(p, true);
-         fp.FixParameter(p);
-      }
-  }
+   LOG("MCMarginaliser", pNOTICE) << "4";
+   fData->Generate(fModel, *fParams, false);
+   LOG("MCMarginaliser", pNOTICE) << "5";
 
    int numBins = 1 + static_cast<int>((maxValue - minValue) / stepSize);
    fLikelihood = new VALORArray(numBins);
    fLikelihood->SetAll(0.0);
+   fAvgLikelihood1D = new TH1D("h_avg_likelihood_1D", "h_avg_likelihood_1D",
+         numBins, minValue, maxValue);
    int i = 0;
    for(double value = minValue; value <= maxValue; value += stepSize, ++i)
    {
       // Ensure that each set of toys is equivalent to the last set
       Rnd::Instance()->SetSeeds(*fArg);
-      fp.SetCurrentValue(fParam0, value);
+      fParams->SetCurrentValue(fParam0, value);
       // Marginalise for this value
       double totalLikelihood = 0.0;
       for(int n = 0; n < fNumToys; ++n)
       {
-         RandomizeNuisance();
          LOG("MCMarginaliser", pDEBUG) << "Toy " << n;
-         int ndof = data.NumOfBins() - fp.GetNumberFreeParameters();
-         double chi2 = data.GetFitStatistic(&model, fp, NULL);
+         RandomizeNuisance();
+         int ndof = fData->NumOfBins() - fParams->GetNumberFreeParameters();
+         double chi2 = fData->GetFitStatistic(fModel, *fParams, NULL);
          totalLikelihood += exp(-chi2 / 2);
          LOG("MCMarginaliser", pDEBUG) << "Chi2[" << ndof << "] (" << n <<
             ": " << value << ") = " << chi2 << "   L = " << totalLikelihood;
       }
-      fLikelihood->SetEntry(totalLikelihood / fNumToys, i);
+      double likelihood = totalLikelihood / fNumToys;
+      fLikelihood->SetEntry(likelihood, i);
+      // Root histogram bins offset by 1 because of underflow bin
+      fAvgLikelihood1D->SetBinContent(i + 1, likelihood);
       LOG("MCMarginaliser", pNOTICE) << "L(" << value << ") = " <<
-         (totalLikelihood / fNumToys);
+         likelihood;
    }
-
-   return 0.0;
 }
 
-double MCMarginaliser::Marginalise2D()
+void MCMarginaliser::Marginalise2D()
 {
-   FitDataABC& data = fFitInputs->Observation();
-   FitModelABC& model = fFitInputs->Expectation();
-   FitParamList& fp = fFitInputs->FitParams();
+   double minValue0 = fParams->MinValueByIndex(fParam0);
+   double maxValue0 = fParams->MaxValueByIndex(fParam0);
+   double stepSize0 = fParams->StepSizeByIndex(fParam0);
+   double minValue1 = fParams->MinValueByIndex(fParam1);
+   double maxValue1 = fParams->MaxValueByIndex(fParam1);
+   double stepSize1 = fParams->StepSizeByIndex(fParam1);
 
-   double minValue0 = fp.MinValueByIndex(fParam0);
-   double maxValue0 = fp.MaxValueByIndex(fParam0);
-   double stepSize0 = fp.StepSizeByIndex(fParam0);
-   double minValue1 = fp.MinValueByIndex(fParam1);
-   double maxValue1 = fp.MaxValueByIndex(fParam1);
-   double stepSize1 = fp.StepSizeByIndex(fParam1);
-
-   fp.SetCurrentValue(fParam0, minValue0);
-   fp.SetCurrentValue(fParam1, minValue1);
+   fParams->SetCurrentValue(fParam0, minValue0);
+   fParams->SetCurrentValue(fParam1, minValue1);
    Rnd::Instance()->SetSeeds(*fArg);
-   data.Generate(&model, fp);
+   fData->Generate(fModel, *fParams);
 
-   for(int i = 0; i < fp.Size(); ++i)
+   int numBins0 = 1 + static_cast<int>((maxValue0 - minValue0) / stepSize0);
+   int numBins1 = 1 + static_cast<int>((maxValue1 - minValue1) / stepSize1);
+   fAvgLikelihood2D = new TH2D("h_avg_likelihood_2D", "h_avg_likelihood_2D",
+         numBins0, minValue0, maxValue0, numBins1, minValue1, maxValue1);
+   int i = 0;
+   int j = 0;
+   for(double value0 = minValue0; value0 <= maxValue0; value0 += stepSize0, ++i)
    {
-      conv::PhysParamId_t p = fp.WhichParam(i);
-      if(p == fParam0 || p == fParam1)
-      {
-         fp.SetNuisance(p, false);
-         fp.FreeParameter(p);
-      }
-      else
-      {
-         // Need to determine appropriate combination for free/fixed and
-         // nuisance/marginalisation parameters
-         fp.SetNuisance(p, true);
-         fp.SetDoMarg(p, true);
-         fp.FixParameter(p);
-      }
-   }
-
-   for(double value0 = minValue0; value0 <= maxValue0; value0 += stepSize0)
-   {
-      fp.SetCurrentValue(fParam0, value0);
-      for(double value1 = minValue1; value1 <= maxValue1; value1 += stepSize1)
+      fParams->SetCurrentValue(fParam0, value0);
+      for(double value1 = minValue1; value1 <= maxValue1; value1 += stepSize1, ++j)
       {
          // Ensure that each set of toys is equivalent to the last set
          Rnd::Instance()->SetSeeds(*fArg);
-         fp.SetCurrentValue(fParam1, value1);
+         fParams->SetCurrentValue(fParam1, value1);
          // Marginalise for this value
          double totLikelihood = 0.0;
-         for(int i = 0; i < fNumToys; ++i)
+         for(int n = 0; n < fNumToys; ++n)
          {
             RandomizeNuisance();
-            totLikelihood += exp(-data.GetFitStatistic(&model, fp, NULL) / 2);
+            totLikelihood += exp(-fData->GetFitStatistic(fModel, *fParams,
+                     NULL) / 2);
          }
          double likelihood = totLikelihood / fNumToys;
+         // Root histogram bins offset by 1 because of underflow bin
+         fAvgLikelihood2D->SetBinContent(i + 1, j + 1, likelihood);
          LOG("MCMarginaliser", pNOTICE) << "Likelihood (" << value0 << "," <<
             value1 << ") = " << likelihood;
       }
    }
-
-   return 0.0;
 }
 
 void MCMarginaliser::Configure(const CmdLnArgList& arg)
@@ -181,23 +180,24 @@ void MCMarginaliser::Configure(const CmdLnArgList& arg)
    }
 
    fParam0 = GetPhysParamId(arg.GetString("fit-param-0"));
+   // Temporary hack to set systematic as free parameter
+   LOG("MCMarginaliser", pWARN) << "Hacked free parameter used";
+   fParam0 = fParams->WhichParam(159);
    fParam1 = GetPhysParamId(arg.GetString("fit-param-1"));
    fNumDimensions = (fParam1 == conv::kPhypUndefined) ? 1 : 2;
 }
 
 void MCMarginaliser::RandomizeNuisance()
 {
-   FitModelABC& model = fFitInputs->Expectation();
-   FitParamList& fp = fFitInputs->FitParams();
    TString options(fArg->GetString("param-values-option"));
 
    // Loop until all parameters are within physical limits
    do
    {
-      model.ResetSystematics("all");
-      model.RandomizeSystematics(options.Data());
-      PhysParamList tweaks = model.Tweaks();
-      fp.FromPhysParamList(tweaks, "current");
+      fModel->ResetSystematics("all");
+      fModel->RandomizeSystematics(options.Data());
+      PhysParamList tweaks = fModel->Tweaks();
+      fParams->FromPhysParamList(tweaks, "current");
    }
    while(!AllParametersWithinBounds());
    do
@@ -209,33 +209,32 @@ void MCMarginaliser::RandomizeNuisance()
 
 void MCMarginaliser::RandomizeOscillation()
 {
-   FitParamList& fp = fFitInputs->FitParams();
-   for(int i = 0; i < fp.Size(); ++i)
+   for(int i = 0; i < fParams->Size(); ++i)
    {
-      conv::PhysParamId_t p = fp.WhichParam(i);
+      conv::PhysParamId_t p = fParams->WhichParam(i);
       if(p!= fParam0 && p != fParam1)
       {
          if(!util::IsSystematic(p) && !util::IsNormalization(p))
          {
-            std::string prior = fp.GetPriorModeName(p);
+            std::string prior = fParams->GetPriorModeName(p);
             if(prior == "flat")
             {
-               double min = fp.GetMinValueFlat(p);
-               double max = fp.GetMaxValueFlat(p);
+               double min = fParams->GetMinValueFlat(p);
+               double max = fParams->GetMaxValueFlat(p);
                double val = Rnd::Instance()->RndToyMCosc().Uniform(min, max);
-               fp.SetCurrentValue(p, val);
+               fParams->SetCurrentValue(p, val);
             }
             else if(prior == "gaus")
             {
-               double mean = fp.GetMeanGaus(p);
-               double sigma = fp.GetSigmaGaus(p);
+               double mean = fParams->GetMeanGaus(p);
+               double sigma = fParams->GetSigmaGaus(p);
                double val = Rnd::Instance()->RndToyMCosc().Gaus(mean, sigma);
-               fp.SetCurrentValue(p, val);
+               fParams->SetCurrentValue(p, val);
             }
             else if(prior == "user")
             {
-               double val = fp.GetPriorHisto(p)->GetRandom();
-               fp.SetCurrentValue(p, val);
+               double val = fParams->GetPriorHisto(p)->GetRandom();
+               fParams->SetCurrentValue(p, val);
             }
             else
             {
@@ -318,19 +317,14 @@ conv::PhysParamId_t MCMarginaliser::GetPhysParamId(const std::string& name)
 
 bool MCMarginaliser::AllParametersWithinBounds()
 {
-   FitParamList& fp = fFitInputs->FitParams();
-   for(int i = 0; i < fp.Size(); ++i)
+   for(int i = 0; i < fParams->Size(); ++i)
    {
-      conv::PhysParamId_t p = fp.WhichParam(i);
+      conv::PhysParamId_t p = fParams->WhichParam(i);
       if(p != fParam0 && p != fParam1)
       {
-         if(fp.CurrValue(p) > fp.MaxValue(p) ||
-               fp.CurrValue(p) < fp.MinValue(p))
+         if(fParams->CurrValue(p) > fParams->MaxValue(p) ||
+               fParams->CurrValue(p) < fParams->MinValue(p))
          {
-/*            LOG("MCMarginaliser", pNOTICE) <<
-               util::NameRegistry::Instance()->AsString(p) <<
-               " out of bounds. Has value " << fp.CurrValue(p) <<
-               " require " << fp.MinValue(p) << "-" << fp.MaxValue(p);*/
             return false;
          }
       }

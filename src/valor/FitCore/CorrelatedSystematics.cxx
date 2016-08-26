@@ -449,8 +449,9 @@ void CorrelatedSystematics::Tweak(
      {
         const TMatrixD& invCholesky = *fCovMtrxChoLInv;
         const TMatrixD& covar = *fCovMtrx;
-        TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values,
-              fNSigma, invCholesky, covar);
+/*        TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values,
+              fNSigma, invCholesky, covar);*/
+        TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
         current_values = vec;
      }
   }
@@ -539,8 +540,9 @@ void CorrelatedSystematics::Tweak(
       {
          const TMatrixD& invCholesky = *fCovMtrxChoLInv;
          const TMatrixD& covar = *fCovMtrx;
-         TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values,
-               fNSigma, invCholesky, covar);
+/*         TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values,
+               fNSigma, invCholesky, covar);*/
+         TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
          for (int ip = 0; ip < vec.GetNoElements() ; ip++)
          {
             PhysParamId_t p = this->Idx2Param(ip);

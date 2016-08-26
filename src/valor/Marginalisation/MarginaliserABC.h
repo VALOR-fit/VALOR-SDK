@@ -2,6 +2,7 @@
 #define MARGINALISERABC_H
 
 #include "valor/CmdLine/CmdLnArgList.h"
+#include "valor/VArray/VALORArrayD.h"
 
 namespace valor
 {
@@ -14,10 +15,24 @@ namespace marginalisation
 
       /**
          Marginalises over nuisance parameters.
+      */
+      virtual void Marginalise() = 0;
+
+      /**
+         Retrieves the average likelihood calculated during a 1D
+         marginalisation.
 
          \return The average likelihood over the marginalization toys.
       */
-      virtual double Marginalise() = 0;
+      virtual TH1D* GetAverageLikelihood1D() = 0;
+
+      /**
+         Retrieves the average likelihood calculated during a 2D
+         marginalisation.
+
+         \return The average likelihood over the marginalization toys.
+      */
+      virtual TH2D* GetAverageLikelihood2D() = 0;
 
       /**
          Configures the marginaliser.
