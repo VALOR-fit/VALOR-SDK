@@ -24,6 +24,9 @@ fi
 export LD_LIBRARY_PATH="${VALOR_FMWK}/lib:${LD_LIBRARY_PATH}"
 export PATH="${VALOR_FMWK}/bin:${PATH}"
 
-# To resolve bugs with Python - investigate why this helps
-unset PYTHONHOME
+# If we've got a python virtualenv, set it up
+if [ -e "${VALOR_FMWK}/external/python/valor/bin/activate" ] ; then
+  export VIRTUAL_ENV_DISABLE_PROMPT=1
+  . "${VALOR_FMWK}/external/python/valor/bin/activate"
+fi
 
