@@ -122,7 +122,7 @@ double valor::util::RandomiseParametersByAcceptance(FitInputs & fitinputs,
     }
   }
   
-  LOG("UtlNumStat",pERROR)<<"Failed to properly randomise the parameters";
+  LOG("UtlFit",pERROR)<<"Failed to properly randomise the parameters";
     
   return conv::kBadResult;
 }
@@ -144,8 +144,9 @@ TMatrixDSym valor::util::CalculateCovariance(std::vector<PhysParamList> param_se
 bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
   double & current_chisq, int & n_attempts_output, double step_size_factor, TMatrixD * cholesky_for_throws, int max_attempts)
 {
+  const bool respect_fixed  = true;
+  const bool respect_limits = false;
   TRandom3 & rnd = Rnd::Instance()->RndOther();
-  const bool respect_fixed = true;
   FitParamList & fp = fitinputs.FitParams();
   
   int npar = fp.Size();
@@ -175,7 +176,7 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
         double val = corr_step + current;
         
         // Reject the throw if we go outside the limits
-        if (val > fp.MaxValueByIndex(ip) || val < fp.MinValueByIndex(ip)) {
+        if (respect_limits && (val > fp.MaxValueByIndex(ip) || val < fp.MinValueByIndex(ip))) {
           bad_throw = true;
           //~ cerr<<fp.NameByIndex(ip)<<"\t"<<val<<"\t"<<fp.MinValueByIndex(ip)<<"\t"<<fp.MaxValueByIndex(ip)<<std::endl;
           break;
@@ -191,7 +192,7 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
         double current  = start_values[ip];
         double sigma = step_size_factor * fp.MigradErrorByIndex(ip);
         double val = rnd.Gaus(current,sigma);
-        if (val > fp.MaxValueByIndex(ip) || val < fp.MinValueByIndex(ip)) {
+        if (respect_limits && (val > fp.MaxValueByIndex(ip) || val < fp.MinValueByIndex(ip))) {
           bad_throw = true;
           //~ cerr<<fp.NameByIndex(ip)<<"\t"<<val<<"\t"<<fp.MinValueByIndex(ip)<<"\t"<<fp.MaxValueByIndex(ip)<<std::endl;
           break;
@@ -209,17 +210,25 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
     double step_chisq = fitinputs.Statistic();
     // The acceptance probability is: A = (P(curr) * q(curr) / (P(step) * q(step))
     // We're using a symmetric proposal so q(curr)==q(step)
-    double step_prob = std::exp( -(step_chisq-current_chisq)/2. );
+    double delta_chisq = step_chisq-current_chisq;
+    double step_prob = std::exp( -delta_chisq/2. );
     double rand_prob = rnd.Uniform();
-    if (step_prob > rand_prob) {
-      current_chisq = step_chisq;
-      //~ std::cerr<<"Made step!"<<std::endl;
+    double rand_chisq = -2 * std::log(rand_prob);
+    //~ assert((delta_chisq < rand_chisq)==(step_prob > rand_prob));
+    //~ if (step_prob > rand_prob) {
+    if (delta_chisq < rand_chisq) {
       n_attempts_output = i_attempt+1;
+      LOG("UtlFit",pINFO)<<"Made a step after "<<n_attempts_output<<" attempts. "
+        <<"Delta chisq was "<<Form("%.2lg",delta_chisq)<<", random chisq was "<<rand_chisq;
+      LOG("UtlFit",pDEBUG)<<"Step chisq = "<<step_chisq<<", prev chisq = "<<current_chisq << ", stepped chisq = "<<step_chisq;
+      current_chisq = step_chisq;
+      LOG("UtlFit",pDEBUG)<<fp;
       return true;
     }
+    LOG("UtlFit",pDEBUG)<<"Step not made - delta chisq was "<<Form("%.2lg",delta_chisq)<<", random chisq was "<<rand_chisq;
   }
   
-  LOG("UtlNumStat",pERROR)<<"Failed to successfully make a step";
+  LOG("UtlFit",pERROR)<<"Failed to successfully make a step";
   for (int ip = 0 ; ip < npar; ip++) {
     fp.SetCurrentValueByIndex(ip,start_values[ip]);
   }
