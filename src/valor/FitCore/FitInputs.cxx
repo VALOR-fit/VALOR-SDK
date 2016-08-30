@@ -88,16 +88,16 @@ double FitInputs::Statistic(Option_t * option) const
   else {
     data_statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL);
   }
-  total_statistic += data_statistic;
   TString option_ts(option);
   if (! option_ts.Contains("nopenalty")) {
     syst_penalty = fExp->GetFitStatisticPenalty(option);
     phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);
-    total_statistic += syst_penalty + phys_penalty;
   }
-  
+  total_statistic = data_statistic + syst_penalty + phys_penalty;
   LOG("FitInputs",pINFO)<<"Statistic = "<<total_statistic<<" (data/MC="<<data_statistic
     <<", syst penalty="<<syst_penalty<<", phys penalty="<<phys_penalty<<")";
+  
+  assert(TMath::Finite(total_statistic));
   return total_statistic;
 }
 //____________________________________________________________________________ 
