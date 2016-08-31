@@ -49,6 +49,10 @@ namespace util {
   
   // Convert a histogram into a TMatrix
   TMatrixD TH2ToTMatrix(const TH2 * hist);
+  
+  // Make a color palette that goes red to blue via white (for covariance matrix)
+  // ROOT automatically makes this the default palette when it's made
+  int CreateRedToBlueColorPalette(int n_shades = 100);
 
 } // util
 } // valor
