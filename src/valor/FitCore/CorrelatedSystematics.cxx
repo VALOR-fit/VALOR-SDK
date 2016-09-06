@@ -611,6 +611,18 @@ int CorrelatedSystematics::Param2Idx(PhysParamId_t p) const
   return idx;  
 }
 //________________________________________________________________________________________
+bool CorrelatedSystematics::Contains(PhysParamId_t p) const
+{
+  if (p==kPhypUndefined) {
+    return false;
+  }
+  int idx = fParam2Idx[p];
+  if (idx < 0 || idx > (int)fNSystParameters) {
+    return false;
+  }
+  return true;
+}
+//________________________________________________________________________________________
 conv::PhysParamId_t CorrelatedSystematics::Idx2Param (int index) const
 {
   assert(index >= 0 && index <= (int)fNSystParameters);

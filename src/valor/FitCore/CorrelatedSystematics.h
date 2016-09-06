@@ -85,6 +85,7 @@ public:
   void SetCovMatrix(const TMatrixD & matr);
   
   // Find out which parameters are at which indices
+  bool Contains(conv::PhysParamId_t p) const;
   unsigned int Size(void) const;
   conv::PhysParamId_t WhichParam(int idx) const;
   const conv::PhysParamId_t * GetParameters() const {return fSystParameters;}
