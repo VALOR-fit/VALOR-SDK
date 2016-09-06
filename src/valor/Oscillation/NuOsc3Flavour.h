@@ -125,6 +125,9 @@ public:
  // It fills this with an array[i][j] of P(nu_i)->P(nu_j)
  void CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs_out[3][3]);
  
+ // Get members
+ double GetBaseline (void) const;
+ double GetDensity  (void) const;
  valor::conv::NuMassHierarchy_t GetMassHierarchy(void) const;
 
  void CalcPMNSElements(double s12, double c12, double s13, double c13, double s23, double c23, double dmsq21, double dmsq31, double deltaCP);

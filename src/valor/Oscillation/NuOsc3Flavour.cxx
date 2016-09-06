@@ -2831,3 +2831,13 @@ conv::NuMassHierarchy_t NuOsc3Flavour::GetMassHierarchy(void) const
   return fMassHierarchy;
 }
 //_________________________________________________________
+double NuOsc3Flavour::GetBaseline(void) const
+{
+  return fBaseline;
+}
+//_________________________________________________________
+double NuOsc3Flavour::GetDensity(void) const
+{
+  return fNe;
+}
+//_________________________________________________________
