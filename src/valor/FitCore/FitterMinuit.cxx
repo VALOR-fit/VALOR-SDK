@@ -394,7 +394,9 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     for (int i = 0; i < num_of_params; i++) {
       if (!fp.IsFixedByIndex(i)) {continue;}
       PhysParamId_t p = fp.WhichParam(i);
-      cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
+      if (cm->GetSystematics()->Contains(p)) {
+        cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
+      }
     }
   }
   fp.SetCovMatrix(cov);
