@@ -21,6 +21,7 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    debug             Adds -g in the compiler options to request debug info       default: disabled \n";
   print "    asan              Build and link against AddressSanitizer.                    default: disabled \n";
   print "    parallel          Use N threads for updating the templates (requires C++11)   default: disabled \n";
+  print "    fault-on-die      Segfault when util::Die() is called, giving a stacktrace    default: disabled \n";
   print "\n options for 3rd party software, prefix with --with- (eg --with-lhapdf-lib=/some/path/)\n\n";
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
   print "    log4cpp-inc       Path to log4cpp includes                                    default: - (auto-detection enabled) \n";
@@ -109,12 +110,14 @@ my $opt_enable_debug      = "NO";
 my $opt_enable_gsl        = "NO";
 my $opt_enable_asan       = "NO";
 my $opt_enable_parallel   = "NO";
+my $opt_enable_fault      = "NO";
 
 # Check configure's command line arguments for non-default values
 #
-if(($match = grep(/--enable-debug/i,    @ARGV)) > 0) { $opt_enable_debug    = "YES"; }
-if(($match = grep(/--enable-asan/i,     @ARGV)) > 0) { $opt_enable_asan     = "YES"; }
-if(($match = grep(/--enable-parallel/i, @ARGV)) > 0) { $opt_enable_parallel = "YES"; }
+if(($match = grep(/--enable-debug/i,        @ARGV)) > 0) { $opt_enable_debug    = "YES"; }
+if(($match = grep(/--enable-asan/i,         @ARGV)) > 0) { $opt_enable_asan     = "YES"; }
+if(($match = grep(/--enable-parallel/i,     @ARGV)) > 0) { $opt_enable_parallel = "YES"; }
+if(($match = grep(/--enable-fault-on-die/i, @ARGV)) > 0) { $opt_enable_fault    = "YES"; }
 
 # Just enable GSL if available
 if (`root-config --features` =~ m/mathmore/) { $opt_enable_gsl    = "YES"; }
@@ -265,6 +268,11 @@ if($opt_enable_debug eq "YES") {
   print BLD_HEADER_FILE   "#define __VALOR_FMWK_DEBUG_ENABLED__\n"; 
 } else {
   print BLD_HEADER_FILE "//#define __VALOR_FMWK_DEBUG_ENABLED__\n"; 
+}
+if($opt_enable_fault eq "YES") { 
+  print BLD_HEADER_FILE   "#define __VALOR_FMWK_FAULT_ON_DIE__\n"; 
+} else {
+  print BLD_HEADER_FILE "//#define __VALOR_FMWK_FAULT_ON_DIE__\n"; 
 }
 # grab log4cpp version information
 open(LOG4CPP_FILE, "$opt_with_log4cpp_inc/log4cpp/config.h") or warn("$opt_with_log4cpp_inc/log4cpp/config.h!");
