@@ -84,14 +84,14 @@ bool FitParamList::AddParam (int ip, PhysParamId_t p,
     this->Print();
     cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
     <<") to slot "<<ip<<" (max params "<<fNParams<<") "<<endl;
-    exit(-1);
+    util::Die(-1);return 0;
   }
   
   if (this->Exists(p)) {
     this->Print();
     cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
     <<"): parameter already exists."<<endl;
-    exit(-1);
+    util::Die(-1);return 0;
   }
   
   fIdMap.insert(map<PhysParamId_t, int>::value_type(p,ip));
@@ -198,7 +198,7 @@ void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
   if(plst.GetParListName() != fParListName) {
     cerr << "Cannot copy BestFit values in FitParamList of type " << plst.GetParListName()
     << " to InitValues in FitParamList of type " << fParListName << endl;
-    exit(1);
+    util::Die(-1);return;
   }
   for(int ip = 0; ip < fNParams; ip++) {
     fInitValue[ip] = plst.BestFitValueByIndex(ip);
@@ -233,7 +233,7 @@ void FitParamList::SetMigradErrors(vector<double> err)
     cerr << "FitterKernelMinuit2/SetMigradErrors >> Error vector size: " << err.size()
     << " is not the same size as the number of free parameters: "
     << this->GetNumberFreeParameters() << endl;
-    exit(1);
+    util::Die(-1);return;
   }
   
   for(int ip = 0; ip < fNParams; ip++) {
@@ -248,7 +248,7 @@ void FitParamList::SetHesseErrors(vector<double> err)
     cerr << "FitterKernelMinuit2/SetHesseErrors >> Error vector size: " << err.size()
     << " is not the same size as the number of free parameters: "
     << this->GetNumberFreeParameters() << endl;
-    exit(1);
+    util::Die(-1);return;
   }
   
   for(int ip = 0; ip < fNParams; ip++) {
@@ -263,12 +263,12 @@ void FitParamList::SetMinosErrors(vector<double> plus, vector<double> minus)
     cerr << "FitterKernelMinuit2/SetMinosErrors >> Error vector size: " << plus.size()
     << " is not the same size as the number of parameters: "
     << this->GetNumberFreeParameters() << endl;
-    exit(1);
+    util::Die(-1);return;
   }
   if(plus.size() != minus.size()) {
     cerr << "FitterKernelMinuit2/SetMinosErrors >> Error vector size (plus): " << plus.size()
     << " is not the same size as error vector size (minus): " << minus.size() << endl;
-    exit(1);
+    util::Die(-1);return;
   }
   
   for(int ip = 0; ip < fNParams; ip++) {
@@ -932,7 +932,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarFit(int nuisance)
       break;
     default:
       std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
-      exit(-1);
+      util::Die(-1);return 0;
   }
   
   fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
@@ -990,7 +990,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarDissapFit(int nuisance)
       break;
     default:
       std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
-      exit(-1);
+      util::Die(-1);return 0;
   }
   
   fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
@@ -1056,7 +1056,7 @@ FitParamList * FitParamList::NuOsc3FlavourBarNormBarFit(int nuisance)
       break;
     default:
       std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
-      exit(-1);
+      util::Die(-1);return 0;
   }
   
   fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
@@ -1929,7 +1929,7 @@ int FitParamList::Id(PhysParamId_t p) const
   if(it == fIdMap.end()) {
     cerr << "FitParamList::Id() >> Parameter: " << util::NameRegistry::Instance()->AsString(p) << " PhysParamId_t p = " << p
     << " was not included in current fit parameter list" << endl;
-    exit(1);
+    util::Die(-1); return 0;
   }
   int id = it->second;
   return id;
@@ -2023,7 +2023,7 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,int priormode)
     cerr << "  0 --> flat prior" << endl;
     cerr << "  1 --> gaus prior" << endl;
     cerr << "  2 --> prior from user distribution" << endl;
-    exit(1);
+    util::Die(-1);return;
   }
 }
 //________________________________________________________________________________________
@@ -2047,7 +2047,7 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,string priormodenam
     cerr << "  flat --> flat prior" << endl;
     cerr << "  gaus --> gaus prior" << endl;
     cerr << "  user --> prior from user distribution" << endl;
-    exit(1);
+    util::Die(-1);return;
   }
 }
 //________________________________________________________________________________________
