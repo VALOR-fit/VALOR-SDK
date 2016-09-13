@@ -259,3 +259,22 @@ int valor::util::CreateRedToBlueColorPalette(int n_shades)
   return pal_number;
 }
 //___________________________________________________________________________
+TObjArray valor::util::GetHistsFromCanvas(TCanvas * canv, const char * name)
+{
+  TList * arr = canv->GetListOfPrimitives();
+  TObjArray output;
+  for (int i = 0 ; i < arr->GetEntries(); i++) {
+    TObject * obj = arr->At(i);
+    if (TString(obj->ClassName()).Contains(name)) {
+      TH1 * h = dynamic_cast<TH1*>(obj);
+      if (h) {
+        output.Add(h);
+      }
+      else {
+        LOG("UtlHist",pWARN) << "Did not get valid histogram from object matching "<<name;
+      }
+    }
+  }
+  return output;
+}
+//___________________________________________________________________________

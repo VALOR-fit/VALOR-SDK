@@ -22,6 +22,8 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TObjArray.h>
+#include <TCanvas.h>
+#include <TObjArray.h>
 
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/FitParamList.h"
@@ -53,6 +55,10 @@ namespace util {
   // Make a color palette that goes red to blue via white (for covariance matrix)
   // ROOT automatically makes this the default palette when it's made
   int CreateRedToBlueColorPalette(int n_shades = 100);
+  
+  // Get the histograms out of a TCanvas
+  TObjArray GetHistsFromCanvas(TCanvas * canv, const char * name = "TH1");
+  
 
 } // util
 } // valor
