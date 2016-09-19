@@ -45,6 +45,7 @@ namespace util {
   std::string FlavourAsString(conv::NuFlavour_t p); //alias for python
 
   conv::NuFlavour_t FlavourFromString(std::string h);
+  conv::NuFlavour_t FlavourFromPDG(int nu_pdg);
 
 } // util
 

@@ -9,6 +9,7 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include "valor/Conventions/NuFlavour.h"
+#include "valor/Conventions/PDG.h"
 
 #include <algorithm>
 
@@ -45,6 +46,21 @@ NuFlavour_t util::FlavourFromString(string flavname)
     }
   }
     
+  return kNuFlavourUndefined;
+}
+//________________________________________________________________________________________
+NuFlavour_t util::FlavourFromPDG(int nu_pdg)
+{
+  switch (nu_pdg) {
+   case (conv::kPdgNuE     ) : return kNuE     ;
+   case (conv::kPdgNuMu    ) : return kNuMu    ;
+   case (conv::kPdgNuTau   ) : return kNuTau   ;
+   case (conv::kPdgNuEBar  ) : return kNuEBar  ;
+   case (conv::kPdgNuMuBar ) : return kNuMuBar ;
+   case (conv::kPdgNuTauBar) : return kNuTauBar;
+   
+   default : return kNuFlavourUndefined;
+  }
   return kNuFlavourUndefined;
 }
 //________________________________________________________________________________________

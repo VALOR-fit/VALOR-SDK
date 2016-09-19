@@ -206,7 +206,7 @@ TH1 * valor::util::MakeFittedHistogramShowingFittedValues(const TH1* hist, const
   fitted_hist->SetBins(npoints,xmin,xmax);
     
   for (int ibin = 1 ; ibin <= fitted_hist->GetXaxis()->GetNbins() ; ibin++) {
-    double bin_width  = fitted_hist->GetXaxis()->GetBinWidth(1);
+    //~ double bin_width  = fitted_hist->GetXaxis()->GetBinWidth(1);
     double bin_centre = fitted_hist->GetXaxis()->GetBinCenter(ibin);
     double func_val = func->Eval(bin_centre);
     fitted_hist->SetBinContent(ibin, func_val);
@@ -245,5 +245,36 @@ TMatrixD valor::util::TH2ToTMatrix(const TH2 * hist)
     }
   }
   return m;
+}
+//___________________________________________________________________________
+int valor::util::CreateRedToBlueColorPalette(int n_shades)
+{
+  double reds  [3] = {1.,1.,0};
+  double blues [3] = {0.,1.,1};
+  double greens[3] = {0.,1.,0};
+  
+  double stops [3] = {0.0,0.5, 1.0};
+
+  int pal_number = TColor::CreateGradientColorTable(3,stops,reds,greens,blues,n_shades);
+  return pal_number;
+}
+//___________________________________________________________________________
+TObjArray valor::util::GetHistsFromCanvas(TCanvas * canv, const char * name)
+{
+  TList * arr = canv->GetListOfPrimitives();
+  TObjArray output;
+  for (int i = 0 ; i < arr->GetEntries(); i++) {
+    TObject * obj = arr->At(i);
+    if (TString(obj->ClassName()).Contains(name)) {
+      TH1 * h = dynamic_cast<TH1*>(obj);
+      if (h) {
+        output.Add(h);
+      }
+      else {
+        LOG("UtlHist",pWARN) << "Did not get valid histogram from object matching "<<name;
+      }
+    }
+  }
+  return output;
 }
 //___________________________________________________________________________

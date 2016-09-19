@@ -22,6 +22,7 @@ ChangeLog:
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Conventions/Build.h"
 #include "valor/Conventions/Opt.h"
 
 using namespace valor;
@@ -44,6 +45,12 @@ void valor::util::Die(int status_code)
 #endif
     return;
   }
+#ifdef __VALOR_FMWK_FAULT_ON_DIE__
+  std::cerr<<"VALOR died, forcing segfault to get trace."<<std::endl;
+  ((TSystem*)(NULL))->Abort();
+#else
+  std::cerr<<"VALOR died"<<std::endl;
+#endif
   exit(status_code);
 }
 //____________________________________________________________________________

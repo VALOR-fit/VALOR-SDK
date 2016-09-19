@@ -182,6 +182,7 @@ template<typename numtype> int VALORArrayT<numtype>::
   }
   for (int i = 0 ; i < fNDim; i++) {
     assert(indices[i]>=0);
+    assert(indices[i]<fDimensions[i]);
   }
   for (int i = fNDim ; i < 6 ; i++) {
     assert(indices[i]==-1);

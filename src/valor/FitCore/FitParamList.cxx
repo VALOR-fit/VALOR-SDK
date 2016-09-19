@@ -31,6 +31,7 @@ using std::vector;
 using std::setw;
 using std::setprecision;
 
+using namespace std;
 using namespace valor;
 using namespace valor::conv;
 
@@ -78,23 +79,19 @@ bool FitParamList::AddParam (int ip, PhysParamId_t p,
       ip = this->FirstEmptyEntry();
    }
   
-   if (ip < 0 || ip >= fNParams)
-   {
-      this->Print();
-      LOG("FitParamList", pERROR) << "Failed to add parameter " <<
-         util::NameRegistry::Instance()->AsString(p) << " (" << name <<
-         ") to slot " << ip << " (max params " << fNParams << ") ";
-      exit(-1);
-   }
+  if (ip < 0 || ip >= fNParams) {
+    this->Print();
+    cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
+    <<") to slot "<<ip<<" (max params "<<fNParams<<") "<<endl;
+    util::Die(-1);return 0;
+  }
   
-   if (this->Exists(p))
-   {
-      this->Print();
-      LOG("FitParamList", pERROR) << "Failed to add parameter " <<
-         util::NameRegistry::Instance()->AsString(p) << " (" << name <<
-         "): parameter already exists.";
-      exit(-1);
-   }
+  if (this->Exists(p)) {
+    this->Print();
+    cerr<<"FitParamList/AddParam >> Failed to add parameter "<<util::NameRegistry::Instance()->AsString(p) <<" ("<<name
+    <<"): parameter already exists."<<endl;
+    util::Die(-1);return 0;
+  }
   
    fIdMap.insert(map<PhysParamId_t, int>::value_type(p,ip));
   
@@ -198,18 +195,14 @@ void FitParamList::CopyCurrToInitValues(void)
 //________________________________________________________________________________________
 void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
 {
-   if(plst.GetParListName() != fParListName)
-   {
-      LOG("FitParamList", pERROR) <<
-         "Cannot copy BestFit values in FitParamList of type " <<
-         plst.GetParListName() << " to InitValues in FitParamList of type " <<
-         fParListName;
-      exit(1);
-   }
-   for(int ip = 0; ip < fNParams; ip++)
-   {
-      fInitValue[ip] = plst.BestFitValueByIndex(ip);
-   }
+  if(plst.GetParListName() != fParListName) {
+    cerr << "Cannot copy BestFit values in FitParamList of type " << plst.GetParListName()
+    << " to InitValues in FitParamList of type " << fParListName << endl;
+    util::Die(-1);return;
+  }
+  for(int ip = 0; ip < fNParams; ip++) {
+    fInitValue[ip] = plst.BestFitValueByIndex(ip);
+  }
 }
 //________________________________________________________________________________________
 void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix)
@@ -236,13 +229,12 @@ void FitParamList::SetErrors(double * errplus, double * errminus, double * errmi
 //________________________________________________________________________________________
 void FitParamList::SetMigradErrors(vector<double> err)
 {
-   if(err.size() != (unsigned int)this->Size())
-   {
-      LOG("FitParamList", pERROR) << "Error vector size: " << err.size() <<
-         " is not the same size as the number of free parameters: " <<
-         this->GetNumberFreeParameters();
-      exit(1);
-   }
+  if(err.size() != (unsigned int)this->Size()) {
+    cerr << "FitterKernelMinuit2/SetMigradErrors >> Error vector size: " << err.size()
+    << " is not the same size as the number of free parameters: "
+    << this->GetNumberFreeParameters() << endl;
+    util::Die(-1);return;
+  }
   
    for(int ip = 0; ip < fNParams; ip++)
    {
@@ -253,13 +245,12 @@ void FitParamList::SetMigradErrors(vector<double> err)
 //________________________________________________________________________________________
 void FitParamList::SetHesseErrors(vector<double> err)
 {
-   if(err.size() != (unsigned int)this->Size())
-   {
-      LOG("FitParamList", pERROR) << "Error vector size: " << err.size() <<
-         " is not the same size as the number of free parameters: " <<
-         this->GetNumberFreeParameters();
-      exit(1);
-   }
+  if(err.size() != (unsigned int)this->Size()) {
+    cerr << "FitterKernelMinuit2/SetHesseErrors >> Error vector size: " << err.size()
+    << " is not the same size as the number of free parameters: "
+    << this->GetNumberFreeParameters() << endl;
+    util::Die(-1);return;
+  }
   
    for(int ip = 0; ip < fNParams; ip++)
    {
@@ -270,21 +261,17 @@ void FitParamList::SetHesseErrors(vector<double> err)
 //________________________________________________________________________________________
 void FitParamList::SetMinosErrors(vector<double> plus, vector<double> minus)
 {
-   if((int)plus.size() != this->Size())
-   {
-      LOG("FitParamList", pERROR) << "Error vector size: " << plus.size() <<
-         " is not the same size as the number of parameters: " <<
-         this->GetNumberFreeParameters();
-      exit(1);
-   }
-   if(plus.size() != minus.size())
-   {
-      LOG("FitParamList", pERROR) << "Error vector size (plus): " <<
-         plus.size() <<
-         " is not the same size as error vector size (minus): " <<
-         minus.size();
-      exit(1);
-   }
+  if((int)plus.size() != this->Size()) {
+    cerr << "FitterKernelMinuit2/SetMinosErrors >> Error vector size: " << plus.size()
+    << " is not the same size as the number of parameters: "
+    << this->GetNumberFreeParameters() << endl;
+    util::Die(-1);return;
+  }
+  if(plus.size() != minus.size()) {
+    cerr << "FitterKernelMinuit2/SetMinosErrors >> Error vector size (plus): " << plus.size()
+    << " is not the same size as error vector size (minus): " << minus.size() << endl;
+    util::Die(-1);return;
+  }
   
    for(int ip = 0; ip < fNParams; ip++)
    {
@@ -966,25 +953,23 @@ FitParamList * FitParamList::NuOsc3FlavourBarFit(int nuisance)
    FitParamList::Append3FlavourOscillation(fparm, 0);
    FitParamList::Append3FlavourOscillationBar(fparm, 6);
   
-   // Set initial values for the non-barred fit params
-   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
-   switch(omp)
-   {
-      case(kNuMixSinsq2Theta):
-         fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsq2Theta12);
-         fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsq2Theta13);
-         fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsq2Theta23);
-         break;
-      case(kNuMixSinsqTheta):
-         fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsqTheta12);
-         fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsqTheta13);
-         fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsqTheta23);
-         break;
-      default:
-         LOG("FitParamList", pERROR) <<
-            "Unknown oscillation mixing parameter choice: " << omp;
-         exit(-1);
-   }
+  // Set initial values for the non-barred fit params
+  NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+  switch(omp) {
+    case(kNuMixSinsq2Theta):
+      fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsq2Theta12);
+      fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsq2Theta13);
+      fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsq2Theta23);
+      break;
+    case(kNuMixSinsqTheta):
+      fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsqTheta12);
+      fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsqTheta13);
+      fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsqTheta23);
+      break;
+    default:
+      std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
+      util::Die(-1);return 0;
+  }
   
    fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
    NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
@@ -1032,27 +1017,25 @@ FitParamList * FitParamList::NuOsc3FlavourBarDissapFit(int nuisance)
    FitParamList::Append3FlavourOscillation(fparm, 0);
    FitParamList::Append3Flavour23BarOscillation(fparm, 6);
   
-   // Set initial values for the non-barred fit params
-   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
-   switch(omp)
-   {
-      case(kNuMixSinsq2Theta):
-         fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsq2Theta12);
-         fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsq2Theta13);
-         fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsq2Theta23);
-         fparm->SetInitValue(kPhypMixing23Bar, conv::kGlobFitSinsq2Theta23);
-         break;
-      case(kNuMixSinsqTheta):
-         fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsqTheta12);
-         fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsqTheta13);
-         fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsqTheta23);
-         fparm->SetInitValue(kPhypMixing23Bar, conv::kGlobFitSinsqTheta23);
-         break;
-      default:
-         LOG("FitParamList", pERROR) <<
-            "Unknown oscillation mixing parameter choice: " << omp;
-         exit(-1);
-   }
+  // Set initial values for the non-barred fit params
+  NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+  switch(omp) {
+    case(kNuMixSinsq2Theta):
+      fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsq2Theta12);
+      fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsq2Theta13);
+      fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsq2Theta23);
+      fparm->SetInitValue(kPhypMixing23Bar, conv::kGlobFitSinsq2Theta23);
+      break;
+    case(kNuMixSinsqTheta):
+      fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsqTheta12);
+      fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsqTheta13);
+      fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsqTheta23);
+      fparm->SetInitValue(kPhypMixing23Bar, conv::kGlobFitSinsqTheta23);
+      break;
+    default:
+      std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
+      util::Die(-1);return 0;
+  }
   
    fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
    NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
@@ -1110,25 +1093,23 @@ FitParamList * FitParamList::NuOsc3FlavourBarNormBarFit(int nuisance)
    FitParamList::Append3FlavourOscillationBar(fparm, 6);
    FitParamList::AppendNormBar(fparm, 12);
   
-   // Set initial values for the non-barred fit params
-   NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
-   switch(omp)
-   {
-      case(kNuMixSinsq2Theta):
-         fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsq2Theta12);
-         fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsq2Theta13);
-         fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsq2Theta23);
-         break;
-      case(kNuMixSinsqTheta):
-         fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsqTheta12);
-         fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsqTheta13);
-         fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsqTheta23);
-         break;
-      default:
-         LOG("FitParamList", pERROR) <<
-            "Unknown oscillation mixing parameter choice: " << omp;
-         exit(-1);
-   }
+  // Set initial values for the non-barred fit params
+  NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+  switch(omp) {
+    case(kNuMixSinsq2Theta):
+      fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsq2Theta12);
+      fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsq2Theta13);
+      fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsq2Theta23);
+      break;
+    case(kNuMixSinsqTheta):
+      fparm->SetInitValue(kPhypMixing12   , conv::kGlobFitSinsqTheta12);
+      fparm->SetInitValue(kPhypMixing13   , conv::kGlobFitSinsqTheta13);
+      fparm->SetInitValue(kPhypMixing23   , conv::kGlobFitSinsqTheta23);
+      break;
+    default:
+      std::cerr<<"Unknown oscillation mixing parameter choice: "<<omp<<std::endl;
+      util::Die(-1);return 0;
+  }
   
    fparm->SetInitValue(kPhypCPV        , conv::kGlobFitDeltaCP);
    NuOscDmsqScheme_t odmsq = Opt::Instance()->GetEffectiveDmsqScheme();
@@ -2167,7 +2148,7 @@ int FitParamList::Id(PhysParamId_t p) const
     LOG("FitParamList", pERROR) << "FitParamList::Id() >> Parameter: " <<
        util::NameRegistry::Instance()->AsString(p) << " PhysParamId_t p = " <<
        p << " was not included in current fit parameter list";
-    exit(1);
+    util::Die(-1); return 0;
   }
   int id = it->second;
   return id;
@@ -2255,54 +2236,41 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,int priormode)
 {
    fPriorMode [this->Id(p)] = priormode;
   
-   if(priormode==0)
-   {
-      fPriorModeName [this->Id(p)].SetString("flat");
-   }
-   else if(priormode==1)
-   {
-      fPriorModeName [this->Id(p)].SetString("gaus");
-   }
-   else if(priormode==2)
-   {
-      fPriorModeName [this->Id(p)].SetString("user");
-   }
-   else
-   {
-      LOG("FitParamList", pERROR) << "Chosen marginalization prior mode " <<
-         priormode << " is not available\n" << "Possible choices are:\n" <<
-         "  0 --> flat prior\n  1 --> gaus prior\n" <<
-         "  2 --> prior from user distribution";
-      exit(1);
-   }
+  if      (priormode==0) fPriorModeName [this->Id(p)].SetString("flat");
+  else if (priormode==1) fPriorModeName [this->Id(p)].SetString("gaus");
+  else if (priormode==2) fPriorModeName [this->Id(p)].SetString("user");
+  else{
+    cerr << "Chosen marginalization prior mode " << priormode << " is not available" << endl;
+    cerr << "Possible choices are:" << endl;
+    cerr << "  0 --> flat prior" << endl;
+    cerr << "  1 --> gaus prior" << endl;
+    cerr << "  2 --> prior from user distribution" << endl;
+    util::Die(-1);return;
+  }
 }
 //________________________________________________________________________________________
 void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,string priormodename)
 {
-   if(priormodename=="flat")
-   {
-      fPriorModeName [this->Id(p)].SetString("flat");
-      fPriorMode [this->Id(p)] = 0;
-   }
-   else if (priormodename=="gaus")
-   {
-      fPriorModeName [this->Id(p)].SetString("gaus");
-      fPriorMode [this->Id(p)] = 1;
-   }
-   else if (priormodename=="user")
-   {
-      fPriorModeName [this->Id(p)].SetString("user");
-      fPriorMode [this->Id(p)] = 2;
-   }
-   else
-   {
-      LOG("FitParamList", pERROR) << "Chosen marginalization prior mode " <<
-         priormodename << " is not available\n" <<
-         "Possible choices are:\n  flat --> flat prior\n" <<
-         "  gaus --> gaus prior\n" <<
-         "  user --> prior from user distribution";
-      exit(1);
-   }
+  if(priormodename=="flat"){
+    fPriorModeName [this->Id(p)].SetString("flat");
+    fPriorMode [this->Id(p)] = 0;
+  }
+  else if (priormodename=="gaus"){
+    fPriorModeName [this->Id(p)].SetString("gaus");
+    fPriorMode [this->Id(p)] = 1;
+  }
+  else if (priormodename=="user"){
+    fPriorModeName [this->Id(p)].SetString("user");
+    fPriorMode [this->Id(p)] = 2;
+  }
+  else{
+    cerr << "Chosen marginalization prior mode " << priormodename << " is not available" << endl;
+    cerr << "Possible choices are:" << endl;
+    cerr << "  flat --> flat prior" << endl;
+    cerr << "  gaus --> gaus prior" << endl;
+    cerr << "  user --> prior from user distribution" << endl;
+    util::Die(-1);return;
+  }
 }
 //________________________________________________________________________________________
 void FitParamList::SetMeanGaus(valor::conv::PhysParamId_t p,double mean)
