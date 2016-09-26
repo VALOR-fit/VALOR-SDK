@@ -77,20 +77,15 @@ TH2D* MCMarginaliser::GetAverageLikelihood2D()
 
 void MCMarginaliser::Marginalise1D()
 {
-   LOG("MCMarginaliser", pNOTICE) << "1";
    double minValue = fParams->MinValue(fParam0);
    double maxValue = fParams->MaxValue(fParam0);
    // Quick hack for testing purposes
-   double stepSize = (maxValue - minValue) / 99.0;
-   // double step_size = fitInputs->FitParams().StepSize(fParam0);
-   LOG("MCMarginaliser", pNOTICE) << "2";
+   //double stepSize = (maxValue - minValue) / 99.0;
+   double stepSize = fParams->StepSize(fParam0);
    
    fParams->SetCurrentValue(fParam0, minValue);
-   LOG("MCMarginaliser", pNOTICE) << "3";
    Rnd::Instance()->SetSeeds(*fArg);
-   LOG("MCMarginaliser", pNOTICE) << "4";
    fData->Generate(fModel, *fParams, false);
-   LOG("MCMarginaliser", pNOTICE) << "5";
 
    int numBins = 1 + static_cast<int>((maxValue - minValue) / stepSize);
    fLikelihood = new VALORArray(numBins);
@@ -181,8 +176,8 @@ void MCMarginaliser::Configure(const CmdLnArgList& arg)
 
    fParam0 = GetPhysParamId(arg.GetString("fit-param-0"));
    // Temporary hack to set systematic as free parameter
-   LOG("MCMarginaliser", pWARN) << "Hacked free parameter used";
-   fParam0 = fParams->WhichParam(159);
+//   LOG("MCMarginaliser", pWARN) << "Hacked free parameter used";
+//   fParam0 = fParams->WhichParam(159);
    fParam1 = GetPhysParamId(arg.GetString("fit-param-1"));
    fNumDimensions = (fParam1 == conv::kPhypUndefined) ? 1 : 2;
 }
