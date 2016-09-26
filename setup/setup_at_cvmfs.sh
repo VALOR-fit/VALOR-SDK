@@ -10,8 +10,10 @@
 
 # Setup LArSoft. This gives us g++4.9, ROOT and GENIE
 # The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
+if [[ ! $PRODUCTS == *"larsoft"* ]] ; then
+  . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?" 
+fi
 if [ -z "$SETUP_LARSOFT" ] ; then
-  . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
   setup "larsoft" "v05_10_00" -q "e9:prof" && retval="$?"
 fi
 
