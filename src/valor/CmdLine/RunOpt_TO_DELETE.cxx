@@ -1417,9 +1417,7 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
             stream << " - " << setw(w) << "Input file for marginalization toys IH:"  << fInfilename_ih << endl;
           }
     
-    stream << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl
-           << " - " << setw(w) << "Number of input file for marginalization toys:"  << fNfiles << endl
-           << " - " << setw(w) << "Number of toys for marginalization:"  << fNtoysMarg << endl
+    stream << " - " << setw(w) << "Number of toys for marginalization:"  << fNtoysMarg << endl
            << " - " << setw(w) << "Name of free parameter 0 for fit with marginalization:"  << fFreeparname0 << endl
            << " - " << setw(w) << "Name of free parameter 1 for fit with marginalization:"  << fFreeparname1 << endl
            << " - " << setw(w) << "Min value of free parameter 0 for fit with marginalization:"  << fFreeparmin0 << endl
