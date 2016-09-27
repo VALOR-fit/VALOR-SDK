@@ -74,8 +74,8 @@ namespace valor {
         string VerbosityFile   () const { if(fParseType & kParseCommon) return fVerbosityFile; cerr << "kParseCommon not set" << endl; exit(-1); }
         string FileTag         () const { if(fParseType & kParseCommon) return fFileTag;       cerr << "kParseCommon not set" << endl; exit(-1); }
         int    Run             () const { if(fParseType & kParseCommon) return fRun;           cerr << "kParseCommon not set" << endl; exit(-1); }
-	string PathFileData    () const { if(fParseType & kParseCommon) return fPathFileData;  cerr << "kParseCommon not set" << endl; exit(-1); }
-	bool   UseFileData     () const { if(fParseType & kParseCommon) return fUseFileData;   cerr << "kParseCommon not set" << endl; exit(-1); }
+        string PathFileData    () const { if(fParseType & kParseCommon) return fPathFileData;  cerr << "kParseCommon not set" << endl; exit(-1); }
+        bool   UseFileData     () const { if(fParseType & kParseCommon) return fUseFileData;   cerr << "kParseCommon not set" << endl; exit(-1); }
 
         UInt_t RndSeedToyMCstat() const {return fSeedToyMCstat;}
         UInt_t RndSeedToyMCsyst() const {return fSeedToyMCsyst;}
@@ -170,12 +170,9 @@ namespace valor {
         string fVerbosityFile;
         string fFileTag;
         int    fRun;
-	
-	// Posterior predictive
-	bool   fUseFileData;
-       	string fPathFileData;
-	//bool   fUseSKsample[conv::kns];
-	
+        bool   fUseFileData;
+        string fPathFileData;
+
         // toy options
         int  fFirstExperiment;
         int  fLastExperiment;
@@ -185,6 +182,7 @@ namespace valor {
         bool fRethrowIfUnphysical;
         bool fVerboseSystThrows;
         bool fVerboseFit;
+
         // global options
         string fGlobalDmsqScheme;
         string fGlobalMassHierarchy;
@@ -254,11 +252,9 @@ namespace valor {
         bool fReadSKExp;
         string fFit_param_list;
         string fInfilename;
-
         string fInfilename_nh;
         string fInfilename_ih;
         bool fDoFC;
-
         int fNfiles;
         int fNtoysMarg;
         string fFreeparname0;
@@ -271,9 +267,7 @@ namespace valor {
         int fNptScan1;
         bool fDoMargMH;
         string fHierarchy_marg;
-
         bool fDoMinimize; // use descent gradient
-	
         TString fTypeError;
         bool fDrawFullChisq;
         string fTeststat;
@@ -283,7 +277,7 @@ namespace valor {
         bool fPenaltyTerm1; // penalty term for param1
         bool kScale_toys_based_on_samples;
         double fScale_toys_based_on_samples_scale;
-      
+
         //conv::PhysParamId_t fFreepar0;
         //conv::PhysParamId_t fFreepar1;
         //

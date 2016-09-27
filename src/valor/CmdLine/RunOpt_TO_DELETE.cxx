@@ -123,21 +123,10 @@ void valor::RunOpt::Init(void)
 
 
   
-  // Posterior predictive
-
   // External inputs
   fUseFileData   = false;
   fPathFileData  = "";
-
-  // for(int is = 0; is < kns; is++) {
-  //   SuperkSample_t s = conv::kSKSamples[is];
-  //   if (s == conv::kSKsUndefined) continue;
-  //   fUseSKsample[is] = false;
-  // }//is
-  /////
-
-
-
+  
   // Priors
   
   fPriorId = conv::kBadResult;
@@ -189,6 +178,10 @@ void valor::RunOpt::Init(void)
   fInfilename_ih    = "";
   fDoFC             = false;
 
+  fInfilename       = "";
+  fInfilename_nh    = "";
+  fInfilename_ih    = "";
+  fDoFC             = false;
   fNfiles           = 9;
   fNtoysMarg        = 100;
   fFreeparname0     = "deltacp";
@@ -210,7 +203,6 @@ void valor::RunOpt::Init(void)
   fPenaltyTerm1     = false;
   kScale_toys_based_on_samples = false;
   fScale_toys_based_on_samples_scale = 1;
-
 }
 //____________________________________________________________________________
 void valor::RunOpt::InitOscParams(double value)
@@ -352,24 +344,11 @@ void valor::RunOpt::ReadCommonOptions()
     fSeedOther = 0;
   }
   
-
-
-
-
-  // Posterior predictive
-  
   if (fParser->OptionExists("file-data")){
     fPathFileData = fParser->ArgAsString("file-data");
     fUseFileData = true;
   }
   
-  // if (fParser->OptionExists("Use-1Re")){
-  //   fUseSKsample[] = true;
-  // }
-
-  //////
-
-
   // Should this be done here? Or in macro code.
   Rnd::Instance()->SetSeeds(fSeedToyMCstat,fSeedToyMCsyst,fSeedToyMCosc,fSeedFitter,fSeedOther);
   
@@ -459,6 +438,18 @@ void valor::RunOpt::ReadToyOptions()
     cerr << endl;
     cerr << "Toy options:" << endl;
     cerr << "You didn't set the option --verbose-syst-throws (0 or 1)" << endl;
+    cerr << endl;
+    exit(1);
+  }
+  
+  // Set verbosity of fits
+  if(fParser->OptionExists("verbose-fit")){
+    fVerboseFit = (bool) fParser->ArgAsInt("verbose-fit");
+  }
+  else{
+    cerr << endl;
+    cerr << "Toy options:" << endl;
+    cerr << "You didn't set the option --verbose-fit (0 or 1)" << endl;
     cerr << endl;
     exit(1);
   }
@@ -867,6 +858,7 @@ void valor::RunOpt::ReadFitMargOptions()
     cerr << endl;
     exit(1);
   }
+
   
   if(fParser->OptionExists("use-xml-file")){
     fUsing_xml_file = (bool)fParser->ArgAsInt("use-xml-file");
@@ -920,11 +912,6 @@ void valor::RunOpt::ReadFitMargOptions()
     exit(1);
   }
   
-
-
-
-
-
   if(fParser->OptionExists("do-fc")){
     fDoFC = (bool)fParser->ArgAsInt("do-fc");
   }
@@ -936,6 +923,7 @@ void valor::RunOpt::ReadFitMargOptions()
     exit(1);
   }
 
+  
   
   if(fDoFC==false){
     
@@ -953,7 +941,7 @@ void valor::RunOpt::ReadFitMargOptions()
   }
   
   else{
-
+    
     if(fParser->OptionExists("file-margtoys-nh")){
       fInfilename_nh= fParser->ArgAsString("file-margtoys-nh");
     }
@@ -965,7 +953,7 @@ void valor::RunOpt::ReadFitMargOptions()
       cerr << endl;
       exit(1);
     }
-
+    
     if(fParser->OptionExists("file-margtoys-ih")){
       fInfilename_ih = fParser->ArgAsString("file-margtoys-ih");
     }
@@ -977,19 +965,8 @@ void valor::RunOpt::ReadFitMargOptions()
       cerr << endl;
       exit(1);
     }
-
+    
   }
-  
-
-
-
-
-
-
-
-
-
-
 
   if(fParser->OptionExists("nfiles-margtoys")){
     fNfiles = fParser->ArgAsInt("nfiles-margtoys");
@@ -1233,11 +1210,10 @@ void valor::RunOpt::ReadFitMargOptions()
   
   if(fParser->OptionExists("scale-gentoys")){
     kScale_toys_based_on_samples = (bool) fParser->ArgAsInt("scale-gentoys");
-
+    
     if(fParser->OptionExists("scale-gentoys-scale")){
       fScale_toys_based_on_samples_scale = (double) fParser->ArgAsDouble("scale-gentoys-scale");
     }
-
   }
   
 }
@@ -1253,11 +1229,11 @@ void valor::RunOpt::Usage(const int w)
   
   if(fParseType & kParseCommon) {
     cout << "Common running options:" << endl
-	 << " " << setw(w) << "--config-file VALUE"      << "analysis configuration file to use (in $T2KOSCANA/config/)" << endl
-	 << " " << setw(w) << "--file-tag VALUE"         << "tag for output file(s)" << endl
-	 << " " << setw(w) << "--run VALUE"              << "job number for output file(s)" << endl
-	 << " " << setw(w) << "--file-data"              << "input file that contains the data set" << endl         
-	 << endl;
+    << " " << setw(w) << "--config-file VALUE"      << "analysis configuration file to use (in $T2KOSCANA/config/)" << endl
+    << " " << setw(w) << "--file-tag VALUE"         << "tag for output file(s)" << endl
+    << " " << setw(w) << "--run VALUE"              << "job number for output file(s)" << endl
+    << " " << setw(w) << "--file-data"              << "input file that contains the data set" << endl
+    << endl;
   }//kParseCommon
   if(fParseType & kParseToys) {
     cout << "Toy running options:" << endl
@@ -1363,11 +1339,11 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
            << " - " << setw(w) << "Verbosity file:"  << fVerbosityFile << endl
            << " - " << setw(w) << "Output file tag:" << fFileTag       << endl
            << " - " << setw(w) << "Run number:"      << fRun           << endl
-
-           << " - " << setw(w) << "Using data file:" << ((fUseFileData) ? "YES " : "NO") << endl;
+    
+          << " - " << setw(w) << "Using data file:" << ((fUseFileData) ? "YES " : "NO") << endl;
     if(fUseFileData) cout << " - " << setw(w) << " --> " << fPathFileData;
-    cout << endl;
-
+                     cout << endl;
+    
     stream << " - " << setw(w) << "Seed (stat):   "  << seedToyMCstat  << endl
            << " - " << setw(w) << "Seed (syst):   "  << seedToyMCsyst  << endl
            << " - " << setw(w) << "Seed (osc):    "  << seedToyMCosc   << endl
@@ -1427,23 +1403,22 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
   if(fParseType & kParseFitMarg) {
     stream << "Fit with marginalization running options:" << endl
            << " - " << setw(w) << "Do toys for fake datasets on the fly:" << ((fDoToys) ? "YES " : "NO") << endl
-	   << " - " << setw(w) << "Use xml file for fakedata sets (if not use root file):"  << ((fUsing_xml_file) ? "YES " : "NO") << endl
+           << " - " << setw(w) << "Use xml file for fakedata sets (if not use root file):"  << ((fUsing_xml_file) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Input xml file for fakedata sets:" << fXmlfile << endl
            << " - " << setw(w) << "Input root file for fakedata sets:" << fRootfile << endl
-          << " - " << setw(w) << "Read SKExp with data files:" << ((fReadSKExp) ? "YES " : "NO") << endl
            << " - " << setw(w) << "Fit parameter list:"  << fFit_param_list << endl;
     
-    
     stream << " - " << setw(w) << "Running Feldman-Cousins:" << ((fDoFC) ? "YES " : "NO") << endl;
-    if(fDoFC==false){
-      stream << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl;
-    }
-    else{
-      stream << " - " << setw(w) << "Input file for marginalization toys NH:"  << fInfilename_nh << endl;
-      stream << " - " << setw(w) << "Input file for marginalization toys IH:"  << fInfilename_ih << endl;
-    }
+          if(fDoFC==false){
+            stream << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl;
+          }
+          else{
+            stream << " - " << setw(w) << "Input file for marginalization toys NH:"  << fInfilename_nh << endl;
+            stream << " - " << setw(w) << "Input file for marginalization toys IH:"  << fInfilename_ih << endl;
+          }
     
-    stream << " - " << setw(w) << "Number of input file for marginalization toys:"  << fNfiles << endl
+    stream << " - " << setw(w) << "Input file for marginalization toys:"  << fInfilename << endl
+           << " - " << setw(w) << "Number of input file for marginalization toys:"  << fNfiles << endl
            << " - " << setw(w) << "Number of toys for marginalization:"  << fNtoysMarg << endl
            << " - " << setw(w) << "Name of free parameter 0 for fit with marginalization:"  << fFreeparname0 << endl
            << " - " << setw(w) << "Name of free parameter 1 for fit with marginalization:"  << fFreeparname1 << endl
