@@ -1231,3 +1231,23 @@ void valor::util::ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, b
   return;
 }
 //____________________________________________________________________________
+double valor::util::Chisq_Penalty_TH2D(TH2D* hobs, TH2D* hexp)
+{
+  int nbins_x = hobs->GetNbinsX();
+  int nbins_y = hobs->GetNbinsY();
+  
+  double chisq = 0;
+  
+  for(int i=1;i<= nbins_x;i++)
+  {
+    for(int j=1;j<= nbins_y;j++)
+    {
+      double obs = hobs->GetBinContent(i,j);
+      double exp = hexp->GetBinContent(i,j);
+      
+      chisq += valor::util::ChisqPoisson(obs,exp);
+    }
+  }
+  
+  return chisq;
+}
