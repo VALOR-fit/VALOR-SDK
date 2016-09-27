@@ -144,7 +144,9 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
   long double nmc   = nmc_db;
   if(nmc < conv::kSetNegEventsTo) {
     if (ndata>conv::kAVerySmallNum) {
-      LOG("UtlNumStat",pWARN)<<"Zero MC events in bin with data events - chisquare should be infinite.";
+      LOG("UtlNumStat",pWARN)<<"Zero MC events in bin with data events - chisquare should be infinite."
+                             <<" MC: " << nmc_db
+                             <<" Data:" << ndata_db;
     }
     nmc = conv::kSetNegEventsTo;
   }
