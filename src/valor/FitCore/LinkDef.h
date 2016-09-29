@@ -1,5 +1,6 @@
 #ifdef __CINT__
 #include <vector>
+#include <map>
 
 #pragma link off all globals;
 #pragma link off all classes;
@@ -29,5 +30,8 @@
 #pragma link C++ class valor::FitterMinuit2+;
 
 #pragma link C++ class valor::FitterABC_new+;
+
+// Part of FitParamList
+#pragma link C++ class std::map<valor::conv::PhysParamId_t,int>;
 
 #endif
