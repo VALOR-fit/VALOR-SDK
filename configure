@@ -22,6 +22,7 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    asan              Build and link against AddressSanitizer.                    default: disabled \n";
   print "    parallel          Use N threads for updating the templates (requires C++11)   default: disabled \n";
   print "    fault-on-die      Segfault when util::Die() is called, giving a stacktrace    default: disabled \n";
+  print "    penalty-only      Do not generate templates, for rapid penalty-only fits      default: disabled \n";
   print "\n options for 3rd party software, prefix with --with- (eg --with-lhapdf-lib=/some/path/)\n\n";
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
   print "    log4cpp-inc       Path to log4cpp includes                                    default: - (auto-detection enabled) \n";
@@ -111,6 +112,7 @@ my $opt_enable_gsl        = "NO";
 my $opt_enable_asan       = "NO";
 my $opt_enable_parallel   = "NO";
 my $opt_enable_fault      = "NO";
+my $opt_penalty_only      = "NO";
 
 # Check configure's command line arguments for non-default values
 #
@@ -118,6 +120,7 @@ if(($match = grep(/--enable-debug/i,        @ARGV)) > 0) { $opt_enable_debug    
 if(($match = grep(/--enable-asan/i,         @ARGV)) > 0) { $opt_enable_asan     = "YES"; }
 if(($match = grep(/--enable-parallel/i,     @ARGV)) > 0) { $opt_enable_parallel = "YES"; }
 if(($match = grep(/--enable-fault-on-die/i, @ARGV)) > 0) { $opt_enable_fault    = "YES"; }
+if(($match = grep(/--enable-penalty-only/i, @ARGV)) > 0) { $opt_penalty_only    = "YES"; }
 
 # Just enable GSL if available
 if (`root-config --features` =~ m/mathmore/) { $opt_enable_gsl    = "YES"; }
@@ -273,6 +276,12 @@ if($opt_enable_fault eq "YES") {
   print BLD_HEADER_FILE   "#define __VALOR_FMWK_FAULT_ON_DIE__\n"; 
 } else {
   print BLD_HEADER_FILE "//#define __VALOR_FMWK_FAULT_ON_DIE__\n"; 
+}
+# Disable template generation
+if($opt_penalty_only eq "YES") { 
+  print BLD_HEADER_FILE   "#define __VALOR_FMWK_PENALTY_ONLY__\n"; 
+} else {
+  print BLD_HEADER_FILE "//#define __VALOR_FMWK_PENALTY_ONLY__\n"; 
 }
 # grab log4cpp version information
 open(LOG4CPP_FILE, "$opt_with_log4cpp_inc/log4cpp/config.h") or warn("$opt_with_log4cpp_inc/log4cpp/config.h!");

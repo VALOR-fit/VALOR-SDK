@@ -93,7 +93,10 @@ double FitInputs::Statistic(Option_t * option) const
     syst_penalty = fExp->GetFitStatisticPenalty(option);
     phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);
   }
-  total_statistic = data_statistic + syst_penalty + phys_penalty;
+  total_statistic = syst_penalty + phys_penalty;
+#ifndef __VALOR_FMWK_PENALTY_ONLY__
+  total_statistic += data_statistic;
+#endif
   LOG("FitInputs",pINFO)<<"Statistic = "<<total_statistic<<" (data/MC="<<data_statistic
     <<", syst penalty="<<syst_penalty<<", phys penalty="<<phys_penalty<<")";
   
