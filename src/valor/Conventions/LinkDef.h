@@ -1,4 +1,6 @@
 #ifdef __CINT__
+#include <map>
+#include <utility>
 
 #pragma link off all globals;
 #pragma link off all classes;
@@ -23,5 +25,9 @@
 
 #pragma link C++ class valor::Opt+;
 #pragma link C++ class valor::Opt::Persistable+;
+
+// Part of FitParamList
+#pragma link C++ class std::map<valor::conv::PhysParamId_t,int>;
+#pragma link C++ class std::pair<valor::conv::PhysParamId_t,int>;
 
 #endif

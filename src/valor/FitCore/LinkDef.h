@@ -31,7 +31,4 @@
 
 #pragma link C++ class valor::FitterABC_new+;
 
-// Part of FitParamList
-#pragma link C++ class std::map<valor::conv::PhysParamId_t,int>;
-
 #endif
