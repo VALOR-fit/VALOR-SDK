@@ -132,6 +132,9 @@ namespace util {
 
   int Sign(double x);
   
+  double Logistic(double x);
+  double Logit(double p);
+  
   // Gives the fraction of bin 1 that lies inside bin 2
   double FractionOfBinContained(double min1, double max1, double min2, double max2);
   

@@ -55,12 +55,15 @@ ChangeLog:
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_matrix.h>
+#include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_errno.h>
 
 #include "Math/Interpolator.h"
 #endif
+
+//~ #define GSL_CHOLESKY // Use the GSL version of cholesky decomposition
 
 using std::cout;
 using std::cerr;
@@ -178,10 +181,60 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
    int nrows = cov_matrix.GetNrows();
 
    assert(ncols==nrows);
-
    int n = nrows;
-
    TMatrixD L(n, n);
+
+#ifdef GSL_CHOLESKY
+
+  const double diag_increment = 1E-3; // If we're not pos-def, try increasing the diagonal by multiples of this factor
+  const int max_increment_attempts = 1000; // Try increasing the diagonal this many times maximum
+  
+  gsl_matrix * m = gsl_matrix_alloc(nrows,ncols);
+  
+  // Disable the error handler so we don't get messages when we're checking the validity
+  gsl_error_handler_t * old_error_handler = gsl_set_error_handler_off ();
+  
+  int iattempt = 0;
+  bool success = false;
+  // Try to decompose the matrix, increasing the diagonal by 0.1% until it's appropriately pos-def
+  for (iattempt = 0 ; iattempt < max_increment_attempts+1 ; iattempt++) {
+    memcpy( (double*)gsl_matrix_ptr(m,0,0), cov_matrix.GetMatrixArray(), n*n*sizeof(double) );
+    if (iattempt) {
+      double factor = 1.+(double)iattempt*diag_increment;
+      for (int ielem = 0 ; ielem < n; ielem++) {
+        double new_val = cov_matrix(ielem,ielem)*factor;
+        //~ cerr<<ielem<<"\t"<<factor<<"\t"<<new_val<<std::endl;
+        gsl_matrix_set(m,ielem,ielem,new_val);
+      }
+    }
+    //~ int status = gsl_linalg_cholesky_decomp1(m); // Documentation says this one is best but doesn't appear on all systems.
+    int status = gsl_linalg_cholesky_decomp(m);
+    if (status != GSL_EDOM) {
+      LOG("UtlNumStat", pINFO) << "GSL successfully Cholesky decomposed matrix.";
+      success = true;
+      break;
+    }
+  }
+  
+  if (!success) {
+    LOG("UtlNumStat", pFATAL) << "GSL failed to Cholesky decompose matrix.";
+    util::Die(1); return TMatrixD();
+  }
+  if (iattempt) {
+    LOG("UtlNumStat", pWARN) << "GSL had to increase diagonal elements by "<<100.*diag_increment<<iattempt<<"% to decompose.";
+  }
+  
+  for (int i = 0 ; i < n; i++) {
+    for (int j = 0 ; j <= i ; j++) {
+      L(i,j) = gsl_matrix_get(m,i,j);
+    }
+  }
+  gsl_matrix_free(m);
+  
+  // Restore the original error handler
+  gsl_set_error_handler(old_error_handler);
+  return L;
+#else // GSL_CHOLESKY
 
    for (int i = 0; i < n; ++i) {
 
@@ -239,6 +292,7 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 #endif
 
   return LT;
+#endif // !GSL_CHOLESKY
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParams (
@@ -870,6 +924,16 @@ int valor::util::Sign(double tweaking_dial)
   if(fabs(tweaking_dial) < kASmallNum) return 0;
   if (tweaking_dial < 0) return -1;
   return +1;
+}
+//____________________________________________________________________________
+double valor::util::Logistic(double x)
+{
+  return 1./(1.+std::exp(-x));
+}
+//____________________________________________________________________________
+double valor::util::Logit(double p)
+{
+  return -std::log(1./p - 1.);
 }
 //____________________________________________________________________________
 int valor::util::DiagonaliseGSL(
