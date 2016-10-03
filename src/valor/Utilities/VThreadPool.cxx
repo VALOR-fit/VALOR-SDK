@@ -12,13 +12,23 @@ ChangeLog:
 
 #include "valor/Utilities/VThreadPool.h"
 
-#if __cplusplus > 199711L
-
 using namespace valor;
 
 //____________________________________________________________________________
 valor::util::VThreadPool * valor::util::VThreadPool::fInstance = 0;
 //____________________________________________________________________________
+valor::util::VThreadPool * valor::util::VThreadPool::Instance() 
+{
+  if(fInstance == 0) {
+    static valor::util::VThreadPool::Cleaner cleaner;
+    cleaner.DummyMethodAndSilentCompiler();
+    fInstance = new valor::util::VThreadPool;
+  }
+  return fInstance;
+}
+//____________________________________________________________________________
+// From here on we have the things that are only defined if the parallelism works (ie C++11 defined)
+#if __cplusplus > 199711L
 valor::util::VThreadPool::VThreadPool()
 :
   fNThreads(std::thread::hardware_concurrency()),
@@ -30,16 +40,6 @@ valor::util::VThreadPool::VThreadPool()
   while (fThreads.size() < fNThreads) {
     this->AddThread();
   }
-}
-//____________________________________________________________________________
-valor::util::VThreadPool * valor::util::VThreadPool::Instance() 
-{
-  if(fInstance == 0) {
-    static valor::util::VThreadPool::Cleaner cleaner;
-    cleaner.DummyMethodAndSilentCompiler();
-    fInstance = new valor::util::VThreadPool;
-  }
-  return fInstance;
 }
 //____________________________________________________________________________
 valor::util::VThreadPool::~VThreadPool()
