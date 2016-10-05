@@ -37,9 +37,6 @@ valor::util::VThreadPool::VThreadPool()
   fNRunningJobs(0)
 {
   fInstance = 0;
-  while (fThreads.size() < fNThreads) {
-    this->AddThread();
-  }
 }
 //____________________________________________________________________________
 valor::util::VThreadPool::~VThreadPool()
@@ -116,6 +113,12 @@ void util::VThreadPool::SetNThreads(unsigned int n)
 //____________________________________________________________________________
 void util::VThreadPool::AddTask(std::function<void(void)> work)
 {
+  if (!fThreads.size()) {
+    while (fThreads.size() < fNThreads) {
+      this->AddThread();
+    }
+  }
+  
   std::lock_guard<std::mutex> lock( fQueueMutex );
   fQueue.emplace_back( work );
   fNQueuedJobs++;
