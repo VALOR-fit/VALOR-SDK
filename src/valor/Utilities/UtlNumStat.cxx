@@ -183,6 +183,8 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
    assert(ncols==nrows);
    int n = nrows;
    TMatrixD L(n, n);
+   
+   if (!n) {return L;}
 
 #ifdef GSL_CHOLESKY
 
@@ -203,7 +205,6 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
       double factor = 1.+(double)iattempt*diag_increment;
       for (int ielem = 0 ; ielem < n; ielem++) {
         double new_val = cov_matrix(ielem,ielem)*factor;
-        //~ cerr<<ielem<<"\t"<<factor<<"\t"<<new_val<<std::endl;
         gsl_matrix_set(m,ielem,ielem,new_val);
       }
     }
