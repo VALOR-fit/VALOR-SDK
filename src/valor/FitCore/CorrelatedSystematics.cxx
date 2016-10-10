@@ -268,6 +268,21 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
      util::Die(1); return false;
   }
   
+  // Check if we're uncorrelating the matrix
+  TString force_uncorrelated_path = nodepath+"force_uncorrelated";
+  bool force_uncorrelated = false;
+  if (util::NodeExists(xml,root_node,force_uncorrelated_path.Data())) {
+    force_uncorrelated = util::XML2Bool(xml,root_node,force_uncorrelated_path.Data());
+  }
+  if (force_uncorrelated) {
+    LOG("CorrelatedSystematics",pNOTICE) << "Forcing "<<this->GetName()<<" systematics to be uncorrelated.";
+    for (int i = 0 ; i < np; i++) {
+      for (int j = 0 ; j < np; j++) {
+        if (i!=j) {cov(i,j) = 0;};
+      }
+    }
+  }
+  
   // Do Cholesky decomposition
   LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();
