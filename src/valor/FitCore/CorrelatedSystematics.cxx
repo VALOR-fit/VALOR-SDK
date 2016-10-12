@@ -676,6 +676,36 @@ void CorrelatedSystematics::UpdateFrom(const valor::PhysParamList  & ppl)
   return;
 }
 //________________________________________________________________________________________
+void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor::FitParamList  & fpl)
+{
+  const TMatrixDSym & fpl_cov = *(fpl.GetCovMatrix());
+  for (unsigned int i = 0 ; i < fNSystParameters ; i++) {
+    PhysParamId_t p = fSystParameters[i];
+    if (fpl.Exists(p)) {
+      fInitialValues [i] = fpl.CurrValue(p);
+      fCurrentArray  [i] = fpl.CurrValue(p);
+      
+      for (unsigned int j = 0 ; j <= i ; j++) {
+        PhysParamId_t p2 = fSystParameters[j];
+        if (fpl.Exists(p2)) {
+          (*fCovMtrx)(i,j) = fpl_cov(i,j);
+          (*fCovMtrx)(j,i) = fpl_cov(i,j);
+        }
+      }
+    }
+    else {
+      LOG("CorrelatedSystematics",pWARN) 
+        << "Unable to update syst parameter " << NameRegistry::Instance()->AsString(p) << " from FPL.";
+    }
+  }
+  
+  // Do Cholesky decomposition
+  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
+  this->CholeskyDecomposeMatrix();
+  this->InvertMatrices();
+  
+}
+//________________________________________________________________________________________
 void CorrelatedSystematics::CopyTweaksTo(valor::PhysParamList & ppl) const
 {
   for (int i = 0 ; i < fCurrentValues->GetNoElements() ; i++) {
