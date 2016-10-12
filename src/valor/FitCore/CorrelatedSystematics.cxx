@@ -106,10 +106,10 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
   fUntunedValues        = new TVectorD(fNSystParameters);
   fInitialValues        = new TVectorD(fNSystParameters);
   fCurrentValues        = new TVectorD(fNSystParameters);
-  fCovMtrx              = 0;
-  fCovMtrxInv           = 0;
-  fCovMtrxChoL          = 0; 
-  fCovMtrxChoLInv       = 0; 
+  fCovMtrx              = NULL;
+  fCovMtrxInv           = NULL;
+  fCovMtrxChoL          = NULL; 
+  fCovMtrxChoLInv       = NULL; 
   fIsTweaked            = false;
   
   fUntunedArray = fUntunedValues->GetMatrixArray();
@@ -682,13 +682,13 @@ void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor:
   for (unsigned int i = 0 ; i < fNSystParameters ; i++) {
     PhysParamId_t p = fSystParameters[i];
     if (fpl.Exists(p)) {
-      fInitialValues [i] = fpl.CurrValue(p);
+      fInitialArray  [i] = fpl.CurrValue(p);
       fCurrentArray  [i] = fpl.CurrValue(p);
+      int ifpl = fpl.Id(p);
       
       for (unsigned int j = 0 ; j <= i ; j++) {
         PhysParamId_t p2 = fSystParameters[j];
         if (fpl.Exists(p2)) {
-          int ifpl = fpl.Id(p);
           int jfpl = fpl.Id(p2);
           double matrix_entry = fpl_cov(ifpl,jfpl);
           (*fCovMtrx)(i,j) = matrix_entry;
