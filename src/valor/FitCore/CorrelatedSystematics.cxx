@@ -688,8 +688,11 @@ void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor:
       for (unsigned int j = 0 ; j <= i ; j++) {
         PhysParamId_t p2 = fSystParameters[j];
         if (fpl.Exists(p2)) {
-          (*fCovMtrx)(i,j) = fpl_cov(i,j);
-          (*fCovMtrx)(j,i) = fpl_cov(i,j);
+          int ifpl = fpl.Id(p);
+          int jfpl = fpl.Id(p2);
+          double matrix_entry = fpl_cov(ifpl,jfpl);
+          (*fCovMtrx)(i,j) = matrix_entry;
+          (*fCovMtrx)(j,i) = matrix_entry;
         }
       }
     }
