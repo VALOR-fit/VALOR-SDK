@@ -784,4 +784,3 @@ void CorrelatedSystematics::InvertMatrices()
 #endif // __check_inverse__
   return;
 }
-//________________________________________________________________________________________

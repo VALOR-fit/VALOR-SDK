@@ -1697,6 +1697,99 @@ void valor::util::OscParams::Write(TFile * f)
 }
 //____________________________________________________________________________
 //____________________________________________________________________________
+void valor::util::OscParams::SetRandomize(conv::PhysParamId_t p, bool random)
+{
+  switch(p){
+    case(kPhypBetaBar) :
+      randomize_beta_bar = random;
+      break;
+    case(kPhypMixing12) :
+      randomize_mixing12_ih = random;
+      randomize_mixing12_nh = random;
+      break;
+    case(kPhypMixing12Bar) :
+      randomize_mixing12bar_ih = random;
+      randomize_mixing12bar_nh = random;
+      break;
+    case(kPhypMixing13) :
+      randomize_mixing13_ih = random;
+      randomize_mixing13_nh = random;
+      break;
+    case(kPhypMixing13Bar) :
+      randomize_mixing13bar_ih = random;
+      randomize_mixing13bar_nh = random;
+      break;
+    case(kPhypMixing23) :
+      randomize_mixing23_ih = random;
+      randomize_mixing23_nh = random;
+      break;
+    case(kPhypMixing23Bar) :
+      randomize_mixing23bar_ih = random;
+      randomize_mixing23bar_nh = random;
+      break;
+    case(kPhypDm23sq) :
+      randomize_dm23sq_nh = random;
+      randomize_dm23sq_ih = random;
+      break;
+    case(kPhypDm23sqBar) :
+      randomize_dm23sqbar_nh = random;
+      randomize_dm23sqbar_ih = random;
+      break;
+    case(kPhypDm12sq) :
+      randomize_dm12sq_nh = random;
+      randomize_dm12sq_ih = random;
+      break;
+    case(kPhypDm12sqBar) :
+      randomize_dm12sqbar_nh = random;
+      randomize_dm12sqbar_ih = random;
+      break;
+    case(kPhypCPV) :
+      randomize_dcp_nh = random;
+      randomize_dcp_ih = random;
+      break;
+    case(kPhypCPVBar) :
+      randomize_dcpbar_nh = random;
+      randomize_dcpbar_ih = random;
+      break;
+    default:
+      std::cerr << "OscParams/SetRandomize >> Parameter: " << util::RawParamAsString(p)
+      << " not handled in function." << std::endl;
+      exit(0);
+      break;
+  }
+}
+//____________________________________________________________________________
+//____________________________________________________________________________
+void valor::util::OscParams::SetRandomize(bool random)
+{
+
+      randomize_beta_bar = random;
+      randomize_mixing12_ih = random;
+      randomize_mixing12_nh = random;
+      randomize_mixing12bar_ih = random;
+      randomize_mixing12bar_nh = random;
+      randomize_mixing13_ih = random;
+      randomize_mixing13_nh = random;
+      randomize_mixing13bar_ih = random;
+      randomize_mixing13bar_nh = random;
+      randomize_mixing23_ih = random;
+      randomize_mixing23_nh = random;
+      randomize_mixing23bar_ih = random;
+      randomize_mixing23bar_nh = random;
+      randomize_dm23sq_nh = random;
+      randomize_dm23sq_ih = random;
+      randomize_dm23sqbar_nh = random;
+      randomize_dm23sqbar_ih = random;
+      randomize_dm12sq_nh = random;
+      randomize_dm12sq_ih = random;
+      randomize_dm12sqbar_nh = random;
+      randomize_dm12sqbar_ih = random;
+      randomize_dcp_nh = random;
+      randomize_dcp_ih = random;
+      randomize_dcpbar_nh = random;
+      randomize_dcpbar_ih = random;
+
+}
 //____________________________________________________________________________
 //____________________________________________________________________________
 //____________________________________________________________________________
