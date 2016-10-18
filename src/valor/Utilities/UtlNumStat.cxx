@@ -58,12 +58,15 @@ ChangeLog:
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_matrix.h>
+#include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_errno.h>
 
 #include "Math/Interpolator.h"
 #endif
+
+//~ #define GSL_CHOLESKY // Use the GSL version of cholesky decomposition
 
 using std::cout;
 using std::cerr;
@@ -147,7 +150,9 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
   long double nmc   = nmc_db;
   if(nmc < conv::kSetNegEventsTo) {
     if (ndata>conv::kAVerySmallNum) {
-      LOG("UtlNumStat",pWARN)<<"Zero MC events in bin with data events - chisquare should be infinite.";
+      LOG("UtlNumStat",pWARN)<<"Zero MC events in bin with data events - chisquare should be infinite."
+                             <<" MC: " << nmc_db
+                             <<" Data:" << ndata_db;
     }
     nmc = conv::kSetNegEventsTo;
   }
@@ -179,10 +184,61 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
    int nrows = cov_matrix.GetNrows();
 
    assert(ncols==nrows);
-
    int n = nrows;
-
    TMatrixD L(n, n);
+   
+   if (!n) {return L;}
+
+#ifdef GSL_CHOLESKY
+
+  const double diag_increment = 1E-3; // If we're not pos-def, try increasing the diagonal by multiples of this factor
+  const int max_increment_attempts = 1000; // Try increasing the diagonal this many times maximum
+  
+  gsl_matrix * m = gsl_matrix_alloc(nrows,ncols);
+  
+  // Disable the error handler so we don't get messages when we're checking the validity
+  gsl_error_handler_t * old_error_handler = gsl_set_error_handler_off ();
+  
+  int iattempt = 0;
+  bool success = false;
+  // Try to decompose the matrix, increasing the diagonal by 0.1% until it's appropriately pos-def
+  for (iattempt = 0 ; iattempt < max_increment_attempts+1 ; iattempt++) {
+    memcpy( (double*)gsl_matrix_ptr(m,0,0), cov_matrix.GetMatrixArray(), n*n*sizeof(double) );
+    if (iattempt) {
+      double factor = 1.+(double)iattempt*diag_increment;
+      for (int ielem = 0 ; ielem < n; ielem++) {
+        double new_val = cov_matrix(ielem,ielem)*factor;
+        gsl_matrix_set(m,ielem,ielem,new_val);
+      }
+    }
+    //~ int status = gsl_linalg_cholesky_decomp1(m); // Documentation says this one is best but doesn't appear on all systems.
+    int status = gsl_linalg_cholesky_decomp(m);
+    if (status != GSL_EDOM) {
+      LOG("UtlNumStat", pINFO) << "GSL successfully Cholesky decomposed matrix.";
+      success = true;
+      break;
+    }
+  }
+  
+  if (!success) {
+    LOG("UtlNumStat", pFATAL) << "GSL failed to Cholesky decompose matrix.";
+    util::Die(1); return TMatrixD();
+  }
+  if (iattempt) {
+    LOG("UtlNumStat", pWARN) << "GSL had to increase diagonal elements by "<<100.*diag_increment<<iattempt<<"% to decompose.";
+  }
+  
+  for (int i = 0 ; i < n; i++) {
+    for (int j = 0 ; j <= i ; j++) {
+      L(i,j) = gsl_matrix_get(m,i,j);
+    }
+  }
+  gsl_matrix_free(m);
+  
+  // Restore the original error handler
+  gsl_set_error_handler(old_error_handler);
+  return L;
+#else // GSL_CHOLESKY
 
    for (int i = 0; i < n; ++i) {
 
@@ -240,6 +296,7 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 #endif
 
   return LT;
+#endif // !GSL_CHOLESKY
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParams(const TMatrixD& cholesky,
@@ -940,6 +997,16 @@ int valor::util::Sign(double tweaking_dial)
   return +1;
 }
 //____________________________________________________________________________
+double valor::util::Logistic(double x)
+{
+  return 1./(1.+std::exp(-x));
+}
+//____________________________________________________________________________
+double valor::util::Logit(double p)
+{
+  return -std::log(1./p - 1.);
+}
+//____________________________________________________________________________
 int valor::util::DiagonaliseGSL(
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 int ndim, double * matrix_in, double * eigenvectors_out, double * eigenvalues_out
@@ -1299,3 +1366,23 @@ void valor::util::ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, b
   return;
 }
 //____________________________________________________________________________
+double valor::util::Chisq_Penalty_TH2D(TH2D* hobs, TH2D* hexp)
+{
+  int nbins_x = hobs->GetNbinsX();
+  int nbins_y = hobs->GetNbinsY();
+  
+  double chisq = 0;
+  
+  for(int i=1;i<= nbins_x;i++)
+  {
+    for(int j=1;j<= nbins_y;j++)
+    {
+      double obs = hobs->GetBinContent(i,j);
+      double exp = hexp->GetBinContent(i,j);
+      
+      chisq += valor::util::ChisqPoisson(obs,exp);
+    }
+  }
+  
+  return chisq;
+}

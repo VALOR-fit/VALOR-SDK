@@ -106,10 +106,10 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
   fUntunedValues        = new TVectorD(fNSystParameters);
   fInitialValues        = new TVectorD(fNSystParameters);
   fCurrentValues        = new TVectorD(fNSystParameters);
-  fCovMtrx              = 0;
-  fCovMtrxInv           = 0;
-  fCovMtrxChoL          = 0; 
-  fCovMtrxChoLInv       = 0; 
+  fCovMtrx              = NULL;
+  fCovMtrxInv           = NULL;
+  fCovMtrxChoL          = NULL; 
+  fCovMtrxChoLInv       = NULL; 
   fIsTweaked            = false;
   
   fUntunedArray = fUntunedValues->GetMatrixArray();
@@ -266,6 +266,21 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
         << "\n Expecting: " <<  np << " x " << np << " matrix"
         << "\n Found: " << cov.GetNrows() << " x " <<  cov.GetNcols() << " matrix";
      util::Die(1); return false;
+  }
+  
+  // Check if we're uncorrelating the matrix
+  TString force_uncorrelated_path = nodepath+"force_uncorrelated";
+  bool force_uncorrelated = false;
+  if (util::NodeExists(xml,root_node,force_uncorrelated_path.Data())) {
+    force_uncorrelated = util::XML2Bool(xml,root_node,force_uncorrelated_path.Data());
+  }
+  if (force_uncorrelated) {
+    LOG("CorrelatedSystematics",pNOTICE) << "Forcing "<<this->GetName()<<" systematics to be uncorrelated.";
+    for (int i = 0 ; i < np; i++) {
+      for (int j = 0 ; j < np; j++) {
+        if (i!=j) {cov(i,j) = 0;};
+      }
+    }
   }
   
   // Do Cholesky decomposition
@@ -691,6 +706,39 @@ void CorrelatedSystematics::UpdateFrom(const valor::PhysParamList  & ppl)
   }
   fIsTweaked = true;
   return;
+}
+//________________________________________________________________________________________
+void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor::FitParamList  & fpl)
+{
+  const TMatrixDSym & fpl_cov = *(fpl.GetCovMatrix());
+  for (unsigned int i = 0 ; i < fNSystParameters ; i++) {
+    PhysParamId_t p = fSystParameters[i];
+    if (fpl.Exists(p)) {
+      fInitialArray  [i] = fpl.CurrValue(p);
+      fCurrentArray  [i] = fpl.CurrValue(p);
+      int ifpl = fpl.Id(p);
+      
+      for (unsigned int j = 0 ; j <= i ; j++) {
+        PhysParamId_t p2 = fSystParameters[j];
+        if (fpl.Exists(p2)) {
+          int jfpl = fpl.Id(p2);
+          double matrix_entry = fpl_cov(ifpl,jfpl);
+          (*fCovMtrx)(i,j) = matrix_entry;
+          (*fCovMtrx)(j,i) = matrix_entry;
+        }
+      }
+    }
+    else {
+      LOG("CorrelatedSystematics",pWARN) 
+        << "Unable to update syst parameter " << NameRegistry::Instance()->AsString(p) << " from FPL.";
+    }
+  }
+  
+  // Do Cholesky decomposition
+  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
+  this->CholeskyDecomposeMatrix();
+  this->InvertMatrices();
+  
 }
 //________________________________________________________________________________________
 void CorrelatedSystematics::CopyTweaksTo(valor::PhysParamList & ppl) const

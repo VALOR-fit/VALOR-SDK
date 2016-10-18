@@ -31,6 +31,9 @@
 #include <TH1D.h>
 #include <TSpline.h>
 
+class TH2D;
+
+
 #include "valor/Conventions/Build.h"
 #include "valor/Conventions/ConfLevel.h"
 #include "valor/Conventions/PhysParamId.h"
@@ -48,10 +51,11 @@ namespace util {
   // Statistics
   //
 
-  double DeltaChisquare   (conv::ConfLevel_t cl, int nfitparams);
-  double ChisqGauss       (double ndata, double nmc);
-  double ChisqPoisson     (double ndata, double nmc);
-  
+  double DeltaChisquare     (conv::ConfLevel_t cl, int nfitparams);
+  double ChisqGauss         (double ndata, double nmc);
+  double ChisqPoisson       (double ndata, double nmc);
+  double Chisq_Penalty_TH2D (TH2D* hobs, TH2D* hexp);
+
   TAxis EstimateOptimalBinning(int npoints, double * points);
   int EstimateOptimalNumberOfBinsForGaussian(int npoints, double nsigma);
 
@@ -134,6 +138,9 @@ namespace util {
   //
 
   int Sign(double x);
+  
+  double Logistic(double x);
+  double Logit(double p);
   
   // Gives the fraction of bin 1 that lies inside bin 2
   double FractionOfBinContained(double min1, double max1, double min2, double max2);

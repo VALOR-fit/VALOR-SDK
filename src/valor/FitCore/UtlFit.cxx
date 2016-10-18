@@ -144,7 +144,7 @@ TMatrixDSym valor::util::CalculateCovariance(std::vector<PhysParamList> param_se
 }
 //______________________________________________________________________________
 bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
-  double & current_chisq, int & n_attempts_output, double step_size_factor, TMatrixD * cholesky_for_throws, int max_attempts)
+  double & current_chisq, int & n_attempts_output, double step_size_factor, const TMatrixD * cholesky_for_throws, int max_attempts)
 {
   const bool respect_fixed  = true;
   const bool respect_limits = false;

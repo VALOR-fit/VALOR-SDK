@@ -12,25 +12,10 @@ ChangeLog:
 
 #include "valor/Utilities/VThreadPool.h"
 
-#if __cplusplus > 199711L
-
 using namespace valor;
 
 //____________________________________________________________________________
 valor::util::VThreadPool * valor::util::VThreadPool::fInstance = 0;
-//____________________________________________________________________________
-valor::util::VThreadPool::VThreadPool()
-:
-  fNThreads(std::thread::hardware_concurrency()),
-  fAbort(false),
-  fNQueuedJobs(0),
-  fNRunningJobs(0)
-{
-  fInstance = 0;
-  while (fThreads.size() < fNThreads) {
-    this->AddThread();
-  }
-}
 //____________________________________________________________________________
 valor::util::VThreadPool * valor::util::VThreadPool::Instance() 
 {
@@ -40,6 +25,18 @@ valor::util::VThreadPool * valor::util::VThreadPool::Instance()
     fInstance = new valor::util::VThreadPool;
   }
   return fInstance;
+}
+//____________________________________________________________________________
+// From here on we have the things that are only defined if the parallelism works (ie C++11 defined)
+#if __cplusplus > 199711L
+valor::util::VThreadPool::VThreadPool()
+:
+  fNThreads(std::thread::hardware_concurrency()),
+  fAbort(false),
+  fNQueuedJobs(0),
+  fNRunningJobs(0)
+{
+  fInstance = 0;
 }
 //____________________________________________________________________________
 valor::util::VThreadPool::~VThreadPool()
@@ -116,6 +113,12 @@ void util::VThreadPool::SetNThreads(unsigned int n)
 //____________________________________________________________________________
 void util::VThreadPool::AddTask(std::function<void(void)> work)
 {
+  if (!fThreads.size()) {
+    while (fThreads.size() < fNThreads) {
+      this->AddThread();
+    }
+  }
+  
   std::lock_guard<std::mutex> lock( fQueueMutex );
   fQueue.emplace_back( work );
   fNQueuedJobs++;

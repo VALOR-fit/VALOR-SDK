@@ -19,6 +19,7 @@ ChangeLog:
 #include "valor/Conventions/Constants.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
+#include "valor/Utilities/VThreadPool.h"
 #include "valor/FitCore/CompoundFitData.h"
 #include "valor/FitCore/CompoundFitModel.h"
 
@@ -97,49 +98,79 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
 //________________________________________________________________________________________
 bool CompoundFitData::Generate (FitModelABC * model, const PhysHypothesis & ph, bool stat_fluct)
 {
+  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+#ifdef __VALOR_FMWK_PARALLEL__
+  std::atomic_bool status(true);
+#else
   bool status = true;
-  for (unsigned int i = 0 ; i < fSubData.size() ; i++) {
-    FitDataABC * data = fSubData[i];
-    CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
-    if (cfm) {
-      status = status && data->Generate(cfm->GetSubModel(i), ph, stat_fluct);
-    }
-    else {
-      status = status && data->Generate(model, ph, stat_fluct);
-    }
+#endif
+  int ientry = 0;
+  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it,++ientry) {
+    FitDataABC  & d = **it;
+    FitModelABC & m = *(cfm ? cfm->GetSubModel(ientry) : model);
+#ifdef __VALOR_FMWK_PARALLEL__
+    std::function<void(void)> f = [&]{status = status && d.Generate(&m, ph, stat_fluct);};
+    util::VThreadPool::Instance()->AddTask(f);
+#else
+    status = status && d.Generate(&m, ph, stat_fluct);
+#endif
   }
+#ifdef __VALOR_FMWK_PARALLEL__
+  util::VThreadPool::Instance()->Wait();
+#endif
+  
   return status;
 }
 //________________________________________________________________________________________
 bool CompoundFitData::Generate (FitModelABC * model, const FitParamList & fp, bool stat_fluct)
 {
+  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+#ifdef __VALOR_FMWK_PARALLEL__
+  std::atomic_bool status(true);
+#else
   bool status = true;
-  for (unsigned int i = 0 ; i < fSubData.size() ; i++) {
-    FitDataABC * data = fSubData[i];
-    CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
-    if (cfm) {
-      status = status && data->Generate(cfm->GetSubModel(i), fp, stat_fluct);
-    }
-    else {
-      status = status && data->Generate(model, fp, stat_fluct);
-    }
+#endif
+  int ientry = 0;
+  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it,++ientry) {
+    FitDataABC  & d = **it;
+    FitModelABC & m = *(cfm ? cfm->GetSubModel(ientry) : model);
+#ifdef __VALOR_FMWK_PARALLEL__
+    std::function<void(void)> f = [&]{status = status && d.Generate(&m, fp, stat_fluct);};
+    util::VThreadPool::Instance()->AddTask(f);
+#else
+    status = status && d.Generate(&m, fp, stat_fluct);
+#endif
   }
+#ifdef __VALOR_FMWK_PARALLEL__
+  util::VThreadPool::Instance()->Wait();
+#endif
+  
   return status;
 }
 //________________________________________________________________________________________
 bool CompoundFitData::Generate (FitModelABC * model, bool stat_fluct)
 {
+  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+#ifdef __VALOR_FMWK_PARALLEL__
+  std::atomic_bool status(true);
+#else
   bool status = true;
-  for (unsigned int i = 0 ; i < fSubData.size() ; i++) {
-    FitDataABC * data = fSubData[i];
-    CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
-    if (cfm) {
-      status = status && data->Generate(cfm->GetSubModel(i), stat_fluct);
-    }
-    else {
-      status = status && data->Generate(model, stat_fluct);
-    }
+#endif
+  int ientry = 0;
+  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it,++ientry) {
+    FitDataABC  & d = **it;
+    FitModelABC & m = *(cfm ? cfm->GetSubModel(ientry) : model);
+#ifdef __VALOR_FMWK_PARALLEL__
+    std::function<void(void)> f = [&]{status = status && d.Generate(&m, stat_fluct);};
+    util::VThreadPool::Instance()->AddTask(f);
+#else
+    status = status && d.Generate(&m, stat_fluct);
+#endif
   }
+#ifdef __VALOR_FMWK_PARALLEL__
+  util::VThreadPool::Instance()->Wait();
+#endif
+  
   return status;
 }
 //________________________________________________________________________________________

@@ -91,7 +91,28 @@ class VThreadPool {
 } // namespace valor
 
 #else // No C++11
-namespace valor{namespace util{class VThreadPool {};}}
+namespace valor{
+namespace util{
+class VThreadPool
+{
+  public:
+   static VThreadPool * Instance();
+   void SetNThreads(unsigned int){};
+  private:
+    static VThreadPool * fInstance;
+      struct Cleaner {
+        void DummyMethodAndSilentCompiler() { } 
+          ~Cleaner() {
+            if (VThreadPool::fInstance !=0) {
+              delete VThreadPool::fInstance;
+              VThreadPool::fInstance = 0;
+            }
+          }
+      };
+    friend struct Cleaner;
+};
+}
+}
 #endif
 
 #endif // VALOR_THREADPOOL_H

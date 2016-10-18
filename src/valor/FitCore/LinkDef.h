@@ -1,5 +1,6 @@
 #ifdef __CINT__
 #include <vector>
+#include <map>
 
 #pragma link off all globals;
 #pragma link off all classes;

@@ -104,6 +104,8 @@ public:
   void UpdateFrom    (const valor::FitParamList  & fpl);
   void UpdateFrom    (const valor::PhysParamList & ppl);
   
+  void UpdateCentralValuesAndCovarianceFromFPL(const valor::FitParamList  & fpl);
+  
   bool AppendParamsTo      (valor::FitParamList  & fpl ) const;
   void CopyTweaksTo        (valor::FitParamList  & fpl ) const;
   void CopyTweaksTo        (valor::PhysParamList & ppl ) const;

@@ -13,8 +13,11 @@ ChangeLog:
 #include <iomanip>
 #include <cstdlib>
 
+#include "valor/Messenger/Messenger.h"
+#include "valor/Conventions/Constants.h"
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Utilities/NameRegistry.h"
+#include "valor/Utilities/UtlSystem.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/PhysHypothesis.h"
 
@@ -79,7 +82,9 @@ double PhysHypothesis::CurrValue(PhysParamId_t p) const
 {
   map<int,double>::const_iterator it = fParams.find(p);
   if(it == fParams.end()) {
-     exit(1);
+    LOG("PhysHypothesis",pFATAL) << "PhysHypothesis does not contain parameter: "
+      <<"("<<p<<") "<<util::NameRegistry::Instance()->AsString(p);
+    util::Die(-1); return conv::kBadResult;
   } 
   return it->second;
 }
@@ -93,11 +98,8 @@ void PhysHypothesis::Copy(const PhysHypothesis & ph)
 {
   fHypothesis = ph.fHypothesis;
 
-  fParams.clear();
-  fParams.insert(ph.fParams.begin(), ph.fParams.end());
-  
-  fIsNuisance.clear();
-  fIsNuisance.insert(ph.fIsNuisance.begin(), ph.fIsNuisance.end());
+  fParams      = ph.fParams;
+  fIsNuisance  = ph.fIsNuisance;
 /*
   this->Init(ph.fHypothesis);
   map<int,double>::const_iterator it = ph.fParams.begin();

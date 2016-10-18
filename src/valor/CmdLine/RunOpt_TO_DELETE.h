@@ -74,7 +74,9 @@ namespace valor {
         string VerbosityFile   () const { if(fParseType & kParseCommon) return fVerbosityFile; cerr << "kParseCommon not set" << endl; exit(-1); }
         string FileTag         () const { if(fParseType & kParseCommon) return fFileTag;       cerr << "kParseCommon not set" << endl; exit(-1); }
         int    Run             () const { if(fParseType & kParseCommon) return fRun;           cerr << "kParseCommon not set" << endl; exit(-1); }
-        
+        string PathFileData    () const { if(fParseType & kParseCommon) return fPathFileData;  cerr << "kParseCommon not set" << endl; exit(-1); }
+        bool   UseFileData     () const { if(fParseType & kParseCommon) return fUseFileData;   cerr << "kParseCommon not set" << endl; exit(-1); }
+
         UInt_t RndSeedToyMCstat() const {return fSeedToyMCstat;}
         UInt_t RndSeedToyMCsyst() const {return fSeedToyMCsyst;}
         UInt_t RndSeedToyMCosc () const {return fSeedToyMCosc; }
@@ -87,9 +89,11 @@ namespace valor {
         string GlobalMixParamScheme() const { if(fParseType & kParseGlobal) return fGlobalMixParamScheme; cerr << "kParseGlobal not set" << endl; exit(-1); }
         string GlobalMixParamOctant() const { if(fParseType & kParseGlobal) return fGlobalMixParamOctant; cerr << "kParseGlobal not set" << endl; exit(-1); }
         string GlobalCPVPhaseScheme() const { if(fParseType & kParseGlobal) return fGlobalCPVPhaseScheme; cerr << "kParseGlobal not set" << endl; exit(-1); }
-        // 3f osc options
+        
+	// 3f osc options
         string Hypothesis   () const { if(fParseType & kParse3FOscParams ) return fHypothesis; cerr << "kParse3FOscParams or kParse3FOscBarParams not set" << endl; exit(-1); }
         
+	
         // toy or fit marginalization options
         int    FirstExperiment     () const { if(fParseType & (kParseToys | kParseFitMarg)) return fFirstExperiment;     cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
         int    LastExperiment      () const { if(fParseType & (kParseToys | kParseFitMarg)) return fLastExperiment;      cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
@@ -98,15 +102,20 @@ namespace valor {
         int    SystTweakMode       () const { if(fParseType & (kParseToys | kParseFitMarg)) return fSystTweakMode;       cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
         bool   RethrowIfUnphysical () const { if(fParseType & (kParseToys | kParseFitMarg)) return fRethrowIfUnphysical; cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
         bool   VerboseSystThrows   () const { if(fParseType & (kParseToys | kParseFitMarg)) return fVerboseSystThrows;   cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
-        
+        bool   VerboseFit          () const { if(fParseType & (kParseToys | kParseFitMarg)) return fVerboseFit       ;   cerr << "kParseToys or kParseFitMarg not set" << endl; exit(-1); }
+
         // fit marginalization options
         //string Tag () const { if(fParseType & kParseFitMarg) return fTag; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Xmlfile () const { if(fParseType & kParseFitMarg) return fXmlfile; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Rootfile () const { if(fParseType & kParseFitMarg) return fRootfile; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   Using_xml_file () const { if(fParseType & kParseFitMarg) return fUsing_xml_file; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   DoToys () const { if(fParseType & kParseFitMarg) return fDoToys; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+        bool   ReadSKExp() const { if(fParseType & kParseFitMarg) return fReadSKExp; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Fit_param_list () const { if(fParseType & kParseFitMarg) return fFit_param_list; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+        bool   DoFC () const { if(fParseType & kParseFitMarg) return fDoFC; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Infilename () const { if(fParseType & kParseFitMarg) return fInfilename; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+        string Infilename_nh () const { if(fParseType & kParseFitMarg) return fInfilename_nh; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+        string Infilename_ih () const { if(fParseType & kParseFitMarg) return fInfilename_ih; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         int    Nfiles () const { if(fParseType & kParseFitMarg) return fNfiles; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         int    NtoysMarg () const { if(fParseType & kParseFitMarg) return fNtoysMarg; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Freeparname0 () const { if(fParseType & kParseFitMarg) return fFreeparname0; cerr << "kParseFitMarg not set" << endl; exit(-1); }
@@ -119,13 +128,16 @@ namespace valor {
         int    NptScan1 () const { if(fParseType & kParseFitMarg) return fNptScan1; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   DoMargMH () const { if(fParseType & kParseFitMarg) return fDoMargMH; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Hierarchy_marg () const { if(fParseType & kParseFitMarg) return fHierarchy_marg; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+        bool   DoMinimize () const { if(fParseType & kParseFitMarg) return fDoMinimize; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         TString TypeError () const { if(fParseType & kParseFitMarg) return fTypeError; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   DrawFullChisq () const { if(fParseType & kParseFitMarg) return fDrawFullChisq; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         string Teststat () const { if(fParseType & kParseFitMarg) return fTeststat; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool StoreLikeWeights () const { if(fParseType & kParseFitMarg) return fStoreLikeWeights; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   PenaltyTerm0 () const { if(fParseType & kParseFitMarg) return fPenaltyTerm0; cerr << "kParseFitMarg not set" << endl; exit(-1); }
         bool   PenaltyTerm1 () const { if(fParseType & kParseFitMarg) return fPenaltyTerm1; cerr << "kParseFitMarg not set" << endl; exit(-1); }
-        
+        bool Scale_toys_based_on_samples () const { if(fParseType & kParseFitMarg) return kScale_toys_based_on_samples; cerr << "kScale_toys_based_on_samples not set" << endl; exit(-1); }
+        double Scale_toys_based_on_samples_scale () const { if(fParseType & kParseFitMarg) return fScale_toys_based_on_samples_scale; cerr << "fScale_toys_based_on_samples_scale not set" << endl; exit(-1); }
+
         // Print
         virtual void   Print (ostream & stream, const int w = 30) const;
         friend ostream & operator << (ostream & stream, const RunOpt & opt);
@@ -158,6 +170,9 @@ namespace valor {
         string fVerbosityFile;
         string fFileTag;
         int    fRun;
+        bool   fUseFileData;
+        string fPathFileData;
+
         // toy options
         int  fFirstExperiment;
         int  fLastExperiment;
@@ -166,13 +181,15 @@ namespace valor {
         int  fSystTweakMode;
         bool fRethrowIfUnphysical;
         bool fVerboseSystThrows;
+        bool fVerboseFit;
+
         // global options
         string fGlobalDmsqScheme;
         string fGlobalMassHierarchy;
         string fGlobalMixParamScheme;
         string fGlobalMixParamOctant;
-        string fGlobalCPVPhaseScheme;
-        
+        string fGlobalCPVPhaseScheme;   
+
         // Random seeds
         UInt_t fSeedToyMCstat;      ///< initial seeds for RNG - stat fluctuations
         UInt_t fSeedToyMCsyst;      ///< initial seeds for RNG - syst fluctuations
@@ -232,8 +249,12 @@ namespace valor {
         string fRootfile;
         bool fUsing_xml_file;
         bool fDoToys;
+        bool fReadSKExp;
         string fFit_param_list;
         string fInfilename;
+        string fInfilename_nh;
+        string fInfilename_ih;
+        bool fDoFC;
         int fNfiles;
         int fNtoysMarg;
         string fFreeparname0;
@@ -246,6 +267,7 @@ namespace valor {
         int fNptScan1;
         bool fDoMargMH;
         string fHierarchy_marg;
+        bool fDoMinimize; // use descent gradient
         TString fTypeError;
         bool fDrawFullChisq;
         string fTeststat;
@@ -253,7 +275,9 @@ namespace valor {
         bool fStoreLikeWeights;
         bool fPenaltyTerm0; // penalty term for param0
         bool fPenaltyTerm1; // penalty term for param1
-        
+        bool kScale_toys_based_on_samples;
+        double fScale_toys_based_on_samples_scale;
+
         //conv::PhysParamId_t fFreepar0;
         //conv::PhysParamId_t fFreepar1;
         //

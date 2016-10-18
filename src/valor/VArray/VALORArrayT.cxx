@@ -639,7 +639,7 @@ template<typename numtype> void VALORArrayT<numtype>::
   header.Write(os);
   os.write( (char*)compressed_buffer,nbytes_compressed);
   
-  delete compressed_buffer;
+  delete[] compressed_buffer;
 #else // with USE_UNCOMPRESSED_VARRAY_FORMAT
   os.write( (char*)&fNDim      ,sizeof(int));
   os.write( (char*)fDimensions ,sizeof(Int_t)*6);
