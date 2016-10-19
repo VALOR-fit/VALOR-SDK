@@ -109,7 +109,7 @@ void FitterMarginal::Init(FitInputs * fit_inputs, Option_t * option)
       fit_params.SetTo(fitter);
     
       // set minimization function
-      fitter->SetFCN(MarginalFitFunc);            
+      fitter->SetFCN(MarginalFitFunc); 
    }
   
    // Parse a tolerance out of the fitter option

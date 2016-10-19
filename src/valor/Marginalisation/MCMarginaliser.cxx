@@ -7,6 +7,9 @@
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/NameRegistry.h"
 
+// Temp include - can remove when generate doesn't depend on TMath.Pi()
+#include "TMath.h"
+
 namespace valor
 {
 namespace marginalisation
@@ -80,12 +83,10 @@ void MCMarginaliser::Marginalise1D()
    double minValue = fParams->MinValue(fParam0);
    double maxValue = fParams->MaxValue(fParam0);
    // Quick hack for testing purposes
-   //double stepSize = (maxValue - minValue) / 99.0;
-   double stepSize = fParams->StepSize(fParam0);
+   double stepSize = (maxValue - minValue) / 9.0;
+   //double stepSize = fParams->StepSize(fParam0);
    
-   fParams->SetCurrentValue(fParam0, minValue);
    Rnd::Instance()->SetSeeds(*fArg);
-   fData->Generate(fModel, *fParams, false);
 
    int numBins = 1 + static_cast<int>((maxValue - minValue) / stepSize);
    fLikelihood = new VALORArray(numBins);
@@ -102,13 +103,13 @@ void MCMarginaliser::Marginalise1D()
       double totalLikelihood = 0.0;
       for(int n = 0; n < fNumToys; ++n)
       {
-         LOG("MCMarginaliser", pDEBUG) << "Toy " << n;
          RandomizeNuisance();
          int ndof = fData->NumOfBins() - fParams->GetNumberFreeParameters();
          double chi2 = fData->GetFitStatistic(fModel, *fParams, NULL);
          totalLikelihood += exp(-chi2 / 2);
-         LOG("MCMarginaliser", pDEBUG) << "Chi2[" << ndof << "] (" << n <<
-            ": " << value << ") = " << chi2 << "   L = " << totalLikelihood;
+         LOG("MCMarginaliser", pDEBUG) << ":\nToy " << (n + 1) << " of " <<
+            fNumToys << " => Chi2[" << ndof << "] (" << value << ") = " <<
+            chi2 << "   Sum(L) = " << totalLikelihood;
       }
       double likelihood = totalLikelihood / fNumToys;
       fLikelihood->SetEntry(likelihood, i);
@@ -193,10 +194,6 @@ void MCMarginaliser::RandomizeNuisance()
       fModel->RandomizeSystematics(options.Data());
       PhysParamList tweaks = fModel->Tweaks();
       fParams->FromPhysParamList(tweaks, "current");
-   }
-   while(!AllParametersWithinBounds());
-   do
-   {
       RandomizeOscillation();
    }
    while(!AllParametersWithinBounds());
@@ -320,6 +317,11 @@ bool MCMarginaliser::AllParametersWithinBounds()
          if(fParams->CurrValue(p) > fParams->MaxValue(p) ||
                fParams->CurrValue(p) < fParams->MinValue(p))
          {
+            LOG("MCMarginaliser", pDEBUG) << "Nuisance " <<
+               util::NameRegistry::Instance()->AsString(p) << " = " <<
+               fParams->CurrValue(p) << " from [" <<
+               fParams->MinValue(p) << "," <<
+               fParams->MaxValue(p)  << "]";
             return false;
          }
       }
