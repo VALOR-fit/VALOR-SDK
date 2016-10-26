@@ -20,6 +20,7 @@
 #define _valor_corr_syst_h_
 
 #include <iostream>
+#include <map>
 
 #include <TObject.h>
 #include <TMatrixD.h>
@@ -64,8 +65,9 @@ public:
   double ChisqPenalty (bool all_syst = true) const;
   
   // Tweak all the systematics, either to a specific vector or randomly with correlations.
-  void Tweak(bool force_inputs, TVectorD * input_vec, Option_t * opt = 0);
-  void Tweak(bool force_inputs, TVectorD * input_vec, bool (* use_twk_param)(conv::PhysParamId_t));
+  void Tweak(bool force_inputs, const TVectorD * input_vec, Option_t * opt = 0);
+  void Tweak(bool force_inputs, const TVectorD * input_vec, const std::map<valor::conv::PhysParamId_t,bool> & should_tweak, Option_t * opt = 0);
+  void Tweak(bool force_inputs, const TVectorD * input_vec, bool (* use_twk_param)(conv::PhysParamId_t), Option_t * opt = 0);
   
   // Access vector values
   double CurrentValueByIndex(int idx) const;

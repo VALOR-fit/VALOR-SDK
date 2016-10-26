@@ -20,6 +20,7 @@
 
 #include <string>
 #include <iostream>
+#include <map>
 
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/FitCore/PhysHypothesis.h"
@@ -46,7 +47,13 @@ public:
   // The input option in TweakSystematics() can be used as needed in a particular context to interpret the input tweak
   // (for example, in T2K context, to specify whether the input tweak is wrt to the nominal and BANFF-tuned MC parameters).
   virtual bool Generate             (const PhysHypothesis & ph, Option_t * opt = 0) = 0;
-  virtual void RandomizeSystematics (Option_t * opt = 0) = 0; 
+  
+  // This one will randomize all systematics
+  virtual void RandomizeSystematics (Option_t * opt = 0) = 0;
+  // These two only randomize the systematics inside that return "true" in the should_randomize argument
+  virtual void RandomizeSystematics (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0) = 0;
+  virtual void RandomizeSystematics (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0) = 0;
+   
   virtual void TweakSystematic      (std::string syst_name, double twkdial=0., Option_t * opt = 0) = 0; 
   virtual void TweakSystematic      (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0) = 0; 
   // Additional related methods to reset the systematics and enquire their values.
@@ -65,6 +72,12 @@ public:
   
   // Get penalty term for current systematics
   virtual double GetFitStatisticPenalty(Option_t * opt = 0) const = 0;
+  
+  // Interface for the systematic parameters
+  // By default SetSystConf just points at an external syst object. Use opt="copy" or "adopt" if you want control.
+  virtual void  SetSystConf(CorrelatedSystematics * syst, Option_t * opt = "") = 0;
+  virtual       CorrelatedSystematics * GetSystematics(Option_t * opt = "") = 0;
+  virtual const CorrelatedSystematics * GetSystematics(Option_t * opt = "") const = 0;
 
 protected:
    FitModelABC();

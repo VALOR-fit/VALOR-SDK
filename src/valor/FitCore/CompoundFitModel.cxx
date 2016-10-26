@@ -155,6 +155,30 @@ void CompoundFitModel::RandomizeSystematics (Option_t * opt)
   }
 }
 //________________________________________________________________________________________
+void CompoundFitModel::RandomizeSystematics (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt)
+{
+  if (fSystematics) {  // If we have our own systematic model, tweak that
+    fSystematics->Tweak(false, NULL, should_randomize, opt);
+  }
+  else {// otherwise loop over all submodels.
+    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      (*it)->RandomizeSystematics(should_randomize, opt);
+    }
+  }
+}
+//________________________________________________________________________________________
+void CompoundFitModel::RandomizeSystematics (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt)
+{
+  if (fSystematics) {  // If we have our own systematic model, tweak that
+    fSystematics->Tweak(false, NULL, should_randomize, opt);
+  }
+  else {// otherwise loop over all submodels.
+    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      (*it)->RandomizeSystematics(should_randomize, opt);
+    }
+  }
+}
+//________________________________________________________________________________________
 void CompoundFitModel::TweakSystematic (string syst_name, double twkdial, Option_t * opt)
 {
   assert(!"Not implemented");
@@ -296,10 +320,10 @@ void CompoundFitModel::SetSystConf(CorrelatedSystematics * syst, Option_t * opt)
     fOwnerOfSystematics = ts.Contains("adopt");
   }
   
-  //~ // Set the same matrix for the submodels
-  //~ for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    //~ (*it)->SetSystConf(syst,opt);
-  //~ }
+  // Set the same matrix for the submodels
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+    (*it)->SetSystConf(syst,opt);
+  }
   
   return;
 }

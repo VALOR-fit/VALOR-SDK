@@ -47,7 +47,13 @@ public:
   // The input option in TweakSystematics() can be used as needed in a particular context to interpret the input tweak
   // (for example, in T2K context, to specify whether the input tweak is wrt to the nominal and BANFF-tuned MC parameters).
   virtual bool Generate             (const PhysHypothesis & ph, Option_t * opt = 0) ;
-  virtual void RandomizeSystematics (Option_t * opt = 0) ; 
+  
+  // This one will randomize all systematics
+  virtual void RandomizeSystematics (Option_t * opt = 0);
+  // These two only randomize the systematics inside that return "true" in the should_randomize argument
+  virtual void RandomizeSystematics (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
+  virtual void RandomizeSystematics (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0);
+  
   virtual void TweakSystematic      (std::string syst_name, double twkdial=0., Option_t * opt = 0) ; 
   virtual void TweakSystematic      (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0) ; 
   // Additional related methods to reset the systematics and enquire their values.
