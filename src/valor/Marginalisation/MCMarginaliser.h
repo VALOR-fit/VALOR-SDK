@@ -17,13 +17,32 @@ namespace marginalisation
    public:
       MCMarginaliser(FitDataABC* data, FitModelABC* model,
             FitParamList* parameters);
-      MCMarginaliser(const MCMarginaliser& original);
       virtual ~MCMarginaliser();
 
       /**
          Marginalises over nuisance parameters.
       */
       virtual void Marginalise();
+
+      /**
+         Marginalises over nuisance parameters.
+
+         \param data
+            The data against which the fit should be performed.
+         \param model
+            The model over which to marginalise.
+      */
+      virtual void Marginalise(FitDataABC* data, FitModelABC* model);
+
+      /*
+         Retrieves an iterator representing the beginning of the set of models.
+      */
+      virtual std::vector<FitModelABC*>::iterator Begin();
+
+      /*
+         Retrieves an interator representing the end of the set of models.
+      */
+      virtual std::vector<FitModelABC*>::iterator End();
 
       /**
          Retrieves the average likelihood calculated during a 1D
@@ -42,6 +61,13 @@ namespace marginalisation
       virtual TH2D* GetAverageLikelihood2D();
 
       /**
+         Returns the number of marginalisation toys.
+
+         \return The number of marginalisation toys.
+      */
+      int GetNumToys() const;
+
+      /**
          Configures the marginaliser.
 
          \param arg
@@ -54,6 +80,7 @@ namespace marginalisation
    private:
       void RandomizeNuisance();
       void RandomizeOscillation();
+      void MarginaliseNew();
       void Marginalise1D();
       void Marginalise2D();
       bool AllParametersWithinBounds();
@@ -69,6 +96,12 @@ namespace marginalisation
       VALORArrayD* fLikelihood;
       TH1D* fAvgLikelihood1D;
       TH2D* fAvgLikelihood2D;
+      // This is temporary until the binary file read/write is working
+      // Note that the Root dictionary does not correctly resolve FitModelABC
+      // as belonging to the valor namespace when used as the template to a
+      // vector within the valor::marginalisation namespace, so it must have its
+      // namespace explicitly specified.
+      std::vector<valor::FitModelABC*> fToys;
    };
 }
 }

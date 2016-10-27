@@ -19,24 +19,9 @@ MCMarginaliser::MCMarginaliser(FitDataABC* data, FitModelABC* model,
       FitParamList* parameters):
    fNumToys(0), fNumDimensions(1), fParam0(conv::kPhypUndefined),
    fParam1(conv::kPhypUndefined), fData(data), fModel(model),
-   fParams(parameters), fLikelihood(0), fAvgLikelihood1D(0), fAvgLikelihood2D(0)
+   fParams(parameters), fLikelihood(0), fAvgLikelihood1D(0),
+   fAvgLikelihood2D(0)
 {
-}
-
-MCMarginaliser::MCMarginaliser(const MCMarginaliser& original):
-   fNumToys(original.fNumToys), fNumDimensions(original.fNumDimensions),
-   fParam0(original.fParam0), fParam1(original.fParam1),
-   fData(original.fData), fModel(original.fModel), fParams(original.fParams)
-{
-   fLikelihood = new VALORArrayD(*original.fLikelihood);
-   if(fAvgLikelihood1D)
-   {
-      fAvgLikelihood1D = dynamic_cast<TH1D*>(original.fAvgLikelihood1D->Clone());
-   }
-   if(fAvgLikelihood2D)
-   {
-      fAvgLikelihood2D = dynamic_cast<TH2D*>(original.fAvgLikelihood2D->Clone());
-   }
 }
 
 MCMarginaliser::~MCMarginaliser()
@@ -53,10 +38,17 @@ MCMarginaliser::~MCMarginaliser()
    {
       delete fAvgLikelihood2D;
    }
+   std::vector<FitModelABC*>::iterator it = fToys.begin();
+   while(it != fToys.end())
+   {
+      delete *it;
+      it = fToys.erase(it);
+   }
 }
 
 void MCMarginaliser::Marginalise()
 {
+/*
    LOG("MCMarginaliser", pNOTICE) << "Performing " << fNumDimensions << "D fit.";
    if(fNumDimensions == 1)
    {
@@ -66,6 +58,37 @@ void MCMarginaliser::Marginalise()
    {
       Marginalise2D();
    }
+*/
+}
+
+void MCMarginaliser::Marginalise(FitDataABC* data, FitModelABC* model)
+{
+   Rnd::Instance()->SetSeeds(*fArg);
+   TString tag(fArg->GetString("tag"));
+
+   LOG("MCMarginaliser", pNOTICE) << "Creating " << fNumToys <<
+      " marginalisation toys";
+   for(int n = 0; n < fNumToys; ++n)
+   {
+      LOG("MCMarginaliser", pNOTICE) << "Generating toy " << (n + 1) <<
+         " of " << fNumToys;
+      RandomizeNuisance();
+      model->Generate(*fParams, "+SB");
+      // Temporary in memory storage
+      fToys.push_back(model);
+      TString filename = TString::Format("%s_%d.root", tag.Data(), n);
+      model->Write(filename.Data());
+   }
+}
+
+std::vector<FitModelABC*>::iterator MCMarginaliser::Begin()
+{
+   return fToys.begin();
+}
+
+std::vector<FitModelABC*>::iterator MCMarginaliser::End()
+{
+   return fToys.end();
 }
 
 TH1D* MCMarginaliser::GetAverageLikelihood1D()
@@ -78,12 +101,17 @@ TH2D* MCMarginaliser::GetAverageLikelihood2D()
    return fAvgLikelihood2D;
 }
 
+int MCMarginaliser::GetNumToys() const
+{
+   return fNumToys;
+}
+
 void MCMarginaliser::Marginalise1D()
 {
    double minValue = fParams->MinValue(fParam0);
    double maxValue = fParams->MaxValue(fParam0);
    // Quick hack for testing purposes
-   double stepSize = (maxValue - minValue) / 9.0;
+   double stepSize = (maxValue - minValue) / 99.0;
    //double stepSize = fParams->StepSize(fParam0);
    
    Rnd::Instance()->SetSeeds(*fArg);
@@ -194,7 +222,7 @@ void MCMarginaliser::RandomizeNuisance()
       fModel->RandomizeSystematics(options.Data());
       PhysParamList tweaks = fModel->Tweaks();
       fParams->FromPhysParamList(tweaks, "current");
-      RandomizeOscillation();
+//      RandomizeOscillation();
    }
    while(!AllParametersWithinBounds());
 }
