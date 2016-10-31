@@ -33,4 +33,6 @@
 #pragma link C++ class std::map <valor::conv::PhysParamId_t,bool>;
 #pragma link C++ class std::pair<valor::conv::PhysParamId_t,bool>;
 
+#pragma link C++ class std::vector<valor::conv::PhysParamId_t>;
+
 #endif
