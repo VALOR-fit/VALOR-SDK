@@ -507,7 +507,7 @@ void CorrelatedSystematics::Tweak(
         assert(vec.GetNoElements() == (int)fNSystParameters);
         for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
           PhysParamId_t p = this->Idx2Param(ip);
-          if (!should_tweak.at(p)) {
+          if (should_tweak.count(p) && !should_tweak.at(p)) {
             // LOG("CorrelatedSystematics", pNOTICE)
             //   << "Adding to tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
             vec[ip]=current_values[ip];
@@ -524,19 +524,19 @@ void CorrelatedSystematics::Tweak(
   else
   {
 #ifdef __show_tweak_mesg_debug__
-     LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
+    LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
 #endif
-     const TMatrixD & L = *fCovMtrxChoL;
-     TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
-     for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
-       PhysParamId_t p = this->Idx2Param(ip);
-       if (!should_tweak.at(p)) {
-         // LOG("CorrelatedSystematics", pNOTICE)
-         //   << "Adding to Chol tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
-         vec[ip]=current_values[ip];
-       }
-     }
-     current_values = vec;
+    const TMatrixD & L = *fCovMtrxChoL;
+    TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
+    for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
+      PhysParamId_t p = this->Idx2Param(ip);
+      if (should_tweak.count(p) && !should_tweak.at(p)) {
+        // LOG("CorrelatedSystematics", pNOTICE)
+        //   << "Adding to Chol tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
+        vec[ip]=current_values[ip];
+      }
+    }
+    current_values = vec;
   }
   return;
 }
