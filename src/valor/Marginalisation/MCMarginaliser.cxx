@@ -6,6 +6,7 @@
 #include "valor/Utilities/Rnd.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/NameRegistry.h"
+#include "valor/Utilities/XMLConfig.h"
 
 // Temp include - can remove when generate doesn't depend on TMath.Pi()
 #include "TMath.h"
@@ -78,6 +79,17 @@ void MCMarginaliser::Marginalise(FitDataABC* data, FitModelABC* model)
       fToys.push_back(model);
       TString filename = TString::Format("%s_%d.root", tag.Data(), n);
       model->Write(filename.Data());
+
+      // Write the xml configuration asscoiated with this compound fit model to file
+      std::string filestr(filename.Data());
+      valor::util::XMLConfig xmlconf(filestr);
+      TXMLEngine* xml = xmlconf.GetXMLEngine();
+      XMLNodePointer_t root = xml->NewChild(NULL, NULL, "analysis_inputs");
+      xml->DocSetRootElement(xmlconf.GetXMLDocument(), root);
+      model->WriteXML(xmlconf);
+      LOG("MCMarginaliser", pNOTICE) << "Writing master file: " <<
+         xmlconf.GetMasterFilename();
+      xml->SaveDoc(xmlconf.GetXMLDocument(), xmlconf.GetMasterFilename().c_str());
    }
 }
 
