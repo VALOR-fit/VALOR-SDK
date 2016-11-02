@@ -390,9 +390,9 @@ double CorrelatedSystematics::CovMatrixElementByIndex(int idx1, int idx2) const
 }
 //________________________________________________________________________________________
 void CorrelatedSystematics::Tweak(
-  bool       force_inputs, // force the input params or generate random ones internally  
-  TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
-  Option_t * opt
+  bool             force_inputs, // force the input params or generate random ones internally  
+  const TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
+  Option_t *       opt
 )
 {
   
@@ -474,9 +474,10 @@ void CorrelatedSystematics::Tweak(
 }
 //________________________________________________________________________________________
 void CorrelatedSystematics::Tweak(
-  bool       force_inputs, // force the input params or generate random ones internally  
-  TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
-  bool     (* use_twk_param)(PhysParamId_t)
+  bool              force_inputs,  // force the input params or generate random ones internally  
+  const TVectorD *  input_vec   ,  // input vector of syst params - Set to 0 to reset to nominal ones 
+  const map<conv::PhysParamId_t, bool> & should_tweak,  // If the parameter's entry here is false, no tweak applied
+  Option_t * /*opt*/
 )
 {
   
@@ -514,7 +515,87 @@ void CorrelatedSystematics::Tweak(
 #ifdef __show_tweak_mesg_debug__
         LOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
 #endif
-        TVectorD & vec = *input_vec;
+        TVectorD vec(*input_vec);
+        assert(vec.GetNoElements() == (int)fNSystParameters);
+        for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
+          PhysParamId_t p = this->Idx2Param(ip);
+          if (!should_tweak.count(p) || !should_tweak.at(p)) {
+            // LOG("CorrelatedSystematics", pNOTICE)
+            //   << "Adding to tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
+            vec[ip]=current_values[ip];
+          }
+        }
+        current_values = vec;
+     }
+  }//force_inputs?
+
+  //
+  // If the tweaking dials were not forced, generate correlated tweaking dials
+  // using the Cholesky method
+  //
+  else
+  {
+#ifdef __show_tweak_mesg_debug__
+    LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
+#endif
+    const TMatrixD & L = *fCovMtrxChoL;
+    TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
+    for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
+      PhysParamId_t p = this->Idx2Param(ip);
+      if (!should_tweak.count(p) || !should_tweak.at(p)) {
+        // LOG("CorrelatedSystematics", pNOTICE)
+        //   << "Adding to Chol tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
+        vec[ip]=current_values[ip];
+      }
+    }
+    current_values = vec;
+  }
+  return;
+}
+//________________________________________________________________________________________
+void CorrelatedSystematics::Tweak(
+  bool             force_inputs, // force the input params or generate random ones internally  
+  const TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
+  bool             (* use_twk_param)(PhysParamId_t),
+  Option_t * /*opt*/ 
+)
+{
+  
+#ifdef __show_tweak_mesg_debug__
+  LOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
+#endif
+
+  // Switch flags
+  fIsTweaked         = true;
+  
+  //
+  // Get best-fit and current syst params
+  //
+  
+  TVectorD & initial_values = *fInitialValues;
+  TVectorD & current_values = *fCurrentValues;
+
+  //
+  // Force the input parameters
+  //
+  if(force_inputs) 
+  {
+     // Input vector is NULL.
+     // This resets the input params to their best-fit values.
+     if(input_vec==0) {
+#ifdef __show_tweak_mesg_debug__
+        LOG("CorrelatedSystematics",pDEBUG) << "Reset input params to best-fit values.";
+#endif
+        fIsTweaked = false;
+        current_values = initial_values;
+        return;
+     }
+     else     
+     {
+#ifdef __show_tweak_mesg_debug__
+        LOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
+#endif
+        TVectorD vec(*input_vec);
         assert(vec.GetNoElements() == (int)fNSystParameters);
         for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
           PhysParamId_t p = this->Idx2Param(ip);
