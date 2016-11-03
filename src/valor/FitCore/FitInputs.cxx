@@ -38,11 +38,11 @@ ClassImp(FitInputs)
 
 //________________________________________________________________________________________
 FitInputs::FitInputs(FitDataABC * o, FitModelABC * e, FitParamList * fpar,
-      MarginaliserABC* m, string opt, double errdef, bool goodnessoffit) :
+      LikelihoodABC* l, string opt, double errdef, bool goodnessoffit) :
    fObs(o), 
    fExp(e), 
    fFitParams(fpar),
-   fMarginaliser(m),
+   fLikelihood(l),
    fOpt(opt),
    fErrDef(errdef),
    fGoodnessOfFit(goodnessoffit)
@@ -75,14 +75,9 @@ FitParamList & FitInputs::FitParams(void)
   return *fFitParams; 
 }
 
-MarginaliserABC & FitInputs::Marginaliser (void)
+LikelihoodABC & FitInputs::Likelihood (void)
 {
-   if(!fMarginaliser)
-   {
-      LOG("FitInputs", pERROR) << "No marginaliser set. Exiting.";
-      exit(1);
-   }
-   return *fMarginaliser;
+   return *fLikelihood;
 }
 
 
@@ -131,51 +126,17 @@ void valor::FitFunc (
 { 
 // To be used with a TVirtualFitter
 
-  FitInputs * inputs = (FitInputs *) gMinuit->GetObjectFit();
-
-  // get fit params
-  FitParamList & fpar = inputs->FitParams(); 
+  FitInputs* inputs = (FitInputs *) gMinuit->GetObjectFit();
+  FitDataABC& data = inputs->Observation();
+  FitParamList& fp = inputs->FitParams();
+  LikelihoodABC& likelihood = inputs->Likelihood();
 
   // synchronize FitParamList with the paramerer array used by MINUIT
-  fpar.Sync(par,true);
+  fp.Sync(par, true);
 
-  f = inputs->Statistic();
+  f = likelihood.Likelihood(&data, &fp);
   
-  fpar.SetCurrStatistic(f);
-}
-
-void valor::MarginalFitFunc(Int_t&, Double_t*, Double_t& f, Double_t* par,
-      Int_t iflag)
-{
-   FitInputs * inputs = (FitInputs *) gMinuit->GetObjectFit();
-   FitParamList & fp = inputs->FitParams();
-   MarginaliserABC & marginaliser = inputs->Marginaliser();
-   fp.Sync(par,true);
-   
-   int nDimensions = fp.GetNumberFreeParameters();
-   if(nDimensions == 1)
-   {
-      TH1D* likelihood = marginaliser.GetAverageLikelihood1D();
-      FitParamList* freeParam = fp.FreeParameterSubset();
-      int bin = likelihood->FindBin(freeParam->CurrValueByIndex(0));
-      f = likelihood->GetBinContent(bin);
-   }
-   else if(nDimensions == 2)
-   {
-      TH2D* likelihood = marginaliser.GetAverageLikelihood2D();
-      FitParamList* freeParam = fp.FreeParameterSubset();
-      int bin = likelihood->FindBin(freeParam->CurrValueByIndex(0),
-            freeParam->CurrValueByIndex(1));
-      f = likelihood->GetBinContent(bin);
-   }
-   else
-   {
-      LOG("FitInputs", pERROR) << "Unsupported number of free parameters: " <<
-         nDimensions;
-      exit(1);
-   }
-
-   fp.SetCurrStatistic(f);
+  fp.SetCurrStatistic(f);
 }
 
 //____________________________________________________________________________

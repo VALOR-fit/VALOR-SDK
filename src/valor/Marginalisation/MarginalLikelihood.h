@@ -9,7 +9,7 @@ namespace valor
 namespace marginalisation
 {
 
-   class MarginalLikelihood : LikelihoodABC
+   class MarginalLikelihood : public LikelihoodABC
    {
    public:
       MarginalLikelihood(MarginaliserABC* marginaliser);

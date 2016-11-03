@@ -72,12 +72,7 @@ void MCMarginaliser::Marginalise(FitDataABC* data, FitModelABC* model)
       LOG("MCMarginaliser", pNOTICE) << "Generating toy " << (n + 1) <<
          " of " << fNumToys;
       RandomizeNuisance();
-      model->Generate(*fParams, "+SB");
-
-      // Temporary chi2 calculation for testing purposes
-      double chi2 = fData->GetFitStatistic(fModel, *fParams, NULL);
-      LOG("MCMarginaliser", pNOTICE) << "Toy " << (n + 1) << " of " <<
-         fNumToys << ": chi2 = " << chi2;
+      model->GenerateUnoscillated(*fParams, "+SB");
 
       // Temporary in memory storage
       fToys.push_back(model);

@@ -26,10 +26,7 @@
 #include <HFitInterface.h>
 
 #include "valor/FitCore/FitParamList.h"
-
-#include "valor/Marginalisation/MarginaliserABC.h"
-
-using namespace valor::marginalisation;
+#include "valor/FitCore/LikelihoodABC.h"
 
 namespace valor {
   
@@ -78,14 +75,14 @@ class FitInputs: public ROOT::Minuit2::FCNBase, public TObject
 {
 public :
   FitInputs(FitDataABC* o, FitModelABC* e, FitParamList* p,
-        MarginaliserABC* m = NULL, string opt = "poisson", double errdef = 1,
+        LikelihoodABC* l, string opt = "poisson", double errdef = 1,
         bool goodnessoffit = false);
   ~FitInputs();
   
   FitDataABC &      Observation  (void);
   FitModelABC &     Expectation  (void);
   FitParamList &    FitParams    (void);
-  MarginaliserABC & Marginaliser (void);
+  LikelihoodABC &   Likelihood   (void);
 
   void UpdateParamList(FitParamList * fpar);
   
@@ -119,7 +116,7 @@ private:
   FitDataABC *            fObs;
   mutable FitModelABC *   fExp;
   mutable FitParamList *  fFitParams;
-  MarginaliserABC *       fMarginaliser;
+  LikelihoodABC *         fLikelihood;
   string                  fOpt;
   int                     fMode;
   double                  fErrDef;
@@ -135,7 +132,6 @@ private:
 //
 
 void FitFunc (Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t iflag);
-void MarginalFitFunc(Int_t&, Double_t*, Double_t& f, Double_t* par, Int_t iflag);
 
 } // valor
 
