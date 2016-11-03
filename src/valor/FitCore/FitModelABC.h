@@ -47,7 +47,10 @@ public:
   // Then one uses the tweaked model to generate predictions for the given physics hypothesis.
   // The input option in TweakSystematics() can be used as needed in a particular context to interpret the input tweak
   // (for example, in T2K context, to specify whether the input tweak is wrt to the nominal and BANFF-tuned MC parameters).
-  virtual bool Generate             (const PhysHypothesis & ph, Option_t * opt = 0) = 0;
+  virtual bool Generate(const PhysHypothesis& ph, Option_t* opt = 0) = 0;
+  virtual bool GenerateUnoscillated(const PhysHypothesis& ph,
+        Option_t* opt = 0) = 0;
+  virtual bool Oscillate(const PhysHypothesis& ph, Option_t* opt = 0) = 0;
   
   // This one will randomize all systematics
   virtual void RandomizeSystematics (Option_t * opt = 0) = 0;
@@ -66,6 +69,8 @@ public:
   // This interface method was developed for fitters. 
   // The fit parameter list contains all relevant parameters, describing both a physics hypothesis and systematic variations.
   virtual bool Generate (const FitParamList & fp, Option_t * opt = 0) = 0;
+  virtual bool GenerateUnoscillated(const FitParamList& fp,
+        Option_t* opt = 0) = 0;
 
   // Write all predictions to the input container or to the input file
   virtual bool Write (TObjArray* collection, const char * tag = "model", Option_t * write_opt = 0) = 0;

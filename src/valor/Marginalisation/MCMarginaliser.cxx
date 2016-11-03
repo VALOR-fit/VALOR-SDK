@@ -67,29 +67,33 @@ void MCMarginaliser::Marginalise(FitDataABC* data, FitModelABC* model)
    Rnd::Instance()->SetSeeds(*fArg);
    TString tag(fArg->GetString("tag"));
 
-   LOG("MCMarginaliser", pNOTICE) << "Creating " << fNumToys <<
-      " marginalisation toys";
    for(int n = 0; n < fNumToys; ++n)
    {
       LOG("MCMarginaliser", pNOTICE) << "Generating toy " << (n + 1) <<
          " of " << fNumToys;
       RandomizeNuisance();
       model->Generate(*fParams, "+SB");
+
+      // Temporary chi2 calculation for testing purposes
+      double chi2 = fData->GetFitStatistic(fModel, *fParams, NULL);
+      LOG("MCMarginaliser", pNOTICE) << "Toy " << (n + 1) << " of " <<
+         fNumToys << ": chi2 = " << chi2;
+
       // Temporary in memory storage
       fToys.push_back(model);
       TString filename = TString::Format("%s_%d.root", tag.Data(), n);
       model->Write(filename.Data());
 
-      // Write the xml configuration asscoiated with this compound fit model to file
+      // Write the xml configuration asscoiated with this compound fit model to
+      // file
       std::string filestr(filename.Data());
       valor::util::XMLConfig xmlconf(filestr);
       TXMLEngine* xml = xmlconf.GetXMLEngine();
       XMLNodePointer_t root = xml->NewChild(NULL, NULL, "analysis_inputs");
       xml->DocSetRootElement(xmlconf.GetXMLDocument(), root);
       model->WriteXML(xmlconf);
-      LOG("MCMarginaliser", pNOTICE) << "Writing master file: " <<
-         xmlconf.GetMasterFilename();
-      xml->SaveDoc(xmlconf.GetXMLDocument(), xmlconf.GetMasterFilename().c_str());
+      xml->SaveDoc(xmlconf.GetXMLDocument(),
+            xmlconf.GetMasterFilename().c_str());
    }
 }
 
