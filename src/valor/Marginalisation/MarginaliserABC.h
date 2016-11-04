@@ -17,11 +17,6 @@ namespace marginalisation
 
       /**
          Marginalises over nuisance parameters.
-      */
-      virtual void Marginalise() = 0;
-
-      /**
-         Marginalises over nuisance parameters.
 
          \param data
             The data against which the fit should be performed.
@@ -39,22 +34,6 @@ namespace marginalisation
          Retrieves an iterator representing the end of the set of models.
       */
       virtual std::vector<FitModelABC*>::iterator End() = 0;
-
-      /**
-         Retrieves the average likelihood calculated during a 1D
-         marginalisation.
-
-         \return The average likelihood over the marginalization toys.
-      */
-      virtual TH1D* GetAverageLikelihood1D() = 0;
-
-      /**
-         Retrieves the average likelihood calculated during a 2D
-         marginalisation.
-
-         \return The average likelihood over the marginalization toys.
-      */
-      virtual TH2D* GetAverageLikelihood2D() = 0;
 
       /**
          Configures the marginaliser.

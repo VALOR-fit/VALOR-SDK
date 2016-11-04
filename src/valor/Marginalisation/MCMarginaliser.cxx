@@ -20,46 +20,18 @@ MCMarginaliser::MCMarginaliser(FitDataABC* data, FitModelABC* model,
       FitParamList* parameters):
    fNumToys(0), fNumDimensions(1), fParam0(conv::kPhypUndefined),
    fParam1(conv::kPhypUndefined), fData(data), fModel(model),
-   fParams(parameters), fLikelihood(0), fAvgLikelihood1D(0),
-   fAvgLikelihood2D(0)
+   fParams(parameters)
 {
 }
 
 MCMarginaliser::~MCMarginaliser()
 {
-   if(fLikelihood)
-   {
-      delete fLikelihood;
-   }
-   if(fAvgLikelihood1D)
-   {
-      delete fAvgLikelihood1D;
-   }
-   if(fAvgLikelihood2D)
-   {
-      delete fAvgLikelihood2D;
-   }
    std::vector<FitModelABC*>::iterator it = fToys.begin();
    while(it != fToys.end())
    {
       delete *it;
       it = fToys.erase(it);
    }
-}
-
-void MCMarginaliser::Marginalise()
-{
-/*
-   LOG("MCMarginaliser", pNOTICE) << "Performing " << fNumDimensions << "D fit.";
-   if(fNumDimensions == 1)
-   {
-      Marginalise1D();
-   }
-   else
-   {
-      Marginalise2D();
-   }
-*/
 }
 
 void MCMarginaliser::Marginalise(FitDataABC* data, FitModelABC* model)
@@ -71,7 +43,7 @@ void MCMarginaliser::Marginalise(FitDataABC* data, FitModelABC* model)
    {
       LOG("MCMarginaliser", pNOTICE) << "Generating toy " << (n + 1) <<
          " of " << fNumToys;
-      RandomizeNuisance();
+      //RandomizeNuisance();
       model->GenerateUnoscillated(*fParams, "+SB");
 
       // Temporary in memory storage
@@ -102,106 +74,9 @@ std::vector<FitModelABC*>::iterator MCMarginaliser::End()
    return fToys.end();
 }
 
-TH1D* MCMarginaliser::GetAverageLikelihood1D()
-{
-   return fAvgLikelihood1D;
-}
-
-TH2D* MCMarginaliser::GetAverageLikelihood2D()
-{
-   return fAvgLikelihood2D;
-}
-
 int MCMarginaliser::GetNumToys() const
 {
    return fNumToys;
-}
-
-void MCMarginaliser::Marginalise1D()
-{
-   double minValue = fParams->MinValue(fParam0);
-   double maxValue = fParams->MaxValue(fParam0);
-   // Quick hack for testing purposes
-   double stepSize = (maxValue - minValue) / 99.0;
-   //double stepSize = fParams->StepSize(fParam0);
-   
-   Rnd::Instance()->SetSeeds(*fArg);
-
-   int numBins = 1 + static_cast<int>((maxValue - minValue) / stepSize);
-   fLikelihood = new VALORArray(numBins);
-   fLikelihood->SetAll(0.0);
-   fAvgLikelihood1D = new TH1D("h_avg_likelihood_1D", "h_avg_likelihood_1D",
-         numBins, minValue, maxValue);
-   int i = 0;
-   for(double value = minValue; value <= maxValue; value += stepSize, ++i)
-   {
-      // Ensure that each set of toys is equivalent to the last set
-      Rnd::Instance()->SetSeeds(*fArg);
-      fParams->SetCurrentValue(fParam0, value);
-      // Marginalise for this value
-      double totalLikelihood = 0.0;
-      for(int n = 0; n < fNumToys; ++n)
-      {
-         RandomizeNuisance();
-         int ndof = fData->NumOfBins() - fParams->GetNumberFreeParameters();
-         double chi2 = fData->GetFitStatistic(fModel, *fParams, NULL);
-         totalLikelihood += exp(-chi2 / 2);
-         LOG("MCMarginaliser", pDEBUG) << ":\nToy " << (n + 1) << " of " <<
-            fNumToys << " => Chi2[" << ndof << "] (" << value << ") = " <<
-            chi2 << "   Sum(L) = " << totalLikelihood;
-      }
-      double likelihood = totalLikelihood / fNumToys;
-      fLikelihood->SetEntry(likelihood, i);
-      // Root histogram bins offset by 1 because of underflow bin
-      fAvgLikelihood1D->SetBinContent(i + 1, likelihood);
-      LOG("MCMarginaliser", pNOTICE) << "L(" << value << ") = " <<
-         likelihood;
-   }
-}
-
-void MCMarginaliser::Marginalise2D()
-{
-   double minValue0 = fParams->MinValueByIndex(fParam0);
-   double maxValue0 = fParams->MaxValueByIndex(fParam0);
-   double stepSize0 = fParams->StepSizeByIndex(fParam0);
-   double minValue1 = fParams->MinValueByIndex(fParam1);
-   double maxValue1 = fParams->MaxValueByIndex(fParam1);
-   double stepSize1 = fParams->StepSizeByIndex(fParam1);
-
-   fParams->SetCurrentValue(fParam0, minValue0);
-   fParams->SetCurrentValue(fParam1, minValue1);
-   Rnd::Instance()->SetSeeds(*fArg);
-   fData->Generate(fModel, *fParams);
-
-   int numBins0 = 1 + static_cast<int>((maxValue0 - minValue0) / stepSize0);
-   int numBins1 = 1 + static_cast<int>((maxValue1 - minValue1) / stepSize1);
-   fAvgLikelihood2D = new TH2D("h_avg_likelihood_2D", "h_avg_likelihood_2D",
-         numBins0, minValue0, maxValue0, numBins1, minValue1, maxValue1);
-   int i = 0;
-   int j = 0;
-   for(double value0 = minValue0; value0 <= maxValue0; value0 += stepSize0, ++i)
-   {
-      fParams->SetCurrentValue(fParam0, value0);
-      for(double value1 = minValue1; value1 <= maxValue1; value1 += stepSize1, ++j)
-      {
-         // Ensure that each set of toys is equivalent to the last set
-         Rnd::Instance()->SetSeeds(*fArg);
-         fParams->SetCurrentValue(fParam1, value1);
-         // Marginalise for this value
-         double totLikelihood = 0.0;
-         for(int n = 0; n < fNumToys; ++n)
-         {
-            RandomizeNuisance();
-            totLikelihood += exp(-fData->GetFitStatistic(fModel, *fParams,
-                     NULL) / 2);
-         }
-         double likelihood = totLikelihood / fNumToys;
-         // Root histogram bins offset by 1 because of underflow bin
-         fAvgLikelihood2D->SetBinContent(i + 1, j + 1, likelihood);
-         LOG("MCMarginaliser", pNOTICE) << "Likelihood (" << value0 << "," <<
-            value1 << ") = " << likelihood;
-      }
-   }
 }
 
 void MCMarginaliser::Configure(const CmdLnArgList& arg)

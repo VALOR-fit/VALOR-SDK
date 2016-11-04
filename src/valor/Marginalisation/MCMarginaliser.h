@@ -21,11 +21,6 @@ namespace marginalisation
 
       /**
          Marginalises over nuisance parameters.
-      */
-      virtual void Marginalise();
-
-      /**
-         Marginalises over nuisance parameters.
 
          \param data
             The data against which the fit should be performed.
@@ -43,22 +38,6 @@ namespace marginalisation
          Retrieves an interator representing the end of the set of models.
       */
       virtual std::vector<FitModelABC*>::iterator End();
-
-      /**
-         Retrieves the average likelihood calculated during a 1D
-         marginalisation.
-
-         \return The average likelihood over the marginalization toys.
-      */
-      virtual TH1D* GetAverageLikelihood1D();
-
-      /**
-         Retrieves the average likelihood calculated during a 2D
-         marginalisation.
-
-         \return The average likelihood over the marginalization toys.
-      */
-      virtual TH2D* GetAverageLikelihood2D();
 
       /**
          Returns the number of marginalisation toys.
@@ -80,9 +59,6 @@ namespace marginalisation
    private:
       void RandomizeNuisance();
       void RandomizeOscillation();
-      void MarginaliseNew();
-      void Marginalise1D();
-      void Marginalise2D();
       bool AllParametersWithinBounds();
 
    private:
@@ -93,9 +69,6 @@ namespace marginalisation
       FitDataABC* fData;
       FitModelABC* fModel;
       FitParamList* fParams;
-      VALORArrayD* fLikelihood;
-      TH1D* fAvgLikelihood1D;
-      TH2D* fAvgLikelihood2D;
       // This is temporary until the binary file read/write is working
       // Note that the Root dictionary does not correctly resolve FitModelABC
       // as belonging to the valor namespace when used as the template to a
