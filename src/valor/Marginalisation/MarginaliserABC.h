@@ -3,7 +3,6 @@
 
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/VArray/VALORArrayD.h"
-#include "valor/FitCore/FitDataABC.h"
 #include "valor/FitCore/FitModelABC.h"
 
 namespace valor
@@ -18,12 +17,10 @@ namespace marginalisation
       /**
          Marginalises over nuisance parameters.
 
-         \param data
-            The data against which the fit should be performed.
          \param model
             The model over which to marginalise.
       */
-      virtual void Marginalise(FitDataABC* data, FitModelABC* model) = 0;
+      virtual void Marginalise(FitModelABC* model) = 0;
 
       /*
          Retrieves an iterator representing the beginning of the set of models.

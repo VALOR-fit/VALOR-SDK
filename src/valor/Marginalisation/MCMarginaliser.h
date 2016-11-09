@@ -3,10 +3,8 @@
 
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Marginalisation/MarginaliserABC.h"
-#include "valor/FitCore/FitDataABC.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitParamList.h"
-#include "valor/VArray/VALORArrayD.h"
 
 namespace valor
 {
@@ -15,19 +13,16 @@ namespace marginalisation
    class MCMarginaliser : public MarginaliserABC
    {
    public:
-      MCMarginaliser(FitDataABC* data, FitModelABC* model,
-            FitParamList* parameters);
+      MCMarginaliser(FitModelABC* model, FitParamList* parameters);
       virtual ~MCMarginaliser();
 
       /**
          Marginalises over nuisance parameters.
 
-         \param data
-            The data against which the fit should be performed.
          \param model
             The model over which to marginalise.
       */
-      virtual void Marginalise(FitDataABC* data, FitModelABC* model);
+      virtual void Marginalise(FitModelABC* model);
 
       /*
          Retrieves an iterator representing the beginning of the set of models.
@@ -54,19 +49,12 @@ namespace marginalisation
       */
       virtual void Configure(const CmdLnArgList& arg);
 
-      static conv::PhysParamId_t GetPhysParamId(const std::string& name);
-
    private:
       void RandomizeNuisance();
-      void RandomizeOscillation();
       bool AllParametersWithinBounds();
 
    private:
       int fNumToys;
-      int fNumDimensions;
-      conv::PhysParamId_t fParam0;
-      conv::PhysParamId_t fParam1;
-      FitDataABC* fData;
       FitModelABC* fModel;
       FitParamList* fParams;
       // This is temporary until the binary file read/write is working
