@@ -47,17 +47,6 @@ void MCMarginaliser::Marginalise(FitModelABC* model)
       fToys.push_back(model);
       TString filename = TString::Format("%s_%d.root", tag.Data(), n);
       model->Write(filename.Data());
-
-      // Write the xml configuration asscoiated with this compound fit model to
-      // file
-      std::string filestr(filename.Data());
-      valor::util::XMLConfig xmlconf(filestr);
-      TXMLEngine* xml = xmlconf.GetXMLEngine();
-      XMLNodePointer_t root = xml->NewChild(NULL, NULL, "analysis_inputs");
-      xml->DocSetRootElement(xmlconf.GetXMLDocument(), root);
-      model->WriteXML(xmlconf);
-      xml->SaveDoc(xmlconf.GetXMLDocument(),
-            xmlconf.GetMasterFilename().c_str());
    }
 }
 

@@ -362,37 +362,6 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
   return status;
 }
 
-bool CompoundFitModel::WriteXML(valor::util::XMLConfig& xmlconf)
-{
-   bool status = true;
-   int i = 0;
-   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-         it != fSubModels.end(); ++it)
-   {
-      FitModelABC* model = *it;
-      TXMLEngine* xml = xmlconf.GetXMLEngine();
-      XMLDocPointer_t xmldoc = xmlconf.GetXMLDocument();
-      XMLNodePointer_t xmlroot = xml->DocGetRootElement(xmldoc);
-      XMLNodePointer_t xmlmodel = xml->NewChild(xmlroot, NULL, "model");
-      xml->NewChild(xmlmodel, NULL, "name", model->Name().c_str());
-      xml->NewChild(xmlmodel, NULL, "class",
-            "valor::GenericSingleSampleFitModel");
-
-      valor::util::XMLConfig subxmlconf(xmlconf.GetMCFilename());
-      xml->NewChild(xmlmodel, NULL, "config",
-            subxmlconf.GetModelFilename(i).c_str());
-      TXMLEngine* subxml = subxmlconf.GetXMLEngine();
-      XMLNodePointer_t subroot = subxml->NewChild(NULL, NULL, "analysis_inputs");
-      subxml->DocSetRootElement(subxmlconf.GetXMLDocument(), subroot);
-      status = status && model->WriteXML(subxmlconf);
-      subxml->SaveDoc(subxmlconf.GetXMLDocument(),
-            subxmlconf.GetModelFilename(i).c_str());
-
-      i++;
-   }
-   return status;
-}
-
 //________________________________________________________________________________________
 double CompoundFitModel::GetFitStatisticPenalty(Option_t * opt) const
 {
