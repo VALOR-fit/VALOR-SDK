@@ -362,6 +362,46 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
   return status;
 }
 
+void CompoundFitModel::Cache(util::ModelCacheABC* cache)
+{
+   // This whole method needs to be reconsidered to allow repeat use of the same cache
+   // Currently truncating with each new model, probably want to pass the stream
+   // into this function as well, so truncation (or not) can be handled
+   // globally for all 10K marginalisation toys.
+   ofstream stream("/data/t2k/phrdqd/VALOR/softw/dune/branches/"
+         "v3.0.0_marginalisation/data/toymc/toytest.valor",
+         std::ios::out | std::ios::binary | std::ios::trunc);
+         //std::ios::out | std::ios::app | std::ios::binary | std::ios::trunc);
+
+   cache->MakeToy(fSubModels.size());
+
+   if(stream.is_open())
+   {
+      int mIdx = 0;
+      for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+            it != fSubModels.end(); ++it)
+      {
+         FitModelABC* m = *it;
+         cache->MakeModel();
+         m->Cache(cache);
+         //cache->WriteFileHeader(stream);
+         // Currently only one toy, this will need to be passed up to a higher
+         // level
+         //cache->WriteToyHeader(stream, 0);
+         //cache->WriteModelHeader(stream, mIdx);
+         //cache->WriteModelData(stream);
+         ++mIdx;
+         LOG("CompoundFitModel", pNOTICE) << cache->ToString();
+      }
+      stream.close();
+   }
+   else
+   {
+      LOG("CompoundFitModel", pERROR) << "Failed to create write marginalisation toy. Exiting.";
+      exit(1);
+   }
+}
+
 //________________________________________________________________________________________
 double CompoundFitModel::GetFitStatisticPenalty(Option_t * opt) const
 {
