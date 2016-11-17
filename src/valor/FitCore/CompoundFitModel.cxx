@@ -370,27 +370,23 @@ void CompoundFitModel::Cache(util::ModelCacheABC* cache)
    // globally for all 10K marginalisation toys.
    ofstream stream("/data/t2k/phrdqd/VALOR/softw/dune/branches/"
          "v3.0.0_marginalisation/data/toymc/toytest.valor",
-         std::ios::out | std::ios::binary | std::ios::trunc);
+         std::ios::out | std::ios::binary | std::ios::trunc | std::ios::in);
          //std::ios::out | std::ios::app | std::ios::binary | std::ios::trunc);
 
    cache->MakeToy(fSubModels.size());
 
    if(stream.is_open())
    {
-      int mIdx = 0;
       for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
             it != fSubModels.end(); ++it)
       {
          FitModelABC* m = *it;
          cache->MakeModel();
          m->Cache(cache);
-         //cache->WriteFileHeader(stream);
-         // Currently only one toy, this will need to be passed up to a higher
-         // level
-         //cache->WriteToyHeader(stream, 0);
-         //cache->WriteModelHeader(stream, mIdx);
-         //cache->WriteModelData(stream);
-         ++mIdx;
+         cache->WriteFileHeader(stream);
+         cache->WriteToyHeader(stream);
+         cache->WriteModelHeader(stream);
+         cache->WriteModelData(stream);
          LOG("CompoundFitModel", pNOTICE) << cache->ToString();
       }
       stream.close();

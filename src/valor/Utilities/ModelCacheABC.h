@@ -70,23 +70,19 @@ namespace util
          Writes a toy header to the specified stream.
 
          \param out The output stream to write to.
-         \param toy The toy to be written (indexed from zero).
 
          \return True if the write succeeded, false otherwise.
       */ 
-      virtual bool WriteToyHeader(std::ofstream& out, const int toy) = 0;
+      virtual bool WriteToyHeader(std::ofstream& out) = 0;
 
       /**
          Writes a model header to the specified stream.
 
-         \param out
-            The output stream to write to.
-         \param model
-            The model to be written (index from zero relative to the current toy)
+         \param out The output stream to write to.
 
          \return True if the write succeeded, false otherwise.
       */ 
-      virtual bool WriteModelHeader(std::ofstream& out, const int model) = 0;
+      virtual bool WriteModelHeader(std::ofstream& out) = 0;
 
       /**
          Writes a model's data to the specified stream.
