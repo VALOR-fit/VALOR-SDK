@@ -14,18 +14,15 @@ namespace util
       virtual ~ModelCacheABC(){ };
 
       /**
-         Reads the file header from the specified stream into the cache.
-
-         \param in The input stream to read from.
+         Reads the file header into the cache.
 
          \return True if the read succeeded, false otherwise.
       */ 
       virtual bool ReadFileHeader() = 0;
 
       /**
-         Reads a toy header from the specified stream into the cache.
+         Reads a toy header into the cache.
 
-         \param in The input stream to read from.
          \param toy The toy to be read (indexed from zero).
 
          \return True if the read succeeded, false otherwise.
@@ -33,61 +30,49 @@ namespace util
       virtual bool ReadToyHeader(const int toy) = 0;
 
       /**
-         Reads a model header from the specified stream into the cache based on
-         the most recently read toy information.
+         Reads a model header into the cache based on the most recently read toy
+         information.
 
-         \param in
-            The input stream to read from.
          \param model
-            The model to be read (indexed from zero relative to the current toy).
+            The model to be read (indexed from zero relative to the current
+            toy).
 
          \return True if the read succeeded, false otherwise.
       */ 
       virtual bool ReadModelHeader(const int model) = 0;
 
       /**
-         Reads data from the specified stream into the cache based on the most
-         recently read model information. That is, the data read will be that of
-         the most recently processed toy and model headers.
-
-         \param in
-            The input stream to read from.
+         Reads data into the cache based on the most recently read model
+         information. That is, the data read will be that of the most recently
+         processed toy and model headers.
 
          \return True if the read succeeded, false otherwise.
       */ 
       virtual bool ReadModelData() = 0; 
 
       /**
-         Writes the file header to the specified stream.
-
-         \param out The output stream to write to.
+         Writes the file header.
 
          \return True if written succeeded, false otherwise.
       */ 
       virtual bool WriteFileHeader() = 0;
 
       /**
-         Writes a toy header to the specified stream.
-
-         \param out The output stream to write to.
+         Writes a toy header.
 
          \return True if the write succeeded, false otherwise.
       */ 
       virtual bool WriteToyHeader() = 0;
 
       /**
-         Writes a model header to the specified stream.
-
-         \param out The output stream to write to.
+         Writes a model header.
 
          \return True if the write succeeded, false otherwise.
       */ 
       virtual bool WriteModelHeader() = 0;
 
       /**
-         Writes a model's data to the specified stream.
-
-         \param out The output stream to write to.
+         Writes a model's data.
 
          \return True if the write succeeded, false otherwise.
       */ 
