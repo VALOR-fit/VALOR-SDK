@@ -76,6 +76,7 @@ public:
   virtual bool Write (TObjArray* collection, const char * tag = "model", Option_t * write_opt = 0) = 0;
   virtual bool Write (const char * filename, const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0) = 0;
   virtual void Cache(util::ModelCacheABC* cache) = 0;
+  virtual void Retrieve(util::ModelCacheABC* cache) = 0;
   
   // Get penalty term for current systematics
   virtual double GetFitStatisticPenalty(Option_t * opt = 0) const = 0;

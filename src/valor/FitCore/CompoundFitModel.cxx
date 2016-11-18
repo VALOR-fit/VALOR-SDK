@@ -380,6 +380,22 @@ void CompoundFitModel::Cache(util::ModelCacheABC* cache)
    }
 }
 
+void CompoundFitModel::Retrieve(util::ModelCacheABC* cache)
+{
+   cache->ReadFileHeader();
+   cache->ReadToyHeader();
+
+   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+         it != fSubModels.end(); ++it)
+   {
+      FitModelABC* m = *it;
+      cache->ReadModelHeader();
+//      cache->ReadModelData();
+//      m->Retrieve(cache);
+      LOG("CompoundFitModel", pNOTICE) << cache->ToString();
+   }
+}
+
 //________________________________________________________________________________________
 double CompoundFitModel::GetFitStatisticPenalty(Option_t * opt) const
 {

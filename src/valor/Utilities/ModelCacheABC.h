@@ -23,23 +23,17 @@ namespace util
       /**
          Reads a toy header into the cache.
 
-         \param toy The toy to be read (indexed from zero).
-
          \return True if the read succeeded, false otherwise.
       */ 
-      virtual bool ReadToyHeader(const int toy) = 0;
+      virtual bool ReadToyHeader() = 0;
 
       /**
          Reads a model header into the cache based on the most recently read toy
          information.
 
-         \param model
-            The model to be read (indexed from zero relative to the current
-            toy).
-
          \return True if the read succeeded, false otherwise.
       */ 
-      virtual bool ReadModelHeader(const int model) = 0;
+      virtual bool ReadModelHeader() = 0;
 
       /**
          Reads data into the cache based on the most recently read model
