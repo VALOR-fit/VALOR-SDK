@@ -364,37 +364,19 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
 
 void CompoundFitModel::Cache(util::ModelCacheABC* cache)
 {
-   // This whole method needs to be reconsidered to allow repeat use of the same cache
-   // Currently truncating with each new model, probably want to pass the stream
-   // into this function as well, so truncation (or not) can be handled
-   // globally for all 10K marginalisation toys.
-   ofstream stream("/data/t2k/phrdqd/VALOR/softw/dune/branches/"
-         "v3.0.0_marginalisation/data/toymc/toytest.valor",
-         std::ios::out | std::ios::binary | std::ios::trunc | std::ios::in);
-         //std::ios::out | std::ios::app | std::ios::binary | std::ios::trunc);
-
    cache->MakeToy(fSubModels.size());
 
-   if(stream.is_open())
+   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+         it != fSubModels.end(); ++it)
    {
-      for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-            it != fSubModels.end(); ++it)
-      {
-         FitModelABC* m = *it;
-         cache->MakeModel();
-         m->Cache(cache);
-         cache->WriteFileHeader(stream);
-         cache->WriteToyHeader(stream);
-         cache->WriteModelHeader(stream);
-         cache->WriteModelData(stream);
-         LOG("CompoundFitModel", pNOTICE) << cache->ToString();
-      }
-      stream.close();
-   }
-   else
-   {
-      LOG("CompoundFitModel", pERROR) << "Failed to create write marginalisation toy. Exiting.";
-      exit(1);
+      FitModelABC* m = *it;
+      cache->MakeModel();
+      m->Cache(cache);
+      cache->WriteFileHeader();
+      cache->WriteToyHeader();
+      cache->WriteModelHeader();
+      cache->WriteModelData();
+      LOG("CompoundFitModel", pNOTICE) << cache->ToString();
    }
 }
 

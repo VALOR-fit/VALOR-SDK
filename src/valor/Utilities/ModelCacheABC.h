@@ -20,7 +20,7 @@ namespace util
 
          \return True if the read succeeded, false otherwise.
       */ 
-      virtual bool ReadFileHeader(std::ifstream& in) = 0;
+      virtual bool ReadFileHeader() = 0;
 
       /**
          Reads a toy header from the specified stream into the cache.
@@ -30,7 +30,7 @@ namespace util
 
          \return True if the read succeeded, false otherwise.
       */ 
-      virtual bool ReadToyHeader(std::ifstream& in, const int toy) = 0;
+      virtual bool ReadToyHeader(const int toy) = 0;
 
       /**
          Reads a model header from the specified stream into the cache based on
@@ -43,7 +43,7 @@ namespace util
 
          \return True if the read succeeded, false otherwise.
       */ 
-      virtual bool ReadModelHeader(std::ifstream& in, const int model) = 0;
+      virtual bool ReadModelHeader(const int model) = 0;
 
       /**
          Reads data from the specified stream into the cache based on the most
@@ -55,7 +55,7 @@ namespace util
 
          \return True if the read succeeded, false otherwise.
       */ 
-      virtual bool ReadModelData(std::ifstream& in) = 0; 
+      virtual bool ReadModelData() = 0; 
 
       /**
          Writes the file header to the specified stream.
@@ -64,7 +64,7 @@ namespace util
 
          \return True if written succeeded, false otherwise.
       */ 
-      virtual bool WriteFileHeader(std::ofstream& out) = 0;
+      virtual bool WriteFileHeader() = 0;
 
       /**
          Writes a toy header to the specified stream.
@@ -73,7 +73,7 @@ namespace util
 
          \return True if the write succeeded, false otherwise.
       */ 
-      virtual bool WriteToyHeader(std::ofstream& out) = 0;
+      virtual bool WriteToyHeader() = 0;
 
       /**
          Writes a model header to the specified stream.
@@ -82,7 +82,7 @@ namespace util
 
          \return True if the write succeeded, false otherwise.
       */ 
-      virtual bool WriteModelHeader(std::ofstream& out) = 0;
+      virtual bool WriteModelHeader() = 0;
 
       /**
          Writes a model's data to the specified stream.
@@ -91,7 +91,7 @@ namespace util
 
          \return True if the write succeeded, false otherwise.
       */ 
-      virtual bool WriteModelData(std::ofstream& out) = 0;
+      virtual bool WriteModelData() = 0;
 
       /**
          Updates the cache to populate a new toy.
