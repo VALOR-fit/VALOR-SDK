@@ -390,9 +390,9 @@ void CompoundFitModel::Retrieve(util::ModelCacheABC* cache)
    {
       FitModelABC* m = *it;
       cache->ReadModelHeader();
-//      cache->ReadModelData();
-//      m->Retrieve(cache);
-      LOG("CompoundFitModel", pNOTICE) << cache->ToString();
+      cache->ReadModelData();
+      m->Retrieve(cache);
+//      LOG("CompoundFitModel", pNOTICE) << cache->ToString();
    }
 }
 
