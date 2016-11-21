@@ -376,7 +376,7 @@ void CompoundFitModel::Cache(util::ModelCacheABC* cache)
       cache->WriteToyHeader();
       cache->WriteModelHeader();
       cache->WriteModelData();
-      LOG("CompoundFitModel", pNOTICE) << cache->ToString();
+//      LOG("CompoundFitModel", pNOTICE) << cache->ToString();
    }
 }
 
