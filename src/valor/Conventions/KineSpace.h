@@ -26,7 +26,6 @@
 #include "valor/Conventions/KineVar.h"
 
 using std::string;
-using std::vector;
 
 namespace valor {
 namespace conv {
@@ -70,9 +69,9 @@ namespace util {
   conv::KineSpace_t       SubSpaceTrue        (conv::KineSpace_t ks);
   conv::KineSpace_t       KineSpaceFromInt    (int is);
   conv::KineSpace_t       KineSpaceFromString (string s);
-  vector<valor::conv::KineVar_t> KineVar             (conv::KineSpace_t ks);
-  vector<valor::conv::KineVar_t> KineVarReco         (conv::KineSpace_t ks);
-  vector<valor::conv::KineVar_t> KineVarTrue         (conv::KineSpace_t ks);
+  std::vector<valor::conv::KineVar_t> KineVar      (conv::KineSpace_t ks);
+  std::vector<valor::conv::KineVar_t> KineVarReco  (conv::KineSpace_t ks);
+  std::vector<valor::conv::KineVar_t> KineVarTrue  (conv::KineSpace_t ks);
 
 
 } // util
