@@ -44,7 +44,9 @@ fExp(e),
 fFitParams(fpar),
 fOpt(opt),
 fErrDef(errdef),
-fGoodnessOfFit(goodnessoffit)
+fGoodnessOfFit(goodnessoffit),
+fIncludePenaltySyst(true),
+fIncludePenaltyHyp (true)
 { 
 
 }
@@ -89,9 +91,9 @@ double FitInputs::Statistic(Option_t * option) const
     data_statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL);
   }
   TString option_ts(option);
-  if (! option_ts.Contains("nopenalty")) {
-    syst_penalty = fExp->GetFitStatisticPenalty(option);
-    phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);
+  if (!option_ts.Contains("nopenalty")){
+    if (fIncludePenaltySyst) {syst_penalty = fExp->GetFitStatisticPenalty(option);}
+    if (fIncludePenaltyHyp ) {phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);}
   }
   total_statistic = syst_penalty + phys_penalty;
 #ifndef __VALOR_FMWK_PENALTY_ONLY__
@@ -102,6 +104,16 @@ double FitInputs::Statistic(Option_t * option) const
   
   assert(TMath::Finite(total_statistic));
   return total_statistic;
+}
+//____________________________________________________________________________
+void FitInputs::IncludePenaltySyst(bool use_penalty)
+{
+  fIncludePenaltySyst = use_penalty;
+}
+//____________________________________________________________________________
+void FitInputs::IncludePenaltyHyp(bool use_penalty)
+{
+  fIncludePenaltyHyp = use_penalty;
 }
 //____________________________________________________________________________ 
 // MINUIT fit functions 

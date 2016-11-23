@@ -87,6 +87,10 @@ public :
   // set the chisq definition 5 bins vs 73 bins
   void SetChisqDefinition (bool goodnessoffit) { fGoodnessOfFit = goodnessoffit; }
   bool GetChisqDefinition (void) { return fGoodnessOfFit; }
+  
+  // Turn the penalty term off or on (defaults to on)
+  void IncludePenaltyHyp(bool use_penalty);
+  void IncludePenaltySyst(bool use_penalty);
       
   // Set the chisquare type (e.g. poisson) to be used in the fit
   void SetChisquareFitOption(Option_t * opt) { fOpt = opt; }
@@ -118,6 +122,9 @@ private:
   bool                    fGoodnessOfFit;
   int                     fNPoints;
   int                     fNDim;
+  
+  bool                    fIncludePenaltySyst;
+  bool                    fIncludePenaltyHyp;
   
   ClassDef(FitInputs, 4)    
 };
