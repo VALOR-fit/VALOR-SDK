@@ -26,11 +26,11 @@ class CompoundCorrelatedSystematics: public CorrelatedSystematics
 {
 public:
   CompoundCorrelatedSystematics(const std::vector<const valor::CorrelatedSystematics*> & vec,
-                                std::string xml_node_name = "syst");
+                                std::string xml_node_name = "syst",std::string name = "Systematics");
                                 
   CompoundCorrelatedSystematics(unsigned int n_cov_matrices,
                                 const CorrelatedSystematics * const * syst_objs,
-                                std::string xml_node_name = "syst");
+                                std::string xml_node_name = "syst",std::string name = "Systematics");
                                 
   virtual ~CompoundCorrelatedSystematics();
 
