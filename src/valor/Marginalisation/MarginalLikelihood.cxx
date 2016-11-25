@@ -21,13 +21,17 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
    assert(marginaliser);
    std::vector<double> chi2Values;
    int i = 0;
-   for(std::vector<FitModelABC*>::iterator it = marginaliser->Begin();
-         it != marginaliser->End(); ++it)
+   std::vector<FitModelABC*>::iterator it = marginaliser->Begin();
+   // Calculate probability once for a given set of oscillation parameters
+   double pOsc = (*it)->Oscillate(hypothesis, NULL);
+   for( ; it != marginaliser->End(); ++it)
    {
       i++;
       FitModelABC* model = *it;
       // Apply oscillation to the marginalisation toy
-      model->Oscillate(hypothesis, NULL);
+      // Need a function here that actually applies the oscillation probability
+      // to the model, having already calculated the probability
+      //model->Oscillate(hypothesis, NULL);
       // Calculate the likelihood
       double chi2 = data->GetFitStatistic(model, NULL);
       chi2Values.push_back(chi2);
