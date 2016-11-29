@@ -2,7 +2,6 @@
 #define MARGINALISERABC_H
 
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/VArray/VALORArrayD.h"
 #include "valor/FitCore/FitModelABC.h"
 
 namespace valor
@@ -16,21 +15,29 @@ namespace marginalisation
 
       /**
          Marginalises over nuisance parameters.
-
-         \param model
-            The model over which to marginalise.
       */
-      virtual void Marginalise(FitModelABC* model) = 0;
+      virtual void Marginalise() = 0;
 
-      /*
-         Retrieves an iterator representing the beginning of the set of models.
-      */
-      virtual std::vector<FitModelABC*>::iterator Begin() = 0;
+      /**
+         The first marginalisation toy in the set.
 
-      /*
-         Retrieves an iterator representing the end of the set of models.
+         \return The first marginalisation toy.
       */
-      virtual std::vector<FitModelABC*>::iterator End() = 0;
+      virtual FitModelABC* Begin() = 0;
+
+      /**
+         The terminating marginalisation toy in the set.
+
+         \return The terminating marginalisation toy.
+      */
+      virtual FitModelABC* End() = 0;
+
+      /**
+         The next marginalisation toy in the set.
+
+         \return The next marginalisation toy.
+      */
+      virtual FitModelABC* Next() = 0;
 
       /**
          Configures the marginaliser.

@@ -20,20 +20,14 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
    MCMarginaliser* marginaliser = dynamic_cast<MCMarginaliser*>(fMarginaliser);
    assert(marginaliser);
    std::vector<double> chi2Values;
-   int i = 0;
-   std::vector<FitModelABC*>::iterator it = marginaliser->Begin();
-   // Calculate probability once for a given set of oscillation parameters
-   double pOsc = (*it)->Oscillate(hypothesis, NULL);
-   for( ; it != marginaliser->End(); ++it)
+   FitParamList* free = params->FreeParameterSubset();
+   for(FitModelABC* m = marginaliser->Begin() ; m != marginaliser->End();
+         m = marginaliser->Next())
    {
-      i++;
-      FitModelABC* model = *it;
       // Apply oscillation to the marginalisation toy
-      // Need a function here that actually applies the oscillation probability
-      // to the model, having already calculated the probability
-      //model->Oscillate(hypothesis, NULL);
+      m->Oscillate(hypothesis, NULL);
       // Calculate the likelihood
-      double chi2 = data->GetFitStatistic(model, NULL);
+      double chi2 = data->GetFitStatistic(m, NULL);
       chi2Values.push_back(chi2);
    }
    std::sort(chi2Values.begin(), chi2Values.end());
@@ -41,19 +35,20 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
    double halfAvgChi2 = 0.5 * avgChi2;
    double scale = halfAvgChi2 <= PRECISION_SCALE ? halfAvgChi2 : PRECISION_SCALE;
    double totalLikelihood = 0;
+   int i = 0;
    for(std::vector<double>::iterator it = chi2Values.begin();
-         it != chi2Values.end(); ++it)
+         it != chi2Values.end(); ++it, i++)
    {
       double likelihood = exp(-0.5 * *it + scale);
       totalLikelihood += likelihood;
       LOG("MarginalLikelihood", pNOTICE) << "Toy " << i << " FP: " <<
-         params->CurrValueByIndex(0) << " Chi2: " << *it << " L: " << likelihood;
+         free->CurrValueByIndex(0) << " Chi2: " << *it << " L: " << likelihood;
    }
 
    double averageLikelihood = totalLikelihood / marginaliser->GetNumToys();
    double lnLikelihood = 2 * scale - 2 * log(averageLikelihood);
    LOG("MarginalLikelihood", pNOTICE) << "FP: " <<
-         params->CurrValueByIndex(0) << " -2lnL: " << lnLikelihood;
+         free->CurrValueByIndex(0) << " -2lnL: " << lnLikelihood;
 
    return lnLikelihood;
 }

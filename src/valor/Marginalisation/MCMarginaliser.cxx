@@ -16,48 +16,54 @@ namespace valor
 namespace marginalisation
 {
 
-MCMarginaliser::MCMarginaliser(FitModelABC* model, FitParamList* parameters):
-   fNumToys(0), fModel(model), fParams(parameters)
+MCMarginaliser::MCMarginaliser(FitModelABC* model, FitParamList* parameters,
+      util::ModelCacheABC* cache):
+   fNumToys(0), fParams(parameters), fCache(cache), fCurrentToy(0), fModel(model)
 {
 }
 
 MCMarginaliser::~MCMarginaliser()
 {
-   std::vector<FitModelABC*>::iterator it = fToys.begin();
-   while(it != fToys.end())
-   {
-      delete *it;
-      it = fToys.erase(it);
-   }
 }
 
-void MCMarginaliser::Marginalise(FitModelABC* model)
+void MCMarginaliser::Marginalise()
 {
    Rnd::Instance()->SetSeeds(*fArg);
-   TString tag(fArg->GetString("tag"));
 
    for(int n = 0; n < fNumToys; ++n)
    {
       LOG("MCMarginaliser", pNOTICE) << "Generating toy " << (n + 1) <<
          " of " << fNumToys;
-      //RandomizeNuisance();
-      model->GenerateUnoscillated(*fParams, "+SB");
-
-      // Temporary in memory storage
-      fToys.push_back(model);
-      TString filename = TString::Format("%s_%d.root", tag.Data(), n);
-      model->Write(filename.Data());
+      RandomizeNuisance();
+      fModel->GenerateUnoscillated(*fParams, "+SB");
+      fModel->Cache(fCache);
    }
 }
 
-std::vector<FitModelABC*>::iterator MCMarginaliser::Begin()
+FitModelABC* MCMarginaliser::Begin()
 {
-   return fToys.begin();
+   fCurrentToy = 0;
+   fCache->ReadFileHeader();
+   fModel->Retrieve(fCache);
+   return fModel;
 }
 
-std::vector<FitModelABC*>::iterator MCMarginaliser::End()
+FitModelABC* MCMarginaliser::End()
 {
-   return fToys.end();
+   return 0;
+}
+
+FitModelABC* MCMarginaliser::Next()
+{
+   if(++fCurrentToy < fNumToys)
+   {
+      fModel->Retrieve(fCache);
+      return fModel;
+   }
+   else
+   {
+      return 0;
+   }
 }
 
 int MCMarginaliser::GetNumToys() const

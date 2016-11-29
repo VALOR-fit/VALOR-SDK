@@ -5,6 +5,7 @@
 #include "valor/Marginalisation/MarginaliserABC.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitParamList.h"
+#include "valor/Utilities/ModelCacheABC.h"
 
 namespace valor
 {
@@ -13,26 +14,35 @@ namespace marginalisation
    class MCMarginaliser : public MarginaliserABC
    {
    public:
-      MCMarginaliser(FitModelABC* model, FitParamList* parameters);
+      MCMarginaliser(FitModelABC* model, FitParamList* parameters,
+            util::ModelCacheABC* cache);
       virtual ~MCMarginaliser();
 
       /**
          Marginalises over nuisance parameters.
-
-         \param model
-            The model over which to marginalise.
       */
-      virtual void Marginalise(FitModelABC* model);
+      virtual void Marginalise();
 
-      /*
-         Retrieves an iterator representing the beginning of the set of models.
-      */
-      virtual std::vector<FitModelABC*>::iterator Begin();
+      /**
+         The first marginalisation toy in the set.
 
-      /*
-         Retrieves an interator representing the end of the set of models.
+         \return The first marginalisation toy.
       */
-      virtual std::vector<FitModelABC*>::iterator End();
+      virtual FitModelABC* Begin();
+
+      /**
+         The terminating marginalisation toy in the set.
+
+         \return The terminating marginalisation toy.
+      */
+      virtual FitModelABC* End();
+
+      /**
+         The next marginalisation toy in the set.
+
+         \return The next marginalisation toy.
+      */
+      virtual FitModelABC* Next();
 
       /**
          Returns the number of marginalisation toys.
@@ -55,14 +65,10 @@ namespace marginalisation
 
    private:
       int fNumToys;
-      FitModelABC* fModel;
       FitParamList* fParams;
-      // This is temporary until the binary file read/write is working
-      // Note that the Root dictionary does not correctly resolve FitModelABC
-      // as belonging to the valor namespace when used as the template to a
-      // vector within the valor::marginalisation namespace, so it must have its
-      // namespace explicitly specified.
-      std::vector<valor::FitModelABC*> fToys;
+      util::ModelCacheABC* fCache;
+      int fCurrentToy;
+      FitModelABC* fModel;
    };
 }
 }
