@@ -382,7 +382,7 @@ void CompoundFitModel::Cache(util::ModelCacheABC* cache)
 
 void CompoundFitModel::Retrieve(util::ModelCacheABC* cache)
 {
-   cache->ReadFileHeader();
+//   cache->ReadFileHeader();
    cache->ReadToyHeader();
 
    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
