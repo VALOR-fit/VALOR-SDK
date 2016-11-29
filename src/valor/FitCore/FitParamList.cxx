@@ -1735,6 +1735,7 @@ void FitParamList::Copy(const FitParamList & plst)
     }
   }
   
+  this->fBestFitStatisticContributions = plst.fBestFitStatisticContributions;
   this->fBestFitStatistic = plst.fBestFitStatistic;
   this->fCurrStatistic    = plst.fCurrStatistic;
   this->fFitTime          = plst.fFitTime;
@@ -1914,6 +1915,7 @@ void FitParamList::CleanUp(void)
   if (fToyHisto2D    ) { delete [] fToyHisto2D   ; fToyHisto2D    = 0 ; }
   //
   
+  fBestFitStatisticContributions.clear();
   fBestFitStatistic = 0.;
   fCurrStatistic    = 0.;
   fFitTime          = 0.;

@@ -82,7 +82,7 @@ public :
 
   void UpdateParamList(FitParamList * fpar);
   
-  double Statistic(Option_t * stat_opt = "likelihood-ratio") const;
+  double Statistic(Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) const;
 
   // set the chisq definition 5 bins vs 73 bins
   void SetChisqDefinition (bool goodnessoffit) { fGoodnessOfFit = goodnessoffit; }
