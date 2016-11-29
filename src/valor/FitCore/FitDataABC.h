@@ -19,6 +19,7 @@
 #define _valor_fit_data_abc_h_
 
 #include <string>
+#include <map>
 #include <TROOT.h>
 
 class TObjArray;
@@ -76,9 +77,9 @@ public:
   // The corresponding prediction is taken from the input model.
   // Similar considerations as in Write() method, see above, apply for how this prediction is generated.
   // This method calculates the statistical term. The penalty term is not included - you must ask the model for this specifically.
-  virtual double GetFitStatistic (FitModelABC * pred, const FitParamList & fp,   Option_t * stat_opt = "likelihood-ratio") = 0;
-  virtual double GetFitStatistic (FitModelABC * pred, const PhysHypothesis & ph, Option_t * stat_opt = "likelihood-ratio") = 0;
-  virtual double GetFitStatistic (FitModelABC * pred, Option_t * stat_opt = "likelihood-ratio") = 0;
+  virtual double GetFitStatistic (FitModelABC * pred, const FitParamList & fp,   Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
+  virtual double GetFitStatistic (FitModelABC * pred, const PhysHypothesis & ph, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
+  virtual double GetFitStatistic (FitModelABC * pred, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
 
 protected:
    FitDataABC();

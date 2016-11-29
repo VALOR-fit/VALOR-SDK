@@ -183,39 +183,39 @@ bool CompoundFitData::Write (TObjArray* collection, const char * tag, Option_t *
   return status;
 }
 //________________________________________________________________________________________
-double CompoundFitData::GetFitStatistic (FitModelABC * model, const PhysHypothesis & ph, Option_t * opt)
+double CompoundFitData::GetFitStatistic (FitModelABC * model, const PhysHypothesis & ph, Option_t * opt, std::map<std::string,double> * likelihood_components)
 {
   double statistic = 0;
   CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
   if (!cfm) {util::Die(-1);return conv::kBadResult;}
   model->Generate(ph,opt);
   for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
-    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt);
+    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt, likelihood_components);
   }
   LOG("CompoundFitData",pINFO) << fName<<" - statistic (ph) = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
-double CompoundFitData::GetFitStatistic (FitModelABC * model, const FitParamList & fp, Option_t * opt)
+double CompoundFitData::GetFitStatistic (FitModelABC * model, const FitParamList & fp, Option_t * opt, std::map<std::string,double> * likelihood_components )
 {
   double statistic = 0;
   CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
   if (!cfm) {util::Die(-1);return conv::kBadResult;}
   model->Generate(fp,opt);
   for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
-    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt);
+    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt, likelihood_components);
   }
   LOG("CompoundFitData",pINFO) << fName<<" - statistic (fp) = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
-double CompoundFitData::GetFitStatistic (FitModelABC * model, Option_t * opt)
+double CompoundFitData::GetFitStatistic (FitModelABC * model, Option_t * opt, std::map<std::string,double> * likelihood_components )
 {
   double statistic = 0;
   CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
   if (!cfm) {util::Die(-1);return conv::kBadResult;}
   for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
-    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt);
+    statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt, likelihood_components);
   }
   LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;

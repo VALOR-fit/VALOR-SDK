@@ -76,7 +76,7 @@ FitParamList & FitInputs::FitParams(void)
   return *fFitParams; 
 }
 //________________________________________________________________________________________
-double FitInputs::Statistic(Option_t * option) const
+double FitInputs::Statistic(Option_t * option, std::map<std::string,double> * likelihood_components) const
 {
   double total_statistic = 0;
   double data_statistic  = 0;
@@ -85,15 +85,20 @@ double FitInputs::Statistic(Option_t * option) const
   if (option || fGoodnessOfFit) {
     const char * s = fGoodnessOfFit ? "%s gof" : "%s";
     TString newopt =  TString::Format(s,option);
-    data_statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt.Data());
+    data_statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt.Data(), likelihood_components);
   }
   else {
-    data_statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL);
+    data_statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL, likelihood_components);
   }
   TString option_ts(option);
   if (!option_ts.Contains("nopenalty")){
     if (fIncludePenaltySyst) {syst_penalty = fExp->GetFitStatisticPenalty(option);}
     if (fIncludePenaltyHyp ) {phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);}
+  }
+  
+  if (likelihood_components) {
+    (*likelihood_components)["penalty_syst"] = syst_penalty;
+    (*likelihood_components)["penalty_hyp" ] = phys_penalty;
   }
   total_statistic = syst_penalty + phys_penalty;
 #ifndef __VALOR_FMWK_PENALTY_ONLY__
