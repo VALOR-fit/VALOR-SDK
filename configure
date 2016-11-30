@@ -133,7 +133,7 @@ my $opt_with_cxx_misc_libs ="";
 if($opt_enable_asan eq "YES") {
   $opt_with_cxx_misc_flags .= "-fsanitize=address -fno-omit-frame-pointer ";
   $compiler_vers = `$opt_with_compiler --version`;
-  if ($compiler_vers!~"LLVM") {
+  if ($compiler_vers!~"LLVM" && $compiler_vers!~"clang") {
     $opt_with_cxx_misc_libs  .= "-lasan ";
   }
 }
