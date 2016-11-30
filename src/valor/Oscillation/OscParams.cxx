@@ -597,32 +597,6 @@ void valor::util::OscParams::Randomize()
   
   //Used to check if osc paramters have been generated for normal osillactions.
   //If so the NuBar oscillation parameters will be equal, if not marginalised with
-  // Nu oscillation priors
-  bool rand_mix23_nh 		= false;
-  bool rand_mix13_nh 		= false;
-  bool rand_mix12_nh 		= false;
-  bool rand_dcp_nh 	 	= false;
-  bool rand_dm23sq_nh   	= false;
-  bool rand_dm12sq_nh 		= false;
-  bool rand_mix23_ih 		= false;
-  bool rand_mix13_ih 		= false;
-  bool rand_mix12_ih 		= false;
-  bool rand_dcp_ih 	 	= false;
-  bool rand_dm23sq_ih   	= false;
-  bool rand_dm12sq_ih 		= false;
-
-  bool rand_mix23bar_nh 	= false;
-  bool rand_mix13bar_nh 	= false;
-  bool rand_mix12bar_nh 	= false;
-  bool rand_dcpbar_nh 	 	= false;
-  bool rand_dm23sqbar_nh        = false;
-  bool rand_dm12sqbar_nh 	= false;
-  bool rand_mix23bar_ih 	= false;
-  bool rand_mix13bar_ih 	= false;
-  bool rand_mix12bar_ih 	= false;
-  bool rand_dcpbar_ih 	 	= false;
-  bool rand_dm23sqbar_ih        = false;
-  bool rand_dm12sqbar_ih 	= false;
   
   // Normal Hierarchy
   if(iMH==0){
@@ -634,7 +608,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing23;
     if(randomize_mixing23_nh){
       mixing23_nh = this->ExtractParam(conv::kPhypMixing23,priormode,par1,par2,mixmode);
-      rand_mix23_nh = true;
     }
     
     // mixing13
@@ -644,7 +617,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing13;
     if(randomize_mixing13_nh){
       mixing13_nh = this->ExtractParam(conv::kPhypMixing13,priormode,par1,par2,mixmode);
-      rand_mix13_nh	= true;
     }
     
     // deltaCP
@@ -654,7 +626,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dcp_nh){
       dcp_nh = this->ExtractParam(conv::kPhypCPV,priormode,par1,par2,mixmode);
-      rand_dcp_nh = true;
     }
     
     // dmsq23
@@ -664,7 +635,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dm23sq_nh){
       dm23sq_nh = this->ExtractParam(conv::kPhypDm23sq,priormode,par1,par2,mixmode);
-      rand_dm23sq_nh = true;
     }
     
     // dmsq12
@@ -674,7 +644,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dm12sq_nh){
       dm12sq_nh = this->ExtractParam(conv::kPhypDm12sq,priormode,par1,par2,mixmode);
-      rand_dm12sq_nh = true;
     }
     
     // mixing12
@@ -684,7 +653,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing12;
     if(randomize_mixing12_nh){
       mixing12_nh = this->ExtractParam(conv::kPhypMixing12,priormode,par1,par2,mixmode);
-      rand_mix12_nh = true;
     }    
         
     //NuBar Parameters!
@@ -696,7 +664,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing23;
     if(randomize_mixing23bar_nh){
       mixing23bar_nh = this->ExtractParam(conv::kPhypMixing23Bar,priormode,par1,par2,mixmode);
-      rand_mix23bar_nh = true;
     }
     
     // mixing13
@@ -706,7 +673,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing13;
     if(randomize_mixing13bar_nh){
       mixing13bar_nh = this->ExtractParam(conv::kPhypMixing13Bar,priormode,par1,par2,mixmode);
-      rand_mix13bar_nh	= true;
     }
     
     // deltaCP
@@ -716,7 +682,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dcpbar_nh){
       dcpbar_nh = this->ExtractParam(conv::kPhypCPVBar,priormode,par1,par2,mixmode);
-      rand_dcpbar_nh = true;
     }
     
     // dmsq23
@@ -726,7 +691,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dm23sqbar_nh){
       dm23sqbar_nh = this->ExtractParam(conv::kPhypDm23sqBar,priormode,par1,par2,mixmode);
-      rand_dm23sqbar_nh = true;
     }
     
     // dmsq12
@@ -736,7 +700,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dm12sqbar_nh){
       dm12sqbar_nh = this->ExtractParam(conv::kPhypDm12sqBar,priormode,par1,par2,mixmode);
-      rand_dm12sqbar_nh = true;
     }
  
     // mixing12
@@ -746,7 +709,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing12;
     if(randomize_mixing12bar_nh){
       mixing12bar_nh = this->ExtractParam(conv::kPhypMixing12Bar,priormode,par1,par2,mixmode);
-      rand_mix12bar_nh = true;
     }
     
   }
@@ -762,7 +724,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing23;
     if(randomize_mixing23_ih){
       mixing23_ih = this->ExtractParam(conv::kPhypMixing23,priormode,par1,par2,mixmode);
-      rand_mix23_ih = true;
     }
     
     // mixing13
@@ -772,7 +733,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing13;
     if(randomize_mixing13_ih){
       mixing13_ih = this->ExtractParam(conv::kPhypMixing13,priormode,par1,par2,mixmode);
-      rand_mix13_ih = true;
     }
     
     // deltaCP
@@ -782,7 +742,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dcp_ih){
       dcp_ih = this->ExtractParam(conv::kPhypCPV,priormode,par1,par2,mixmode);
-      rand_dcp_ih = true;
     }
     
     // dmsq23
@@ -792,7 +751,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dm23sq_ih){
       dm23sq_ih = this->ExtractParam(conv::kPhypDm23sq,priormode,par1,par2,mixmode);
-      rand_dm23sq_ih = true;
     }
     
     // dmsq12
@@ -802,7 +760,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dm12sq_ih){
       dm12sq_ih = this->ExtractParam(conv::kPhypDm12sq,priormode,par1,par2,mixmode);
-      rand_dm12sq_ih = true;
     }
      
     // mixing12
@@ -812,7 +769,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing12;
     if(randomize_mixing12_ih){
       mixing12_ih = this->ExtractParam(conv::kPhypMixing12,priormode,par1,par2,mixmode);
-      rand_mix12_ih = true;
     }
     
     // mixing23
@@ -822,7 +778,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing23;
     if(randomize_mixing23bar_ih){
       mixing23bar_ih = this->ExtractParam(conv::kPhypMixing23Bar,priormode,par1,par2,mixmode);
-      rand_mix23bar_ih = true;
     }
     
     // mixing13
@@ -832,7 +787,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing13;
     if(randomize_mixing13bar_ih){
       mixing13bar_ih = this->ExtractParam(conv::kPhypMixing13Bar,priormode,par1,par2,mixmode);
-      rand_mix13bar_ih	= true;
     }
     
     // deltaCP
@@ -842,7 +796,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dcpbar_ih){
       dcpbar_ih = this->ExtractParam(conv::kPhypCPVBar,priormode,par1,par2,mixmode);
-      rand_dcpbar_ih = true;
     }
     
     // dmsq23
@@ -852,7 +805,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dm23sqbar_ih){
       dm23sqbar_ih = this->ExtractParam(conv::kPhypDm23sqBar,priormode,par1,par2,mixmode);
-      rand_dm23sqbar_ih = true;
     }
     
     // dmsq12
@@ -862,7 +814,6 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dm12sqbar_ih){
       dm12sqbar_ih = this->ExtractParam(conv::kPhypDm12sqBar,priormode,par1,par2,mixmode);
-      rand_dm12sqbar_ih = true;
     }
     
     // mixing12
@@ -872,7 +823,6 @@ void valor::util::OscParams::Randomize()
     mixmode = mixmode_mixing12;
     if(randomize_mixing12bar_ih){
       mixing12bar_ih = this->ExtractParam(conv::kPhypMixing12Bar,priormode,par1,par2,mixmode);
-      rand_mix12bar_ih = true;
     }
 
   }
