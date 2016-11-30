@@ -21,6 +21,7 @@
 #include <iostream>
 #include <math.h>
 #include <complex>
+#include <map>
 
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/OscChannelId.h"
@@ -185,7 +186,24 @@ private:
 
  bool useEquations12;
  int nFlavourIndex;
- 
+
+ // Probability cache
+ struct OscProbs
+ {
+    double p[3][3];
+ };
+
+ static double sCachedT12;
+ static double sCachedT13;
+ static double sCachedT23;
+ static double sCachedM12;
+ static double sCachedM23;
+ static double sCachedDCP;
+
+ static std::map<double, OscProbs> sOscProbs;
+ static std::map<double, OscProbs> sOscProbsBar;
+ static std::map<double, bool> sOscCached;
+ static std::map<double, bool> sOscCachedBar;
 };
 
 }//end of namespace valor

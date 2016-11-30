@@ -1,7 +1,6 @@
 #include "valor/Marginalisation/MarginalLikelihood.h"
 #include "valor/Marginalisation/MCMarginaliser.h"
 #include "valor/Messenger/Messenger.h"
-#include "valor/Utilities/OscProbCache.h"
 
 #include "TMath.h"
 
@@ -17,9 +16,6 @@ MarginalLikelihood::MarginalLikelihood(MarginaliserABC* marginaliser) :
 
 double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
 {
-   // Need to clear the cache of oscillation probabilities for each different
-   // oscillation parameter value
-   util::OscProbCache::Reset();
    PhysHypothesis hypothesis(*params);
    MCMarginaliser* marginaliser = dynamic_cast<MCMarginaliser*>(fMarginaliser);
    assert(marginaliser);

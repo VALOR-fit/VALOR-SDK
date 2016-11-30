@@ -23,6 +23,17 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 using namespace valor;
 using namespace valor::conv;
 
+std::map<double, NuOsc3Flavour::OscProbs> NuOsc3Flavour::sOscProbs;
+std::map<double, NuOsc3Flavour::OscProbs> NuOsc3Flavour::sOscProbsBar;
+std::map<double, bool> NuOsc3Flavour::sOscCached;
+std::map<double, bool> NuOsc3Flavour::sOscCachedBar;
+double NuOsc3Flavour::sCachedT12 = 0.0;
+double NuOsc3Flavour::sCachedT13 = 0.0;
+double NuOsc3Flavour::sCachedT23 = 0.0;
+double NuOsc3Flavour::sCachedM12 = 0.0;
+double NuOsc3Flavour::sCachedM23 = 0.0;
+double NuOsc3Flavour::sCachedDCP = 0.0;
+
 //________________________________________________________________________________________
 NuOsc3Flavour::NuOsc3Flavour()
 {
@@ -79,6 +90,20 @@ void NuOsc3Flavour::SetOscParameters(
   double dmsq12_in, double dmsq23_in, 
   double deltaCP)
 {
+   if(sCachedT12 != sinsq2theta12 || sCachedT13 != sinsq2theta13 ||
+         sCachedT23 != sinsq2theta23 || sCachedM12 != dmsq12_in ||
+         sCachedM23 != dmsq23_in || sCachedDCP != deltaCP)
+   {  // New oscillation parameter values, clear the cache
+      sOscCached.clear();
+      sOscCachedBar.clear();
+      sCachedT12 = sinsq2theta12;
+      sCachedT13 = sinsq2theta13;
+      sCachedT23 = sinsq2theta23;
+      sCachedM12 = dmsq12_in;
+      sCachedM23 = dmsq23_in;
+      sCachedDCP = deltaCP;
+   }
+
    dmsq12 = dmsq12_in;
    dmsq23 = dmsq23_in;
 
@@ -2545,21 +2570,54 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
   return oscProb;
 }
 //________________________________________________________________________________________
- void NuOsc3Flavour::CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs[3][3])
+void NuOsc3Flavour::CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs[3][3])
 {
 // This method calculates the 3-flavour oscillation probabilities in constant 
 // density matter.
 // The neutrino codes are the PDG ones and the neutrino energy is in GeV.
 //
 
+  if(!isAntineutrino)
+  { // Neutrino mode
+    if(sOscCached[energy])
+    { // Already have a cached probability, return that
+      OscProbs op = sOscProbs[energy];
+      memcpy(osc_probs, op.p, nFlav * nFlav * sizeof(double));
+      return;
+    }
+  }
+  else
+  { // Antineutrino mode
+    if(sOscCachedBar[energy])
+    { // Already have a cached probability, return that
+      OscProbs op = sOscProbsBar[energy];
+      memcpy(osc_probs, op.p, nFlav * nFlav * sizeof(double));
+      return;
+    }
+  }
+
+  // We only get here if we do not already have a cached probability to return
+  OscProbs op;
+
   //if all 3 mixing angles are small, take it that there are no oscillations
   if(nFlavourIndex == 0)
   {
     for (int i = 0 ; i < nFlav ; i++){
       for (int j = 0 ; j < nFlav ; j++){
-        osc_probs[i][j] = (i==j);
+        op.p[i][j] = (i==j);
       }
     }
+    if(isAntineutrino)
+    {
+      sOscCachedBar[energy] = true;
+      sOscProbsBar[energy] = op;
+    }
+    else
+    {
+      sOscCached[energy] = true;
+      sOscProbs[energy] = op;
+    }
+    memcpy(osc_probs, op.p, nFlav * nFlav * sizeof(double));
     return;
   }
   else if(nFlavourIndex > 0)
@@ -2568,11 +2626,22 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
       for (int i = 0 ; i < nFlav ; i++){
 	for (int j = 0 ; j < nFlav ; j++){
 	  if(isAntineutrino)
-	    osc_probs[i][j] = this->Calc2FlavMatterOscProb(-(12+2*i), -(12+2*j), energy, nFlavourIndex);
+	    op.p[i][j] = this->Calc2FlavMatterOscProb(-(12+2*i), -(12+2*j), energy, nFlavourIndex);
 	  else
-	    osc_probs[i][j] = this->Calc2FlavMatterOscProb(12+2*i, 12+2*j, energy, nFlavourIndex);
+	    op.p[i][j] = this->Calc2FlavMatterOscProb(12+2*i, 12+2*j, energy, nFlavourIndex);
 	}
       }
+      if(isAntineutrino)
+      {
+        sOscCachedBar[energy] = true;
+        sOscProbsBar[energy] = op;
+      }
+      else
+      {
+        sOscCached[energy] = true;
+        sOscProbs[energy] = op;
+      }
+      memcpy(osc_probs, op.p, nFlav * nFlav * sizeof(double));
       return;
     }
 
@@ -3008,11 +3077,22 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
     //in the far detector as that flavour.
     //The oscillation probabilities are the moduli squared of the amplitudes
     for (int i_finalflav = 0 ; i_finalflav < nFlav ; i_finalflav++ ) {
-      osc_probs[i_initflav][i_finalflav] = finalFlavourState[i_finalflav][re]*finalFlavourState[i_finalflav][re] 
+      op.p[i_initflav][i_finalflav] = finalFlavourState[i_finalflav][re]*finalFlavourState[i_finalflav][re] 
                                          + finalFlavourState[i_finalflav][im]*finalFlavourState[i_finalflav][im];
-    }
-    
+    } 
   } //i_initflav
+
+  if(isAntineutrino)
+  {
+    sOscCachedBar[energy] = true;
+    sOscProbsBar[energy] = op;
+  }
+  else
+  {
+    sOscCached[energy] = true;
+    sOscProbs[energy] = op;
+  }
+  memcpy(osc_probs, op.p, nFlav * nFlav * sizeof(double)); 
 
   return;
 }
