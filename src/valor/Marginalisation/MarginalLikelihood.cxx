@@ -1,6 +1,7 @@
 #include "valor/Marginalisation/MarginalLikelihood.h"
 #include "valor/Marginalisation/MCMarginaliser.h"
 #include "valor/Messenger/Messenger.h"
+#include "valor/Utilities/OscProbCache.h"
 
 #include "TMath.h"
 
@@ -16,6 +17,9 @@ MarginalLikelihood::MarginalLikelihood(MarginaliserABC* marginaliser) :
 
 double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
 {
+   // Need to clear the cache of oscillation probabilities for each different
+   // oscillation parameter value
+   util::OscProbCache::Reset();
    PhysHypothesis hypothesis(*params);
    MCMarginaliser* marginaliser = dynamic_cast<MCMarginaliser*>(fMarginaliser);
    assert(marginaliser);
@@ -30,6 +34,7 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
       double chi2 = data->GetFitStatistic(m, NULL);
       chi2Values.push_back(chi2);
    }
+
    std::sort(chi2Values.begin(), chi2Values.end());
    double avgChi2 = 0.5 * (chi2Values[0] + chi2Values[chi2Values.size() - 1]);
    double halfAvgChi2 = 0.5 * avgChi2;
@@ -41,14 +46,12 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
    {
       double likelihood = exp(-0.5 * *it + scale);
       totalLikelihood += likelihood;
-      LOG("MarginalLikelihood", pNOTICE) << "Toy " << i << " FP: " <<
-         free->CurrValueByIndex(0) << " Chi2: " << *it << " L: " << likelihood;
    }
 
    double averageLikelihood = totalLikelihood / marginaliser->GetNumToys();
    double lnLikelihood = 2 * scale - 2 * log(averageLikelihood);
-   LOG("MarginalLikelihood", pNOTICE) << "FP: " <<
-         free->CurrValueByIndex(0) << " -2lnL: " << lnLikelihood;
+   LOG("MarginalLikelihood", pNOTICE) << "FP: " << free->CurrValueByIndex(0) <<
+      " L: " << averageLikelihood << " -2lnL: " << lnLikelihood;
 
    return lnLikelihood;
 }

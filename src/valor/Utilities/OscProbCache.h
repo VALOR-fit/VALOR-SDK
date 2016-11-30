@@ -42,6 +42,11 @@ namespace util
       */
       static void GetOscProb(NuOsc3Flavour& model, bool isAntineutrino, double energy, double p[3][3]);
 
+      /**
+         Resets the oscillation probability cache for a new oscillation parameter value.
+      */
+      static void Reset();
+
    private:
       OscProbCache(){ };
       static std::map<double, OscProbs> sOscProbs;

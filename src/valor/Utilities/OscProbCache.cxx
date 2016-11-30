@@ -79,6 +79,12 @@ namespace util
          }
       }
    }
+
+   void OscProbCache::Reset()
+   {
+      sOscCached.clear();
+      sOscCachedBar.clear();
+   }
 }
 }
 
