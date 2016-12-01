@@ -99,8 +99,7 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
 //________________________________________________________________________________________
 bool CompoundFitModel::Generate(const PhysHypothesis& ph, Option_t* opt)
 {
-   return this->GenerateUnoscillated(ph, opt) && this->Oscillate(ph, opt);
-/*   bool status = true;
+   bool status = true;
    #ifdef __VALOR_FMWK_PARALLEL__
    std::atomic_bool astat(status);
    for(std::vector<FitModelABC*>::iterator it = fSubModels.begin();
@@ -117,57 +116,6 @@ bool CompoundFitModel::Generate(const PhysHypothesis& ph, Option_t* opt)
          it != fSubModels.end(); ++it)
    {
       status = status && (*it)->Generate(ph, opt);
-   }
-   #endif //__VALOR_FMWK_PARALLEL__
-   return status;*/
-}
-
-bool CompoundFitModel::GenerateUnoscillated(const PhysHypothesis& ph,
-      Option_t* opt)
-{
-   bool status = true;
-   #ifdef __VALOR_FMWK_PARALLEL__
-   std::atomic_bool astat(status);
-   for(std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-         it != fSubModels.end(); ++it)
-   {
-      FitModelABC& m = **it;
-      std::function<void(void)> f = [&]{astat = astat &&
-         m.GenerateUnoscillated(ph, opt);};
-      util::VThreadPool::Instance()->AddTask(f);
-   }
-   util::VThreadPool::Instance()->Wait();
-   status = astat;
-   #else
-   for(std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-         it != fSubModels.end(); ++it)
-   {
-      status = status && (*it)->GenerateUnoscillated(ph, opt);
-   }
-   #endif //__VALOR_FMWK_PARALLEL__
-   return status;
-}
-
-bool CompoundFitModel::Oscillate(const PhysHypothesis& ph, Option_t* opt)
-{
-   bool status = true;
-   #ifdef __VALOR_FMWK_PARALLEL__
-   std::atomic_bool astat(status);
-   for(std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-         it != fSubModels.end(); ++it)
-   {
-      FitModelABC& m = **it;
-      std::function<void(void)> f = [&]{astat = astat &&
-         m.Oscillate(ph, opt);};
-      util::VThreadPool::Instance()->AddTask(f);
-   }
-   util::VThreadPool::Instance()->Wait();
-   status = astat;
-   #else
-   for(std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-         it != fSubModels.end(); ++it)
-   {
-      status = status && (*it)->Oscillate(ph, opt);
    }
    #endif //__VALOR_FMWK_PARALLEL__
    return status;
@@ -200,40 +148,6 @@ bool CompoundFitModel::Generate(const FitParamList& fp, Option_t* opt)
             it != fSubModels.end(); ++it)
       {
          status = status && (*it)->Generate(fp, opt);
-      }
-      #endif //__VALOR_FMWK_PARALLEL__
-   }
-   return status;
-}
-
-bool CompoundFitModel::GenerateUnoscillated(const FitParamList& fp,
-      Option_t* opt)
-{
-   bool status = true;
-   if(fSystematics)
-   {
-      fSystematics->UpdateFrom(fp);
-      status = this->GenerateUnoscillated(PhysHypothesis(fp), opt);
-   }
-   else
-   {
-      #ifdef __VALOR_FMWK_PARALLEL__
-      std::atomic_bool astat(status);
-      for(std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-            it != fSubModels.end(); ++it)
-      {
-         FitModelABC & m = **it;
-         std::function<void(void)> f = [&]{astat = astat &&
-            m.GenerateUnoscillated(fp, opt);};
-         util::VThreadPool::Instance()->AddTask(f);
-      }
-      util::VThreadPool::Instance()->Wait();
-      status = astat;
-      #else
-      for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-            it != fSubModels.end(); ++it)
-      {
-         status = status && (*it)->GenerateUnoscillated(fp, opt);
       }
       #endif //__VALOR_FMWK_PARALLEL__
    }

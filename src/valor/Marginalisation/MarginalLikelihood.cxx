@@ -25,7 +25,7 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
          m = marginaliser->Next())
    {
       // Apply oscillation to the marginalisation toy
-      m->Oscillate(hypothesis, NULL);
+      m->Generate(hypothesis, "+OSC");
       // Calculate the likelihood
       double chi2 = data->GetFitStatistic(m, NULL);
       chi2Values.push_back(chi2);

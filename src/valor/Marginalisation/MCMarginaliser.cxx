@@ -35,7 +35,7 @@ void MCMarginaliser::Marginalise()
       LOG("MCMarginaliser", pNOTICE) << "Generating toy " << (n + 1) <<
          " of " << fNumToys;
       RandomizeNuisance();
-      fModel->GenerateUnoscillated(*fParams, "+SB");
+      fModel->Generate(*fParams, "+SB+SYS");
       fModel->Cache(fCache);
    }
 }
