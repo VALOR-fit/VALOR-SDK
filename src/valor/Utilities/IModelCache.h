@@ -1,18 +1,15 @@
-#ifndef MODELCACHEABC_H
-#define MODELCACHEABC_H
+#ifndef IMODELCACHE_H
+#define IMODELCACHE_H
 
-#include <iostream>
-#include <fstream>
+#include <string>
 
 namespace valor
 {
 namespace util
 {
-   class ModelCacheABC
+   class IModelCache
    {
    public:
-      virtual ~ModelCacheABC(){ };
-
       /**
          Reads the file header into the cache.
 
@@ -43,6 +40,13 @@ namespace util
          \return True if the read succeeded, false otherwise.
       */ 
       virtual bool ReadModelData() = 0; 
+
+      /**
+         Returns a string representation of the cache.
+
+         \return A string representation of the cache.
+      */
+      virtual std::string ToString() = 0;
 
       /**
          Writes the file header.
@@ -84,15 +88,11 @@ namespace util
       */
       virtual void MakeModel() = 0;
 
-      /**
-         Returns a string representation of the cache.
-
-         \return A string representation of the cache.
-      */
-      virtual std::string ToString() = 0;
-
    protected:
-      ModelCacheABC(){ };
+      IModelCache(){ };
+
+   private:
+      IModelCache(const IModelCache&){ };
    };
 }
 }

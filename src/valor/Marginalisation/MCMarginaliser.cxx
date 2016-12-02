@@ -17,7 +17,7 @@ namespace marginalisation
 {
 
 MCMarginaliser::MCMarginaliser(FitModelABC* model, FitParamList* parameters,
-      util::ModelCacheABC* cache):
+      util::IModelCache* cache):
    fNumToys(0), fParams(parameters), fCache(cache), fCurrentToy(0), fModel(model)
 {
 }

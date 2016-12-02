@@ -276,7 +276,7 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
   return status;
 }
 
-void CompoundFitModel::Cache(util::ModelCacheABC* cache)
+void CompoundFitModel::Cache(util::IModelCache* cache)
 {
    cache->MakeToy(fSubModels.size());
 
@@ -294,7 +294,7 @@ void CompoundFitModel::Cache(util::ModelCacheABC* cache)
    }
 }
 
-void CompoundFitModel::Retrieve(util::ModelCacheABC* cache)
+void CompoundFitModel::Retrieve(util::IModelCache* cache)
 {
 //   cache->ReadFileHeader();
    cache->ReadToyHeader();
