@@ -211,7 +211,7 @@ bool valor::util::AttemptMCMCStep(FitInputs & fitinputs,
     // The acceptance probability is: A = (P(curr) * q(curr) / (P(step) * q(step))
     // We're using a symmetric proposal so q(curr)==q(step)
     double delta_chisq = step_chisq-current_chisq;
-    double step_prob = std::exp( -delta_chisq/2. );
+    //~ double step_prob = std::exp( -delta_chisq/2. );
     double rand_prob = rnd.Uniform();
     double rand_chisq = -2 * std::log(rand_prob);
     //~ assert((delta_chisq < rand_chisq)==(step_prob > rand_prob));

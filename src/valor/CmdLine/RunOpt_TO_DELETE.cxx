@@ -1342,7 +1342,7 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
     
           << " - " << setw(w) << "Using data file:" << ((fUseFileData) ? "YES " : "NO") << endl;
     if(fUseFileData) cout << " - " << setw(w) << " --> " << fPathFileData;
-                     cout << endl;
+    cout << endl;
     
     stream << " - " << setw(w) << "Seed (stat):   "  << seedToyMCstat  << endl
            << " - " << setw(w) << "Seed (syst):   "  << seedToyMCsyst  << endl
