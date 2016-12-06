@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "valor/Utilities/CacheItem.h"
+
 namespace valor
 {
 namespace util
@@ -42,35 +44,11 @@ namespace util
             const int maxToysPerFile);
 
       /**
-         Writes data to the cache.
+         Writes an item to the cache.
 
-         \param data The data to be stored.
-         \param size The size (in bytes) of the data.
+         \param item The item to be stored.
       */
-      void Write(const char* data, const std::streamsize size);
-
-      /**
-         Jump to a specific location in the cache.
-
-         \param pos
-            The position in the file to go to (byte offset from the start of the
-            cache.
-      */
-      void Seek(const std::streampos pos);
-
-      /**
-         Returns the status of the cache.
-
-         \return True if the cache status is good, false otherwise.
-      */
-      bool Good();
-
-      /**
-         Returns the current cache position.
-
-         \return The current cache position.
-      */
-      std::streampos Position();
+      void Write(CacheItem* item);
 
    protected:
       WriteableCache(std::string name, const int numToys,
@@ -79,7 +57,8 @@ namespace util
    private:
       static WriteableCache* _instance;
 //      std::vector<std::fstream*> _streams;
-      std::fstream* _stream;
+      std::fstream* _hStream;
+      std::fstream* _tStream;
       int _numToysPerFile;
       int _numFiles;
    };

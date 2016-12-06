@@ -26,6 +26,7 @@
 #include "valor/FitCore/PhysHypothesis.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/Utilities/IModelCache.h"
+#include "valor/Utilities/CacheItem.h"
 
 class TObjArray;
 
@@ -70,8 +71,8 @@ public:
   // Write all predictions to the input container or to the input file
   virtual bool Write (TObjArray* collection, const char * tag = "model", Option_t * write_opt = 0) = 0;
   virtual bool Write (const char * filename, const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0) = 0;
-  virtual void Cache(util::IModelCache* cache) = 0;
-  virtual void Retrieve(util::IModelCache* cache) = 0;
+  virtual util::CacheItem* Cache() = 0;
+  virtual void Retrieve(util::CacheItem* cache = 0) = 0;
   
   // Get penalty term for current systematics
   virtual double GetFitStatisticPenalty(Option_t * opt = 0) const = 0;

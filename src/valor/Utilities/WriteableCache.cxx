@@ -15,17 +15,24 @@ namespace util
       _numFiles(TMath::Ceil(static_cast<double>(numToys) /
                static_cast<double>(maxToysPerFile)))
    {
+      std::ostringstream headerName;
+      headerName << name << ".head";
+      _hStream = new std::fstream(headerName.str().c_str(), std::ios::out |
+            std::ios::binary | std::ios::trunc | std::ios::in);
+      // Number of toys can be written to the header immediately
+      _hStream->write(reinterpret_cast<const char*>(&numToys), sizeof(numToys));
 //      _streams.reserve(_numFiles);
       for(int i = 0; i < _numFiles; ++i)
       {
-         std::ostringstream sstream;
-         sstream << name;// << "_" << i;
 /*         _streams.push_back(new std::fstream(sstream.str().c_str(),
                   std::ios::out | std::ios::binary | std::ios::trunc |
                   std::ios::in));*/
-         _stream = new std::fstream(sstream.str().c_str(), std::ios::out |
+         std::ostringstream toysName;
+         toysName << name << ".toys";
+         _tStream = new std::fstream(toysName.str().c_str(), std::ios::out |
                std::ios::binary | std::ios::trunc | std::ios::in);
       }
+
    }
 
    WriteableCache::~WriteableCache()
@@ -41,11 +48,16 @@ namespace util
          }
       }
       _streams.clear();*/
-      if(_stream && _stream->is_open())
+      if(_hStream && _hStream->is_open())
       {
-         _stream->close();
+         _hStream->close();
       }
-      delete _stream;
+      delete _hStream;
+      if(_tStream && _tStream->is_open())
+      {
+         _tStream->close();
+      }
+      delete _tStream;
    }
 
    WriteableCache* WriteableCache::Instance()
@@ -76,26 +88,19 @@ namespace util
       return _instance;
    }
 
-   void WriteableCache::Write(const char* data, const std::streamsize size)
+   void WriteableCache::Write(CacheItem* item)
    {
-      // Temporarily only handling one stream
-      _stream->write(data, size);
-   }
-
-   void WriteableCache::Seek(const std::streampos pos)
-   {
-      // Temporarily only handling one stream
-      _stream->seekp(pos);
-   }
-
-   std::streampos WriteableCache::Position()
-   {
-      return _stream->tellp();
-   }
-
-   bool WriteableCache::Good()
-   {
-      return _stream->good();
+      long size = item->GetDiskSize();
+      long offset = _tStream->tellp();
+      // The offset of the data being written
+      _hStream->write(reinterpret_cast<char*>(&offset), sizeof(offset));
+      // The amount of data to write to the toy file
+      _hStream->write(reinterpret_cast<char*>(&size), sizeof(size));
+      // Temporarily only handling one stream and one cache item
+      const char* data = item->Flatten();
+      _tStream->write(data, size);
+      _hStream->flush();
+      _tStream->flush();
    }
 }
 }

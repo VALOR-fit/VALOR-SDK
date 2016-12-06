@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "valor/Utilities/CacheItem.h"
+
 namespace valor
 {
 namespace util
@@ -44,33 +46,12 @@ namespace util
       /**
          Reads data from the cache.
 
-         \param data The location into which data will be read.
-         \param size The size (in bytes) of the data to be read.
+         \return The data read.
       */
-      void Read(char* data, const std::streamsize size);
+      CacheItem* Read();
 
-      /**
-         Jump to a specific location in the cache.
-
-         \param pos
-            The position in the file to go to (byte offset from the start of the
-            cache.
-      */
-      void Seek(const std::streampos pos);
-
-      /**
-         Returns the status of the cache.
-
-         \return True if the cache status is good, false otherwise.
-      */
-      bool Good();
-
-      /**
-         Returns the current cache position.
-
-         \return The current cache position.
-      */
-      std::streampos Position();
+      // Temporary function
+      void Reset();
 
    protected:
       ReadableCache(std::string name, const int numToys,
@@ -79,9 +60,11 @@ namespace util
    private:
       static ReadableCache* _instance;
 //      std::vector<std::fstream*> _streams;
-      std::fstream* _stream;
+      std::fstream* _hStream;
+      std::fstream* _tStream;
       int _numToysPerFile;
       int _numFiles;
+      CacheItem* _cache;
    };
 }
 }

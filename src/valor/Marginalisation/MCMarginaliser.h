@@ -5,7 +5,6 @@
 #include "valor/Marginalisation/MarginaliserABC.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitParamList.h"
-#include "valor/Utilities/IModelCache.h"
 
 namespace valor
 {
@@ -14,8 +13,7 @@ namespace marginalisation
    class MCMarginaliser : public MarginaliserABC
    {
    public:
-      MCMarginaliser(FitModelABC* model, FitParamList* parameters,
-            util::IModelCache* cache);
+      MCMarginaliser(FitModelABC* model, FitParamList* parameters);
       virtual ~MCMarginaliser();
 
       /**
@@ -66,7 +64,6 @@ namespace marginalisation
    private:
       int fNumToys;
       FitParamList* fParams;
-      util::IModelCache* fCache;
       int fCurrentToy;
       FitModelABC* fModel;
    };

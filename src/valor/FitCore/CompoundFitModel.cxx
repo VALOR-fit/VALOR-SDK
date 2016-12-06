@@ -21,6 +21,8 @@ ChangeLog:
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/VThreadPool.h"
 #include "valor/FitCore/CompoundFitModel.h"
+#include "valor/Utilities/ReadableCache.h"
+#include "valor/Utilities/WriteableCache.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -276,37 +278,35 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
   return status;
 }
 
-void CompoundFitModel::Cache(util::IModelCache* cache)
+util::CacheItem* CompoundFitModel::Cache()
 {
-   cache->MakeToy(fSubModels.size());
-
+   util::CacheItem* toyCacheItem = new util::CacheItem();
    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
          it != fSubModels.end(); ++it)
    {
       FitModelABC* m = *it;
-      cache->MakeModel();
-      m->Cache(cache);
-      cache->WriteFileHeader();
-      cache->WriteToyHeader();
-      cache->WriteModelHeader();
-      cache->WriteModelData();
-//      LOG("CompoundFitModel", pNOTICE) << cache->ToString();
+      util::CacheItem* cacheItem = m->Cache();
+      toyCacheItem->AddChild(cacheItem);
    }
+
+   util::WriteableCache* cache = util::WriteableCache::Instance();
+   cache->Write(toyCacheItem);
+
+   // Might want to simply dispose of this and return null?
+   return toyCacheItem;
 }
 
-void CompoundFitModel::Retrieve(util::IModelCache* cache)
+void CompoundFitModel::Retrieve(util::CacheItem*)
 {
-//   cache->ReadFileHeader();
-   cache->ReadToyHeader();
-
+   util::ReadableCache* cache = util::ReadableCache::Instance();
+   util::CacheItem* toyCacheItem = cache->Read();
+   int i = 0;
    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-         it != fSubModels.end(); ++it)
+         it != fSubModels.end(); ++it, ++i)
    {
       FitModelABC* m = *it;
-      cache->ReadModelHeader();
-      cache->ReadModelData();
-      m->Retrieve(cache);
-//      LOG("CompoundFitModel", pNOTICE) << cache->ToString();
+      util::CacheItem* cacheItem = toyCacheItem->GetChild(i);
+      m->Retrieve(cacheItem);
    }
 }
 

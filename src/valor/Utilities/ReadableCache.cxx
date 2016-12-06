@@ -13,19 +13,35 @@ namespace util
          const int maxToysPerFile):
       _numToysPerFile(maxToysPerFile),
       _numFiles(TMath::Ceil(static_cast<double>(numToys) /
-               static_cast<double>(maxToysPerFile)))
+               static_cast<double>(maxToysPerFile))),
+      _cache(0)
    {
-//      _streams.reserve(_numFiles);
-      LOG("ReadableCache", pNOTICE) << "Num files: " << _numFiles;
+      std::ostringstream headerName;
+      headerName << name << ".head";
+      _hStream = new std::fstream(headerName.str().c_str(), std::ios::binary |
+            std::ios::in);
+      int numToysFromFile = 0;
+      _hStream->read(reinterpret_cast<char*>(&numToysFromFile),
+            sizeof(numToysFromFile));
       for(int i = 0; i < _numFiles; ++i)
       {
-         std::ostringstream sstream;
-         sstream << name;// << "_" << i;
-         LOG("ReadableCache", pNOTICE) << "Filename " << sstream.str();
 //         _streams.push_back(new std::fstream(sstream.str().c_str(),
 //                  std::ios::binary | std::ios::in));
-         _stream = new std::fstream(sstream.str().c_str(), std::ios::binary |
+         std::ostringstream toysName;
+         toysName << name << ".toys";
+         _tStream = new std::fstream(toysName.str().c_str(), std::ios::binary |
                std::ios::in);
+         if(!_tStream)
+         {
+            LOG("ReadableCache", pFATAL) << "Failed to open file: " <<
+               toysName.str();
+            exit(1);
+         }
+         else
+         {
+            LOG("ReadableCache", pNOTICE) << "Opened file, at position" <<
+               _tStream->tellg();
+         }
       }
    }
 
@@ -42,11 +58,17 @@ namespace util
          }
       }
       _streams.clear();*/
-      if(_stream && _stream->is_open())
+      if(_hStream && _hStream->is_open())
       {
-         _stream->close();
+         _hStream->close();
       }
-      delete _stream;
+      delete _hStream;
+      if(_tStream && _tStream->is_open())
+      {
+         _tStream->close();
+      }
+      delete _tStream;
+      delete _cache;
    }
 
    ReadableCache* ReadableCache::Instance()
@@ -77,26 +99,37 @@ namespace util
       return _instance;
    }
 
-   void ReadableCache::Read(char* data, const std::streamsize size)
+   CacheItem* ReadableCache::Read()
    {
+      long offset = 0;
+      long size = 0;
+      // Read in the location of the data within the toy file
+      _hStream->read(reinterpret_cast<char*>(&offset), sizeof(offset));
+      // Determine how much data to read from the toy file
+      _hStream->read(reinterpret_cast<char*>(&size), sizeof(size));
+
       // Temporarily only handling one stream
-      _stream->read(data, size);
+      char* data = new char[size];
+      _tStream->read(data, size);
+
+      // Temporarily only handling one cached item
+      delete _cache;
+      _cache = new CacheItem();
+      _cache->Build(data);
+
+      return _cache;
    }
 
-   void ReadableCache::Seek(const std::streampos pos)
+   void ReadableCache::Reset()
    {
-      // Temporarily only handling one stream
-      _stream->seekg(pos);
-   }
-
-   std::streampos ReadableCache::Position()
-   {
-      return _stream->tellg();
-   }
-
-   bool ReadableCache::Good()
-   {
-      return _stream->good();
+      if(_hStream && _hStream->is_open())
+      {
+         _hStream->seekg(sizeof(int));
+      }
+      if(_tStream && _tStream->is_open())
+      {
+         _tStream->seekg(0);
+      }
    }
 }
 }

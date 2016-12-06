@@ -7,6 +7,7 @@
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/XMLConfig.h"
+#include "valor/Utilities/ReadableCache.h"
 
 // Temp include - can remove when generate doesn't depend on TMath.Pi()
 #include "TMath.h"
@@ -16,9 +17,8 @@ namespace valor
 namespace marginalisation
 {
 
-MCMarginaliser::MCMarginaliser(FitModelABC* model, FitParamList* parameters,
-      util::IModelCache* cache):
-   fNumToys(0), fParams(parameters), fCache(cache), fCurrentToy(0), fModel(model)
+MCMarginaliser::MCMarginaliser(FitModelABC* model, FitParamList* parameters):
+   fNumToys(0), fParams(parameters), fCurrentToy(0), fModel(model)
 {
 }
 
@@ -36,15 +36,19 @@ void MCMarginaliser::Marginalise()
          " of " << fNumToys;
       RandomizeNuisance();
       fModel->Generate(*fParams, "+SB+SYS");
-      fModel->Cache(fCache);
+      fModel->Cache();
    }
 }
 
 FitModelABC* MCMarginaliser::Begin()
 {
+   // Temporary reset of cache file offsets etc - once cache is implemented
+   // in full this will happen transparently
+   LOG("MCMarginaliser", pWARN) << "Resetting cache";
+   util::ReadableCache::Instance()->Reset();
    fCurrentToy = 0;
-   fCache->ReadFileHeader();
-   fModel->Retrieve(fCache);
+//   fCache->ReadFileHeader();
+   fModel->Retrieve();
    return fModel;
 }
 
@@ -57,7 +61,7 @@ FitModelABC* MCMarginaliser::Next()
 {
    if(++fCurrentToy < fNumToys)
    {
-      fModel->Retrieve(fCache);
+      fModel->Retrieve();
       return fModel;
    }
    else
