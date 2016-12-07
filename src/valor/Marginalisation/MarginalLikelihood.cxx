@@ -49,6 +49,8 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
    LOG("MarginalLikelihood", pNOTICE) << "FP: " << free->CurrValueByIndex(0) <<
       " L: " << averageLikelihood << " -2lnL: " << lnLikelihood;
 
+   delete free;
+
    return lnLikelihood;
 }
 

@@ -101,6 +101,7 @@ namespace util
       _tStream->write(data, size);
       _hStream->flush();
       _tStream->flush();
+      delete[] data;
    }
 }
 }

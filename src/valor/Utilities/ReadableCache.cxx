@@ -69,6 +69,7 @@ namespace util
       }
       delete _tStream;
       delete _cache;
+      _cache = 0;
    }
 
    ReadableCache* ReadableCache::Instance()
@@ -109,7 +110,7 @@ namespace util
       _hStream->read(reinterpret_cast<char*>(&size), sizeof(size));
 
       // Temporarily only handling one stream
-      char* data = new char[size];
+      char data[size];
       _tStream->read(data, size);
 
       // Temporarily only handling one cached item

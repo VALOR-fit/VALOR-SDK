@@ -30,6 +30,7 @@ namespace util
 
    void CacheItem::SetData(const char* data, unsigned long size)
    {
+      delete[] _data;
       _data = new char[size];
       std::memcpy(_data, data, size);
       _size = size;
