@@ -280,20 +280,19 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
 
 util::CacheItem* CompoundFitModel::Cache()
 {
-   util::CacheItem* toyCacheItem = new util::CacheItem();
+   util::CacheItem toyCacheItem;
    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
          it != fSubModels.end(); ++it)
    {
       FitModelABC* m = *it;
       util::CacheItem* cacheItem = m->Cache();
-      toyCacheItem->AddChild(cacheItem);
+      toyCacheItem.AddChild(cacheItem);
    }
 
    util::WriteableCache* cache = util::WriteableCache::Instance();
-   cache->Write(toyCacheItem);
+   cache->Write(&toyCacheItem);
 
-   // Might want to simply dispose of this and return null?
-   return toyCacheItem;
+   return 0;
 }
 
 void CompoundFitModel::Retrieve(util::CacheItem*)
