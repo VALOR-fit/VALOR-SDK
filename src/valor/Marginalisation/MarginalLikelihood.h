@@ -27,7 +27,6 @@ namespace marginalisation
       MarginaliserABC* fMarginaliser;
       const double PRECISION_SCALE = 80;
    };
-
 }
 }
 

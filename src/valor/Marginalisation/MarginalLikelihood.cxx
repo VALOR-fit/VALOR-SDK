@@ -21,14 +21,17 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
    assert(marginaliser);
    std::vector<double> chi2Values;
    FitParamList* free = params->FreeParameterSubset();
-   for(FitModelABC* m = marginaliser->Begin() ; m != marginaliser->End();
-         m = marginaliser->Next())
+//   for(FitModelABC* m = marginaliser->Begin() ; m != marginaliser->End();
+//         m = marginaliser->Next())
+   FitModelABC* m = marginaliser->Begin();
+   for( ; m != marginaliser->End(); )
    {
       // Apply oscillation to the marginalisation toy
       m->Generate(hypothesis, "+OSC");
       // Calculate the likelihood
       double chi2 = data->GetFitStatistic(m, NULL);
       chi2Values.push_back(chi2);
+      m = marginaliser->Next();
    }
 
    std::sort(chi2Values.begin(), chi2Values.end());
