@@ -41,7 +41,13 @@ CompoundFitModel::CompoundFitModel() :
 //________________________________________________________________________________________
 CompoundFitModel::~CompoundFitModel() 
 {
-  if (fSystematics && fOwnerOfSystematics) { delete fSystematics; }
+   if (fSystematics && fOwnerOfSystematics) { delete fSystematics; }
+   for(std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+        it != fSubModels.end(); ++it)
+   {
+      FitModelABC* m = *it;
+      delete m;
+   }
 }
 //________________________________________________________________________________________
 std::string CompoundFitModel::Name() const
@@ -295,8 +301,9 @@ util::CacheItem* CompoundFitModel::Cache()
    return 0;
 }
 
-void CompoundFitModel::Retrieve(util::CacheItem*)
+FitModelABC* CompoundFitModel::Retrieve(util::CacheItem*)
 {
+   CompoundFitModel* cfm = new CompoundFitModel();
    util::ReadableCache* cache = util::ReadableCache::Instance();
    util::CacheItem* toyCacheItem = cache->Read();
    int i = 0;
@@ -305,8 +312,10 @@ void CompoundFitModel::Retrieve(util::CacheItem*)
    {
       FitModelABC* m = *it;
       util::CacheItem* cacheItem = toyCacheItem->GetChild(i);
-      m->Retrieve(cacheItem);
+      cfm->AddSubModel(m->Retrieve(cacheItem));
    }
+
+   return cfm;
 }
 
 //________________________________________________________________________________________

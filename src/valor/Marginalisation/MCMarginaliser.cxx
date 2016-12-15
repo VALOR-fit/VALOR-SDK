@@ -44,12 +44,9 @@ FitModelABC* MCMarginaliser::Begin()
 {
    // Temporary reset of cache file offsets etc - once cache is implemented
    // in full this will happen transparently
-   LOG("MCMarginaliser", pWARN) << "Resetting cache";
    util::ReadableCache::Instance()->Reset();
    fCurrentToy = 0;
-//   fCache->ReadFileHeader();
-   fModel->Retrieve();
-   return fModel;
+   return fModel->Retrieve();
 }
 
 FitModelABC* MCMarginaliser::End()
@@ -61,8 +58,7 @@ FitModelABC* MCMarginaliser::Next()
 {
    if(++fCurrentToy < fNumToys)
    {
-      fModel->Retrieve();
-      return fModel;
+      return fModel->Retrieve();
    }
    else
    {

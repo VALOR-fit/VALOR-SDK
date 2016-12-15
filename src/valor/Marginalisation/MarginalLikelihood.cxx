@@ -31,6 +31,7 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
       // Calculate the likelihood
       double chi2 = data->GetFitStatistic(m, NULL);
       chi2Values.push_back(chi2);
+      delete m;
       m = marginaliser->Next();
    }
 
