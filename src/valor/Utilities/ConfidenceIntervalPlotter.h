@@ -39,63 +39,60 @@ namespace valor {
     class ConfidenceIntervalPlotter;
 
     class ConfidenceIntervalPlotter: public TNamed {
-        public:
-			// Construct with information which must be consistent across all confidence intervals in the same plot
-			ConfidenceIntervalPlotter(conv::PhysParamId_t par_x, conv::PhysParamId_t par_y, bool avg_or_min_delta_chi2, bool find_delta_chi2, string input_titles);
-            ~ConfidenceIntervalPlotter();
+    public:
+        // Construct with information which must be consistent across all confidence intervals in the same plot
+        ConfidenceIntervalPlotter(conv::PhysParamId_t par_x, conv::PhysParamId_t par_y, bool avg_or_min_delta_chi2, bool find_delta_chi2, string input_titles);
+        ~ConfidenceIntervalPlotter();
 
-			// Add a dataset to the plot, generate the confidence interval and set the plotting information
-			void Add(string data_file, string confidence);
+        // Add a dataset to the plot, generate the confidence interval and set the plotting information
+        void Add(string data_file, string confidence);
 
-			// Draw the collection of confidence intervals and datasets
-			void Draw(TCanvas *canvas);
+        // Draw the collection of confidence intervals and datasets
+        void Draw(TCanvas *canvas);
 
-			// The axis ranges use the range of input data by default, but can be set to something else
-			void SetRangeManually(double x_low, double y_low, double x_high, double y_high);
+        // The axis ranges use the range of input data by default, but can be set to something else
+        void SetRangeManually(double x_low, double y_low, double x_high, double y_high);
 
-			// Set the (optional) cosmetic settings for the graphs and histograms
-			void SetChiSqLineColor(short int col) 	{line_colour 	= col;}
-			void SetChiSqLineStyle(Style_t sty) 	{line_style 	= sty;}
-			void SetChiSqLineLabel(string lab)		{label			= lab;}
-			void SetBestFitColor(short int col)		{bf_colour 		= col;}		// Only used for 2D plots
-			void SetBestFitStyle(Style_t sty)		{bf_style 		= sty;}		// Only used for 2D plots
-			void SetBestFitSize(Size_t siz)			{bf_size		= siz;}		// Only used for 2D plots
-			void SetDataLineColor(short int col) 	{hist_colour 	= col;}		// Only used for 1D plots
-			void SetDataLineStyle(Style_t sty) 		{hist_style 	= sty;}		// Only used for 1D plots
-			void SetDataLineLabel(string lab)		{hist_label		= lab;}		// Only used for 1D plots
+        // Set the (optional) cosmetic settings for the graphs and histograms
+        void SetChiSqLineColor(short int col) 	{line_colour 	= col;}
+        void SetChiSqLineStyle(Style_t sty) 	{line_style 	= sty;}
+        void SetChiSqLineLabel(string lab)		{label			= lab;}
+        void SetBestFitColor(short int col)		{bf_colour 		= col;}		// Only used for 2D plots
+        void SetBestFitStyle(Style_t sty)		{bf_style 		= sty;}		// Only used for 2D plots
+        void SetBestFitSize(Size_t siz)			{bf_size		= siz;}		// Only used for 2D plots
+        void SetDataLineColor(short int col) 	{hist_colour 	= col;}		// Only used for 1D plots
+        void SetDataLineStyle(Style_t sty) 		{hist_style 	= sty;}		// Only used for 1D plots
+        void SetDataLineLabel(string lab)		{hist_label		= lab;}		// Only used for 1D plots
 
-			TH1F *frame;
-			TLegend *leg = new TLegend(0.6, 0.75, 0.9, 0.95);
+        TH1F *frame;
+        TLegend *leg;
 
-			ClassDef(ConfidenceIntervalPlotter,1);
-			
+        ClassDef(ConfidenceIntervalPlotter,1);
 
-        private:
-            ConfidenceIntervalPlotter();
 
-			// Check the legend for a matching label. Returns true if the legend already contains an entry that has a matching label
-			bool CheckLegendLabel(std::vector<string> vec, string label);
+    private:
+        ConfidenceIntervalPlotter();
 
-			bool bf_marker_added = false;
-			bool manual_range = false;
-			double limits[4];
-			std::vector<string> line_labels, hist_labels;
-			TObjArray *graphs_to_draw = new TObjArray();
-			TObjArray *bfp_to_draw = new TObjArray();
-			TObjArray *hists_to_draw = new TObjArray();
-			string titles = "";	// The graph and axis titles to be drawn. Expected format is "title;x_title;y_title"
+        // Check the legend for a matching label. Returns true if the legend already contains an entry that has a matching label
+        bool CheckLegendLabel(std::vector<string> vec, string label);
 
-			// Cosmetic settings for the graphs and histograms
-			short int line_colour = 1, bf_colour = 1, hist_colour = 2;
-			Style_t line_style = 1, bf_style = 29, hist_style = 1;
-			Size_t bf_size = 1.5;
-			string label = "Confidence Limit", hist_label = "Data";
+        bool bf_marker_added, manual_range;
+        double limits[4];
+        std::vector<string> line_labels, hist_labels;
+        TObjArray *graphs_to_draw, *bfp_to_draw, *hists_to_draw;
+        string titles;	// The graph and axis titles to be drawn. Expected format is "title;x_title;y_title"
 
-			// Parameters common to each confidence interval to be drawn. These are passed to ConfidenceInterval
-			conv::PhysParamId_t param_x = conv::kPhypMixing23;
-			conv::PhysParamId_t param_y = conv::kPhypUndefined;
-			bool avg_delta_chi2 = true;
-			bool find_delta = true;
+        // Cosmetic settings for the graphs and histograms
+        short int line_colour, bf_colour, hist_colour;
+        Style_t line_style, bf_style, hist_style;
+        Size_t bf_size;
+        string label, hist_label;
+
+        // Parameters common to each confidence interval to be drawn. These are passed to ConfidenceInterval
+        conv::PhysParamId_t param_x;
+        conv::PhysParamId_t param_y;
+        bool avg_delta_chi2;
+        bool find_delta;
     };
 }
 #endif
