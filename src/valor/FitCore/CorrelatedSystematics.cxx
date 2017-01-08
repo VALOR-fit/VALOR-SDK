@@ -262,7 +262,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   {
      LOG("CorrelatedSystematics",pFATAL)
         << "\n Syst covariance matrix for "<<this->GetName()<<" has unexpected size!"
-        << "\n Reading from: " << fCovMtrx->GetName()
+        << "\n Reading from: " << fCovMtrx->GetName() << " in " << cov_mtrx_path.Data()
         << "\n Expecting: " <<  np << " x " << np << " matrix"
         << "\n Found: " << cov.GetNrows() << " x " <<  cov.GetNcols() << " matrix";
      util::Die(1); return false;
@@ -284,7 +284,6 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   }
   
   // Do Cholesky decomposition
-  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();
   
   this->InvertMatrices();
@@ -655,6 +654,7 @@ void CorrelatedSystematics::Tweak(
 //________________________________________________________________________________________
 void CorrelatedSystematics::CholeskyDecomposeMatrix(void)
 {
+  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   if (fCovMtrxChoL) {delete fCovMtrxChoL; fCovMtrxChoL = NULL;}
 #ifdef __show_cholesky_mesg_info__  
     LOG("CorrelatedSystematics",pDEBUG) 

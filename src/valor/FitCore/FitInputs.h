@@ -86,11 +86,15 @@ public :
 
   void UpdateParamList(FitParamList * fpar);
   
-  double Statistic(Option_t * stat_opt = "likelihood-ratio") const;
+  double Statistic(Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) const;
 
   // set the chisq definition 5 bins vs 73 bins
   void SetChisqDefinition (bool goodnessoffit) { fGoodnessOfFit = goodnessoffit; }
   bool GetChisqDefinition (void) { return fGoodnessOfFit; }
+  
+  // Turn the penalty term off or on (defaults to on)
+  void IncludePenaltyHyp(bool use_penalty);
+  void IncludePenaltySyst(bool use_penalty);
       
   // Set the chisquare type (e.g. poisson) to be used in the fit
   void SetChisquareFitOption(Option_t * opt) { fOpt = opt; }
@@ -123,6 +127,9 @@ private:
   bool                    fGoodnessOfFit;
   int                     fNPoints;
   int                     fNDim;
+  
+  bool                    fIncludePenaltySyst;
+  bool                    fIncludePenaltyHyp;
   
   ClassDef(FitInputs, 4)    
 };

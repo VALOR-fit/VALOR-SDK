@@ -27,17 +27,18 @@ using namespace std;
 ClassImp(CompoundCorrelatedSystematics)
 
 //________________________________________________________________________________________
-CompoundCorrelatedSystematics::CompoundCorrelatedSystematics(const vector<const CorrelatedSystematics*> & vec, string xml_node_name)
+CompoundCorrelatedSystematics::CompoundCorrelatedSystematics(const vector<const CorrelatedSystematics*> & vec, string xml_node_name, std::string name)
 : CorrelatedSystematics()
 {
-  
+  this->SetNameTitle(name.c_str(),name.c_str());
   this->CompoundInit(vec.size(),vec.data(),xml_node_name);
   return;
 }
 //________________________________________________________________________________________
-CompoundCorrelatedSystematics::CompoundCorrelatedSystematics(unsigned int n_cov_matrices, const CorrelatedSystematics * const * syst_objs, string xml_node_name)
+CompoundCorrelatedSystematics::CompoundCorrelatedSystematics(unsigned int n_cov_matrices, const CorrelatedSystematics * const * syst_objs, string xml_node_name, std::string name)
 : CorrelatedSystematics()
 {
+  this->SetNameTitle(name.c_str(),name.c_str());
   this->CompoundInit(n_cov_matrices,syst_objs,xml_node_name);
   return;
 }
@@ -45,7 +46,7 @@ CompoundCorrelatedSystematics::CompoundCorrelatedSystematics(unsigned int n_cov_
 void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, const CorrelatedSystematics * const * syst_objs, string xml_node_name)
 {
   // Count how many total elements we have
-  LOG("CompoundCorrelatedSystematics",pDEBUG) << "Initialising a CompoundCorrelatedSystematics from "<<n_cov_matrices<<" smaller matrices";
+  LOG("CompoundCorrelatedSystematics",pNOTICE) << "Initialising a Compound matrix "<<fName<<" from "<<n_cov_matrices<<" smaller matrices";
   unsigned int total_elements = 0;
   for (unsigned int icov = 0 ; icov < n_cov_matrices ; icov++) {
     const CorrelatedSystematics * corr = syst_objs[icov];
@@ -97,7 +98,6 @@ void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, co
   
   // Set the names
   fXMLNodeName = xml_node_name;
-  fName = "CompoundSyst";
   
   // And we're configured
   fIsConfigured = true;

@@ -55,6 +55,8 @@ namespace util {
   double ChisqGauss         (double ndata, double nmc);
   double ChisqPoisson       (double ndata, double nmc);
   double Chisq_Penalty_TH2D (TH2D* hobs, TH2D* hexp);
+  
+  double ChisqMeanLikelihood(std::vector<double> chisqs); // Performs a mean of the non-logged values, returns chisq
 
   TAxis EstimateOptimalBinning(int npoints, double * points);
   int EstimateOptimalNumberOfBinsForGaussian(int npoints, double nsigma);

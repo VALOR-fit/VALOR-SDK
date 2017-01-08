@@ -199,6 +199,9 @@ namespace valor {
     void   SetFitTries         (int   fit_tries)  { fFitTries = fit_tries;       }
     int    GetFitTries         (void) const       { return fFitTries;            }
     
+    void   SetBestFitStatisticContributions (const std::map<std::string,double> & stat_bf)   { fBestFitStatisticContributions = stat_bf; }
+    const std::map<std::string,double> & GetBestFitStatisticContributions (void) const { return fBestFitStatisticContributions;    }
+    
     // Check if this FPL is complete and ready to be used
     bool IsComplete();
     
@@ -371,7 +374,8 @@ namespace valor {
     bool fHesseErrorsSet;
     bool fMinosErrorsSet;
     
-    map<string, int> fStatusCodes;
+    std::map<std::string, int> fStatusCodes;
+    std::map<std::string, double> fBestFitStatisticContributions;
     
     mutable bool fShowCurrValuesOnly;
     mutable bool fShowBestFitValuesOnly;
@@ -403,7 +407,7 @@ namespace valor {
     
     
     
-    ClassDef(FitParamList,2)
+    ClassDef(FitParamList,3)
   };
   
   std::ostream & operator<< (std::ostream & stream, const FitParamList & plst);

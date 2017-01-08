@@ -12,6 +12,9 @@
 
 #pragma link C++ enum  valor::conv::ConfLevel_t;
 
+#pragma link C++ enum  valor::conv::KineVar_t;
+#pragma link C++ enum  valor::conv::KineSpace_t;
+
 #pragma link C++ enum  valor::conv::NuMassHierarchy_t;
 #pragma link C++ enum  valor::conv::NuOscDeltaCP_t;
 #pragma link C++ enum  valor::conv::NuOscDmsqScheme_t;

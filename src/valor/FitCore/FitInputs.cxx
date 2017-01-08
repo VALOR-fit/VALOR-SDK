@@ -45,7 +45,9 @@ FitInputs::FitInputs(FitDataABC * o, FitModelABC * e, FitParamList * fpar,
    fLikelihood(l),
    fOpt(opt),
    fErrDef(errdef),
-   fGoodnessOfFit(goodnessoffit)
+   fGoodnessOfFit(goodnessoffit),
+   fIncludePenaltySyst(true),   // Not sure if we want these calls for marginalisation
+   fIncludePenaltyHyp (true)
 { 
 
 }
@@ -82,7 +84,7 @@ LikelihoodABC & FitInputs::Likelihood (void)
 
 
 //________________________________________________________________________________________
-double FitInputs::Statistic(Option_t * option) const
+double FitInputs::Statistic(Option_t * option, std::map<std::string,double> * likelihood_components) const
 {
   double total_statistic = 0;
   double data_statistic  = 0;
@@ -91,15 +93,20 @@ double FitInputs::Statistic(Option_t * option) const
   if (option || fGoodnessOfFit) {
     const char * s = fGoodnessOfFit ? "%s gof" : "%s";
     TString newopt =  TString::Format(s,option);
-    data_statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt.Data());
+    data_statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt.Data(), likelihood_components);
   }
   else {
-    data_statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL);
+    data_statistic = fObs->GetFitStatistic(fExp,*fFitParams, NULL, likelihood_components);
   }
   TString option_ts(option);
-  if (! option_ts.Contains("nopenalty")) {
-    syst_penalty = fExp->GetFitStatisticPenalty(option);
-    phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);
+  if (!option_ts.Contains("nopenalty")){
+    if (fIncludePenaltySyst) {syst_penalty = fExp->GetFitStatisticPenalty(option);}
+    if (fIncludePenaltyHyp ) {phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);}
+  }
+  
+  if (likelihood_components) {
+    (*likelihood_components)["penalty_syst"] = syst_penalty;
+    (*likelihood_components)["penalty_hyp" ] = phys_penalty;
   }
   total_statistic = syst_penalty + phys_penalty;
 #ifndef __VALOR_FMWK_PENALTY_ONLY__
@@ -110,6 +117,16 @@ double FitInputs::Statistic(Option_t * option) const
   
   assert(TMath::Finite(total_statistic));
   return total_statistic;
+}
+//____________________________________________________________________________
+void FitInputs::IncludePenaltySyst(bool use_penalty)
+{
+  fIncludePenaltySyst = use_penalty;
+}
+//____________________________________________________________________________
+void FitInputs::IncludePenaltyHyp(bool use_penalty)
+{
+  fIncludePenaltyHyp = use_penalty;
 }
 //____________________________________________________________________________ 
 // MINUIT fit functions 

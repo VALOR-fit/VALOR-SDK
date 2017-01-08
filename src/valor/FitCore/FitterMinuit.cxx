@@ -247,9 +247,9 @@ bool FitterMinuit::DoTheFit(void)
 
   // reset fit time, bestfit statistic and status codes in
   // persistable FitParamList obj
-  fFitInputs->FitParams().SetFitTime(-999);
-  fFitInputs->FitParams().SetBestFitStatistic(-999);
-  fFitInputs->FitParams().ClearStatusCodes();
+  fit_params.SetFitTime(-999);
+  fit_params.SetBestFitStatistic(-999);
+  fit_params.ClearStatusCodes();
 
   // Run the fitter once - we have the option here to check the status code
   // and if the fitter failed, re-seed the fitter and try again
@@ -271,29 +271,30 @@ bool FitterMinuit::DoTheFit(void)
   // stop clock
   w.Stop();
   fFitTime = w.CpuTime();
+  
+  std::map<std::string, double> likelihood_contributions;
 
   LOG("Minuit", pINFO) 
     << "Fit performed in " << fFitTime 
     << " sec after " << fFitTries << " attempts."
     << " Used " <<gMinuit->fNfcn << " calls.";
   LOG("Minuit", pINFO) 
-    << "Best-fit statistic: " << fFitInputs->FitParams().GetBestFitStatistic();
-
+    << "Best-fit statistic: " << fit_params.GetBestFitStatistic();
+    
   // copy fit time and bestfit statistic and status codes 
   // to persistable FitParamList obj
 
-  fFitInputs->FitParams().SetFitTime (fFitTime);
-  fFitInputs->FitParams().SetFitTries(fFitTries);
-  fFitInputs->FitParams().SetBestFitStatistic(fFitInputs->FitParams().GetBestFitStatistic());
+  fit_params.SetFitTime (fFitTime);
+  fit_params.SetFitTries(fFitTries);
 
-  fFitInputs->FitParams().SetStatusCode("migrad_min", fMigradMinStatusCode);
-  fFitInputs->FitParams().SetStatusCode("migrad_err", fMigradErrStatusCode);
+  fit_params.SetStatusCode("migrad_min", fMigradMinStatusCode);
+  fit_params.SetStatusCode("migrad_err", fMigradErrStatusCode);
 
   if(fCalcHesseErrors) {
-    fFitInputs->FitParams().SetStatusCode("hesse_err", fHesseErrStatusCode);
+    fit_params.SetStatusCode("hesse_err", fHesseErrStatusCode);
   }
   if(fCalcMinosErrors) {
-    fFitInputs->FitParams().SetStatusCode("minos_err", fMinosErrStatusCode);
+    fit_params.SetStatusCode("minos_err", fMinosErrStatusCode);
   }
   return ok;
 }
@@ -359,6 +360,11 @@ bool FitterMinuit::RunOnce(bool use_simplex)
     fp.Update(p, value, true);
   }
   fp.CopyCurrToBestFitValues();
+  
+  // Get the contributions to the BF chisquare
+  std::map<std::string,double> stat_contrib;
+  (void)fFitInputs->Statistic("likelihood_ratio",&stat_contrib);
+  fp.SetBestFitStatisticContributions(stat_contrib);
 
   // Print fit result
 #ifdef __show_fit_result__

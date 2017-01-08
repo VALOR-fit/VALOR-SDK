@@ -48,19 +48,22 @@ Messenger * Messenger::Instance()
     cleaner.DummyMethodAndSilentCompiler();
 
     fInstance = new Messenger;
-    log4cpp::Appender * appender;
-    appender = new log4cpp::OstreamAppender("default", &cout);
-    const char* layoutenv = gSystem->Getenv("VALOR_MSG_LAYOUT");
-    std::string layoutstr = (layoutenv) ? string(layoutenv) : "BASIC";
-    if ( layoutstr == "SIMPLE" ) {
-      appender->setLayout(new log4cpp::SimpleLayout());
-    } else {
-      appender->setLayout(new log4cpp::BasicLayout());
-    }
-
     log4cpp::Category & MSG = log4cpp::Category::getRoot();
-    MSG.setAdditivity(false);
-    MSG.addAppender(appender);
+    
+    log4cpp::Appender * appender = MSG.getAppender();
+    if (!appender) {
+      appender = new log4cpp::OstreamAppender("default", &cout);
+      const char* layoutenv = gSystem->Getenv("VALOR_MSG_LAYOUT");
+      std::string layoutstr = (layoutenv) ? string(layoutenv) : "BASIC";
+      if ( layoutstr == "SIMPLE" ) {
+        appender->setLayout(new log4cpp::SimpleLayout());
+      } else {
+        appender->setLayout(new log4cpp::BasicLayout());
+      }
+
+      MSG.setAdditivity(false);
+      MSG.addAppender(appender);
+    }
   }
   return fInstance;
 }

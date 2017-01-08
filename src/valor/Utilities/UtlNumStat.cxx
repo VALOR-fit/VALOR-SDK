@@ -1386,3 +1386,24 @@ double valor::util::Chisq_Penalty_TH2D(TH2D* hobs, TH2D* hexp)
   
   return chisq;
 }
+//____________________________________________________________________________
+double valor::util::ChisqMeanLikelihood(std::vector<double> chisqs)
+{
+  // Use log(sum) = log(a0) + log( 1 + sum(a0/ai) ), a0 > a1 > ... > aN
+  // From https://en.wikipedia.org/wiki/List_of_logarithmic_identities
+  
+  //~ std::sort(chisqs.begin(),chisqs.end(),std::greater<int>());
+  std::sort(chisqs.begin(),chisqs.end());
+  
+  double log_a0 = -0.5 * chisqs[0];
+  double internal_sum = 1.;
+  for (unsigned int ii = 1 ; ii < chisqs.size() ; ii++) {
+    double log_ai = -0.5 * chisqs[ii];
+    internal_sum += std::exp(log_ai-log_a0);
+  }
+  double log_sum = log_a0 + std::log(internal_sum);
+  double log_mean = log_sum - std::log(chisqs.size());
+  double chisq_mean = -2. * log_mean;
+  return chisq_mean;
+}
+//____________________________________________________________________________

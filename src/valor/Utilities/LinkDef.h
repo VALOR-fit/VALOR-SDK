@@ -13,6 +13,8 @@
 
 #pragma link C++ class valor::util::NameRegistry+;
 #pragma link C++ class valor::util::Interpolator+;
+#pragma link C++ class valor::ConfidenceInterval+;
+#pragma link C++ class valor::ConfidenceIntervalPlotter+;
 
 
 #endif
