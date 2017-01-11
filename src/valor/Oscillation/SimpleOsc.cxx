@@ -31,10 +31,10 @@ double valor::util::Calculate2FSterileOsc(int init_pdg, int final_pdg, double lO
       
   if (ipdg == kPdgNuE) {
     double prob = sinsq2thee * sinsqdm;
-    if (ipdg != kPdgNuE) {
+    if (fpdg == kPdgNuMu) {
       return prob;
     }
-    else {
+    else if (fpdg == kPdgNuE) {
       return 1-prob;
     }
   }
