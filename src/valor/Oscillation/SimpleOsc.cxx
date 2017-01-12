@@ -14,6 +14,8 @@ ChangeLog:
 #include <cmath>
 #include <cassert>
 
+#include "valor/Messenger/Messenger.h"
+#include "valor/Utilities/UtlSystem.h"
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/PDG.h"
 #include "valor/Oscillation/SimpleOsc.h"
@@ -48,6 +50,7 @@ double valor::util::Calculate2FSterileOsc(int init_pdg, int final_pdg, double lO
       return sinsq2mue * sinsqdm;
     }
   }
-  assert("Flavours not supported");
+  LOG("Flavours not supported",pFATAL);
+  util::Die(-1);
   return conv::kBadResult;
 }
