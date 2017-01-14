@@ -13,7 +13,7 @@ namespace marginalisation
    {
    public:
       MarginalLikelihood(MarginaliserABC* marginaliser);
-      virtual ~MarginalLikelihood(){ };
+      virtual ~MarginalLikelihood();
 
       /**
          Computes the marginal likelihood.
@@ -24,8 +24,22 @@ namespace marginalisation
       virtual double Likelihood(FitDataABC* data, FitParamList* params);
 
    private:
+      void PreCalcMarginalValues(FitParamList& fp);
+
+   private:
       MarginaliserABC* fMarginaliser;
       const double PRECISION_SCALE = 80;
+      std::map<conv::PhysParamId_t, std::vector<double>*> marginalValues;
+      bool computedMarginalValues;
+
+      struct marginalValueDeleter
+      {
+         template <typename T>
+         void operator()(const T& x) const
+         {
+            delete x.second;
+         }
+      };
    };
 }
 }
