@@ -66,6 +66,7 @@ namespace marginalisation
       FitParamList* fParams;
       int fCurrentToy;
       FitModelABC* fModel;
+      std::string outputDir;
    };
 }
 }

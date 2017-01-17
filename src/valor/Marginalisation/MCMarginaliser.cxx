@@ -9,8 +9,11 @@
 #include "valor/Utilities/XMLConfig.h"
 #include "valor/Utilities/ReadableCache.h"
 
-// Temp include - can remove when generate doesn't depend on TMath.Pi()
-#include "TMath.h"
+#include <sstream>
+#include <algorithm>
+
+#include "TFile.h"
+#include "TH1D.h"
 
 namespace valor
 {
@@ -29,6 +32,24 @@ MCMarginaliser::~MCMarginaliser()
 void MCMarginaliser::Marginalise()
 {
    Rnd::Instance()->SetSeeds(*fArg);
+   std::ostringstream ss;
+   ss << outputDir << "sys.params.root";
+   TFile file(ss.str().c_str(), "RECREATE");
+
+   // Histogram to store the distribution of parameter values in marginalisation
+   // toys
+   TH1D hParams[fParams->Size()];
+   // Choose a number of bins appropriate to the number of toys
+   // fNumToys / 6 is effective for 30 toy test runs, whilst 100 makes sense for
+   // a full 10K toy run
+   int nbins = std::min(fNumToys / 6, 100);
+   for(int i = 0; i < fParams->Size(); ++i)
+   {
+      conv::PhysParamId_t p = fParams->WhichParam(i);
+      std::string name = util::NameRegistry::Instance()->AsString(p);
+      hParams[i] = TH1D(name.c_str(), name.c_str(), nbins,
+            fParams->MinValue(p), fParams->MaxValue(p));
+   }
 
    for(int n = 0; n < fNumToys; ++n)
    {
@@ -37,7 +58,14 @@ void MCMarginaliser::Marginalise()
       RandomizeNuisance();
       fModel->Generate(*fParams, "+SB+SYS");
       fModel->Cache();
+      for(int i = 0; i < fParams->Size(); ++i)
+      {
+         hParams[i].Fill(fParams->CurrValueByIndex(i));
+      }
    }
+
+   file.Write();
+   file.Close();
 }
 
 FitModelABC* MCMarginaliser::Begin()
@@ -80,6 +108,9 @@ void MCMarginaliser::Configure(const CmdLnArgList& arg)
       LOG("MCMarginaliser", pERROR) <<
          "Number of marginalisation toys must be positive";   
    }
+   std::string ext = "margtoys.valor";
+   outputDir = arg.GetString("marginalisation-toys");
+   outputDir = outputDir.substr(0, outputDir.size() - ext.size());
 }
 
 void MCMarginaliser::RandomizeNuisance()
