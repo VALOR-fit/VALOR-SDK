@@ -308,14 +308,14 @@ void KBCubHcmbMondrian::UseEdge2EdgeBinning(
 //________________________________________________________________________________________
 unsigned int KBCubHcmbMondrian::MapFromLinearizedE2E(unsigned int e2e_lin_bin) const
 {
-  map<unsigned int, unsigned int>::const_iterator it = fBinMondrianFromE2E.find(e2e_lin_bin);
+  std::map<unsigned int, unsigned int>::const_iterator it = fBinMondrianFromE2E.find(e2e_lin_bin);
   assert(it != fBinMondrianFromE2E.end());
   return it->second;
 }
 //________________________________________________________________________________________
 unsigned int KBCubHcmbMondrian::Dimension(conv::KineVar_t kv) const
 {
-  map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
+  std::map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
   assert(it != fKineVar2Dim.end());
   int dimension = it->second;
   return dimension;
@@ -324,19 +324,13 @@ unsigned int KBCubHcmbMondrian::Dimension(conv::KineVar_t kv) const
 vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void)
 {
   if (fNDimensions == 2) {
-  // fBinEdgesTLines;
-    fBinEdgesTLines.reserve(fNBins * fNDimensions * 4);
+     fBinEdgesTLines.reserve(fNBins * fNDimensions * 4);
     for (unsigned int ibin = 0; ibin < fNBins ; ibin++ ) {
       double x0 = this->BinMinimum(ibin,0);
       double x1 = this->BinMaximum(ibin,0);
       double y0 = this->BinMinimum(ibin,1);
       double y1 = this->BinMaximum(ibin,1);
       
-      // TLine * lxl = new TLine(x0,y0,x1,y0);
-      // TLine * lxh = new TLine(x0,y1,x1,y1);
-      // TLine * lyl = new TLine(x0,y0,x0,y1);
-      // TLine * lyh = new TLine(x1,y0,x1,y1);
-
       TLine lxl = TLine(x0,y0,x1,y0);
       TLine lxh = TLine(x0,y1,x1,y1);
       TLine lyl = TLine(x0,y0,x0,y1);

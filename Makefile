@@ -141,6 +141,7 @@ purge: FORCE
 	cd Registry;                  make purge; cd ..; \
 	cd CmdLine;                   make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
+	cd KineBinning;               make purge; cd ..; \
 	cd ${VALOR_FMWK}
 
 clean: clean-files clean-dir clean-etc
@@ -159,6 +160,7 @@ clean-files: FORCE
 	cd Registry;                make clean; cd ..; \
 	cd CmdLine;                 make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
+	cd KineBinning;             make clean; cd ..; \
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm -f ./bin/*;\
         [ ! -d ./lib ] || rm -f ./lib/*_rdict.pcm;\

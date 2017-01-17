@@ -446,7 +446,7 @@ unsigned int KBCubHcmbEdge2Edge::Bin(
 //________________________________________________________________________________________
 unsigned int KBCubHcmbEdge2Edge::Dimension(conv::KineVar_t kv) const
 {
-  map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
+  std::map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
   assert(it != fKineVar2Dim.end());
   int dimension = it->second;
   return dimension;
