@@ -72,7 +72,8 @@ typedef enum EPhysParamId
    kPhypDelta34,               // Sterile phase
    kPhypDelta35,               // Sterile phase
    kPhypNSIepsMuTau,           // Nonstandard matter interactions
-   
+   kPhypMixingEE,              // Effective steriles (e-e)
+   kPhypMixingMuMu,            // Effective steriles (mu-mu)
    
    // Generic nuisance parameters
   kNuis000 ,
