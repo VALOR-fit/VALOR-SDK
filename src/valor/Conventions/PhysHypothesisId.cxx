@@ -58,6 +58,9 @@ string util::AsString(PhysHypothesis_t h)
     case (kHypOscSterile5F) :
       return "<3+2 Sterile Neutrino Oscillations>";
       break;
+    case (kHypOscSterileEff) :
+      return "<Effective 2F Sterile Neutrino Oscillations>";
+      break;
     case (kHypNSI3F) :
       return "<3-flavour Neutrino Oscillations plus mu-tau NSI>";
       break;
@@ -580,6 +583,10 @@ string util::AsString (
     out<<"sterile_3+2";
   }
   
+  if (hyp == valor::conv::kHypOscSterileEff) {
+    out<<"sterile_eff";
+  }
+  
   //
   // 2-flavour oscillations, numu disappearance
   // Build the string as mix23_nnn,dm23sq_nnneV2
@@ -612,10 +619,11 @@ PhysHypothesis_t util::PhysHypFromString (string sh)
   if(sh == "3f_osc_normbar") return kHypOsc3FNormBar;
   //
   
-  if(sh == "3f_nsi"        ) return kHypNSI3F;
-  if(sh == "4f_sterile_osc") return kHypOscSterile4F;
-  if(sh == "5f_sterile_osc") return kHypOscSterile5F;
-  if(sh == "void"          ) return kHypVoid;
+  if(sh == "3f_nsi"         ) return kHypNSI3F;
+  if(sh == "4f_sterile_osc" ) return kHypOscSterile4F;
+  if(sh == "5f_sterile_osc" ) return kHypOscSterile5F;
+  if(sh == "eff_sterile_osc") return kHypOscSterileEff;
+  if(sh == "void"           ) return kHypVoid;
   
   return kHypUndefined;
 }

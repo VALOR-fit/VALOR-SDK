@@ -45,6 +45,7 @@ namespace valor {
       
       kHypOscSterile4F,      // neutrino oscillations with steriles, 3+1
       kHypOscSterile5F,      // neutrino oscillations with steriles, 3+2
+      kHypOscSterileEff,     // Neutrino, effective 2 flavour steriles (for SBN)
       kHypNSI3F,             // non-standard matter interactions
       kHypVoid               // nothing - used for ND systematic constraint fits
     }
