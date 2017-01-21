@@ -42,7 +42,7 @@ void MCMarginaliser::Marginalise()
    // Choose a number of bins appropriate to the number of toys
    // fNumToys / 6 is effective for 30 toy test runs, whilst 100 makes sense for
    // a full 10K toy run
-   int nbins = std::min(fNumToys / 6, 100);
+   int nbins = std::min(fNumToys / 6, 25);
    for(int i = 0; i < fParams->Size(); ++i)
    {
       conv::PhysParamId_t p = fParams->WhichParam(i);
@@ -58,9 +58,16 @@ void MCMarginaliser::Marginalise()
       RandomizeNuisance();
       fModel->Generate(*fParams, "+SB+SYS");
       fModel->Cache();
-      for(int i = 0; i < fParams->Size(); ++i)
+      if(n % 10 == 0)
       {
-         hParams[i].Fill(fParams->CurrValueByIndex(i));
+         for(int i = 0; i < fParams->Size(); ++i)
+         {
+   //         conv::PhysParamId_t p = fParams->WhichParam(i);
+   //         std::string name = util::NameRegistry::Instance()->AsString(p);
+   //         hParam = dynamic_cast<TH1D*>(file.Get(name.c_str()));
+            hParams[i].Fill(fParams->CurrValueByIndex(i));
+   //         hParam->Write("", TObject::kOverwrite);
+         }
       }
    }
 
