@@ -23,6 +23,14 @@ namespace marginalisation
       */
       virtual double Likelihood(FitDataABC* data, FitParamList* params);
 
+      /**
+         Enables validation.
+
+         \param filename
+            The file to which validation information will be written.
+      */
+      virtual void EnableValidation(std::string filename);
+
    private:
       void PreCalcMarginalValues(FitParamList& fp);
 
@@ -31,6 +39,8 @@ namespace marginalisation
       const double PRECISION_SCALE = 80;
       std::map<conv::PhysParamId_t, std::vector<double>*> marginalValues;
       bool computedMarginalValues;
+      std::string _validationFilename;
+      bool _validate;
 
       struct marginalValueDeleter
       {

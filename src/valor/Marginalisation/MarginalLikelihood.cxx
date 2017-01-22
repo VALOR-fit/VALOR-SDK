@@ -4,7 +4,10 @@
 #include "valor/Utilities/Rnd.h"
 #include "valor/Utilities/NameRegistry.h"
 
+#include "TFile.h"
+#include "TH1D.h"
 #include "TMath.h"
+#include "TObjArray.h"
 
 namespace valor
 {
@@ -12,7 +15,8 @@ namespace marginalisation
 {
 
 MarginalLikelihood::MarginalLikelihood(MarginaliserABC* marginaliser) :
-   LikelihoodABC(), fMarginaliser(marginaliser), computedMarginalValues(false)
+   LikelihoodABC(), fMarginaliser(marginaliser), computedMarginalValues(false),
+   _validationFilename(""), _validate(false)
 {
 }
 
@@ -34,6 +38,8 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
       PreCalcMarginalValues(*params);
    }
 
+   TObjArray array;
+
    // Want to build an object holding the tuples of marginal values
    // and then iterate over this object to retrieve for each toy
    // rather than iterator over several vectors and indexing
@@ -50,13 +56,30 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
          params->SetInitValue(p, randvals->at(i));
       }
       PhysHypothesis hypothesis(*params);
+
+      // Consider adding unoscillated spectra to validation file here
+
       // Apply oscillation to the marginalisation toy
       m->Generate(hypothesis, "+OSC");
       // Calculate the likelihood
       double chi2 = data->GetFitStatistic(m, NULL);
       chi2Values.push_back(chi2);
+
+      if(_validate)
+      {
+         TString tag = TString::Format("toy_%d", i);
+         m->Write(&array, tag.Data(), "pdft_rf");
+      }
+
+      FitModelABC* next =marginaliser->Next();
+      if(_validate && !next)
+      {
+         TFile file(_validationFilename.c_str(), "RECREATE");
+         array.Write("", TObject::kOverwrite);
+         file.Close();
+      }
       delete m;
-      m = marginaliser->Next();
+      m = next;
       ++i;
    }
 
@@ -82,6 +105,12 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
    delete free;
 
    return lnLikelihood;
+}
+
+void MarginalLikelihood::EnableValidation(std::string filename)
+{
+   _validate = true;
+   _validationFilename = filename;
 }
 
 void MarginalLikelihood::PreCalcMarginalValues(FitParamList& fp)
