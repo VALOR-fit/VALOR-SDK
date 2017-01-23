@@ -58,6 +58,13 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
       PhysHypothesis hypothesis(*params);
 
       // Consider adding unoscillated spectra to validation file here
+      if(_validate)
+      {
+         // Generate the final PDFs without applying oscillation
+         m->Generate(hypothesis, "");
+         TString tag = TString::Format("toy_%d_unosc", i);
+         m->Write(&array, tag.Data(), "pdft_rf");
+      }
 
       // Apply oscillation to the marginalisation toy
       m->Generate(hypothesis, "+OSC");
@@ -67,7 +74,7 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
 
       if(_validate)
       {
-         TString tag = TString::Format("toy_%d", i);
+         TString tag = TString::Format("toy_%d_osc", i);
          m->Write(&array, tag.Data(), "pdft_rf");
       }
 
