@@ -26,7 +26,8 @@ string util::AsString(KineVar_t kv)
     case (kvEreco     ) : return "Ereco";     break;
     case (kvEvis      ) : return "Evis";      break;
     case (kvYreco     ) : return "yreco";     break;
-    case (kvThetareco ) : return "Thetareco"; break;      
+    case (kvThetareco ) : return "Thetareco"; break;
+    case (kvQ2reco    ) : return "Q2reco";    break;      
     default : 
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
@@ -44,7 +45,8 @@ string util::AsStringTeX(KineVar_t kv, bool root)
     case (kvEreco     ) : name = "E_{reco} (GeV)";         break;
     case (kvEvis      ) : name = "E_{vis} (GeV)";          break;
     case (kvYreco     ) : name = "y_{reco}";               break;
-    case (kvThetareco ) : name = "\theta_{reco}";          break;            
+    case (kvThetareco ) : name = "\theta_{reco}";          break;
+    case (kvQ2reco    ) : name = "Q^{2}_{reco}";           break;            
     default : 
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
@@ -66,6 +68,7 @@ bool util::IsReco(KineVar_t kv)
     case (kvEvis      ) : return true;
     case (kvYreco     ) : return true;
     case (kvThetareco ) : return true;
+    case (kvQ2reco    ) : return true;
     default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;

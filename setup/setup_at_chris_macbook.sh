@@ -7,7 +7,7 @@
 #
 
 export VALOR_FMWK=$1
-export ROOTSYS=/Users/chrisbarry/software/root_v5.34.32_osx
+export ROOTSYS=/Users/chrisbarry/software/root_v5.34.34_osx
 
 echo "VALOR FMWK set to:"
 echo "$VALOR_FMWK"

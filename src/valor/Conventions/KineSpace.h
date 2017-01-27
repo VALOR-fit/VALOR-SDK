@@ -42,7 +42,8 @@ typedef enum EKineSpace
    kspThetareco,       // 1D: reconstructed lepton angle 
    kspErecoYreco,      // 2D: reconstructed energy, inelasticity
    kspEtrueQ2true,     // 2D: true neutrino energy, true momentum transfer
-   kspErecoThetareco   // 2D: reconstructed neutrino energy, reconstructed lepton angle
+   kspErecoThetareco,   // 2D: reconstructed neutrino energy, reconstructed lepton angle
+   kspErecoThetarecoQ2reco  //3D: reconstructed neutrino energy, reconstructed lepton angle, and reconstructed momentum transfer
    // ...
    // ...
    // ...

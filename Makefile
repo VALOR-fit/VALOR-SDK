@@ -26,6 +26,7 @@ BUILD_TARGETS =    print-make-info     \
 		   build-registry      \
 		   build-cmdline       \
 		   build-core-fitter   \
+		   build-kinebinning   \
 		   | copy-rootdict-to-lib
 
 # define targets
@@ -91,6 +92,12 @@ build-core-fitter: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building FitCore package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/FitCore"
+
+build-kinebinning: | make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building KineBinning package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/KineBinning"
+
 
 copy-rootdict-to-lib: | make-bin-lib-dir FORCE
 	@echo " "

@@ -321,10 +321,13 @@ unsigned int KBCubHcmbMondrian::Dimension(conv::KineVar_t kv) const
   return dimension;
 }
 //________________________________________________________________________________________
-vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void)
+std::vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void)
 {
+  //
+  // Needs to be modified to loop over linearised bins and grab the bin edges
+  //
   if (fNDimensions == 2) {
-     fBinEdgesTLines.reserve(fNBins * fNDimensions * 4);
+    fBinEdgesTLines.reserve(fNBins * fNDimensions * 4);
     for (unsigned int ibin = 0; ibin < fNBins ; ibin++ ) {
       double x0 = this->BinMinimum(ibin,0);
       double x1 = this->BinMaximum(ibin,0);
