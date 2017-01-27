@@ -8,7 +8,7 @@ MAKEFILE = Makefile
 
 # Include machine specific flags and locations (inc. files & libs)
 #
-include $(VALOR_DUNE)/make/Make.include
+include $(VALOR_FMWK)/make/Make.include
 
 PACKAGE           = ValorDuneKBin
 DICTIONARY        = _RootDict_$(PACKAGE)
@@ -18,7 +18,7 @@ all : lib lib-link
 
 # Include standard package makefile targets
 #
-include $(VALOR_DUNE)/make/Make.template
+include $(VALOR_FMWK)/make/Make.template
 
 FORCE:
 
