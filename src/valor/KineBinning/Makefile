@@ -10,7 +10,7 @@ MAKEFILE = Makefile
 #
 include $(VALOR_FMWK)/make/Make.include
 
-PACKAGE           = ValorDuneKBin
+PACKAGE           = ValorKBin
 DICTIONARY        = _RootDict_$(PACKAGE)
 LIBNAME           = lib$(PACKAGE)
 
