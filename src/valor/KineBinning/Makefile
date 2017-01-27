@@ -14,7 +14,7 @@ PACKAGE           = ValorKBin
 DICTIONARY        = _RootDict_$(PACKAGE)
 LIBNAME           = lib$(PACKAGE)
 
-all : lib lib-link
+all : rootcint lib lib-link
 
 # Include standard package makefile targets
 #
