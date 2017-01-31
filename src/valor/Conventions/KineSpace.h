@@ -26,11 +26,12 @@
 #include "valor/Conventions/KineVar.h"
 
 using std::string;
+using std::vector;
 
 namespace valor {
 namespace conv {
 
-static const int kMaxKineSpaces = 9;
+static const int kMaxKineSpaces = 11;
 
 typedef enum EKineSpace
 {
@@ -42,8 +43,9 @@ typedef enum EKineSpace
    kspThetareco,       // 1D: reconstructed lepton angle 
    kspErecoYreco,      // 2D: reconstructed energy, inelasticity
    kspEtrueQ2true,     // 2D: true neutrino energy, true momentum transfer
-   kspErecoThetareco,   // 2D: reconstructed neutrino energy, reconstructed lepton angle
-   kspErecoThetarecoQ2reco  //3D: reconstructed neutrino energy, reconstructed lepton angle, and reconstructed momentum transfer
+   kspErecoThetareco,  // 2D: reconstructed neutrino energy, reconstructed lepton angle
+   kspq0recoq3reco,    // 2D: reconstructed 1st component of the 4-momentum, hadronic momentum along z-direction
+   kspq0recomodqreco   // 2D: reconstructed 1st component of the 4-momentum, reconstructed magnitude of the 3-momentum
    // ...
    // ...
    // ...
@@ -68,11 +70,15 @@ namespace util {
   int                     NDimTrue            (conv::KineSpace_t ks);
   conv::KineSpace_t       SubSpaceReco        (conv::KineSpace_t ks);
   conv::KineSpace_t       SubSpaceTrue        (conv::KineSpace_t ks);
+  vector<conv::KineVar_t> KineVar             (conv::KineSpace_t ks);
+  vector<conv::KineVar_t> KineVarReco         (conv::KineSpace_t ks);
+  vector<conv::KineVar_t> KineVarTrue         (conv::KineSpace_t ks);
   conv::KineSpace_t       KineSpaceFromInt    (int is);
   conv::KineSpace_t       KineSpaceFromString (string s);
-  std::vector<valor::conv::KineVar_t> KineVar      (conv::KineSpace_t ks);
-  std::vector<valor::conv::KineVar_t> KineVarReco  (conv::KineSpace_t ks);
-  std::vector<valor::conv::KineVar_t> KineVarTrue  (conv::KineSpace_t ks);
+  
+  // Aliases to prevent overloading ambiguity
+  string                  KineSpaceAsString    (conv::KineSpace_t ks);
+  string                  KineSpaceAsStringTeX (conv::KineSpace_t ks, bool root);
 
 
 } // util

@@ -1,12 +1,14 @@
 //________________________________________________________________________________________
 /*
 
-Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
+   Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 
 ChangeLog:
 
 */
 //________________________________________________________________________________________
+
+#include <algorithm>
 
 //fmwk
 #include "valor/Utilities/UtlStr.h"
@@ -27,7 +29,9 @@ string util::AsString(KineVar_t kv)
     case (kvEvis      ) : return "Evis";      break;
     case (kvYreco     ) : return "yreco";     break;
     case (kvThetareco ) : return "Thetareco"; break;
-    case (kvQ2reco    ) : return "Q2reco";    break;      
+    case (kvq0reco    ) : return "q0reco";    break;
+    case (kvq3reco    ) : return "|q|reco";   break;
+    case (kvmodqreco  ) : return "|q|reco";   break;
     default : 
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
@@ -40,21 +44,27 @@ string util::AsStringTeX(KineVar_t kv, bool root)
   string name = "";
 
   switch(kv) {
-    case (kvEtrue     ) : name = "E_{true} (GeV)";         break;
-    case (kvQ2true    ) : name = "Q^{2}_{true} (GeV^{2})"; break;
-    case (kvEreco     ) : name = "E_{reco} (GeV)";         break;
-    case (kvEvis      ) : name = "E_{vis} (GeV)";          break;
-    case (kvYreco     ) : name = "y_{reco}";               break;
-    case (kvThetareco ) : name = "\theta_{reco}";          break;
-    case (kvQ2reco    ) : name = "Q^{2}_{reco}";           break;            
+    case (kvEtrue     ) : name = "E_{true} (GeV)";                break;
+    case (kvQ2true    ) : name = "Q^{2}_{true} (GeV^{2})";        break;
+    case (kvEreco     ) : name = "E_{reco} (GeV)";                break;
+    case (kvEvis      ) : name = "E_{vis} (GeV)";                 break;
+    case (kvYreco     ) : name = "y_{reco}";                      break;
+    case (kvThetareco ) : name = "\theta_{reco}";                 break;
+    case (kvq0reco    ) : name = "q_{0 reco}";                    break;
+    case (kvq3reco    ) : name = "|\overrightarrow{q}|_{reco}";   break;
+    case (kvmodqreco  ) : name = "|\overrightarrow{q}|_{reco}";   break;
     default : 
-     LOG("KineVar",pERROR) 
-        << "Unrecognized kinematic variable: " << kv;
+                          LOG("KineVar",pERROR) 
+                            << "Unrecognized kinematic variable: " << kv;
   }
 
-  if(root) return name;
-
-  // change # with \ -- later
+  if(root) {
+    replace( name.begin(), name.end(), '\\', '#' ); // Make slashes hashes for RooTeX
+    // Get rid of hashes preceding sin
+    size_t ind = name.find("#sin",0);
+    if (ind !=  string::npos) (name.replace(ind,4," sin"));
+    return util::TrimSpaces(name);
+  }
 
   return name;
 }
@@ -68,7 +78,9 @@ bool util::IsReco(KineVar_t kv)
     case (kvEvis      ) : return true;
     case (kvYreco     ) : return true;
     case (kvThetareco ) : return true;
-    case (kvQ2reco    ) : return true;
+    case (kvq0reco    ) : return true;
+    case (kvq3reco    ) : return true;
+    case (kvmodqreco  ) : return true;
     default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
@@ -82,4 +94,4 @@ bool util::IsTrue(KineVar_t kv)
   return (!is_reco);
 }
 //________________________________________________________________________________________
-	
+

@@ -35,8 +35,10 @@ typedef enum EKineVar
    kvEreco,           // reconstructed neutrino energy
    kvEvis,            // visible neutrino energy
    kvYreco,           // reconstructed inelasticity (y)
-   kvThetareco,        // reconstructed lepton angle
-   kvQ2reco          // reconstructed momentum transfer   
+   kvThetareco,       // reconstructed lepton angle
+   kvq0reco,          // reconstructed 1st component of the 4-momentum    TODO: Isn't this just the same as Ereco?
+   kvq3reco,          // reconstructed hadronic energy along the z-direction
+   kvmodqreco		  // reconstructed magnitude of the 3-momentum
 } 
 KineVar_t; 
 
