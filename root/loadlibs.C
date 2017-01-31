@@ -39,5 +39,6 @@ void loadlibs ()
   valor_load_lib("libValorOsc.so");
   valor_load_lib("libValorUtil.so");
   valor_load_lib("libValorCmdLine.so");
+  valor_load_lib("libValorKBin.so");
 }
 
