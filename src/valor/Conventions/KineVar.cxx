@@ -51,8 +51,8 @@ string util::AsStringTeX(KineVar_t kv, bool root)
     case (kvYreco     ) : name = "y_{reco}";                      break;
     case (kvThetareco ) : name = "\theta_{reco}";                 break;
     case (kvq0reco    ) : name = "q_{0 reco}";                    break;
-    case (kvq3reco    ) : name = "|\overrightarrow{q}|_{reco}";   break;
-    case (kvmodqreco  ) : name = "|\overrightarrow{q}|_{reco}";   break;
+    case (kvq3reco    ) : name = "|\\overrightarrow{q}|_{reco}";  break;
+    case (kvmodqreco  ) : name = "|\\overrightarrow{q}|_{reco}";  break;
     default : 
                           LOG("KineVar",pERROR) 
                             << "Unrecognized kinematic variable: " << kv;
