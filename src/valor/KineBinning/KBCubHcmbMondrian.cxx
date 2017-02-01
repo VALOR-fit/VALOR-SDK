@@ -45,21 +45,15 @@ KBCubHcmbMondrian::~KBCubHcmbMondrian()
 bool KBCubHcmbMondrian::Read(string file)
 {
   this->CleanUp();
-
+  
+  file = util::CompleteConfigPath(file);
   TString ts_file = file.c_str();
   gSystem->ExpandPathName(ts_file);
-
-  // See if it works as a normal path
+  
   FileStat_t dummy;
-  if (gSystem->GetPathInfo(ts_file.Data(), dummy))
-  {
-    // If not, try the config folder
-    ts_file = TString::Format("%s/%s",
-       Env::Instance()->TopLevelConfDir().c_str(),ts_file.Data());
-    if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-      LOG("Binning", pERROR) << "Binning file not found: " << file;
-      util::Die(1); return false;
-    }
+  if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
+    LOG("Binning", pERROR) << "Binning file not found: " << file;
+    util::Die(1); return false;
   }
 
   // Parse the input binning configuration XML file
@@ -114,8 +108,6 @@ bool KBCubHcmbMondrian::Read(string file)
   LOG("Binning", pNOTICE) << "Number of bins = " << fNBins;
 
   fBinEdges.reserve(fNBins * fNDimensions * 2);
-
-  //  fBinEdgesTLines.reserve(fNBins * fNDimensions * 4);
   
   unsigned int l = 0;
   for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
@@ -264,7 +256,7 @@ vector<double> KBCubHcmbMondrian::BinCentre(unsigned int bin) const
   return centre;
 }
 //________________________________________________________________________________________
-unsigned int KBCubHcmbMondrian::FindBin(vector<double> & xarr)
+unsigned int KBCubHcmbMondrian::FindBin(vector<double> & xarr) const
 {
   assert(xarr.size() == fNDimensions);
 
@@ -321,13 +313,14 @@ unsigned int KBCubHcmbMondrian::Dimension(conv::KineVar_t kv) const
   return dimension;
 }
 //________________________________________________________________________________________
-std::vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void)
+std::vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void) const
 {
   //
   // Needs to be modified to loop over linearised bins and grab the bin edges
   //
+  std::vector<TLine> bin_edge_lines;
   if (fNDimensions == 2) {
-    fBinEdgesTLines.reserve(fNBins * fNDimensions * 4);
+    bin_edge_lines.reserve(fNBins * fNDimensions * 4);
     for (unsigned int ibin = 0; ibin < fNBins ; ibin++ ) {
       double x0 = this->BinMinimum(ibin,0);
       double x1 = this->BinMaximum(ibin,0);
@@ -339,13 +332,13 @@ std::vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void)
       TLine lyl = TLine(x0,y0,x0,y1);
       TLine lyh = TLine(x1,y0,x1,y1);
 
-      fBinEdgesTLines.push_back(lxl);
-      fBinEdgesTLines.push_back(lxh);
-      fBinEdgesTLines.push_back(lyl);
-      fBinEdgesTLines.push_back(lyh);    
+      bin_edge_lines.push_back(lxl);
+      bin_edge_lines.push_back(lxh);
+      bin_edge_lines.push_back(lyl);
+      bin_edge_lines.push_back(lyh);    
     }
   }
-  return fBinEdgesTLines;
+  return bin_edge_lines;
 }
 //________________________________________________________________________________________
 conv::KineVar_t KBCubHcmbMondrian::KineVar(unsigned int dimension)
@@ -367,17 +360,10 @@ void KBCubHcmbMondrian::Init(void)
   fMaximum.clear();
   fBinMondrianFromE2E.clear();
   fBinMondrianToE2E.clear();
-  fBinEdgesTLines.clear();
 }
 //________________________________________________________________________________________
 void KBCubHcmbMondrian::CleanUp(void)
 {
-  // vector<TLine>::iterator it = fBinEdgesTLines.begin();
-  // for( ; it != fBinEdgesTLines.end(); ++it) {
-  //   TLine line = *it;
-  //   if(line) delete line;
-  //   line = 0;
-  // }  
   this->Init();
 }
 //________________________________________________________________________________________

@@ -43,21 +43,15 @@ KBCubHcmbEdge2Edge::~KBCubHcmbEdge2Edge()
 bool KBCubHcmbEdge2Edge::Read(string file)
 {
   this->CleanUp();
-
+  
+  file = util::CompleteConfigPath(file);
   TString ts_file = file.c_str();
   gSystem->ExpandPathName(ts_file);
-
-  // See if it works as a normal path
+  
   FileStat_t dummy;
-  if (gSystem->GetPathInfo(ts_file.Data(), dummy)) 
-  {
-    // If not, try the config folder
-    ts_file = TString::Format("%s/%s",
-       Env::Instance()->TopLevelConfDir().c_str(),ts_file.Data());
-    if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-      LOG("Binning", pERROR) << "Binning file not found: " << file;
-      util::Die(1); return false;
-    }
+  if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
+    LOG("Binning", pERROR) << "Binning file not found: " << file;
+    util::Die(1); return false;
   }
 
   // Parse the input binning configuration XML file

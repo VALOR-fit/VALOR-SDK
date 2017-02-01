@@ -131,7 +131,7 @@ public:
   std::vector<double> BinCentre (unsigned int bin                         ) const;
 
   // Find bin
-  unsigned int FindBin (std::vector<double> & xarr);
+  unsigned int FindBin (std::vector<double> & xarr) const;
 
   // An alternative `edge-to-edge' binning of the same kiematical space may be 
   // specified to simplify plotting. If specified, a bin mapping bwteen the
@@ -139,7 +139,7 @@ public:
   void UseEdge2EdgeBinning(const KBCubHcmbEdge2Edge * kbe2e);
   unsigned int MapFromLinearizedE2E(unsigned int e2e_linearized_bin) const;
   
-  std::vector<TLine>  GetBinningTLines(void);
+  std::vector<TLine>  GetBinningTLines(void) const;
   
 protected:
 
@@ -157,7 +157,6 @@ protected:
   const KBCubHcmbEdge2Edge *                fKBE2E;               //
   std::map<unsigned int, unsigned int>      fBinMondrianFromE2E;  // e2e linearized bin --> mondrian bin (1:1)
   std::multimap<unsigned int, unsigned int> fBinMondrianToE2E;    // mondrian bin --> e2e linearized bin (1:N) 
-  std::vector<TLine>                        fBinEdgesTLines;      // Bin Edges as TLines for plotting purposes 
   
 ClassDef(KBCubHcmbMondrian, 1)
 
