@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _valor_kine_space_h_
-#define _valor_kine_space_h_
+#ifndef _valor_fmwk_kine_space_h_
+#define _valor_fmwk_kine_space_h_
 
 #include <string>
 #include <vector>
@@ -43,7 +43,8 @@ typedef enum EKineSpace
    kspEtrueQ2true,     // 2D: true neutrino energy, true momentum transfer
    kspErecoThetareco,  // 2D: reconstructed neutrino energy, reconstructed lepton angle
    kspq0recoq3reco,    // 2D: reconstructed 1st component of the 4-momentum, hadronic momentum along z-direction
-   kspq0recomodqreco   // 2D: reconstructed 1st component of the 4-momentum, reconstructed magnitude of the 3-momentum
+   kspq0recomodqreco,  // 2D: reconstructed 1st component of the 4-momentum, reconstructed magnitude of the 3-momentum
+   kspErecoEvis        // 2D: reconstructed neutrino energy, visible neutrino energy
    // ...
    // ...
    // ...
