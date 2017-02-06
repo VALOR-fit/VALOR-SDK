@@ -73,6 +73,8 @@ bool KBCubHcmbEdge2Edge::Read(string file)
       << "Undefined kinematical space: " << space;
     return false;
   }
+  LOG("Binning", pNOTICE) 
+    << "Kinematic space: " << util::AsString(fKineSpace);
 
   //
   fNDimensions = util::NDim(fKineSpace); 

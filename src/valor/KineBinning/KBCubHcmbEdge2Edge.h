@@ -84,7 +84,7 @@ public:
   unsigned int NDimensions (void) const { return fNDimensions; }
 
   // List of kinematical variables
-  const vector<valor::conv::KineVar_t> & KineVars (void) const { return fKineVars; }
+  const std::vector<valor::conv::KineVar_t> & KineVars (void) const { return fKineVars; }
 
   // Dimension -> Variable
   conv::KineVar_t KineVar(unsigned int dimension);
