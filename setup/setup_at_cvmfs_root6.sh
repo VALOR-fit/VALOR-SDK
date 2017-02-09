@@ -12,7 +12,7 @@
 # The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
 if [ -z "$SETUP_LARSOFT" ] ; then
   . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
-  setup "larsoft" "v06_06_01" -q "e10:prof" && retval="$?"
+  setup "larsoft" "v06_24_00" -q "e10:prof" && retval="$?"
 fi
 
 if [ -z "$VALOR_FMWK" ]; then
