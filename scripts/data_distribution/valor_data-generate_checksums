@@ -1,0 +1,53 @@
+#!/usr/bin/perl
+
+#
+#-------------------------------------------------------------------------------------------------------------------------------
+# Generate and save checksums for a VALOR data set. 
+# See the README file for the VALOR data archive directory structure.
+#
+# Inputs:
+#    --experiment     : 
+#   [--component    ] : Default: *
+#   [--version      ] : Default: * 
+#    --archive-path   : 
+#
+# Examples:
+# ---------
+# 1) Generate checksum for dune/ndfit/2017a data files and store in checksums/dune_ndfit_2017a.md5 (see above):
+#    % valor_data-generate_checksums --experiment dune --component ndfit --version 2017a --archive-path /some/path/
+#
+# 2) Generate checksum for all files from all dune components in version 2017a (i.e. both dune/ndfit/2017a and 
+#    dune/fdfit/2017a) and store in checksums/dune_*_2017a.md5:
+#    % valor_data-generate_checksums --experiment dune --version 2017a --archive-path /some/path/
+# 
+# 3) Generate checksum for all dune data files (all components and all versions) and store in checksums/dune_*_*.md5:
+#    % valor_data-generate_checksums --experiment dune --archive-path /some/path/
+# 
+# C. Andreopoulos <costas.andreopoulos@stfc.ac.uk>
+# University of Liverpool & STFC/RAL
+#-------------------------------------------------------------------------------------------------------------------------------
+#
+
+$iarg=0;
+foreach (@ARGV) {
+  if   ($_ eq '--experiment'   ) { $experiment   = $ARGV[$iarg+1]; }
+  elsif($_ eq '--component'    ) { $component    = $ARGV[$iarg+1]; }
+  elsif($_ eq '--version'      ) { $version      = $ARGV[$iarg+1]; }
+  elsif($_ eq '--archive-path' ) { $archive_path = $ARGV[$iarg+1]; }
+  $iarg++;
+}
+die("Please provide an input for --experiment") unless defined $experiment;
+
+$component = "*" unless defined $component;
+$version   = "*" unless defined $version;
+
+print "Creating checksums for [Experiment:$experiment/Component:$component/Version:$version] \n";
+print "Archive path: $archive_path \n";
+
+$inputs_path   = "$experiment/$component/$version/";
+$checksum_file = "$experiment\_$component\_$version.md5";
+
+print "Running: cd $archive_path/data; find $inputs_path -type f -print0 | xargs -0 md5 > $archive_path/checksums/$checksum_file \n";
+
+system("cd $archive_path/data; find $inputs_path -type f -print0 | xargs -0 md5 > $archive_path/checksums/$checksum_file");
+
