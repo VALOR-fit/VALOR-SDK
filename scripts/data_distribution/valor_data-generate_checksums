@@ -6,10 +6,10 @@
 # See the README file for the VALOR data archive directory structure.
 #
 # Inputs:
-#    --experiment     : 
-#   [--component    ] : Default: *
-#   [--version      ] : Default: * 
-#    --archive-path   : 
+#     --experiment    : Experiment name associated with a set of VALOR inputs. 
+#    [--component]    : Data component name associated with a set of VALOR inputs. Wildcards allowed. [Default: *]
+#    [--version]      : Version number associated with a set of VALOR inputs. Wildcards allowed. [Default: *]
+#    [--archive-path] : Local path to a VALOR archive area visible from the web. [Default: .]
 #
 # Examples:
 # ---------
@@ -28,6 +28,9 @@
 #-------------------------------------------------------------------------------------------------------------------------------
 #
 
+use Term::ANSIColor;
+use Term::ANSIColor qw(:constants);
+
 $iarg=0;
 foreach (@ARGV) {
   if   ($_ eq '--experiment'   ) { $experiment   = $ARGV[$iarg+1]; }
@@ -38,16 +41,20 @@ foreach (@ARGV) {
 }
 die("Please provide an input for --experiment") unless defined $experiment;
 
-$component = "*" unless defined $component;
-$version   = "*" unless defined $version;
+$component    = "*" unless defined $component;
+$version      = "*" unless defined $version;
+$archive_path = "." unless defined $archive_path;
 
-print "Creating checksums for [Experiment:$experiment/Component:$component/Version:$version] \n";
-print "Archive path: $archive_path \n";
+print "\n";
+print BOLD, YELLOW, "VALOR: Creating checksums for [Experiment:$experiment/Component:$component/Version:$version] \n", RESET;
+print BOLD, YELLOW, "VALOR: Data archive path: $archive_path \n", RESET;
 
 $inputs_path   = "$experiment/$component/$version/";
 $checksum_file = "$experiment\_$component\_$version.md5";
 
-print "Running: cd $archive_path/data; find $inputs_path -type f -print0 | xargs -0 md5 > $archive_path/checksums/$checksum_file \n";
+print BOLD, CYAN, "\nVALOR: Running: cd $archive_path/data; find $inputs_path -type f -print0 | xargs -0 md5sum > $archive_path/checksums/$checksum_file \n\n", RESET;
 
-system("cd $archive_path/data; find $inputs_path -type f -print0 | xargs -0 md5 > $archive_path/checksums/$checksum_file");
+system("cd $archive_path/data; find $inputs_path -type f -print0 | xargs -0 md5sum > $archive_path/checksums/$checksum_file");
+
+print BOLD, YELLOW, "VALOR: Done generating checksums \n\n", RESET;
 
