@@ -58,7 +58,7 @@
 
 use Term::ANSIColor;
 use Term::ANSIColor qw(:constants);
-use DateTime;
+#use DateTime;
 
 $iarg=0;
 foreach (@ARGV) {
@@ -78,12 +78,6 @@ $component    = "*" unless defined $component;
 $version      = "*" unless defined $version;
 $rm_obsolete  = 0   unless defined $rm_obsolete;
 $debug_output = 0   unless defined $debug_output;
-
-# Wildcards not permitted with http...
-#$component_no_wildcard = ($component eq "*") ? "all" : $component;
-#$version_no_wildcard   = ($version   eq "*") ? "all" : $version;
-#$component_no_wildcard = $component;
-#$version_no_wildcard   = $version;
 
 print "\n\n";
 print BOLD, YELLOW, "VALOR: Will fetch [Experiment:$experiment/Component:$component/Version:$version] data to $local_path\n", RESET;
@@ -120,10 +114,17 @@ $num_of_cut_dirs = $num_of_tokens;
 #$num_of_cut_dirs += 1; # add the `data' directory which sits between the archive URL and the `experiment/component/version/ part
   
 # Get date/time for reporting and tagging old files, if needed.
-$dt   = DateTime->now;   # Stores current date and time as datetime object
-$date = $dt->ymd;        # Retrieves date as a string in 'yyyy-mm-dd' format
-$time = $dt->hms;        # Retrieves time as a string in 'hh:mm:ss' format
-$now_string = "$date\_$time";
+# ---------
+# requires `use DateTime;'
+#$dt   = DateTime->now;   # Stores current date and time as datetime object
+#$date = $dt->ymd;        # Retrieves date as a string in 'yyyy-mm-dd' format
+#$time = $dt->hms;        # Retrieves time as a string in 'hh:mm:ss' format
+#$now_string = "$date\_$time";
+# ---------
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+$year += 1900; # $year in localtime() counts years from 1900...
+my @mon_text = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec); # $mon in localtime() starts from 0...
+$now_string = "$year-$mon_text[$mon]-$mday\_$hour:$min:$sec";
 
 # Build some needed filenames
 $inputs_path                = "$experiment/$component/$version/";
@@ -183,7 +184,7 @@ die("VALOR: *** Failed to generate the diff file $diff_file_w_local_path *** \n"
 #
 
 print BOLD, YELLOW, "\nVALOR: Reading in diff file: $diff_file \n", RESET;
-open DIFF_FILE, $diff_file or die();
+open DIFF_FILE, $diff_file_w_local_path or die();
 chomp(@diff_entries = <DIFF_FILE>);
 close DIFF_FILE;
 
