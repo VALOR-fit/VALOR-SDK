@@ -111,6 +111,7 @@ public:
   
   // Print the contents
   void PrintEntries(std::ostream & str = std::cout);
+  void PrintDimensions(std::ostream & str = std::cout);
   
 private:
   int fNDim;

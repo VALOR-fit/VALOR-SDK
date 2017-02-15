@@ -722,6 +722,16 @@ template<typename numtype> void VALORArrayT<numtype>::
   return;
 }
 //________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+  PrintDimensions(std::ostream & stream)
+{
+  stream<<fName<<" {\n";
+  for (int i = 0 ; i < fNDim ; i++) {
+    stream<<"   "<<fDimensions[i]<<"\t"<<fNames[i]<<"\n";
+  }
+  stream<<"} with total size "<<fSize<<std::endl;
+}
+//________________________________________________________________________________________
 namespace valor { // g++ bug requires specialisations to be in namespace
 template <typename numtype> VALORArrayHeader::kVArrayType VALORArrayT<numtype>::
  GetHeaderType(void)
