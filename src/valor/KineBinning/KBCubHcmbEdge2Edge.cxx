@@ -6,8 +6,6 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 */
 //________________________________________________________________________________________
 
-#include <cassert>
-
 #include <TSystem.h>
 #include <TMath.h>
 
@@ -188,7 +186,10 @@ unsigned int KBCubHcmbEdge2Edge::NBins(void) const
 //________________________________________________________________________________________
 bool KBCubHcmbEdge2Edge::FixedWidth(unsigned int dimension) const
 {
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return false;
+  }
   return fFixedWidth[dimension];
 }
 //________________________________________________________________________________________
@@ -221,7 +222,10 @@ double KBCubHcmbEdge2Edge::Minimum(conv::KineVar_t kv) const
 //________________________________________________________________________________________
 double KBCubHcmbEdge2Edge::Maximum(unsigned int dimension) const
 {
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return false;
+  }
   return fMaximum[dimension];
 }
 //________________________________________________________________________________________
@@ -234,7 +238,10 @@ double KBCubHcmbEdge2Edge::Maximum(conv::KineVar_t kv) const
 double KBCubHcmbEdge2Edge::BinMinimum(
   unsigned int linearized_bin, unsigned int dimension) const
 {
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return false;
+  }
   vector<unsigned int> binarr = this->BinArr(linearized_bin);
   unsigned int bin = binarr[dimension];
   const double * bin_edges = this->BinEdgeArr(dimension);
@@ -245,7 +252,10 @@ double KBCubHcmbEdge2Edge::BinMinimum(
   unsigned int linearized_bin, conv::KineVar_t kv) const
 {
   unsigned int dimension = this->Dimension(kv);
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return false;
+  }
   vector<unsigned int> binarr = this->BinArr(linearized_bin);
   unsigned int bin = binarr[dimension];
   const double * bin_edges = this->BinEdgeArr(dimension);
@@ -255,7 +265,10 @@ double KBCubHcmbEdge2Edge::BinMinimum(
 double KBCubHcmbEdge2Edge::BinMaximum(
   unsigned int linearized_bin, unsigned int dimension) const
 {
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return false;
+  }
   vector<unsigned int> binarr = this->BinArr(linearized_bin);
   unsigned int bin = binarr[dimension];
   const double * bin_edges = this->BinEdgeArr(dimension);
@@ -266,7 +279,10 @@ double KBCubHcmbEdge2Edge::BinMaximum(
   unsigned int linearized_bin, conv::KineVar_t kv) const
 {
   unsigned int dimension = this->Dimension(kv);
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return false;
+  }
   vector<unsigned int> binarr = this->BinArr(linearized_bin);
   unsigned int bin = binarr[dimension];
   const double * bin_edges = this->BinEdgeArr(dimension);
@@ -277,7 +293,10 @@ vector<double> KBCubHcmbEdge2Edge::BinRange(
   unsigned int linearized_bin, unsigned int dimension) const
 {
   vector<double> range(2);
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return range;
+  }
   vector<unsigned int> binarr = this->BinArr(linearized_bin);
   unsigned int bin = binarr[dimension];
   const double * bin_edges = this->BinEdgeArr(dimension);
@@ -291,7 +310,10 @@ vector<double> KBCubHcmbEdge2Edge::BinRange(
 {
   vector<double> range(2);
   unsigned int dimension = this->Dimension(kv);
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return range;
+  }
   vector<unsigned int> binarr = this->BinArr(linearized_bin);
   unsigned int bin = binarr[dimension];
   const double * bin_edges = this->BinEdgeArr(dimension);
@@ -352,7 +374,10 @@ vector<double> KBCubHcmbEdge2Edge::BinCentre(unsigned int linearized_bin) const
 //________________________________________________________________________________________
 const double * KBCubHcmbEdge2Edge::BinEdgeArr(unsigned int dimension) const
 {
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return NULL;
+  }
   return fBinEdges[dimension]->GetArray();
 }
 //________________________________________________________________________________________
@@ -364,7 +389,10 @@ const double * KBCubHcmbEdge2Edge::BinEdgeArr(conv::KineVar_t kv) const
 //________________________________________________________________________________________
 const VALORArray * KBCubHcmbEdge2Edge::BinEdgeVArr(unsigned int dimension) const
 {
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    util::Die(-1) ; return NULL;
+  }
   return fBinEdges[dimension];
 }
 //________________________________________________________________________________________
@@ -389,8 +417,11 @@ unsigned int KBCubHcmbEdge2Edge::FindBin(double x, conv::KineVar_t kv) const
 //________________________________________________________________________________________
 vector<unsigned int> KBCubHcmbEdge2Edge::FindBinArr(vector<double> & xarr) const
 {
-  assert(xarr.size() == fNDimensions);
   vector<unsigned int> binarr;
+  if (xarr.size() != fNDimensions) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << fName<<" Vector has wrong dimension, got "<<xarr.size()<<", need "<<fNDimensions;
+    util::Die(-1) ; return binarr;
+  }
   binarr.reserve(fNDimensions);
   for(unsigned int idim = 0; idim < fNDimensions; idim++) {
     double x = xarr[idim];
@@ -443,7 +474,10 @@ unsigned int KBCubHcmbEdge2Edge::Bin(
 unsigned int KBCubHcmbEdge2Edge::Dimension(conv::KineVar_t kv) const
 {
   std::map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
-  assert(it != fKineVar2Dim.end());
+  if (it == fKineVar2Dim.end()) {
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad KineVar: "<<util::AsString(kv)<<" ("<<kv<<")";
+    util::Die(-1) ; return -1;
+  }
   int dimension = it->second;
   return dimension;
 }
