@@ -6,11 +6,10 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 */
 //________________________________________________________________________________________
 
-#include <cassert>
-
 #include <TSystem.h>
 #include <TMath.h>
 
+#include "valor/Conventions/Constants.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/VArray/VALORArray.h"
@@ -155,7 +154,10 @@ double KBCubHcmbMondrian::Minimum(conv::KineVar_t kv) const
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::Maximum(unsigned int dimension) const
 {
-  assert(dimension < fNDimensions);
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
+    util::Die(-1) ; return conv::kBadResult;
+  }
   return fMaximum[dimension];
 }
 //________________________________________________________________________________________
@@ -167,8 +169,14 @@ double KBCubHcmbMondrian::Maximum(conv::KineVar_t kv) const
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinMinimum(unsigned int bin, unsigned int dimension) const
 {
-  assert(bin < fNBins);
-  assert(dimension < fNDimensions);
+  if (bin >= fNBins) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
+    util::Die(-1) ; return conv::kBadResult;
+  }
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
+    util::Die(-1) ; return conv::kBadResult;
+  }
   unsigned int idx = (2 * fNDimensions * bin) + (2 * dimension);
   return fBinEdges[idx];
 }
@@ -181,8 +189,14 @@ double KBCubHcmbMondrian::BinMinimum(unsigned int bin, conv::KineVar_t kv) const
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinMaximum(unsigned int bin, unsigned int dimension) const
 {
-  assert(bin < fNBins);
-  assert(dimension < fNDimensions);
+  if (bin >= fNBins) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
+    util::Die(-1) ; return conv::kBadResult;
+  }
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
+    util::Die(-1) ; return conv::kBadResult;
+  }
   unsigned int idx = (2 * fNDimensions * bin) + (2 * dimension) + 1;
   return fBinEdges[idx];
 }
@@ -197,8 +211,14 @@ vector<double> KBCubHcmbMondrian::BinRange(
   unsigned int bin, unsigned int dimension) const
 {
   vector<double> range(2);
-  assert(bin < fNBins);
-  assert(dimension < fNDimensions);
+  if (bin >= fNBins) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
+    util::Die(-1) ; return range;
+  }
+  if (dimension >= fNDimensions) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
+    util::Die(-1) ; return range;
+  }
   unsigned int idx_base = (2 * fNDimensions * bin) + (2 * dimension);
   range[0] = fBinEdges[idx_base];
   range[1] = fBinEdges[idx_base+1];
@@ -258,25 +278,26 @@ vector<double> KBCubHcmbMondrian::BinCentre(unsigned int bin) const
 //________________________________________________________________________________________
 unsigned int KBCubHcmbMondrian::FindBin(vector<double> & xarr) const
 {
-  assert(xarr.size() == fNDimensions);
-
-  for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
-     bool inside = true;     
-     for(unsigned int idim = 0; idim < fNDimensions; idim++) {
-        double x   = xarr[idim];
-        unsigned int idx = (2 * fNDimensions * ibin) + (2 * idim);
-        double min = fBinEdges[idx];
-        double max = fBinEdges[idx+1];
-        inside = inside && (x >= min && x < max);
-        if(!inside) break;
-     }  
-     if(inside) {
-       return ibin;
-     }
+  if (xarr.size() == fNDimensions) {
+    for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
+       bool inside = true;     
+       for(unsigned int idim = 0; idim < fNDimensions; idim++) {
+          double x   = xarr[idim];
+          unsigned int idx = (2 * fNDimensions * ibin) + (2 * idim);
+          double min = fBinEdges[idx];
+          double max = fBinEdges[idx+1];
+          inside = inside && (x >= min && x < max);
+          if(!inside) break;
+       }  
+       if(inside) {
+         return ibin;
+       }
+    }
   }
 
-  LOG("Binning", pERROR) << "Mondrian binning doesn't span all space?";
-  exit(1);
+  LOG("Binning", pFATAL) << "Mondrian binning doesn't span all space?";
+  util::Die(-1);
+  return 0;
 }
 //________________________________________________________________________________________
 void KBCubHcmbMondrian::UseEdge2EdgeBinning(
@@ -301,14 +322,20 @@ void KBCubHcmbMondrian::UseEdge2EdgeBinning(
 unsigned int KBCubHcmbMondrian::MapFromLinearizedE2E(unsigned int e2e_lin_bin) const
 {
   std::map<unsigned int, unsigned int>::const_iterator it = fBinMondrianFromE2E.find(e2e_lin_bin);
-  assert(it != fBinMondrianFromE2E.end());
+  if (it == fBinMondrianFromE2E.end()) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad Edge2Edge linear bin: "<<e2e_lin_bin;
+    util::Die(-1) ; return 0;
+  }
   return it->second;
 }
 //________________________________________________________________________________________
 unsigned int KBCubHcmbMondrian::Dimension(conv::KineVar_t kv) const
 {
   std::map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
-  assert(it != fKineVar2Dim.end());
+  if (it == fKineVar2Dim.end()) {
+    LOG("KBCubHcmbMondrian",pFATAL) << "Bad KineVar: "<<util::AsString(kv) << " ("<<kv<<")"<< " in "<<util::AsString(fKineSpace);
+    util::Die(-1) ; return 0;
+  }
   int dimension = it->second;
   return dimension;
 }
