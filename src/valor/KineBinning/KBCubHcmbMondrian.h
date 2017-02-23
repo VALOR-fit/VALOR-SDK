@@ -67,6 +67,7 @@
 
 #include <TNamed.h>
 #include <TLine.h>
+#include <TH2D.h>
 
 #include "valor/VArray/VALORArray.h"
 #include "valor/VArray/VALORArrayBin.h"
@@ -104,6 +105,16 @@ public:
   // Number of multi-dimensional bins 
   int NBins (void) const { return fNBins; }
 
+  /**
+    Takes this binning and creates a new binning using the specified subset of
+    kinematic variables.
+
+    \param ks The target kinematic space. This must be a strict subset of the
+      kinematic space used by the current binning.
+    \return The binning with the specified kinematic space.
+  */
+  KBCubHcmbMondrian* Contract(conv::KineSpace_t ks) const;
+
   // Global bin and max values
   double Minimum (unsigned int dimension ) const;
   double Minimum (conv::KineVar_t kv     ) const;
@@ -140,6 +151,30 @@ public:
   unsigned int MapFromLinearizedE2E(unsigned int e2e_linearized_bin) const;
   
   std::vector<TLine>  GetBinningTLines(void) const;
+
+  /**
+    Creates a T2HD with binning that is compatible with the Mondrian binning
+    for the purpose of plotting.
+
+    Note that the T2HD object returned by this method should not be used for any
+    purpose other than the production of a Root compatible plot that will look
+    like a Mondrian-binned histogram. The total number of events in the histogram,
+    once filled will exceed that in the true Mondrian-binned histogram it
+    represents and so is not valid for computation.
+
+    \param kv1 The first kinematic variable to be plotted. This variable will be
+      ignored if the Mondrian binning is already 2-dimensional. If the Mondrian
+      binning has more than 2 dimensions and this variable is not provided the
+      application will terminate with an error.
+    \param kv2 The second kinematic variable to be plotted. This variable will be
+      ignored if the Mondrian binning is already 2-dimensional. If the Mondrian
+      binning has more than 2 dimensions and this variable is not provided the
+      application will terminate with an error.
+
+    \return A T2HD with bins suitable for Mondrian-binning-like plots.
+  */
+  TH2D* ToTH2D(conv::KineVar_t kv1 = conv::kvUndefined,
+        conv::KineVar_t kv2 = conv::kvUndefined) const;
   
 protected:
 

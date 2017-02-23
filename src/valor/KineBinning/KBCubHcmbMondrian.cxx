@@ -140,6 +140,128 @@ bool KBCubHcmbMondrian::Read(string file)
 
   return true;
 }
+
+KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
+{
+   KBCubHcmbMondrian* mond = new KBCubHcmbMondrian();
+
+   // Get the subset of the kinematic variables for the desired space
+   mond->fKineVars = util::KineVarSubset(fKineSpace, ks);
+
+   // The number of dimensions is equal to the number of kinematic variables in
+   // the subset
+   mond->fNDimensions = mond->fKineVars.size();
+   // Set the mapping from kinematic variable to dimension
+   for(unsigned int i = 0; i < mond->fNDimensions; ++i)
+   {
+      mond->fKineVar2Dim[fKineVars[i]] = i;
+   }
+
+   // Reserve space for the bin minima, maxima and edges
+   mond->fMinimum.reserve(mond->fNDimensions);
+   mond->fMaximum.reserve(mond->fNDimensions);
+
+   // Initialise minima and maximum to opposite extremes
+   for(unsigned int d = 0; d < fNDimensions; ++d)
+   {
+      mond->fMinimum[d] = std::numeric_limits<double>::max();
+      mond->fMaximum[d] = -std::numeric_limits<double>::max();
+   }
+
+   mond->fBinEdges.reserve(mond->fNDimensions);
+
+   // Construct new bin edges from old
+   int EDGES_PER_BIN = 2 * fNDimensions;
+   int EDGES_PER_DIM = 2;
+
+   for(unsigned int i = 0; i < fNBins; ++i)
+   {
+      for(unsigned int d = 0; d < fNDimensions; ++d)
+      {
+         int index = i * EDGES_PER_BIN + d * EDGES_PER_DIM;
+         if(std::find(mond->fKineVars.begin(), mond->fKineVars.end(),
+                  fKineVars[d]) != mond->fKineVars.end())
+         {  // Current dimension is for a kinematic variable in the target space
+            // Add the edges for the current dimension to the current bin
+            mond->fBinEdges.push_back(fBinEdges[index]);
+            mond->fBinEdges.push_back(fBinEdges[index + 1]);
+         }
+      }
+   }
+   EDGES_PER_BIN = 2 * mond->fNDimensions;
+   // Compute number of bins based on edge count
+   mond->fNBins = mond->fBinEdges.size() / EDGES_PER_BIN;
+
+   // It's possible that the contracted set of bins might contain duplicates, so
+   // we need to remove those
+   
+   std::vector<int> duplicateBins;
+   // Loop over the bins and check for duplicates, being sure not to check bins
+   // already marked as duplicates
+   for(unsigned int i = 0; i < mond->fNBins; ++i)
+   {
+      if(std::find(duplicateBins.begin(), duplicateBins.end(), i) !=
+            duplicateBins.end())
+      {  // Skip bins already known to be duplicates
+         LOG("KBCubHcmbMondrian", pNOTICE) << "Skipping bin " << i;
+         continue;
+      }
+      int index1 = i * EDGES_PER_BIN;
+      for(unsigned int j = i + 1; j < mond->fNBins; ++j)
+      {
+         int index2 = j * EDGES_PER_BIN;
+         bool duplicate = true;
+         LOG("KBCubHcmbMondrian", pNOTICE) << "Comparing bin " << i <<
+            " to bin " << j;
+         for(unsigned int d = 0; d < 2 * mond->fNDimensions; ++d)
+         {
+            LOG("KBCubHcmbMondrian", pNOTICE) << "Edge " << d << ": " <<
+               mond->fBinEdges[index1 + d] << " " << mond->fBinEdges[index2 + d];
+            if(mond->fBinEdges[index1 + d] != mond->fBinEdges[index2 + d])
+            {  // Not a duplicate, move on
+               LOG("KBCubHcmbMondrian", pNOTICE) << "No match";
+               duplicate = false;
+               break;
+            }
+         }
+         if(duplicate)
+         {
+            LOG("KBCubHcmbMondrian", pNOTICE) << "Duplicate";
+            duplicateBins.push_back(j);
+         }
+      }
+      // Update minima and maxima
+      for(unsigned int d = 0; d < mond->fNDimensions; ++d)
+      {
+         int lowIndex = index1 + d * EDGES_PER_DIM;
+         int highIndex = index1 + d * EDGES_PER_DIM + 1;
+         if(mond->fMinimum[d] > mond->fBinEdges[lowIndex])
+         {
+            mond->fMinimum[d] = mond->fBinEdges[lowIndex];
+         }
+         if(mond->fMaximum[d] < mond->fBinEdges[highIndex])
+         {
+            mond->fMaximum[d] = mond->fBinEdges[highIndex];
+         }
+      }
+   }
+
+   // Remove any duplicate bins and adjust the bin count
+   for(unsigned int i = mond->fNBins - 1; i > 0; --i)
+   {
+      if(std::find(duplicateBins.begin(), duplicateBins.end(), i) !=
+            duplicateBins.end())
+      {  // This bin is a duplicate, remove the edges
+         auto begin = mond->fBinEdges.begin() + i * EDGES_PER_BIN;
+         auto end = mond->fBinEdges.begin() + (i + 1) * EDGES_PER_BIN;
+         mond->fBinEdges.erase(begin, end);
+      }
+   }
+   mond->fNBins -= duplicateBins.size();
+
+   return mond;
+}
+
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::Minimum(unsigned int dimension) const
 {
@@ -374,6 +496,54 @@ conv::KineVar_t KBCubHcmbMondrian::KineVar(unsigned int dimension)
 
   return conv::kvUndefined;
 }
+
+TH2D* KBCubHcmbMondrian::ToTH2D(conv::KineVar_t kv1, conv::KineVar_t kv2) const
+{
+   // Set default dimensions
+   int dim1 = 0;
+   int dim2 = 1;
+   if(fNDimensions > 2)
+   {  // Get the dimensions for the specified kinematics
+      if(kv1 == conv::kvUndefined || kv2 == conv::kvUndefined)
+      {
+         LOG("KBCubHcmbMondrian", pERROR) << "Kinematic variables must be " <<
+            "specified for Mondrian binnings with more than 2 dimensions.";
+         util::Die(-1);
+      }
+      dim1 = Dimension(kv1);
+      dim2 = Dimension(kv2);
+   }
+   // Find all bin edges in each dimension
+   std::set<double> dim1Edges;
+   std::set<double> dim2Edges;
+   const int EDGES_PER_BIN = 2 * fNDimensions;
+   const int EDGES_PER_DIM = 2;
+   for(unsigned int i = 0; i < fNBins; ++i)
+   {
+      // Minimum edge of first dimension for bin i
+      dim1Edges.insert(fBinEdges[i * EDGES_PER_BIN + EDGES_PER_DIM * dim1]);
+      // Maximum edge of first dimension for bin i
+      dim1Edges.insert(fBinEdges[i * EDGES_PER_BIN + EDGES_PER_DIM * dim1 + 1]);
+      // Minimum edge of second dimension for bin i
+      dim2Edges.insert(fBinEdges[i * EDGES_PER_BIN + EDGES_PER_DIM * dim2]);
+      // Maximum edge of second dimension for bin i
+      dim2Edges.insert(fBinEdges[i * EDGES_PER_BIN + EDGES_PER_DIM * dim2 + 1]);
+   }
+   // No need to sort or remove duplicate edges as both properties are
+   // guaranteed by set
+   // Create the Root histogram
+   int nDim1Bins = dim1Edges.size() - 1;
+   double dim1BinEdges[nDim1Bins + 1];
+   std::copy(dim1Edges.begin(), dim2Edges.end(), dim1BinEdges);
+   int nDim2Bins = dim2Edges.size() - 1;
+   double dim2BinEdges[nDim1Bins + 1];
+   std::copy(dim2Edges.begin(), dim2Edges.end(), dim2BinEdges);
+   TH2D* histo = new TH2D("histo", "histo", nDim1Bins, dim1BinEdges,
+         nDim2Bins, dim2BinEdges);
+
+   return histo;
+}
+
 //________________________________________________________________________________________
 void KBCubHcmbMondrian::Init(void)
 {

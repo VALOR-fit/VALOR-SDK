@@ -6,8 +6,11 @@
 */
 //________________________________________________________________________________________
 
+#include <algorithm>
+
 //fmwk
 #include "valor/Utilities/UtlStr.h"
+#include "valor/Utilities/UtlSystem.h"
 #include "valor/Messenger/Messenger.h"
 //dune
 #include "valor/Conventions/KineSpace.h"
@@ -232,6 +235,38 @@ conv::KineSpace_t util::SubSpaceTrue(conv::KineSpace_t ks)
   }
   return kspUndefined;
 }
+
+std::vector<valor::conv::KineVar_t> util::KineVarSubset(conv::KineSpace_t original,
+      conv::KineSpace_t target)
+{
+   // Check the new kinematic space is consistent with the current space
+   std::vector<KineVar_t> originalKineVars = util::KineVar(original);
+   std::vector<KineVar_t> targetKineVars = util::KineVar(target);
+   if(targetKineVars.size() >= originalKineVars.size())
+   {  // New kinematic space not a strict subset of current space
+      LOG("KineSpace", pERROR) << "New kinematic space " <<
+         util::AsString(target) << " is not a strict subset of the current " <<
+         "kinematic space " << util::AsString(original) << ".";
+      util::Die(-1);
+   }
+   else
+   {
+      for(auto kv : targetKineVars) 
+      {
+         if(std::find(originalKineVars.begin(), originalKineVars.end(), kv) ==
+               originalKineVars.end())
+         {  // Target kinematic space has values not in current space
+            LOG("KineSpace", pERROR) << "New kinematic space " <<
+               util::AsString(target) << " is not a strict subset of the current " <<
+               "kinematic space " << util::AsString(original) << ".";
+            util::Die(-1);
+         }
+      }
+   }
+
+   return targetKineVars;
+}
+
 //________________________________________________________________________________________
 vector<KineVar_t> util::KineVar(conv::KineSpace_t ks)
 {

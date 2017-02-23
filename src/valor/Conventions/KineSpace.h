@@ -69,6 +69,19 @@ namespace util {
   int                                 NDimTrue            (conv::KineSpace_t ks);
   conv::KineSpace_t                   SubSpaceReco        (conv::KineSpace_t ks);
   conv::KineSpace_t                   SubSpaceTrue        (conv::KineSpace_t ks);
+  /**
+    Retrieve a strict subset of the kinematic variables from a kinematic space.
+
+    This function is intended to ensure that any subset space requested from an
+    existing space is a strict subset of the existing space. This is useful for
+    producing ROOT compatible plots from Mondrian binnings.
+
+    \param original The original space from which the subset will be extracted.
+    \param target   The subset space desired.
+    \return The kinematic variables that form the subset.
+  */
+  std::vector<valor::conv::KineVar_t> KineVarSubset(conv::KineSpace_t original,
+        conv::KineSpace_t target);
   std::vector<valor::conv::KineVar_t> KineVar             (conv::KineSpace_t ks);
   std::vector<valor::conv::KineVar_t> KineVarReco         (conv::KineSpace_t ks);
   std::vector<valor::conv::KineVar_t> KineVarTrue         (conv::KineSpace_t ks);
