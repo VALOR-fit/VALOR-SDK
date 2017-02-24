@@ -140,6 +140,7 @@ public:
   // Find bin
   unsigned int              FindBin           (double x, unsigned int dimension) const;
   unsigned int              FindBin           (double x, conv::KineVar_t kv) const;
+  unsigned int              FindBin           (std::vector<double>& xarr) const;
   std::vector<unsigned int> FindBinArr        (std::vector<double> & xarr) const;
   unsigned int              FindLinearizedBin (std::vector<double> & xarr) const;
 

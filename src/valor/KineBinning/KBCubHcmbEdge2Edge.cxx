@@ -414,6 +414,12 @@ unsigned int KBCubHcmbEdge2Edge::FindBin(double x, conv::KineVar_t kv) const
   unsigned int dimension = this->Dimension(kv);
   return this->FindBin(x,dimension);
 }
+
+unsigned int KBCubHcmbEdge2Edge::FindBin(vector<double> & xarr) const
+{
+  return this->FindLinearizedBin(xarr);
+}
+
 //________________________________________________________________________________________
 vector<unsigned int> KBCubHcmbEdge2Edge::FindBinArr(vector<double> & xarr) const
 {
