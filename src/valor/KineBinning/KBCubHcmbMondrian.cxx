@@ -203,7 +203,6 @@ KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
       if(std::find(duplicateBins.begin(), duplicateBins.end(), i) !=
             duplicateBins.end())
       {  // Skip bins already known to be duplicates
-         LOG("KBCubHcmbMondrian", pNOTICE) << "Skipping bin " << i;
          continue;
       }
       int index1 = i * EDGES_PER_BIN;
@@ -211,22 +210,16 @@ KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
       {
          int index2 = j * EDGES_PER_BIN;
          bool duplicate = true;
-         LOG("KBCubHcmbMondrian", pNOTICE) << "Comparing bin " << i <<
-            " to bin " << j;
          for(unsigned int d = 0; d < 2 * mond->fNDimensions; ++d)
          {
-            LOG("KBCubHcmbMondrian", pNOTICE) << "Edge " << d << ": " <<
-               mond->fBinEdges[index1 + d] << " " << mond->fBinEdges[index2 + d];
             if(mond->fBinEdges[index1 + d] != mond->fBinEdges[index2 + d])
             {  // Not a duplicate, move on
-               LOG("KBCubHcmbMondrian", pNOTICE) << "No match";
                duplicate = false;
                break;
             }
          }
          if(duplicate)
          {
-            LOG("KBCubHcmbMondrian", pNOTICE) << "Duplicate";
             duplicateBins.push_back(j);
          }
       }

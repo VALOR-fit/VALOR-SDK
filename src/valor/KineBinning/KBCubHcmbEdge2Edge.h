@@ -77,6 +77,16 @@ public:
   // Read binning from file
   bool Read(string file);
 
+  /**
+    Takes this binning and creates a new binning using the specified subset of
+    kinematic variables.
+
+    \param ks The target kinematic space. This must be a strict subset of the
+      kinematic space used by the current binning.
+    \return The binning with the specified kinematic space.
+  */
+  KBCubHcmbEdge2Edge* Contract(conv::KineSpace_t ks) const;
+
   // Get the corresponding kinematical space
   conv::KineSpace_t KineSpace(void) const { return fKineSpace; }
 

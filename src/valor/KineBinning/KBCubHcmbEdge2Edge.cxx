@@ -163,6 +163,45 @@ bool KBCubHcmbEdge2Edge::Read(string file)
 
   return true;
 }
+
+KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
+{
+   KBCubHcmbEdge2Edge* binning = new KBCubHcmbEdge2Edge();
+
+   // Get the subset of the kinematic variables for the desired space
+   binning->fKineVars = util::KineVarSubset(fKineSpace, ks);
+
+   // The number of dimensions is equal to the number of kinematic variables in
+   // the subset
+   binning->fNDimensions = binning->fKineVars.size();
+   // Set the mapping from kinematic variable to dimension
+   for(unsigned int i = 0; i < binning->fNDimensions; ++i)
+   {
+      binning->fKineVar2Dim[fKineVars[i]] = i;
+   }
+
+   // Reserve space for the bin minima, maxima and edges
+   binning->fMinimum.reserve(binning->fNDimensions);
+   binning->fMaximum.reserve(binning->fNDimensions);
+   binning->fBinEdges.reserve(binning->fNDimensions);
+
+   // Construct new bin edges from old
+   for(unsigned int d = 0; d < fNDimensions; ++d)
+   {
+      if(std::find(binning->fKineVars.begin(), binning->fKineVars.end(),
+               fKineVars[d]) != binning->fKineVars.end())
+      {  // Current dimension is for a kinematic variable in the target space
+         // Add the edges for the current dimension, type, minima and maxima
+         binning->fBinEdges.push_back(fBinEdges[d]);
+         binning->fFixedWidth.push_back(fFixedWidth[d]);
+         binning->fMinimum.push_back(fMinimum[d]);
+         binning->fMaximum.push_back(fMaximum[d]);
+      }
+   }
+
+   return binning;
+}
+
 //________________________________________________________________________________________
 unsigned int KBCubHcmbEdge2Edge::NBins(unsigned int dimension) const
 {
