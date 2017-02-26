@@ -145,6 +145,9 @@ KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
 {
    KBCubHcmbMondrian* mond = new KBCubHcmbMondrian();
 
+   // Set the new kinematic space
+   mond->fKineSpace = ks;
+
    // Get the subset of the kinematic variables for the desired space
    mond->fKineVars = util::KineVarSubset(fKineSpace, ks);
 

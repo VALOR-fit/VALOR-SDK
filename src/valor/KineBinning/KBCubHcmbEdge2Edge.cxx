@@ -168,6 +168,9 @@ KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
 {
    KBCubHcmbEdge2Edge* binning = new KBCubHcmbEdge2Edge();
 
+   // Set the new kinematic space
+   binning->fKineSpace = ks;
+
    // Get the subset of the kinematic variables for the desired space
    binning->fKineVars = util::KineVarSubset(fKineSpace, ks);
 
