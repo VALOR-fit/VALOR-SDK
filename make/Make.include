@@ -36,6 +36,11 @@ ROOT_FLAGS  = $(shell root-config --cflags)
 ROOT_INCLUDES  = -I$(shell root-config --incdir)
 ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore -lEGPythia6
 
+# If ROOT doesn't specify a C++ standard, use 0x:
+ifeq (,$(findstring -std=,$(ROOT_FLAGS)))
+  ROOT_FLAGS += -std=c++0x 
+endif
+
 #-------------------------------------------------------------------
 #                             log4cpp
 #-------------------------------------------------------------------
