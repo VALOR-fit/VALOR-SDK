@@ -23,6 +23,7 @@ ChangeLog:
 using namespace valor;
 using namespace valor::conv;
 
+//____________________________________________________________________________
 double valor::util::Calculate2FSterileOsc(int init_pdg, int final_pdg, double lOverE, double sinsq2thee, double sinsq2thmumu, double dmsq)
 {
   int ipdg = abs(init_pdg);
@@ -54,3 +55,13 @@ double valor::util::Calculate2FSterileOsc(int init_pdg, int final_pdg, double lO
   util::Die(-1);
   return conv::kBadResult;
 }
+//____________________________________________________________________________
+double valor::util::FlipOctantAroundMaxDisap(double sinsqth23, double sinsqth13)
+{
+  double costh13 = std::sqrt(1-sinsqth13);
+  double centre = 1./(2*costh13);
+  double diff = centre - sinsqth23;
+  double result = sinsqth23 + 2*diff;
+  return result;
+}
+//____________________________________________________________________________

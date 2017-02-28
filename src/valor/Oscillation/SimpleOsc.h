@@ -24,6 +24,8 @@ namespace util {
   
   double Calculate2FSterileOsc(int init_pdg, int final_pdg, double lOverE, double sinsq2thee, double sinsqthmumu, double dmsq);
   
+  double FlipOctantAroundMaxDisap(double sinsqth23, double sinsqth13);
+  
 } // util
 } // valor
 
