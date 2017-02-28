@@ -23,6 +23,7 @@
 #include "valor/Conventions/Opt.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/FitParamList.h"
+#include "valor/Oscillation/SimpleOsc.h"
 
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlSystem.h"
@@ -37,6 +38,7 @@ using std::setprecision;
 using namespace valor;
 using namespace valor::conv;
 
+#define USE_NEAREST_23_OCTANT_PENALTY
 //~ #define DOUBLE_ANGLE_REACTOR_PENALTY
 
 ClassImp(FitParamList)
@@ -1960,16 +1962,24 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
     
     center = Opt::Instance()->GetGlobalBestFit(p);
     error  = Opt::Instance()->GetGlobalFitError(p)*center;
+    
+#ifdef USE_NEAREST_23_OCTANT_PENALTY
+    if (p==conv::kPhypMixing23 && Opt::Instance()->gOscMixingParamChoice == conv::kNuMixSinsqTheta) {
+      double flipped_current = util::FlipOctantAroundMaxDisap(current,this->CurrValue(conv::kPhypMixing13));
+      if (std::fabs(flipped_current-center) < std::fabs(current-center)) {
+        current = flipped_current;
+      }
+    }
+#endif //USE_NEAREST_23_OCTANT_PENALTY
 
 #ifdef DOUBLE_ANGLE_REACTOR_PENALTY
-    NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
     if(p==conv::kPhypMixing13 && omp==conv::kNuMixSinsqTheta){ // Use the reactor constrain with sinsq2theta13 (not sinsqtheta13)
       double current_sinsq2th = 1 - (1-2*current)*(1-2*current);
       current = current_sinsq2th;
       center = conv::kGlobFitSinsq2Theta13;
       error = conv::kGlobFitErrSinsq2Theta13 * center;
     }
-#endif
+#endif //DOUBLE_ANGLE_REACTOR_PENALTY
     
     if (center == -999) {
       std::cerr<<"FitParamList/HypothesisFitStatisticPenalty >> Using zero penalty for parameter "
