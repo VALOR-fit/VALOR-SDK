@@ -37,6 +37,8 @@ using std::setprecision;
 using namespace valor;
 using namespace valor::conv;
 
+//~ #define DOUBLE_ANGLE_REACTOR_PENALTY
+
 ClassImp(FitParamList)
 
 //________________________________________________________________________________________
@@ -1958,7 +1960,8 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
     
     center = Opt::Instance()->GetGlobalBestFit(p);
     error  = Opt::Instance()->GetGlobalFitError(p)*center;
-    
+
+#ifdef DOUBLE_ANGLE_REACTOR_PENALTY
     NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
     if(p==conv::kPhypMixing13 && omp==conv::kNuMixSinsqTheta){ // Use the reactor constrain with sinsq2theta13 (not sinsqtheta13)
       double current_sinsq2th = 1 - (1-2*current)*(1-2*current);
@@ -1966,6 +1969,7 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
       center = conv::kGlobFitSinsq2Theta13;
       error = conv::kGlobFitErrSinsq2Theta13 * center;
     }
+#endif
     
     if (center == -999) {
       std::cerr<<"FitParamList/HypothesisFitStatisticPenalty >> Using zero penalty for parameter "
