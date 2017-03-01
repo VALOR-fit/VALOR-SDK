@@ -38,7 +38,7 @@ public:
   string AppName         (void) { return fAppName;         }
   string Banner          (void) { return fBanner;          }
 
-  void AutoSet (Option_t * valor_application);
+  void AutoSet (const char* valor_application);
 
   void SetTopLevelDir     (string dir) { fTopLevelDir     = dir; }
   void SetTopLevelDataDir (string dir) { fTopLevelDataDir = dir; }

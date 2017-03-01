@@ -26,6 +26,17 @@ namespace valor {
 
 namespace conv {
 
+/*
+// Possible abridged definition of PhysParamId_t
+typedef enum EPhysParamId : int
+{
+   kPhypUndefined = -1,
+   kPhypPhysics = 0,
+   kPhypNuisance = 33,
+   kPhypLast = 1533
+} PhysParamId_t;
+*/
+
 typedef enum EPhysParamId 
 {   
    kPhypUndefined = -1, 

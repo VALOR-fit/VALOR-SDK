@@ -74,6 +74,32 @@ XMLNodePointer_t valor::util::FindNode(
   }
   return 0;
 }
+
+vector<XMLNodePointer_t> valor::util::FindNodes(TXMLEngine* xml_eng,
+      XMLNodePointer_t top_node, const string& tag)
+{
+   vector<XMLNodePointer_t> nodes;
+   // Retrieve the first node for the search
+   XMLNodePointer_t node = xml_eng->GetChild(top_node);
+   if(node)
+   {  // There is a node to examine
+      if(xml_eng->GetNodeName(node) == tag)
+      {  // The first node matches our search, store it
+         nodes.push_back(node);
+      }
+      // Iterate through the remaining nodes, storing the matches
+      while(node = xml_eng->GetNext(node))
+      {
+         if(xml_eng->GetNodeName(node) == tag)
+         {  // Node matches our search, store it
+            nodes.push_back(node);
+         }
+      }
+   }
+
+   return nodes;
+}
+
 //____________________________________________________________________________________________________
 bool valor::util::NodeExists(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
