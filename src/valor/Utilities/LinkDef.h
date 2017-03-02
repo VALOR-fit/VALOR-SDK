@@ -16,5 +16,4 @@
 #pragma link C++ class valor::ConfidenceInterval+;
 #pragma link C++ class valor::ConfidenceIntervalPlotter+;
 
-
 #endif

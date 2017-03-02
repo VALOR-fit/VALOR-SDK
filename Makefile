@@ -27,6 +27,7 @@ BUILD_TARGETS =    print-make-info     \
 		   build-cmdline       \
 		   build-core-fitter   \
 		   build-kinebinning   \
+		   build-testing       \
 		   | copy-rootdict-to-lib
 
 # define targets
@@ -98,6 +99,10 @@ build-kinebinning: | make-bin-lib-dir FORCE
 	@echo "** Building KineBinning package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/KineBinning"
 
+build-testing: | make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building Testing package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Testing"
 
 copy-rootdict-to-lib: | make-bin-lib-dir FORCE
 	@echo " "
@@ -149,6 +154,7 @@ purge: FORCE
 	cd CmdLine;                   make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
 	cd KineBinning;               make purge; cd ..; \
+	cd Testing;                   make purge; cd ..; \
 	cd ${VALOR_FMWK}
 
 clean: clean-files clean-dir clean-etc
@@ -168,6 +174,7 @@ clean-files: FORCE
 	cd CmdLine;                 make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
 	cd KineBinning;             make clean; cd ..; \
+	cd Testing;                 make clean; cd ..; \
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm -f ./bin/*;\
         [ ! -d ./lib ] || rm -f ./lib/*_rdict.pcm;\
