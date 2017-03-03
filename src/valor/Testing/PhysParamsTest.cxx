@@ -15,7 +15,7 @@ bool PhysParamsTestCase::TestNParams()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    // Check the number of parameters defined
-   passed = _test->Equal(params.NParams(), 586) && passed;
+   passed = Test::Equal(params.NParams(), 586) && passed;
 
    return passed;
 }
@@ -27,12 +27,12 @@ bool PhysParamsTestCase::TestValidParams()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    // Check first parameter ID
-   passed = _test->Equal(params["kPhypMixing23"], 0) && passed;
+   passed = Test::Equal(params["kPhypMixing23"], 0) && passed;
    // Check last parameter ID
-   passed = _test->Equal(params["kNuisIntTarget"], 585) && passed;
+   passed = Test::Equal(params["kNuisIntTarget"], 585) && passed;
    // Check intermediate parameter IDs
-   passed = _test->Equal(params["kNuisFHCNuEFDFlux01"], 149) && passed;
-   passed = _test->Equal(params["kNuisEffRHCnumuCC0pi1trk08"], 324) && passed;
+   passed = Test::Equal(params["kNuisFHCNuEFDFlux01"], 149) && passed;
+   passed = Test::Equal(params["kNuisEffRHCnumuCC0pi1trk08"], 324) && passed;
 
    return passed;
 }
@@ -44,7 +44,7 @@ bool PhysParamsTestCase::TestInvalidParams()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    // Check undefined parameter ID
-   passed = _test->Equal(params["_kPhypNonExistent"], PhysParams::Undefined) && passed;
+   passed = Test::Equal(params["_kPhypNonExistent"], PhysParams::Undefined) && passed;
 
    return passed;
 }

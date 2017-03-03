@@ -160,7 +160,7 @@ public:
 
       \return True if the numbers are equal within tolerance, false otherwise.
    */
-   virtual bool Equal(double obs, double exp, double tol = 1E-6);
+   static bool Equal(double obs, double exp, double tol = 1E-6);
 
    /**
       Tests the equality of integer values.
@@ -170,7 +170,7 @@ public:
 
       \return True if the numbers are equal.
    */
-   virtual bool Equal(int obs, int exp);
+   static bool Equal(int obs, int exp);
 
 protected:
    Test(): _arg{nullptr}{ }
