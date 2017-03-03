@@ -30,9 +30,34 @@ namespace testing
 class PhysParamsTestCase : public TestCase
 {
 public:
+   /**
+      Constructor.
+
+      \param test The associated Test object.
+   */
    PhysParamsTestCase(Test* test): TestCase(test){ }
 
+   /**
+      Check the number of parameters loaded is as expected.
+
+      \return True if the test passed, false otherwise.
+   */
    bool TestNParams();
+
+   /**
+      Check that a number of parameters expected to have been loaded exist and
+      have the IDs expected.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestValidParams();
+
+   /**
+      Check that a parameter not expetced in the set is not not present.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestInvalidParams();
 };
 
 class PhysParamsTest : public Test

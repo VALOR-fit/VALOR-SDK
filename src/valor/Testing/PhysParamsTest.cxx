@@ -16,6 +16,16 @@ bool PhysParamsTestCase::TestNParams()
 
    // Check the number of parameters defined
    passed = _test->Equal(params.NParams(), 586) && passed;
+
+   return passed;
+}
+
+bool PhysParamsTestCase::TestValidParams()
+{
+   bool passed = true;
+
+   PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
+
    // Check first parameter ID
    passed = _test->Equal(params["kPhypMixing23"], 0) && passed;
    // Check last parameter ID
@@ -23,6 +33,16 @@ bool PhysParamsTestCase::TestNParams()
    // Check intermediate parameter IDs
    passed = _test->Equal(params["kNuisFHCNuEFDFlux01"], 149) && passed;
    passed = _test->Equal(params["kNuisEffRHCnumuCC0pi1trk08"], 324) && passed;
+
+   return passed;
+}
+
+bool PhysParamsTestCase::TestInvalidParams()
+{
+   bool passed = true;
+
+   PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
+
    // Check undefined parameter ID
    passed = _test->Equal(params["_kPhypNonExistent"], PhysParams::Undefined) && passed;
 
@@ -41,14 +61,22 @@ void PhysParamsTest::Setup()
 
 void PhysParamsTest::Teardown()
 {
+   if(_params)
+   {
+      _params->Clear();
+   }
 }
 
 void PhysParamsTest::AddTests()
 {
    PhysParamsTestCase* testCase = new PhysParamsTestCase(this);
 
-   Add(new TestKey("SimpleTest", testCase),
+   Add(new TestKey("TestNParams", testCase),
          [testCase](void) { return testCase->TestNParams(); });
+   Add(new TestKey("TestValidParams", testCase),
+         [testCase](void) { return testCase->TestValidParams(); });
+   Add(new TestKey("TestInvalidParams", testCase),
+         [testCase](void) { return testCase->TestInvalidParams(); });
 }
 
 }

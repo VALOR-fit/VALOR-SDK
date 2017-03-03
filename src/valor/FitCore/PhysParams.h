@@ -103,6 +103,11 @@ public:
    int NParams() const { return _nextId; }
 
    /**
+      Clear all parameters from the PhysParams singleton.
+   */
+   void Clear() { _nextId = 0; _parameters.clear(); }
+
+   /**
       Destructor.
    */
    ~PhysParams();

@@ -144,6 +144,13 @@ public:
    virtual int NFailures() const;
 
    /**
+      This method returns the failed tests. 
+
+      \return The failed tests.
+   */
+   virtual const std::vector<TestKey*>& Failures() const{ return _failures; }
+
+   /**
       Tests the equality of double-precision floating point numbers within a given
       arithmetic tolerance.
 
@@ -166,6 +173,8 @@ public:
    virtual bool Equal(int obs, int exp);
 
 protected:
+   Test(): _arg{nullptr}{ }
+
    /**
       This method adds a unit test to the set of tests to be run.
 
