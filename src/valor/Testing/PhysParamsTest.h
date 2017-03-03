@@ -4,7 +4,7 @@
 
 \brief     This class provides unit tests for PhysParams.
 
-\author    Andy Chappell <A.Chappell \t warwick.ac.uk
+\author    Andy Chappell <A.Chappell \at warwick.ac.uk
            University of Warwick
           
 \created   Mar 01, 2017
