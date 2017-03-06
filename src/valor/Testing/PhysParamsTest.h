@@ -38,6 +38,20 @@ public:
    PhysParamsTestCase(Test* test): TestCase(test){ }
 
    /**
+      Check that best fit values are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestBestfit();
+
+   /**
+      Check that intial values are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestInitial();
+
+   /**
       Check the number of parameters loaded is as expected.
 
       \return True if the test passed, false otherwise.

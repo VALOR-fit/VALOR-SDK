@@ -4,7 +4,6 @@
 
 // Root
 #include <TSystem.h>
-#include <TXMLEngine.h>
 
 // valor
 #include "valor/Messenger/Messenger.h"
@@ -22,13 +21,22 @@ using std::string;
 using std::vector;
 using util::UtlFile;
 
-PhysParams::PhysParams(): _nextId{0}
+PhysParams::PhysParams():
+   _defaults{new Param("default", Undefined)},
+   _nextId{0}
 {
 
 }
 
 PhysParams::~PhysParams()
 {
+   // Delete the individual parameters from the map
+   for(auto param : _parameters)
+   {
+      delete param.second;
+   }
+   _parameters.clear();
+   delete _defaults; _defaults = nullptr;
    delete _instance; _instance = nullptr;
 }
 
@@ -43,6 +51,45 @@ PhysParams* PhysParams::Instance()
 }
 
 void PhysParams::Read(const string& filename)
+{
+   string fullFilename = UtlFile::GetConfigurationFilename(filename);
+
+   // Check that the config file exists.
+   if(fullFilename.empty())
+   {  // File not found
+      LOG("PhysParams", pERROR) << "Config file not found: " << filename;
+      util::Die(1);
+   }
+
+   // Parse the XML configuration file
+   TXMLEngine* xml = new TXMLEngine();
+   XMLDocPointer_t xmlDoc = xml->ParseFile(fullFilename.c_str());
+   if(xmlDoc == 0)
+   {
+      LOG("PhysParams", pERROR) << "Cannot parse XML file [" << fullFilename <<
+         "]";
+      delete xml;
+      util::Die(1);
+   }
+
+   XMLNodePointer_t rootNode = xml->DocGetRootElement(xmlDoc);
+   XMLNodePointer_t defaultsNode = util::FindNode(xml, rootNode, "defaults");
+
+   // Get oscillation parameter node
+   ProcessDefaults(xml, defaultsNode);
+
+   // Process parameter values
+   vector<XMLNodePointer_t> params = util::FindNodes(xml, rootNode,
+         "parameter");
+   for(auto node : params)
+   {
+      ProcessParameter(xml, node);
+   }
+
+   delete xml;
+}
+
+void PhysParams::Select(const string& filename)
 {
    string fullFilename = UtlFile::GetConfigurationFilename(filename);
 
@@ -80,13 +127,37 @@ void PhysParams::Read(const string& filename)
    delete xml;
 }
 
+double PhysParams::Bestfit(const std::string& param) const
+{
+   if(_parameters.find(param) == _parameters.end())
+   {
+      LOG("PhysParams", pERROR) << "Cannot get best fit. No such parameter: " <<
+         param;
+      util::Die(-1);
+   }
+   
+   return _parameters.at(param)->_bestfit;
+}
+
+double PhysParams::Initial(const std::string& param) const
+{
+   if(_parameters.find(param) == _parameters.end())
+   {
+      LOG("PhysParams", pERROR) << "Cannot get initial value. " <<
+         "No such parameter: " << param;
+      util::Die(-1);
+   }
+   
+   return _parameters.at(param)->_initial;
+}
+
 conv::PhysParamId_t PhysParams::GetParamId(const std::string& param) const
 {
    // Check if the parameter exists
    auto item = _parameters.find(param);
    if(item != _parameters.end())
    {  // Parameter exists, return its ID
-      return item->second;
+      return item->second->_id;
    }
    else
    {  // Parameter does not exist, return undefined
@@ -101,9 +172,9 @@ conv::PhysParamId_t PhysParams::operator[](const std::string& param) const
 
 void PhysParams::AddParameter(const string& param)
 {
+   Param* p = new Param(param, static_cast<conv::PhysParamId_t>(_nextId));
    // Attempt to Insert the parameter
-   auto value = _parameters.insert(std::make_pair(param,
-            static_cast<conv::PhysParamId_t>(_nextId)));
+   auto value = _parameters.insert(std::make_pair(param, p));
    ++_nextId;
    // Check to see if the value was inserted (i.e. didn't already exist)
    if(not(value.second))
@@ -115,6 +186,9 @@ void PhysParams::AddParameter(const string& param)
    }
 }
 
+/*
+This is the old processing code for handling the selected parameters for an
+analysis. This should be moved to the FPL factory.*/
 void PhysParams::ProcessParameters(const string& parameterList)
 {
    vector<string> tokens = util::Tokens(parameterList, ",");
@@ -127,6 +201,40 @@ void PhysParams::ProcessParameters(const string& parameterList)
          AddParameter(param);
       }
    }
+}
+
+void PhysParams::SetParameterValue(double& value, TXMLEngine* xml,
+      XMLNodePointer_t node, const std::string& path, const double def)
+{
+   // Set parameter value, using default if necessary
+   if(util::NodeExists(xml, node, path))
+   {  // Value is specified, read it
+      value = util::XML2Dbl(xml, node, path);
+   }
+   else
+   {  // No value specified, use default
+      value = def;
+   }
+}
+
+void PhysParams::ProcessParameter(TXMLEngine* xml, XMLNodePointer_t node)
+{
+   // Get the name attribute and create the parameter
+   string name = xml->GetAttr(node, "name");
+   AddParameter(name);
+
+   // Set all of the parameter values, using defaults as necessary
+   SetParameterValue(_parameters[name]->_bestfit, xml, node, "values/bestfit",
+         _defaults->_bestfit);
+   SetParameterValue(_parameters[name]->_initial, xml, node, "values/init",
+         _defaults->_initial);
+
+}
+
+void PhysParams::ProcessDefaults(TXMLEngine* xml, XMLNodePointer_t node)
+{
+   _defaults->_bestfit = util::XML2Dbl(xml, node, "values/bestfit");
+   _defaults->_initial = util::XML2Dbl(xml, node, "values/init");
 }
 
 }

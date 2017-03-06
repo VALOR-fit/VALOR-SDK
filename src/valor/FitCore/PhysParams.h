@@ -20,6 +20,9 @@
 #include <string>
 #include <map>
 
+// root
+#include <TXMLEngine.h>
+
 // valor
 #include "valor/Conventions/PhysParamId.h"
 
@@ -35,6 +38,66 @@ public:
       \return The PhysParams singelton instance.
    */
    static PhysParams* Instance();
+
+   /**
+      Reads the parameter specification from a configuration file.
+
+      The form of the configuration file is as follows:
+
+      <?xml version="1.0"?>
+
+      <parameters>
+         <defaults>
+            <values>
+               <bestfit>1.0</bestfit>
+               <init>1.0</init>
+               <minimum>0.0</minimum>
+               <maximum>2.0</maximum>
+               <stepsize>0.0001</stepsize>
+               <scaling>1.0</scaling>
+            </values>
+            <marginalisation>
+               <set>False</set>               <!-- True/False -->
+               <priors>
+                  <gaus>
+                     <mean>0.0</mean>
+                     <sigma>1.0</sigma>
+                  </gaus>
+                  <flat>
+                     <minimum>0.0</minimum>
+                     <maximum>1.0</maximum>
+                  </flat>
+
+                  <user>
+                     <histogram></histogram>  <!-- Filename -->
+                  </user>
+               </priors>
+            </marginalisation>
+            <properties>
+               <fixed>False</fixed>           <!-- True/False -->
+               <nuisance>True</nuisance>      <!-- True/False -->
+            </properties>
+            <errors>
+               <migrad>
+                 <set>False</set>             <!-- True/False -->
+                 <error>0.0</error>
+               </migrad>
+               <hesse>
+                 <set>False</set>             <!-- True/False -->
+                 <error>0.0</error>
+               </hesse>
+               <minos>
+                 <set>False</set>             <!-- True/False -->
+                 <low_error>0.0</low_error>
+                 <high_error>0.0</high_error>
+               </minos>
+            </errors>
+         </defaults>
+      </parameters>
+
+      \param filename The location of the configuration file to read.
+   */
+   void Read(const std::string& filename);
 
    /**
       Reads the set of parameters for the analysis from a configuration file.
@@ -76,7 +139,23 @@ public:
 
       \param filename The location of the configuration file to read.
    */
-   void Read(const std::string& filename);
+   void Select(const std::string& filename);
+
+   /**
+      Retrieve the baseline best-fit value for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The best fit value of the specified parameter.
+   */
+   double Bestfit(const std::string& param) const;
+
+   /**
+      Retrieve the baseline initial value for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The initial value of the specified parameter.
+   */
+   double Initial(const std::string& param) const;
 
    /**
       Retrieve the ID of a parameter.
@@ -134,8 +213,41 @@ private:
       Processes the parameters found in a configuration file parameter list.
 
       Records the set of parameters specified in a parameter list.
+
+      \param parameterList A list of comma-separated parameter values.
    */
    void ProcessParameters(const std::string& parameterList);
+
+   /**
+      Sets a particular parameter value.
+
+      The value is read from XML if available, otherwise a default value is
+      applied.
+
+      \param value A reference to the variable where the value will be stored.
+      \param xml The TXMLEngine to perform the parsing.
+      \param node The node within which to search for values.
+      \param path The path within the specified node (e.g. "child/grandchild").
+      \param def The default value to use if the path does not exist.
+   */
+   void SetParameterValue(double& value, TXMLEngine* xml, XMLNodePointer_t node,
+         const std::string& path, const double def);
+
+   /**
+      Processes a parameter to specify all of its values.
+
+      \param xml The TXMLEngine to perform the parsing.
+      \param node The node within which to search for values.
+   */
+   void ProcessParameter(TXMLEngine* xml, XMLNodePointer_t node);
+
+   /**
+      Processes default parameter values in a configuration file.
+
+      \param xml The TXMLEngine to perform the parsing.
+      \param node The node within which to search for default values.
+   */
+   void ProcessDefaults(TXMLEngine* xml, XMLNodePointer_t node);
 
    /*
       Disallow copy, move and assignment.
@@ -157,6 +269,26 @@ private:
       return const_cast<PhysParams&>(obj);
    }
 
+private:
+   struct Param
+   {
+      /**
+         Constructor.
+
+         \param name The name of the parameter.
+         \param id The identifier of the parameter.
+      */
+      Param(const std::string& name, conv::PhysParamId_t id):
+         _name{name}, _id{id}, _bestfit{0.0}, _initial{0.0}
+      {
+      }
+
+      std::string _name;
+      conv::PhysParamId_t _id;
+      double _bestfit;
+      double _initial;
+   };
+
 public:
    static const conv::PhysParamId_t Undefined = conv::kPhypUndefined;
 
@@ -165,7 +297,9 @@ private:
    static PhysParams* _instance;
 
    /// The physics and nuisance parameters available to the analysis
-   std::map<std::string, conv::PhysParamId_t> _parameters;
+   std::map<std::string, Param*> _parameters;
+   /// The default parameter settings
+   Param* _defaults;
    int _nextId;
 };
 
