@@ -259,7 +259,7 @@ int valor::util::CreateRedToBlueColorPalette(int n_shades)
   return pal_number;
 }
 //___________________________________________________________________________
-TObjArray valor::util::GetHistsFromCanvas(TCanvas * canv, const char * name)
+TObjArray valor::util::GetHistsFromCanvas(TVirtualPad * canv, const char * name)
 {
   TList * arr = canv->GetListOfPrimitives();
   TObjArray output;
