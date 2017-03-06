@@ -80,6 +80,13 @@ public:
    bool TestScaling();
 
    /**
+      Check that marginalisation values are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestIsMarginalised();
+
+   /**
       Check the number of parameters loaded is as expected.
 
       \return True if the test passed, false otherwise.

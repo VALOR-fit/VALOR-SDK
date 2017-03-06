@@ -172,6 +172,24 @@ public:
    */
    static bool Equal(int obs, int exp);
 
+   /**
+      Tests if a boolean value is true.
+
+      \param obs The observed value.
+
+      \return True if the value is true.
+   */
+   static bool True(bool obs);
+
+   /**
+      Tests if a boolean value is false.
+
+      \param obs The observed value.
+
+      \return True if the value is false.
+   */
+   static bool False(bool obs);
+
 protected:
    Test(): _arg{nullptr}{ }
 

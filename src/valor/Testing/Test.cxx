@@ -76,16 +76,6 @@ TestKey& TestKey::operator=(const TestKey& original)
    return (*this);
 }
 
-/**
-   Tests the equality of double-precision floating point numbers within a given
-   arithmetic tolerance.
-
-   \param obs The observed value.
-   \param b The expected value.
-   \param tol The tolerance of the comparison. Default 1E-6.
-
-   \return True if the numbers are equal within tolerance, false otherwise.
-*/
 bool Test::Equal(double obs, double exp, double tol)
 {
    bool equal = (abs(obs - exp) < tol);
@@ -97,14 +87,6 @@ bool Test::Equal(double obs, double exp, double tol)
    return equal;
 }
 
-/**
-   Tests the equality of integer values.
-
-   \param obs The observed value.
-   \param exp The expected value.
-
-   \return True if the numbers are equal.
-*/
 bool Test::Equal(int obs, int exp)
 {
    bool equal = obs == exp;
@@ -112,6 +94,26 @@ bool Test::Equal(int obs, int exp)
    {
       LOG("Test", pERROR) << "Test failed: Expected " << exp << ". Found " <<
          obs << ".";
+   }
+   return equal;
+}
+
+bool Test::True(bool obs)
+{
+   bool equal = obs == true;
+   if(!equal)
+   {
+      LOG("Test", pERROR) << "Test failed: Expected true. Found false.";
+   }
+   return equal;
+}
+
+bool Test::False(bool obs)
+{
+   bool equal = obs == false;
+   if(!equal)
+   {
+      LOG("Test", pERROR) << "Test failed: Expected false. Found true.";
    }
    return equal;
 }

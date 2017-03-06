@@ -190,6 +190,14 @@ public:
    double Scaling(const std::string& param) const;
 
    /**
+      Check if a parameter is to be marginalised.
+
+      \param param The parameter to retrieve the value from.
+      \return Whether or not the parameter is to be margianlised.
+   */
+   bool IsMarginalised (const std::string& param) const;
+
+   /**
       Retrieve the ID of a parameter.
 
       \param param The parameter whose ID is to be found.
@@ -262,8 +270,9 @@ private:
       \param path The path within the specified node (e.g. "child/grandchild").
       \param def The default value to use if the path does not exist.
    */
-   void SetParameterValue(double& value, TXMLEngine* xml, XMLNodePointer_t node,
-         const std::string& path, const double def);
+   template <class T>
+   void SetParameterValue(T& value, TXMLEngine* xml, XMLNodePointer_t node,
+         const std::string& path, const T def);
 
    /**
       Processes a parameter to specify all of its values.
@@ -322,7 +331,7 @@ private:
       */
       Param(const std::string& name, conv::PhysParamId_t id):
          _name{name}, _id{id}, _bestfit{0.0}, _initial{0.0}, _minimum{0.0},
-         _maximum{0.0}, _stepsize{0.0}, _scaling{0.0}
+         _maximum{0.0}, _stepsize{0.0}, _scaling{0.0}, _isMarginalised{false}
       {
       }
 
@@ -334,6 +343,7 @@ private:
       double _maximum;
       double _stepsize;
       double _scaling;
+      bool _isMarginalised;
    };
 
 public:

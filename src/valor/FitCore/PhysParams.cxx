@@ -163,6 +163,12 @@ double PhysParams::Scaling(const std::string& param) const
    return _parameters.at(param)->_scaling;
 }
 
+bool PhysParams::IsMarginalised(const std::string& param) const
+{
+   StrictCheck(param, "marginalisation status");
+   return _parameters.at(param)->_isMarginalised;
+}
+
 conv::PhysParamId_t PhysParams::GetParamId(const std::string& param) const
 {
    // Check if the parameter exists
@@ -215,8 +221,9 @@ void PhysParams::ProcessParameters(const string& parameterList)
    }
 }
 
-void PhysParams::SetParameterValue(double& value, TXMLEngine* xml,
-      XMLNodePointer_t node, const std::string& path, const double def)
+template <class T>
+void PhysParams::SetParameterValue(T& value, TXMLEngine* xml,
+      XMLNodePointer_t node, const std::string& path, const T def)
 {
    // Set parameter value, using default if necessary
    if(util::NodeExists(xml, node, path))
@@ -248,6 +255,8 @@ void PhysParams::ProcessParameter(TXMLEngine* xml, XMLNodePointer_t node)
          _defaults->_stepsize);
    SetParameterValue(_parameters[name]->_scaling, xml, node, "values/scaling",
          _defaults->_scaling);
+   SetParameterValue(_parameters[name]->_isMarginalised, xml, node,
+         "marginalisation/set", _defaults->_isMarginalised);
 }
 
 void PhysParams::ProcessDefaults(TXMLEngine* xml, XMLNodePointer_t node)
@@ -258,6 +267,7 @@ void PhysParams::ProcessDefaults(TXMLEngine* xml, XMLNodePointer_t node)
    _defaults->_maximum = util::XML2Dbl(xml, node, "values/maximum");
    _defaults->_stepsize = util::XML2Dbl(xml, node, "values/step_size");
    _defaults->_scaling = util::XML2Dbl(xml, node, "values/scaling");
+   _defaults->_isMarginalised = util::XML2Bool(xml, node, "marginalisation/set");
 }
 
 void PhysParams::StrictCheck(const std::string& param, const std::string& value)

@@ -74,6 +74,17 @@ bool PhysParamsTestCase::TestScaling()
    return passed;
 }
 
+bool PhysParamsTestCase::TestIsMarginalised()
+{
+   bool passed = true;
+
+   PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
+
+   passed = Test::False(params.IsMarginalised("kPhypMixing23")) && passed;
+
+   return passed;
+}
+
 bool PhysParamsTestCase::TestNParams()
 {
    bool passed = true;
@@ -159,6 +170,8 @@ void PhysParamsTest::AddTests()
          [testCase](void) { return testCase->TestStepSize(); });
    Add(new TestKey("TestScaling", testCase),
          [testCase](void) { return testCase->TestScaling(); });
+   Add(new TestKey("TestIsMarginalised", testCase),
+         [testCase](void) { return testCase->TestIsMarginalised(); });
 }
 
 }
