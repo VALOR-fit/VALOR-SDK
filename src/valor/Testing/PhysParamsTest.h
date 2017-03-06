@@ -52,6 +52,34 @@ public:
    bool TestInitial();
 
    /**
+      Check that minimum values are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestMinimum();
+
+   /**
+      Check that maximum values are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestMaximum();
+
+   /**
+      Check that step size values are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestStepSize();
+
+   /**
+      Check that scaling values are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestScaling();
+
+   /**
       Check the number of parameters loaded is as expected.
 
       \return True if the test passed, false otherwise.

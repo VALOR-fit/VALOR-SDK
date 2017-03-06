@@ -142,7 +142,7 @@ public:
    void Select(const std::string& filename);
 
    /**
-      Retrieve the baseline best-fit value for a parameter.
+      Retrieve the best-fit value for a parameter.
 
       \param param The parameter to retrieve the value from.
       \return The best fit value of the specified parameter.
@@ -150,12 +150,44 @@ public:
    double Bestfit(const std::string& param) const;
 
    /**
-      Retrieve the baseline initial value for a parameter.
+      Retrieve the initial value for a parameter.
 
       \param param The parameter to retrieve the value from.
       \return The initial value of the specified parameter.
    */
    double Initial(const std::string& param) const;
+
+   /**
+      Retrieve the minimum value for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The minimum value of the specified parameter.
+   */
+   double Minimum(const std::string& param) const;
+
+   /**
+      Retrieve the maximum value for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The maximum value of the specified parameter.
+   */
+   double Maximum(const std::string& param) const;
+
+   /**
+      Retrieve the step size for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The step size of the specified parameter.
+   */
+   double StepSize(const std::string& param) const;
+
+   /**
+      Retrieve the scaling for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The scaling of the specified parameter.
+   */
+   double Scaling(const std::string& param) const;
 
    /**
       Retrieve the ID of a parameter.
@@ -249,6 +281,16 @@ private:
    */
    void ProcessDefaults(TXMLEngine* xml, XMLNodePointer_t node);
 
+   /**
+      Checks if a specified parameter exists.
+
+      This method will terminate the application if the parameter is not found.
+
+      \param param The parameter to check for.
+      \param value The name of the parameter value we're attempting to retrieve.
+   */
+   void StrictCheck(const std::string& param, const std::string& value) const;
+
    /*
       Disallow copy, move and assignment.
 
@@ -279,7 +321,8 @@ private:
          \param id The identifier of the parameter.
       */
       Param(const std::string& name, conv::PhysParamId_t id):
-         _name{name}, _id{id}, _bestfit{0.0}, _initial{0.0}
+         _name{name}, _id{id}, _bestfit{0.0}, _initial{0.0}, _minimum{0.0},
+         _maximum{0.0}, _stepsize{0.0}, _scaling{0.0}
       {
       }
 
@@ -287,6 +330,10 @@ private:
       conv::PhysParamId_t _id;
       double _bestfit;
       double _initial;
+      double _minimum;
+      double _maximum;
+      double _stepsize;
+      double _scaling;
    };
 
 public:

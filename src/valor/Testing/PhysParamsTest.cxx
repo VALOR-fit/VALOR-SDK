@@ -30,6 +30,49 @@ bool PhysParamsTestCase::TestInitial()
    return passed;
 }
 
+bool PhysParamsTestCase::TestMinimum()
+{
+   bool passed = true;
+
+   PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
+
+   passed = Test::Equal(params.Minimum("kPhypMixing23"), 0.0) && passed;
+
+   return passed;
+}
+
+bool PhysParamsTestCase::TestMaximum()
+{
+   bool passed = true;
+
+   PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
+
+   passed = Test::Equal(params.Maximum("kPhypMixing23"), 2.0) && passed;
+
+   return passed;
+}
+
+bool PhysParamsTestCase::TestStepSize()
+{
+   bool passed = true;
+
+   PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
+
+   passed = Test::Equal(params.StepSize("kPhypMixing23"), 1.0e-4) && passed;
+
+   return passed;
+}
+
+bool PhysParamsTestCase::TestScaling()
+{
+   bool passed = true;
+
+   PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
+
+   passed = Test::Equal(params.Scaling("kPhypMixing23"), 1.0) && passed;
+
+   return passed;
+}
 
 bool PhysParamsTestCase::TestNParams()
 {
@@ -108,7 +151,14 @@ void PhysParamsTest::AddTests()
          [testCase](void) { return testCase->TestBestfit(); });
    Add(new TestKey("TestInitial", testCase),
          [testCase](void) { return testCase->TestInitial(); });
-
+   Add(new TestKey("TestMinimum", testCase),
+         [testCase](void) { return testCase->TestMinimum(); });
+   Add(new TestKey("TestMaximum", testCase),
+         [testCase](void) { return testCase->TestMaximum(); });
+   Add(new TestKey("TestStepSize", testCase),
+         [testCase](void) { return testCase->TestStepSize(); });
+   Add(new TestKey("TestScaling", testCase),
+         [testCase](void) { return testCase->TestScaling(); });
 }
 
 }

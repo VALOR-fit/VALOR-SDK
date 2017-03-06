@@ -129,26 +129,38 @@ void PhysParams::Select(const string& filename)
 
 double PhysParams::Bestfit(const std::string& param) const
 {
-   if(_parameters.find(param) == _parameters.end())
-   {
-      LOG("PhysParams", pERROR) << "Cannot get best fit. No such parameter: " <<
-         param;
-      util::Die(-1);
-   }
-   
+   StrictCheck(param, "best fit"); 
    return _parameters.at(param)->_bestfit;
 }
 
 double PhysParams::Initial(const std::string& param) const
 {
-   if(_parameters.find(param) == _parameters.end())
-   {
-      LOG("PhysParams", pERROR) << "Cannot get initial value. " <<
-         "No such parameter: " << param;
-      util::Die(-1);
-   }
-   
+   StrictCheck(param, "initial value");
    return _parameters.at(param)->_initial;
+}
+
+double PhysParams::Minimum(const std::string& param) const
+{
+   StrictCheck(param, "minimum value"); 
+   return _parameters.at(param)->_minimum;
+}
+
+double PhysParams::Maximum(const std::string& param) const
+{
+   StrictCheck(param, "maximum value");
+   return _parameters.at(param)->_maximum;
+}
+
+double PhysParams::StepSize(const std::string& param) const
+{
+   StrictCheck(param, "step size");
+   return _parameters.at(param)->_stepsize;
+}
+
+double PhysParams::Scaling(const std::string& param) const
+{
+   StrictCheck(param, "scaling");
+   return _parameters.at(param)->_scaling;
 }
 
 conv::PhysParamId_t PhysParams::GetParamId(const std::string& param) const
@@ -228,13 +240,35 @@ void PhysParams::ProcessParameter(TXMLEngine* xml, XMLNodePointer_t node)
          _defaults->_bestfit);
    SetParameterValue(_parameters[name]->_initial, xml, node, "values/init",
          _defaults->_initial);
-
+   SetParameterValue(_parameters[name]->_minimum, xml, node, "values/minimum",
+         _defaults->_minimum);
+   SetParameterValue(_parameters[name]->_maximum, xml, node, "values/maximum",
+         _defaults->_maximum);
+   SetParameterValue(_parameters[name]->_stepsize, xml, node, "values/step_size",
+         _defaults->_stepsize);
+   SetParameterValue(_parameters[name]->_scaling, xml, node, "values/scaling",
+         _defaults->_scaling);
 }
 
 void PhysParams::ProcessDefaults(TXMLEngine* xml, XMLNodePointer_t node)
 {
    _defaults->_bestfit = util::XML2Dbl(xml, node, "values/bestfit");
    _defaults->_initial = util::XML2Dbl(xml, node, "values/init");
+   _defaults->_minimum = util::XML2Dbl(xml, node, "values/minimum");
+   _defaults->_maximum = util::XML2Dbl(xml, node, "values/maximum");
+   _defaults->_stepsize = util::XML2Dbl(xml, node, "values/step_size");
+   _defaults->_scaling = util::XML2Dbl(xml, node, "values/scaling");
+}
+
+void PhysParams::StrictCheck(const std::string& param, const std::string& value)
+   const
+{
+   if(_parameters.find(param) == _parameters.end())
+   {
+      LOG("PhysParams", pERROR) << "Cannot get " << value << ". " <<
+         "No such parameter: " << param;
+      util::Die(-1);
+   }
 }
 
 }
