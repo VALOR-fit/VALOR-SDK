@@ -85,6 +85,7 @@ public:
   virtual ~KBCubHcmbMondrian();
 
   // Read binning from file
+  using TObject::Read; // Tell clang we really do want this
   bool Read(string file);
 
   // Get the corresponding kinematical space

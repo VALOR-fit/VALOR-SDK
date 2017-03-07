@@ -160,6 +160,9 @@ bool KBCubHcmbEdge2Edge::Read(string file)
     }
 
   }//idim
+  
+ LOG("Binning", pNOTICE) 
+   << fName<< " total bins "<<this->NBins();
 
   return true;
 }

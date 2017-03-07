@@ -76,6 +76,7 @@ public:
 
   // Read binning from file
   bool Read(string file);
+  using TObject::Read; // Tell clang we really do want this
 
   /**
     Takes this binning and creates a new binning using the specified subset of

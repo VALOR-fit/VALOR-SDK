@@ -110,7 +110,7 @@ bool KBCubHcmbMondrian::Read(string file)
   
   unsigned int l = 0;
   for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
-     LOG("Binning", pNOTICE) << "Reading edges of bin: " << ibin;
+     LOG("Binning", pINFO) << "Reading edges of bin: " << ibin;
      vector<double> edges = util::XML2DblArray(
                  xml,root_node,Form("bin_%d",ibin));
      if(edges.size() != 2*fNDimensions) {
@@ -125,7 +125,7 @@ bool KBCubHcmbMondrian::Read(string file)
          double max = edges[k++];
          fBinEdges[l++] = min;
          fBinEdges[l++] = max;
-         LOG("Binning", pNOTICE) 
+         LOG("Binning", pINFO) 
             << "\t Dimension: " << idim 
             << " -> [" << min << ", " << max << "]";
          if(ibin == 0) {
