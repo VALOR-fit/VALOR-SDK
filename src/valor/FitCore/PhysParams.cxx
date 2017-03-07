@@ -381,7 +381,7 @@ void PhysParams::ProcessParameter(TXMLEngine* xml, XMLNodePointer_t node)
    SetParameterValue(_parameters[name]->_isFixed, xml, node,
          "properties/fixed", _defaults->_isFixed);
    SetParameterValue(_parameters[name]->_isNuisance, xml, node,
-         "properties/fixed", _defaults->_isNuisance);
+         "properties/nuisance", _defaults->_isNuisance);
    SetParameterValue(_parameters[name]->_hasMigradError, xml, node,
          "errors/migrad/set", _defaults->_hasMigradError);
    SetParameterValue(_parameters[name]->_migradError, xml, node,

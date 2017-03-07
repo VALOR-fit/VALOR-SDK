@@ -15,6 +15,7 @@ bool PhysParamsTestCase::TestBestfit()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::Equal(params.Bestfit("kPhypMixing23"), 1.0) && passed;
+   passed = Test::Equal(params.Bestfit("kPhypMixing13"), 0.2) && passed;
 
    return passed;
 }
@@ -26,6 +27,7 @@ bool PhysParamsTestCase::TestInitial()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::Equal(params.Initial("kPhypMixing23"), 1.0) && passed;
+   passed = Test::Equal(params.Initial("kPhypMixing13"), 0.3) && passed;
 
    return passed;
 }
@@ -37,6 +39,7 @@ bool PhysParamsTestCase::TestMinimum()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::Equal(params.Minimum("kPhypMixing23"), 0.0) && passed;
+   passed = Test::Equal(params.Minimum("kPhypMixing13"), 0.05) && passed;
 
    return passed;
 }
@@ -48,6 +51,7 @@ bool PhysParamsTestCase::TestMaximum()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::Equal(params.Maximum("kPhypMixing23"), 2.0) && passed;
+   passed = Test::Equal(params.Maximum("kPhypMixing13"), 0.4) && passed;
 
    return passed;
 }
@@ -59,6 +63,7 @@ bool PhysParamsTestCase::TestStepSize()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::Equal(params.StepSize("kPhypMixing23"), 1.0e-4) && passed;
+   passed = Test::Equal(params.StepSize("kPhypMixing13"), 2.0e-4) && passed;
 
    return passed;
 }
@@ -70,6 +75,7 @@ bool PhysParamsTestCase::TestScaling()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::Equal(params.Scaling("kPhypMixing23"), 1.0) && passed;
+   passed = Test::Equal(params.Scaling("kPhypMixing13"), 0.999) && passed;
 
    return passed;
 }
@@ -81,6 +87,7 @@ bool PhysParamsTestCase::TestIsMarginalised()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::False(params.IsMarginalised("kPhypMixing23")) && passed;
+   passed = Test::True(params.IsMarginalised("kPhypMixing13")) && passed;
 
    return passed;
 }
@@ -94,6 +101,11 @@ bool PhysParamsTestCase::TestGaussianPrior()
    passed = Test::Equal(params.GaussianPriorMean("kPhypMixing23"), 1.0) &&
       passed;
    passed = Test::Equal(params.GaussianPriorSigma("kPhypMixing23"), 0.2) &&
+      passed;
+
+   passed = Test::Equal(params.GaussianPriorMean("kPhypMixing13"), 0.2) &&
+      passed;
+   passed = Test::Equal(params.GaussianPriorSigma("kPhypMixing13"), 0.05) &&
       passed;
 
    return passed;
@@ -110,6 +122,11 @@ bool PhysParamsTestCase::TestFlatPrior()
    passed = Test::Equal(params.FlatPriorMaximum("kPhypMixing23"), 2.0) &&
       passed;
 
+   passed = Test::Equal(params.FlatPriorMinimum("kPhypMixing13"), 0.01) &&
+      passed;
+   passed = Test::Equal(params.FlatPriorMaximum("kPhypMixing13"), 0.35) &&
+      passed;
+
    return passed;
 }
 
@@ -120,6 +137,8 @@ bool PhysParamsTestCase::TestUserPrior()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::Equal(params.UserPriorFilename("kPhypMixing23"), "") &&
+      passed;
+   passed = Test::Equal(params.UserPriorFilename("kPhypMixing13"), "random") &&
       passed;
 
    return passed;
@@ -132,6 +151,7 @@ bool PhysParamsTestCase::TestIsFixed()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::False(params.IsFixed("kPhypMixing23")) && passed;
+   passed = Test::True(params.IsFixed("kPhypMixing13")) && passed;
 
    return passed;
 }
@@ -143,6 +163,7 @@ bool PhysParamsTestCase::TestIsNuisance()
    PhysParams& params = *(dynamic_cast<PhysParamsTest*>(_test)->_params);
 
    passed = Test::True(params.IsNuisance("kPhypMixing23")) && passed;
+   passed = Test::False(params.IsNuisance("kPhypMixing13")) && passed;
 
    return passed;
 }
@@ -156,6 +177,9 @@ bool PhysParamsTestCase::TestMigradErrors()
    passed = Test::False(params.IsMigradErrorSet("kPhypMixing23")) && passed;
    passed = Test::Equal(params.MigradError("kPhypMixing23"), 0.0) && passed;
 
+   passed = Test::True(params.IsMigradErrorSet("kPhypMixing13")) && passed;
+   passed = Test::Equal(params.MigradError("kPhypMixing13"), 0.2) && passed;
+
    return passed;
 }
 
@@ -167,6 +191,9 @@ bool PhysParamsTestCase::TestHesseErrors()
 
    passed = Test::False(params.IsHesseErrorSet("kPhypMixing23")) && passed;
    passed = Test::Equal(params.HesseError("kPhypMixing23"), 0.0) && passed;
+
+   passed = Test::True(params.IsHesseErrorSet("kPhypMixing13")) && passed;
+   passed = Test::Equal(params.HesseError("kPhypMixing13"), 0.25) && passed;
 
    return passed;
 }
@@ -180,6 +207,10 @@ bool PhysParamsTestCase::TestMinosErrors()
    passed = Test::False(params.IsMinosErrorSet("kPhypMixing23")) && passed;
    passed = Test::Equal(params.MinosLowError("kPhypMixing23"), 0.0) && passed;
    passed = Test::Equal(params.MinosHighError("kPhypMixing23"), 0.0) && passed;
+
+   passed = Test::True(params.IsMinosErrorSet("kPhypMixing13")) && passed;
+   passed = Test::Equal(params.MinosLowError("kPhypMixing13"), 0.15) && passed;
+   passed = Test::Equal(params.MinosHighError("kPhypMixing13"), 0.25) && passed;
 
    return passed;
 }
