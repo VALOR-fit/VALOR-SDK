@@ -1,5 +1,7 @@
 #include "valor/Testing/Test.h"
 
+#include <cmath>
+
 // valor
 #include "valor/Messenger/Messenger.h"
 
@@ -76,9 +78,9 @@ TestKey& TestKey::operator=(const TestKey& original)
    return (*this);
 }
 
-bool Test::Equal(double obs, double exp, double tol)
+bool Test::Equal(const double obs, const double exp, const double tol)
 {
-   bool equal = (abs(obs - exp) < tol);
+   bool equal = (std::abs(obs - exp) < tol);
    if(!equal)
    {
       LOG("Test", pERROR) << "Test failed: Expected " << exp << ". Found " <<
@@ -87,7 +89,7 @@ bool Test::Equal(double obs, double exp, double tol)
    return equal;
 }
 
-bool Test::Equal(int obs, int exp)
+bool Test::Equal(const int obs, const int exp)
 {
    bool equal = obs == exp;
    if(!equal)
@@ -98,7 +100,18 @@ bool Test::Equal(int obs, int exp)
    return equal;
 }
 
-bool Test::True(bool obs)
+bool Test::Equal(const std::string& obs, const std::string& exp)
+{
+   bool equal = obs == exp;
+   if(!equal)
+   {
+      LOG("Test", pERROR) << "Test failed: Expected \'" << exp << "\'. Found \'" <<
+         obs << "\'.";
+   }
+   return equal;
+}
+
+bool Test::True(const bool obs)
 {
    bool equal = obs == true;
    if(!equal)
@@ -108,7 +121,7 @@ bool Test::True(bool obs)
    return equal;
 }
 
-bool Test::False(bool obs)
+bool Test::False(const bool obs)
 {
    bool equal = obs == false;
    if(!equal)

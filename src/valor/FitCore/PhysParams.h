@@ -198,6 +198,118 @@ public:
    bool IsMarginalised (const std::string& param) const;
 
    /**
+      Retrieve the mean for a Gaussian prior for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The prior mean of the specified parameter.
+   */
+   double GaussianPriorMean(const std::string& param) const;
+
+   /**
+      Retrieve the standard deviation for a Gaussian prior for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The prior standard deviation of the specified parameter.
+   */
+   double GaussianPriorSigma(const std::string& param) const;
+
+   /**
+      Retrieve the mean for a flat prior for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The prior minimum of the specified parameter.
+   */
+   double FlatPriorMinimum(const std::string& param) const;
+
+   /**
+      Retrieve the maximum for a flat prior for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The prior maximum of the specified parameter.
+   */
+   double FlatPriorMaximum(const std::string& param) const;
+
+   /**
+      Retrieve the filename for a user prior for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The prior filename of the specified parameter.
+   */
+   const std::string& UserPriorFilename(const std::string& param) const;
+
+   /**
+      Check if a parameter is fixed.
+
+      \param param The parameter to retrieve the value from.
+      \return Whether or not the parameter is fixed.
+   */
+   bool IsFixed(const std::string& param) const;
+
+   /**
+      Check if a parameter is a nuisance parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return Whether or not the parameter is a nuisance parameter.
+   */
+   bool IsNuisance(const std::string& param) const;
+
+   /**
+      Check if a parameter has migrad errors.
+
+      \param param The parameter to retrieve the value from.
+      \return Whether or not the parameter has migrad errors.
+   */
+   bool IsMigradErrorSet(const std::string& param) const;
+
+   /**
+      Retrieve the migrad error for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The migrad error of the specified parameter.
+   */
+   double MigradError(const std::string& param) const;
+
+   /**
+      Check if a parameter has hesse errors.
+
+      \param param The parameter to retrieve the value from.
+      \return Whether or not the parameter has hesse errors.
+   */
+   bool IsHesseErrorSet(const std::string& param) const;
+
+   /**
+      Retrieve the hesse error for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The hesse error of the specified parameter.
+   */
+   double HesseError(const std::string& param) const;
+
+   /**
+      Check if a parameter has minos errors.
+
+      \param param The parameter to retrieve the value from.
+      \return Whether or not the parameter has minos errors.
+   */
+   bool IsMinosErrorSet(const std::string& param) const;
+
+   /**
+      Retrieve the minos low error for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The minos los error of the specified parameter.
+   */
+   double MinosLowError(const std::string& param) const;
+
+   /**
+      Retrieve the minos high error for a parameter.
+
+      \param param The parameter to retrieve the value from.
+      \return The minos high error of the specified parameter.
+   */
+   double MinosHighError(const std::string& param) const;
+
+   /**
       Retrieve the ID of a parameter.
 
       \param param The parameter whose ID is to be found.
@@ -270,9 +382,38 @@ private:
       \param path The path within the specified node (e.g. "child/grandchild").
       \param def The default value to use if the path does not exist.
    */
-   template <class T>
-   void SetParameterValue(T& value, TXMLEngine* xml, XMLNodePointer_t node,
-         const std::string& path, const T def);
+   void SetParameterValue(double& value, TXMLEngine* xml, XMLNodePointer_t node,
+         const std::string& path, const double def);
+
+   /**
+      Sets a particular parameter value.
+
+      The value is read from XML if available, otherwise a default value is
+      applied.
+
+      \param value A reference to the variable where the value will be stored.
+      \param xml The TXMLEngine to perform the parsing.
+      \param node The node within which to search for values.
+      \param path The path within the specified node (e.g. "child/grandchild").
+      \param def The default value to use if the path does not exist.
+   */
+   void SetParameterValue(bool& value, TXMLEngine* xml, XMLNodePointer_t node,
+         const std::string& path, const bool def);
+
+   /**
+      Sets a particular parameter value.
+
+      The value is read from XML if available, otherwise a default value is
+      applied.
+
+      \param value A reference to the variable where the value will be stored.
+      \param xml The TXMLEngine to perform the parsing.
+      \param node The node within which to search for values.
+      \param path The path within the specified node (e.g. "child/grandchild").
+      \param def The default value to use if the path does not exist.
+   */
+   void SetParameterValue(std::string& value, TXMLEngine* xml, XMLNodePointer_t node,
+         const std::string& path, const std::string& def);
 
    /**
       Processes a parameter to specify all of its values.
@@ -331,7 +472,12 @@ private:
       */
       Param(const std::string& name, conv::PhysParamId_t id):
          _name{name}, _id{id}, _bestfit{0.0}, _initial{0.0}, _minimum{0.0},
-         _maximum{0.0}, _stepsize{0.0}, _scaling{0.0}, _isMarginalised{false}
+         _maximum{0.0}, _stepsize{0.0}, _scaling{0.0}, _isMarginalised{false},
+         _gausMean{0.0}, _gausSigma{0.0}, _flatMinimum{0.0}, _flatMaximum{0.0},
+         _userFilename{""}, _isFixed{false}, _isNuisance{false},
+         _hasMigradError{false}, _migradError{0.0}, _hasHesseError{false},
+         _hesseError{0.0}, _hasMinosError{false}, _minosLowError{0.0},
+         _minosHighError{0.0}
       {
       }
 
@@ -344,6 +490,20 @@ private:
       double _stepsize;
       double _scaling;
       bool _isMarginalised;
+      double _gausMean;
+      double _gausSigma;
+      double _flatMinimum;
+      double _flatMaximum;
+      std::string _userFilename;
+      bool _isFixed;
+      bool _isNuisance;
+      bool _hasMigradError;
+      double _migradError;
+      bool _hasHesseError;
+      double _hesseError;
+      bool _hasMinosError;
+      double _minosLowError;
+      double _minosHighError;
    };
 
 public:

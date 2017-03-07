@@ -160,7 +160,8 @@ public:
 
       \return True if the numbers are equal within tolerance, false otherwise.
    */
-   static bool Equal(double obs, double exp, double tol = 1E-6);
+   static bool Equal(const double obs, const double exp,
+         const double tol = 1E-6);
 
    /**
       Tests the equality of integer values.
@@ -170,7 +171,17 @@ public:
 
       \return True if the numbers are equal.
    */
-   static bool Equal(int obs, int exp);
+   static bool Equal(const int obs, const int exp);
+
+   /**
+      Tests the equality of string values.
+
+      \param obs The observed value.
+      \param exp The expected value.
+
+      \return True if the strings are equal.
+   */
+   static bool Equal(const std::string& obs, const std::string& exp);
 
    /**
       Tests if a boolean value is true.
@@ -179,7 +190,7 @@ public:
 
       \return True if the value is true.
    */
-   static bool True(bool obs);
+   static bool True(const bool obs);
 
    /**
       Tests if a boolean value is false.
@@ -188,7 +199,7 @@ public:
 
       \return True if the value is false.
    */
-   static bool False(bool obs);
+   static bool False(const bool obs);
 
 protected:
    Test(): _arg{nullptr}{ }

@@ -87,6 +87,62 @@ public:
    bool TestIsMarginalised();
 
    /**
+      Check that gaussian priors are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestGaussianPrior();
+
+   /**
+      Check that flat priors are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestFlatPrior();
+
+   /**
+      Check that user priors are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestUserPrior();
+
+   /**
+      Check that the fixed property is set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestIsFixed();
+
+   /**
+      Check that the nuisance property is set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestIsNuisance();
+
+   /**
+      Check that migrad errors are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestMigradErrors();
+
+   /**
+      Check that hesse errors are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestHesseErrors();
+
+   /**
+      Check that minos errors are set correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestMinosErrors();
+
+   /**
       Check the number of parameters loaded is as expected.
 
       \return True if the test passed, false otherwise.

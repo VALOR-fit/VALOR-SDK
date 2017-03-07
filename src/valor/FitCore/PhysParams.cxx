@@ -169,6 +169,90 @@ bool PhysParams::IsMarginalised(const std::string& param) const
    return _parameters.at(param)->_isMarginalised;
 }
 
+double PhysParams::GaussianPriorMean(const std::string& param) const
+{
+   StrictCheck(param, "Gaussian prior mean value");
+   return _parameters.at(param)->_gausMean;
+}
+
+double PhysParams::GaussianPriorSigma(const std::string& param) const
+{
+   StrictCheck(param, "Gaussian prior sigma value");
+   return _parameters.at(param)->_gausSigma;
+}
+
+double PhysParams::FlatPriorMinimum(const std::string& param) const
+{
+   StrictCheck(param, "Flat prior minimum value");
+   return _parameters.at(param)->_flatMinimum;
+}
+
+double PhysParams::FlatPriorMaximum(const std::string& param) const
+{
+   StrictCheck(param, "Flat prior maximum value");
+   return _parameters.at(param)->_flatMaximum;
+}
+
+const std::string& PhysParams::UserPriorFilename(const std::string& param) const
+{
+   StrictCheck(param, "User prior histogram");
+   return _parameters.at(param)->_userFilename;
+}
+
+bool PhysParams::IsFixed(const std::string& param) const
+{
+   StrictCheck(param, "Fixed");
+   return _parameters.at(param)->_isFixed;
+}
+
+bool PhysParams::IsNuisance(const std::string& param) const
+{
+   StrictCheck(param, "Nuisance");
+   return _parameters.at(param)->_isNuisance;
+}
+
+bool PhysParams::IsMigradErrorSet(const std::string& param) const
+{
+   StrictCheck(param, "Migrad error set");
+   return _parameters.at(param)->_hasMigradError;
+}
+
+double PhysParams::MigradError(const std::string& param) const
+{
+   StrictCheck(param, "Migrad error");
+   return _parameters.at(param)->_migradError;
+}
+
+bool PhysParams::IsHesseErrorSet(const std::string& param) const
+{
+   StrictCheck(param, "Hesse error set");
+   return _parameters.at(param)->_hasHesseError;
+}
+
+double PhysParams::HesseError(const std::string& param) const
+{
+   StrictCheck(param, "Hesse error");
+   return _parameters.at(param)->_hesseError;
+}
+
+bool PhysParams::IsMinosErrorSet(const std::string& param) const
+{
+   StrictCheck(param, "Minos error set");
+   return _parameters.at(param)->_hasMinosError;
+}
+
+double PhysParams::MinosLowError(const std::string& param) const
+{
+   StrictCheck(param, "Minos low error");
+   return _parameters.at(param)->_minosLowError;
+}
+
+double PhysParams::MinosHighError(const std::string& param) const
+{
+   StrictCheck(param, "Minos high error");
+   return _parameters.at(param)->_minosHighError;
+}
+
 conv::PhysParamId_t PhysParams::GetParamId(const std::string& param) const
 {
    // Check if the parameter exists
@@ -221,9 +305,8 @@ void PhysParams::ProcessParameters(const string& parameterList)
    }
 }
 
-template <class T>
-void PhysParams::SetParameterValue(T& value, TXMLEngine* xml,
-      XMLNodePointer_t node, const std::string& path, const T def)
+void PhysParams::SetParameterValue(double& value, TXMLEngine* xml,
+      XMLNodePointer_t node, const std::string& path, const double def)
 {
    // Set parameter value, using default if necessary
    if(util::NodeExists(xml, node, path))
@@ -233,6 +316,34 @@ void PhysParams::SetParameterValue(T& value, TXMLEngine* xml,
    else
    {  // No value specified, use default
       value = def;
+   }
+}
+
+void PhysParams::SetParameterValue(bool& value, TXMLEngine* xml,
+      XMLNodePointer_t node, const std::string& path, const bool def)
+{
+   // Set parameter value, using default if necessary
+   if(util::NodeExists(xml, node, path))
+   {  // Value is specified, read it
+      value = util::XML2Bool(xml, node, path);
+   }
+   else
+   {  // No value specified, use default
+      value = def;
+   }
+}
+
+void PhysParams::SetParameterValue(std::string& value, TXMLEngine* xml,
+      XMLNodePointer_t node, const std::string& path, const std::string& def)
+{
+   // Set parameter value, using default if necessary
+   if(util::NodeExists(xml, node, path))
+   {  // Value is specified, read it
+      value = util::XML2String(xml, node, path);
+   }
+   else
+   {  // No value specified, use default
+      value = std::string(def);
    }
 }
 
@@ -257,6 +368,34 @@ void PhysParams::ProcessParameter(TXMLEngine* xml, XMLNodePointer_t node)
          _defaults->_scaling);
    SetParameterValue(_parameters[name]->_isMarginalised, xml, node,
          "marginalisation/set", _defaults->_isMarginalised);
+   SetParameterValue(_parameters[name]->_gausMean, xml, node,
+         "marginalisation/priors/gaus/mean", _defaults->_gausMean);
+   SetParameterValue(_parameters[name]->_gausSigma, xml, node,
+         "marginalisation/priors/gaus/sigma", _defaults->_gausSigma);
+   SetParameterValue(_parameters[name]->_flatMinimum, xml, node,
+         "marginalisation/priors/flat/minimum", _defaults->_flatMinimum);
+   SetParameterValue(_parameters[name]->_flatMaximum, xml, node,
+         "marginalisation/priors/flat/maximum", _defaults->_flatMaximum);
+   SetParameterValue(_parameters[name]->_userFilename, xml, node,
+         "marginalisation/priors/user/histogram", _defaults->_userFilename);
+   SetParameterValue(_parameters[name]->_isFixed, xml, node,
+         "properties/fixed", _defaults->_isFixed);
+   SetParameterValue(_parameters[name]->_isNuisance, xml, node,
+         "properties/fixed", _defaults->_isNuisance);
+   SetParameterValue(_parameters[name]->_hasMigradError, xml, node,
+         "errors/migrad/set", _defaults->_hasMigradError);
+   SetParameterValue(_parameters[name]->_migradError, xml, node,
+         "errors/migrad/error", _defaults->_migradError);
+   SetParameterValue(_parameters[name]->_hasHesseError, xml, node,
+         "errors/hesse/set", _defaults->_hasHesseError);
+   SetParameterValue(_parameters[name]->_hesseError, xml, node,
+         "errors/hesse/error", _defaults->_hesseError);
+   SetParameterValue(_parameters[name]->_hasMinosError, xml, node,
+         "errors/minos/set", _defaults->_hasMinosError);
+   SetParameterValue(_parameters[name]->_minosLowError, xml, node,
+         "errors/minos/low_error", _defaults->_minosLowError);
+   SetParameterValue(_parameters[name]->_minosHighError, xml, node,
+         "errors/minos/high_error", _defaults->_minosHighError);
 }
 
 void PhysParams::ProcessDefaults(TXMLEngine* xml, XMLNodePointer_t node)
@@ -268,6 +407,27 @@ void PhysParams::ProcessDefaults(TXMLEngine* xml, XMLNodePointer_t node)
    _defaults->_stepsize = util::XML2Dbl(xml, node, "values/step_size");
    _defaults->_scaling = util::XML2Dbl(xml, node, "values/scaling");
    _defaults->_isMarginalised = util::XML2Bool(xml, node, "marginalisation/set");
+   _defaults->_gausMean = util::XML2Dbl(xml, node,
+         "marginalisation/priors/gaus/mean");
+   _defaults->_gausSigma = util::XML2Dbl(xml, node,
+         "marginalisation/priors/gaus/sigma");
+   _defaults->_flatMinimum = util::XML2Dbl(xml, node,
+         "marginalisation/priors/flat/minimum");
+   _defaults->_flatMaximum = util::XML2Dbl(xml, node,
+         "marginalisation/priors/flat/maximum");
+   _defaults->_userFilename = util::XML2String(xml, node,
+         "marginalisation/priors/user/histogram");
+   _defaults->_isFixed = util::XML2Bool(xml, node, "properties/fixed");
+   _defaults->_isNuisance = util::XML2Bool(xml, node, "properties/nuisance");
+   _defaults->_hasMigradError = util::XML2Bool(xml, node, "errors/migrad/set");
+   _defaults->_migradError = util::XML2Dbl(xml, node, "errors/migrad/error");
+   _defaults->_hasHesseError = util::XML2Bool(xml, node, "errors/hesse/set");
+   _defaults->_hesseError = util::XML2Dbl(xml, node, "errors/hesse/error");
+   _defaults->_hasMinosError = util::XML2Bool(xml, node, "errors/minos/set");
+   _defaults->_minosLowError = util::XML2Dbl(xml, node,
+         "errors/minos/low_error");
+   _defaults->_minosHighError = util::XML2Dbl(xml, node,
+         "errors/minos/high_error");
 }
 
 void PhysParams::StrictCheck(const std::string& param, const std::string& value)
