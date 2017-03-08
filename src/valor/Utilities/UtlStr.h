@@ -18,6 +18,7 @@
 #ifndef _valor_str_utils_h_
 #define _valor_str_utils_h_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,17 @@ namespace util {
   
 } // util
 } // valor
-  
+
+// Operator to stream a std::vector [like,this]
+// Maybe we should do make sure this never clashes with another template to do the same thing?
+template<class T> std::ostream& operator<<(std::ostream& os, const std::vector<T> & v)
+{
+  for (unsigned int i = 0; i < v.size() ; i++) {
+    os<<(i?",":"[")<<v[i];
+  }
+  return os<<"]";
+}
+
 #endif
 
 
