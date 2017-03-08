@@ -40,7 +40,9 @@ typedef enum EKineVar
    kvq3reco,          // reconstructed hadronic energy along the z-direction
    kvmodqreco         // reconstructed magnitude of the 3-momentum
 } 
-KineVar_t; 
+KineVar_t;
+
+const int kNKineVarMax = conv::kvmodqreco+1;
 
 } // conv
 
