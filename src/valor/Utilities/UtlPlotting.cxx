@@ -30,7 +30,7 @@ void UtlPlotting::GenericPlot(TH1* histogram, const std::string& title,
    c.cd();
 
    histogram->SetTitle(title.c_str());
-   histogram->SetStats(nullptr);
+   histogram->SetStats(false);
 
    TAxis* x = histogram->GetXaxis();
    x->SetTitle(xTitle.c_str());
