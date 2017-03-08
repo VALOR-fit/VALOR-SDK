@@ -102,6 +102,7 @@ public:
 
   // Variable -> Dimension
   unsigned int Dimension(conv::KineVar_t kv) const;
+  bool Contains(conv::KineVar_t kv) const;
 
   // Number of bins by dimension or kinematical variable
   unsigned int NBins (unsigned int dimension ) const;

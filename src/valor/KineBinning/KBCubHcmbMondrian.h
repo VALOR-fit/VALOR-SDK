@@ -102,6 +102,7 @@ public:
 
   // Variable -> Dimension
   unsigned int Dimension(conv::KineVar_t kv) const;
+  bool Contains(conv::KineVar_t kv) const;
 
   // Number of multi-dimensional bins 
   int NBins (void) const { return fNBins; }

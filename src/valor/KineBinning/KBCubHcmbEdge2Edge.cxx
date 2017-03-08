@@ -533,6 +533,12 @@ unsigned int KBCubHcmbEdge2Edge::Dimension(conv::KineVar_t kv) const
   return dimension;
 }
 //________________________________________________________________________________________
+bool KBCubHcmbEdge2Edge::Contains(conv::KineVar_t kv) const
+{
+  std::map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
+  return (it != fKineVar2Dim.end());
+}
+//________________________________________________________________________________________
 conv::KineVar_t KBCubHcmbEdge2Edge::KineVar(unsigned int dimension)
 {
   if(dimension < fNDimensions) return fKineVars[dimension];

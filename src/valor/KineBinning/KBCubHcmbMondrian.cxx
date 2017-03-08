@@ -458,6 +458,12 @@ unsigned int KBCubHcmbMondrian::Dimension(conv::KineVar_t kv) const
   return dimension;
 }
 //________________________________________________________________________________________
+bool KBCubHcmbMondrian::Contains(conv::KineVar_t kv) const
+{
+  std::map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
+  return (it != fKineVar2Dim.end());
+}
+//________________________________________________________________________________________
 std::vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void) const
 {
   //
