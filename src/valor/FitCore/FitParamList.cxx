@@ -212,6 +212,11 @@ void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
 void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix)
 {
   TMatrixDSym & m = *fCovMatrix;
+  if (m.GetNrows()!=covmatrix.GetNrows()) {
+    LOG("FitParmList",pERROR) << "Cov matrix given has "<<covmatrix.GetNrows()
+      <<" elements but FPL needs "<<m.GetNrows()<<" elements.";
+    util::Die(-1) ; return;
+  }
   for(int ip = 0; ip < fNParams; ip++) {
     for(int jp = 0; jp < fNParams; jp++) {
       m[ip][jp] = covmatrix[ip][jp];
