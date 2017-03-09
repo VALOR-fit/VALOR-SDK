@@ -46,7 +46,7 @@ void MondrianKBTest::Setup()
 {
    // Retrieve the location of the Mondrian XML file
    std::string filename = _arg->GetString("reco-binning-file");
-   std::string fullFilename = util::UtlFile::GetConfigurationFilename(filename);
+   std::string fullFilename = util::file::GetConfigurationFilename(filename);
 
    _binning = new KBCubHcmbMondrian;
    _binning->Read(fullFilename);

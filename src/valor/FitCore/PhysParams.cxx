@@ -19,7 +19,6 @@ PhysParams* PhysParams::_instance = nullptr;
 
 using std::string;
 using std::vector;
-using util::UtlFile;
 
 PhysParams::PhysParams():
    _defaults{new Param("default", Undefined)},
@@ -52,7 +51,7 @@ PhysParams* PhysParams::Instance()
 
 void PhysParams::Read(const string& filename)
 {
-   string fullFilename = UtlFile::GetConfigurationFilename(filename);
+   string fullFilename = util::file::GetConfigurationFilename(filename);
 
    // Check that the config file exists.
    if(fullFilename.empty())
@@ -91,7 +90,7 @@ void PhysParams::Read(const string& filename)
 
 void PhysParams::Select(const string& filename)
 {
-   string fullFilename = UtlFile::GetConfigurationFilename(filename);
+   string fullFilename = util::file::GetConfigurationFilename(filename);
 
    // Check that the config file exists.
    if(fullFilename.empty())

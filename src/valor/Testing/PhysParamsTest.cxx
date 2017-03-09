@@ -259,9 +259,9 @@ bool PhysParamsTestCase::TestInvalidParams()
 void PhysParamsTest::Setup()
 {
    // Retrieve the location of the XML configuration file
-   std::string selFilename = util::UtlFile::GetConfigurationFilename(
+   std::string selFilename = util::file::GetConfigurationFilename(
          _arg->GetString("params-sel-file"));
-   std::string specFilename = util::UtlFile::GetConfigurationFilename(
+   std::string specFilename = util::file::GetConfigurationFilename(
          _arg->GetString("params-spec-file"));
 
    _params = PhysParams::Instance();

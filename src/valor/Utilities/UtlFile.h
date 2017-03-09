@@ -27,11 +27,8 @@ namespace valor
 {
 namespace util
 {
-
-class UtlFile
+namespace file
 {
-public:
-
    /**
       Takes an input filename and returns a filename with special characters
       expanded and relative paths resolved.
@@ -45,7 +42,7 @@ public:
       \return The expanded path to the requested file, if it exists, an empty
          string otherwise.
    */
-   static std::string GetConfigurationFilename(const std::string& filename);
+   std::string GetConfigurationFilename(const std::string& filename);
 
    /**
       Takes an input filename and returns a filename with special characters
@@ -60,7 +57,7 @@ public:
       \return The expanded path to the requested file, if it exists, an empty
          string otherwise.
    */
-   static std::string GetDataFilename(const std::string& filename);
+   std::string GetDataFilename(const std::string& filename);
 
    /**
       Takes an input filename and returns a filename with special characters
@@ -75,29 +72,8 @@ public:
       \return The expanded path to the requested file, if it exists, an empty
          string otherwise.
    */
-   static std::string GetFilename(const std::string& filename);
-
-private:
-   UtlFile(){ }
-
-   /**
-      Takes an input filename and returns a filename with special characters
-      expanded and relative paths resolved.
-
-      This method first expands any special characters (e.g ${HOME}) and then
-      attempts to resolve the file location. If the file is not found using this
-      path, the alternative path is also searched, and if found, this file
-      location is used.
-
-      \param filename The name of the file to be resolved.
-      \param altPath The alternative path to search.
-      \return The expanded path to the requested file, if it exists, an empty
-         string otherwise.
-   */
-   static std::string GetFilename(const std::string& filename,
-         const std::string& altPath);
-};
-
+   std::string GetFilename(const std::string& filename);
+}
 }
 }
 

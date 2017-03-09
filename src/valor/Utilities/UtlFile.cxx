@@ -10,23 +10,24 @@ namespace valor
 {
 namespace util
 {
-
-std::string UtlFile::GetConfigurationFilename(const std::string& filename)
+namespace file
 {
-   return GetFilename(filename, Env::Instance()->TopLevelConfDir());
-}
 
-std::string UtlFile::GetDataFilename(const std::string& filename)
-{
-   return GetFilename(filename, Env::Instance()->TopLevelDataDir());
-}
+/**
+   Takes an input filename and returns a filename with special characters
+   expanded and relative paths resolved.
 
-std::string UtlFile::GetFilename(const std::string& filename)
-{
-   return GetFilename(filename, Env::Instance()->TopLevelDir());
-}
+   This method first expands any special characters (e.g ${HOME}) and then
+   attempts to resolve the file location. If the file is not found using this
+   path, the alternative path is also searched, and if found, this file
+   location is used.
 
-std::string UtlFile::GetFilename(const std::string& filename,
+   \param filename The name of the file to be resolved.
+   \param altPath The alternative path to search.
+   \return The expanded path to the requested file, if it exists, an empty
+      string otherwise.
+*/
+std::string GetExpandedFilename(const std::string& filename,
       const std::string& altPath)
 {
    std::string resolved{""};
@@ -42,12 +43,12 @@ std::string UtlFile::GetFilename(const std::string& filename,
       delete[] temp;
       temp = gSystem->ExpandPathName(sstream.str().c_str());
       if(not(gSystem->GetPathInfo(temp, dummy)))
-      {  // Strange return value convenction - zero means found
+      {  // Strange return value convention - zero means found
          resolved = temp;
       }
    }
    else
-   {  // Strange return value convenction - zero means found
+   {  // Strange return value convention - zero means found
       resolved = temp;
    }
 
@@ -56,5 +57,21 @@ std::string UtlFile::GetFilename(const std::string& filename,
    return resolved;
 }
 
+std::string GetConfigurationFilename(const std::string& filename)
+{
+   return GetExpandedFilename(filename, Env::Instance()->TopLevelConfDir());
+}
+
+std::string GetDataFilename(const std::string& filename)
+{
+   return GetExpandedFilename(filename, Env::Instance()->TopLevelDataDir());
+}
+
+std::string GetFilename(const std::string& filename)
+{
+   return GetExpandedFilename(filename, Env::Instance()->TopLevelDir());
+}
+
+}
 }
 }
