@@ -21,9 +21,6 @@
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace valor {
 
 class CmdLnArgParser {
@@ -35,33 +32,30 @@ public:
   // Methods to check the existence of single character switches (eg -f, -s)
   // and retrieve the command-line argument following the switch
 
-  bool          OptionExists (char opt, bool set_used = true) const;   ///< was option set?
-  const char *  Arg          (char opt) const;   ///< return argument following -`opt'
-
-  string         ArgAsString       (char opt) const;
-  vector<string> ArgAsStringTokens (char opt, string delimeter) const;
+  bool                      OptionExists (char opt, bool set_used = true) const;   ///< was option set?
   
-  vector<string> ArgAsStringTokens (string opt, string delimeter) const;
+  std::string               ArgAsString       (char opt) const;
+  std::vector<std::string>  ArgAsStringTokens (char opt, std::string delimeter) const;
+  std::vector<std::string>  ArgAsStringTokens (std::string opt, std::string delimeter) const;
   
-  double                ArgAsDouble       (char opt) const;
-  vector<double>        ArgAsDoubleTokens (char opt, string delimeter) const;
-  int                   ArgAsInt          (char opt) const;
-  vector<int>           ArgAsIntTokens    (char opt, string delimeter) const;
-  unsigned int          ArgAsUInt         (char opt) const;
-  vector<unsigned int>  ArgAsUIntTokens   (char opt, string delimeter) const;
-  long                  ArgAsLong         (char opt) const;
-  vector<long>          ArgAsLongTokens   (char opt, string delimeter) const;
+  double                    ArgAsDouble       (char opt) const;
+  std::vector<double>       ArgAsDoubleTokens (char opt, std::string delimeter) const;
+  int                       ArgAsInt          (char opt) const;
+  std::vector<int>          ArgAsIntTokens    (char opt, std::string delimeter) const;
+  unsigned int              ArgAsUInt         (char opt) const;
+  std::vector<unsigned int> ArgAsUIntTokens   (char opt, std::string delimeter) const;
+  long                      ArgAsLong         (char opt) const;
+  std::vector<long>         ArgAsLongTokens   (char opt, std::string delimeter) const;
 
   // As above, but supporting multi-character switches (eg --with-x-file )
-
-  bool    OptionExists (string opt, bool set_used = true) const; ///< was option set?
-  const char *  Arg    (string opt) const; ///< return argument following --`opt'
-
-  string         ArgAsString       (string opt) const;
-  double         ArgAsDouble       (string opt) const;
-  int            ArgAsInt          (string opt) const;
-  unsigned int   ArgAsUInt         (string opt) const;
-  long           ArgAsLong         (string opt) const;
+  
+  bool    OptionExists (std::string opt, bool set_used = true) const; ///< was option set?
+  
+  std::string    ArgAsString       (std::string opt) const;
+  double         ArgAsDouble       (std::string opt) const;
+  int            ArgAsInt          (std::string opt) const;
+  unsigned int   ArgAsUInt         (std::string opt) const;
+  long           ArgAsLong         (std::string opt) const;
   
   // Method to make sure all arguments given been identified
   bool RecognisedAllArgs() const;
@@ -71,7 +65,8 @@ private:
   int     fArgc;
   char ** fArgv;
   
-  bool * fArgUsed;
+  // Saves whether each argument has been used or not.
+  mutable std::vector<bool> fArgUsed;
   
 };
 

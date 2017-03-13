@@ -8,6 +8,9 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 
 #include <cctype>
 #include <cstdlib>
+#include <string>
+
+#include "TMath.h"
 
 #include "valor/CmdLine/CmdLnArgParser.h"
 #include "valor/Messenger/Messenger.h"
@@ -16,12 +19,14 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "valor/Utilities/Env.h"
 
 using namespace valor;
+using std::string;
+using std::vector;
 
 //____________________________________________________________________________
 CmdLnArgParser::CmdLnArgParser(int argc, char **argv) :
   fArgc(argc),
   fArgv(argv),
-  fArgUsed(new bool[fArgc])
+  fArgUsed(fArgc,false)
 {
   TString conf_dir  = valor::Env::Instance()->TopLevelConfDir();
   TString verbosity = conf_dir + "/verbosity.xml";
@@ -37,16 +42,12 @@ CmdLnArgParser::CmdLnArgParser(int argc, char **argv) :
 //____________________________________________________________________________
 CmdLnArgParser::~CmdLnArgParser()
 {
-  if (fArgUsed) {delete[] fArgUsed;}
 }
 //____________________________________________________________________________
-const char * CmdLnArgParser::Arg(char op) const
+std::string CmdLnArgParser::ArgAsString(char op) const
 {
-  const int buf_size = 2048;
-
-  //bool    set       = false;
-  char *  argument  = new char[buf_size];
-  strcpy(argument, "");
+  
+  std::string argument;
 
   int     argc = fArgc;
   char ** argv = fArgv;
@@ -64,10 +65,10 @@ const char * CmdLnArgParser::Arg(char op) const
         LOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
 
         if (strlen(&argv[1][2]) ) {
-          strcpy(argument,&argv[1][2]);
+          argument = &argv[1][2];
           //set = true;
           LOG("Parser", pINFO) 
-            << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
+            << "Set opt = [" << op << "] to val = [" << argument << "] "<<" from "<<argv[1][2]<<"(args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
           
         }
         else if( (argc>2) && 
@@ -78,7 +79,7 @@ const char * CmdLnArgParser::Arg(char op) const
 
           argc--;
           argv++;
-          strcpy(argument,&argv[1][0]);
+          argument = &argv[1][0];
           //set = true;
           LOG("Parser", pINFO) 
             << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
@@ -116,15 +117,6 @@ bool CmdLnArgParser::OptionExists(char op, bool set_used) const
   return set;
 }
 //____________________________________________________________________________
-string CmdLnArgParser::ArgAsString(char op) const
-{
-  const char * argument = this->Arg(op);
-  string value = string(argument);
-  delete [] argument;
-
-  return value;
-}
-//____________________________________________________________________________
 vector<string> CmdLnArgParser::ArgAsStringTokens(char op, string delimeter) const
 {
   string argument = this->ArgAsString(op);
@@ -144,9 +136,8 @@ vector<string> CmdLnArgParser::ArgAsStringTokens(string op, string delimeter) co
 //____________________________________________________________________________
 double CmdLnArgParser::ArgAsDouble(char op) const
 {
-  const char * argument = this->Arg(op);
-  double value = atof(argument);
-  delete [] argument;
+  std::string argument = this->ArgAsString(op);
+  double value = std::atof(argument.c_str());
 
   return value;
 }
@@ -158,26 +149,32 @@ vector<double> CmdLnArgParser::ArgAsDoubleTokens(char op, string delimeter) cons
   vector<string>::const_iterator iter = strtokens.begin();
   for( ; iter != strtokens.end(); ++iter) {
     string arg = *iter;
-    tokens.push_back(atof(arg.c_str()));
+    tokens.push_back(std::atof(arg.c_str()));
   }
   return tokens;
 }
 //____________________________________________________________________________
 int CmdLnArgParser::ArgAsInt(char op) const
 {
-  const char * argument = this->Arg(op);
-  int value = atoi(argument);
-  delete [] argument;
-
+  std::string argument = this->ArgAsString(op);
+  int value = std::atoi(argument.c_str());
+  // If there's an e in it, treat it as a double
+  if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+    value = TMath::Nint(std::atof(argument.c_str()));
+  }
   return value;
 }
 //____________________________________________________________________________
 unsigned int CmdLnArgParser::ArgAsUInt(char op) const
 {
-  const char * argument = this->Arg(op);
-  unsigned int value = strtoul(argument,NULL,0);
-  delete [] argument;
-
+  std::string argument = this->ArgAsString(op);
+  unsigned int value = std::strtoul(argument.c_str(),NULL,0);
+  // If there's an e in it, treat it as a double
+  if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+    double as_d = std::atof(argument.c_str());
+    value = TMath::Nint(as_d);
+    if (as_d < 0) { LOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
+  }
   return value;
 }
 //____________________________________________________________________________
@@ -187,8 +184,14 @@ vector<int> CmdLnArgParser::ArgAsIntTokens(char op, string delimeter) const
   vector<int> tokens;
   vector<string>::const_iterator iter = strtokens.begin();
   for( ; iter != strtokens.end(); ++iter) {
-    string arg = *iter;
-    tokens.push_back(atoi(arg.c_str()));
+    string argument = *iter;
+    int value = std::atoi(argument.c_str());
+    if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+      double as_d = std::atof(argument.c_str());
+      value = TMath::Nint(as_d);
+      if (as_d < 0) { LOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
+    }
+    tokens.push_back(value);
   }
   return tokens;
 }
@@ -199,18 +202,27 @@ vector<unsigned int> CmdLnArgParser::ArgAsUIntTokens(char op, string delimeter) 
   vector<unsigned int> tokens;
   vector<string>::const_iterator iter = strtokens.begin();
   for( ; iter != strtokens.end(); ++iter) {
-    string arg = *iter;
-    tokens.push_back(strtoul(arg.c_str(),NULL,0));
+    string argument = *iter;
+    unsigned int value = std::strtoul(argument.c_str(),NULL,0);
+    // If there's an e in it, treat it as a double
+    if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+      double as_d = std::atof(argument.c_str());
+      value = TMath::Nint(as_d);
+      if (as_d < 0) { LOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
+    }
+    tokens.push_back(value);
   }
   return tokens;
 }
 //____________________________________________________________________________
 long CmdLnArgParser::ArgAsLong(char op) const
 {
-  const char * argument = this->Arg(op);
-  long value = atol(argument);
-  delete [] argument;
-
+  std::string argument = this->ArgAsString(op);
+  long value = std::atol(argument.c_str());
+  // If there's an e in it, treat it as a double
+  if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+    value = TMath::Nint(std::atof(argument.c_str()));
+  }
   return value;
 }
 //____________________________________________________________________________
@@ -220,18 +232,20 @@ vector<long> CmdLnArgParser::ArgAsLongTokens(char op, string delimeter) const
   vector<long> tokens;
   vector<string>::const_iterator iter = strtokens.begin();
   for( ; iter != strtokens.end(); ++iter) {
-    string arg = *iter;
-    tokens.push_back(atol(arg.c_str()));
+    string argument = *iter;
+    long value = std::atol(argument.c_str());
+    // If there's an e in it, treat it as a double
+    if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+      value = TMath::Nint(std::atof(argument.c_str()));
+    }
+    tokens.push_back(value);
   }
   return tokens;
 }
 //____________________________________________________________________________
-const char * CmdLnArgParser::Arg(string op) const
+std::string CmdLnArgParser::ArgAsString(string op) const
 {
-  const int buf_size = 2048;
-  //bool    set        = false;
-  char *  argument   = new char[buf_size];
-  strcpy(argument, "");
+  std::string argument;
 
   int     argc  = fArgc;
   char ** argv  = fArgv;
@@ -243,27 +257,27 @@ const char * CmdLnArgParser::Arg(string op) const
 
     if (argv[1][0] == '-' && argv[1][1] == '-') {      
       //char * op_cur = strndup(argv[1]+2,strlen(argv[1]));
-      char op_cur[buf_size];
-      strcpy(op_cur,&argv[1][2]);
+      const char * op_cur = &argv[1][2];
       LOG("Parser", pDEBUG) 
         << "Got string following '--' : " << op_cur;
       if (strcmp(op.c_str(),op_cur)==0) {
         LOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
 
         if (strlen(&argv[2][0]) ) {
-          strcpy(argument,&argv[2][0]);
+          argument = &argv[2][0];
           //set = true;
           LOG("Parser", pINFO) 
             << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
 
-        } else if( (argc>2) && 
+        }
+        else if( (argc>2) && 
             !(argv[2][0]=='-' &&argv[2][1]=='-' && isalpha(argv[2][2])) ) {
           LOG("Parser", pDEBUG) 
             << "argc>2 and next arg not a '--' followed by an alpha char";
 
           argc--;
           argv++;
-          strcpy(argument,&argv[1][0]);
+          argument = &argv[1][0];
           //set = true;
           LOG("Parser", pINFO) 
             << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
@@ -284,7 +298,6 @@ const char * CmdLnArgParser::Arg(string op) const
 //____________________________________________________________________________
 bool CmdLnArgParser::OptionExists(string op, bool set_used) const
 {
-  const int buf_size = 2048;
   bool set = false;
 
   int     argc = fArgc;
@@ -292,10 +305,7 @@ bool CmdLnArgParser::OptionExists(string op, bool set_used) const
 
   while(argc>1) {
     if(argv[1][0] == '-' && argv[1][1] == '-') {
-      //char * op_cur =  strndup(argv[1]+2,strlen(argv[1]));
-      char op_cur[buf_size];
-      strcpy(op_cur,&argv[1][2]);
-      if (strcmp(op.c_str(),op_cur)==0) {
+      if (strcmp(op.c_str(),&argv[1][2])==0) {
         set = true;
         if (set_used) {fArgUsed[fArgc-argc+1] = true;}
       }
@@ -307,48 +317,45 @@ bool CmdLnArgParser::OptionExists(string op, bool set_used) const
   return set;
 }
 //____________________________________________________________________________
-string CmdLnArgParser::ArgAsString(string op) const
-{
-  const char * argument = this->Arg(op);
-  string value = string(argument);
-  delete [] argument;
-
-  return value;
-}
-//____________________________________________________________________________
 double CmdLnArgParser::ArgAsDouble(string op) const
 {
-  const char * argument = this->Arg(op);
-  double value = atof(argument);
-  delete [] argument;
-
+  std::string argument = this->ArgAsString(op);
+  double value = std::atof(argument.c_str());
   return value;
 }
 //____________________________________________________________________________
 int CmdLnArgParser::ArgAsInt(string op) const
 {
-  const char * argument = this->Arg(op);
-  int value = atoi(argument);
-  delete [] argument;
-
+  std::string argument = this->ArgAsString(op);
+  int value = std::atoi(argument.c_str());
+  // If there's an e in it, treat it as a double
+  if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+    value = TMath::Nint(std::atof(argument.c_str()));
+  }
   return value;
 }
 //____________________________________________________________________________
 unsigned int CmdLnArgParser::ArgAsUInt(string op) const
 {
-  const char * argument = this->Arg(op);
-  int value = strtoul(argument,NULL,0);
-  delete [] argument;
-
+  std::string argument = this->ArgAsString(op);
+  unsigned int value = std::strtoul(argument.c_str(),NULL,0);
+  // If there's an e in it, treat it as a double
+  if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+    double as_d = std::atof(argument.c_str());
+    value = TMath::Nint(as_d);
+    if (as_d < 0) { LOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
+  }
   return value;
 }
 //____________________________________________________________________________
 long CmdLnArgParser::ArgAsLong(string op) const
 {
-  const char * argument = this->Arg(op);
-  long value = atol(argument);
-  delete [] argument;
-
+  std::string argument = this->ArgAsString(op);
+  long value = std::atol(argument.c_str());
+  // If there's an e in it, treat it as a double
+  if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
+    value = TMath::Nint(std::atof(argument.c_str()));
+  }
   return value;
 }
 //____________________________________________________________________________

@@ -90,10 +90,10 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
     while (!file.eof()) {
       string line = "";
       std::getline(file,line);
+      line = util::TrimSpaces(line);
       LOG("CmdLnArgList",pDEBUG) << "Read line: " << line;
-      if(line.find('#') != string::npos) {
+      if(line[0] == '#') {
         // comment line, continue
-        // stricly speaking should check the first character other than space...
         continue;
       }
       if(line.size() == 0) {         
