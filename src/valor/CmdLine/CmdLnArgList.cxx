@@ -39,6 +39,8 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
 
   LOG("CmdLnArgList",pINFO)
     << "Reading command-line argument specs from: " << arg_spec_files;
+    
+  bool failure = false;
 
   // list of argument spec files
   vector<string> fv;
@@ -70,7 +72,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
       if(!env_var_value) {
         LOG("CmdLnArgList",pERROR)
           << "Undefined env. var: " << env_var;
-        return false;
+        failure = true ; continue;;
       }
       string str_env_var_value = env_var_value;
       filename.replace(start,length+1,str_env_var_value);
@@ -136,14 +138,14 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
           LOG("CmdLnArgList",pERROR) 
             << "Mandatory argument: " << argument
             << " was not found!";
-          return false;
+          failure = true ; continue;
         }
         // Optional argument not found, but no default either
         if(is_optional && !is_found && no_deflt) {
           LOG("CmdLnArgList",pERROR) 
             << "Optional argument: " << argument
             << " wasn't set and has no default value specified!";
-          return false;
+          failure = true ; continue;
         }
 
         // All should be OK now, insert input value or default
@@ -198,7 +200,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
           LOG("CmdLnArgList",pERROR) 
             << "Argument: " << argument
             << " can not be mandatory!";
-          return false;
+          failure = true ; continue;
         }
         this->Set(argument,is_found);
       }// boolean
@@ -219,7 +221,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
           LOG("CmdLnArgList",pERROR) 
             << "Input: " << argument
             << " does not contain a list of multiple boolean arguments!";
-          return false;
+          failure = true ; continue;
         }
         int nfound = 0;
         vector<string>::const_iterator boolargit = boolarglist.begin();
@@ -233,20 +235,20 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
           LOG("CmdLnArgList",pERROR) 
             << "Mandatory argument from list: " << argument
             << " was not found!";
-          return false;
+          failure = true ; continue;
         }
         if(nfound>1) {
           LOG("CmdLnArgList",pERROR) 
             << "Multiple argument from list: " << argument
             << " were not found but only one is expected!";
-          return false;
+          failure = true ; continue;
         }
         // Optional argument not found, but no default either
         if(is_optional && nfound==0 && no_deflt) {
           LOG("CmdLnArgList",pERROR) 
             << "None of the arguments in list: " << argument
             << " was set, but no default value was specified either!";
-          return false;
+          failure = true ; continue;
         }
 
         // All should be OK now, insert input value or default
@@ -290,7 +292,7 @@ bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
     return false;
   }
 
-  return true;
+  return !failure;
 }
 //________________________________________________________________________________________
 
