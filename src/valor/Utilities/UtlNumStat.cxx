@@ -63,7 +63,7 @@ ChangeLog:
 #include "Math/Interpolator.h"
 #endif
 
-//~ #define GSL_CHOLESKY // Use the GSL version of cholesky decomposition
+#define GSL_CHOLESKY // Use the GSL version of cholesky decomposition
 
 using std::cout;
 using std::cerr;
