@@ -23,7 +23,7 @@ using std::string;
 using std::vector;
 
 //____________________________________________________________________________
-CmdLnArgParser::CmdLnArgParser(int argc, char **argv) :
+CmdLnArgParser::CmdLnArgParser(int argc, const char* const* argv) :
   fArgc(argc),
   fArgv(argv),
   fArgUsed(fArgc,false)
@@ -49,8 +49,8 @@ std::string CmdLnArgParser::ArgAsString(char op) const
   
   std::string argument;
 
-  int     argc = fArgc;
-  char ** argv = fArgv;
+  int                 argc = fArgc;
+  const char* const*  argv = fArgv;
 
   while(argc>2)
   {
@@ -100,8 +100,8 @@ bool CmdLnArgParser::OptionExists(char op, bool set_used) const
 {
   bool set = false;
 
-  int     argc = fArgc;
-  char ** argv = fArgv;
+  int                argc = fArgc;
+  const char* const* argv = fArgv;
 
   while(argc>1) {
     if(argv[1][0] == '-') {
@@ -247,8 +247,8 @@ std::string CmdLnArgParser::ArgAsString(string op) const
 {
   std::string argument;
 
-  int     argc  = fArgc;
-  char ** argv  = fArgv;
+  int                argc  = fArgc;
+  const char* const* argv  = fArgv;
 
   while(argc>2)
   {
@@ -300,8 +300,8 @@ bool CmdLnArgParser::OptionExists(string op, bool set_used) const
 {
   bool set = false;
 
-  int     argc = fArgc;
-  char ** argv = fArgv;
+  int                 argc = fArgc;
+  const char* const*  argv = fArgv;
 
   while(argc>1) {
     if(argv[1][0] == '-' && argv[1][1] == '-') {

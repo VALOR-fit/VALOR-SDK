@@ -33,7 +33,7 @@ CmdLnArgList::~CmdLnArgList()
 
 }
 //________________________________________________________________________________________
-bool CmdLnArgList::Read(int argc, char ** argv, string arg_spec_files)
+bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files)
 {
   CmdLnArgParser parser(argc,argv);
 

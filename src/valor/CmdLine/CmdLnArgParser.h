@@ -26,7 +26,7 @@ namespace valor {
 class CmdLnArgParser {
 
 public:
-  CmdLnArgParser(int argc, char **argv);
+  CmdLnArgParser(int argc, const char* const* argv);
  ~CmdLnArgParser();
 
   // Methods to check the existence of single character switches (eg -f, -s)
@@ -62,8 +62,8 @@ public:
 
 private:
 
-  int     fArgc;
-  char ** fArgv;
+  int                 fArgc;
+  const char* const*  fArgv;
   
   // Saves whether each argument has been used or not.
   mutable std::vector<bool> fArgUsed;
