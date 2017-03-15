@@ -88,7 +88,11 @@ std::vector<std::string> valor::util::GetLinkedLibraries(std::string executable_
 //____________________________________________________________________________
 std::string valor::util::CompleteConfigPath(std::string config_file)
 {
-  TString ts_file = config_file.c_str();
+  TString ts_file = util::TrimSpaces(config_file.c_str());
+  if (ts_file.Length()==0) {
+    LOG("UtlSystem",pERROR) << "Passed empty string to read as config path.";
+    util::Die(-1) ; return "";
+  }
   gSystem->ExpandPathName(ts_file);
 
   // Check for config file.
