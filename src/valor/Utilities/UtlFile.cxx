@@ -39,16 +39,16 @@ std::string GetExpandedFilename(const std::string& filename,
    {  // Strange return value convention - Non-zero means not found.
       // Look in the valor top level configuration folder
       std::ostringstream sstream;
-      sstream << altPath << temp;
+      sstream << altPath << filename;
       delete[] temp;
       temp = gSystem->ExpandPathName(sstream.str().c_str());
       if(not(gSystem->GetPathInfo(temp, dummy)))
-      {  // Strange return value convention - zero means found
+      {
          resolved = temp;
       }
    }
    else
-   {  // Strange return value convention - zero means found
+   {
       resolved = temp;
    }
 
