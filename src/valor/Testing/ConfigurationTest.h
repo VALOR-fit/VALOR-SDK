@@ -45,6 +45,41 @@ public:
       \return True if the test passed, false otherwise.
    */
    bool TestInstance();
+
+   /**
+      Check that boolean values are correctly set.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestBool();
+
+   /**
+      Check that integer values are correctly set.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestInt();
+
+   /**
+      Check that double values are correctly set.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestDouble();
+
+   /**
+      Check that string values are correctly set.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestString();
+
+   /**
+      Check that histograms are correctly set.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestHistograms();
 };
 
 class ConfigurationTest : public Test
