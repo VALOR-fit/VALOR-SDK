@@ -88,7 +88,7 @@ vector<XMLNodePointer_t> valor::util::FindNodes(TXMLEngine* xml_eng,
          nodes.push_back(node);
       }
       // Iterate through the remaining nodes, storing the matches
-      while(node = xml_eng->GetNext(node))
+      while((node = xml_eng->GetNext(node)))
       {
          if(xml_eng->GetNodeName(node) == tag)
          {  // Node matches our search, store it
