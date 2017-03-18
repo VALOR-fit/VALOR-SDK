@@ -21,6 +21,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <map>
 
 using std::string;
 using std::vector;
@@ -46,6 +47,16 @@ template<class T> std::ostream& operator<<(std::ostream& os, const std::vector<T
     os<<(i?",":"[")<<v[i];
   }
   return os<<"]";
+}
+// Similar for map
+template<typename Key,typename Val> std::ostream& operator<<(std::ostream& os, const std::map<Key,Val> & m)
+{
+  unsigned int i = 0;
+  for (typename std::map<Key,Val>::const_iterator it = m.begin() ; it != m.end() ; ++it) {
+    os<<(i?",":"{")<<"\n  ("<<it->first<<": "<<it->second<<")";
+    i++;
+  }
+  return os<<"\n}";
 }
 
 #endif
