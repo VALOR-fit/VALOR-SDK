@@ -49,6 +49,47 @@ public:
    void ReadAnalysis(const std::string& filename);
 
 private:
+   /**
+      Reads the samples configuration file.
+
+      XML format:
+      <?xml version="1.0"?>
+      <sample_list name="analysis_name">
+        <sample name="sample_name">
+          <detector>dune_nd</detector>
+          <beam>lbnf_fhc</beam>
+          <selection>numucc0pi1trk</selection>
+          <data>observations.root</data>
+          <mc>mc/dune_ndfit_2017a_FGT_pt4.xml</mc>
+          <data_class>valor::GenericSingleSampleFitData</data_class>
+          <model_class>valor::GenericSingleSampleFitModel</model_class>
+        </sample>
+      </sample_list>
+
+      \param filename The name of the file to read.
+   */
+   void ReadSamples(const std::string& filename);
+
+   /**
+      Processes sample nodes.
+
+      \param rootNode The sample node to process.
+   */
+   void ProcessSamples(XMLNodePointer_t rootNode);
+
+   /**
+      Helper function to create keys to store configuration information.
+
+      Creates strings of the form <prefix><id>suffix>
+
+      \param prefix The string prefix.
+      \param id The id.
+      \param suffix The string suffix.
+   */
+   std::string BuildString(const std::string& prefix, const int id,
+         const std::string& suffix);
+
+private:
    TXMLEngine* _engine;
 };
 

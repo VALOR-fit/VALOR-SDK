@@ -31,7 +31,6 @@ using util::ConfigurationHandler;
 
 class ConfigurationHandlerTestCase : public TestCase
 {
-friend class ConfigurationHandler;
 public:
    /**
       Constructor.
@@ -46,6 +45,13 @@ public:
       \return True if the test passed, false otherwise.
    */
    bool TestReadAnalysis();
+
+   /**
+      Check that the samples configuration file is read correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestReadSamples();
 };
 
 class ConfigurationHandlerTest : public Test

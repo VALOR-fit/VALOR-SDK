@@ -29,14 +29,51 @@ bool ConfigurationHandlerTestCase::TestReadAnalysis()
    return passed;
 }
 
+bool ConfigurationHandlerTestCase::TestReadSamples()
+{
+   bool passed = true;
+
+   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
+            _test));
+   ConfigurationHandler& handler = *(test._handler);
+
+   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
+   util::Configuration& config = (*util::Configuration::Instance());
+
+   passed = Test::Equal(config.GetString("sample_list.name"),
+         "analysis_name") && passed;
+
+   // First sample
+   passed = Test::Equal(config.GetString("sample_list.sample_1.name"),
+         "sample_name") && passed;
+   passed = Test::Equal(config.GetString("sample_list.sample_1.detector"),
+         "dune_nd") && passed;
+   passed = Test::Equal(config.GetString("sample_list.sample_1.beam"),
+         "lbnf_fhc") && passed;
+   passed = Test::Equal(config.GetString("sample_list.sample_1.selection"),
+         "numucc0pi1trk") && passed;
+   passed = Test::Equal(config.GetString("sample_list.sample_1.data"),
+         "observations.root") && passed;  
+   passed = Test::Equal(config.GetString("sample_list.sample_1.mc"),
+         "mc/dune_ndfit_2017a_FGT_pt4.xml") && passed; 
+   passed = Test::Equal(config.GetString("sample_list.sample_1.data_class"),
+         "valor::GenericSingleSampleFitData") && passed;  
+   passed = Test::Equal(config.GetString("sample_list.sample_1.model_class"),
+         "valor::GenericSingleSampleFitModel") && passed;
+
+   return passed;
+}
+
 void ConfigurationHandlerTest::Setup()
 {
    _handler = new ConfigurationHandler();
+   util::Configuration::Instance();
 }
 
 void ConfigurationHandlerTest::Teardown()
 {
   delete _handler;
+  util::Configuration::Instance()->Clear(true);;
 }
 
 void ConfigurationHandlerTest::AddTests()
@@ -44,6 +81,8 @@ void ConfigurationHandlerTest::AddTests()
    ConfigurationHandlerTestCase* testCase = new ConfigurationHandlerTestCase(this);
    Add(new TestKey("TestReadAnalysis", testCase),
          [testCase](void) { return testCase->TestReadAnalysis(); });
+   Add(new TestKey("TestReadSamples", testCase),
+         [testCase](void) { return testCase->TestReadSamples(); });
 }
 
 }
