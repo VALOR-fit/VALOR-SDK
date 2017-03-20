@@ -51,7 +51,15 @@ public:
 
       \return True if the test passed, false otherwise.
    */
-   bool TestReadSamples();
+   bool TestReadSampleList();
+
+   /**
+      Check that the parameters configuration file is read correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestReadParameterList();
+
 };
 
 class ConfigurationHandlerTest : public Test

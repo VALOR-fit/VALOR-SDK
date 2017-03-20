@@ -29,7 +29,7 @@ bool ConfigurationHandlerTestCase::TestReadAnalysis()
    return passed;
 }
 
-bool ConfigurationHandlerTestCase::TestReadSamples()
+bool ConfigurationHandlerTestCase::TestReadSampleList()
 {
    bool passed = true;
 
@@ -64,6 +64,34 @@ bool ConfigurationHandlerTestCase::TestReadSamples()
    return passed;
 }
 
+bool ConfigurationHandlerTestCase::TestReadParameterList()
+{
+   bool passed = true;
+
+   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
+            _test));
+   ConfigurationHandler& handler = *(test._handler);
+
+   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
+   util::Configuration& config = (*util::Configuration::Instance());
+
+   passed = Test::Equal(config.GetString("param_list.name"), "name") && passed;
+
+   // Oscillation group
+   passed = Test::Equal(config.GetString("param_list.osc.parameters"),
+         "params/oscillation/osc_params.xml") && passed;
+   passed = Test::Equal(config.GetString("param_list.osc.penalty.type"),
+         "gaussian") && passed;
+   passed = Test::Equal(config.GetString("param_list.osc.penalty.cov.filename"),
+         "osc_covariance.root") && passed;
+   passed = Test::Equal(config.GetString("param_list.osc.penalty.cov.objname"),
+         "osc_covariance") && passed;
+   passed = Test::Equal(config.GetString("param_list.osc.penalty.cov.objtype"),
+         "TMatrixD") && passed;
+
+   return passed;
+}
+
 void ConfigurationHandlerTest::Setup()
 {
    _handler = new ConfigurationHandler();
@@ -81,8 +109,10 @@ void ConfigurationHandlerTest::AddTests()
    ConfigurationHandlerTestCase* testCase = new ConfigurationHandlerTestCase(this);
    Add(new TestKey("TestReadAnalysis", testCase),
          [testCase](void) { return testCase->TestReadAnalysis(); });
-   Add(new TestKey("TestReadSamples", testCase),
-         [testCase](void) { return testCase->TestReadSamples(); });
+   Add(new TestKey("TestReadSampleList", testCase),
+         [testCase](void) { return testCase->TestReadSampleList(); });
+   Add(new TestKey("TestReadParameterList", testCase),
+         [testCase](void) { return testCase->TestReadParameterList(); });
 }
 
 }

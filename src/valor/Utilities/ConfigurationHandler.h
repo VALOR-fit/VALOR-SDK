@@ -68,7 +68,7 @@ private:
 
       \param filename The name of the file to read.
    */
-   void ReadSamples(const std::string& filename);
+   void ReadSampleList(const std::string& filename);
 
    /**
       Processes sample nodes.
@@ -76,6 +76,40 @@ private:
       \param rootNode The sample node to process.
    */
    void ProcessSamples(XMLNodePointer_t rootNode);
+
+   /**
+      Reads the parameters configuration file.
+
+      XML format:
+      <?xml version="1.0"?>
+      <parameter_list name="name">
+	<parameter_group name="flux">
+          <parameters>params/systematic/flux/flux_params.xml -->
+          <penalty_term type="gaussian">
+            <covariance_matrix>
+              <filename>flux_covariance.root</filename>
+              <objname>flux_covariance</objname>
+              <objtype>TMatrixD</objtype>
+            </covariance_matrix>
+          </penalty_term>
+          <postfit>
+            <filename>flux_postfit.root</filename>
+            <objname>flux_postfit</objname>    
+            <objtype>TVectorD</objtype>
+          </postfit>
+	</parameter_group>
+      </parameter_list>
+
+      \param filename The name of the file to read.
+   */
+   void ReadParameterList(const std::string& filename);
+
+   /**
+      Processes oscillation parameters.
+
+      \param rootNode The oscillation parameters node to process.
+   */
+   void ProcessOscillationParameters(XMLNodePointer_t rootNode);
 
    /**
       Helper function to create keys to store configuration information.
