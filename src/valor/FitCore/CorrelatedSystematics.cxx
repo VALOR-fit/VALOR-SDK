@@ -87,6 +87,33 @@ fIsConfigured     (false)
   this->Init(0,nullptr);
 }
 //________________________________________________________________________________________
+CorrelatedSystematics::CorrelatedSystematics(const CorrelatedSystematics & c)
+ :
+TNamed(c),
+fDefaultValues    (new TVectorD(*(c.fDefaultValues ))),
+fUntunedValues    (new TVectorD(*(c.fUntunedValues ))),
+fInitialValues    (new TVectorD(*(c.fInitialValues ))),
+fCurrentValues    (new TVectorD(*(c.fCurrentValues ))),
+fCovMtrx          (new TMatrixD(*(c.fCovMtrx       ))),
+fCovMtrxInv       (new TMatrixD(*(c.fCovMtrxInv    ))),
+fCovMtrxChoL      (new TMatrixD(*(c.fCovMtrxChoL   ))),
+fCovMtrxChoLInv   (new TMatrixD(*(c.fCovMtrxChoLInv))),
+fUntunedArray     (fUntunedValues->GetMatrixArray()),
+fInitialArray     (fInitialValues->GetMatrixArray()),
+fCurrentArray     (fCurrentValues->GetMatrixArray()),
+fNSystParameters  (c.fNSystParameters),
+fSystParameters   (new conv::PhysParamId_t[fNSystParameters]),
+fXMLNodeName      (c.fXMLNodeName),
+fIsConfigured     (true)
+{
+  for (unsigned int ip = 0 ; ip < fNSystParameters ; ip++) {
+    fSystParameters[ip] = c.fSystParameters[ip];
+  }
+  for (int ip = 0 ; ip < conv::knppmax ; ip++) {
+    fParam2Idx[ip] = c.fParam2Idx[ip];
+  }
+}
+//________________________________________________________________________________________
 CorrelatedSystematics::~CorrelatedSystematics()
 {
   this->CleanUp();
