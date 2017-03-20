@@ -78,7 +78,7 @@ private:
    void ProcessSamples(XMLNodePointer_t rootNode);
 
    /**
-      Reads the parameters configuration file.
+      Reads the parameter list configuration file.
 
       XML format:
       <?xml version="1.0"?>
@@ -122,6 +122,63 @@ private:
          const std::string& type);
 
    /**
+      Reads the parameters configuration file.
+
+      XML format:
+      <?xml version="1.0"?>
+      <parameters>
+         <defaults>
+            <bestfit />1.0</bestfit>
+            <init>1.0</bestfit>
+            <minimum>0.0</minimum>
+            <maximum>2.0</maximum>
+            <step_size>0.0001</stepsize>
+            <scaling>1.0</scaling>
+            <fixed>false</fixed>
+            <nuisance>true</nuisance>
+            <marginalise>false</marginalise>
+         </defaults>
+         <parameter name="kPhypMixing13">
+            <!-- Optionally override the default values above -->
+            <errors>
+               <migrad>
+                  <error>0.0</error>
+               </migrad>		
+               <hesse>
+                  <error>0.0</error>
+               </hesse>
+               <minos>
+                  <low_error>0.0</low_error>
+                  <high_error>0.0</high_error>
+               </minos>
+            </errors>
+         </parameter>
+      </parameters>
+   */
+   void ReadParameters(const std::string& filename);
+
+   /**
+      Processes default parameter values.
+
+      \param rootNode The defaults node.
+   */
+   void ProcessDefaults(XMLNodePointer_t rootNode);
+
+   /**
+      Processes parameter values.
+
+      \param rootNode The parameters node to process.
+   */
+   void ProcessParameters(XMLNodePointer_t rootNode);
+
+   /**
+      Processes error nodes.
+
+      \param rootNode The errors node to process.
+   */
+   void ProcessErrors(XMLNodePointer_t rootNode);
+
+   /**
       Helper function to create keys to store configuration information.
 
       Creates strings of the form <prefix><id><suffix>
@@ -147,6 +204,7 @@ private:
 
 private:
    TXMLEngine* _engine;
+   int _nextParamId;
 };
 
 }

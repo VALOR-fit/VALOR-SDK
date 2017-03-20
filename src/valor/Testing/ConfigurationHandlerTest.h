@@ -54,12 +54,18 @@ public:
    bool TestReadSampleList();
 
    /**
-      Check that the parameters configuration file is read correctly.
+      Check that the parameter list configuration file is read correctly.
 
       \return True if the test passed, false otherwise.
    */
    bool TestReadParameterList();
 
+   /**
+      Check that the parameters configuration file is read correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestReadParameters();
 };
 
 class ConfigurationHandlerTest : public Test

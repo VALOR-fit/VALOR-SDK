@@ -79,7 +79,7 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
 
    // Oscillation group
    passed = Test::Equal(config.GetString("param_list.osc.parameters"),
-         "params/oscillation/osc_params.xml") && passed;
+         "test/newxml/params/oscillation/osc_params.xml") && passed;
    passed = Test::Equal(config.GetString("param_list.osc.penalty.type"),
          "gaussian") && passed;
    passed = Test::Equal(config.GetString("param_list.osc.penalty.cov.filename"),
@@ -91,7 +91,7 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
 
    // Flux systematics group
    passed = Test::Equal(config.GetString("param_list.flux.parameters"),
-         "params/systematic/flux/flux_params.xml") && passed;
+         "test/newxml/params/systematic/flux/flux_params.xml") && passed;
    passed = Test::Equal(config.GetString("param_list.flux.penalty.type"),
          "gaussian") && passed;
    passed = Test::Equal(config.GetString("param_list.flux.penalty.cov.filename"),
@@ -109,7 +109,7 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
 
    // Interaction systematics group
    passed = Test::Equal(config.GetString("param_list.interaction.parameters"),
-         "params/systematic/interaction/int_params.xml") && passed;
+         "test/newxml/params/systematic/interaction/int_params.xml") && passed;
    passed = Test::Equal(config.GetString("param_list.interaction.penalty.type"),
          "gaussian") && passed;
    passed = Test::Equal(config.GetString(
@@ -133,7 +133,7 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
 
    // Detector systematics group
    passed = Test::Equal(config.GetString("param_list.detector.parameters"),
-         "params/systematic/detector/det_params.xml") && passed;
+         "test/newxml/params/systematic/detector/det_params.xml") && passed;
    passed = Test::Equal(config.GetString("param_list.detector.penalty.type"),
          "gaussian") && passed;
    passed = Test::Equal(config.GetString(
@@ -154,6 +154,66 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
    passed = Test::Equal(config.GetString(
             "param_list.detector.postfit.objtype"),
             "TVectorD") && passed;
+
+   return passed;
+}
+
+bool ConfigurationHandlerTestCase::TestReadParameters()
+{
+   bool passed = true;
+
+   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
+            _test));
+   ConfigurationHandler& handler = *(test._handler);
+
+   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
+   util::Configuration& config = (*util::Configuration::Instance());
+
+   passed = Test::Equal(config.GetString("param_list.name"), "name") && passed;
+
+   // Defaults
+   passed = Test::Equal(config.GetDouble("param_list.defaults.bestfit"), 1.0)
+         && passed;
+   passed = Test::Equal(config.GetDouble("param_list.defaults.init"), 1.0)
+         && passed;
+   passed = Test::Equal(config.GetDouble("param_list.defaults.minimum"), 0.0)
+         && passed;
+   passed = Test::Equal(config.GetDouble("param_list.defaults.maximum"), 2.0)
+         && passed;  
+   passed = Test::Equal(config.GetDouble("param_list.defaults.step_size"), 0.0001)
+         && passed;  
+   passed = Test::Equal(config.GetDouble("param_list.defaults.scaling"), 1.0)
+         && passed;
+   passed = Test::False(config.GetBool("param_list.defaults.fixed"))
+         && passed;  
+   passed = Test::True(config.GetBool("param_list.defaults.nuisance"))
+         && passed;  
+   passed = Test::False(config.GetBool("param_list.defaults.marginalise"))
+         && passed; 
+
+   // Parameters
+   passed = Test::Equal(config.GetString("param_list.param_1.name"),
+         "kPhypMixing13") && passed;
+   passed = Test::Equal(config.GetDouble("param_list.param_1.bestfit"), 0.093)
+         && passed;
+   passed = Test::Equal(config.GetDouble("param_list.param_1.init"), 0.093)
+         && passed;
+   passed = Test::Equal(config.GetDouble("param_list.param_1.minimum"), 0.077)
+         && passed;
+   passed = Test::Equal(config.GetDouble("param_list.param_1.maximum"), 0.109)
+         && passed;  
+   passed = Test::Equal(config.GetDouble("param_list.param_1.step_size"), 0.0001)
+         && passed;  
+   passed = Test::Equal(config.GetDouble("param_list.param_1.scaling"), 1.0)
+         && passed;
+   passed = Test::False(config.GetBool("param_list.param_1.fixed"))
+         && passed;  
+   passed = Test::False(config.GetBool("param_list.param_1.nuisance"))
+         && passed;  
+   passed = Test::True(config.GetBool("param_list.param_1.marginalise"))
+         && passed;
+   passed = Test::Equal(config.GetDouble(
+            "param_list.param_1.errors.migrad.error"), 0.6) && passed;
 
    return passed;
 }
@@ -179,6 +239,8 @@ void ConfigurationHandlerTest::AddTests()
          [testCase](void) { return testCase->TestReadSampleList(); });
    Add(new TestKey("TestReadParameterList", testCase),
          [testCase](void) { return testCase->TestReadParameterList(); });
+   Add(new TestKey("TestReadParameters", testCase),
+         [testCase](void) { return testCase->TestReadParameters(); });
 }
 
 }
