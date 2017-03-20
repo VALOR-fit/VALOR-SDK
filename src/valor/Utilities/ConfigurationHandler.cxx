@@ -150,6 +150,16 @@ void ConfigurationHandler::ReadParameterList(const std::string& filename)
       {
          ProcessOscillationParameters(group);
       }
+      else if(name == "flux" || name == "interaction" || name == "detector")
+      {
+         ProcessSystematicParameters(group, name);
+      }
+      else
+      {  // Undefined group
+         LOG("ConfigurationHandler", pERROR) << "Unknown parameter group " <<
+            name;
+         util::Die(1);
+      }
    }
 }
 
@@ -173,11 +183,52 @@ void ConfigurationHandler::ProcessOscillationParameters(XMLNodePointer_t rootNod
    }
 }
 
+void ConfigurationHandler::ProcessSystematicParameters(XMLNodePointer_t rootNode,
+      const std::string& type)
+{
+   Configuration& config = (*Configuration::Instance());
+   // Find the XML file containing the oscillation parameter details
+   config.Set(BuildString("param_list.", type, ".parameters"),
+         util::XML2String(_engine, rootNode, "parameters"));
+   // Look for a penalty term - penalty terms are optional
+   auto penalty = util::FindNode(_engine, rootNode, "penalty_term");
+   if(penalty != nullptr)
+   {  // Penalty term found
+      config.Set(BuildString("param_list.", type, ".penalty.type"),
+               _engine->GetAttr(penalty, "type"));
+      config.Set(BuildString("param_list.", type, ".penalty.cov.filename"),
+            util::XML2String(_engine, penalty, "covariance_matrix/filename"));
+      config.Set(BuildString("param_list.", type, ".penalty.cov.objname"),
+            util::XML2String(_engine, penalty, "covariance_matrix/objname"));
+      config.Set(BuildString("param_list.", type, ".penalty.cov.objtype"),
+            util::XML2String(_engine, penalty, "covariance_matrix/objtype"));
+   }
+   // Look for a postfit term - postfit terms are optional
+   auto postfit = util::FindNode(_engine, rootNode, "postfit");
+   if(postfit != nullptr)
+   {  // Postfit term found
+      config.Set(BuildString("param_list.", type, ".postfit.filename"),
+            util::XML2String(_engine, postfit, "filename"));
+      config.Set(BuildString("param_list.", type, ".postfit.objname"),
+            util::XML2String(_engine, postfit, "objname"));
+      config.Set(BuildString("param_list.", type, ".postfit.objtype"),
+            util::XML2String(_engine, postfit, "objtype"));
+   }
+}
+
 std::string ConfigurationHandler::BuildString(const std::string& prefix,
       const int id, const std::string& suffix)
 {
    std::ostringstream ss;
    ss << prefix << id << suffix;
+   return ss.str();
+}
+
+std::string ConfigurationHandler::BuildString(const std::string& prefix,
+      const std::string& infix, const std::string& suffix)
+{
+   std::ostringstream ss;
+   ss << prefix << infix << suffix;
    return ss.str();
 }
 

@@ -112,15 +112,37 @@ private:
    void ProcessOscillationParameters(XMLNodePointer_t rootNode);
 
    /**
+      Processes systematic parameters.
+
+      \param rootNode The systematic parameters node to process.
+      \param type The type of systematic. This should be either "flux",
+         "interaction", or "detector".
+   */
+   void ProcessSystematicParameters(XMLNodePointer_t rootNode,
+         const std::string& type);
+
+   /**
       Helper function to create keys to store configuration information.
 
-      Creates strings of the form <prefix><id>suffix>
+      Creates strings of the form <prefix><id><suffix>
 
       \param prefix The string prefix.
       \param id The id.
       \param suffix The string suffix.
    */
    std::string BuildString(const std::string& prefix, const int id,
+         const std::string& suffix);
+
+   /**
+      Helper function to create keys to store configuration information.
+
+      Creates strings of the form <prefix><infix><suffix>
+
+      \param prefix The string prefix.
+      \param infix The string infix..
+      \param suffix The string suffix.
+   */
+   std::string BuildString(const std::string& prefix, const std::string& infix,
          const std::string& suffix);
 
 private:

@@ -89,6 +89,24 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
    passed = Test::Equal(config.GetString("param_list.osc.penalty.cov.objtype"),
          "TMatrixD") && passed;
 
+   // Flux systematics group
+   passed = Test::Equal(config.GetString("param_list.flux.parameters"),
+         "params/systematic/flux/flux_params.xml") && passed;
+   passed = Test::Equal(config.GetString("param_list.flux.penalty.type"),
+         "gaussian") && passed;
+   passed = Test::Equal(config.GetString("param_list.flux.penalty.cov.filename"),
+         "flux_covariance.root") && passed;
+   passed = Test::Equal(config.GetString("param_list.flux.penalty.cov.objname"),
+         "flux_covariance") && passed;
+   passed = Test::Equal(config.GetString("param_list.flux.penalty.cov.objtype"),
+         "TMatrixD") && passed;
+   passed = Test::Equal(config.GetString("param_list.flux.postfit.filename"),
+         "flux_postfit.root") && passed;
+   passed = Test::Equal(config.GetString("param_list.flux.postfit.objname"),
+         "flux_postfit") && passed;
+   passed = Test::Equal(config.GetString("param_list.flux.postfit.objtype"),
+         "TVectorD") && passed;
+
    return passed;
 }
 
