@@ -107,6 +107,54 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
    passed = Test::Equal(config.GetString("param_list.flux.postfit.objtype"),
          "TVectorD") && passed;
 
+   // Interaction systematics group
+   passed = Test::Equal(config.GetString("param_list.interaction.parameters"),
+         "params/systematic/interaction/int_params.xml") && passed;
+   passed = Test::Equal(config.GetString("param_list.interaction.penalty.type"),
+         "gaussian") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.interaction.penalty.cov.filename"),
+            "int_covariance.root") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.interaction.penalty.cov.objname"),
+            "int_covariance") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.interaction.penalty.cov.objtype"),
+            "TMatrixD") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.interaction.postfit.filename"),
+            "int_postfit.root") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.interaction.postfit.objname"),
+            "int_postfit") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.interaction.postfit.objtype"),
+            "TVectorD") && passed;
+
+   // Detector systematics group
+   passed = Test::Equal(config.GetString("param_list.detector.parameters"),
+         "params/systematic/detector/det_params.xml") && passed;
+   passed = Test::Equal(config.GetString("param_list.detector.penalty.type"),
+         "gaussian") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.detector.penalty.cov.filename"),
+            "det_covariance.root") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.detector.penalty.cov.objname"),
+            "det_covariance") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.detector.penalty.cov.objtype"),
+            "TMatrixD") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.detector.postfit.filename"),
+            "det_postfit.root") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.detector.postfit.objname"),
+            "det_postfit") && passed;
+   passed = Test::Equal(config.GetString(
+            "param_list.detector.postfit.objtype"),
+            "TVectorD") && passed;
+
    return passed;
 }
 
