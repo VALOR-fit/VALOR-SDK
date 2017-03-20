@@ -142,6 +142,9 @@ void ConfigurationHandler::ReadParameterList(const std::string& filename)
    XMLNodePointer_t rootNode = _engine->DocGetRootElement(doc);
    config.Set("param_list.name", _engine->GetAttr(rootNode, "name"));
 
+   // Process the default parameter values
+   ProcessDefaults(rootNode);
+
    // Process the parameter groups within the parameter list
    auto groups = util::FindNodes(_engine, rootNode, "parameter_group");
    for(unsigned int i = 0; i < groups.size(); ++i)
@@ -157,6 +160,9 @@ void ConfigurationHandler::ReadParameterList(const std::string& filename)
       else if(name == "flux" || name == "interaction" || name == "detector")
       {
          ProcessSystematicParameters(group, name);
+         // Read the corresponding oscillation parameters
+         ReadParameters(config.GetString(BuildString("param_list.", name,
+                     ".parameters")));
       }
       else
       {  // Undefined group
@@ -243,8 +249,6 @@ void ConfigurationHandler::ReadParameters(const std::string& filename)
 
    XMLNodePointer_t rootNode = _engine->DocGetRootElement(doc);
 
-   // Process the default parameter values
-   ProcessDefaults(rootNode);
    // Process parameters
    ProcessParameters(rootNode);
 }

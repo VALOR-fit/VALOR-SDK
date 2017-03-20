@@ -215,6 +215,22 @@ bool ConfigurationHandlerTestCase::TestReadParameters()
    passed = Test::Equal(config.GetDouble(
             "param_list.param_1.errors.migrad.error"), 0.6) && passed;
 
+   // Selected systematic values
+   passed = Test::Equal(config.GetString("param_list.param_2.name"),
+         "kNuisFHCNuMuFlux00") && passed;
+   passed = Test::Equal(config.GetDouble("param_list.param_2.maximum"), 2.0)
+         && passed;  
+   passed = Test::True(config.GetBool("param_list.param_2.marginalise"))
+         && passed;
+   passed = Test::Equal(config.GetString("param_list.param_3.name"),
+         "kNuisIntNuCCQE1") && passed;
+   passed = Test::Equal(config.GetDouble("param_list.param_3.init"), 1.0)
+         && passed;
+   passed = Test::Equal(config.GetString("param_list.param_4.name"),
+         "kNuisEffNuMuCC0pi1trk") && passed;
+   passed = Test::Equal(config.GetDouble("param_list.param_4.bestfit"), 1.0)
+         && passed;
+
    return passed;
 }
 
