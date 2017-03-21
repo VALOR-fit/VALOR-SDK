@@ -174,6 +174,42 @@ void ConfigurationHandler::ReadMC(const std::string& filename)
             "mc/interaction_mass"));
    config.Set("mc.default_binning", util::XML2String(_engine, rootNode,
             "default_binning"));
+
+   ReadBinning(config.GetString("mc.default_binning"));
+}
+
+void ConfigurationHandler::ReadBinning(const std::string& filename)
+{
+   string fullFilename = file::GetConfigurationFilename(filename);
+
+   // Check that the config file exists.
+   if(fullFilename.empty())
+   {  // File not found
+      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+         filename;
+      util::Die(1);
+   }
+
+   // Parse the XML configuration file
+   XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
+   if(doc == 0)
+   {
+      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+         fullFilename << "]";
+      util::Die(1);
+   }
+
+   Configuration& config = (*Configuration::Instance());
+   XMLNodePointer_t rootNode = _engine->DocGetRootElement(doc);
+   // Process the MC
+   config.Set("binning.reco.opt", util::XML2String(_engine, rootNode,
+            "reco_optimized"));
+   config.Set("binning.reco.smp", util::XML2String(_engine, rootNode,
+            "reco_simple"));
+   config.Set("binning.true.smp.default", util::XML2String(_engine, rootNode,
+            "true_simple/default"));
+   config.Set("binning.xsec.reco", util::XML2String(_engine, rootNode,
+            "xsec_reco"));
 }
 
 void ConfigurationHandler::ReadParameterList(const std::string& filename)

@@ -89,7 +89,25 @@ bool ConfigurationHandlerTestCase::TestReadMC()
    passed = Test::Equal(config.GetDouble("mc.interaction_mass"), -999.0) &&
       passed;
    passed = Test::Equal(config.GetString("mc.default_binning"),
-         "test/newxml/binning/fd_elike.xml") && passed;
+         "test/newxml/binning/binning.xml") && passed;
+
+   return passed;
+}
+
+bool ConfigurationHandlerTestCase::TestReadBinning()
+{
+   bool passed = true;
+
+   util::Configuration& config = (*util::Configuration::Instance());
+
+   passed = Test::Equal(config.GetString("binning.reco.opt"),
+         "test/newxml/binning/mondrian/reco/ErecoYreco.xml") && passed;
+   passed = Test::Equal(config.GetString("binning.reco.smp"),
+         "test/newxml/binning/e2e/reco/ErecoYreco.xml") && passed;
+   passed = Test::Equal(config.GetString("binning.true.smp.default"),
+         "test/newxml/binning/e2e/true/ErecoYreco.xml") && passed;
+   passed = Test::Equal(config.GetString("binning.xsec.reco"),
+         "test/newxml/binning/e2e/reco/ErecoYreco.xml") && passed;
 
    return passed;
 }
@@ -296,6 +314,8 @@ void ConfigurationHandlerTest::AddTests()
          [testCase](void) { return testCase->TestReadSplines(); });
    Add(new TestKey("TestReadMC", testCase),
          [testCase](void) { return testCase->TestReadMC(); });
+   Add(new TestKey("TestReadBinning", testCase),
+         [testCase](void) { return testCase->TestReadBinning(); });
 }
 
 }

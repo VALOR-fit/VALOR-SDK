@@ -61,6 +61,13 @@ public:
    bool TestReadMC();
 
    /**
+      Check that the binning configuration file is read correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestReadBinning();
+
+   /**
       Check that the parameter list configuration file is read correctly.
 
       \return True if the test passed, false otherwise.

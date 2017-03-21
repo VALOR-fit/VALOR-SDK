@@ -118,6 +118,23 @@ private:
    void ReadMC(const std::string& filename);
 
    /**
+      Reads the binning configuration file.
+
+      XML format:
+      <sample_binning>
+         <reco_optimized>binning/mondrian/reco/binning.xml</reco_optimized>
+         <reco_simple>binning/e2e/reco/binning.xml</reco_simple>
+         <true_simple>
+            <default>binning/e2e/true/binning.xml</default>
+         </true_simple>
+         <xsec_reco />binning/e2e/reco/binning.xml</default>
+      </sample_binning>
+
+      \param filename The name of the file to read.
+   */
+   void ReadBinning(const std::string& filename);
+
+   /**
       Reads the parameter list configuration file.
 
       XML format:
