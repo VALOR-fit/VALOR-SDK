@@ -66,6 +66,14 @@ public:
       \return True if the test passed, false otherwise.
    */
    bool TestReadParameters();
+
+   /**
+      Check that the splines configuration file is read correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestReadSplines();
+
 };
 
 class ConfigurationHandlerTest : public Test

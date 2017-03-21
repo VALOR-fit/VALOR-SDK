@@ -19,11 +19,11 @@ bool ConfigurationHandlerTestCase::TestReadAnalysis()
    handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
    util::Configuration& config = (*util::Configuration::Instance());
 
-   passed = Test::Equal(config.GetString("Analysis.samples"),
+   passed = Test::Equal(config.GetString("analysis.samples"),
          "test/newxml/samples/samples.xml") && passed;
-   passed = Test::Equal(config.GetString("Analysis.parameters"),
+   passed = Test::Equal(config.GetString("analysis.parameters"),
          "test/newxml/params/params.xml") && passed;
-   passed = Test::Equal(config.GetString("Analysis.splines"),
+   passed = Test::Equal(config.GetString("analysis.splines"),
          "test/newxml/splines/splines.xml") && passed;
 
    return passed;
@@ -234,6 +234,25 @@ bool ConfigurationHandlerTestCase::TestReadParameters()
    return passed;
 }
 
+bool ConfigurationHandlerTestCase::TestReadSplines()
+{
+   bool passed = true;
+
+   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
+            _test));
+   ConfigurationHandler& handler = *(test._handler);
+
+   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
+   util::Configuration& config = (*util::Configuration::Instance());
+
+   passed = Test::Equal(config.GetString("splines.folder"),
+         "dune/ndfit/2016b/fd/splines") && passed;
+   passed = Test::Equal(config.GetString("splines.pattern"),
+         "valor_splines_[BEAM]_[SELECTION]_[PARAM].root") && passed;
+
+   return passed;
+}
+
 void ConfigurationHandlerTest::Setup()
 {
    _handler = new ConfigurationHandler();
@@ -257,6 +276,8 @@ void ConfigurationHandlerTest::AddTests()
          [testCase](void) { return testCase->TestReadParameterList(); });
    Add(new TestKey("TestReadParameters", testCase),
          [testCase](void) { return testCase->TestReadParameters(); });
+   Add(new TestKey("TestReadSplines", testCase),
+         [testCase](void) { return testCase->TestReadSplines(); });
 }
 
 }

@@ -105,6 +105,13 @@ private:
    void ReadParameterList(const std::string& filename);
 
    /**
+      Processes default parameter values.
+
+      \param rootNode The defaults node.
+   */
+   void ProcessDefaults(XMLNodePointer_t rootNode);
+
+   /**
       Processes oscillation parameters.
 
       \param rootNode The oscillation parameters node to process.
@@ -158,13 +165,6 @@ private:
    void ReadParameters(const std::string& filename);
 
    /**
-      Processes default parameter values.
-
-      \param rootNode The defaults node.
-   */
-   void ProcessDefaults(XMLNodePointer_t rootNode);
-
-   /**
       Processes parameter values.
 
       \param rootNode The parameters node to process.
@@ -177,6 +177,20 @@ private:
       \param rootNode The errors node to process.
    */
    void ProcessErrors(XMLNodePointer_t rootNode);
+
+   /**
+      Reads the parameter list configuration file.
+
+      XML format:
+      <?xml version="1.0"?>
+      <splines>
+         <folder>dune/ndfit/2016b/fd/splines</folder>
+         <pattern>valor_splines_[BEAM]_[SELECTION]_[PARAM].root</pattern>
+      </splines>
+
+      \param filename The name of the file to read.
+   */
+   void ReadSplines(const std::string& filename);
 
    /**
       Helper function to create keys to store configuration information.

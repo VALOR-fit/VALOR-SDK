@@ -49,18 +49,19 @@ void ConfigurationHandler::ReadAnalysis(const std::string& filename)
    Configuration& config = (*Configuration::Instance());
 
    // Find samples configuration
-   config.Set("Analysis.samples", util::XML2String(_engine, rootNode,
+   config.Set("analysis.samples", util::XML2String(_engine, rootNode,
             "samples"));
-   ReadSampleList(config.GetString("Analysis.samples"));
+   ReadSampleList(config.GetString("analysis.samples"));
 
    // Find parameters configuration
-   config.Set("Analysis.parameters", util::XML2String(_engine, rootNode,
+   config.Set("analysis.parameters", util::XML2String(_engine, rootNode,
             "parameters"));
-   ReadParameterList(config.GetString("Analysis.parameters"));
+   ReadParameterList(config.GetString("analysis.parameters"));
 
    // Find splines configuration
-   config.Set("Analysis.splines", util::XML2String(_engine, rootNode,
+   config.Set("analysis.splines", util::XML2String(_engine, rootNode,
             "splines"));
+   ReadSplines(config.GetString("analysis.splines"));
 }
 
 void ConfigurationHandler::ReadSampleList(const std::string& filename)
@@ -171,6 +172,33 @@ void ConfigurationHandler::ReadParameterList(const std::string& filename)
          util::Die(1);
       }
    }
+}
+
+void ConfigurationHandler::ReadSplines(const std::string& filename)
+{
+   string fullFilename = file::GetConfigurationFilename(filename);
+
+   // Check that the config file exists.
+   if(fullFilename.empty())
+   {  // File not found
+      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+         filename;
+      util::Die(1);
+   }
+
+   // Parse the XML configuration file
+   XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
+   if(doc == 0)
+   {
+      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+         fullFilename << "]";
+      util::Die(1);
+   }
+
+   Configuration& config = (*Configuration::Instance());
+   XMLNodePointer_t rootNode = _engine->DocGetRootElement(doc);
+   config.Set("splines.folder", util::XML2String(_engine, rootNode, "folder"));
+   config.Set("splines.pattern", util::XML2String(_engine, rootNode, "pattern"));
 }
 
 void ConfigurationHandler::ProcessOscillationParameters(XMLNodePointer_t rootNode)
