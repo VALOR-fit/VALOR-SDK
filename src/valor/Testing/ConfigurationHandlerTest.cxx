@@ -12,11 +12,6 @@ bool ConfigurationHandlerTestCase::TestReadAnalysis()
 {
    bool passed = true;
 
-   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
-            _test));
-   ConfigurationHandler& handler = *(test._handler);
-
-   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
    util::Configuration& config = (*util::Configuration::Instance());
 
    passed = Test::Equal(config.GetString("analysis.samples"),
@@ -33,11 +28,6 @@ bool ConfigurationHandlerTestCase::TestReadSampleList()
 {
    bool passed = true;
 
-   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
-            _test));
-   ConfigurationHandler& handler = *(test._handler);
-
-   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
    util::Configuration& config = (*util::Configuration::Instance());
 
    passed = Test::Equal(config.GetString("sample_list.name"),
@@ -68,11 +58,6 @@ bool ConfigurationHandlerTestCase::TestReadMC()
 {
    bool passed = true;
 
-   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
-            _test));
-   ConfigurationHandler& handler = *(test._handler);
-
-   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
    util::Configuration& config = (*util::Configuration::Instance());
 
    passed = Test::Equal(config.GetString("mc.name"), "mc_name") && passed;
@@ -113,11 +98,6 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
 {
    bool passed = true;
 
-   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
-            _test));
-   ConfigurationHandler& handler = *(test._handler);
-
-   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
    util::Configuration& config = (*util::Configuration::Instance());
 
    passed = Test::Equal(config.GetString("param_list.name"), "name") && passed;
@@ -207,11 +187,6 @@ bool ConfigurationHandlerTestCase::TestReadParameters()
 {
    bool passed = true;
 
-   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
-            _test));
-   ConfigurationHandler& handler = *(test._handler);
-
-   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
    util::Configuration& config = (*util::Configuration::Instance());
 
    passed = Test::Equal(config.GetString("param_list.name"), "name") && passed;
@@ -283,11 +258,6 @@ bool ConfigurationHandlerTestCase::TestReadSplines()
 {
    bool passed = true;
 
-   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
-            _test));
-   ConfigurationHandler& handler = *(test._handler);
-
-   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
    util::Configuration& config = (*util::Configuration::Instance());
 
    passed = Test::Equal(config.GetString("splines.folder"),
@@ -300,8 +270,9 @@ bool ConfigurationHandlerTestCase::TestReadSplines()
 
 void ConfigurationHandlerTest::Setup()
 {
-   _handler = new ConfigurationHandler();
    util::Configuration::Instance();
+   _handler = new ConfigurationHandler();
+   _handler->ReadAnalysis(_arg->GetString("test-config-analysis-file"));
 }
 
 void ConfigurationHandlerTest::Teardown()
