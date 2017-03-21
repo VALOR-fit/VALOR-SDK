@@ -115,7 +115,65 @@ void ConfigurationHandler::ProcessSamples(XMLNodePointer_t rootNode)
                util::XML2String(_engine, sample, "data_class"));
       config.Set(BuildString("sample_list.sample_", i + 1, ".model_class"),
                util::XML2String(_engine, sample, "model_class"));
+      ReadMC(config.GetString(BuildString("sample_list.sample_", i + 1, ".mc")));
    }
+}
+
+void ConfigurationHandler::ReadMC(const std::string& filename)
+{
+   string fullFilename = file::GetConfigurationFilename(filename);
+
+   // Check that the config file exists.
+   if(fullFilename.empty())
+   {  // File not found
+      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+         filename;
+      util::Die(1);
+   }
+
+   // Parse the XML configuration file
+   XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
+   if(doc == 0)
+   {
+      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+         fullFilename << "]";
+      util::Die(1);
+   }
+
+   Configuration& config = (*Configuration::Instance());
+   XMLNodePointer_t rootNode = _engine->DocGetRootElement(doc);
+   // Process the MC
+   config.Set("mc.name", _engine->GetAttr(rootNode, "name"));
+   config.Set("mc.version", _engine->GetAttr(rootNode, "version"));
+   config.Set("mc.detector", _engine->GetAttr(rootNode, "detector"));
+   config.Set("mc.exposure.fhc", util::XML2Dbl(_engine, rootNode,
+            "data/exposure/fhc"));
+   config.Set("mc.exposure.rhc", util::XML2Dbl(_engine, rootNode,
+            "data/exposure/rhc"));
+   config.Set("mc.fiducial_mass", util::XML2Dbl(_engine, rootNode,
+            "fiducial_mass"));
+   config.Set("mc.use_dst", util::XML2Bool(_engine, rootNode,
+            "mc/using_dst_format"));
+   config.Set("mc.dst.fhc.filename", util::XML2String(_engine, rootNode,
+            "mc/dst/fhc/filename"));
+   config.Set("mc.dst.fhc.objname", util::XML2String(_engine, rootNode,
+            "mc/dst/fhc/objname"));
+   config.Set("mc.dst.fhc.objtype", util::XML2String(_engine, rootNode,
+            "mc/dst/fhc/objtype"));
+   config.Set("mc.dst.rhc.filename", util::XML2String(_engine, rootNode,
+            "mc/dst/rhc/filename"));
+   config.Set("mc.dst.rhc.objname", util::XML2String(_engine, rootNode,
+            "mc/dst/rhc/objname"));
+   config.Set("mc.dst.rhc.objtype", util::XML2String(_engine, rootNode,
+            "mc/dst/rhc/objtype"));
+   config.Set("mc.template.filename", util::XML2String(_engine, rootNode,
+            "mc/template/filename"));
+   config.Set("mc.template.tag", util::XML2String(_engine, rootNode,
+            "mc/template/tag"));
+   config.Set("mc.interaction_mass", util::XML2Dbl(_engine, rootNode,
+            "mc/interaction_mass"));
+   config.Set("mc.default_binning", util::XML2String(_engine, rootNode,
+            "default_binning"));
 }
 
 void ConfigurationHandler::ReadParameterList(const std::string& filename)

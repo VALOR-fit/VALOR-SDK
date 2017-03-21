@@ -55,11 +55,56 @@ bool ConfigurationHandlerTestCase::TestReadSampleList()
    passed = Test::Equal(config.GetString("sample_list.sample_1.data"),
          "observations.root") && passed;  
    passed = Test::Equal(config.GetString("sample_list.sample_1.mc"),
-         "mc/dune_ndfit_2017a_FGT_pt4.xml") && passed; 
+         "test/newxml/mc/mc.xml") && passed; 
    passed = Test::Equal(config.GetString("sample_list.sample_1.data_class"),
          "valor::GenericSingleSampleFitData") && passed;  
    passed = Test::Equal(config.GetString("sample_list.sample_1.model_class"),
          "valor::GenericSingleSampleFitModel") && passed;
+
+   return passed;
+}
+
+bool ConfigurationHandlerTestCase::TestReadMC()
+{
+   bool passed = true;
+
+   ConfigurationHandlerTest& test = *(dynamic_cast<ConfigurationHandlerTest*>(
+            _test));
+   ConfigurationHandler& handler = *(test._handler);
+
+   handler.ReadAnalysis(test._arg->GetString("test-config-analysis-file"));
+   util::Configuration& config = (*util::Configuration::Instance());
+
+   passed = Test::Equal(config.GetString("mc.name"), "mc_name") && passed;
+   passed = Test::Equal(config.GetString("mc.version"), "ver") && passed;
+   passed = Test::Equal(config.GetString("mc.detector"), "det") && passed;
+   passed = Test::Equal(config.GetDouble("mc.exposure.fhc"), 5.1518E21) &&
+      passed;
+   passed = Test::Equal(config.GetDouble("mc.exposure.rhc"), 5.1518E21) &&
+      passed;
+   passed = Test::Equal(config.GetDouble("mc.fiducial_mass"), 35.09) &&
+      passed;
+   passed = Test::True(config.GetBool("mc.use_dst")) && passed;
+   passed = Test::Equal(config.GetString("mc.dst.fhc.filename"),
+         "FHC_NuE_high.root") && passed;
+   passed = Test::Equal(config.GetString("mc.dst.fhc.objname"),
+         "valor_dune_nd_mini_dst") && passed;
+   passed = Test::Equal(config.GetString("mc.dst.fhc.objtype"),
+         "TTree") && passed;
+   passed = Test::Equal(config.GetString("mc.dst.rhc.filename"),
+         "RHC_NuE_high.root") && passed;
+   passed = Test::Equal(config.GetString("mc.dst.rhc.objname"),
+         "valor_dune_nd_mini_dst") && passed;
+   passed = Test::Equal(config.GetString("mc.dst.rhc.objtype"),
+         "TTree") && passed;
+   passed = Test::Equal(config.GetString("mc.template.filename"),
+         "template.root") && passed;
+   passed = Test::Equal(config.GetString("mc.template.tag"),
+         "pass") && passed;
+   passed = Test::Equal(config.GetDouble("mc.interaction_mass"), -999.0) &&
+      passed;
+   passed = Test::Equal(config.GetString("mc.default_binning"),
+         "test/newxml/binning/fd_elike.xml") && passed;
 
    return passed;
 }
@@ -278,6 +323,8 @@ void ConfigurationHandlerTest::AddTests()
          [testCase](void) { return testCase->TestReadParameters(); });
    Add(new TestKey("TestReadSplines", testCase),
          [testCase](void) { return testCase->TestReadSplines(); });
+   Add(new TestKey("TestReadMC", testCase),
+         [testCase](void) { return testCase->TestReadMC(); });
 }
 
 }

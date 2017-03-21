@@ -54,6 +54,13 @@ public:
    bool TestReadSampleList();
 
    /**
+      Check that the MC configuration file is read correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestReadMC();
+
+   /**
       Check that the parameter list configuration file is read correctly.
 
       \return True if the test passed, false otherwise.

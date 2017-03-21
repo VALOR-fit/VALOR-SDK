@@ -78,6 +78,46 @@ private:
    void ProcessSamples(XMLNodePointer_t rootNode);
 
    /**
+      Reads the MC configuration file.
+
+      XML format:
+      <?xml version="1.0"?>
+      <mc_inputs name="name" version="ver" detector="det">
+         <data>
+            <exposure> 
+               <fhc>5.1518e+21</fhc>
+               <rhc>5.1518e+21</rhc>     
+            </exposure>
+         </data>
+         <fiducial_mass>35.09</fiducial_mass>
+         <mc>
+            <using_dst_format>true</using_dst_format> 
+            <dst>
+               <fhc>
+                  <filename>FHC_NuE_high.root</filename>
+                  <objname>valor_dune_nd_mini_dst</objname> 
+                  <objtype>TTree</objtype>
+               </fhc>
+               <rhc>
+                  <filename>RHC_NuE_high.root</filename> 
+                  <objname>valor_dune_nd_mini_dst</objname>
+                  <objtype>TTree</objtype> 
+               </rhc>
+            </dst>
+            <template>
+               <filename>template.root</filename>
+               <tag>pass</tag>
+            </template>
+            <interaction_mass>-999</interaction_mass>
+         </mc>
+         <default_binning>test/newxml/binning/fd_elike.xml</default_binning>
+      </mc_inputs>
+
+      \param filename The name of the file to read.
+   */
+   void ReadMC(const std::string& filename);
+
+   /**
       Reads the parameter list configuration file.
 
       XML format:
