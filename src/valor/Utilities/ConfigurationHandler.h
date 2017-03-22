@@ -135,6 +135,53 @@ private:
    void ReadBinning(const std::string& filename);
 
    /**
+      Reads an optimised binning configuration file.
+
+      XML format:
+      <?xml version="1.0" encoding="ISO-8859-1"?>
+      <binning>
+	 <space>Ereco,yreco</space>
+	 <type>mondrian</type>
+	 <nbins>1</nbins>
+	 <bin_0> 0.0, 0.40, 0.0, 1.0 </bin_0>
+      </binning>
+
+      \param filename The name of the file to read.
+      \param key A key to indicate the current binning sample. This should be
+         the same as the key identifying the binning sample, e.g.
+         binning.reco.opt.
+   */
+   void ReadOptimisedBinning(const std::string& filename,
+         const std::string& key);
+
+   /**
+      Reads a simple binning configuration file.
+
+      XML format:
+      <?xml version="1.0" encoding="ISO-8859-1"?>
+      <binning>
+         <space>Ereco,yreco</space>
+         <type>edge-to-edge</type>
+         <Ereco_binning>
+            <bin_size>variable</bin_size>
+            <nbins>3</nbins>
+            <bin_edges>0.0, 1.0, 3.0, 7.0, 10.0</bin_edges>
+         </Ereco_binning>
+         <yreco_binning>
+            <bin_size>fixed</bin_size>
+            <nbins>4</nbins>
+            <bin_edges>0.0, 0.25, 0.5, 0.75, 1.0</bin_edges>
+         </yreco_binning>
+      </binning>
+
+      \param filename The name of the file to read.
+      \param key A key to indicate the current binning sample. This should be
+         the same as the key identifying the binning sample, e.g.
+         binning.true.smp.
+   */
+   void ReadSimpleBinning(const std::string& filename, const std::string& key);
+
+   /**
       Reads the parameter list configuration file.
 
       XML format:

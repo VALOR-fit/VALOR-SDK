@@ -101,13 +101,91 @@ bool ConfigurationHandlerTestCase::TestReadBinning()
    util::Configuration& config = (*util::Configuration::Instance());
 
    passed = Test::Equal(config.GetString("binning.reco.opt"),
-         "test/newxml/binning/mondrian/reco/ErecoYreco.xml") && passed;
+         "test/newxml/binning/mondrian/reco/Ereco_yreco.xml") && passed;
    passed = Test::Equal(config.GetString("binning.reco.smp"),
-         "test/newxml/binning/e2e/reco/ErecoYreco.xml") && passed;
+         "test/newxml/binning/e2e/reco/Ereco_yreco.xml") && passed;
    passed = Test::Equal(config.GetString("binning.true.smp.default"),
-         "test/newxml/binning/e2e/true/ErecoYreco.xml") && passed;
+         "test/newxml/binning/e2e/true/Etrue.xml") && passed;
    passed = Test::Equal(config.GetString("binning.xsec.reco"),
-         "test/newxml/binning/e2e/reco/ErecoYreco.xml") && passed;
+         "test/newxml/binning/e2e/reco/Ereco_yreco.xml") && passed;
+
+   return passed;
+}
+
+bool ConfigurationHandlerTestCase::TestReadOptimisedBinning()
+{
+   bool passed = true;
+
+   util::Configuration& config = (*util::Configuration::Instance());
+
+   passed = Test::Equal(config.GetString("binning.reco.opt.space"),
+         "Ereco,yreco") && passed;
+   passed = Test::Equal(config.GetString("binning.reco.opt.type"),
+         "mondrian") && passed;
+   passed = Test::Equal(config.GetInt("binning.reco.opt.nbins"), 1) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.opt.bin_0.xlow"),
+         0.0) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.opt.bin_0.xhigh"),
+         0.4) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.opt.bin_0.ylow"),
+         0.0) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.opt.bin_0.yhigh"),
+         1.0) && passed;
+
+   return passed;
+}
+
+bool ConfigurationHandlerTestCase::TestReadSimpleBinning()
+{
+   bool passed = true;
+
+   util::Configuration& config = (*util::Configuration::Instance());
+
+   passed = Test::Equal(config.GetString("binning.reco.smp.space"),
+         "Ereco,yreco") && passed;
+   passed = Test::Equal(config.GetString("binning.reco.smp.type"),
+         "edge-to-edge") && passed;
+   // Reco binning
+   // Ereco binning
+   passed = Test::Equal(config.GetString("binning.reco.smp.kv_1.name"),
+         "Ereco") && passed;
+   passed = Test::Equal(config.GetString("binning.reco.smp.kv_1.size"),
+         "variable") && passed;
+   passed = Test::Equal(config.GetInt("binning.reco.smp.kv_1.nbins"), 3) &&
+      passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_1.edge_0"),
+         0.0) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_1.edge_1"),
+         1.0) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_1.edge_2"),
+         3.0) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_1.edge_3"),
+         10.0) && passed;
+   // yreco binning
+   passed = Test::Equal(config.GetString("binning.reco.smp.kv_2.name"),
+         "yreco") && passed;
+   passed = Test::Equal(config.GetString("binning.reco.smp.kv_2.size"),
+         "fixed") && passed;
+   passed = Test::Equal(config.GetInt("binning.reco.smp.kv_2.nbins"), 4) &&
+      passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_2.edge_0"),
+         0.0) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_2.edge_1"),
+         0.25) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_2.edge_2"),
+         0.5) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_2.edge_3"),
+         0.75) && passed;
+   passed = Test::Equal(config.GetDouble("binning.reco.smp.kv_2.edge_4"),
+         1.0) && passed;
+   // True binning
+   passed = Test::Equal(config.GetString("binning.true.smp.default.kv_1.name"),
+         "Etrue") && passed;
+   passed = Test::Equal(config.GetDouble("binning.true.smp.default.kv_1.edge_2"),
+         7.0) && passed;
+   // xsec reco binning
+   passed = Test::Equal(config.GetString("binning.xsec.reco.kv_1.name"),
+         "Ereco") && passed;
 
    return passed;
 }
@@ -316,6 +394,10 @@ void ConfigurationHandlerTest::AddTests()
          [testCase](void) { return testCase->TestReadMC(); });
    Add(new TestKey("TestReadBinning", testCase),
          [testCase](void) { return testCase->TestReadBinning(); });
+   Add(new TestKey("TestReadOptimisdBinning", testCase),
+         [testCase](void) { return testCase->TestReadOptimisedBinning(); });
+   Add(new TestKey("TestReadSimpleBinning", testCase),
+         [testCase](void) { return testCase->TestReadSimpleBinning(); });
 }
 
 }

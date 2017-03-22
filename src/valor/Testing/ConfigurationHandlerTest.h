@@ -68,6 +68,20 @@ public:
    bool TestReadBinning();
 
    /**
+      Check that the optimised binning configuration file is read correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestReadOptimisedBinning();
+
+   /**
+      Check that the simple binning configuration file is read correctly.
+
+      \return True if the test passed, false otherwise.
+   */
+   bool TestReadSimpleBinning();
+
+   /**
       Check that the parameter list configuration file is read correctly.
 
       \return True if the test passed, false otherwise.

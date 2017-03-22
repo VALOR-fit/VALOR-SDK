@@ -1,11 +1,13 @@
 #include "valor/Utilities/ConfigurationHandler.h"
 
+#include <cstdlib>
 #include <sstream>
 
 // valor
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/Configuration.h"
 #include "valor/Utilities/UtlFile.h"
+#include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlXML.h"
 
 namespace valor
@@ -204,12 +206,140 @@ void ConfigurationHandler::ReadBinning(const std::string& filename)
    // Process the MC
    config.Set("binning.reco.opt", util::XML2String(_engine, rootNode,
             "reco_optimized"));
+   ReadOptimisedBinning(config.GetString("binning.reco.opt"),
+         "binning.reco.opt");
    config.Set("binning.reco.smp", util::XML2String(_engine, rootNode,
             "reco_simple"));
+   ReadSimpleBinning(config.GetString("binning.reco.smp"),
+         "binning.reco.smp");
    config.Set("binning.true.smp.default", util::XML2String(_engine, rootNode,
             "true_simple/default"));
+   ReadSimpleBinning(config.GetString("binning.true.smp.default"),
+         "binning.true.smp.default");
    config.Set("binning.xsec.reco", util::XML2String(_engine, rootNode,
             "xsec_reco"));
+   ReadSimpleBinning(config.GetString("binning.xsec.reco"),
+         "binning.xsec.reco");
+}
+
+void ConfigurationHandler::ReadOptimisedBinning(const std::string& filename,
+      const std::string& key)
+{
+   string fullFilename = file::GetConfigurationFilename(filename);
+
+   // Check that the config file exists.
+   if(fullFilename.empty())
+   {  // File not found
+      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+         filename;
+      util::Die(1);
+   }
+
+   // Parse the XML configuration file
+   XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
+   if(doc == 0)
+   {
+      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+         fullFilename << "]";
+      util::Die(1);
+   }
+
+   Configuration& config = (*Configuration::Instance());
+   XMLNodePointer_t rootNode = _engine->DocGetRootElement(doc);
+   // Process the optimised binning
+   config.Set(key + ".space", util::XML2String(_engine, rootNode,
+            "space"));
+   config.Set(key + ".type", util::XML2String(_engine, rootNode,
+            "type"));
+   config.Set(key + ".nbins", util::XML2Int(_engine, rootNode,
+            "nbins"));
+   for(int i = 0; i < config.GetInt(key + ".nbins"); ++i)
+   {
+      std::string list = util::XML2String(_engine, rootNode,
+            BuildString("bin_", i, ""));
+      std::vector<std::string> tokens = util::Tokens(list, ",");
+      if(tokens.size() != 4)
+      {  // Wrong number of bin edges specified
+         LOG("ConfigurationHandler", pERROR) << "bin_" << i << " has " <<
+            tokens.size() << " edges specifed. Expected 4.";
+         util::Die(1);
+      }
+      std::string prefix = BuildString(key, ".bin_", "");
+      config.Set(BuildString(prefix, i, ".xlow"), std::atof(
+               util::TrimSpaces(tokens[0]).c_str()));
+      config.Set(BuildString(prefix, i, ".xhigh"), std::atof(
+               util::TrimSpaces(tokens[1]).c_str()));
+      config.Set(BuildString(prefix, i, ".ylow"), std::atof(
+               util::TrimSpaces(tokens[2]).c_str()));
+      config.Set(BuildString(prefix, i, ".yhigh"), std::atof(
+               util::TrimSpaces(tokens[3]).c_str()));
+   }
+}
+
+void ConfigurationHandler::ReadSimpleBinning(const std::string& filename,
+      const std::string& key)
+{
+   string fullFilename = file::GetConfigurationFilename(filename);
+
+   // Check that the config file exists.
+   if(fullFilename.empty())
+   {  // File not found
+      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+         filename;
+      util::Die(1);
+   }
+
+   // Parse the XML configuration file
+   XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
+   if(doc == 0)
+   {
+      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+         fullFilename << "]";
+      util::Die(1);
+   }
+
+   Configuration& config = (*Configuration::Instance());
+   XMLNodePointer_t rootNode = _engine->DocGetRootElement(doc);
+   // Process the optimised binning
+   config.Set(key + ".space", util::XML2String(_engine, rootNode,
+            "space"));
+   config.Set(key + ".type", util::XML2String(_engine, rootNode,
+            "type"));
+
+   // Get the kinematic variables from the space and process the binning
+   std::vector<std::string> kvs = util::Tokens(config.GetString(key + ".space"),
+         ",");
+   for(unsigned int k = 0; k < kvs.size(); ++k)
+   {
+      kvs[k] = util::TrimSpaces(kvs[k]);
+      XMLNodePointer_t kvNode = util::FindNode(_engine, rootNode,
+            kvs[k] + "_binning");
+      // Store the name of the kinematic variable
+      std::string prefix = BuildString(key + ".kv_", k + 1, "");
+      config.Set(BuildString(prefix, ".name", ""), kvs[k]);
+      config.Set(BuildString(prefix, ".size", ""), util::XML2String(_engine,
+               kvNode, "bin_size"));
+      int nbins = util::XML2Int(_engine, kvNode, "nbins");
+      config.Set(BuildString(prefix, ".nbins", ""), nbins);
+      std::string edges = util::XML2String(_engine, kvNode, "bin_edges");
+
+      for(int i = 0; i < nbins; ++i)
+      {
+         std::vector<std::string> tokens = util::Tokens(edges, ",");
+         if(tokens.size() != (nbins + 1))
+         {  // Wrong number of bin edges specified
+            LOG("ConfigurationHandler", pERROR) << "bin_" << i << " has " <<
+               tokens.size() << " edges specifed. Expected 4.";
+            util::Die(1);
+         }
+         for(unsigned int j = 0; j < tokens.size(); ++j)
+         {
+            std::string edge = BuildString(prefix, ".edge_", "");
+            config.Set(BuildString(edge, j, ""), std::atof(
+                     util::TrimSpaces(tokens[j]).c_str()));
+         }
+      }
+   }
 }
 
 void ConfigurationHandler::ReadParameterList(const std::string& filename)
