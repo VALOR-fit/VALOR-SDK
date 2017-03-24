@@ -209,17 +209,22 @@ void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
   }
 }
 //________________________________________________________________________________________
-void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix)
+void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix, unsigned int start_at)
 {
   TMatrixDSym & m = *fCovMatrix;
-  if (m.GetNrows()!=covmatrix.GetNrows()) {
-    LOG("FitParmList",pERROR) << "Cov matrix given has "<<covmatrix.GetNrows()
-      <<" elements but FPL needs "<<m.GetNrows()<<" elements.";
+  int tot_rows = m.GetNrows()-start_at;
+  if (tot_rows < 0) {
+    LOG("FitParmList",pERROR) << "Can't start at row "<<start_at<<" in a "<<m.GetNrows()<<" matrix.";
     util::Die(-1) ; return;
   }
-  for(int ip = 0; ip < fNParams; ip++) {
-    for(int jp = 0; jp < fNParams; jp++) {
-      m[ip][jp] = covmatrix[ip][jp];
+  if (tot_rows!=covmatrix.GetNrows()) {
+    LOG("FitParmList",pERROR) << "Cov matrix given has "<<covmatrix.GetNrows()
+      <<" elements but FPL needs "<<tot_rows<<" elements.";
+    util::Die(-1) ; return;
+  }
+  for(int ip = 0; ip < tot_rows; ip++) {
+    for(int jp = 0; jp < tot_rows; jp++) {
+      m[ip+start_at][jp+start_at] = covmatrix[ip][jp];
     }
   }
 }
@@ -1127,6 +1132,13 @@ FitParamList * FitParamList::NuOscSterile5FlavourFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
+FitParamList * FitParamList::NuOscSterileEffectiveFit(int nuisance)
+{
+  FitParamList * fparm = new FitParamList(3+nuisance);
+  FitParamList::AppendEffectiveSterileOscillation(fparm, 0);
+  return fparm;
+}
+//________________________________________________________________________________________
 FitParamList * FitParamList::NumuDisapFit(int nuisance)
 {
   FitParamList * fparm = new FitParamList(2+nuisance);
@@ -1515,6 +1527,15 @@ void FitParamList::Append5FlavourSterileOscillation(FitParamList * fparm, int st
   
   fparm->AddParam( ip++, kPhypDm41sq,    kInitFitDm41sq,   kMinFitDm41sq, kMaxFitDm41sq, kStepDm41sq,  false, false);
   fparm->AddParam( ip++, kPhypDm51sq,    kInitFitDm51sq,   kMinFitDm51sq, kMaxFitDm51sq, kStepDm51sq,  false, false);
+}
+//________________________________________________________________________________________
+void FitParamList::AppendEffectiveSterileOscillation(FitParamList * fparm, int start)
+{
+  int ip = start; // first unallocated element in the param list
+  fparm->AddParam( ip++, kPhypDm41sq    , 1.,  0.0, 100, 0.10,  false, false);
+  fparm->AddParam( ip++, kPhypMixingEE  , 0.1, 0.0, 1.0, 0.01,  false, false);
+  fparm->AddParam( ip++, kPhypMixingMuMu, 0.1, 0.0, 1.0, 0.01,  false, false);
+  return;
 }
 //________________________________________________________________________________________
 void FitParamList::Append2FlavourOscillation(FitParamList * fparm, int start)

@@ -128,7 +128,7 @@ namespace valor {
     void Copy (const FitParamList & plst);
     
     // Set the covariance matrix
-    void SetCovMatrix(TMatrixDSym & covmatrix);
+    void SetCovMatrix(TMatrixDSym & covmatrix, unsigned int start_at = 0);
     
     // Set the errors
     void SetErrors(double * errplus, double * errminus, double * errmigrad);
@@ -296,6 +296,7 @@ namespace valor {
     static FitParamList * NumuDecohFit                              (int nuisance = 0);
     static FitParamList * NuOscSterile4FlavourFit                   (int nuisance = 0);
     static FitParamList * NuOscSterile5FlavourFit                   (int nuisance = 0);
+    static FitParamList * NuOscSterileEffectiveFit                  (int nuisance = 0);
     
     static void           Append3FlavourOscillation                 (FitParamList * fp, int start);
     static void           Append3FlavourOscillationBar              (FitParamList * fp, int start);
@@ -308,6 +309,7 @@ namespace valor {
     static void           Append2FlavourOscillation                 (FitParamList * fp, int start);
     static void           Append4FlavourSterileOscillation          (FitParamList * fp, int start);
     static void           Append5FlavourSterileOscillation          (FitParamList * fp, int start);
+    static void           AppendEffectiveSterileOscillation         (FitParamList * fp, int start);
     static void           AppendAllSystematics                      (FitParamList * fp, int start);
     
     void SetParListName (string s)   { fParListName = s; }
