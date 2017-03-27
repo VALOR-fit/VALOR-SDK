@@ -64,7 +64,7 @@ public:
   CmdLnArgList();
  ~CmdLnArgList();
 
-  bool Read (int argc, char ** argv, string arg_spec_files);
+  bool Read (int argc, const char* const* argv, string arg_spec_files);
 };
 
 }

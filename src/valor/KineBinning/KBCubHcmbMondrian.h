@@ -67,14 +67,11 @@
 
 #include <TNamed.h>
 #include <TLine.h>
+#include <TH2D.h>
 
 #include "valor/VArray/VALORArray.h"
 #include "valor/VArray/VALORArrayBin.h"
 #include "valor/Conventions/KineSpace.h"
-
-using std::vector;
-using std::map;
-using std::multimap;
 
 namespace valor {
 
@@ -88,6 +85,7 @@ public:
   virtual ~KBCubHcmbMondrian();
 
   // Read binning from file
+  using TObject::Read; // Tell clang we really do want this
   bool Read(string file);
 
   // Get the corresponding kinematical space
@@ -97,16 +95,27 @@ public:
   unsigned int NDimensions (void) const { return fNDimensions; }
 
   // List of kinematical variables
-  const vector<valor::conv::KineVar_t> & KineVars (void) const { return fKineVars; }
+  const std::vector<valor::conv::KineVar_t> & KineVars (void) const { return fKineVars; }
 
   // Dimension -> Variable
   conv::KineVar_t KineVar(unsigned int dimension);
 
   // Variable -> Dimension
   unsigned int Dimension(conv::KineVar_t kv) const;
+  bool Contains(conv::KineVar_t kv) const;
 
   // Number of multi-dimensional bins 
   int NBins (void) const { return fNBins; }
+
+  /**
+    Takes this binning and creates a new binning using the specified subset of
+    kinematic variables.
+
+    \param ks The target kinematic space. This must be a strict subset of the
+      kinematic space used by the current binning.
+    \return The binning with the specified kinematic space.
+  */
+  KBCubHcmbMondrian* Contract(conv::KineSpace_t ks) const;
 
   // Global bin and max values
   double Minimum (unsigned int dimension ) const;
@@ -121,21 +130,21 @@ public:
   double BinMaximum (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin range
-  vector<double> BinRange (unsigned int bin, unsigned int dimension ) const;
-  vector<double> BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
+  std::vector<double> BinRange (unsigned int bin, unsigned int dimension ) const;
+  std::vector<double> BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin width
-  double         BinWidth (unsigned int bin, unsigned int dimension ) const;
-  double         BinWidth (unsigned int bin, conv::KineVar_t kv     ) const;
-  vector<double> BinWidth (unsigned int bin                         ) const;
+  double              BinWidth (unsigned int bin, unsigned int dimension ) const;
+  double              BinWidth (unsigned int bin, conv::KineVar_t kv     ) const;
+  std::vector<double> BinWidth (unsigned int bin                         ) const;
 
   // Bin centre
-  double         BinCentre (unsigned int bin, unsigned int dimension ) const;
-  double         BinCentre (unsigned int bin, conv::KineVar_t kv     ) const;
-  vector<double> BinCentre (unsigned int bin                         ) const;
+  double              BinCentre (unsigned int bin, unsigned int dimension ) const;
+  double              BinCentre (unsigned int bin, conv::KineVar_t kv     ) const;
+  std::vector<double> BinCentre (unsigned int bin                         ) const;
 
   // Find bin
-  unsigned int FindBin (vector<double> & xarr);
+  unsigned int FindBin (std::vector<double> & xarr) const;
 
   // An alternative `edge-to-edge' binning of the same kiematical space may be 
   // specified to simplify plotting. If specified, a bin mapping bwteen the
@@ -143,25 +152,48 @@ public:
   void UseEdge2EdgeBinning(const KBCubHcmbEdge2Edge * kbe2e);
   unsigned int MapFromLinearizedE2E(unsigned int e2e_linearized_bin) const;
   
-  vector<TLine>  GetBinningTLines(void);
+  std::vector<TLine>  GetBinningTLines(void) const;
+
+  /**
+    Creates a T2HD with binning that is compatible with the Mondrian binning
+    for the purpose of plotting.
+
+    Note that the T2HD object returned by this method should not be used for any
+    purpose other than the production of a Root compatible plot that will look
+    like a Mondrian-binned histogram. The total number of events in the histogram,
+    once filled will exceed that in the true Mondrian-binned histogram it
+    represents and so is not valid for computation.
+
+    \param kv1 The first kinematic variable to be plotted. This variable will be
+      ignored if the Mondrian binning is already 2-dimensional. If the Mondrian
+      binning has more than 2 dimensions and this variable is not provided the
+      application will terminate with an error.
+    \param kv2 The second kinematic variable to be plotted. This variable will be
+      ignored if the Mondrian binning is already 2-dimensional. If the Mondrian
+      binning has more than 2 dimensions and this variable is not provided the
+      application will terminate with an error.
+
+    \return A T2HD with bins suitable for Mondrian-binning-like plots.
+  */
+  TH2D* ToTH2D(conv::KineVar_t kv1 = conv::kvUndefined,
+        conv::KineVar_t kv2 = conv::kvUndefined) const;
   
 protected:
 
   void Init    (void);
   void CleanUp (void);
 
-  conv::KineSpace_t                    fKineSpace;           // kinematical space
-  unsigned int                         fNDimensions;         // number of dimensions
-  vector<conv::KineVar_t>              fKineVars;            // kinematical variables in given space
-  map<conv::KineVar_t, unsigned int>   fKineVar2Dim;         // kinematical variable -> dimension
-  unsigned int                         fNBins;               // number of bins
-  vector<double>                       fBinEdges;            // (xmin,xmax,ymin,ymax,...)_bin0,(xmin,xmax,ymin,ymax,...)_bin1,... 
-  vector<double>                       fMinimum;             //
-  vector<double>                       fMaximum;             //
-  const KBCubHcmbEdge2Edge *           fKBE2E;               //
-  map<unsigned int, unsigned int>      fBinMondrianFromE2E;  // e2e linearized bin --> mondrian bin (1:1)
-  multimap<unsigned int, unsigned int> fBinMondrianToE2E;    // mondrian bin --> e2e linearized bin (1:N) 
-  vector<TLine>                        fBinEdgesTLines;      // Bin Edges as TLines for plotting purposes 
+  conv::KineSpace_t                         fKineSpace;           // kinematical space
+  unsigned int                              fNDimensions;         // number of dimensions
+  std::vector<conv::KineVar_t>              fKineVars;            // kinematical variables in given space
+  std::map<conv::KineVar_t, unsigned int>   fKineVar2Dim;         // kinematical variable -> dimension
+  unsigned int                              fNBins;               // number of bins
+  std::vector<double>                       fBinEdges;            // (xmin,xmax,ymin,ymax,...)_bin0,(xmin,xmax,ymin,ymax,...)_bin1,... 
+  std::vector<double>                       fMinimum;             //
+  std::vector<double>                       fMaximum;             //
+  const KBCubHcmbEdge2Edge *                fKBE2E;               //
+  std::map<unsigned int, unsigned int>      fBinMondrianFromE2E;  // e2e linearized bin --> mondrian bin (1:1)
+  std::multimap<unsigned int, unsigned int> fBinMondrianToE2E;    // mondrian bin --> e2e linearized bin (1:N) 
   
 ClassDef(KBCubHcmbMondrian, 1)
 

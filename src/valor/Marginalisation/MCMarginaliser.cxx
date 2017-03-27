@@ -38,7 +38,7 @@ void MCMarginaliser::Marginalise()
 
    // Histogram to store the distribution of parameter values in marginalisation
    // toys
-   TH1D hParams[fParams->Size()];
+   TH1D* hParams = new TH1D[fParams->Size()];
    // Choose a number of bins appropriate to the number of toys
    // fNumToys / 6 is effective for 30 toy test runs, whilst 100 makes sense for
    // a full 10K toy run
@@ -73,6 +73,7 @@ void MCMarginaliser::Marginalise()
 
    file.Write();
    file.Close();
+   delete[] hParams;
 }
 
 FitModelABC* MCMarginaliser::Begin()

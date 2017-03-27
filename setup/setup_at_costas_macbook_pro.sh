@@ -11,7 +11,8 @@ if [ -z "$VALOR_FMWK" ]; then
       export VALOR_FMWK="$( dirname "$( dirname "${source}" )" )/" # Directory above the one containing this file
 fi
 
-export ROOTSYS=/hep/soft/root/v5.34.34/
+#source /hep/soft/root/v6.08.00/build/bin/thisroot.sh
+source /hep/soft/root/v5.34.34/bin/thisroot.sh
 
-export DYLD_LIBRARY_PATH=${VALOR_FMWK}/lib:${ROOTSYS}/lib:${DYLD_LIBRARY_PATH}
-export PATH=${VALOR_FMWK}/root:${ROOTSYS}/bin:${PATH}
+export DYLD_LIBRARY_PATH=${VALOR_FMWK}/lib:${DYLD_LIBRARY_PATH}
+export PATH=${VALOR_FMWK}/root:${PATH}

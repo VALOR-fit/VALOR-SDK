@@ -39,6 +39,7 @@ class CorrelatedSystematics : public TNamed
 {
 public:
   CorrelatedSystematics(unsigned int n_syst, const conv::PhysParamId_t * syst_params, const std::string & xml_node_name = "syst");
+  CorrelatedSystematics(const CorrelatedSystematics & c);
   virtual ~CorrelatedSystematics();
 
   // Read inputs from XML file

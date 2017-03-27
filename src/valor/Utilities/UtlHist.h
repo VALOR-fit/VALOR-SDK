@@ -57,7 +57,7 @@ namespace util {
   int CreateRedToBlueColorPalette(int n_shades = 100);
   
   // Get the histograms out of a TCanvas
-  TObjArray GetHistsFromCanvas(TCanvas * canv, const char * name = "TH1");
+  TObjArray GetHistsFromCanvas(TVirtualPad * canv, const char * name = "TH1");
   
 
 } // util

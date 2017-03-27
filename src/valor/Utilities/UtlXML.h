@@ -49,6 +49,20 @@ namespace valor {
 namespace util {
 
   XMLNodePointer_t FindNode          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  /**
+     Retrieves all nodes with a given name under a given node.
+
+     This method returns all nodes that are direct children of a specified node.
+     It will not look within other child nodes.
+
+     \param xml_eng The TXXMLEngine that will perform the parsing.
+     \param top_node The node within which to search.
+     \param tag The XMl tag to search for.
+     \return The set of nodes found.
+  */
+  vector<XMLNodePointer_t> FindNodes(TXMLEngine* xml_eng,
+        XMLNodePointer_t top_node, const string& tag);
+
   bool             NodeExists        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
   bool             XML2Bool          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);

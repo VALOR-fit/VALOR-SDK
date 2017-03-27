@@ -241,6 +241,10 @@ string util::RawParamAsStringRaw(PhysParamId_t p)
 
     // Nonstandard matter interaction
     case ( kPhypNSIepsMuTau           ) : return "nsi_epsilonMuTau";    break;
+    
+    // Effective steriles:
+    case ( kPhypMixingEE              ) : return "sinsq2thEE";         break;
+    case ( kPhypMixingMuMu            ) : return "sinsq2thMuMu";       break;
 
     default:
     {
@@ -481,6 +485,10 @@ string util::RawParamAsString(PhysParamId_t p)
 
     // Nonstandard matter interaction
     case ( kPhypNSIepsMuTau           ) : return "nsi_epsilonMuTau";    break;
+    
+    // Effective steriles
+    case(kPhypMixingEE  ) : return "sin^2(2*theta_ee)"  ;       break;
+    case(kPhypMixingMuMu) : return "sin^2(2*theta_mumu)";       break;
 
     default:
     {
@@ -727,6 +735,10 @@ string util::RawParamAsStringTex(PhysParamId_t p)
 
     // Nonstandard matter interaction
     case ( kPhypNSIepsMuTau           ) : return "$nsi_\\epsilon_{\\mu\\tau}$";      break;
+    
+    // Effective steriles
+    case(kPhypMixingEE  ) : return "$\\sin^2(2\\theta_{ee})$"      ; break;
+    case(kPhypMixingMuMu) : return "$\\sin^2(2\\theta_{\\mu\\mu})$"; break;
 
     default :
       return "--";
@@ -893,6 +905,10 @@ string util::RawParamAsStringRooTex(PhysParamId_t p)
     case ( kPhypSinsq2ThetaDecay      ) : return "sin^{2}(2#theta_{decay})";       break;
     case ( kPhypMusqDecoh             ) : return "#mu^{2}_{decoh}";                break;
     case ( kPhypSinsq2ThetaDecoh      ) : return "sin^{2}(2#theta_{decoh})";       break;
+    
+    // Effective steriles
+    case(kPhypMixingEE  ) : return "$\\sin^2(2\\theta_{ee})$"    ; break;
+    case(kPhypMixingMuMu) : return "$\\sin^2(2\\theta_{#mu#mu})$"; break;
 
     default :
       return "--";

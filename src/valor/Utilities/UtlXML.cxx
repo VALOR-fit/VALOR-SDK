@@ -29,7 +29,9 @@ ChangeLog:
 #include <TFile.h>
 #include <TSystem.h>
 
+#include "valor/Conventions/Constants.h"
 #include "valor/Messenger/Messenger.h"
+#include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/Rnd.h"
@@ -72,6 +74,32 @@ XMLNodePointer_t valor::util::FindNode(
   }
   return 0;
 }
+
+vector<XMLNodePointer_t> valor::util::FindNodes(TXMLEngine* xml_eng,
+      XMLNodePointer_t top_node, const string& tag)
+{
+   vector<XMLNodePointer_t> nodes;
+   // Retrieve the first node for the search
+   XMLNodePointer_t node = xml_eng->GetChild(top_node);
+   if(node)
+   {  // There is a node to examine
+      if(xml_eng->GetNodeName(node) == tag)
+      {  // The first node matches our search, store it
+         nodes.push_back(node);
+      }
+      // Iterate through the remaining nodes, storing the matches
+      while((node = xml_eng->GetNext(node)))
+      {
+         if(xml_eng->GetNodeName(node) == tag)
+         {  // Node matches our search, store it
+            nodes.push_back(node);
+         }
+      }
+   }
+
+   return nodes;
+}
+
 //____________________________________________________________________________________________________
 bool valor::util::NodeExists(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
@@ -111,7 +139,7 @@ bool valor::util::XML2Bool(
   if(!found_node) {
     LOG("XML", pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
-    exit(1);
+    util::Die(1); return false;
   }
   string content = TrimSpaces(xml_eng->GetNodeContent(found_node));
 
@@ -127,11 +155,10 @@ bool valor::util::XML2Bool(
      content == "0"    || 
      content == "O") return false;
 
-   LOG("XML", pFATAL) 
-       << "Could not interpret content (" << content 
-       << ") found at node_path: " << node_path << " as a boolean!";
-    exit(1);
-
+  LOG("XML", pFATAL) 
+      << "Could not interpret content (" << content 
+      << ") found at node_path: " << node_path << " as a boolean!";
+  util::Die(1);
   return false;
 }
 //____________________________________________________________________________________________________
@@ -146,7 +173,7 @@ int valor::util::XML2Int(
   if(!found_node) {
     LOG("XML", pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
-    exit(1);
+    util::Die(1); return -1;
   }
   string content = xml_eng->GetNodeContent(found_node);
   int value = atoi(content.c_str());
@@ -164,7 +191,7 @@ double valor::util::XML2Dbl(
   if(!found_node) {
     LOG("XML", pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
-    exit(1);
+    util::Die(1); return conv::kBadResult;
   }
   string content = xml_eng->GetNodeContent(found_node);
   double value = atof(content.c_str());
@@ -178,14 +205,13 @@ vector<double> valor::util::XML2DblArray(
 // The node content should be a comma-separed list of numbers
 
   LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
-
+  vector<double> array;
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
     LOG("XML",pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
-    exit(1);
+    util::Die(1); return array;
   }
-  vector<double> array;
   const char * nc = xml_eng->GetNodeContent(found_node);
   if (not nc) return array;
   
@@ -213,7 +239,7 @@ string valor::util::XML2String(
   if(!found_node) {
     LOG("XML",pFATAL)
        << "No node was found at input XML node node_path: " << node_path;
-    exit(1);
+    util::Die(1); return "badstring";
   }
   const char * nc = xml_eng->GetNodeContent(found_node);
   if (not nc) return string("");
@@ -230,12 +256,12 @@ pair<double,double> valor::util::XML2DblDblPair(
   LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
+  pair<double,double> pair;
   if(!found_node) {
     LOG("XML",pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
-    exit(1);
+    util::Die(1); return pair;
   }
-  pair<double,double> pair;
   const char * nc = xml_eng->GetNodeContent(found_node);
   if (not nc) return pair;
   
@@ -245,7 +271,7 @@ pair<double,double> valor::util::XML2DblDblPair(
   if(str_tokens.size() != 2) {
     LOG("XML",pFATAL)
       << "XML2DblDblPair cannot get exactly two values from: " << content;
-    exit(1);
+    util::Die(1); return pair;
   }
   
   pair.first  = atof(str_tokens[0].c_str());
@@ -329,11 +355,11 @@ TFile * valor::util::XML2TFile(
   TFile * file = new TFile(full_filename.Data(),"read");
   if(!file) {
     LOG("XML",pFATAL) << "No file: " << full_filename << " found";
-    exit(1);
+    util::Die(1); return 0;
   }
   if(file->IsZombie()) {
     LOG("XML",pFATAL) << "File is a zombie: " << full_filename;
-    exit(1);
+    util::Die(1); return 0;
   }
 
   return file;
@@ -361,7 +387,7 @@ TH1F * valor::util::XML2TH1F(
   if(!h) {
     LOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
     file.Close();
-    exit(1);
+    util::Die(1); return 0;
   }
 
   TH1F * hcopy = new TH1F(*h);
@@ -392,9 +418,9 @@ TGraph * valor::util::XML2TGraph(
     TFile file(full_filename,"read");
     TGraph * h = (TGraph*)file.Get(objname.c_str());
     if(!h) {
-        LOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
-        file.Close();
-        exit(1);
+      LOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
+      file.Close();
+      util::Die(1); return 0;
     }
     
     TGraph * hcopy = new TGraph(*h);
@@ -426,7 +452,7 @@ TH1D * valor::util::XML2TH1D(
   if(!h) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    exit(1);
+    util::Die(1); return 0;
   }
 
   TH1D * hcopy = new TH1D(*h);
@@ -460,7 +486,7 @@ TH2D * valor::util::XML2TH2D(
   if(!h2) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    exit(1);
+    util::Die(1); return 0;
   }
 
   TH2D * h2copy = new TH2D(*h2);
@@ -494,7 +520,7 @@ TH3D * valor::util::XML2TH3D(
     if(!h2) {
         LOG("XML",pFATAL) << "No " << objname << " in " << filename;
         file.Close();
-        exit(1);
+        util::Die(1); return 0;
     }
     
     TH3D * h2copy = new TH3D(*h2);
@@ -528,7 +554,7 @@ TTree * valor::util::XML2TTree(
   if(!tree) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
 //  file.Close();
-    exit(1);
+    util::Die(1); return 0;
   }
 
   return tree;
@@ -560,7 +586,7 @@ TVectorD * valor::util::XML2TVectorD(
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
     //return 0;
-    exit(1);
+    util::Die(1); return 0;
   }
   
   TVectorD * vec_copy = new TVectorD(*vec);
@@ -591,7 +617,7 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
   if(!matrix) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    exit(1);
+    util::Die(1); return 0;
   }
 
   TMatrixDSym * matrix_copy = new TMatrixDSym(*matrix);
@@ -625,7 +651,7 @@ TMatrixD * valor::util::XML2TMatrixD(
   if(!matrix) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file->Close();
-    exit(1);
+    util::Die(1); return 0;
   }
 
   TMatrixD * matrix_copy = new TMatrixD(*matrix);
@@ -657,7 +683,7 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
   if(!h2) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    exit(1);
+    util::Die(1); return 0;
   }
   
   const int nrows = h2->GetNbinsX();
@@ -696,7 +722,7 @@ TSpline3 * valor::util::XML2TSpline3(
   if(!spl) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
-    exit(1);
+    util::Die(1); return 0;
   }
 
   TSpline3 * spl_copy = new TSpline3(*spl);
@@ -716,8 +742,7 @@ TAxis *  valor::util::XML2BinInfo(
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
     LOG("XML",pFATAL) << "No node was found at input XML node node_path: " << node_path;
-    //return 0;
-    exit(1);
+    util::Die(1); return 0;
   }
 
   string binsz = xml_eng->GetAttr(found_node,"bin_size");
@@ -744,11 +769,11 @@ TAxis *  valor::util::XML2BinInfo(
   else   
   if(binsz == "variable") {
     LOG("XML",pFATAL) << "Not handling variable size bins yet";
-    exit(1);
+    util::Die(1); return 0;
   }
   else {
     LOG("XML",pFATAL) << "Invalid bin_size attribute";
-    exit(1);
+    util::Die(1); return 0;
   }
 
   return 0;

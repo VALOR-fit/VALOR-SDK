@@ -15,8 +15,8 @@
 */
 //____________________________________________________________________________
 
-#ifndef _valor_dune_kine_var_h_
-#define _valor_dune_kine_var_h_
+#ifndef _valor_fmwk_kine_var_h_
+#define _valor_fmwk_kine_var_h_
 
 #include <TROOT.h>
 
@@ -35,9 +35,14 @@ typedef enum EKineVar
    kvEreco,           // reconstructed neutrino energy
    kvEvis,            // visible neutrino energy
    kvYreco,           // reconstructed inelasticity (y)
-   kvThetareco        // reconstructed lepton angle
+   kvThetareco,       // reconstructed lepton angle
+   kvq0reco,          // reconstructed 1st component of the 4-momentum    TODO: Isn't this just the same as Ereco?
+   kvq3reco,          // reconstructed hadronic energy along the z-direction
+   kvmodqreco         // reconstructed magnitude of the 3-momentum
 } 
-KineVar_t; 
+KineVar_t;
+
+const int kNKineVarMax = conv::kvmodqreco+1;
 
 } // conv
 

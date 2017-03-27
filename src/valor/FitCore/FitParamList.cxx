@@ -23,6 +23,7 @@
 #include "valor/Conventions/Opt.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/FitParamList.h"
+#include "valor/Oscillation/SimpleOsc.h"
 
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlSystem.h"
@@ -34,6 +35,9 @@ using std::setprecision;
 using namespace std;
 using namespace valor;
 using namespace valor::conv;
+
+#define USE_NEAREST_23_OCTANT_PENALTY
+//~ #define DOUBLE_ANGLE_REACTOR_PENALTY
 
 ClassImp(FitParamList)
 
@@ -205,12 +209,22 @@ void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
   }
 }
 //________________________________________________________________________________________
-void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix)
+void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix, unsigned int start_at)
 {
   TMatrixDSym & m = *fCovMatrix;
-  for(int ip = 0; ip < fNParams; ip++) {
-    for(int jp = 0; jp < fNParams; jp++) {
-      m[ip][jp] = covmatrix[ip][jp];
+  int tot_rows = m.GetNrows()-start_at;
+  if (tot_rows < 0) {
+    LOG("FitParmList",pERROR) << "Can't start at row "<<start_at<<" in a "<<m.GetNrows()<<" matrix.";
+    util::Die(-1) ; return;
+  }
+  if (tot_rows!=covmatrix.GetNrows()) {
+    LOG("FitParmList",pERROR) << "Cov matrix given has "<<covmatrix.GetNrows()
+      <<" elements but FPL needs "<<tot_rows<<" elements.";
+    util::Die(-1) ; return;
+  }
+  for(int ip = 0; ip < tot_rows; ip++) {
+    for(int jp = 0; jp < tot_rows; jp++) {
+      m[ip+start_at][jp+start_at] = covmatrix[ip][jp];
     }
   }
 }
@@ -1178,6 +1192,13 @@ FitParamList * FitParamList::NuOscSterile5FlavourFit(int nuisance)
   return fparm;
 }
 //________________________________________________________________________________________
+FitParamList * FitParamList::NuOscSterileEffectiveFit(int nuisance)
+{
+  FitParamList * fparm = new FitParamList(3+nuisance);
+  FitParamList::AppendEffectiveSterileOscillation(fparm, 0);
+  return fparm;
+}
+//________________________________________________________________________________________
 FitParamList * FitParamList::NumuDisapFit(int nuisance)
 {
   FitParamList * fparm = new FitParamList(2+nuisance);
@@ -1726,6 +1747,15 @@ void FitParamList::Append5FlavourSterileOscillation(FitParamList * fparm, int st
          kMaxFitDm51sq, kStepDm51sq, false, false);
 }
 //________________________________________________________________________________________
+void FitParamList::AppendEffectiveSterileOscillation(FitParamList * fparm, int start)
+{
+  int ip = start; // first unallocated element in the param list
+  fparm->AddParam( ip++, kPhypDm41sq    , 1.,  0.0, 100, 0.10,  false, false);
+  fparm->AddParam( ip++, kPhypMixingEE  , 0.1, 0.0, 1.0, 0.01,  false, false);
+  fparm->AddParam( ip++, kPhypMixingMuMu, 0.1, 0.0, 1.0, 0.01,  false, false);
+  return;
+}
+//________________________________________________________________________________________
 void FitParamList::Append2FlavourOscillation(FitParamList * fparm, int start)
 {
   
@@ -2178,13 +2208,23 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
     center = Opt::Instance()->GetGlobalBestFit(p);
     error  = Opt::Instance()->GetGlobalFitError(p)*center;
     
-    NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
+#ifdef USE_NEAREST_23_OCTANT_PENALTY
+    if (p==conv::kPhypMixing23 && Opt::Instance()->gOscMixingParamChoice == conv::kNuMixSinsqTheta) {
+      double flipped_current = util::FlipOctantAroundMaxDisap(current,this->CurrValue(conv::kPhypMixing13));
+      if (std::fabs(flipped_current-center) < std::fabs(current-center)) {
+        current = flipped_current;
+      }
+    }
+#endif //USE_NEAREST_23_OCTANT_PENALTY
+
+#ifdef DOUBLE_ANGLE_REACTOR_PENALTY
     if(p==conv::kPhypMixing13 && omp==conv::kNuMixSinsqTheta){ // Use the reactor constrain with sinsq2theta13 (not sinsqtheta13)
       double current_sinsq2th = 1 - (1-2*current)*(1-2*current);
       current = current_sinsq2th;
       center = conv::kGlobFitSinsq2Theta13;
       error = conv::kGlobFitErrSinsq2Theta13 * center;
     }
+#endif //DOUBLE_ANGLE_REACTOR_PENALTY
     
    if (center == -999)
    {

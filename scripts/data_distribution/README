@@ -1,0 +1,35 @@
+The VALOR data archive is organised as follows:
+
+
+<archive base>               <experiment>   <component>     <version>
+                                  |             |              |
+                                  |             |              |
+                                 \|/           \|/            \|/
+ /some/path/
+    |--------- checksums/
+    |
+    |--------- data/
+                 |-------------- t2k/
+                 |                |---------- toys
+                 |                |             |----------- kendall_request_28918291/
+                 |                |             |              |------- ... more directories and data files                    
+                 |                |             |
+                 |                |             |----------- marginalization_2017a/
+                 |                |                            |------- ... more directories and data files                    
+                 |                |---------- oa_base
+                 |                              |----------- 2017a/
+                 |                                             |--------- ... more directories and data files
+                 |-------------- dune/
+                                  |---------- ndfit/
+                                  |             |---------- 2016c/
+                                  |             |              |-------- ... more directories and data files
+                                  |             |              
+                                  |             |---------- 2017a/
+                                  |                            |-------- ... more directories and data files
+                                  |---------- fdfit/
+                                                |---------- 2016c/
+                                                |              |-------- ... more directories and data files
+                                                |              
+                                                |---------- 2017a/
+                                                               |-------- ... more directories and data files
+

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!--
+  This configuration file is used to generate a set of generic nuisance
+  parameters that act as reference IDs for experiment-specific nuisance
+  parameters defined in other configuration files.
+
+  With prefix=kNuis and num_params=657 the set of generic nuisance parameters
+  generated will be:
+
+  kNuis000 = 0
+  kNuis001 = 1
+  ...
+  kNuis655 = 655
+  kNuis656 = 656
+-->
+
+<nuisance_params>
+
+  <!--
+    Generic nuisance parameters are mapped to names of the form <prefix>XYZ,
+    e.g. kNuis143
+  -->
+  <prefix>kNuis</prefix>
+
+  <!--
+    The total number of generic nuisance parameters to generate
+  -->
+  <num_params>657</num_params>
+
+</nuisance_params>
+
+

@@ -14,6 +14,7 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include <numeric>
 
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Messenger/Messenger.h"
 #include "valor/VArray/VALORArrayT.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
@@ -176,13 +177,11 @@ template<typename numtype> int VALORArrayT<numtype>::
 {
 #ifdef CHECK_VA_ADDRESS
   int indices[6] = {ind1,ind2,ind3,ind4,ind5,ind6};
-  //~ cerr<<this->GetName()<<"\t"<<fNDim<<endl;
   for (int i = 0 ; i < fNDim; i++) {
-    //~ cerr<<indices[i]<<"\t"<<fDimensions[i]<<endl;
-  }
-  for (int i = 0 ; i < fNDim; i++) {
-    assert(indices[i]>=0);
-    assert(indices[i]<fDimensions[i]);
+    if (indices[i]<0 || indices[i]>=fDimensions[i]) {
+      LOG("VALORArray",pFATAL) <<fName<<" bad index "<<indices[i]<< " for dimension "<<i<<" ("<<fNames[i]<<"), max = "<<fDimensions[i];
+      util::Die(-1) ; return 0;
+    }
   }
   for (int i = fNDim ; i < 6 ; i++) {
     assert(indices[i]==-1);
@@ -721,6 +720,16 @@ template<typename numtype> void VALORArrayT<numtype>::
   }
   stream<<std::endl;
   return;
+}
+//________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+  PrintDimensions(std::ostream & stream)
+{
+  stream<<fName<<" {\n";
+  for (int i = 0 ; i < fNDim ; i++) {
+    stream<<"   "<<fDimensions[i]<<"\t"<<fNames[i]<<"\n";
+  }
+  stream<<"} with total size "<<fSize<<std::endl;
 }
 //________________________________________________________________________________________
 namespace valor { // g++ bug requires specialisations to be in namespace

@@ -1,5 +1,6 @@
 #ifdef __CINT__
 #include <map>
+#include <vector>
 #include <utility>
 
 #pragma link off all globals;
@@ -37,5 +38,8 @@
 #pragma link C++ class std::pair<valor::conv::PhysParamId_t,bool>;
 
 #pragma link C++ class std::vector<valor::conv::PhysParamId_t>;
+#pragma link C++ class std::vector<valor::conv::KineVar_t>;
+#pragma link C++ class std::vector<valor::conv::KineSpace_t>;
+
 
 #endif

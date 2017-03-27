@@ -27,7 +27,9 @@ BUILD_TARGETS =    print-make-info     \
 		   build-cmdline       \
 		   build-core-fitter   \
                    build-marginalisation \
-		   copy-rootdict-to-lib
+		   copy-rootdict-to-lib \
+		   build-kinebinning   \
+		   build-testing
 
 # define targets
 
@@ -41,54 +43,54 @@ print-make-info: FORCE
 	@echo "***** The source tree corresponds to VALOR framework version $(VALOR_VERSION)"
 	@echo " "
 
-copy-scripts-to-bin: make-bin-lib-dir FORCE
+copy-scripts-to-bin: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Copying scripts to bin..."
 	cp ${VALOR_FMWK}/make/valor_fmwk-config ${VALOR_FMWK}/bin
 	cp ${VALOR_FMWK}/root/valor ${VALOR_FMWK}/bin
 	[ ! -d "${VALOR_FMWK}/external/color/build/" ] || cp "${VALOR_FMWK}/external/color/build/"* "${VALOR_FMWK}/bin"
 
-build-conventions: make-bin-lib-dir FORCE
+build-conventions: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Conventions package..."${VALOR_FMWK}/src;\
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Conventions"
 
-build-utilities: make-bin-lib-dir FORCE
+build-utilities: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Utilities package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Utilities"
 
-build-messenger: make-bin-lib-dir FORCE
+build-messenger: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Messenger package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Messenger"
 
-build-varray: make-bin-lib-dir FORCE
+build-varray: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building VArray package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/VArray"
 
-build-oscillation: make-bin-lib-dir FORCE
+build-oscillation: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Oscillation package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Oscillation"
 
-build-ntuple: make-bin-lib-dir FORCE
+build-ntuple: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Ntuple package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Ntuple"
 
-build-registry: make-bin-lib-dir FORCE
+build-registry: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Registry package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Registry"
 
-build-cmdline: make-bin-lib-dir FORCE
+build-cmdline: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building CmdLine package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/CmdLine"
 
-build-core-fitter: make-bin-lib-dir FORCE
+build-core-fitter: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building FitCore package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/FitCore"
@@ -98,7 +100,17 @@ build-marginalisation: make-bin-lib-dir FORCE
 	@echo "** Building Marginalisation package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Marginalisation"
 
-copy-rootdict-to-lib: make-bin-lib-dir FORCE
+build-kinebinning: | make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building KineBinning package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/KineBinning"
+
+build-testing: | make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building Testing package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Testing"
+
+copy-rootdict-to-lib: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo -n "** Copying ROOT dictionary PCM files to ${VALOR_FMWK}/lib ..."
 	$(shell find "${VALOR_FMWK}/src/valor" -name "_RootDict*_rdict.pcm" | xargs -n 1 -I{} cp {} "${VALOR_FMWK}/lib/" )
@@ -148,6 +160,8 @@ purge: FORCE
 	cd CmdLine;                   make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
         cd Marginalisation;           make purge; cd ..; \
+	cd KineBinning;               make purge; cd ..; \
+	cd Testing;                   make purge; cd ..; \
 	cd ${VALOR_FMWK}
 
 clean: clean-files clean-dir clean-etc
@@ -167,6 +181,8 @@ clean-files: FORCE
 	cd CmdLine;                 make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
         cd Marginalisation;         make clean; cd ..; \
+	cd KineBinning;             make clean; cd ..; \
+	cd Testing;                 make clean; cd ..; \
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm -f ./bin/*;\
         [ ! -d ./lib ] || rm -f ./lib/*_rdict.pcm;\

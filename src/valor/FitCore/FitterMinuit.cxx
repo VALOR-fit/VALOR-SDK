@@ -36,7 +36,8 @@ ChangeLog:
 #include "valor/FitCore/FitterMinuit.h" 
 #include "valor/FitCore/FitInputs.h" 
 #include "valor/FitCore/FitParamList.h" 
-#include "valor/FitCore/FitDataABC.h" 
+#include "valor/FitCore/FitDataABC.h"
+#include "valor/Utilities/UtlSystem.h"
 
 using namespace valor; 
 using namespace valor::conv;
@@ -193,7 +194,11 @@ void FitterMinuit::Init(FitInputs * fit_inputs, Option_t * option)
   // calculate degrees of freedom  
   fNFitBins       = fit_inputs->Observation().NumOfBins();
   fNFreeFitParams = fit_params.GetNumberFreeParameters();
-  
+  if(fNFitBins <= 0) {
+      LOG("Minuit", pFATAL) << "Number of fit bins  = " << fNFitBins;
+      util::Die(-1);
+      return;
+  }
   assert(fNFitBins > 0);
   assert(fNFreeFitParams >= 0);
 

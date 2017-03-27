@@ -102,6 +102,8 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
   
   if (not status) { util::Die(-1); }
   
+  LOG("CompoundFitModel",pNOTICE) << "Created fit model from "<<fSubModels.size()<<" submodels.";
+  
   return status;
 }
 //________________________________________________________________________________________

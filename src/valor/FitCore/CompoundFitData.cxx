@@ -85,13 +85,16 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
       continue;
     }
     
-    status = curr_data->Read(config_path.Data());
+    status = status && curr_data->Read(config_path.Data());
     
     fSubData.push_back(curr_data);
     
   }
   
-  if (not status) { util::Die(-1); }
+  if (not status) {
+    LOG("CompoundFitData",pFATAL) << "Failed to properly read all data.";
+    util::Die(-1);
+  }
   
   return status;
 }
