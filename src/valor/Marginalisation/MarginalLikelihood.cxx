@@ -70,6 +70,7 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
       m->Generate(hypothesis, "+OSC");
       // Calculate the likelihood
       double chi2 = data->GetFitStatistic(m, NULL);
+      std::cout << "Fit statistic toy " << (i + 1) << " " << chi2 << std::endl;
       chi2Values.push_back(chi2);
 
       if(_validate)
@@ -78,14 +79,13 @@ double MarginalLikelihood::Likelihood(FitDataABC* data, FitParamList* params)
          m->Write(&array, tag.Data(), "pdft_rf");
       }
 
-      FitModelABC* next =marginaliser->Next();
+      FitModelABC* next = marginaliser->Next();
       if(_validate && !next)
       {
          TFile file(_validationFilename.c_str(), "RECREATE");
          array.Write("", TObject::kOverwrite);
          file.Close();
       }
-      delete m;
       m = next;
       ++i;
    }

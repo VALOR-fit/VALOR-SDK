@@ -62,6 +62,8 @@ namespace marginalisation
       bool AllParametersWithinBounds();
 
    private:
+      TFile* _file;
+      TIter* _iter;
       int fNumToys;
       FitParamList* fParams;
       int fCurrentToy;

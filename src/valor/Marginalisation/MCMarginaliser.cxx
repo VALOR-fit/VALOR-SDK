@@ -14,6 +14,7 @@
 
 #include "TFile.h"
 #include "TH1D.h"
+#include "TKey.h"
 
 namespace valor
 {
@@ -21,16 +22,40 @@ namespace marginalisation
 {
 
 MCMarginaliser::MCMarginaliser(FitModelABC* model, FitParamList* parameters):
-   fNumToys(0), fParams(parameters), fCurrentToy(0), fModel(model)
+   _file(nullptr), _iter(nullptr), fNumToys(0), fParams(parameters), fCurrentToy(0), fModel(model)
 {
 }
 
 MCMarginaliser::~MCMarginaliser()
 {
+  delete _file; _file = nullptr;
+  delete _iter; _iter = nullptr;
 }
 
 void MCMarginaliser::Marginalise()
 {
+   Rnd::Instance()->SetSeeds(*fArg);
+   TFile file(fArg->GetString("marginalisation-toys").c_str(), "RECREATE");
+   TObjArray* toys = nullptr;
+
+   for(int n = 0; n < fNumToys; ++n)
+   {
+      LOG("MCMarginaliser", pNOTICE) << "Generating toy " << (n + 1) <<
+         " of " << fNumToys;
+      toys = new TObjArray();
+      TString id = TString::Format("%s_%d", "toy", n);
+      std::string idStr(id.Data());
+      RandomizeNuisance();
+      fModel->Generate(*fParams, "+SB+SYS");
+      fModel->WriteMCT(*toys, idStr);
+      toys->Write(id.Data(), TObjArray::kSingleKey);
+      // Should consider looping through the TObjArray and deleting non-VALOR
+      // array objects.
+      delete toys; toys = nullptr;
+   }
+
+   file.Close();
+   /*
    Rnd::Instance()->SetSeeds(*fArg);
    std::ostringstream ss;
    ss << outputDir << "sys.params.root";
@@ -73,16 +98,32 @@ void MCMarginaliser::Marginalise()
 
    file.Write();
    file.Close();
-   delete[] hParams;
+   delete[] hParams;*/
 }
 
 FitModelABC* MCMarginaliser::Begin()
 {
-   // Temporary reset of cache file offsets etc - once cache is implemented
+  fCurrentToy = 0;
+   if(_file)
+   {
+      delete _file; _file = nullptr;
+      delete _iter; _iter = nullptr;
+   }
+   _file = new TFile(fArg->GetString("marginalisation-toys").c_str());
+   _iter = new TIter(_file->GetListOfKeys());
+   TKey* key = dynamic_cast<TKey*>(_iter->Next());
+   if(key)
+   {
+      TObjArray* collection = dynamic_cast<TObjArray*>(key->ReadObj());
+      return fModel->ReadMCT(*collection);
+   }
+
+   return nullptr;
+     // Temporary reset of cache file offsets etc - once cache is implemented
    // in full this will happen transparently
-   util::ReadableCache::Instance()->Reset();
+/*   util::ReadableCache::Instance()->Reset();
    fCurrentToy = 0;
-   return fModel->Retrieve();
+   return fModel->Retrieve();*/
 }
 
 FitModelABC* MCMarginaliser::End()
@@ -94,11 +135,19 @@ FitModelABC* MCMarginaliser::Next()
 {
    if(++fCurrentToy < fNumToys)
    {
-      return fModel->Retrieve();
+     TKey* key = dynamic_cast<TKey*>(_iter->Next());
+     if(key)
+     {
+        TObjArray* collection = dynamic_cast<TObjArray*>(key->ReadObj());
+        return fModel->ReadMCT(*collection);
+     }
+
+     return nullptr;
+     // return fModel->Retrieve();
    }
    else
    {
-      return 0;
+      return nullptr;
    }
 }
 

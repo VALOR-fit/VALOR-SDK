@@ -390,3 +390,31 @@ void CompoundFitModel::SetName(std::string name)
   fName = name;
 }
 //________________________________________________________________________________________
+
+FitModelABC* CompoundFitModel::ReadMCT(TObjArray& collection,
+      const std::string& opt)
+{
+   int i = 0;
+   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+         it != fSubModels.end(); ++it, ++i)
+   {
+      FitModelABC* m = *it;
+      m->ReadMCT(collection, opt);
+   }
+
+   return this;
+}
+
+void CompoundFitModel::WriteMCT(TObjArray& collection, const std::string& tag,
+      const std::string& opt)
+{
+   int i = 0;
+   for(std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+         it != fSubModels.end(); ++it)
+   {
+      TString id = TString::Format("%s_%d", tag.c_str(), i);
+      FitModelABC* m = *it;
+      m->WriteMCT(collection, std::string(id.Data()), opt);
+      ++i;
+   }
+}

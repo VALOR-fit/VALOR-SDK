@@ -87,6 +87,11 @@ public:
   virtual const CorrelatedSystematics * GetSystematics(Option_t * opt = "") const;
   
   void SetName(std::string name);
+
+  virtual FitModelABC* ReadMCT(TObjArray& collection,
+      const std::string& opt = "mct_fin");
+  virtual void WriteMCT(TObjArray& collection, const std::string& tag = "toy",
+        const std::string& opt = "mct_fin");
   
 protected:
   std::string fName;
