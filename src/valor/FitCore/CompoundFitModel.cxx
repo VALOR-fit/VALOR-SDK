@@ -21,8 +21,6 @@ ChangeLog:
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/VThreadPool.h"
 #include "valor/FitCore/CompoundFitModel.h"
-#include "valor/Utilities/ReadableCache.h"
-#include "valor/Utilities/WriteableCache.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -284,40 +282,6 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
   f.Close();
 
   return status;
-}
-
-util::CacheItem* CompoundFitModel::Cache()
-{
-   util::CacheItem toyCacheItem;
-   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-         it != fSubModels.end(); ++it)
-   {
-      FitModelABC* m = *it;
-      util::CacheItem* cacheItem = m->Cache();
-      toyCacheItem.AddChild(cacheItem);
-   }
-
-   util::WriteableCache* cache = util::WriteableCache::Instance();
-   cache->Write(&toyCacheItem);
-
-   return 0;
-}
-
-FitModelABC* CompoundFitModel::Retrieve(util::CacheItem*)
-{
-   CompoundFitModel* cfm = new CompoundFitModel();
-   util::ReadableCache* cache = util::ReadableCache::Instance();
-   util::CacheItem* toyCacheItem = cache->Read();
-   int i = 0;
-   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
-         it != fSubModels.end(); ++it, ++i)
-   {
-      FitModelABC* m = *it;
-      util::CacheItem* cacheItem = toyCacheItem->GetChild(i);
-      cfm->AddSubModel(m->Retrieve(cacheItem));
-   }
-
-   return cfm;
 }
 
 //________________________________________________________________________________________

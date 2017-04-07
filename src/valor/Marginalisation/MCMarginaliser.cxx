@@ -7,7 +7,6 @@
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/XMLConfig.h"
-#include "valor/Utilities/ReadableCache.h"
 
 #include <sstream>
 #include <algorithm>
@@ -119,11 +118,6 @@ FitModelABC* MCMarginaliser::Begin()
    }
 
    return nullptr;
-     // Temporary reset of cache file offsets etc - once cache is implemented
-   // in full this will happen transparently
-/*   util::ReadableCache::Instance()->Reset();
-   fCurrentToy = 0;
-   return fModel->Retrieve();*/
 }
 
 FitModelABC* MCMarginaliser::End()
