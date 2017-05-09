@@ -160,7 +160,7 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
     chisq = 2. * ndata * (nmc/ndata+std::log(ndata/nmc)-1.l);
   }
 #ifdef VALOR_FMWK_LOW_LEVEL_MESG_ENABLED
-  if (chisq<0) {
+  if (chisq<conv.kAVerySmallNum) {
     LOG("UtlNumStat",pWARN)<<"Negative chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
   }
 #endif
