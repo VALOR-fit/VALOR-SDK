@@ -40,6 +40,9 @@ CompoundFitModel::CompoundFitModel() :
 CompoundFitModel::~CompoundFitModel() 
 {
   if (fSystematics && fOwnerOfSystematics) { delete fSystematics; }
+  for (FitModelABC *& m : fSubModels) {
+    delete m; m=0;
+  }
 }
 //________________________________________________________________________________________
 std::string CompoundFitModel::Name() const
@@ -323,8 +326,9 @@ void CompoundFitModel::SetSystConf(CorrelatedSystematics * syst, Option_t * opt)
   }
   
   // Set the same matrix for the submodels
+  // Submodels will never own
   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    (*it)->SetSystConf(syst,opt);
+    (*it)->SetSystConf(syst,"");
   }
   
   return;
