@@ -14,8 +14,8 @@ if [[ ! $PRODUCTS == *"larsoft"* ]] ; then
   . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?" 
 fi
 if [ -z "$SETUP_LARSOFT" ] ; then
-  setup "atlas.cern.ch" "v05_10_00" -q "e9:prof" && retval="$?"
-  #setup "larsoft" "v05_10_00" -q "e9:prof" && retval="$?"
+  #setup "atlas.cern.ch" "v05_10_00" -q "e9:prof" && retval="$?"
+  setup "larsoft" "v05_10_00" -q "e9:prof" && retval="$?"
 fi
 
 if [ -z "$VALOR_FMWK" ]; then
