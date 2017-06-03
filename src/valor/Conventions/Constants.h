@@ -396,8 +396,8 @@ static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
  static const double kPrior_Sinsq2th13_Flat_Low = 0.03;
  static const double kPrior_Sinsq2th13_Flat_Up  = 0.2;
 
- static const double kPrior_Sinsq2th23_Flat_Low = 0.4;
- static const double kPrior_Sinsq2th23_Flat_Up  = 0.65;
+ static const double kPrior_Sinsq2th23_Flat_Low = 0.3;
+ static const double kPrior_Sinsq2th23_Flat_Up  = 0.7;
 
  static const double kPrior_Dm23sq_Flat_Low = 2.3E-3;
  static const double kPrior_Dm23sq_Flat_Up  = 2.7E-3;
