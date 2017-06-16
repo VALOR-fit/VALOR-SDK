@@ -124,7 +124,21 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       bool is_mandatory = (required == "mandatory");
       bool no_deflt     = (deflt == "-");
       bool is_found = parser.OptionExists(argument);
-
+      
+      bool valid_type = is_int ||
+                        is_dbl ||
+                        is_str ||
+                        is_bln ||
+                        is_blnlst;
+                     
+      if (!valid_type) {
+        LOG("CmdLnArgList",pFATAL) 
+          << "Argument: " << argument
+          << " has unrecognised type: " << type;
+        failure = true;
+        util::Die(-1); return !failure;
+      }
+        
       //
       // Handle integer,double,string inputs
       //
