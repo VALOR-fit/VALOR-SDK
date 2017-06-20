@@ -42,7 +42,7 @@ NuOscSterile::~NuOscSterile()
 void NuOscSterile::Init()
 {
   // set default baseline
-  this->SetBaseline(kBaseline);
+  this->SetBaseline(kBaselineT2K);
 
   // set the default mass hierarchy 
   NuMassHierarchy_t nmh = Opt::Instance()->gMassHierarchyAssumed;
@@ -52,7 +52,7 @@ void NuOscSterile::Init()
   this->SetSterileMassHierarchy(32);
 
   // set default density 
-  this->SetDensity(kCrustDensity);
+  this->SetDensity(kCrustDensityT2K);
 
   for (int i=0; i<nFlav; i++)
     {

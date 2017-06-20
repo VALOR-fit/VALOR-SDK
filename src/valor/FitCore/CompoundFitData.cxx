@@ -38,7 +38,9 @@ CompoundFitData::CompoundFitData()
 //________________________________________________________________________________________
 CompoundFitData::~CompoundFitData() 
 {
-  
+  for (FitDataABC *& d : fSubData) {
+    delete d; d = 0;
+  }
 }
 //________________________________________________________________________________________
 std::string CompoundFitData::Name() const

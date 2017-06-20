@@ -48,14 +48,14 @@ NuOsc3Flavour::~NuOsc3Flavour( )
 void NuOsc3Flavour::Init()
 {
   // set default baseline
-  this->SetBaseline(kBaseline);
+  this->SetBaseline(kBaselineT2K);
 
   // set the default mass hierarchy 
   NuMassHierarchy_t nmh = Opt::Instance()->gMassHierarchyAssumed;
   this->SetMassHierarchy(nmh);
 
   // set default density 
-  this->SetDensity(kCrustDensity);
+  this->SetDensity(kCrustDensityT2K);
 }
 //________________________________________________________________________________________
 void NuOsc3Flavour::SetBaseline(double length)
