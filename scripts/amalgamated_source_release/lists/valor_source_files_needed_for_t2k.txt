@@ -85,8 +85,8 @@ src/valor/FitCore/FitModelABC.cxx
 src/valor/FitCore/FitModelABC.h
 src/valor/FitCore/FitterABC.cxx
 src/valor/FitCore/FitterABC.h
-src/valor/FitCore/FitterABC_new.cxx
-src/valor/FitCore/FitterABC_new.h
+#src/valor/FitCore/FitterABC_new.cxx
+#src/valor/FitCore/FitterABC_new.h
 src/valor/FitCore/CorrelatedSystematics.cxx
 src/valor/FitCore/CorrelatedSystematics.h
 src/valor/FitCore/CompoundCorrelatedSystematics.cxx
@@ -103,10 +103,10 @@ src/valor/FitCore/UtlFit.cxx
 src/valor/FitCore/UtlFit.h
 
 # fmwk / Fitters
-src/valor/Fitters/FitterFactory.cxx
-src/valor/Fitters/FitterFactory.h
-src/valor/Fitters/MinuitFitter.cxx
-src/valor/Fitters/MinuitFitter.h
+#src/valor/Fitters/FitterFactory.cxx
+#src/valor/Fitters/FitterFactory.h
+#src/valor/Fitters/MinuitFitter.cxx
+#src/valor/Fitters/MinuitFitter.h
 
 # fmwk / KineBinning
 src/valor/KineBinning/KBCubHcmbEdge2Edge.cxx
@@ -171,4 +171,3 @@ src/valor/Utilities/UtlXML.cxx
 src/valor/Utilities/UtlXML.h
 src/valor/Utilities/VThreadPool.cxx
 src/valor/Utilities/VThreadPool.h
-
