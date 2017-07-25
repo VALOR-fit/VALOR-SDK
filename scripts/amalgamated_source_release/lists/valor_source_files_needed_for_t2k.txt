@@ -7,11 +7,11 @@ src/valor/Messenger/Messenger.cxx
 src/valor/Messenger/Messenger.h
 
 # fmwk / Registry
-src/valor/Registry/RegistryItem.cxx
-src/valor/Registry/RegistryItem.h
-src/valor/Registry/RegistryItemI.h
 src/valor/Registry/RegistryItemTypeDef.h
 src/valor/Registry/RegistryItemTypeId.h
+src/valor/Registry/RegistryItemI.h
+src/valor/Registry/RegistryItem.cxx
+src/valor/Registry/RegistryItem.h
 src/valor/Registry/Registry.cxx
 src/valor/Registry/Registry.h
 
@@ -56,37 +56,49 @@ src/valor/CmdLine/CmdLnArgParser.h
 src/valor/CmdLine/RunOpt_TO_DELETE.cxx
 src/valor/CmdLine/RunOpt_TO_DELETE.h
 
+# fmwk / VArray
+src/valor/VArray/VALORArrayBin.cxx
+src/valor/VArray/VALORArrayBin.h
+src/valor/VArray/VALORArrayD.h
+src/valor/VArray/VALORArrayF.h
+src/valor/VArray/VALORArrayHeader.cxx
+src/valor/VArray/VALORArrayHeader.h
+src/valor/VArray/VALORArrayI.h
+src/valor/VArray/VALORArrayT.cxx
+src/valor/VArray/VALORArrayT.h
+src/valor/VArray/VALORArray.h
+
 # fmwk / FitCore
-src/valor/FitCore/CompoundCorrelatedSystematics.cxx
-src/valor/FitCore/CompoundCorrelatedSystematics.h
-src/valor/FitCore/CompoundFitData.cxx
-src/valor/FitCore/CompoundFitData.h
-src/valor/FitCore/CompoundFitModel.cxx
-src/valor/FitCore/CompoundFitModel.h
-src/valor/FitCore/CorrelatedSystematics.cxx
-src/valor/FitCore/CorrelatedSystematics.h
+src/valor/FitCore/PhysParams.cxx
+src/valor/FitCore/PhysParams.h
+src/valor/FitCore/PhysParamList.cxx
+src/valor/FitCore/PhysParamList.h
+src/valor/FitCore/FitParamList.cxx
+src/valor/FitCore/FitParamList.h
+src/valor/FitCore/PhysHypothesis.cxx
+src/valor/FitCore/PhysHypothesis.h
 src/valor/FitCore/FitDataABC.cxx
 src/valor/FitCore/FitDataABC.h
 src/valor/FitCore/FitInputs.cxx
 src/valor/FitCore/FitInputs.h
 src/valor/FitCore/FitModelABC.cxx
 src/valor/FitCore/FitModelABC.h
-src/valor/FitCore/FitParamList.cxx
-src/valor/FitCore/FitParamList.h
 src/valor/FitCore/FitterABC.cxx
 src/valor/FitCore/FitterABC.h
 src/valor/FitCore/FitterABC_new.cxx
 src/valor/FitCore/FitterABC_new.h
+src/valor/FitCore/CorrelatedSystematics.cxx
+src/valor/FitCore/CorrelatedSystematics.h
+src/valor/FitCore/CompoundCorrelatedSystematics.cxx
+src/valor/FitCore/CompoundCorrelatedSystematics.h
+src/valor/FitCore/CompoundFitData.cxx
+src/valor/FitCore/CompoundFitData.h
+src/valor/FitCore/CompoundFitModel.cxx
+src/valor/FitCore/CompoundFitModel.h
 src/valor/FitCore/FitterMinuit.cxx
 src/valor/FitCore/FitterMinuit.h
 src/valor/FitCore/FitterMinuit2.cxx
 src/valor/FitCore/FitterMinuit2.h
-src/valor/FitCore/PhysHypothesis.cxx
-src/valor/FitCore/PhysHypothesis.h
-src/valor/FitCore/PhysParamList.cxx
-src/valor/FitCore/PhysParamList.h
-src/valor/FitCore/PhysParams.cxx
-src/valor/FitCore/PhysParams.h
 src/valor/FitCore/UtlFit.cxx
 src/valor/FitCore/UtlFit.h
 
@@ -160,14 +172,3 @@ src/valor/Utilities/UtlXML.h
 src/valor/Utilities/VThreadPool.cxx
 src/valor/Utilities/VThreadPool.h
 
-# fmwk / VArray
-src/valor/VArray/VALORArray.h
-src/valor/VArray/VALORArrayBin.cxx
-src/valor/VArray/VALORArrayBin.h
-src/valor/VArray/VALORArrayD.h
-src/valor/VArray/VALORArrayF.h
-src/valor/VArray/VALORArrayHeader.cxx
-src/valor/VArray/VALORArrayHeader.h
-src/valor/VArray/VALORArrayI.h
-src/valor/VArray/VALORArrayT.cxx
-src/valor/VArray/VALORArrayT.h
