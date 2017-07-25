@@ -18,7 +18,7 @@ foreach(@valor_files) {
   if(/.h$/) {
     $valor_file = $valor_fmwk_top_dir . "/" . $_;
     print "Adding: $valor_file \n";
-    system("cat $valor_file | grep -v '^#' | grep -v '^//' | grep -v '^using' >> valor.cxx.tmp~1");
+    system("cat $valor_file | grep -v '^#include' | grep -v '^//' | grep -v '^using' >> valor.cxx.tmp~1");
   }
 }
 # Add VALOR implementation files
@@ -26,7 +26,7 @@ foreach(@valor_files) {
   if(/.cxx$/) {
     $valor_file = $valor_fmwk_top_dir . "/" . $_;
     print "Adding: $valor_file \n";
-    system("cat $valor_file | grep -v '^#' | grep -v '^//' | grep -v '^using' >> valor.cxx.tmp~1");
+    system("cat $valor_file | grep -v '^#include' | grep -v '^//' | grep -v '^using' >> valor.cxx.tmp~1");
   }
 }
 
@@ -35,9 +35,6 @@ system("./remove_comments.sed < valor.cxx.tmp~1 > valor.cxx.tmp~2");
 
 # Remove all empty lines and destroy C++ indentation
 system("sed -f remove_spaces.sed valor.cxx.tmp~2 > valor.cxx.tmp~3");
-
-#
-# system("sed -e /^$/d out2.tmp > out3.tmp");
 
 #
 system("cp valor.cxx.tmp~3 valor.cxx");

@@ -1,13 +1,34 @@
+# fmwk / Conventions [auto-generated]
+src/valor/Conventions/Build.h
+src/valor/Conventions/Version.h
+
+# fmwk / Messenger
+src/valor/Messenger/Messenger.cxx
+src/valor/Messenger/Messenger.h
+
+# fmwk / Registry
+src/valor/Registry/RegistryItem.cxx
+src/valor/Registry/RegistryItem.h
+src/valor/Registry/RegistryItemI.h
+src/valor/Registry/RegistryItemTypeDef.h
+src/valor/Registry/RegistryItemTypeId.h
+src/valor/Registry/Registry.cxx
+src/valor/Registry/Registry.h
+
 # fmwk / Conventions
 src/valor/Conventions/Build.h
+src/valor/Conventions/Version.h
+src/valor/Conventions/Constants.h
 src/valor/Conventions/ConfLevel.cxx
 src/valor/Conventions/ConfLevel.h
-src/valor/Conventions/Constants.h
-src/valor/Conventions/KineSpace.cxx
-src/valor/Conventions/KineSpace.h
+src/valor/Conventions/PhysHypothesisId.cxx
+src/valor/Conventions/PhysHypothesisId.h
+src/valor/Conventions/PhysParamId.cxx
+src/valor/Conventions/PhysParamId.h
 src/valor/Conventions/KineVar.cxx
 src/valor/Conventions/KineVar.h
-src/valor/Conventions/LinkDef.h
+src/valor/Conventions/KineSpace.cxx
+src/valor/Conventions/KineSpace.h
 src/valor/Conventions/NuFlavour.cxx
 src/valor/Conventions/NuFlavour.h
 src/valor/Conventions/NuMassHierarchy.cxx
@@ -26,11 +47,6 @@ src/valor/Conventions/OscChannelId.cxx
 src/valor/Conventions/OscChannelId.h
 src/valor/Conventions/PDG.cxx
 src/valor/Conventions/PDG.h
-src/valor/Conventions/PhysHypothesisId.cxx
-src/valor/Conventions/PhysHypothesisId.h
-src/valor/Conventions/PhysParamId.cxx
-src/valor/Conventions/PhysParamId.h
-src/valor/Conventions/Version.h
 
 # fmwk / CmdLine
 src/valor/CmdLine/CmdLnArgList.cxx
@@ -86,10 +102,6 @@ src/valor/KineBinning/KBCubHcmbEdge2Edge.h
 src/valor/KineBinning/KBCubHcmbMondrian.cxx
 src/valor/KineBinning/KBCubHcmbMondrian.h
 
-# fmwk / Messenger
-src/valor/Messenger/Messenger.cxx
-src/valor/Messenger/Messenger.h
-
 # fmwk / Ntuple
 src/valor/Ntuple/StdFitNtp.cxx
 src/valor/Ntuple/StdFitNtp.h
@@ -103,15 +115,6 @@ src/valor/Oscillation/OscParams.cxx
 src/valor/Oscillation/OscParams.h
 src/valor/Oscillation/SimpleOsc.cxx
 src/valor/Oscillation/SimpleOsc.h
-
-# fmwk / Registry
-src/valor/Registry/Registry.cxx
-src/valor/Registry/Registry.h
-src/valor/Registry/RegistryItem.cxx
-src/valor/Registry/RegistryItem.h
-src/valor/Registry/RegistryItemI.h
-src/valor/Registry/RegistryItemTypeDef.h
-src/valor/Registry/RegistryItemTypeId.h
 
 # fmwk / Utilities
 src/valor/Utilities/ConfidenceInterval.cxx

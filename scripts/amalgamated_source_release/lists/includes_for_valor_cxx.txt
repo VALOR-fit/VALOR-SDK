@@ -1,0 +1,43 @@
+#include <cassert>
+#include <fstream>
+#include <cctype>
+#include <cstdlib>
+#include <string>
+#include <map>
+#include <vector>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+
+#include <TSystem.h>
+#include <TMath.h>
+#include <TString.h>
+#include <TStyle.h>
+#include <TColor.h>
+#include <TGraph.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TAxis.h>
+#include <TVectorD.h>
+#include <TMatrixD.h>
+#include <TRandom3.h>
+#include <TXMLEngine.h>
+#include <TFile.h>
+#include <TSystem.h>
+#include <TDecompSVD.h>
+
+#include "valor.h"
+
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::setw;
+using std::string;
+using std::vector;
+using std::map;
+using std::ostream;
+using std::ifstream;
+
+using namespace valor; 
+using namespace valor::conv;
+using namespace valor::util;
