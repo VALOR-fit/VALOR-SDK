@@ -1,0 +1,10 @@
+The intention of the code here is to satisfy the T2K requirement for open analysis code.
+
+We attempt to protect the exclusivity of the VALOR group both by a license agreement and 
+by a practically unusable code release.
+
+The scripts in this directory:
+- bundle all relevant code into a *single* file
+- remove all comments
+- destroy good code indent
+- obscure class names
