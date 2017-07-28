@@ -1,0 +1,7 @@
+# Example of how to run the code if both valor.h and valor.cxx were produced and a valor_dict.h is also present
+#
+
+g++ -c  -m64 -pipe -Wshadow -W -Wall -Woverloaded-virtual -fsigned-char -fno-common -pthread -std=c++11 -m64 -O2 -stdlib=libc++ -mmacosx-version-min=10.9 -Wno-strict-aliasing -I/usr//local/Cellar/log4cpp/1.1.1/include -I/hep/soft/root/v6.08.00/build/include -I/hep/soft/gsl/v1.16/ -I./ valor.cxx
+rootcint -f valor_dict.cc -c -I/hep/soft/root/v6.08.00/build/include -I./ valor.h valor_linkdef.h
+g++ -c -m64 -pipe -Wshadow -W -Wall -Woverloaded-virtual -fsigned-char -fno-common -pthread -std=c++11 -m64 -O2 -stdlib=libc++ -mmacosx-version-min=10.9 -Wno-strict-aliasing -I./ -I/usr//local/Cellar/log4cpp/1.1.1/include -I/hep/soft/root/v6.08.00/build/include -I/hep/soft/gsl/v1.16/ valor_dict.cc
+g++ -dynamiclib -flat_namespace -single_module -undefined dynamic_lookup valor.o valor_dict.o -o libVALOR-T2K.dylib
