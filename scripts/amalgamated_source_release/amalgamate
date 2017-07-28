@@ -1,0 +1,140 @@
+#!/usr/bin/perl
+
+#
+# ------------------------------------------------------------------------------------------
+# ./amalgamate  [--banner /path/to/banner/file.txt]
+#               [--copyright /path/to/copyright/file.txt]
+#               [--includes-h  path/list/of/includes/for/valor_h.txt]
+#               [--incudes-cxx path/list/of/includes/for/valor_cxx.txt]
+#               [--list-of-valor-sources path/list/of/valor/source/files/to/bundle.txt]
+#               [--no-clean-up]
+#               [--single-cxx]
+#
+# C.Andreopoulos
+# ------------------------------------------------------------------------------------------
+#
+
+$valor_fmwk_top_dir = $ENV{"VALOR_FMWK"};
+
+$iarg=0;
+foreach (@ARGV) {
+  if   ($_ eq '--includes-h'           ) { $list_of_includes_h         = $ARGV[$iarg+1]; }
+  elsif($_ eq '--includes-cxx'         ) { $list_of_includes_cxx       = $ARGV[$iarg+1]; }
+  elsif($_ eq '--list-of-valor-sources') { $list_of_valor_source_files = $ARGV[$iarg+1]; }
+  elsif($_ eq '--no-clean-up'          ) { $clean_up     = 0; }
+  elsif($_ eq '--single-cxx'           ) { $single_cxx   = 1; }
+  $iarg++;
+}
+
+# Set defaults
+$list_of_includes_h = "./lists/includes_for_valor_h.txt"
+  unless defined $list_of_includes_h;
+$list_of_includes_cxx = "./lists/includes_for_valor_cxx.txt"
+  unless defined $list_of_includes_cxx;
+$list_of_valor_source_files = "./lists/valor_source_files_needed_for_t2k.txt"
+  unless defined $list_of_valor_source_files;
+
+$clean_up   = 1 unless defined $clean_up;
+$single_cxx = 0 unless defined $single_cxx;
+
+# Create valor.h and valor.cxx files with the necessary includes
+system("cat $list_of_includes_h   >> valor.h.tmp~1");
+system("cat $list_of_includes_cxx >> valor.cxx.tmp~1");
+
+# Read list of VALOR source file to bundle into valor.h and valor.cxx
+open my $SOURCE_FILE_LIST, '<', $list_of_valor_source_files;
+chomp(my @valor_files = <$SOURCE_FILE_LIST>);
+close $SOURCE_FILE_LIST;
+
+# Amalgamation:
+# Add VALOR header files
+foreach(@valor_files) {
+  if(/.h$/) {
+    $valor_file = $valor_fmwk_top_dir . "/" . $_;
+    print "Adding: $valor_file \n";
+    system("cat $valor_file | grep -v '^#include' | grep -v '^//' | grep -v '^using' >> valor.h.tmp~1");
+  }
+}
+# Add VALOR implementation files
+foreach(@valor_files) {
+  if(/.cxx$/) {
+    $valor_file = $valor_fmwk_top_dir . "/" . $_;
+    print "Adding: $valor_file \n";
+    system("cat $valor_file | grep -v '^#include' | grep -v '^//' | grep -v '^using' >> valor.cxx.tmp~1");
+  }
+}
+
+# Remove all comments
+system("./remove_comments.sed < valor.cxx.tmp~1 > valor.cxx.tmp~2");
+system("./remove_comments.sed < valor.h.tmp~1 > valor.h.tmp~2");
+
+# Remove all empty lines and multiple spaces and destroy C++ indentation
+system("sed -f remove_spaces.sed valor.cxx.tmp~2 > valor.cxx.tmp~3");
+system("sed -f remove_spaces.sed valor.h.tmp~2 > valor.h.tmp~3");
+
+# Read cxx file and make sure all multi-line expressions are joined up
+#
+open my $VALOR_CXX_FILE, '<', "valor.cxx.tmp~3";
+chomp(my @valor_cxx = <$VALOR_CXX_FILE>);
+close($VALOR_CXX_FILE);
+
+open my $TWEAKED_VALOR_CXX_FILE, '>', "valor.cxx.tmp~4";
+$joining = 0;
+foreach(@valor_cxx) {
+  # do not mess up lines starting with #
+  if(/^\#/) {
+    if($joining == 1) {
+      # Careful if in the process of joining up multi-line expressions.
+      # Make sure that we do not turn:
+      #   some_return_type valor::SomeFunction(some_argument) {
+      #   #ifdef ...
+      #     ...
+      #   #endif
+      # into:
+      #   some_return_type valor::SomeFunction(some_argument) { #ifdef ...
+      print $TWEAKED_VALOR_CXX_FILE "\n$_ \n";
+    }
+    else {
+      print $TWEAKED_VALOR_CXX_FILE "$_ \n";
+    }
+  }
+  elsif(/\}/)  { print $TWEAKED_VALOR_CXX_FILE "$_ \n"; } # do not mess up lines including a }
+  elsif(/\{/)  { print $TWEAKED_VALOR_CXX_FILE "$_ \n"; } # do not mess up lines including a {
+
+  # # avoid "label at end of compound statement: expected statement" once
+  # # all print out has been stripped out (including from default: cases)
+  # elsif(/default\s*\:/) { print $TWEAKED_VALOR_CXX_FILE "$_ util::Die(-1); \n"; }
+
+  # join-up other lines so that lines always end with a ;
+  else {
+    if(/\;$/) {
+      print $TWEAKED_VALOR_CXX_FILE "$_ \n";
+      $joining = 0;
+    } else {
+      print $TWEAKED_VALOR_CXX_FILE "$_ ";
+      $joining = 1;
+    }
+  }
+}
+close($TWEAKED_VALOR_CXX_FILE);
+
+# Remove all printout statements from cxx file
+system("sed -f remove_printout.sed valor.cxx.tmp~4 > valor.cxx.tmp~5");
+
+# Have valor.h and valor.cxx or just valor.cxx?
+if($single_cxx == 0)
+{
+  system("cp valor.h.tmp~3 valor.h");
+  system("cp valor.cxx.tmp~5 valor.cxx");
+}
+else {
+  system("sed -f remove_include_valor_h.sed valor.cxx.tmp~5 > valor.cxx.tmp~6");
+  system("cat valor.h.tmp~3 valor.cxx.tmp~6 > valor.cxx");
+}
+
+# Clean-up tmp files?
+if($clean_up != 0)
+{
+  system("rm -f valor*tmp*");
+  system("rm -f valor*tmp*");
+}
