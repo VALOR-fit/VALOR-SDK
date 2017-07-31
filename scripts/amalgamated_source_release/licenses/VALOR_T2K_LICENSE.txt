@@ -1,0 +1,96 @@
+
+* PREAMBLE
+
+The VALOR Group has been developing a well-established T2K oscillation analysis 
+since 2010 and it contributed to nearly all published T2K oscillation papers. 
+The T2K analysis code produced by the VALOR Group has evolved into a general 
+oscillation analysis and framework which, amongst other activities, supports 
+a) physics  exploitation in the Fermilab short-baseline (SBN) programme, 
+b) oscillation physics-driven Near Detector design efforts for DUNE, and 
+c) efforts for the development of global LBL oscillation fits. 
+
+Considerable resources were invested in the development of the VALOR analysis 
+procedures. The VALOR Fit is a technology that takes centre stage in the near and 
+long-term physics exploitation plans of several VALOR Group members. This license 
+lays a framework that maintains the exclusivity of the VALOR Group in the 
+exploitation of the VALO IP, but provides the T2K Collaboration with sufficient 
+access to the VALOR Fit and enables independent cross-checks of the VALOR analysis 
+procedures.
+
+
+* TERMS AND CONDITIONS
+
+This License grants a time-limited, non-exclusive, non-transferable and royalty-free 
+permission to use a VALOR T2K Release, in accordance to the Terms & Conditions.
+All rights not explicitly granted by this License are reserved by the VALOR Group.
+
+By installing, copying or otherwise using the Work, you agree to the terms of this 
+License Agreement.
+
+Derivative Works are allowed strictly for the purpose of performing independent 
+cross-checks of results included in T2K physics publications. 
+
+Use of the VALOR T2K Release as a general T2K analysis framework is prohibited. 
+No parts of the VALOR T2K Release shall be included in other T2K analysis codes. 
+
+Use of the VALOR T2K Release outside of T2K is strictly prohibited.
+
+Authorised Users have no right to further distribute a VALOR T2K Release, or 
+Derivative Works, and will not copy it except as necessary for use on a single 
+personal computer. VALOR T2K Releases shall not be stored or installed by the 
+Authorised Users in a manner that provides non-Authorised Users the right to copy, 
+read or execute.
+
+The VALOR Group accepts no responsibility for maintaining VALOR T2K Releases, 
+and no responsibility for providing support, training or documentation beyond 
+what is available. There will be no VALOR documentation or tutorial developed 
+by T2K aiming to encourage general use of VALOR.
+
+Any Derivative Work shall be reported within the VALOR Group first. An explicit 
+agreement by the VALOR Group is required before any Derivative Work is presented 
+to the T2K Collaboration.
+
+Any suspected error will be reported to the VALOR Group first for detailed 
+investigation before reporting to the T2K Collaboration.
+
+Changes to the VALOR Fit will be submitted for consideration to the VALOR Group. 
+There shall be no independent fork of the VALOR Fit.
+
+This License Agreement can be revoked by the VALOR Group at any point, removing 
+any right granted under this License with immediate effect.
+
+
+Definitions
+———————————————————
+
+"Source" form shall mean the preferred form for making modifications, 
+including but not limited to software source code, documentation source, 
+and configuration files.
+
+"Object" form shall mean any form resulting from mechanical transformation 
+or translation of a Source form, including but not limited to compiled 
+object code, generated documentation, and conversions to other media types.
+
+"Data" form shall mean computer and human readable digital data and 
+configuration files required for running the analysis code.
+
+“VALOR Fit” encompasses all Source, Object and Data forms of this product.
+
+“VALOR T2K Release” is a frozen version of selected VALOR Fit components 
+required for reproducing the results included in a T2K physics publication.
+This is a specially prepared and amalgamated code release produced by an 
+automated procedure running over the extended VALOR source tree. 
+The full source tree can not be distributed due to complex 
+
+“VALOR Group” is the group of T2K and non-T2K authors listed in 
+https://valor.pp.rl.ac.uk
+
+"Authorised Users" shall mean the named individuals (T2K Collaborators) 
+exercising permissions granted by this License Agreement.
+
+"Work" shall mean the work of authorship, whether in Source, Object or Data 
+form, made available under this License Agreement.
+
+"Derivative Works" shall mean any work, whether in Source, Object or Data form, 
+that is based on (or derived from) the Work and which represents, as a whole, 
+an original work of authorship. 
