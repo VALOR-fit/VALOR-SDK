@@ -3,7 +3,7 @@
 #
 # ------------------------------------------------------------------------------------------
 # ./amalgamate  [--banner      /path/to/banner/file.txt]
-#               [--copyright   /path/to/copyright/file.txt]
+#               [--license     /path/to/license/agreement/file.txt]
 #               [--linkdef     /path/to/necessary/linkdef/header/file]
 #               [--includes-h  /path/list/of/includes/for/valor_h.txt]
 #               [--incudes-cxx /path/list/of/includes/for/valor_cxx.txt]
@@ -20,7 +20,9 @@ $valor_fmwk_top_dir = $ENV{"VALOR_FMWK"};
 $iarg=0;
 foreach (@ARGV) {
   if   ($_ eq '--linkdef'              ) { $linkdef_file               = $ARGV[$iarg+1]; }
-  if   ($_ eq '--includes-h'           ) { $list_of_includes_h         = $ARGV[$iarg+1]; }
+  if   ($_ eq '--banner'               ) { $banner_file                = $ARGV[$iarg+1]; }
+  if   ($_ eq '--license'              ) { $license_file               = $ARGV[$iarg+1]; }
+  elsif($_ eq '--includes-h'           ) { $list_of_includes_h         = $ARGV[$iarg+1]; }
   elsif($_ eq '--includes-cxx'         ) { $list_of_includes_cxx       = $ARGV[$iarg+1]; }
   elsif($_ eq '--list-of-valor-sources') { $list_of_valor_source_files = $ARGV[$iarg+1]; }
   elsif($_ eq '--no-clean-up'          ) { $clean_up     = 0; }
@@ -29,6 +31,10 @@ foreach (@ARGV) {
 }
 
 # Set defaults
+$banner_file = "$valor_fmwk_top_dir/data/banner/banner.dat"
+  unless defined $banner_file;
+$license_file = "licenses/VALOR_T2K_LICENSE.txt"
+  unless defined $license_file;
 $linkdef_file = "./lists/valor_linkdef_needed_for_t2k.h"
   unless defined $linkdef_file;
 $list_of_includes_h = "./lists/includes_for_valor_h.txt"
@@ -125,20 +131,28 @@ close($TWEAKED_VALOR_CXX_FILE);
 # Remove all printout statements from cxx file
 system("sed -f remove_printout.sed valor_code_release/valor.cxx.tmp~4 > valor_code_release/valor.cxx.tmp~5");
 
+# Add VALOR banner and license in valor.h
+# Dp that here, after the stage of stripping out all comments
+system("echo '/*' >> valor_code_release/valor.txt.tmp");
+system("cat $banner_file >> valor_code_release/valor.txt.tmp");
+system("echo ' ' >> valor_code_release/valor.txt.tmp");
+system("cat $license_file >> valor_code_release/valor.txt.tmp");
+system("echo '*/' >> valor_code_release/valor.txt.tmp");
+system("cat valor_code_release/valor.txt.tmp valor_code_release/valor.h.tmp~3 >> valor_code_release/valor.h.tmp~4");
+
 # Have valor.h and valor.cxx or just valor.cxx?
 if($single_cxx == 0)
 {
-  system("cp valor_code_release/valor.h.tmp~3   valor_code_release/valor.h");
+  system("cp valor_code_release/valor.h.tmp~4   valor_code_release/valor.h");
   system("cp valor_code_release/valor.cxx.tmp~5 valor_code_release/valor.cxx");
 }
 else {
   system("sed -f remove_include_valor_h.sed valor_code_release/valor.cxx.tmp~5 > valor_code_release/valor.cxx.tmp~6");
-  system("cat valor_code_release/valor.h.tmp~3 valor_code_release/valor.cxx.tmp~6 > valor_code_release/valor.cxx");
+  system("cat valor_code_release/valor.h.tmp~4 valor_code_release/valor.cxx.tmp~6 > valor_code_release/valor.cxx");
 }
 
 # Clean-up tmp files?
 if($clean_up != 0)
 {
-  system("rm -f valor_code_release/valor*tmp*");
   system("rm -f valor_code_release/valor*tmp*");
 }

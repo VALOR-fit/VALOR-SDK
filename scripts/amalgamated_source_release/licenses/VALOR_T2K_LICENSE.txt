@@ -1,4 +1,7 @@
 
+VALOR / T2K LISENCE AGREEMENT
+--------------------------------------------------------------------------------------
+
 * PREAMBLE
 
 The VALOR Group has been developing a well-established T2K oscillation analysis 
@@ -12,10 +15,9 @@ c) efforts for the development of global LBL oscillation fits.
 Considerable resources were invested in the development of the VALOR analysis 
 procedures. The VALOR Fit is a technology that takes centre stage in the near and 
 long-term physics exploitation plans of several VALOR Group members. This license 
-lays a framework that maintains the exclusivity of the VALOR Group in the 
-exploitation of the VALO IP, but provides the T2K Collaboration with sufficient 
-access to the VALOR Fit and enables independent cross-checks of the VALOR analysis 
-procedures.
+lays a framework that protects the interests and exclusivity of the VALOR Group,
+but provides the T2K Collaboration with sufficient access to the VALOR Fit and 
+enables independent cross-checks of the VALOR analysis procedures.
 
 
 * TERMS AND CONDITIONS
@@ -79,8 +81,8 @@ configuration files required for running the analysis code.
 “VALOR T2K Release” is a frozen version of selected VALOR Fit components 
 required for reproducing the results included in a T2K physics publication.
 This is a specially prepared and amalgamated code release produced by an 
-automated procedure running over the extended VALOR source tree. 
-The full source tree can not be distributed due to complex 
+automated procedure running over the VALOR source tree. 
+Currently, a release the full VALOR source tree is not practically possible.
 
 “VALOR Group” is the group of T2K and non-T2K authors listed in 
 https://valor.pp.rl.ac.uk
