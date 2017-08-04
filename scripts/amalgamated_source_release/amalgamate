@@ -67,12 +67,10 @@ close $SOURCE_FILE_LIST;
 foreach(@valor_files) {
   next if /^#/;
   if(/.h$/) {
-#    $valor_file = $valor_fmwk_top_dir . "/" . $_;
     print "Adding: $_ \n";
     system("cat $_ | grep -v '^#include' | grep -v '^//' | grep -v '^using' >> valor_code_release/valor.h.tmp~1");
   }
   if(/.cxx$/) {
- #   $valor_file = $valor_fmwk_top_dir . "/" . $_;
     print "Adding: $_ \n";
     system("cat $_ | grep -v '^#include' | grep -v '^//' | grep -v '^using' >> valor_code_release/valor.cxx.tmp~1");
   }
@@ -132,7 +130,7 @@ close($TWEAKED_VALOR_CXX_FILE);
 system("sed -f remove_printout.sed valor_code_release/valor.cxx.tmp~4 > valor_code_release/valor.cxx.tmp~5");
 
 # Add VALOR banner and license in valor.h
-# Dp that here, after the stage of stripping out all comments
+# Do that here, after the stage of stripping out all comments
 system("echo '/*' >> valor_code_release/valor.txt.tmp");
 system("cat $banner_file >> valor_code_release/valor.txt.tmp");
 system("echo ' ' >> valor_code_release/valor.txt.tmp");

@@ -129,4 +129,26 @@
 #pragma link C++ class valor::VALORArrayBin+;
 #pragma link C++ class valor::VALORArrayHeader+;
 
+#pragma link C++ enum  valor::conv::PhysParamId_t;
+#pragma link C++ enum  valor::conv::ConfLevel_t;
+#pragma link C++ enum  valor::conv::SuperkSample_t;
+#pragma link C++ enum  valor::conv::SuperkMode_t;
+
+#pragma link C++ class valor::util::ArrIdx;
+#pragma link C++ class valor::util::UtlMakeFakeData;
+
+#pragma link C++ class valor::T2KPhysicalParameterLimits;
+#pragma link C++ class valor::T2KOpt;
+
+#pragma link C++ class valor::SuperkObservation;
+#pragma link C++ class valor::SuperkExpectation;
+#pragma link C++ class valor::SuperkDetectorFSI;
+#pragma link C++ class valor::SuperkMC+;
+#pragma link C++ class valor::BANFF;
+#pragma link C++ class valor::NuXSec+;
+#pragma link C++ class valor::NuFlux+;
+#pragma link C++ class valor::FitMarginalization+;
+#pragma link C++ class valor::RootFinder;
+
+
 #endif
