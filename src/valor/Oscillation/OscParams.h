@@ -54,6 +54,8 @@ namespace valor {
       void SetRandomize(conv::PhysParamId_t p, bool random = true);
       void SetRandomize(bool random = true);
 
+      void Override(conv::PhysParamId_t p, double value);
+
       // Update all the values in the PhysHypothesis / FitParamList
       void UpdatePhysHypothesis(PhysHypothesis & ph,  bool print = true);
       void UpdateFitParamList  (FitParamList * fparm, bool set_init, bool print = false);

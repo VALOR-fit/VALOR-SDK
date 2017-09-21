@@ -92,31 +92,31 @@ void valor::util::OscParams::Init()
   hPrior_23_nh = 0;
   hPrior_23_ih = 0;
   
-  hToyHisto_dcp_nh = new TH1D("hToyHisto_dcp_nh","hToyHisto_dcp_nh",100,-3.5,+3.5);
-  hToyHisto_Mix13_nh = new TH1D("hToyHisto_Mix13_nh","hToyHisto_Mix13_nh",100,0.,0.20);
-  hToyHisto_Mix23_nh = new TH1D("hToyHisto_Mix23_nh","hToyHisto_Mix23_nh",100,0.2,0.8);
-  hToyHisto_Dm23_nh = new TH1D("hToyHisto_Dm23_nh","hToyHisto_Dm23_nh",100,1.5E-3,3.5E-3);
+  hToyHisto_dcp_nh = new TH1D("hToyHisto_dcp_nh","hToyHisto_dcp_nh",100,-3.1416,+3.1416);
+  hToyHisto_Mix13_nh = new TH1D("hToyHisto_Mix13_nh","hToyHisto_Mix13_nh",100,0.,0.04);
+  hToyHisto_Mix23_nh = new TH1D("hToyHisto_Mix23_nh","hToyHisto_Mix23_nh",100,0.3,0.7);
+  hToyHisto_Dm23_nh = new TH1D("hToyHisto_Dm23_nh","hToyHisto_Dm23_nh",100,2.3E-3,2.7E-3);
   hToyHisto_Mix12_nh = new TH1D("hToyHisto_Mix12_nh","hToyHisto_Mix12_nh",100,0.2,0.4);
   hToyHisto_Dm12_nh = new TH1D("hToyHisto_Dm12_nh","hToyHisto_Dm12_nh",100,6.E-5,9.E-5);
   
-  hToyHisto_dcp_ih = new TH1D("hToyHisto_dcp_ih","hToyHisto_dcp_ih",100,-3.5,+3.5);
-  hToyHisto_Mix13_ih = new TH1D("hToyHisto_Mix13_ih","hToyHisto_Mix13_ih",100,0.,0.20);
-  hToyHisto_Mix23_ih = new TH1D("hToyHisto_Mix23_ih","hToyHisto_Mix23_ih",100,0.2,0.8);
-  hToyHisto_Dm23_ih = new TH1D("hToyHisto_Dm23_ih","hToyHisto_Dm23_ih",100,1.5E-3,3.5E-3);
+  hToyHisto_dcp_ih = new TH1D("hToyHisto_dcp_ih","hToyHisto_dcp_ih",100,-3.1416,+3.1416);
+  hToyHisto_Mix13_ih = new TH1D("hToyHisto_Mix13_ih","hToyHisto_Mix13_ih",100,0.,0.04);
+  hToyHisto_Mix23_ih = new TH1D("hToyHisto_Mix23_ih","hToyHisto_Mix23_ih",100,0.3,0.7);
+  hToyHisto_Dm23_ih = new TH1D("hToyHisto_Dm23_ih","hToyHisto_Dm23_ih",100,2.3E-3,2.7E-3);
   hToyHisto_Mix12_ih = new TH1D("hToyHisto_Mix12_ih","hToyHisto_Mix12_ih",100,0.2,0.4);
   hToyHisto_Dm12_ih = new TH1D("hToyHisto_Dm12_ih","hToyHisto_Dm12_ih",100,6.E-5,9.E-5);
   
-  hToyHisto_dcpBar_nh = new TH1D("hToyHisto_dcpBar_nh","hToyHisto_dcpBar_nh",100,-3.5,+3.5);
-  hToyHisto_Mix13Bar_nh = new TH1D("hToyHisto_Mix13Bar_nh","hToyHisto_Mix13Bar_nh",100,0.,0.20);
-  hToyHisto_Mix23Bar_nh = new TH1D("hToyHisto_Mix23Bar_nh","hToyHisto_Mix23Bar_nh",100,0.2,0.8);
-  hToyHisto_Dm23Bar_nh = new TH1D("hToyHisto_Dm23Bar_nh","hToyHisto_Dm23Bar_nh",100,1.5E-3,3.5E-3);
+  hToyHisto_dcpBar_nh = new TH1D("hToyHisto_dcpBar_nh","hToyHisto_dcpBar_nh",100,-3.1416,+3.1416);
+  hToyHisto_Mix13Bar_nh = new TH1D("hToyHisto_Mix13Bar_nh","hToyHisto_Mix13Bar_nh",100,0.,0.04);
+  hToyHisto_Mix23Bar_nh = new TH1D("hToyHisto_Mix23Bar_nh","hToyHisto_Mix23Bar_nh",100,0.3,0.7);
+  hToyHisto_Dm23Bar_nh = new TH1D("hToyHisto_Dm23Bar_nh","hToyHisto_Dm23Bar_nh",100,2.3E-3,2.7E-3);
   hToyHisto_Mix12Bar_nh = new TH1D("hToyHisto_Mix12Bar_nh","hToyHisto_Mix12Bar_nh",100,0.2,0.4);
   hToyHisto_Dm12Bar_nh = new TH1D("hToyHisto_Dm12Bar_nh","hToyHisto_Dm12Bar_nh",100,6.E-5,9.E-5);
   
-  hToyHisto_dcpBar_ih = new TH1D("hToyHisto_dcpBar_ih","hToyHisto_dcpBar_ih",100,-3.5,+3.5);
-  hToyHisto_Mix13Bar_ih = new TH1D("hToyHisto_Mix13Bar_ih","hToyHisto_Mix13Bar_ih",100,0.,0.20);
-  hToyHisto_Mix23Bar_ih = new TH1D("hToyHisto_Mix23Bar_ih","hToyHisto_Mix23Bar_ih",100,0.2,0.8);
-  hToyHisto_Dm23Bar_ih = new TH1D("hToyHisto_Dm23Bar_ih","hToyHisto_Dm23Bar_ih",100,1.5E-3,3.5E-3);
+  hToyHisto_dcpBar_ih = new TH1D("hToyHisto_dcpBar_ih","hToyHisto_dcpBar_ih",100,-3.1416,+3.1416);
+  hToyHisto_Mix13Bar_ih = new TH1D("hToyHisto_Mix13Bar_ih","hToyHisto_Mix13Bar_ih",100,0.,0.04);
+  hToyHisto_Mix23Bar_ih = new TH1D("hToyHisto_Mix23Bar_ih","hToyHisto_Mix23Bar_ih",100,0.3,0.7);
+  hToyHisto_Dm23Bar_ih = new TH1D("hToyHisto_Dm23Bar_ih","hToyHisto_Dm23Bar_ih",100,2.3E-3,2.7E-3);
   hToyHisto_Mix12Bar_ih = new TH1D("hToyHisto_Mix12Bar_ih","hToyHisto_Mix12Bar_ih",100,0.2,0.4);
   hToyHisto_Dm12Bar_ih = new TH1D("hToyHisto_Dm12Bar_ih","hToyHisto_Dm12Bar_ih",100,6.E-5,9.E-5);
   
@@ -1758,6 +1758,101 @@ void valor::util::OscParams::SetRandomize(conv::PhysParamId_t p, bool random)
       break;
   }
 }
+
+void valor::util::OscParams::Override(conv::PhysParamId_t p, double value)
+{
+   if(iMH == 0)
+   {  // NH
+      switch(p)
+      {
+         case kPhypMixing23:
+            mixing23_nh = value;
+            break;
+         case kPhypMixing13:
+            mixing13_nh = value;
+            break;
+         case kPhypMixing12:
+            mixing12_nh = value;
+            break;
+         case kPhypCPV:
+            dcp_nh = value;
+            break;
+         case kPhypDm23sq:
+            dm23sq_nh = value;
+            break;
+         case kPhypDm12sq:
+            dm12sq_nh = value;
+            break;
+         case kPhypMixing23Bar:
+            mixing23bar_nh = value;
+            break;
+         case kPhypMixing13Bar:
+            mixing13bar_nh = value;
+            break;
+         case kPhypMixing12Bar:
+            mixing12bar_nh = value;
+            break;
+         case kPhypCPVBar:
+            dcpbar_nh = value;
+            break;
+         case kPhypDm23sqBar:
+            dm23sqbar_nh = value;
+            break;
+         case kPhypDm12sqBar:
+            dm12sqbar_nh = value;
+            break;
+         default:
+            std::cout << "OscParams Error: Unrecognised PhysParam_t: " << p << std::endl;
+            exit(1);
+      }
+   }
+   else
+   {  // IH
+      switch(p)
+      {
+         case kPhypMixing23:
+            mixing23_ih = value;
+            break;
+         case kPhypMixing13:
+            mixing13_ih = value;
+            break;
+         case kPhypMixing12:
+            mixing12_ih = value;
+            break;
+         case kPhypCPV:
+            dcp_ih = value;
+            break;
+         case kPhypDm23sq:
+            dm23sq_ih = value;
+            break;
+         case kPhypDm12sq:
+            dm12sq_ih = value;
+            break;
+         case kPhypMixing23Bar:
+            mixing23bar_ih = value;
+            break;
+         case kPhypMixing13Bar:
+            mixing13bar_ih = value;
+            break;
+         case kPhypMixing12Bar:
+            mixing12bar_ih = value;
+            break;
+         case kPhypCPVBar:
+            dcpbar_ih = value;
+            break;
+         case kPhypDm23sqBar:
+            dm23sqbar_ih = value;
+            break;
+         case kPhypDm12sqBar:
+            dm12sqbar_ih = value;
+            break;
+         default:
+            std::cout << "OscParams Error: Unrecognised PhysParam_t: " << p << std::endl;
+            exit(1);
+      }
+   }
+}
+
 //____________________________________________________________________________
 //____________________________________________________________________________
 void valor::util::OscParams::SetRandomize(bool random)
