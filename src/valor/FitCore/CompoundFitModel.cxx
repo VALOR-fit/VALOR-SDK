@@ -9,6 +9,7 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <iostream>
+#include <atomic>
 
 #include "TClass.h"
 #include "TFile.h"

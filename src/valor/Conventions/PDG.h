@@ -19,6 +19,9 @@
 
 #include "valor/Conventions/NuFlavour.h"
 
+// Particle codes taken from
+// http://pdg.lbl.gov/2017/reviews/rpp2016-rev-monte-carlo-numbering.pdf
+
 using std::string;
 
 namespace valor {
@@ -45,6 +48,13 @@ static const int kPdgNuFlavs[kNNuFlavour] = {
  -14,
  -16
 };
+
+  static const int kPdgProton  =  2212; 
+  static const int kPdgNeutron =  2112;
+
+  static const int kPdgPiplus  =  211;
+  static const int kPdgPiminus = -211;
+  static const int kPdgPizero  =  111;
 
 } // conv
 

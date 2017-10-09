@@ -49,6 +49,14 @@ string util::Pdg2String(int pdg_code)
      case ( kPdgNuEBar   ) : return "nuebar";   break;
      case ( kPdgNuMuBar  ) : return "numubar";  break;
      case ( kPdgNuTauBar ) : return "nutaubar"; break;
+
+     case ( kPdgProton  ) :  return "proton";  break;
+     case ( kPdgNeutron ) :  return "neutron"; break;
+
+     case ( kPdgPiplus  ) :  return "piplus";  break;
+     case ( kPdgPiminus ) :  return "piminus"; break;
+     case ( kPdgPizero  ) :  return "pizero";  break;
+
      default               : return "";
   }
   return "";

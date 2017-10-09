@@ -41,8 +41,10 @@ NuOsc3Flavour::~NuOsc3Flavour( )
 void NuOsc3Flavour::Init()
 {
   // set default baseline
+  //this->SetBaseline(kBaseline);
+  LOG("NuOsc3Flavour",pINFO) << "Setting baseline to: " << kBaseline << " km";
   this->SetBaseline(kBaseline);
-
+  
   // set the default mass hierarchy 
   NuMassHierarchy_t nmh = Opt::Instance()->gMassHierarchyAssumed;
   this->SetMassHierarchy(nmh);

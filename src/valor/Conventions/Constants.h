@@ -464,6 +464,7 @@ static const double kALargeNum      = 999999999.;                    //
 static const int    kBadResult      = -999;                          // If a fit fails, give this value to Opt
 static const double kOneMeV         = 0.001;                         // 
 static const double kBaseline       = 295;                           // Tokai->Kamioka (km)
+static const double kBaseline_test  = 1000;                          // Test_detector  (km)  
 static const double kBeamDir[3]     = {0.669764, -0.742179, 0.024223}; // T2K beam direction vector
 static const double kOscDimensFactor= 1.26693281;                    // Dimensional factor (GeV/eV^2/km) appearing in netrino oscillation formula
 static const double kCrustDensity   = 2.6;                           // Average density of Earth's continental crust (gr / cm^3)
