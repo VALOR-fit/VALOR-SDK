@@ -49,25 +49,25 @@ template<typename numtype> VALORArrayT<numtype>::VALORArrayT() :
 //________________________________________________________________________________________
 
 template<typename numtype> VALORArrayT<numtype>::VALORArrayT(const vector<int> dimensions) :
-  TNamed()
+  VALORArrayT()
 {
   this->Construct(dimensions.size(), &dimensions[0]);
 }
 //________________________________________________________________________________________
 template<typename numtype> VALORArrayT<numtype>::VALORArrayT(int nd, const int * dimensions) :
-  TNamed()
+  VALORArrayT()
 {
   this->Construct(nd,dimensions);
 }
 //________________________________________________________________________________________
 template<typename numtype> VALORArrayT<numtype>::VALORArrayT(std::string file_to_read) :
-  TNamed()
+  VALORArrayT()
 {
   this->ReadFile(file_to_read);
 }
 //________________________________________________________________________________________
 template<typename numtype> VALORArrayT<numtype>::VALORArrayT(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) :
-  TNamed()
+  VALORArrayT()
 {
   int dimensions[6] = {dim1,dim2,dim3,dim4,dim5,dim6};
   int ndim=0;
@@ -152,7 +152,11 @@ template<typename numtype> void VALORArrayT<numtype>::CopyDataOnlyFrom(const VAL
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::Cleanup()
 {
-  if (fArray) {delete[] fArray; fArray = 0;}
+  if (fArray)
+  {
+     delete[] fArray;
+     fArray = 0;
+  }
   
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = 1;

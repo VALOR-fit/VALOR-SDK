@@ -754,12 +754,14 @@ void CorrelatedSystematics::InvertMatrices()
 #ifdef __matrix_invert_direct__
   TMatrixD & cov = *fCovMtrx;
   // Calculate matrix inversion directly
+  if (fCovMtrxInv    ) {delete fCovMtrxInv    ; fCovMtrxInv     = NULL;}
   fCovMtrxInv = new TMatrixD(cov);
   fCovMtrxInv->Invert(&det);
   LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (direct): " << det;
 #elif defined(__matrix_invert_svd__)
   TMatrixD & cov = *fCovMtrx;
   // Use scalar value decomposition for matrix inverse
+  if (fCovMtrxInv    ) {delete fCovMtrxInv    ; fCovMtrxInv     = NULL;}
   fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
   LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (SVD): " << det;
 #endif
