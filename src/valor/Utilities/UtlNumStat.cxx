@@ -40,6 +40,7 @@ ChangeLog:
 #include <TFile.h>
 #include <TSystem.h>
 #include <TDecompSVD.h>
+#include <TDecompChol.h>
 
 #include "valor/Conventions/Build.h"
 #include "valor/Conventions/Constants.h"
@@ -171,74 +172,32 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixDSym& cov_matrix)
 //____________________________________________________________________________
 TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 {
-// Perform a Cholesky decomposition of the input covariance matrix and
-// return the lower triangular matrix
-//
+   // Perform a Cholesky decomposition of the input covariance matrix
    int ncols = cov_matrix.GetNcols();
    int nrows = cov_matrix.GetNrows();
 
    assert(ncols==nrows);
 
-   int n = nrows;
+   TDecompChol chol(cov_matrix);
+   Bool_t succeeded = chol.Decompose();
+   if(succeeded != kTRUE)
+   {
+     cerr << "util::CholeskyDecomposition >> decomposition failed" << endl;
+     util::Die(1);
+   }
+    TMatrixD U = chol.GetU();
+    TMatrixD UT(TMatrixD::kTransposed, U);
+/*    cout << "ROOT Cholesky matrix U^{T}" << endl;
+    for(int ip=0; ip<n; ip++)
+    {
+      for(int jp=0; jp<n; jp++)
+      {
+        cout << setw(15) << setfill(' ') << setprecision(6) << UT[ip][jp] << " | ";
+      }
+      cout << endl;
+    }*/
 
-   TMatrixD L(n, n);
-
-   for (int i = 0; i < n; ++i) {
-
-     // calculate the diagonal term first
-     L(i,i) = cov_matrix(i,i);
-     for (int k = 0; k < i; ++k) {
-        double tmp = L(k,i);
-        L(i,i) -= tmp*tmp;
-     }//k
-
-
-     if(L(i,i) <= 0) {
-       if( fabs(L(i,i))<conv::kASmallNum ){
-	 LOG("UtlNumStat", pWARN) << "Element: " << i << "," << i << " = " << L(i,i);
-	 L(i,i)=conv::kASmallNum;
-	 LOG("UtlNumStat", pWARN) << "Changed to "<<L(i,i);
-       }
-       else{
-	 LOG("UtlNumStat", pERROR) << "Decomposed covariance matrix not positive-definite"
-				   << "L(" << i << "," << i << ") = " << L(i,i);
-	 util::Die(1);
-       }
-     }
-     // if(L(i,i) <= 0) {
-     //   cerr << "util/CholeskyDecomposition >> "<< "Value: "<<i<<","<<i<<" = "<<L(i,i);
-     //   L(i,i)=conv::kASmallNum;
-     //   cerr << "  , changed to "<<L(i,i)<<endl;
-     //   //~ cerr << "Decomposed covariance matrix not positive-definite" << endl;
-     //   //~ util::Die(1);
-     // }
-
-
-     L(i,i) = TMath::Sqrt(L(i,i));
-     // then the off-diagonal terms
-     for (int j = i+1; j < n; ++j) {
-        L(i,j) = cov_matrix(i,j);
-        for (int k = 0; k < i; ++k) {
-           L(i,j) -= L(k,i)*L(k,j);
-        }
-        L(i,j) /= L(i,i);
-     }//j
-  }//i
-
-  // create the transpose of L
-  TMatrixD LT(TMatrixD::kTransposed,L);
-
-#ifdef __show_cholesky_decomposition_mesg_debug__
-  cout << "Cholesky matrix L^{T}" << endl;
-  for(int ip=0; ip<n; ip++) {
-    for(int jp=0; jp<n; jp++) {
-      cout << setw(15) << setfill(' ') << setprecision(6) << LT[ip][jp] << " | ";
-    }//jp
-    cout << endl;
-  }//ip
-#endif
-
-  return LT;
+   return UT;
 }
 //____________________________________________________________________________
 TVectorD valor::util::CholeskyGenerateCorrelatedParams (
