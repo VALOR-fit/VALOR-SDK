@@ -58,7 +58,10 @@ namespace util {
   
   // Get the histograms out of a TCanvas
   TObjArray GetHistsFromCanvas(TCanvas * canv, const char * name = "TH1");
-  
+
+  // Swap the axes of a TH2D. This replaces the input hist
+  // Problem: TH2 has no GetRangeUser() function (or equivalent), so any viewing range will have to be set again after calling SwapAxes()
+  void SwapAxes(TH2D*& hist);
 
 } // util
 } // valor
