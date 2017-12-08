@@ -137,6 +137,7 @@ namespace valor {
     bool   PenaltyTerm1 () const { if(fParseType & kParseFitMarg) return fPenaltyTerm1; cerr << "kParseFitMarg not set" << endl; exit(-1); }
     bool Scale_toys_based_on_samples () const { if(fParseType & kParseFitMarg) return kScale_toys_based_on_samples; cerr << "kScale_toys_based_on_samples not set" << endl; exit(-1); }
     double Scale_toys_based_on_samples_scale () const { if(fParseType & kParseFitMarg) return fScale_toys_based_on_samples_scale; cerr << "fScale_toys_based_on_samples_scale not set" << endl; exit(-1); }
+    string AdditionalFileTag() const { if(fParseType & kParseCommon) return fAdditionalFileTag; cerr << "kParseCommon not set" << endl; exit(-1); }
     
     bool ToyPenaltyTerm2D () const { if(fParseType & kParseFitMarg) return kToyPenaltyTerm2D; cerr << "kScale_toys_based_on_penalty not set" << endl; exit(-1); }
     TH2D* ToyPenaltyTerm2DHist () { if(fParseType & kParseFitMarg) return kToyPenaltyTerm2DHist; cerr << "kToyPenaltyTerm2DHist not set" << endl; exit(-1); }
@@ -174,6 +175,7 @@ namespace valor {
     string fConfigFile;
     string fVerbosityFile;
     string fFileTag;
+    string fAdditionalFileTag;
     int    fRun;
     bool   fUseFileData;
     string fPathFileData;

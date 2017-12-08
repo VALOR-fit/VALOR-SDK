@@ -90,10 +90,11 @@ void valor::RunOpt::Init(void)
   fHierStr[0] = "nh";
   fHierStr[1] = "ih";
   //common options
-  fConfigFile      = util::FormFilePath("", "config");
-  fVerbosityFile   = util::FormFilePath("verbosity.xml", "config");
-  fFileTag         = "tag";
-  fRun             = 0;
+  fConfigFile        = util::FormFilePath("", "config");
+  fVerbosityFile     = util::FormFilePath("verbosity.xml", "config");
+  fFileTag           = "tag";
+  fAdditionalFileTag = "";
+  fRun               = 0;
   //toy options
   fFirstExperiment     = 0;
   fLastExperiment      = 0;
@@ -1277,6 +1278,10 @@ void valor::RunOpt::ReadFitMargOptions()
       exit(1);
     }
     
+  }
+
+  if(fParser->OptionExists("additional-file-tag")){
+    fAdditionalFileTag = fParser->ArgAsString("additional-file-tag");
   }
 }
 //____________________________________________________________________________
