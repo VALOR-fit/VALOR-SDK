@@ -35,6 +35,7 @@ VALOR_INCLUDES := -I$(VALOR_FMWK)/src/
 ROOT_FLAGS  = $(shell root-config --cflags)
 ROOT_INCLUDES  = -I$(shell root-config --incdir)
 ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore -lEGPythia6
+ROOT_CINT_FLAGS = -c -p
 
 #-------------------------------------------------------------------
 #                             log4cpp
