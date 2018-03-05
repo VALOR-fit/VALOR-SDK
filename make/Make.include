@@ -42,6 +42,9 @@ ifeq (,$(findstring -std=,$(ROOT_FLAGS)))
   ROOT_FLAGS += -std=c++0x 
 endif
 
+ROOT_VERSION = $(shell root-config --version )
+ROOT_MAJOR   = $(shell root-config --version | cut -d. -f1 )
+
 #-------------------------------------------------------------------
 #                             log4cpp
 #-------------------------------------------------------------------
