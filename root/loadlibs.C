@@ -1,8 +1,9 @@
-void valor_load_lib(const char * lib)
+Long_t valor_load_lib(const char * lib, bool warn_on_fail = true, bool verbose = false)
 {
-  //~ std::cerr<<lib<<":\t"<<
-  gSystem->Load(lib);
-  //~ std::cerr<<std::endl
+  if (verbose) { std::cerr<<lib<<std::endl; }
+  Long_t result = gSystem->Load(lib);
+  if (result && warn_on_fail) {std::cerr<<"Failed to load: "<<lib<<std::endl;}
+  return result;
 }
 
 void loadlibs ()
@@ -14,31 +15,37 @@ void loadlibs ()
   TString features(gROOT->GetConfigFeatures());
 
   // extra ROOT libs
-  valor_load_lib("libGpad");
-  valor_load_lib("libPhysics");
-  valor_load_lib("libMatrix");
-  valor_load_lib("libHist");
-  valor_load_lib("libGraf");
-  valor_load_lib("libTree");
-  valor_load_lib("libRIO");
-  valor_load_lib("libXMLIO");
-  valor_load_lib("libMinuit");
-  valor_load_lib("libMinuit2");
-  if (features.Contains("mathmore")) {valor_load_lib("libMathMore"); }
+  valor_load_lib("libGpad"     , false);
+  valor_load_lib("libPhysics"  , false);
+  valor_load_lib("libMatrix"   , false);
+  valor_load_lib("libHist"     , false);
+  valor_load_lib("libGraf"     , false);
+  valor_load_lib("libTree"     , false);
+  valor_load_lib("libRIO"      , false);
+  valor_load_lib("libXMLIO"    , false);
+  valor_load_lib("libMinuit"   , false);
+  valor_load_lib("libMinuit2"  , false);
+  valor_load_lib("libMathMore"); 
 
   // log4cpp lib
-  valor_load_lib("liblog4cpp");
+  valor_load_lib("liblog4cpp", false);
 
   // VALOR libs
-  valor_load_lib("libValorMesg.so");
-  valor_load_lib("libValorRegistry.so");
-  valor_load_lib("libValorConv.so");
-  valor_load_lib("libValorArray.so");
-  valor_load_lib("libValorFitCore.so");
-  valor_load_lib("libValorNtuple.so");
-  valor_load_lib("libValorOsc.so");
-  valor_load_lib("libValorCmdLine.so");
-  valor_load_lib("libValorUtil.so");
-  valor_load_lib("libValorKBin.so");
+  Long_t valor_lib_status = 0;
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorMesg.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorRegistry.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorConv.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorArray.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorFitCore.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorNtuple.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorOsc.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorCmdLine.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorUtil.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorKBin.so");
+  
+  if (valor_lib_status) {
+    std::cerr<<"Did not successfully load all libraries"<<std::endl;
+    exit(-1);
+  }
 }
 
