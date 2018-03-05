@@ -21,6 +21,7 @@
 #define _valor_array_bin_h_
 
 #include <cstddef>
+#include <iostream>
 
 #include "valor/Conventions/Build.h"
 
