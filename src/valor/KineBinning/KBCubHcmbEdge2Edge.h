@@ -60,6 +60,7 @@
 
 #include <TNamed.h>
 
+#include "valor/KineBinning/VALORBinning.h"
 #include "valor/VArray/VALORArray.h"
 #include "valor/VArray/VALORArrayBin.h"
 #include "valor/Conventions/KineVar.h"
@@ -67,7 +68,7 @@
 
 namespace valor {
 
-class KBCubHcmbEdge2Edge: public TNamed
+class KBCubHcmbEdge2Edge: public VALORBinning
 {
 public:
   KBCubHcmbEdge2Edge();
@@ -75,8 +76,7 @@ public:
   virtual ~KBCubHcmbEdge2Edge();
 
   // Read binning from file
-  bool Read(string file);
-  using TObject::Read; // Tell clang we really do want this
+  virtual bool Read(string file);
 
   /**
     Takes this binning and creates a new binning using the specified subset of
@@ -87,92 +87,70 @@ public:
     \return The binning with the specified kinematic space.
   */
   KBCubHcmbEdge2Edge* Contract(conv::KineSpace_t ks) const;
-
-  // Get the corresponding kinematical space
-  conv::KineSpace_t KineSpace(void) const { return fKineSpace; }
-
-  // Number of dimensions
-  unsigned int NDimensions (void) const { return fNDimensions; }
-
-  // List of kinematical variables
-  const std::vector<valor::conv::KineVar_t> & KineVars (void) const { return fKineVars; }
-
-  // Dimension -> Variable
-  conv::KineVar_t KineVar(unsigned int dimension);
-
-  // Variable -> Dimension
-  unsigned int Dimension(conv::KineVar_t kv) const;
-  bool Contains(conv::KineVar_t kv) const;
-
-  // Number of bins by dimension or kinematical variable
-  unsigned int NBins (unsigned int dimension ) const;
-  unsigned int NBins (conv::KineVar_t kv     ) const;
-
-  // Number of multi-dimensional bins
-  unsigned int NBins (void) const;
-
+  
   // Fixed or variable width?
   bool FixedWidth    (unsigned int dimension ) const;
   bool FixedWidth    (conv::KineVar_t kv     ) const;
   bool VariableWidth (unsigned int dimension ) const;
   bool VariableWidth (conv::KineVar_t kv     ) const;
-
-  // Global min and max values
-  double Minimum (unsigned int dimension ) const;
-  double Minimum (conv::KineVar_t kv     ) const;
-  double Maximum (unsigned int dimension ) const;
-  double Maximum (conv::KineVar_t kv     ) const;
-
-  // Bin min and max values
-  double BinMinimum (unsigned int linearized_bin, unsigned int dimension ) const;
-  double BinMinimum (unsigned int linearized_bin, conv::KineVar_t kv     ) const;
-  double BinMaximum (unsigned int linearized_bin, unsigned int dimension ) const;
-  double BinMaximum (unsigned int linearized_bin, conv::KineVar_t kv     ) const;
-
-  // Bin range (min, max)
-  std::vector<double> BinRange (unsigned int linearized_bin, unsigned int dimension ) const;
-  std::vector<double> BinRange (unsigned int linearized_bin, conv::KineVar_t kv     ) const;
-
-  // Bin width
-  double              BinWidth (unsigned int linearized_bin, unsigned int dimension ) const;
-  double              BinWidth (unsigned int linearized_bin, conv::KineVar_t kv     ) const;
-  std::vector<double> BinWidth (unsigned int linearized_bin                         ) const;
-
-  // Bin centre values
-  double              BinCentre (unsigned int linearized_bin, unsigned int dimension ) const;
-  double              BinCentre (unsigned int linearized_bin, conv::KineVar_t kv     ) const;
-  std::vector<double> BinCentre (unsigned int linearized_bin                         ) const;
-
-  // Bin edge arrays by dimension or kinematical variable
-  const double *      BinEdgeArr    (unsigned int dimension ) const;
-  const double *      BinEdgeArr    (conv::KineVar_t kv     ) const;
-  const VALORArray *  BinEdgeVArr   (unsigned int dimension ) const;
-  const VALORArray *  BinEdgeVArr   (conv::KineVar_t kv     ) const;  
-
+  
+  // Numbers of bins (by dimension)
+  unsigned int NBins (unsigned int dim  ) const;
+  unsigned int NBins (conv::KineVar_t kv) const;
+  
   // Find bin
-  unsigned int              FindBin           (double x, unsigned int dimension) const;
-  unsigned int              FindBin           (double x, conv::KineVar_t kv) const;
-  unsigned int              FindBin           (std::vector<double>& xarr) const;
-  std::vector<unsigned int> FindBinArr        (std::vector<double> & xarr) const;
-  unsigned int              FindLinearizedBin (std::vector<double> & xarr) const;
+  unsigned int              FindBin1D         (double x, unsigned int dimension) const;
+  unsigned int              FindBin1D         (double x, conv::KineVar_t kv) const;
+  std::vector<unsigned int> FindBin1DArr      (std::vector<double> & xarr) const;
 
   unsigned int              LinearizedBin (std::vector<unsigned int> & binarr) const;
-  std::vector<unsigned int> BinArr        (unsigned int linearized_bin) const; 
-  unsigned int              Bin           (unsigned int linearized_bin, unsigned int dimension) const;  
+  std::vector<unsigned int> Bin1DArr      (unsigned int linearized_bin) const; 
+  unsigned int              Bin1D         (unsigned int linearized_bin, unsigned int dimension) const;  
+  unsigned int              Bin1D         (unsigned int linearized_bin, conv::KineVar_t kv) const;  
+  
+  
+  // Bin Edges
+  const double * BinEdgeArr(unsigned int dimension ) const;
+  const double * BinEdgeArr(conv::KineVar_t kv     ) const;
+  
+  // Inherited stuff from VALORBinning
+  using VALORBinning::NBins;
+  // Bin min and max values
+  virtual double BinMinimum (unsigned int bin, unsigned int dimension ) const;
+  virtual double BinMinimum (unsigned int bin, conv::KineVar_t kv     ) const;
+  virtual double BinMaximum (unsigned int bin, unsigned int dimension ) const;
+  virtual double BinMaximum (unsigned int bin, conv::KineVar_t kv     ) const;
+
+  // Bin range
+  virtual std::vector<double> BinRange (unsigned int bin, unsigned int dimension ) const;
+  virtual std::vector<double> BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
+
+  // Bin width
+  virtual double              BinWidth (unsigned int bin, unsigned int dimension ) const;
+  virtual double              BinWidth (unsigned int bin, conv::KineVar_t kv     ) const;
+  virtual std::vector<double> BinWidth (unsigned int bin                         ) const;
+
+  // Bin centre
+  virtual double              BinCentre (unsigned int bin, unsigned int dimension ) const;
+  virtual double              BinCentre (unsigned int bin, conv::KineVar_t kv     ) const;
+  virtual std::vector<double> BinCentre (unsigned int bin                         ) const;
+
+  // Find bin
+  virtual unsigned int FindBin (std::vector<double> & xarr) const;
+  
+  // Returns a vector of TLines that mark the edges of each bin
+  virtual std::vector<TLine>  GetBinningTLines(void) const;
+  
+  
+  using TObject::Read; // Tell clang we really do want this
 
 protected:
 
   void Init    (void);
   void CleanUp (void);
-
-  conv::KineSpace_t                       fKineSpace;     // kinematical space
-  unsigned int                            fNDimensions;   // number of dimensions
-  std::vector<conv::KineVar_t>            fKineVars;      // kinematical variables in given space
-  std::map<conv::KineVar_t, unsigned int> fKineVar2Dim;   // kinematical variable -> dimension
-  std::vector<bool>                       fFixedWidth;    // fixed or variable bin width?
-  std::vector<double>                     fMinimum;       // 
-  std::vector<double>                     fMaximum;       //
-  std::vector<VALORArray*>                fBinEdges;      // bin edges
+  
+  std::vector<bool>                 fFixedWidth; // Are the bins fixed or variable in this dimension?
+  std::vector<std::vector<double> > fBinEdges;      // bin edges
   
 ClassDef(KBCubHcmbEdge2Edge, 1)
 };

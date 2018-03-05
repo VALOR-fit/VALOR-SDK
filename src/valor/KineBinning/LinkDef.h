@@ -7,6 +7,7 @@
 #pragma link C++ namespace valor;
 #pragma link C++ namespace valor::conv;
 
+#pragma link C++ class valor::VALORBinning;
 #pragma link C++ class valor::KBCubHcmbEdge2Edge;
 #pragma link C++ class valor::KBCubHcmbMondrian;
 

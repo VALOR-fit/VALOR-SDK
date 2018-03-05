@@ -25,13 +25,13 @@ ClassImp(KBCubHcmbMondrian)
 
 //________________________________________________________________________________________
 KBCubHcmbMondrian::KBCubHcmbMondrian() :
-TNamed()
+VALORBinning()
 {
   this->Init();
 }
 //________________________________________________________________________________________
 KBCubHcmbMondrian::KBCubHcmbMondrian(string name, string title) :
-TNamed(name.c_str(), title.c_str())
+VALORBinning(name.c_str(), title.c_str())
 {
   this->Init();
 }
@@ -82,9 +82,14 @@ bool KBCubHcmbMondrian::Read(string file)
   LOG("Binning", pNOTICE) 
      << "Number of dimensions = " << fNDimensions;
   fKineVars    = util::KineVar(fKineSpace);
+  fKineVarToDim.reserve(conv::kNKineVarMax);
+  for(unsigned int i = 0 ; i < fKineVarToDim.size() ; i++) {
+    fKineVarToDim[i] = -1;
+  }
+  
   for(unsigned int i = 0; i < fNDimensions; i++) {
     conv::KineVar_t kv = fKineVars[i];
-    fKineVar2Dim[kv] = i;
+    fKineVarToDim[kv] = i;
   }
   fMinimum.reserve(fNDimensions);
   fMaximum.reserve(fNDimensions);
@@ -137,6 +142,16 @@ bool KBCubHcmbMondrian::Read(string file)
          }
      }
   }
+  
+  std::ostringstream binning_print;
+  binning_print << fName<< " total bins "<<this->NBins() << " in range: ";
+  for (unsigned int i = 0 ; i < this->NDimensions() ; i++) {
+    binning_print<< "("<<this->Minimum(i)<<" < "<<util::AsString(this->KineVar(i))<<" < "<<this->Maximum(i)<<") ";
+  }
+  LOG("Binning", pNOTICE) << binning_print.str();
+   
+  xml->FreeDoc(xmldoc);
+  delete xml;
 
   return true;
 }
@@ -157,7 +172,7 @@ KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
    // Set the mapping from kinematic variable to dimension
    for(unsigned int i = 0; i < mond->fNDimensions; ++i)
    {
-      mond->fKineVar2Dim[fKineVars[i]] = i;
+      mond->fKineVarToDim[fKineVars[i]] = i;
    }
 
    // Reserve space for the bin minima, maxima and edges
@@ -257,33 +272,6 @@ KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
 
    return mond;
 }
-
-//________________________________________________________________________________________
-double KBCubHcmbMondrian::Minimum(unsigned int dimension) const
-{
-  return fMinimum[dimension];
-}
-//________________________________________________________________________________________
-double KBCubHcmbMondrian::Minimum(conv::KineVar_t kv) const
-{
-  unsigned int dimension = this->Dimension(kv);
-  return this->Minimum(dimension);
-}
-//________________________________________________________________________________________
-double KBCubHcmbMondrian::Maximum(unsigned int dimension) const
-{
-  if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
-    util::Die(-1) ; return conv::kBadResult;
-  }
-  return fMaximum[dimension];
-}
-//________________________________________________________________________________________
-double KBCubHcmbMondrian::Maximum(conv::KineVar_t kv) const
-{
-  unsigned int dimension = this->Dimension(kv);
-  return this->Maximum(dimension);
-}
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinMinimum(unsigned int bin, unsigned int dimension) const
 {
@@ -299,12 +287,6 @@ double KBCubHcmbMondrian::BinMinimum(unsigned int bin, unsigned int dimension) c
   return fBinEdges[idx];
 }
 //________________________________________________________________________________________
-double KBCubHcmbMondrian::BinMinimum(unsigned int bin, conv::KineVar_t kv) const
-{
-  unsigned int dimension = this->Dimension(kv);
-  return this->BinMinimum(bin,dimension);
-}
-//________________________________________________________________________________________
 double KBCubHcmbMondrian::BinMaximum(unsigned int bin, unsigned int dimension) const
 {
   if (bin >= fNBins) {
@@ -317,12 +299,6 @@ double KBCubHcmbMondrian::BinMaximum(unsigned int bin, unsigned int dimension) c
   }
   unsigned int idx = (2 * fNDimensions * bin) + (2 * dimension) + 1;
   return fBinEdges[idx];
-}
-//________________________________________________________________________________________
-double KBCubHcmbMondrian::BinMaximum(unsigned int bin, conv::KineVar_t kv) const
-{
-  unsigned int dimension = this->Dimension(kv);
-  return this->BinMaximum(bin,dimension);
 }
 //________________________________________________________________________________________
 vector<double> KBCubHcmbMondrian::BinRange(
@@ -447,23 +423,6 @@ unsigned int KBCubHcmbMondrian::MapFromLinearizedE2E(unsigned int e2e_lin_bin) c
   return it->second;
 }
 //________________________________________________________________________________________
-unsigned int KBCubHcmbMondrian::Dimension(conv::KineVar_t kv) const
-{
-  std::map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
-  if (it == fKineVar2Dim.end()) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad KineVar: "<<util::AsString(kv) << " ("<<kv<<")"<< " in "<<util::AsString(fKineSpace);
-    util::Die(-1) ; return 0;
-  }
-  int dimension = it->second;
-  return dimension;
-}
-//________________________________________________________________________________________
-bool KBCubHcmbMondrian::Contains(conv::KineVar_t kv) const
-{
-  std::map<conv::KineVar_t,unsigned int>::const_iterator it = fKineVar2Dim.find(kv);
-  return (it != fKineVar2Dim.end());
-}
-//________________________________________________________________________________________
 std::vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void) const
 {
   //
@@ -492,13 +451,6 @@ std::vector<TLine>  KBCubHcmbMondrian::GetBinningTLines(void) const
   return bin_edge_lines;
 }
 //________________________________________________________________________________________
-conv::KineVar_t KBCubHcmbMondrian::KineVar(unsigned int dimension)
-{
-  if(dimension < fNDimensions) return fKineVars[dimension];
-
-  return conv::kvUndefined;
-}
-
 TH2D* KBCubHcmbMondrian::ToTH2D(conv::KineVar_t kv1, conv::KineVar_t kv2) const
 {
    // Set default dimensions
@@ -540,8 +492,35 @@ TH2D* KBCubHcmbMondrian::ToTH2D(conv::KineVar_t kv1, conv::KineVar_t kv2) const
    int nDim2Bins = dim2Edges.size() - 1;
    double dim2BinEdges[nDim1Bins + 1];
    std::copy(dim2Edges.begin(), dim2Edges.end(), dim2BinEdges);
-   TH2D* histo = new TH2D("histo", "histo", nDim1Bins, dim1BinEdges,
+   TH2D* histo = new TH2D("mondtoth2", "", nDim1Bins, dim1BinEdges,
          nDim2Bins, dim2BinEdges);
+
+   return histo;
+}
+//________________________________________________________________________________________
+TH2Poly * KBCubHcmbMondrian::TH2Poly(conv::KineVar_t kv1, conv::KineVar_t kv2) const
+{
+   // Set default dimensions
+   int dim1 = 0;
+   int dim2 = 1;
+   if(fNDimensions > 2)
+   {  // Get the dimensions for the specified kinematics
+      if(kv1 == conv::kvUndefined || kv2 == conv::kvUndefined)
+      {
+         LOG("KBCubHcmbMondrian", pERROR) << "Kinematic variables must be " <<
+            "specified for Mondrian binnings with more than 2 dimensions.";
+         util::Die(-1);
+      }
+      dim1 = Dimension(kv1);
+      dim2 = Dimension(kv2);
+   }
+   
+   std::vector<double> edges[4]; // 0 is xlow, 1 is xhigh, 2 ylow, 3 yhigh
+   for (unsigned int i = 0 ; i < fBinEdges.size() ; i++) {
+     edges[i%4].push_back(fBinEdges[i]);
+   }
+   TH2Poly * histo = new TH2Poly("mondtoth2poly","",edges[0].size(),
+     edges[0].data(), edges[1].data(), edges[2].data(), edges[3].data());
 
    return histo;
 }
@@ -552,7 +531,7 @@ void KBCubHcmbMondrian::Init(void)
   fKineSpace = conv::kspUndefined;
   fNDimensions = 0;
   fKineVars.clear();
-  fKineVar2Dim.clear();
+  fKineVarToDim.clear();
   fNBins = 0;
   fBinEdges.clear();
   fMinimum.clear();
