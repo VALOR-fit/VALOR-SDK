@@ -40,9 +40,12 @@ public:
   int bin5;
   int bin6;
   
+  friend std::ostream & operator << (std::ostream & stream, const VALORArrayBin & rfl);
+  
 }; // VALORArrayBin
 
 bool operator==(const VALORArrayBin & lhs, const VALORArrayBin & rhs);
+std::ostream & operator << (std::ostream & stream, const VALORArrayBin & rfl);
 
 } //valor
 
