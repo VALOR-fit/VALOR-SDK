@@ -132,7 +132,7 @@ public:
         
   /** Alternatively, just make a TH2Poly, which is a similar thing to the Mondrian anyway
    */
-  TH2DPoly* ToTH2Poly(conv::KineVar_t kv1 = conv::kvUndefined,
+  TH2Poly* ToTH2Poly(conv::KineVar_t kv1 = conv::kvUndefined,
         conv::KineVar_t kv2 = conv::kvUndefined) const;
         
         

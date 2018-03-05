@@ -498,7 +498,7 @@ TH2D* KBCubHcmbMondrian::ToTH2D(conv::KineVar_t kv1, conv::KineVar_t kv2) const
    return histo;
 }
 //________________________________________________________________________________________
-TH2Poly * KBCubHcmbMondrian::TH2Poly(conv::KineVar_t kv1, conv::KineVar_t kv2) const
+TH2Poly * KBCubHcmbMondrian::ToTH2Poly(conv::KineVar_t kv1, conv::KineVar_t kv2) const
 {
    // Set default dimensions
    int dim1 = 0;
@@ -519,8 +519,12 @@ TH2Poly * KBCubHcmbMondrian::TH2Poly(conv::KineVar_t kv1, conv::KineVar_t kv2) c
    for (unsigned int i = 0 ; i < fBinEdges.size() ; i++) {
      edges[i%4].push_back(fBinEdges[i]);
    }
-   TH2Poly * histo = new TH2Poly("mondtoth2poly","",edges[0].size(),
-     edges[0].data(), edges[1].data(), edges[2].data(), edges[3].data());
+   TH2Poly * histo = new TH2Poly("mondtoth2poly","",
+     this->Minimum(0),this->Maximum(0),this->Minimum(1),this->Maximum(1));
+   
+   for (unsigned int i = 0 ; i < edges[0].size(); i++) {
+     histo->AddBin(edges[0][i],edges[2][i],edges[1][i],edges[3][i]);
+   }
 
    return histo;
 }
