@@ -37,7 +37,6 @@ namespace valor {
 Opt * Opt::fInstance = 0;
 //________________________________________________________________________________________
 Opt::Opt() :
- gDoNotDie(false),
  fRegistry("VALORRegistry",false)
 {
   this->SetDefaults();
