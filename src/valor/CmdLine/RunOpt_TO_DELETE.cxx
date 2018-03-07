@@ -22,6 +22,7 @@
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/CmdLine/RunOpt_TO_DELETE.h"
+#include "valor/DerivedUtilities/UtlForMacros.h"
 
 using std::cout;
 using std::cerr;

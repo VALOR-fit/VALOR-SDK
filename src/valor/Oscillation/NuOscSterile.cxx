@@ -14,7 +14,7 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "valor/Conventions/Build.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/PDG.h"
-#include "valor/Utilities/UtlNumStat.h"
+#include "valor/DerivedUtilities/UtlNumStat.h"
 #include "valor/Oscillation/NuOscSterile.h"
 
 #include "valor/Utilities/UtlSystem.h"

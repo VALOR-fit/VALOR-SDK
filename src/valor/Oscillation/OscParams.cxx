@@ -13,7 +13,7 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/Constants.h"
-#include "valor/Utilities/UtlNumStat.h"
+#include "valor/DerivedUtilities/UtlNumStat.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Oscillation/OscParams.h"
 

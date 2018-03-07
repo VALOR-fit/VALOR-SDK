@@ -13,7 +13,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 // fmwk
 #include "valor/Conventions/Constants.h"
 #include "valor/Messenger/Messenger.h"
-#include "valor/Utilities/UtlNumStat.h"
+#include "valor/DerivedUtilities/UtlNumStat.h"
 #include "valor/Utilities/UtlSystem.h"
 
 #include "valor/FitCore/CompoundCorrelatedSystematics.h"

@@ -16,7 +16,7 @@ ChangeLog:
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/Conventions/PhysParamId.h"
 
-#include "valor/Utilities/NameRegistry.h"
+#include "valor/DerivedUtilities/NameRegistry.h"
 #include "valor/Utilities/UtlSystem.h"
 
 using std::cout;

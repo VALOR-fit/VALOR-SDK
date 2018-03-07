@@ -18,8 +18,8 @@ ChangeLog:
 #include "valor/Conventions/Build.h"
 #include "valor/Conventions/Constants.h"
 #include "valor/Messenger/Messenger.h"
-#include "valor/Utilities/NameRegistry.h"
-#include "valor/Utilities/UtlPrint.h"
+#include "valor/DerivedUtilities/NameRegistry.h"
+#include "valor/DerivedUtilities/UtlPrint.h"
 
 using namespace std;
 using namespace valor;

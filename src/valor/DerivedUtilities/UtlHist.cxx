@@ -21,9 +21,9 @@ ChangeLog:
 #include <TMath.h>
 
 #include "valor/Conventions/Build.h"
-#include "valor/Utilities/UtlHist.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/PhysParamId.h"
+#include "valor/DerivedUtilities/UtlHist.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 #include "Math/Interpolator.h"
