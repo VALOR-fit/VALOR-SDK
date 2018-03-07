@@ -8,11 +8,11 @@
 #
 
 
-# Setup LArSoft. This gives us g++4.9, ROOT and GENIE
+# Use Fermilab UPS to get g++4.9, ROOT, log4cpp and GENIE
 # The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
-if [ -z "$SETUP_LARSOFT" ] ; then
+if [ -z "$GENIE" ] ; then
   . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
-  setup "larsoft" "v06_06_01" -q "e10:prof" && retval="$?"
+  setup "genie" "v2_12_8d" -q "e15:prof" && retval="$?"
 fi
 
 if [ -z "$VALOR_FMWK" ]; then
