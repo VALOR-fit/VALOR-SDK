@@ -1,0 +1,115 @@
+//____________________________________________________________________________
+/*!
+
+\class     valor::utils
+
+\brief     Numerical and statistics utilities
+
+\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+           University of Liverpool & STFC Rutherford Appleton Laboratory
+          
+\created   Oct 20, 2010
+
+\copyright (c) 2010-2016, The VALOR group.
+
+*/
+//____________________________________________________________________________
+
+#ifndef _valor_utils_numstat_h_
+#define _valor_utils_numstat_h_
+
+#include <string>
+#include <vector>
+#include <complex>
+
+#include <TXMLEngine.h>
+#include <TFile.h>
+#include <TTree.h>
+#include <TVectorD.h>
+#include <TMatrixD.h>
+#include <TMatrixDSym.h>
+#include <TH1D.h>
+#include <TSpline.h>
+
+class TH2D;
+
+
+#include "valor/Conventions/Build.h"
+
+using std::string;
+using std::vector;
+
+// mathmore forward decl
+namespace ROOT{ namespace Math { class Interpolator;}}
+
+namespace valor {
+namespace util {
+
+  //
+  // Statistics
+  //
+
+  double ChisqGauss         (double ndata, double nmc);
+  double ChisqPoisson       (double ndata, double nmc);
+  double Chisq_Penalty_TH2D (TH2D* hobs, TH2D* hexp);
+
+  TAxis EstimateOptimalBinning(int npoints, double * points);
+  int EstimateOptimalNumberOfBinsForGaussian(int npoints, double nsigma);
+
+  //
+  // Cholesky decomposition
+  //
+
+  TMatrixD CholeskyDecomposition                     (const TMatrixD& cov);                 ///< Cholesky decomposition. Return lower triangular matrix.
+  TMatrixD CholeskyDecomposition                     (const TMatrixDSym& cov);                 ///< calls above with explicit conversion
+  TVectorD CholeskyGenerateCorrelatedParams          (const TMatrixD& Lch, TVectorD& mean); ///< Generate a vector of correlated params
+  TVectorD CholeskyGenerateCorrelatedParams          (const TMatrixD& Lch, TVectorD& mean, TVectorD& g_uncorrelated); ///< Generate a vector of correlated params
+  TVectorD CholeskyGenerateCorrelatedParamVariations (const TMatrixD& Lch);                 ///< Generate a vector of correlated param variations
+  TVectorD CholeskyCalculateCorrelatedParamVariations(const TMatrixD& Lch, TVectorD& g);    ///<
+
+  // Simple maths
+  double SingleAngleToDoubleAngle(double sinsqtheta);
+  double DoubleAngleToSingleAngle(double sinsq2theta);
+
+  // Other Matrix Functions
+  TMatrixD CovarianceMatrixToCorrelationMatrix(const TMatrixD & cov_m);
+  TVectorD CovarianceMatrixToErrorVector(const TMatrixD & cov_m);
+  TMatrixD CorrelationAndErrorToCovarianceMatrix(const TMatrixD & corr, const TVectorD & one_sigma);
+  TMatrixD MatrixPseudoInverted(const TMatrixD & m);
+  TMatrixDSym MatrixToSymMatrix(const TMatrixD & m);
+  TMatrixDSym LowerTriangularMatrixToSymMatrix(const TMatrixD & m);
+
+  TVectorD ConcatenateTVectors  (const std::vector<const TVectorD *>  & tvecs );
+  TMatrixD ConcatenateTMatrices (const std::vector<const TMatrixD *>  & tmats );
+  
+  // Sorts both the vector and matr arguments in according to the vector's values in place
+  void ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, bool descending = false, bool reorder_rows = true, bool reorder_cols = true);
+
+  // Full matrix diagonalisation using GSL
+  // matrix_in is a pointer to a block representing a n*n complex matrix, equivalent to a double[n][n][2]
+  // eigenvectors_out is pointer to (assigned) memory in same format
+  // eigenvalues_out is pointer to double[n]
+  int DiagonaliseGSL(int ndim, double * matrix_in, double * eigenvectors_out, double * eigenvalues_out);
+  
+  //
+  // Etc
+  //
+
+  int Sign(double x);
+  
+  // Gives the fraction of bin 1 that lies inside bin 2
+  double FractionOfBinContained(double min1, double max1, double min2, double max2);
+  
+  // Check if a spline is flat
+  bool SplineIsFlat(const TSpline * spl);
+  bool SplineIsFlat(const ROOT::Math::Interpolator * spl);
+  
+  // Make a TSpline into a new GSL Spline
+  ROOT::Math::Interpolator * ConvertTSplineToGSL(const TSpline & spl, Option_t * opt = "");
+  ROOT::Math::Interpolator * ConvertTSplineToGSL(const TSpline & spl, double xmin, double xmax, Option_t * opt = "");
+  
+} // util
+} // valor
+  
+#endif
+

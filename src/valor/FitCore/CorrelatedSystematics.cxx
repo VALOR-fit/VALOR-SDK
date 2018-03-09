@@ -31,7 +31,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Conventions/Constants.h"
 #include "valor/DerivedUtilities/NameRegistry.h"
 #include "valor/Utilities/UtlXML.h"
-#include "valor/DerivedUtilities/UtlNumStat.h"
+#include "valor/Utilities/UtlNumStat.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/DerivedUtilities/UtlPrint.h"
 #include "valor/FitCore/FitParamList.h"

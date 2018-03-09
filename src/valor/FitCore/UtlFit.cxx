@@ -20,7 +20,7 @@ ChangeLog:
 #include "valor/Conventions/Constants.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/Rnd.h"
-#include "valor/DerivedUtilities/UtlNumStat.h"
+#include "valor/Utilities/UtlNumStat.h"
 
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitInputs.h"

@@ -13,9 +13,10 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/Constants.h"
-#include "valor/DerivedUtilities/UtlNumStat.h"
+#include "valor/Utilities/UtlNumStat.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Oscillation/OscParams.h"
+#include "valor/Oscillation/OscUtils.h"
 
 //#define __print_toys__
 
@@ -1885,6 +1886,7 @@ void valor::util::OscParams::SetRandomize(bool random)
       randomize_dcpbar_ih = random;
 
 }
+
 //____________________________________________________________________________
 //____________________________________________________________________________
 //____________________________________________________________________________
