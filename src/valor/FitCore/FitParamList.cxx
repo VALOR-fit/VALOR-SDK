@@ -24,7 +24,7 @@
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/FitParamList.h"
 
-#include "valor/DerivedUtilities/NameRegistry.h"
+#include "valor/Conventions/NameRegistry.h"
 #include "valor/Utilities/UtlSystem.h"
 
 using std::vector;

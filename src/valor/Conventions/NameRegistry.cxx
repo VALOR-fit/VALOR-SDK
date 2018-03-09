@@ -9,7 +9,7 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <cassert>
-#include "valor/DerivedUtilities/NameRegistry.h"
+#include "valor/Conventions/NameRegistry.h"
 
 using namespace valor;
 using namespace valor::conv;

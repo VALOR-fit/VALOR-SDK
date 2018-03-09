@@ -29,7 +29,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/Build.h"
 #include "valor/Conventions/Constants.h"
-#include "valor/DerivedUtilities/NameRegistry.h"
+#include "valor/Conventions/NameRegistry.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/UtlNumStat.h"
 #include "valor/Utilities/UtlSystem.h"

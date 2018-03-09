@@ -24,4 +24,6 @@
 #pragma link C++ class valor::Opt+;
 #pragma link C++ class valor::Opt::Persistable+;
 
+#pragma link C++ class valor::util::NameRegistry+;
+
 #endif

@@ -14,7 +14,7 @@ ChangeLog:
 #include <cstdlib>
 
 #include "valor/Conventions/PhysHypothesisId.h"
-#include "valor/DerivedUtilities/NameRegistry.h"
+#include "valor/Conventions/NameRegistry.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/PhysHypothesis.h"
 
