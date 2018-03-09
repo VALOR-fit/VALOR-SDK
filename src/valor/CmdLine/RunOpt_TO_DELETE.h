@@ -28,7 +28,7 @@
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/PhysHypothesis.h"
 #include "valor/CmdLine/CmdLnArgParser.h"
-#include "valor/Utilities/UtlForMacros.h"
+#include "valor/DerivedUtilities/UtlForMacros.h"
 
 #include <iostream>
 #include <string>

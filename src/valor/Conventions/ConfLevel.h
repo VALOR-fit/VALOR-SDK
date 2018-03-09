@@ -35,6 +35,7 @@ ConfLevel_t;
 
 namespace util {
 
+    double DeltaChisquare(conv::ConfLevel_t cl, int nfitparams);
 
 } // util
 

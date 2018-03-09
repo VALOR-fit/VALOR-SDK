@@ -15,17 +15,18 @@ include $(VALOR_FMWK)/make/Make.include
 # define composite targets
 #
 BUILD_TARGETS =    print-make-info     \
-		   make-bin-lib-dir    \
-		   copy-scripts-to-bin \
-		   build-conventions   \
-		   build-utilities     \
-		   build-messenger     \
-		   build-varray        \
-		   build-oscillation   \
-		   build-ntuple        \
-		   build-registry      \
-		   build-cmdline       \
-		   build-core-fitter   \
+		   make-bin-lib-dir           \
+		   copy-scripts-to-bin        \
+		   build-conventions          \
+		   build-utilities            \
+		   build-derived-utilities    \
+		   build-messenger            \
+		   build-varray               \
+		   build-oscillation          \
+		   build-ntuple               \
+		   build-registry             \
+		   build-cmdline              \
+		   build-core-fitter          \
 		   copy-rootdict-to-lib
 
 # define targets
@@ -56,6 +57,11 @@ build-utilities: make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building Utilities package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Utilities"
+	
+build-derived-utilities: make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building DerivedUtilities package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/DerivedUtilities"
 
 build-messenger: make-bin-lib-dir FORCE
 	@echo " "
@@ -134,6 +140,7 @@ purge: FORCE
 	cd ${VALOR_FMWK}/src/valor;\
 	cd Conventions;               make purge; cd ..; \
 	cd Utilities;                 make purge; cd ..; \
+	cd DerivedUtilities;          make purge; cd ..; \
 	cd Messenger;                 make purge; cd ..; \
 	cd VArray;                    make purge; cd ..; \
 	cd Oscillation;               make purge; cd ..; \
@@ -152,6 +159,7 @@ clean-files: FORCE
 	cd ${VALOR_FMWK}/src/valor;\
 	cd Conventions;             make clean; cd ..; \
 	cd Utilities;               make clean; cd ..; \
+	cd DerivedUtilities;        make clean; cd ..; \
 	cd Messenger;               make clean; cd ..; \
 	cd VArray;                  make clean; cd ..; \
 	cd Oscillation;             make clean; cd ..; \

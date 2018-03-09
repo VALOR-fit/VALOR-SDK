@@ -34,7 +34,7 @@ Env::Env()
   fTopLevelConfDir = "";
   fAppName         = "";
   fBanner          = "";
-
+  fDie = true;
   fInstance = 0;
 }
 //________________________________________________________________________________________
@@ -104,5 +104,15 @@ void Env::Print(ostream & stream) const
   stream << " - top data dir : " << fTopLevelDataDir << endl;
   stream << " - top conf dir : " << fTopLevelConfDir << endl;
   stream << " - running app  : " << fAppName         << endl;
+}
+//________________________________________________________________________________________
+bool Env::DoWeDie() const
+{
+  return fDie;
+}
+//________________________________________________________________________________________
+void Env::SetDie(bool do_we_die)
+{
+  fDie = do_we_die;
 }
 //________________________________________________________________________________________

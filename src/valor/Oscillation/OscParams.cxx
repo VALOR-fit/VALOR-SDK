@@ -16,6 +16,7 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include "valor/Utilities/UtlNumStat.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Oscillation/OscParams.h"
+#include "valor/Oscillation/OscUtils.h"
 
 //#define __print_toys__
 

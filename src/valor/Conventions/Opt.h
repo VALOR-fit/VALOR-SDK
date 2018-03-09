@@ -89,8 +89,6 @@ public:
   void WriteTo  (Persistable & optp);
   void ReadFrom (Persistable & optp);
   
-  bool gDoNotDie; // Avoid quitting to prevent interactive sessions dying.
-  
   // Store a VALOR registry
   Registry & MutableGlobalRegistry();
   const Registry & GlobalRegistry() const;

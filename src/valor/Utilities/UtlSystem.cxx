@@ -34,7 +34,7 @@ using namespace std;
 //____________________________________________________________________________
 void valor::util::Die(int status_code)
 {
-  if (Opt::Instance()->gDoNotDie) {
+  if (!(Env::Instance()->DoWeDie())) {
 #ifdef USE_TERMINAL_COLOR
     cerr<<"\033[1;31m";
 #endif

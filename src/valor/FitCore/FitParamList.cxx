@@ -21,10 +21,10 @@
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Conventions/Opt.h"
+#include "valor/Conventions/NameRegistry.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/FitParamList.h"
 
-#include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlSystem.h"
 
 using std::vector;

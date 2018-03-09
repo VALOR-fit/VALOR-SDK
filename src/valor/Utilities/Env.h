@@ -47,6 +47,9 @@ public:
 
   void Print(ostream & stream) const;
   friend ostream & operator << (ostream & stream, const Env & env);
+
+  bool DoWeDie() const;
+  void SetDie(bool do_we_die);
   
 private:
 
@@ -60,7 +63,10 @@ private:
   string fTopLevelDataDir;
   string fTopLevelConfDir;
   string fAppName;  
-  string fBanner;  
+  string fBanner;
+
+  // Do we really quit when we hit a util::Die()
+  bool fDie;
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }

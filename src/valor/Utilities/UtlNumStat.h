@@ -33,11 +33,6 @@
 
 class TH2D;
 
-
-#include "valor/Conventions/Build.h"
-#include "valor/Conventions/ConfLevel.h"
-#include "valor/Conventions/PhysParamId.h"
-
 using std::string;
 using std::vector;
 
@@ -51,7 +46,6 @@ namespace util {
   // Statistics
   //
 
-  double DeltaChisquare     (conv::ConfLevel_t cl, int nfitparams);
   double ChisqGauss         (double ndata, double nmc);
   double ChisqPoisson       (double ndata, double nmc);
   double Chisq_Penalty_TH2D (TH2D* hobs, TH2D* hexp);
@@ -87,38 +81,6 @@ namespace util {
   
   // Sorts both the vector and matr arguments in according to the vector's values in place
   void ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, bool descending = false, bool reorder_rows = true, bool reorder_cols = true);
-
-  //
-  // Functions randomizing oscillation params (for use when params are marginalized)
-  //
-  
-  double RandomizeParameter(conv::PhysParamId_t p);
-
-  double RandomizeMixing23 (void); ///< pull from gaussian with mean & sigma from global fit (mixing param is either sinsq2theta or sinsqtheta depending on config)
-  double RandomizeMixing12 (void); ///< pull from gaussian with mean & sigma from global fit ( -//- )
-  double RandomizeMixing13 (void); ///< uniform from 0 up to ~ small_factor x CHOOZ limit    ( -//- )
-  double RandomizeCPV      (void); ///< uniform from -pi to +pi (or -1 to +1)
-  double RandomizeDm12sq   (void); ///< pull from gaussian with mean & sigma from global fit
-  double RandomizeDm23sq   (void); ///< pull from gaussian with mean & sigma from global fit
-  
-  double RandomizeMixing23Bar (void); //
-  double RandomizeMixing12Bar (void); //
-  double RandomizeMixing13Bar (void); //
-  double RandomizeCPVBar      (void); //  
-  double RandomizeDm12sqBar   (void); //
-  double RandomizeDm23sqBar   (void); //
-
-  double RandomizeUser        (TH1D *hPrior); // Extract random from a prior 
-  int    RandomizeMH          (const double probNH);
-  
-  // NEW BETABAR
-  double RandomizeBetaBar   (void); //
-  //
-
-  // NEW OSC PRIOR 
-  double FromSinsq2thToSinsqth(const double sinsq2th);
-  double FromSinsqthToSinsq2th(const double sinsqth);
-  //
 
   // Full matrix diagonalisation using GSL
   // matrix_in is a pointer to a block representing a n*n complex matrix, equivalent to a double[n][n][2]
