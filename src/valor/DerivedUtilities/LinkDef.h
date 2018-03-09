@@ -8,7 +8,5 @@
 #pragma link C++ namespace valor::conv;
 #pragma link C++ namespace valor::util;
 
-#pragma link C++ class valor::util::NameRegistry+;
-
 
 #endif
