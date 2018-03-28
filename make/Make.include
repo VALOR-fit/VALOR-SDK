@@ -274,7 +274,7 @@ endif
 
 # LINUX / 64-bit x86 / with gcc
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ifeq ($(strip $(ARCH)),linuxx8664gcc) 
+ifeq (linuxx8664,$(findstring linuxx8664,$(strip $(ARCH))))
 ARCH_OK       = YES
 CXXFLAGS      = -Wall -Wextra -Wshadow -fPIC \
 		$(ROOT_FLAGS)  \
