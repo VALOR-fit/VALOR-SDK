@@ -30,6 +30,10 @@ void loadlibs ()
   // log4cpp lib
   valor_load_lib("liblog4cpp", false);
 
+  // gcc libs
+  valor_load_lib("libgslcblas");
+  valor_load_lib("libgsl");
+
   // VALOR libs
   Long_t valor_lib_status = 0;
   valor_lib_status = valor_lib_status || valor_load_lib("libValorMesg.so");
