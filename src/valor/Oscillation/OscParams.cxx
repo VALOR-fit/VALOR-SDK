@@ -655,6 +655,9 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dcp_nh){
       dcp_nh = this->ExtractParam(conv::kPhypCPV,priormode,par1,par2,mixmode);
+      if(Opt::Instance()->gOscDeltaCP == kNuDeltaCPPhase){
+        dcp_nh = this->AngleWithinRange(dcp_nh);
+      } 
       rand_dcp_nh = true;
     }
     
@@ -717,6 +720,9 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dcpbar_nh){
       dcpbar_nh = this->ExtractParam(conv::kPhypCPVBar,priormode,par1,par2,mixmode);
+      if(Opt::Instance()->gOscDeltaCP == kNuDeltaCPPhase){
+        dcpbar_nh = this->AngleWithinRange(dcpbar_nh);
+      }
       rand_dcpbar_nh = true;
     }
     
@@ -783,6 +789,9 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dcp_ih){
       dcp_ih = this->ExtractParam(conv::kPhypCPV,priormode,par1,par2,mixmode);
+      if(Opt::Instance()->gOscDeltaCP == kNuDeltaCPPhase){
+        dcp_ih = this->AngleWithinRange(dcp_ih);
+      }                                        
       rand_dcp_ih = true;
     }
     
@@ -843,6 +852,9 @@ void valor::util::OscParams::Randomize()
     mixmode = "";
     if(randomize_dcpbar_ih){
       dcpbar_ih = this->ExtractParam(conv::kPhypCPVBar,priormode,par1,par2,mixmode);
+      if(Opt::Instance()->gOscDeltaCP == kNuDeltaCPPhase){
+        dcpbar_ih = this->AngleWithinRange(dcpbar_ih);
+      } 
       rand_dcpbar_ih = true;
     }
     
@@ -1885,6 +1897,20 @@ void valor::util::OscParams::SetRandomize(bool random)
       randomize_dcpbar_nh = random;
       randomize_dcpbar_ih = random;
 
+}
+//____________________________________________________________________________
+//____________________________________________________________________________
+double valor::util::OscParams::AngleWithinRange(double angle)
+{
+  if(angle < -TMath::Pi()){
+    angle += 2*TMath::Pi();
+    this->AngleWithinRange(angle);
+  }
+  else if(angle > TMath::Pi()){
+    angle -= 2*TMath::Pi();
+    this->AngleWithinRange(angle);
+  }
+  return angle;
 }
 //____________________________________________________________________________
 //____________________________________________________________________________
