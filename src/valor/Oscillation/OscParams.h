@@ -76,6 +76,10 @@ namespace valor {
       void SetPrior(conv::PhysParamId_t physpar,string mode,double par1,double par2, string mixmode="");
       
       double ExtractParam(conv::PhysParamId_t physpar,string mode,double par1,double par2,string mixmode="");
+
+      // Ensures an angle or that should be within [-pi, +pi] stays within this range by adding or subtracting 2pi until it is in this range.
+      // Useful for e.g. generating with a split prior on deltaCP such as [-pi, a] && [b, +pi], which is more conviently entered as the single prior [b-2pi, a]
+      double AngleWithinRange(double angle);
       
       string mixmode_mixing12; // "sinsqth" or "sinsq2th"
       string mixmode_mixing13; // "sinsqth" or "sinsq2th"
