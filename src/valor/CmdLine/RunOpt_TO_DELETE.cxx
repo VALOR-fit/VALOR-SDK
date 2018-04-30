@@ -21,6 +21,7 @@
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/Rnd.h"
+#include "valor/Utilities/UtlSystem.h"
 #include "valor/CmdLine/RunOpt_TO_DELETE.h"
 
 using std::cout;
@@ -204,6 +205,8 @@ void valor::RunOpt::Init(void)
   fPenaltyTerm1     = false;
   kScale_toys_based_on_samples = false;
   fScale_toys_based_on_samples_scale = 1;
+  fUseMCSampling    = true;
+  fCountFailedToys  = false;
   kToyPenaltyTerm2DHistX = "";
   kToyPenaltyTerm2DHistY = "";
   kToyPenaltyTerm2DHistName = "";
@@ -691,63 +694,92 @@ void valor::RunOpt::Read3FOscParamsOptions()
     fPriorParDeltaCP[0]  = conv::kPrior_deltaCP_Flat_Low; //-TMath::Pi();
     fPriorParDeltaCP[1]  = conv::kPrior_deltaCP_Flat_Up;  //+TMath::Pi();
   }
+  else if(fPriorId == 3){
+    cout << endl;
+    cout << "Use custom priors" << endl;
+    cout << endl;
+    // Set prior independently for each osc parameters
+    if(fParser->OptionExists("prior-mixing12")){
+      fMargMixing12 = true;
+      vector<string> input = fParser->ArgAsStringTokens("prior-mixing12",",");
+      fPriorMixing12       = input[0];
+      fPriorParMixing12[0] = (double)atof(input[1].c_str());
+      fPriorParMixing12[1] = (double)atof(input[2].c_str());
+      fMixModeMixing12     = input[3];
+    }
+    else{
+      cerr << "RunOpt::Read3FOscParamsOptions(): ERROR - No custom prior for mixing12 was set" << endl;
+      util::Die(1);
+    }
+    if(fParser->OptionExists("prior-mixing13")){
+      fMargMixing13 = true;
+      vector<string> input = fParser->ArgAsStringTokens("prior-mixing13",",");
+      fPriorMixing13       = input[0];
+      fPriorParMixing13[0] = (double)atof(input[1].c_str());
+      fPriorParMixing13[1] = (double)atof(input[2].c_str());
+      fMixModeMixing13     = input[3];
+    }
+    else{
+      cerr << "RunOpt::Read3FOscParamsOptions(): ERROR - No custom prior for mixing13 was set" << endl;
+      util::Die(1);
+    }
+    if(fParser->OptionExists("prior-mixing23")){
+      fMargMixing23 = true;
+      vector<string> input = fParser->ArgAsStringTokens("prior-mixing23",",");
+      fPriorMixing23       = input[0];
+      fPriorParMixing23[0] = (double)atof(input[1].c_str());
+      fPriorParMixing23[1] = (double)atof(input[2].c_str());
+      fMixModeMixing23     = input[3];
+    }
+    else{
+      cerr << "RunOpt::Read3FOscParamsOptions(): ERROR - No custom prior for mixing23 was set" << endl;
+      util::Die(1);
+    }
+    if(fParser->OptionExists("prior-dmsq23")){
+      fMargDm23sq = true;
+      vector<string> input = fParser->ArgAsStringTokens("prior-dmsq23",",");
+      fPriorDm23sq       = input[0];
+      fPriorParDm23sq[0] = (double)atof(input[1].c_str());
+      fPriorParDm23sq[1] = (double)atof(input[2].c_str());
+    }
+    else{
+      cerr << "RunOpt::Read3FOscParamsOptions(): ERROR - No custom prior for dmsq23 was set" << endl;
+      util::Die(1);
+    }
+    if(fParser->OptionExists("prior-dmsq12")){
+      fMargDm12sq = true;
+      vector<string> input = fParser->ArgAsStringTokens("prior-dmsq12",",");
+      fPriorDm12sq       = input[0];
+      fPriorParDm12sq[0] = (double)atof(input[1].c_str());
+      fPriorParDm12sq[1] = (double)atof(input[2].c_str());
+    }
+    else{
+      cerr << "RunOpt::Read3FOscParamsOptions(): ERROR - No custom prior for dmsq12 was set" << endl;
+      util::Die(1);
+    }
+    if(fParser->OptionExists("prior-deltacp")){
+      fMargDeltaCP = true;
+      vector<string> input = fParser->ArgAsStringTokens("prior-deltacp",",");
+      fPriorDeltaCP       = input[0];
+      fPriorParDeltaCP[0] = (double)atof(input[1].c_str());
+      fPriorParDeltaCP[1] = (double)atof(input[2].c_str());
+    }
+    else{
+      cerr << "RunOpt::Read3FOscParamsOptions(): ERROR - No custom prior for deltacp was set" << endl;
+      util::Die(1);
+    }
+  }
   else{
     cerr << endl;
     cerr << "3FOscParams options:" << endl;
     cerr << "You must set the prior to make fakedata sets using option: --prior-mode-toy" << endl;
     cerr << "0 --> No priors (default parameteres), "
     << "1 --> T2K+reactors (PDG2014), "
-    << "2 --> T2K only" << endl;
+    << "2 --> T2K only, "
+    << "3 --> Custom (specify as e.g. --prior-mixing12 \"gaus\",<mean>,<rms> or --prior-mixing12 \"flat\",<low>,<high>)" << endl;
     cerr << endl;
     exit(1);
   }
-  
-  // // Set prior independently for each osc parameters
-  // if(fParser->OptionExists("prior-mixing12")){
-  //   fMargMixing12 = true;
-  //   vector<string> input = fParser->ArgAsStringTokens("prior-mixing12",",");
-  //   fPriorMixing12       = input[0];
-  //   fPriorParMixing12[0] = (double)atof(input[1].c_str());
-  //   fPriorParMixing12[1] = (double)atof(input[2].c_str());
-  //   fMixModeMixing12     = input[3];
-  // }
-  // if(fParser->OptionExists("prior-mixing13")){
-  //   fMargMixing13 = true;
-  //   vector<string> input = fParser->ArgAsStringTokens("prior-mixing13",",");
-  //   fPriorMixing13       = input[0];
-  //   fPriorParMixing13[0] = (double)atof(input[1].c_str());
-  //   fPriorParMixing13[1] = (double)atof(input[2].c_str());
-  //   fMixModeMixing13     = input[3];
-  // }
-  // if(fParser->OptionExists("prior-mixing23")){
-  //   fMargMixing23 = true;
-  //   vector<string> input = fParser->ArgAsStringTokens("prior-mixing23",",");
-  //   fPriorMixing23       = input[0];
-  //   fPriorParMixing23[0] = (double)atof(input[1].c_str());
-  //   fPriorParMixing23[1] = (double)atof(input[2].c_str());
-  //   fMixModeMixing23     = input[3];
-  // }
-  // if(fParser->OptionExists("prior-dmsq23")){
-  //   fMargDm23sq = true;
-  //   vector<string> input = fParser->ArgAsStringTokens("prior-dmsq23",",");
-  //   fPriorDm23sq       = input[0];
-  //   fPriorParDm23sq[0] = (double)atof(input[1].c_str());
-  //   fPriorParDm23sq[1] = (double)atof(input[2].c_str());
-  // }
-  // if(fParser->OptionExists("prior-dmsq12")){
-  //   fMargDm12sq = true;
-  //   vector<string> input = fParser->ArgAsStringTokens("prior-dmsq12",",");
-  //   fPriorDm12sq       = input[0];
-  //   fPriorParDm12sq[0] = (double)atof(input[1].c_str());
-  //   fPriorParDm12sq[1] = (double)atof(input[2].c_str());
-  // }
-  // if(fParser->OptionExists("prior-deltacp")){
-  //   fMargDeltaCP = true;
-  //   vector<string> input = fParser->ArgAsStringTokens("prior-deltacp",",");
-  //   fPriorDeltaCP       = input[0];
-  //   fPriorParDeltaCP[0] = (double)atof(input[1].c_str());
-  //   fPriorParDeltaCP[1] = (double)atof(input[2].c_str());
-  // }
   
   
   // Set nominal oscillation parameters (not mandatory, default values already set)
@@ -1221,7 +1253,14 @@ void valor::RunOpt::ReadFitMargOptions()
     if(fParser->OptionExists("scale-gentoys-scale")){
       fScale_toys_based_on_samples_scale = (double) fParser->ArgAsDouble("scale-gentoys-scale");
     }
-  }
+    if(fParser->OptionExists("use-mc-sampling")){
+      fUseMCSampling = (bool) fParser->ArgAsInt("use-mc-sampling");
+    }
+    if(fParser->OptionExists("count-failed-toys")){
+      fCountFailedToys = (bool) fParser->ArgAsInt("count-failed-toys");
+    }
+  } 
+
   
   if(fParser->OptionExists("scale-gentoys-2dpenalty")){
     kToyPenaltyTerm2D = (bool) fParser->ArgAsInt("scale-gentoys-2dpenalty");
