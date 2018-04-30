@@ -137,6 +137,8 @@ namespace valor {
     bool   PenaltyTerm1 () const { if(fParseType & kParseFitMarg) return fPenaltyTerm1; cerr << "kParseFitMarg not set" << endl; exit(-1); }
     bool Scale_toys_based_on_samples () const { if(fParseType & kParseFitMarg) return kScale_toys_based_on_samples; cerr << "kScale_toys_based_on_samples not set" << endl; exit(-1); }
     double Scale_toys_based_on_samples_scale () const { if(fParseType & kParseFitMarg) return fScale_toys_based_on_samples_scale; cerr << "fScale_toys_based_on_samples_scale not set" << endl; exit(-1); }
+    bool UseMCSampling () const { if(fParseType & kParseCommon) return fUseMCSampling; cerr << "fUseMCSampling not set" << endl; exit(-1); }
+    bool CountFailedToys () const { if(fParseType & kParseCommon) return fCountFailedToys; cerr << "fCountFailedToys not set" << endl; exit(-1); }
     string AdditionalFileTag() const { if(fParseType & kParseCommon) return fAdditionalFileTag; cerr << "kParseCommon not set" << endl; exit(-1); }
     
     bool ToyPenaltyTerm2D () const { if(fParseType & kParseFitMarg) return kToyPenaltyTerm2D; cerr << "kScale_toys_based_on_penalty not set" << endl; exit(-1); }
@@ -284,6 +286,8 @@ namespace valor {
     bool fPenaltyTerm1; // penalty term for param1
     bool kScale_toys_based_on_samples;
     double fScale_toys_based_on_samples_scale;
+    bool fUseMCSampling;
+    bool fCountFailedToys;
     
     string kToyPenaltyTerm2DHistX;
     string kToyPenaltyTerm2DHistY;
