@@ -135,8 +135,11 @@ template<typename T> void RegistryItem<T>::Print(ostream & stream) const
 template<> void RegistryItem<RgH1F>::Print(ostream & stream) const
 {
   TH1F * histo = dynamic_cast<TH1F *>(fItem);
-  if(!histo) stream << "*** NULL RgH1F ***";
-
+  if(!histo) {
+    stream << "*** NULL RgH1F ***";
+    return;
+  }
+  
   stream << ((fIsLocked) ? "[  locked]" : "[unlocked]") 
          << " "
          << ((fIsLocal)  ? "[l]" : "[g]") 
@@ -147,7 +150,10 @@ template<> void RegistryItem<RgH1F>::Print(ostream & stream) const
 template<> void RegistryItem<RgH2F>::Print(ostream & stream) const
 {
   TH2F * histo = dynamic_cast<TH2F *>(fItem);
-  if(!histo) stream << "*** NULL RgH2F ***";
+  if(!histo) {
+    stream << "*** NULL RgH2F ***";
+    return;
+  }
 
   stream << ((fIsLocked) ? "[  locked]" : "[unlocked]") 
          << " "
@@ -159,7 +165,10 @@ template<> void RegistryItem<RgH2F>::Print(ostream & stream) const
 template<> void RegistryItem<RgTree>::Print(ostream & stream) const
 {
   TTree * tree = dynamic_cast<TTree *>(fItem);
-  if(!tree) stream << "*** NULL RgTree ***";
+  if(!tree) {
+    stream << "*** NULL RgTree ***";
+    return;
+  }
 
   stream << ((fIsLocked) ? "[  locked]" : "[unlocked]") 
          << " "
