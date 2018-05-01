@@ -464,8 +464,12 @@ void ConfidenceInterval::GenerateContour(double chi2_crit)
         chi2_2D->SetContour(1, &chi2_crit);    // chi2_crit may need to be an array
         chi2_2D->Draw("CONT LIST");   // This generates a list of TGraph objects for each contour
         c->Update();    // This is needed to retrieve the contours
-        TObjArray *conts = (TObjArray *) gROOT->GetListOfSpecials()->FindObject("contours");
-        if (conts == NULL) LOG("Messenger", pERROR) << "No Contours Found";
+        TObjArray *conts = dynamic_cast<TObjArray *>(gROOT->GetListOfSpecials()->FindObject("contours"));
+        if (conts == NULL) {
+          util::Die(-1);
+          LOG("Messenger", pERROR) << "No Contours Found";
+          return;
+        }
 
         /* // For testing
         chi2_2D->Draw("text");
@@ -484,7 +488,7 @@ void ConfidenceInterval::GenerateContour(double chi2_crit)
         TList *contLevel = (TList *) conts->At(0);
         TGraph *curv = (TGraph *) contLevel->First();
         TGraph *gc = NULL;
-        Double_t x0, y0, z0;
+        Double_t x0, y0;
         for (int j = 0; j < contLevel->GetSize(); j++) {
             curv->GetPoint(0, x0, y0);
             gc = (TGraph *) curv->Clone();   // Draw clones of the graphs to avoid deletions in case the 1st pad is redrawn.
