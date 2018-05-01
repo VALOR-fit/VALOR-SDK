@@ -78,7 +78,7 @@ std::vector<std::string> valor::util::GetLinkedLibraries(std::string executable_
     TObjArray * arr = re.MatchS(line);
     if (arr->GetEntries()!=3) {util::Die(-1);}
     TObjString * os = dynamic_cast<TObjString*>(arr->At(2));
-    if (!os) {util::Die(-1);}
+    if (!os) {util::Die(-1); return out_lines;}
     std::string out_line(os->GetString().Data());
     out_lines.push_back(out_line);
   }
