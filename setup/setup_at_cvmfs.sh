@@ -14,7 +14,7 @@ if [[ ! $PRODUCTS == *"larsoft"* ]] ; then
   . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?" 
 fi
 if [ -z "$SETUP_LARSOFT" ] ; then
-  setup "larsoft" "v05_10_00" -q "e9:prof" && retval="$?"
+  setup genie v2_10_6 -q e9:prof:r5 && retval="$?"
 fi
 
 if [ -z "$VALOR_FMWK" ]; then
