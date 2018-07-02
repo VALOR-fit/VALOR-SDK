@@ -65,3 +65,16 @@ std::string valor::util::NameRegistry::ParamAsStringSimple(PhysParamId_t p ) con
 std::string valor::util::NameRegistry::AsString      (PhysParamId_t p) const { return this->ParamAsString      (p); }
 std::string valor::util::NameRegistry::AsStringSimple(PhysParamId_t p) const { return this->ParamAsStringSimple(p); }
 //________________________________________________________________________________________
+PhysParamId_t valor::util::NameRegistry::PhysParamFromString(std::string inp_name) const
+{
+  for(int ip = 0; ip < kLastNuisParam; ip++) {
+    PhysParamId_t p = conv::PhysParamId_t(ip);
+    string name = this->AsString(p);
+    string name_simple = this->AsStringSimple(p);
+    if((name == inp_name) || (name_simple == inp_name)) {
+	  return p;
+    }
+  }
+  return kPhypUndefined;
+}
+//________________________________________________________________________________________
