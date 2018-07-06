@@ -215,156 +215,8 @@ void CorrelatedSystematics::CleanUp(void)
 }
 //________________________________________________________________________________________
 bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
-{
-  
-  
-
-
-
-  if (fIsConfigured) {
-    PhysParamId_t tmp_par[fNSystParameters];
-    for (unsigned int i = 0 ; i < fNSystParameters ; i++) {
-      tmp_par[i] = fSystParameters[i];
-    }
-    this->CleanUp();
-    this->Init(fNSystParameters,tmp_par);
-  }
-  
-  LOG("CorrelatedSystematics",pDEBUG) << this->GetName()<<" reading from root node "<<xml->GetNodeName(root_node);
-
-  
-  TString nodepath = "";
-  if (fXMLNodeName.size()) {
-    nodepath = TString::Format("%s/",fXMLNodeName.c_str());
-  }
-  
-  // If specified, get the untuned parameter values. Otherwise make a vector with all values 1.
-  TString untuned_values_path = nodepath+"untuned_values";
-  if (util::NodeExists(xml,root_node,untuned_values_path.Data())) {
-    TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,untuned_values_path.Data());
-    if(!tmp_vec) {
-      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<this->GetName()<<" untuned values vector from "<<untuned_values_path;
-      util::Die(1); return false;
-    }
-    if (tmp_vec->GetNrows()!=fUntunedValues->GetNrows()) {
-      LOG("CorrelatedSystematics",pFATAL) << this->GetName()<<" untuned values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fUntunedValues->GetNrows();
-      util::Die(1); return false;
-    }
-    (*fUntunedValues) = (*tmp_vec);
-    delete tmp_vec;
-  }
-  else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" untuned values vector to default.";
-    (*fUntunedValues) = *fDefaultValues;
-  }
-  
-  // If specified, get the initial parameter values. Otherwise make a vector with all values 1.
-  TString initial_values_path = nodepath+"initial_values";
-  if (util::NodeExists(xml,root_node,initial_values_path.Data())) {
-    TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,initial_values_path.Data());
-    if(!tmp_vec) {
-      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<this->GetName()<<" initial values vector from "<<initial_values_path;
-      util::Die(1); return false;
-    }
-    if (tmp_vec->GetNrows()!=fInitialValues->GetNrows()) {
-      LOG("CorrelatedSystematics",pFATAL) << this->GetName()<<" initial values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fInitialValues->GetNrows();
-      util::Die(1); return false;
-    }
-    (*fInitialValues) = (*tmp_vec);
-    delete tmp_vec;
-  }
-  else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to untuned values.";
-    (*fInitialValues) = *fUntunedValues;
-  }
-  
-  // Copy initial into current
-  
-  (*fCurrentValues) = *fInitialValues;
-  
-  // Get syst covariance matrix
-  TString cov_mtrx_path = nodepath+"covariance_matrix";
-  fCovMtrx = util::XML2TMatrixD(xml,root_node,cov_mtrx_path.Data());  
-  if(!fCovMtrx) {
-    LOG("CorrelatedSystematics",pFATAL) << "No "<<this->GetName()<<" covariance matrix was found at "<<cov_mtrx_path;
-    util::Die(1); return false;
-  }
-  
-  // Check matrix size
-  TMatrixD & cov = *fCovMtrx;
-  const int np = fNSystParameters;  
-  if(cov.GetNrows() != np || cov.GetNcols() != np) 
-  {
-     LOG("CorrelatedSystematics",pFATAL)
-        << "\n Syst covariance matrix for "<<this->GetName()<<" has unexpected size!"
-        << "\n Reading from: " << fCovMtrx->GetName()
-        << "\n Expecting: " <<  np << " x " << np << " matrix"
-        << "\n Found: " << cov.GetNrows() << " x " <<  cov.GetNcols() << " matrix";
-     util::Die(1); return false;
-  }
-  
-  // Check if we're uncorrelating the matrix
-  TString force_uncorrelated_path = nodepath+"force_uncorrelated";
-  bool force_uncorrelated = false;
-  if (util::NodeExists(xml,root_node,force_uncorrelated_path.Data())) {
-    force_uncorrelated = util::XML2Bool(xml,root_node,force_uncorrelated_path.Data());
-  }
-  if (force_uncorrelated) {
-    LOG("CorrelatedSystematics",pNOTICE) << "Forcing "<<this->GetName()<<" systematics to be uncorrelated.";
-    for (int i = 0 ; i < np; i++) {
-      for (int j = 0 ; j < np; j++) {
-        if (i!=j) {cov(i,j) = 0;};
-      }
-    }
-  }
-  
-  // Do Cholesky decomposition
-  this->CholeskyDecomposeMatrix();
-  
-  this->InvertMatrices();
-  
-  // Say we're configured
-  fIsConfigured = true;
-
-#ifdef __init_check_inverse__
-  TMatrixD covTimesInverse = (cov * (*fCovMtrxInv));
-  for (int ii = 0 ; ii < np ; ii++) {
-    for (int jj = 0 ; jj < np ; jj++) {
-      int target = (ii==jj);
-      if (fabs(covTimesInverse[ii][jj]-target) > 1E-9) {
-        LOG("CorrelatedSystematics",pERROR) 
-          << "Bad inversion of "<<this->GetName()<<" matrix - element differs from identity by: "
-          << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?" (on diagonal)":"");
-        fIsConfigured = false;
-      }
-    }
-  }
-  if (!fIsConfigured) {util::Die(1); return fIsConfigured;}
-#endif // __init_check_inverse__
-  
-#ifdef __show_init_mesg_debug__
-  LOG("CorrelatedSystematics",pDEBUG) << "Input "<<this->GetName()<<" covariance matrix: "; 
-  util::PrintMatrix(cov,7,5); // would be nice to use the same stream and threshold as mesg above
-  LOG("CorrelatedSystematics",pDEBUG) << "Inverse "<<this->GetName()<<" covariance matrix: ";
-  util::PrintMatrix(*fCovMtrxInv,7,5); // would be nice to use the same stream and threshold as mesg above
-#endif
-  
-  return fIsConfigured;
-}
-
-//________________________________________________________________________________________
-bool CorrelatedSystematics::Read(string xmlfile)
-{
-  
-  TXMLEngine* xml = new TXMLEngine; 
-  XMLDocPointer_t doc = xml->ParseFile(xmlfile.c_str());  
-  XMLNodePointer_t root_node = xml->DocGetRootElement(doc);
-  if (!doc)
-  {
-    cout<<" No systematics file specified "<<endl;
-    util::Die(1);
-  }
-
+{ 
+  //Reading systematics list file name
   std::vector<PhysParamId_t> params;
   string format = "format";
   //Reading systematics list file name
@@ -375,23 +227,17 @@ bool CorrelatedSystematics::Read(string xmlfile)
   XMLDocPointer_t doc_syst = xml->ParseFile(systxml);
   XMLNodePointer_t root_node_syst = xml->DocGetRootElement(doc_syst);
   XMLNodePointer_t curr_child_node = xml->GetChild(root_node_syst);
-  XMLAttrPointer_t attr = xml->GetFirstAttr(root_node_syst); 
-  const string some_string(xml->GetAttrValue(attr));
-  cout<<some_string<<endl;
-    
+  const string parameters_file_name(xml->GetAttrValue(xml->GetFirstAttr(root_node_syst)));
+  //Read syst parameters from xml file   
   while(curr_child_node)
   {
-    const char * nc = xml->GetNodeContent(curr_child_node);
-      
+    const char * nc = xml->GetNodeContent(curr_child_node);  
     string content(nc);
-    params.push_back(NameRegistry::Instance()->PhysParamFromString(TrimSpaces(content)));
-      
+    params.push_back(NameRegistry::Instance()->PhysParamFromString(TrimSpaces(content)));  
     curr_child_node = xml->GetNext(curr_child_node);
   }    
     
-  this->Init(params.size(), &params[0],some_string);
-
-
+  this->Init(params.size(), &params[0],parameters_file_name);
 
   if (fIsConfigured) {
     PhysParamId_t tmp_par[fNSystParameters];
@@ -404,11 +250,12 @@ bool CorrelatedSystematics::Read(string xmlfile)
   
   LOG("CorrelatedSystematics",pDEBUG) << this->GetName()<<" reading from root node "<<xml->GetNodeName(root_node);
 
+  
   TString nodepath = "";
   if (fXMLNodeName.size()) {
     nodepath = TString::Format("%s/",fXMLNodeName.c_str());
   }
- 
+  
   // If specified, get the untuned parameter values. Otherwise make a vector with all values 1.
   TString untuned_values_path = nodepath+"untuned_values";
   if (util::NodeExists(xml,root_node,untuned_values_path.Data())) {
@@ -428,7 +275,7 @@ bool CorrelatedSystematics::Read(string xmlfile)
     LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" untuned values vector to default.";
     (*fUntunedValues) = *fDefaultValues;
   }
-
+  
   // If specified, get the initial parameter values. Otherwise make a vector with all values 1.
   TString initial_values_path = nodepath+"initial_values";
   if (util::NodeExists(xml,root_node,initial_values_path.Data())) {
@@ -448,7 +295,7 @@ bool CorrelatedSystematics::Read(string xmlfile)
     LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to untuned values.";
     (*fInitialValues) = *fUntunedValues;
   }
-
+  
   // Copy initial into current
   
   (*fCurrentValues) = *fInitialValues;
@@ -519,6 +366,7 @@ bool CorrelatedSystematics::Read(string xmlfile)
   LOG("CorrelatedSystematics",pDEBUG) << "Inverse "<<this->GetName()<<" covariance matrix: ";
   util::PrintMatrix(*fCovMtrxInv,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
+  
   return fIsConfigured;
 }
 //________________________________________________________________________________________
