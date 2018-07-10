@@ -38,6 +38,7 @@ class PhysParamList;
 class CorrelatedSystematics : public TNamed
 {
 public:
+  CorrelatedSystematics();
   CorrelatedSystematics(unsigned int n_syst, const conv::PhysParamId_t * syst_params, const std::string & xml_node_name = "syst");
   CorrelatedSystematics(const CorrelatedSystematics & c);
   virtual ~CorrelatedSystematics();
@@ -124,7 +125,6 @@ public:
   conv::PhysParamId_t  Idx2Param (int index) const; ///< convert flux a covariance matrix or vector index to PhysParamId_t
     
 protected:
-  CorrelatedSystematics();
 
   void Init      (unsigned int n_syst, const conv::PhysParamId_t * syst_params, const std::string & xml_node_name = "syst");
   void CleanUp   (void);

@@ -215,27 +215,33 @@ void CorrelatedSystematics::CleanUp(void)
 }
 //________________________________________________________________________________________
 bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
-{ 
+{
+	
   //Reading systematics list file name
   std::vector<PhysParamId_t> params;
   string format = "format";
   //Reading systematics list file name
   string systfile = util::XML2String(xml,root_node,format.c_str());
   //Reading systematis list from the xml file
-  const char * systxml  = Form("%s/config/systematics/%s", getenv("VALOR_DUNE"), systfile.c_str());
-  //Parse syst list file and put parameters into a vector 
-  XMLDocPointer_t doc_syst = xml->ParseFile(systxml);
-  XMLNodePointer_t root_node_syst = xml->DocGetRootElement(doc_syst);
-  XMLNodePointer_t curr_child_node = xml->GetChild(root_node_syst);
-  const string parameters_file_name(xml->GetAttrValue(xml->GetFirstAttr(root_node_syst)));
-  //Read syst parameters from xml file   
+  std::string syst_xml = util::CompleteConfigPath(std::string("systematics/")+systfile);
+  //Parse syst list file and put parameters into a vector
+  TXMLEngine * xml_syst = new TXMLEngine;
+  XMLDocPointer_t doc_syst = xml_syst->ParseFile(syst_xml.c_str());
+  XMLNodePointer_t root_node_syst = xml_syst->DocGetRootElement(doc_syst);
+  XMLNodePointer_t curr_child_node = xml_syst->GetChild(root_node_syst);
+  const string parameters_file_name(xml_syst->GetAttrValue(xml_syst->GetFirstAttr(root_node_syst)));
+  //Read syst parameters from xml_syst file   
   while(curr_child_node)
   {
-    const char * nc = xml->GetNodeContent(curr_child_node);  
+    const char * nc = xml_syst->GetNodeContent(curr_child_node);  
     string content(nc);
     params.push_back(NameRegistry::Instance()->PhysParamFromString(TrimSpaces(content)));  
-    curr_child_node = xml->GetNext(curr_child_node);
-  }    
+    curr_child_node = xml_syst->GetNext(curr_child_node);
+  }
+  
+  // We're done with the systematics list XML file now
+  xml_syst->FreeDoc(doc_syst);
+  delete xml_syst;
     
   this->Init(params.size(), &params[0],parameters_file_name);
 
@@ -252,9 +258,6 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
 
   
   TString nodepath = "";
-  if (fXMLNodeName.size()) {
-    nodepath = TString::Format("%s/",fXMLNodeName.c_str());
-  }
   
   // If specified, get the untuned parameter values. Otherwise make a vector with all values 1.
   TString untuned_values_path = nodepath+"untuned_values";
