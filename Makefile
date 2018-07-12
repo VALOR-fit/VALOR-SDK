@@ -191,6 +191,15 @@ clean-etc: FORCE
 	cd $(VALOR_FMWK); \
 	rm -f ./*log; \
 	cd ${VALOR_FMWK}
+	
+force-clean: clean-files force-clean-dir clean-etc
+	
+
+force-clean-dir: FORCE
+	@echo "Force deleting VALOR framework lib and bin directories...";
+	cd $(VALOR_FMWK);
+	-rm -rf ./bin;
+	-rm -rf ./lib 
 
 FORCE:
 
