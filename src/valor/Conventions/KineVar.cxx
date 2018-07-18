@@ -12,9 +12,10 @@ ChangeLog:
 
 //fmwk
 #include "valor/Utilities/UtlStr.h"
+#include "valor/Utilities/UtlSystem.h"
 #include "valor/Messenger/Messenger.h"
-//dune
 #include "valor/Conventions/KineVar.h"
+#include "valor/Conventions/Constants.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -30,7 +31,6 @@ string util::AsString(KineVar_t kv)
     case (kvYreco     ) : return "yreco";     break;
     case (kvThetareco ) : return "Thetareco"; break;
     case (kvq0reco    ) : return "q0reco";    break;
-    case (kvq3reco    ) : return "|q|reco";   break;
     case (kvmodqreco  ) : return "|q|reco";   break;
     default : 
      LOG("KineVar",pERROR) 
@@ -51,7 +51,6 @@ string util::AsStringTeX(KineVar_t kv, bool root)
     case (kvYreco     ) : name = "y_{reco}";                      break;
     case (kvThetareco ) : name = "\theta_{reco}";                 break;
     case (kvq0reco    ) : name = "q_{0 reco}";                    break;
-    case (kvq3reco    ) : name = "|\\overrightarrow{q}|_{reco}";  break;
     case (kvmodqreco  ) : name = "|\\overrightarrow{q}|_{reco}";  break;
     default : 
                           LOG("KineVar",pERROR) 
@@ -79,7 +78,6 @@ bool util::IsReco(KineVar_t kv)
     case (kvYreco     ) : return true;
     case (kvThetareco ) : return true;
     case (kvq0reco    ) : return true;
-    case (kvq3reco    ) : return true;
     case (kvmodqreco  ) : return true;
     default:
      LOG("KineVar",pERROR) 
@@ -92,6 +90,33 @@ bool util::IsTrue(KineVar_t kv)
 {
   bool is_reco = util::IsReco(kv);
   return (!is_reco);
+}
+//________________________________________________________________________________________
+KineVar_t util::KineVarFromInt(int k)
+{
+  // Cast an integer to KineVar_t, but with boundary check
+  //            [first]                 [last]
+  if((k >= (int)kvEtrue && k <= (int) kvmodqreco))
+    return (KineVar_t)k;
+  return kvUndefined;
+}
+//________________________________________________________________________________________
+std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
+{
+  switch(kv) {
+    case (kvEtrue     ) : return std::make_pair(0.  , kALargeNum);
+    case (kvQ2true    ) : return std::make_pair(0.  , kALargeNum);
+    case (kvEreco     ) : return std::make_pair(0.  , kALargeNum);
+    case (kvEvis      ) : return std::make_pair(0.  , kALargeNum);
+    case (kvYreco     ) : return std::make_pair(0.  , 1.        );
+    case (kvThetareco ) : return std::make_pair(-kpi, kpi       );    // TODO: angle convention?
+    case (kvq0reco    ) : return std::make_pair(0.  , kALargeNum);
+    case (kvmodqreco  ) : return std::make_pair(0.  , kALargeNum);
+    default:
+      LOG("KineVar",pFATAL)
+        << "Unrecognized kinematic variable: " << kv;
+      util::Die(1);
+  }
 }
 //________________________________________________________________________________________
 
