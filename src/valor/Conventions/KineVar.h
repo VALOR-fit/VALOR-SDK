@@ -21,6 +21,7 @@
 #include <TROOT.h>
 
 #include <string>
+#include <utility>
 
 using std::string;
 
@@ -36,8 +37,7 @@ typedef enum EKineVar
    kvEvis,            // visible neutrino energy
    kvYreco,           // reconstructed inelasticity (y)
    kvThetareco,       // reconstructed lepton angle
-   kvq0reco,          // reconstructed 1st component of the 4-momentum    TODO: Isn't this just the same as Ereco?
-   kvq3reco,          // reconstructed hadronic energy along the z-direction
+   kvq0reco,          // reconstructed 1st component of the 4-momentum
    kvmodqreco         // reconstructed magnitude of the 3-momentum
 } 
 KineVar_t;
@@ -57,6 +57,10 @@ namespace util {
 
   bool IsReco (conv::KineVar_t kv);
   bool IsTrue (conv::KineVar_t kv);
+
+  conv::KineVar_t KineVarFromInt(int k);
+
+  std::pair<double,double> PhysicalLimits(conv::KineVar_t k);
 
 } // util
 
