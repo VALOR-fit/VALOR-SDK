@@ -12,7 +12,6 @@
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Messenger/Messenger.h"
-//dune
 #include "valor/Conventions/KineSpace.h"
 
 using namespace valor;
@@ -30,7 +29,6 @@ string util::AsString(KineSpace_t ks)
     case (kspErecoYreco)       : return "Ereco,yreco";            break;
     case (kspEtrueQ2true)      : return "Etrue,Q2true";           break;
     case (kspErecoThetareco)   : return "Ereco,Thetareco";        break;
-    case (kspq0recoq3reco)     : return "q0reco,q3reco";          break;
     case (kspq0recomodqreco)   : return "q0reco,|q|reco";         break;
     case (kspErecoEvis)        : return "Ereco,Evis";             break;  
     default : 
@@ -53,7 +51,6 @@ string util::AsStringTeX(KineSpace_t ks, bool root)
     case (kspErecoYreco)       : name = "<E_{reco},y_{reco}>";                            break;
     case (kspEtrueQ2true)      : name = "<E_{true},Q^2_{true}>";                          break;
     case (kspErecoThetareco)   : name = "<E_{reco},\theta_{reco}";                        break;
-    case (kspq0recoq3reco)     : name = "<q_{0 reco},q_{3 reco}>";                        break;
     case (kspq0recomodqreco)   : name = "<q_{0 reco},|\\overrightarrow{q}|_{reco}>";      break;
     case (kspErecoEvis)        : name = "<E_{reco},E_{vis}>";                             break;      
     default : 
@@ -79,7 +76,6 @@ bool util::IsPureReco(KineSpace_t ks)
     case (kspErecoYreco)       : return true;
     case (kspEtrueQ2true)      : return false;
     case (kspErecoThetareco)   : return true;
-    case (kspq0recoq3reco)     : return true;
     case (kspq0recomodqreco)   : return true;
     case (kspErecoEvis)        : return true;
     default:
@@ -100,7 +96,6 @@ bool util::IsPureTrue(KineSpace_t ks)
     case (kspErecoYreco)       : return false;
     case (kspEtrueQ2true)      : return true;
     case (kspErecoThetareco)   : return false;
-    case (kspq0recoq3reco)     : return false;
     case (kspq0recomodqreco)   : return false;
     case (kspErecoEvis)        : return false;       
     default:
@@ -121,7 +116,6 @@ bool util::IsMixedRecoTrue(KineSpace_t ks)
     case (kspErecoYreco)       : return false;
     case (kspEtrueQ2true)      : return false;
     case (kspErecoThetareco)   : return false;
-    case (kspq0recoq3reco)     : return false;
     case (kspq0recomodqreco)   : return false;
     case (kspErecoEvis)        : return false;      
     default:
@@ -142,7 +136,6 @@ int util::NDim(KineSpace_t ks)
     case (kspErecoYreco)       : return 2;
     case (kspEtrueQ2true)      : return 2;
     case (kspErecoThetareco)   : return 2;
-    case (kspq0recoq3reco)     : return 2;
     case (kspq0recomodqreco)   : return 2;
     case (kspErecoEvis)        : return 2;      
     default:
@@ -163,7 +156,6 @@ int util::NDimReco(KineSpace_t ks)
     case (kspErecoYreco)       : return 2;
     case (kspEtrueQ2true)      : return 0;
     case (kspErecoThetareco)   : return 2;
-    case (kspq0recoq3reco)     : return 2;
     case (kspq0recomodqreco)   : return 2;
     case (kspErecoEvis)        : return 2;      
     default:
@@ -184,7 +176,6 @@ int util::NDimTrue(KineSpace_t ks)
     case (kspErecoYreco)       : return 0;
     case (kspEtrueQ2true)      : return 2;
     case (kspErecoThetareco)   : return 0;
-    case (kspq0recoq3reco)     : return 0;
     case (kspq0recomodqreco)   : return 0;
     case (kspErecoEvis)        : return 0;            
     default:
@@ -205,8 +196,7 @@ conv::KineSpace_t util::SubSpaceReco(conv::KineSpace_t ks)
     case (kspErecoYreco)       : return kspErecoYreco;
     case (kspEtrueQ2true)      : return kspUndefined;
     case (kspErecoThetareco)   : return kspErecoThetareco;
-    case (kspq0recoq3reco)     : return kspq0recoq3reco;
-    case (kspq0recomodqreco)   : return kspq0recoq3reco;
+    case (kspq0recomodqreco)   : return kspq0recomodqreco;
     case (kspErecoEvis)        : return kspErecoEvis;            
     default:
      LOG("KineVar",pERROR) 
@@ -226,7 +216,6 @@ conv::KineSpace_t util::SubSpaceTrue(conv::KineSpace_t ks)
     case (kspErecoYreco)       : return kspUndefined;
     case (kspEtrueQ2true)      : return kspEtrueQ2true;
     case (kspErecoThetareco)   : return kspUndefined;
-    case (kspq0recoq3reco)     : return kspUndefined;
     case (kspq0recomodqreco)   : return kspUndefined;
     case (kspErecoEvis)        : return kspUndefined;                  
     default:
@@ -299,10 +288,6 @@ vector<KineVar_t> util::KineVar(conv::KineSpace_t ks)
     case (kspErecoThetareco)   :
       vv.push_back(kvEreco);
       vv.push_back(kvThetareco);
-    case (kspq0recoq3reco) :
-      vv.push_back(kvq0reco);
-      vv.push_back(kvq3reco);
-      break;
     case (kspq0recomodqreco) :
       vv.push_back(kvq0reco);
       vv.push_back(kvmodqreco);
@@ -347,10 +332,6 @@ vector<KineVar_t> util::KineVarReco(conv::KineSpace_t ks)
     case (kspErecoThetareco)   :
       vv.push_back(kvEreco);
       vv.push_back(kvThetareco);
-    case (kspq0recoq3reco) :
-      vv.push_back(kvq0reco);
-      vv.push_back(kvq3reco);
-      break;
     case (kspq0recomodqreco) :
       vv.push_back(kvq0reco);
       vv.push_back(kvmodqreco);
@@ -390,8 +371,6 @@ vector<KineVar_t> util::KineVarTrue(conv::KineSpace_t ks)
       vv.push_back(kvQ2true);
       break;
     case (kspErecoThetareco)   :
-      break;
-    case (kspq0recoq3reco) :
       break;
     case (kspq0recomodqreco) :
       break;
