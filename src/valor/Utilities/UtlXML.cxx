@@ -99,7 +99,23 @@ vector<XMLNodePointer_t> valor::util::FindNodes(TXMLEngine* xml_eng,
 
    return nodes;
 }
-
+//____________________________________________________________________________________________________
+vector<XMLNodePointer_t> valor::util::FindAllNodes(TXMLEngine* xml_eng, XMLNodePointer_t top_node)
+{
+  vector<XMLNodePointer_t> nodes;
+  // Retrieve the first node for the search
+  XMLNodePointer_t node = xml_eng->GetChild(top_node);
+  if(node)
+  {  // There is a node to examine
+      nodes.push_back(node);
+    // Iterate through the remaining nodes
+    while((node = xml_eng->GetNext(node)))
+    {
+        nodes.push_back(node);
+    }
+  }
+  return nodes;
+}
 //____________________________________________________________________________________________________
 bool valor::util::NodeExists(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
@@ -194,7 +210,16 @@ double valor::util::XML2Dbl(
     util::Die(1); return conv::kBadResult;
   }
   string content = xml_eng->GetNodeContent(found_node);
-  double value = atof(content.c_str());
+  double value = conv::kBadResult;
+  if(util::ToLowerCase(content) == "inf"){
+    value = conv::kALargeNum;
+  }
+  else if(util::ToLowerCase(content) == "-inf"){
+    value = -conv::kALargeNum;
+  }
+  else{
+    value = atof(content.c_str());
+  }
   return value;
 }
 //____________________________________________________________________________________________________
@@ -222,7 +247,15 @@ vector<double> valor::util::XML2DblArray(
   for( ; str_tokens_iter != str_tokens.end(); ++str_tokens_iter) {
      string token = TrimSpaces(*str_tokens_iter);
      if (not token.size() ) continue;
-     array.push_back( atof(token.c_str()) );
+     if(util::ToLowerCase(token) == "inf"){
+       array.push_back(conv::kALargeNum);
+     }
+     else if(util::ToLowerCase(token) == "-inf"){
+       array.push_back(-conv::kALargeNum);
+     }
+     else{
+       array.push_back( atof(token.c_str()) );
+     }
   }
   
   return array;
@@ -273,9 +306,22 @@ pair<double,double> valor::util::XML2DblDblPair(
       << "XML2DblDblPair cannot get exactly two values from: " << content;
     util::Die(1); return pair;
   }
-  
-  pair.first  = atof(str_tokens[0].c_str());
-  pair.second = atof(str_tokens[1].c_str());
+
+  double arr[2];
+  for(int i = 0; i < 2; ++i) {
+    if(util::ToLowerCase(util::TrimSpaces(str_tokens[i])) == "inf") {
+      arr[i] = conv::kALargeNum;
+    }
+    else if(util::ToLowerCase(util::TrimSpaces(str_tokens[i])) == "-inf") {
+      arr[i] = -conv::kALargeNum;
+    }
+    else {
+      arr[i] = atof(str_tokens[i].c_str());
+    }
+  }
+
+  pair.first  = arr[0];
+  pair.second = arr[1];
   return pair;
 }
 //____________________________________________________________________________________________________
