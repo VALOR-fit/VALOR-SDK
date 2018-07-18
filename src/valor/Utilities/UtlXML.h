@@ -63,6 +63,9 @@ namespace util {
   vector<XMLNodePointer_t> FindNodes(TXMLEngine* xml_eng,
         XMLNodePointer_t top_node, const string& tag);
 
+  // Retrieves all direct children of a given node (regardless of child node name).
+  vector<XMLNodePointer_t> FindAllNodes(TXMLEngine* xml_eng, XMLNodePointer_t top_node);
+
   bool             NodeExists        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
   bool             XML2Bool          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
