@@ -23,6 +23,18 @@ string valor::util::TrimSpaces(string input)
 
   return input;
 }
+//___________________________________________________________________________
+string valor::util::RemoveAllWhitespace(string input)
+{
+  std::string output;
+  output.reserve(input.size());
+  std::remove_copy_if(
+    begin(input), end(input),
+    std::back_inserter(output),
+    [l = std::locale{}](auto ch) { return std::isspace(ch, l); }
+  );
+  return output;
+}
 //____________________________________________________________________________
 vector<string> valor::util::Tokens (string input, string delimiter)
 {
