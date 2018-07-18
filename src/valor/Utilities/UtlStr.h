@@ -30,6 +30,7 @@ namespace valor {
 namespace util {
 
   string         TrimSpaces         (string input);
+  string         RemoveAllWhitespace(string input);
   vector<string> Tokens             (string input, string delimiter);
   string         ToLowerCase        (string data);
   string         ReplaceAll         (string data,string from, string to);
