@@ -413,8 +413,10 @@ static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
  static const double kPrior_Sinsq2th13_PDG2015_RMS  = 0.005;
  static const double kPrior_Sinsq2th13_PDG2016_Mean = 0.0857;
  static const double kPrior_Sinsq2th13_PDG2016_RMS  = 0.0046;
- static const double kPrior_Sinsq2th13_Used_Mean    = kPrior_Sinsq2th13_PDG2016_Mean;
- static const double kPrior_Sinsq2th13_Used_RMS     = kPrior_Sinsq2th13_PDG2016_RMS;
+ static const double kPrior_Sinsq2th13_PDG2018_Mean = 0.0830;
+ static const double kPrior_Sinsq2th13_PDG2018_RMS  = 0.0031;
+ static const double kPrior_Sinsq2th13_Used_Mean    = kPrior_Sinsq2th13_PDG2018_Mean;
+ static const double kPrior_Sinsq2th13_Used_RMS     = kPrior_Sinsq2th13_PDG2018_RMS;
 
  static const double kPrior_Dm12sq_PDG2014_Mean = 7.53E-5;
  static const double kPrior_Dm12sq_PDG2014_RMS  = 0.18E-5;
@@ -422,8 +424,11 @@ static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
  static const double kPrior_Dm12sq_PDG2015_RMS  = 0.18E-5; // same as 2014
  static const double kPrior_Dm12sq_PDG2016_Mean = 7.53E-5; // same as 2015
  static const double kPrior_Dm12sq_PDG2016_RMS  = 0.18E-5; // same as 2015
- static const double kPrior_Dm12sq_Used_Mean    = kPrior_Dm12sq_PDG2016_Mean; 
- static const double kPrior_Dm12sq_Used_RMS     = kPrior_Dm12sq_PDG2016_RMS; 
+ static const double kPrior_Dm12sq_PDG2018_Mean = 7.53E-5; // same as 2015
+ static const double kPrior_Dm12sq_PDG2018_RMS  = 0.18E-5; // same as 2015
+
+ static const double kPrior_Dm12sq_Used_Mean    = kPrior_Dm12sq_PDG2018_Mean; 
+ static const double kPrior_Dm12sq_Used_RMS     = kPrior_Dm12sq_PDG2018_RMS; 
 
  static const double kPrior_Sinsq2th12_PDG2014_Mean = 0.846;
  static const double kPrior_Sinsq2th12_PDG2014_RMS  = 0.021;
@@ -431,8 +436,11 @@ static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
  static const double kPrior_Sinsq2th12_PDG2015_RMS  = 0.021; // same as 2014
  static const double kPrior_Sinsq2th12_PDG2016_Mean = 0.846; // same as 2015
  static const double kPrior_Sinsq2th12_PDG2016_RMS  = 0.021; // same as 2015
- static const double kPrior_Sinsq2th12_Used_Mean    = kPrior_Sinsq2th12_PDG2016_Mean;
- static const double kPrior_Sinsq2th12_Used_RMS     = kPrior_Sinsq2th12_PDG2016_RMS;
+ static const double kPrior_Sinsq2th12_PDG2018_Mean = 0.851;
+ static const double kPrior_Sinsq2th12_PDG2018_RMS  = 0.020;
+
+ static const double kPrior_Sinsq2th12_Used_Mean    = kPrior_Sinsq2th12_PDG2018_Mean;
+ static const double kPrior_Sinsq2th12_Used_RMS     = kPrior_Sinsq2th12_PDG2018_RMS;
  
  static const double kPrior_MH = 0.5;
  
