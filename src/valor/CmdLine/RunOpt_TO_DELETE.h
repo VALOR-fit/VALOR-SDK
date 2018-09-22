@@ -115,6 +115,7 @@ namespace valor {
     bool   DoFC () const { if(fParseType & kParseFitMarg) return fDoFC; cerr << "kParseFitMarg not set" << endl; exit(-1); }
     string Infilename () const { if(fParseType & kParseFitMarg) return fInfilename; cerr << "kParseFitMarg not set" << endl; exit(-1); }
     string Infilename_nh () const { if(fParseType & kParseFitMarg) return fInfilename_nh; cerr << "kParseFitMarg not set" << endl; exit(-1); }
+    string TopLevelDataDir () const { if(fParseType & kParseFitMarg) return fTopLevelDataDir; cerr << "kParseFitMarg not set" << endl; exit(-1); }
     string Infilename_ih () const { if(fParseType & kParseFitMarg) return fInfilename_ih; cerr << "kParseFitMarg not set" << endl; exit(-1); }
     int    Nfiles () const { if(fParseType & kParseFitMarg) return fNfiles; cerr << "kParseFitMarg not set" << endl; exit(-1); }
     int    NtoysMarg () const { if(fParseType & kParseFitMarg) return fNtoysMarg; cerr << "kParseFitMarg not set" << endl; exit(-1); }
@@ -263,6 +264,7 @@ namespace valor {
     string fInfilename;
     string fInfilename_nh;
     string fInfilename_ih;
+    string fTopLevelDataDir;
     bool fDoFC;
     int fNfiles;
     int fNtoysMarg;

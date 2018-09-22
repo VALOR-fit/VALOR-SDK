@@ -178,6 +178,7 @@ void valor::RunOpt::Init(void)
   fInfilename       = "";
   fInfilename_nh    = "";
   fInfilename_ih    = "";
+  fTopLevelDataDir = "";
   fDoFC             = false;
   
   fInfilename       = "";
@@ -1004,7 +1005,19 @@ void valor::RunOpt::ReadFitMargOptions()
       cerr << endl;
       exit(1);
     }
-    
+
+    if(fParser->OptionExists("top-level-data-dir")){
+      fTopLevelDataDir = fParser->ArgAsString("top-level-data-dir");
+    }
+    else
+    {
+      cerr << endl;
+      cerr << "FitMarg options:" << endl;
+      cerr << "You are running Feldman-Cousins and you didn't pass the top level data directory" << endl;
+      cerr << "Use --top-level-data-dir" << endl;
+      cerr << endl;
+      exit(1); 
+    }
   }
   
   if(fParser->OptionExists("nfiles-margtoys")){
@@ -1521,6 +1534,7 @@ void valor::RunOpt::Print(ostream & stream, const int w) const
     else{
       stream << " - " << setw(w) << "Input file for marginalization toys NH:"  << fInfilename_nh << endl;
       stream << " - " << setw(w) << "Input file for marginalization toys IH:"  << fInfilename_ih << endl;
+      stream << " - " << setw(w) << "Top level data directory:"  << fTopLevelDataDir << endl;
     }
     
     stream << " - " << setw(w) << "Number of toys for marginalization:"  << fNtoysMarg << endl
