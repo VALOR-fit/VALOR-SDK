@@ -28,19 +28,14 @@ Past authors:
  Dr. **Costas Andreopoulos** < constantinos.andreopoulos \at cern.ch >
     
 <table>
- <tr>
-  <td>
- University of Liverpool          |  U.K. Research & Innovation (UKRI)
- Faculty of Science & Engineering |  Science & Technology Facilities Council (STFC)
- School of Physical Sciences      |  Rutherford Appleton Laboratory 
- Department of Physics            |  Particle Physics Department
- Oliver Lodge Lab 316             |  Harwell Oxford Campus, R1 2.89
- Liverpool L69 7ZE, UK            |  Oxfordshire OX11 0QX, UK          
- tel: +44-(0)1517-943201          |  tel: +44-(0)1235-445091 
-  </td>
- </tr>
+ <tr> <td> **University of Liverpool**      </td> <td> **U.K. Research & Innovation (UKRI)**          </td> </tr>
+ <tr> <td> Faculty of Science & Engineering </td> <td> Science & Technology Facilities Council (STFC) </td> </tr>
+ <tr> <td> School of Physical Sciences      </td> <td> Rutherford Appleton Laboratory                 </td> </tr>
+ <tr> <td> Department of Physics            </td> <td> Particle Physics Department                    </td> </tr>
+ <tr> <td> *Oliver Lodge Lab 316*           </td> <td> *Harwell Oxford Campus, R1 2.89*               </td> </tr>
+ <tr> <td> *Liverpool L69 7ZE, UK*          </td> <td> *Oxfordshire OX11 0QX, UK*                     </td> </tr>
+ <tr> <td> *tel: +44-(0)1517-943201*        </td> <td> *tel: +44-(0)1235-445091*                      </td> </tr>
 </table>
-
 
 ## Copyright
 
