@@ -4,7 +4,7 @@ VALOR SDK blah blah ...
 
 ## Authors
 
-* **Costas Andreopoulos**, University of Liverpool & STFC Rutherford Appleton Laboratory
+* **Costas Andreopoulos**, *University of Liverpool & STFC Rutherford Appleton Laboratory*
 * **Maria Antonova**, *Instituto de Física Corpuscular (IFIC)*
 * **Chistopher Barry**, *University of Liverpool*
 * **Francis Bench**, *University of Liverpool*
@@ -21,13 +21,15 @@ VALOR SDK blah blah ...
 
 Past authors:
 
-* Raj Shah, *University of Oxford*
+* **Raj Shah**, *University of Oxford*
 
+## Contact
 
-(*) Corresponding Author:
-
- Dr. Costas Andreopoulos < constantinos.andreopoulos \at cern.ch >
+ Dr. **Costas Andreopoulos** < constantinos.andreopoulos \at cern.ch >
     
+<table>
+ <tr>
+  <td>
  University of Liverpool          |  U.K. Research & Innovation (UKRI)
  Faculty of Science & Engineering |  Science & Technology Facilities Council (STFC)
  School of Physical Sciences      |  Rutherford Appleton Laboratory 
@@ -35,6 +37,9 @@ Past authors:
  Oliver Lodge Lab 316             |  Harwell Oxford Campus, R1 2.89
  Liverpool L69 7ZE, UK            |  Oxfordshire OX11 0QX, UK          
  tel: +44-(0)1517-943201          |  tel: +44-(0)1235-445091 
+  </td>
+ </tr>
+</table>
 
 
 ## Copyright
