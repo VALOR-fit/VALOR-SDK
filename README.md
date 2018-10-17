@@ -4,8 +4,8 @@ VALOR SDK blah blah ...
 
 ## Authors
 
-* **Costas Andreopoulos**, *University of Liverpool & STFC Rutherford Appleton Laboratory*
-* **Maria Antonova**, *Instituto de Física Corpuscular (IFIC)*
+* **Costas Andreopoulos**, *University of Liverpool & STFC/RAL*
+* **Maria Antonova**, *IFIC Valencia*
 * **Chistopher Barry**, *University of Liverpool*
 * **Francis Bench**, *University of Liverpool*
 * **Andrew Chappell**, *University of Warwick*
@@ -21,22 +21,23 @@ VALOR SDK blah blah ...
 
 Past authors:
 
-* **Raj Shah**, *University of Oxford*
+* **Raj Shah**, *University of Oxford * STFC/RAL*
 
 ## Contact
 
- Dr. **Costas Andreopoulos** < constantinos.andreopoulos \at cern.ch >
+Dr. **Costas Andreopoulos** < constantinos.andreopoulos \at cern.ch >
  
-**University of Liverpool**, Faculty of Science & Engineering. 
-School of Physical Sciences, Department of Physics. 
-*Oliver Lodge Lab 316*, *Liverpool L69 7ZE, UK*.         
-*tel: +44-(0)1517-943201*.        
+<pre> 
+  University of Liverpool          |  U.K. Research & Innovation (UKRI)
+  Faculty of Science & Engineering |  Science & Technology Facilities Council (STFC)
+  School of Physical Sciences      |  Rutherford Appleton Laboratory 
+  Department of Physics            |  Particle Physics Department
+  Oliver Lodge Lab 316             |  Harwell Oxford Campus, R1 2.89
+  Liverpool L69 7ZE, UK            |  Oxfordshire OX11 0QX, UK          
+  tel: +44-(0)1517-943201          |  tel: +44-(0)1235-445091 
+</pre> 
 
-**U.K. Research & Innovation (UKRI)**, Science & Technology Facilities Council (STFC).    
-Rutherford Appleton Laboratory, Particle Physics Department.   
-*Harwell Oxford Campus, R1 2.89*, *Oxfordshire OX11 0QX, UK*.  
-*tel: +44-(0)1235-445091*.   
 
 ## Copyright
 
-Copyright (c) 2010-2018, The VALOR Fitting Group. All Rights Reserved.
+Copyright (c) 2010-2018, The VALOR Fitting Group. **All Rights Reserved.**
