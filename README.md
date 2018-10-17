@@ -2,35 +2,34 @@
 
 VALOR SDK blah blah ...
 
-<pre>                                                                             
-
-      oooooo     oooo       .o.       ooooo          .oooooo.   ooooooooo.        
-       `888.     .8'       .888.      `888'         d8P'  `Y8b  `888   `Y88.      
-        `888.   .8'       .8"888.      888         888      888  888   .d88'      
-         `888. .8'       .8' `888.     888         888      888  888ooo88P'       
-          `888.8'       .88ooo8888.    888         888      888  888`88b.         
-           `888'       .8'     `888.   888       o `88b    d88'  888  `88b.       
-            `8'       o88o     o8888o o888ooooood8  `Y8bood8P'  o888o  o888o      
-
-</pre>
-
 ## Authors
 
-<pre>
+* Costas Andreopoulos [1,2] (*)
+* Maria Antonova [3] 
+* Chistopher Barry [1]
+* Francis Bench [1]
+* Andrew Chappell [4]
+* Thomas Dealtry [5]
+* Steve Dennis [1]
+* Lorena Escudero [6]
+* Jaggar Henzerling [1] 
+* Rhiannon Jones [1]
+* Nick Grant [4]
+* Marco Roda [1]
+* Davide Sgalaberna [7]
+* Raj Shah [2,8]  
+* Julia Tena Vidal [1]
 
-Costas Andreopoulos [1,2] (*), Maria Antonova [3] Chistopher Barry [1], Francis Bench [1], Andrew Chappell [4], Thomas Dealtry [5], Steve Dennis [1], Lorena Escudero [6], Jaggar Henzerling [1] Rhiannon Jones [1], Nick Grant [4], Marco Roda [1], Davide Sgalaberna [7], Raj Shah [2,8], and Julia Tena Vidal [1]
 
-[1] University of Liverpool, Physics Department, Oliver Lodge Laboratory, Liverpool L69 7ZE, UK
-[2] UK Research and Innovation, Science and Technology Facilities Council,
-     Rutherford Appleton Laboratory, Particle Physics Department, Harwell Oxford Campus, OX11 0QX, UK
-[3] Instituto de Física Corpuscular (IFIC), Valencia, E-46980 Paterna, Spain
-[4] University of Warwick, Physics Department, Coventry CV4 7AL, UK
-[5] Lancaster University, Physics Department, Lancaster, LA1 4YB, UK
-[6] University of Cambridge, Cavendish Laboratory, Cambridge CB3 0HE, UK
-[7] CERN, Switzerland
-[8] University of Oxford, Subdepartment of Particle Physics, Oxford, OX1 3RH, UK 
+1. University of Liverpool, Physics Department, *Oliver Lodge Laboratory, Liverpool L69 7ZE, UK*
+2. STFC Rutherford Appleton Laboratory, Particle Physics Department, *Harwell Oxford Campus, OX11 0QX, UK*
+3. Instituto de Física Corpuscular (IFIC), *Valencia, E-46980 Paterna, Spain*
+4. University of Warwick, Physics Department, *Coventry CV4 7AL, UK*
+5. Lancaster University, Physics Department, *Lancaster, LA1 4YB, UK*
+6. University of Cambridge, Cavendish Laboratory, *Cambridge CB3 0HE, UK*
+7. CERN, Switzerland
+8. University of Oxford, Subdepartment of Particle Physics, *Oxford, OX1 3RH, UK*
 
---------------------
 (*) Corresponding Author:
 
  Dr. Costas Andreopoulos < constantinos.andreopoulos \at cern.ch >
@@ -43,7 +42,6 @@ Costas Andreopoulos [1,2] (*), Maria Antonova [3] Chistopher Barry [1], Francis 
  Liverpool L69 7ZE, UK            |  Oxfordshire OX11 0QX, UK          
  tel: +44-(0)1517-943201          |  tel: +44-(0)1235-445091 
 
-</pre>
 
 ## Copyright
 
