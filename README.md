@@ -2,46 +2,21 @@
 
 VALOR SDK blah blah ...
 
-<pre>
-                                                                                                                        
-                                                           ``                                                           
-                                                          -//-                                                          
-                                                    .--.` /:-/ `..--`                                                   
-                                               ``...-//::------:://-...``                                               
-                                      ````. `-://///////:::``-:://////////-` .````                                      
-                              ```.-:::::::- `.-:///:--:///-` -///:--:///:--` -:::::::-..``                              
-                        ``.-:::::--...........` ``.-::::--:``::-::::-.`` `.......`...--:::::-.``                        
-                    `.-::::-........`````             `.---.`---.``            `````........-::::-.`                    
-                `.-:::-.....````                         ``` `   ``                      ```.....-:::-.`                
-             `-:/:-....``                           `.- `--` .. `--`                           ``....-:/:-`             
-          `.:/:--..`                                 .`  ..  ``  ..                                 `..--:/:-`          
-        `-//--.`                                                                                        `.--//:`        
-      `-//:.` `.-:-.                                                                                       `.://:`      
-     -//:.`  .+syhhy+.          :+++:.   `.-://+++:  -+++/.        `.-/+ooo++:-`      -+++++++++/:.          `.://-     
-   `://-`    ``.-oyhho.        :yhh+` `:+syhhhhhhh:  .shho`      `:syhhyyyyyhhhy+-`   .shhyyyyyyhhy+`          `-//:`   
-   ://.          `+yhh+`      -shho.`:shhys+:-+hhh:  .shho`    `:shhyo:-....-/shhy+.  .shho.```.ohhh/            .///`  
-  -//.            `+hhh+`    -shho.`+yhy+-`   /hhh:  .shho`    /yhho.         `:yhho. .shho`   `+hhy:             `//:  
- `//:              `+hhy/   .shho.`+hhy/`   `:shhh:  .shho`   .shho.            :yhh+ .shho` .:shhy/`              -//` 
- .//.               `+hhy: .ohho. -yhh+``.:oyhhhhy:  .shho`   -yhh/             .shho`.shho-+yhhy+.                `//. 
- .//.                `ohhy:ohhs.  +hhs/+syhhyo+hhy:  .shho`   -shho`            :yhh+ .shhyhhhhh+`                 .//. 
-  //:                 .ohhyhhs-  `ohhyhhyo/-` /hhy:  .shho`    /yhh+.         `:yhhs. .shhhy+/yhho.                ://` 
-  .//-                 .ohhhs-   `ohhhs/.     /hhy:  .shho.````./yhhy+:..``.-/syhyo.  -shhs-  :shhs:`             .//-  
-   -//-                 .shs-    `ohhy-       /hhy:  .shhyyyyyyyy+/syhhyyyyyhhhyo-`   -shho`   .ohhyo-`          -//:   
-    -//:.                -o-     ./oo+-      `/ooo:  -+ooooooooo+- `.:/ooooo+/-`      -+oo/`    `:shhyo/---`   `://-    
-     `:/:-.               .                                                                       `:osyyyo-  .-://.     
-       .//:-.`                                                                                       `...``.-://-`      
-         .:/:--.`                    .-- `:. -`- `:` :-` -` -.. -`-    :. `- `:` --`                   `..-:/:.`        
-           `-:/:--..`                ``.  .` `.`  .  .`` .` ``` ```    .  `.  .  ..                `...-:/:-`           
-              `-:/:-....```                                                                   ``....-:/:-``             
-                 `.-:::-......```                                                      ```......-:::-.`                 
-                     `.-::::--........``````                                ``````........--::::-.`                     
-                          ``.-:::::--....``...........````````````...........``....--:::::-..``                         
-                                ``..--:::::::---........................---:::::::--..``                                
-                                        `````...-----::::::::::::::-----...`````                                        
-                                                                                                                        
+<pre>                                                                             
+
+      oooooo     oooo       .o.       ooooo          .oooooo.   ooooooooo.        
+       `888.     .8'       .888.      `888'         d8P'  `Y8b  `888   `Y88.      
+        `888.   .8'       .8"888.      888         888      888  888   .d88'      
+         `888. .8'       .8' `888.     888         888      888  888ooo88P'       
+          `888.8'       .88ooo8888.    888         888      888  888`88b.         
+           `888'       .8'     `888.   888       o `88b    d88'  888  `88b.       
+            `8'       o88o     o8888o o888ooooood8  `Y8bood8P'  o888o  o888o      
+
 </pre>
 
 ## Authors
+
+<pre>
 
 Costas Andreopoulos [1,2] (*), Maria Antonova [3] Chistopher Barry [1], Francis Bench [1], Andrew Chappell [4], Thomas Dealtry [5], Steve Dennis [1], Lorena Escudero [6], Jaggar Henzerling [1] Rhiannon Jones [1], Nick Grant [4], Marco Roda [1], Davide Sgalaberna [7], Raj Shah [2,8], and Julia Tena Vidal [1]
 
@@ -55,7 +30,20 @@ Costas Andreopoulos [1,2] (*), Maria Antonova [3] Chistopher Barry [1], Francis 
 [7] CERN, Switzerland
 [8] University of Oxford, Subdepartment of Particle Physics, Oxford, OX1 3RH, UK 
 
- (*) For all communications, e-mail: costas.andreopoulos \at stfc.ac.uk 
+--------------------
+(*) Corresponding Author:
+
+ Dr. Costas Andreopoulos < constantinos.andreopoulos \at cern.ch >
+    
+ University of Liverpool          |  U.K. Research & Innovation (UKRI)
+ Faculty of Science & Engineering |  Science & Technology Facilities Council (STFC)
+ School of Physical Sciences      |  Rutherford Appleton Laboratory 
+ Department of Physics            |  Particle Physics Department
+ Oliver Lodge Lab 316             |  Harwell Oxford Campus, R1 2.89
+ Liverpool L69 7ZE, UK            |  Oxfordshire OX11 0QX, UK          
+ tel: +44-(0)1517-943201          |  tel: +44-(0)1235-445091 
+
+</pre>
 
 ## Copyright
 
