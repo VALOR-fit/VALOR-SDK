@@ -4,20 +4,20 @@ VALOR SDK blah blah ...
 
 ## Authors
 
-* Costas Andreopoulos, *University of Liverpool & STFC Rutherford Appleton Laboratory*
-* Maria Antonova, *Instituto de Física Corpuscular (IFIC)*
-* Chistopher Barry, *University of Liverpool*
-* Francis Bench, *University of Liverpool*
-* Andrew Chappell, *University of Warwick*
-* Thomas Dealtry, *Lancaster University*
-* Steve Dennis, *University of Liverpool*
-* Lorena Escudero, *University of Cambridge*
-* Jaggar Henzerling, *University of Liverpool*
-* Rhiannon Jones, *University of Liverpool*
-* Nick Grant, *University of Warwick*
-* Marco Roda, *University of Liverpool*
-* Davide Sgalaberna, *CERN*
-* Julia Tena Vidal, *University of Liverpool*
+* **Costas Andreopoulos**, University of Liverpool & STFC Rutherford Appleton Laboratory
+* **Maria Antonova**, *Instituto de Física Corpuscular (IFIC)*
+* **Chistopher Barry**, *University of Liverpool*
+* **Francis Bench**, *University of Liverpool*
+* **Andrew Chappell**, *University of Warwick*
+* **Thomas Dealtry**, *Lancaster University*
+* **Steve Dennis**, *University of Liverpool*
+* **Lorena Escudero**, *University of Cambridge*
+* **Jaggar Henzerling**, *University of Liverpool*
+* **Rhiannon Jones**, *University of Liverpool*
+* **Nick Grant**, *University of Warwick*
+* **Marco Roda**, *University of Liverpool*
+* **Davide Sgalaberna**, *CERN*
+* **Julia Tena Vidal**, *University of Liverpool*
 
 Past authors:
 
