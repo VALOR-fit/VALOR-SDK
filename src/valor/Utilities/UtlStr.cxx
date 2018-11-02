@@ -31,7 +31,8 @@ string valor::util::RemoveAllWhitespace(string input)
   std::remove_copy_if(
     begin(input), end(input),
     std::back_inserter(output),
-    [l = std::locale{}](auto ch) { return std::isspace(ch, l); }
+    //~ [l = std::locale{}](auto ch) { return std::isspace(ch, l); } // needs C++14, let's use 11
+    [](int ch) { return std::isspace(ch); }
   );
   return output;
 }
