@@ -14,10 +14,12 @@ if [ -z $VALOR_FMWK ]; then
 fi
 
 if [ -z $LOG4CPP_LIB ]; then
-  export LOG4CPP_LIB="/home/steve/packages/log4cpp/install/lib"
+  export LOG4CPP_LIB="/home/steve/packages/log4cpp/build"
 fi
 
-mlr
+if [ -z $ROOTSYS ] ; then 
+  mlr
+fi
 
 export LD_LIBRARY_PATH="${VALOR_FMWK}/lib:${LOG4CPP_LIB}:${LD_LIBRARY_PATH}"
 export PATH="${VALOR_FMWK}/root:${VALOR_FMWK}/production:${PATH}"
