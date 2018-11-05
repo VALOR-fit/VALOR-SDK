@@ -2,16 +2,6 @@
 
 VALOR SDK contains software **modules enabling the implementation** of the **VALOR neutrino oscillation fits** for sereval experiments (SBN, DUNE, T2K and HyperK). 
 
-The SDK is a **highly-abstracted** neutrino oscillation fit. Specific applications built on top of the SDK can specify, almost entirely via XML configuration files:
-- A list event samples to be included in the fit (each a specific combination of beam configuration, detector, and observed topology).
-- The reconstructed kinematical distribution (variables and binning scheme) which is fit for each sample.
-- The types of contributions (typically, corresponding to different generator-level MC-truth interaction modes) which are kept track for each fit distribution.
-- The MC-truth kinematical distribution (variables and binning scheme) associated with each single reconstructed bin in the contribution of every mode to each fit reconstructed distribution. Together multi-dimensional distribution, for each mode of every sample, that spans both reconstructed and MC-truth kinematical variables is referred to as a MC template.
-- The systematic parameters to be included in the fit.
-- The prior errors for systematic parameters as well as input correlations between systematic parameters.
-- A specification of how each systematic parameter affects a kinematical bin in each MC template (for each mode of every fit sample).
-- A physics hypothesis (e.g. 3-flavour oscillations, 3+1 oscillations, etc) and a list of the parameters of interest, their ranges and external constraints, if any.
-
 ## Authors
 
 * **Costas Andreopoulos**, *University of Liverpool & STFC/RAL*
@@ -45,3 +35,15 @@ Dr. **Costas Andreopoulos** < constantinos.andreopoulos \at cern.ch >
 ## Copyright
 
 Copyright (c) 2010-2018, The VALOR Fitting Group. **All Rights Reserved.**
+
+## What is the role of the SDK
+
+The SDK is a **highly-abstracted** neutrino oscillation fit. Specific applications built on top of the SDK can specify, almost entirely via XML configuration files:
+- A list event samples to be included in the fit (each a specific combination of beam configuration, detector, and observed topology).
+- The reconstructed kinematical distribution (variables and binning scheme) which is fit for each sample.
+- The list of contributions, or **modes** (typically, corresponding to different generator-level MC-truth interaction modes) which are explicitly kept track of for each fit distribution. An appropriately chosen selection of modes enables the correct application of all specified systematics and physics hypotheses.
+- The MC-truth kinematical distribution (variables and binning scheme) associated with each single reconstructed bin in the contribution of every mode to each fit reconstructed distribution. An appropriately chosen selection of MC-truth kinematical variables enables the correct application of all specified systematics and physics hypotheses.Together multi-dimensional distribution, for each mode of every sample, that spans both reconstructed and MC-truth kinematical variables is referred to as a MC template.
+- The systematic parameters to be included in the fit.
+- The prior errors for systematic parameters as well as input correlations between systematic parameters.
+- A specification of how each systematic parameter affects a kinematical bin in each MC template (for each mode of every fit sample).
+- A physics hypothesis (e.g. 3-flavour oscillations, 3+1 oscillations, etc) and a list of the parameters of interest, their ranges and external constraints, if any.
