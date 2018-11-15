@@ -59,7 +59,7 @@ namespace util {
   std::string  AsString     (conv::NuclearTarget_t nt);
   std::string  AsStringTeX  (conv::NuclearTarget_t nt, bool root);
   
-  conv::NuclearTarget_t NuclearTargetFromString(string nt);
+  conv::NuclearTarget_t NuclearTargetFromString(std::string nt);
 
 } // util
 
