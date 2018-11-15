@@ -27,6 +27,13 @@
 #pragma link C++ enum  valor::conv::PhysParamId_t;
 #pragma link C++ enum  valor::conv::PhysHypothesis_t;
 
+#pragma link C++ enum valor::conv::BeamConf_t;
+#pragma link C++ enum valor::conv::Sample_t;
+#pragma link C++ enum valor::conv::Detector_t;
+
+#pragma link C++ enum valor::conv::NuclearTarget_t;
+#pragma link C++ class std::vector<valor::conv::NuclearTarget_t>+;
+
 #pragma link C++ class valor::Opt+;
 #pragma link C++ class valor::Opt::Persistable+;
 
