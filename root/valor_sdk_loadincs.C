@@ -1,3 +1,4 @@
+int valor_sdk_loadincs()
 {
   TString topdir = gSystem->Getenv("VALOR_FMWK");
 
@@ -38,5 +39,7 @@
 
   dip = ".include /opt/local/include/log4cpp";
   gROOT->ProcessLine(dip.Data());
+  
+  return 0;
 }
 

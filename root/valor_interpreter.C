@@ -8,8 +8,8 @@ void valor_interpreter()
 
     TString top_dir = gSystem->Getenv("VALOR_FMWK");
 
-    TString loadincs = ".x " + top_dir + "/root/loadincs.C";
-    TString loadlibs = ".x " + top_dir + "/root/loadlibs.C";
+    TString loadincs = ".x " + top_dir + "/root/valor_sdk_loadincs.C";
+    TString loadlibs = ".x " + top_dir + "/root/valor_sdk_loadlibs.C";
 
     gROOT->ProcessLine(loadincs.Data());    
     gROOT->ProcessLine(loadlibs.Data());    

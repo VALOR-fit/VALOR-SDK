@@ -6,7 +6,7 @@ Long_t valor_load_lib(const char * lib, bool warn_on_fail = true, bool verbose =
   return result;
 }
 
-void loadlibs ()
+int valor_sdk_loadlibs ()
 {
   TString vf_libs0 = gSystem->GetDynamicPath();
   TString vf_libs  = vf_libs0 + ":/usr/lib:/usr/local/lib:/opt/lib:/opt/local/lib:/usr/lib64:$VALOR_FMWK/lib";
@@ -47,5 +47,7 @@ void loadlibs ()
     std::cerr<<"Did not successfully load all libraries"<<std::endl;
     exit(-1);
   }
+  
+  return 0;
 }
 
