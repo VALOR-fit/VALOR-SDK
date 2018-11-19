@@ -1,0 +1,14 @@
+#build results
+*.o
+_RootDict_*.cc
+_RootDict_*.h
+bin/
+lib/
+
+#configure results
+src/valor/Conventions/Build.h
+src/valor/Conventions/Version.h
+make/Make.config
+
+#temp files
+*~
