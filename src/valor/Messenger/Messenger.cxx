@@ -12,8 +12,6 @@
 #include <vector>
 #include <iomanip>
 
-#include "log4cpp/SimpleLayout.hh"
-
 #include <TSystem.h>
 #include <TXMLEngine.h>
 
