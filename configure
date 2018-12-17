@@ -198,6 +198,19 @@ $opt_with_gsl_lib = $1 unless not defined $1;
 $root_config =~m /--with-gsl-incdir=(\S*)/;
 $opt_with_gsl_inc = $1 unless not defined $1;
 
+if(! -d $opt_with_gsl_inc && $auto_detect)  {
+  print "\n*** Warning *** You didn't specify the log4cpp include path \n";
+  print "Auto-detecting...\n";
+  $matched = auto_detect("gsl_vector.h");
+  if( $matched=~m/(\S*)\/gsl\/gsl_vector.h/i ) {
+     $opt_with_gsl_inc = $1;
+  }
+  if ( ($opt_with_gsl_inc eq "/usr/include") or ($opt_with_gsl_inc eq "/include") ) {
+    $opt_with_gsl_inc = "";
+  }
+  print "Setting --with-gsl-inc=$opt_with_gsl_inc\n";
+}
+
 print "\n";
 
 # 
