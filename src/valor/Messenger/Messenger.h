@@ -25,10 +25,29 @@
 #include <string>
 #include <map>
 
+
+#if __cplusplus >= 201703L
+    /* Hack to allow log4cpp with C++1z at FNAL*/
+    #include <stdexcept>
+    #include <string>
+    #include <memory>
+
+    /* Now remove the trow */
+    #define throw(...)
+    #include "log4cpp/Category.hh"
+    #include "log4cpp/Appender.hh"
+    #include "log4cpp/OstreamAppender.hh"
+    #include "log4cpp/BasicLayout.hh"
+    #include "log4cpp/SimpleLayout.hh"
+    #include "log4cpp/Priority.hh"
+    #undef throw /* reset */
+#endif
+
 #include "log4cpp/Category.hh"
 #include "log4cpp/Appender.hh"
 #include "log4cpp/OstreamAppender.hh"
 #include "log4cpp/BasicLayout.hh"
+#include "log4cpp/SimpleLayout.hh"
 #include "log4cpp/Priority.hh"
 
 //#include "valor/Conventions/GBuild.h"
