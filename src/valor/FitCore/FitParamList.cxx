@@ -540,8 +540,8 @@ void FitParamList::FromPhysParamList(valor::PhysParamList pl, Option_t * option,
     }
     else {
       if (!silently_pass_missing_parameters) {
-        cout << "FitParamList/FromPhysParamList >> Skipping parameter not found in PhysParamList: "
-        << util::NameRegistry::Instance()->AsString(p) <<endl;
+        LOG("FitParamList",pWARN) << "Skipping parameter not found in PhysParamList: " <<
+           util::NameRegistry::Instance()->AsString(p);
       }
     }
   } //iter
