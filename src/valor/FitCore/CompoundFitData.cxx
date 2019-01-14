@@ -188,6 +188,18 @@ bool CompoundFitData::Write (TObjArray* collection, const char * tag, Option_t *
   return status;
 }
 //________________________________________________________________________________________
+bool CompoundFitData::Write (std::ofstream& stream, Option_t * write_opt)
+{
+
+   bool status = true;
+   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it)
+   {
+      status = status && (*it)->Write(stream, write_opt);
+   }
+   
+   return status;
+}
+//________________________________________________________________________________________
 double CompoundFitData::GetFitStatistic (FitModelABC * model, const PhysHypothesis & ph, Option_t * opt, std::map<std::string,double> * likelihood_components)
 {
   double statistic = 0;

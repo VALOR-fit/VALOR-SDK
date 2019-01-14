@@ -60,6 +60,7 @@ public:
 
   virtual bool Write (TObjArray * collection, const char * tag = "data", Option_t * write_opt = 0);
   virtual bool Write (const char * filename,  const char * tag = "data", Option_t * write_opt = 0, Option_t * file_opt = 0);
+  virtual bool Write (std::ofstream& stream, Option_t * write_opt = 0);
 
   // Number of bins in fit data, or number of events for unbinned fits
   virtual int NumOfBins (Option_t * opt = 0) const;
