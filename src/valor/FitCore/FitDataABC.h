@@ -44,7 +44,8 @@ public:
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
   // Return true if data were succesfully read out
-  virtual bool Read(string file, Option_t * opt = 0) = 0;  
+  virtual bool Read(string file, Option_t * opt = 0) = 0;
+  virtual bool Read(std::ifstream& stream, Option_t * read_opt = 0) = 0;
 
   // Generate mock data (toy-MC)
   // Toy-MC is generated from using the input model 
