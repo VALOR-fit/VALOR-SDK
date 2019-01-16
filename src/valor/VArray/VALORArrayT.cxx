@@ -649,6 +649,30 @@ template<typename numtype> void VALORArrayT<numtype>::
 }
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::
+   ReadStream(std::ifstream& stream)
+{
+   int n_dim = 0;
+   int dimensions[6] = {0};
+   stream.read((char*)&n_dim, sizeof(int));
+   stream.read((char*)dimensions, 6 * sizeof(int));
+   this->Construct(n_dim, dimensions);
+
+   LOG("VALORArrayT", pDEBUG) << "Reading " << this->GetName() << " " <<
+      fDimensions[0] << " " << fDimensions[1] << " (" << fSize << ")";
+   stream.read((char*)fArray, fSize * sizeof(numtype));
+}
+//________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
+   WriteStream(std::ofstream& stream)
+{
+   LOG("VALORArrayT", pDEBUG) << "Writing " << this->GetName() << " " <<
+      fDimensions[0] << " " << fDimensions[1] << "( " << fSize << ")";
+   stream.write((char*)&fNDim, sizeof(int));
+   stream.write((char*)fDimensions, 6 * sizeof(int));
+   stream.write((char*)fArray, fSize * sizeof(numtype));
+}
+//________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::
   Resize(const std::vector<int> dimensions)
 {
   this->Cleanup();
