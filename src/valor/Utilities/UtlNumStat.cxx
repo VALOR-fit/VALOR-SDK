@@ -158,6 +158,9 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
   }
   else {
     chisq = 2. * ndata * (nmc/ndata+std::log(ndata/nmc)-1.l);
+    
+    // This is an alternative - may be much more stable with small chi-squares and large event numbers:
+    //~ chisq = 2.*ndata*((nmc-ndata)/ndata + std::log1p((ndata-nmc)/nmc));
   }
 #ifdef VALOR_FMWK_LOW_LEVEL_MESG_ENABLED
   if (chisq<conv.kAVerySmallNum) {
