@@ -48,6 +48,9 @@ using std::pair;
 namespace valor {
 namespace util {
 
+  // Retrieves all direct children of a given node (regardless of child node name).
+  vector<XMLNodePointer_t> FindAllNodes(TXMLEngine* xml_eng, XMLNodePointer_t top_node);
+
   XMLNodePointer_t FindNode          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   bool             NodeExists        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
