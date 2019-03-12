@@ -49,6 +49,7 @@ vector<string> valor::util::Tokens (string input, string delimiter)
     input.erase(0, pos + delimiter.length());
     tokens.push_back(token);
   }
+  tokens.push_back(input);
   return tokens;
 }
 //___________________________________________________________________________
