@@ -115,7 +115,7 @@ std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
     default:
       LOG("KineVar",pFATAL)
         << "Unrecognized kinematic variable: " << kv;
-      util::Die(1);
+      util::Die(1); return std::make_pair<double>(conv::kBadResult,conv::kBadResult);
   }
 }
 //________________________________________________________________________________________
