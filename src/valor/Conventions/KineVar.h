@@ -54,6 +54,9 @@ namespace util {
 
   string  AsString     (conv::KineVar_t kv);
   string  AsStringTeX  (conv::KineVar_t kv, bool root);
+  
+  string  KineVarAsString     (conv::KineVar_t kv);
+  string  KineVarAsStringTeX  (conv::KineVar_t kv, bool root);
 
   bool IsReco (conv::KineVar_t kv);
   bool IsTrue (conv::KineVar_t kv);

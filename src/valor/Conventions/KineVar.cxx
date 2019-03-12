@@ -119,4 +119,7 @@ std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
   }
 }
 //________________________________________________________________________________________
-
+// aliases
+string util::KineVarAsString(KineVar_t kv) { return util::AsString(kv); }
+string util::KineVarAsStringTeX(KineVar_t kv, bool root) { return util::AsStringTeX(kv, root); }
+//________________________________________________________________________________________
