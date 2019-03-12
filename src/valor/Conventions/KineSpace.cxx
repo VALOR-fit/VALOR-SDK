@@ -228,32 +228,34 @@ conv::KineSpace_t util::SubSpaceTrue(conv::KineSpace_t ks)
 std::vector<valor::conv::KineVar_t> util::KineVarSubset(conv::KineSpace_t original,
       conv::KineSpace_t target)
 {
-   // Check the new kinematic space is consistent with the current space
    std::vector<KineVar_t> originalKineVars = util::KineVar(original);
-   std::vector<KineVar_t> targetKineVars = util::KineVar(target);
-   if(targetKineVars.size() >= originalKineVars.size())
-   {  // New kinematic space not a strict subset of current space
-      LOG("KineSpace", pERROR) << "New kinematic space " <<
-         util::AsString(target) << " is not a strict subset of the current " <<
-         "kinematic space " << util::AsString(original) << ".";
-      util::Die(-1);
+   std::vector<KineVar_t> targetKineVars   = util::KineVar(target);
+   
+   std::vector<KineVar_t> in_both;
+   //~ std::vector<KineVar_t> in_original_but_not_target;
+   std::vector<KineVar_t> in_target_but_not_original;
+   
+   //~ for (const auto & kv_o : originalKineVars) {
+      //~ if (!util::KineSpaceContains(target,kv_o)) {
+        //~ in_original_but_not_target.push_back(kv_o);
+      //~ }
+   //~ }
+   
+   for (const auto & kv_t : targetKineVars) {
+     if (util::KineSpaceContains(original,kv_t)) {
+       in_both.push_back(kv_t);
+     }
+     else {
+       in_target_but_not_original.push_back(kv_t);
+     }
    }
-   else
-   {
-      for(auto kv : targetKineVars) 
-      {
-         if(std::find(originalKineVars.begin(), originalKineVars.end(), kv) ==
-               originalKineVars.end())
-         {  // Target kinematic space has values not in current space
-            LOG("KineSpace", pERROR) << "New kinematic space " <<
-               util::AsString(target) << " is not a strict subset of the current " <<
-               "kinematic space " << util::AsString(original) << ".";
-            util::Die(-1);
-         }
-      }
+   
+   if (in_target_but_not_original.size()) {
+     LOG("KineSpace",pFATAL) << "Phase space "<<util::AsString(target)<<" is not a string subset of "<<util::AsString(original);
+     util::Die(-1); return std::vector<KineVar_t>();
    }
-
-   return targetKineVars;
+   
+   return in_both;
 }
 
 //________________________________________________________________________________________
