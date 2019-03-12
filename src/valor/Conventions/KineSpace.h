@@ -68,6 +68,8 @@ namespace util {
   int                                 NDimTrue            (conv::KineSpace_t ks);
   conv::KineSpace_t                   SubSpaceReco        (conv::KineSpace_t ks);
   conv::KineSpace_t                   SubSpaceTrue        (conv::KineSpace_t ks);
+  
+  bool                                KineSpaceContains   (conv::KineSpace_t ks, conv::KineVar_t kv);
   /**
     Retrieve a strict subset of the kinematic variables from a kinematic space.
 

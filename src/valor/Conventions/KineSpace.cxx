@@ -224,7 +224,7 @@ conv::KineSpace_t util::SubSpaceTrue(conv::KineSpace_t ks)
   }
   return kspUndefined;
 }
-
+//________________________________________________________________________________________
 std::vector<valor::conv::KineVar_t> util::KineVarSubset(conv::KineSpace_t original,
       conv::KineSpace_t target)
 {
@@ -382,6 +382,12 @@ vector<KineVar_t> util::KineVarTrue(conv::KineSpace_t ks)
   }
 
   return vv;
+}
+//________________________________________________________________________________________
+bool util::KineSpaceContains(conv::KineSpace_t ks, conv::KineVar_t kv)
+{
+  std::vector<valor::conv::KineVar_t> vars(util::KineVar(ks));
+  return std::find(vars.begin(), vars.end(), kv) != vars.end();
 }
 //________________________________________________________________________________________
 conv::KineSpace_t util::KineSpaceFromInt(int i_sp)
