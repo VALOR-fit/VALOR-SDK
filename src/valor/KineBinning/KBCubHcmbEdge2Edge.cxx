@@ -200,9 +200,11 @@ KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
    }
 
    // Reserve space for the bin minima, maxima and edges
-   binning->fMinimum.reserve(binning->fNDimensions);
-   binning->fMaximum.reserve(binning->fNDimensions);
+   binning->fMinimum .reserve(binning->fNDimensions);
+   binning->fMaximum .reserve(binning->fNDimensions);
    binning->fBinEdges.reserve(binning->fNDimensions);
+   
+   size_t nbins = 1;
 
    // Construct new bin edges from old
    for(unsigned int d = 0; d < fNDimensions; ++d)
@@ -211,12 +213,19 @@ KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
                fKineVars[d]) != binning->fKineVars.end())
       {  // Current dimension is for a kinematic variable in the target space
          // Add the edges for the current dimension, type, minima and maxima
-         binning->fBinEdges.push_back(fBinEdges[d]);
+         binning->fBinEdges.push_back  (fBinEdges[d]  );
          binning->fFixedWidth.push_back(fFixedWidth[d]);
-         binning->fMinimum.push_back(fMinimum[d]);
-         binning->fMaximum.push_back(fMaximum[d]);
+         binning->fMinimum.push_back   (fMinimum[d]   );
+         binning->fMaximum.push_back   (fMaximum[d]   );
+         
+         nbins *= fBinEdges[d].size()-1;
       }
    }
+   
+   binning->fNBins = nbins;
+   
+   TString new_name = TString::Format("%s_contracted_to_%s",this->GetName(),util::AsString(ks).c_str());
+   binning->SetName(new_name.Data());
 
    return binning;
 }
