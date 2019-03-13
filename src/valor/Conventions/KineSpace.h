@@ -89,6 +89,8 @@ namespace util {
   conv::KineSpace_t                   KineSpaceFromInt    (int is);
   conv::KineSpace_t                   KineSpaceFromString (string s);
   
+  conv::KineSpace_t KineSpaceFromKineVar(const conv::KineVar_t & kv);
+  
   // Aliases to prevent overloading ambiguity
   string                  KineSpaceAsString    (conv::KineSpace_t ks);
   string                  KineSpaceAsStringTeX (conv::KineSpace_t ks, bool root);

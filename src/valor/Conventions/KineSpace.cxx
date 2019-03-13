@@ -416,6 +416,22 @@ conv::KineSpace_t util::KineSpaceFromString(string str_sp)
   return kspUndefined;
 }
 //________________________________________________________________________________________
+conv::KineSpace_t util::KineSpaceFromKineVar(const KineVar_t & kv)
+{
+  switch (kv) {
+    case kvUndefined   : return kspUndefined;
+    case kvEtrue       : return kspEtrue;
+    case kvQ2true      : return kspUndefined;
+    case kvEreco       : return kspEreco;
+    case kvEvis        : return kspEvis;
+    case kvYreco       : return kspYreco;
+    case kvThetareco   : return kspThetareco;
+    case kvq0reco      : return kspUndefined;
+    case kvmodqreco    : return kspUndefined;
+  }
+  return kspUndefined;
+}
+//________________________________________________________________________________________
 // aliases
 string util::KineSpaceAsString(KineSpace_t ks) { return util::AsString(ks); }
 string util::KineSpaceAsStringTeX(KineSpace_t ks, bool root) { return util::AsStringTeX(ks, root); }
