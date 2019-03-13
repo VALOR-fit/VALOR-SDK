@@ -290,6 +290,7 @@ vector<KineVar_t> util::KineVar(conv::KineSpace_t ks)
     case (kspErecoThetareco)   :
       vv.push_back(kvEreco);
       vv.push_back(kvThetareco);
+      break;
     case (kspq0recomodqreco) :
       vv.push_back(kvq0reco);
       vv.push_back(kvmodqreco);
@@ -334,6 +335,7 @@ vector<KineVar_t> util::KineVarReco(conv::KineSpace_t ks)
     case (kspErecoThetareco)   :
       vv.push_back(kvEreco);
       vv.push_back(kvThetareco);
+      break;
     case (kspq0recomodqreco) :
       vv.push_back(kvq0reco);
       vv.push_back(kvmodqreco);
