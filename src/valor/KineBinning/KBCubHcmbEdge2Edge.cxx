@@ -167,6 +167,15 @@ bool KBCubHcmbEdge2Edge::Read(string file)
    
   xml->FreeDoc(xmldoc);
   delete xml;
+  
+  if (fName=="" || fName=="uninitialised") {
+    std::ostringstream name;
+    name<<"e2e";
+    for (const conv::KineVar_t kv : fKineVars) {
+      name<<"_"<<util::AsString(kv);
+    }
+    this->SetName(name.str().c_str());
+  }
 
   return true;
 }
@@ -515,5 +524,19 @@ std::vector<TLine>  KBCubHcmbEdge2Edge::GetBinningTLines(void) const
     LOG("KBCubHcmbMondrian",pWARN) << "GetBinningTLines can only be used with 2D binnings.";
   }
   return lines;
+}
+//________________________________________________________________________________________
+void KBCubHcmbEdge2Edge::Print(std::ostream & stream) const
+{
+  stream<<"Edge to edge binning: "<<this->GetName()<<" "<<this->GetTitle()<<" ("<<fNBins<<" bins)"<<std::endl;
+  for (size_t ibin = 0; ibin < fNBins; ibin++) {
+    stream<<"  Bin "<<std::setw(4)<<ibin<<"\t";
+    for (const conv::KineVar_t & kv : fKineVars) {
+      stream<<std::setw(4)<<this->BinMinimum(ibin,kv)<<" < "
+            <<util::AsString(kv)
+            <<" < "<<std::setw(4)<<this->BinMaximum(ibin,kv)<<" ; ";
+    }
+    stream<<std::endl;
+  }
 }
 //________________________________________________________________________________________

@@ -101,6 +101,9 @@ public:
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const = 0;
   
+  // Print a summary of the binning
+  virtual void Print(std::ostream & stream = std::cout) const = 0;
+  
   
   using TObject::Read; // Tell clang we really do want this
   

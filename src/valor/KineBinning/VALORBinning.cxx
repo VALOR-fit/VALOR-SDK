@@ -23,7 +23,7 @@ using std::vector;
 
 //________________________________________________________________________________________
 VALORBinning::VALORBinning() :
- TNamed(),
+ TNamed("uninitialised","uninitialised"),
  fKineSpace(conv::kspUndefined),
  fNDimensions(0),
  fKineVarToDim(conv::kNKineVarMax,-1),

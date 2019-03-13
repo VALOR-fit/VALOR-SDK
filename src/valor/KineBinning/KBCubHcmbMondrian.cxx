@@ -152,6 +152,15 @@ bool KBCubHcmbMondrian::Read(string file)
    
   xml->FreeDoc(xmldoc);
   delete xml;
+  
+  if (fName=="" || fName=="uninitialised") {
+    std::ostringstream name;
+    name<<"mond";
+    for (const conv::KineVar_t kv : fKineVars) {
+      name<<"_"<<util::AsString(kv);
+    }
+    this->SetName(name.str().c_str());
+  }
 
   return true;
 }
@@ -556,5 +565,17 @@ void KBCubHcmbMondrian::CleanUp(void)
   this->Init();
 }
 //________________________________________________________________________________________
-
-
+void KBCubHcmbMondrian::Print(std::ostream & stream) const
+{
+  stream<<"Mondrian binning: "<<this->GetName()<<" "<<this->GetTitle()<<" ("<<fNBins<<" bins)"<<std::endl;
+  for (size_t ibin = 0; ibin < fNBins; ibin++) {
+    stream<<"  Bin "<<std::setw(4)<<ibin<<"\t";
+    for (const conv::KineVar_t & kv : fKineVars) {
+      stream<<std::setw(4)<<this->BinMinimum(ibin,kv)<<" < "
+            <<util::AsString(kv)
+            <<" < "<<std::setw(4)<<this->BinMaximum(ibin,kv)<<" ; ";
+    }
+    stream<<std::endl;
+  }
+}
+//________________________________________________________________________________________
