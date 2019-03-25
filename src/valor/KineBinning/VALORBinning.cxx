@@ -14,6 +14,7 @@ Copyright (c) 2010-2017, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
+#include "valor/Utilities/UtlStr.h"
 
 #include "valor/KineBinning/KBCubHcmbMondrian.h"
 #include "valor/KineBinning/KBCubHcmbEdge2Edge.h"
@@ -176,7 +177,7 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
   XMLNodePointer_t root_node = xml->DocGetRootElement(xmldoc);
 
   VALORBinning * binning = nullptr;
-  string type = util::XML2String(xml,root_node,"type");
+  string type = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"type"));
   if(type == "edge-to-edge") {
     binning = new KBCubHcmbEdge2Edge;
   }
