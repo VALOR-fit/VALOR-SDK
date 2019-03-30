@@ -13,6 +13,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Messenger/Messenger.h"
 #include "valor/VArray/VALORArray.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/Env.h"
 #include "valor/KineBinning/KBCubHcmbEdge2Edge.h"
 
@@ -64,7 +65,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   XMLNodePointer_t root_node = xml->DocGetRootElement(xmldoc);
 
   //
-  string space = util::XML2String(xml,root_node,"space");
+  string space = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"space"));
   fKineSpace = util::KineSpaceFromString(space);
   if(fKineSpace == conv::kspUndefined) {
     LOG("Binning", pERROR) 
@@ -87,7 +88,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   fBinEdges   . reserve(fNDimensions);
 
   //
-  string type = util::XML2String(xml,root_node,"type");
+  string type = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"type"));
   if(type != "edge-to-edge") {
     LOG("Binning", pERROR) 
       << "Input binning scheme [" << type << "] not `edge-to-edge'";
@@ -101,8 +102,8 @@ bool KBCubHcmbEdge2Edge::Read(string file)
     string kine_var_str = util::AsString(kine_var);
     const char * kine_var_ccs = kine_var_str.c_str();
 
-    string bin_size = util::XML2String(
-       xml,root_node,Form("%s_binning/bin_size",kine_var_ccs));
+    string bin_size = util::RemoveAllWhitespace(util::XML2String(
+       xml,root_node,Form("%s_binning/bin_size",kine_var_ccs)));
     unsigned int nbins_this_dim = (unsigned int) 
         util::XML2Int(xml,root_node,Form("%s_binning/nbins",kine_var_ccs));
         
