@@ -245,6 +245,7 @@ string util::RawParamAsStringRaw(PhysParamId_t p)
     // Effective steriles:
     case ( kPhypMixingEE              ) : return "sinsq2thEE";         break;
     case ( kPhypMixingMuMu            ) : return "sinsq2thMuMu";       break;
+    case ( kPhypMixingMuE             ) : return "sinsq2thMuE" ;       break;
 
     default:
     {
@@ -489,6 +490,7 @@ string util::RawParamAsString(PhysParamId_t p)
     // Effective steriles
     case(kPhypMixingEE  ) : return "sin^2(2*theta_ee)"  ;       break;
     case(kPhypMixingMuMu) : return "sin^2(2*theta_mumu)";       break;
+    case(kPhypMixingMuE ) : return "sin^2(2*theta_mue)" ;       break;
 
     default:
     {
@@ -739,6 +741,7 @@ string util::RawParamAsStringTex(PhysParamId_t p)
     // Effective steriles
     case(kPhypMixingEE  ) : return "$\\sin^2(2\\theta_{ee})$"      ; break;
     case(kPhypMixingMuMu) : return "$\\sin^2(2\\theta_{\\mu\\mu})$"; break;
+    case(kPhypMixingMuE ) : return "$\\sin^2(2\\theta_{\\mu\\e})$" ; break;
 
     default :
       return "--";
@@ -909,6 +912,7 @@ string util::RawParamAsStringRooTex(PhysParamId_t p)
     // Effective steriles
     case(kPhypMixingEE  ) : return "$\\sin^2(2\\theta_{ee})$"    ; break;
     case(kPhypMixingMuMu) : return "$\\sin^2(2\\theta_{#mu#mu})$"; break;
+    case(kPhypMixingMuE ) : return "$\\sin^2(2\\theta_{#mu#e})$" ; break;
 
     default :
       return "--";
@@ -946,6 +950,9 @@ bool util::IsMixingAngle(PhysParamId_t p)
     case ( kPhypMixing25              ) : return true; break;
     case ( kPhypMixing34              ) : return true; break;
     case ( kPhypMixing35              ) : return true; break;
+    case ( kPhypMixingMuMu            ) : return true; break;
+    case ( kPhypMixingEE              ) : return true; break;
+    case ( kPhypMixingMuE             ) : return true; break;
 
     default :
       return false;
