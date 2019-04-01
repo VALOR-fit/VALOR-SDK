@@ -42,9 +42,9 @@ string util::AsString(KineVar_t kv)
 string util::DSTBranchName(KineVar_t kv)
 {
   switch(kv) {
-    case (kvEtrue     ) : return "E_true";     break;
+    case (kvEtrue     ) : return "enu_true";     break;
     case (kvQ2true    ) : return "Q2_true";    break;
-    case (kvEreco     ) : return "E_reco";     break;
+    case (kvEreco     ) : return "enu_reco";     break;
     case (kvEvis      ) : return "E_vis";      break;
     case (kvYreco     ) : return "y_reco";     break;
     case (kvThetareco ) : return "Theta_reco"; break;
