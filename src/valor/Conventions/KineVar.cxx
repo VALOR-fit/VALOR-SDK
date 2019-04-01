@@ -39,6 +39,24 @@ string util::AsString(KineVar_t kv)
   return "";
 }
 //________________________________________________________________________________________
+string util::DSTBranchName(KineVar_t kv)
+{
+  switch(kv) {
+    case (kvEtrue     ) : return "E_true";     break;
+    case (kvQ2true    ) : return "Q2_true";    break;
+    case (kvEreco     ) : return "E_reco";     break;
+    case (kvEvis      ) : return "E_vis";      break;
+    case (kvYreco     ) : return "y_reco";     break;
+    case (kvThetareco ) : return "Theta_reco"; break;
+    case (kvq0reco    ) : return "q0_reco";    break;
+    case (kvmodqreco  ) : return "modq_reco";   break;
+    default : 
+     LOG("KineVar",pERROR) 
+        << "Unrecognized kinematic variable: " << kv;
+  }
+  return "";
+}
+//________________________________________________________________________________________
 string util::AsStringTeX(KineVar_t kv, bool root)
 {
   string name = "";
