@@ -53,12 +53,14 @@ BeamConf_t;
 // This is used to loop over all beam configurations / samples.
 // Probably could be removed once we start using the Compound* classes
 
-static const int kNBeamConf = 2;  
+static const int kNBeamConf = 4;
 
 static const BeamConf_t kBeamConf[kNBeamConf] =
 {
    kbLBNF_FHC, 
-   kbLBNF_RHC 
+   kbLBNF_RHC,
+   kbJPARC_FHC,
+   kbJPARC_RHC,
 };
 // ---------------------------------------------------------------------
 
