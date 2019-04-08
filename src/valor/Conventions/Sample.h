@@ -71,11 +71,15 @@ typedef enum ESample
    ksNuELikeCChigh       , // nue-like (for the moment both nue and nuebar), high resolution (CCQE-like)
    ksNuELikeCClow        , // nue-like (for the moment both nue and nuebar), low resolution (nonCCQE-like)   
    ksNuEBarCChigh        , // nuebar, high resolution (CCQE-like)    - CURRENTLY UNUSED
-   ksNuEBarCClow           // nuebar, low resolution (nonCCQE-like)  - CURRENTLY UNUSED
+   ksNuEBarCClow         , // nuebar, low resolution (nonCCQE-like)  - CURRENTLY UNUSED
+   // SuperK selections
+   ks1Rmu                , // Single-ring muon-like
+   ks1Re                 , // Single-ring electron-like
+   ksMultiRe             , // Multi-ring electron-like
 } 
 Sample_t; 
 
-static const int kMaxNSamples = 37;
+static const int kMaxNSamples = 40;
 
 // 
 // ...........................................................................
@@ -91,12 +95,12 @@ static const int kMaxNSamples = 37;
 // - Edit SampleReacMode.h: Add an entry for the new sample in each array (to define modes for the new sample etc)
 // - Edit SampleKineBinning.h/cxx: Check that an appropriate binning scheme exists, and add a new case (for the new sample)
 //   all switch statements.
-// - Edit FitParams.h: Add instructions on how to apply systematics for the new sample 
+// - Edit FitParams.h: Add instructions on how to apply systematics for the new sample
 // -
  
 //this is the maximum number of selections except the ones not used in 2016a or 2016b analyses
 // For 2016b = total except: undefined, numuCC, 2piC, nueCC, NC, wrong numu, and only 4 for FD (either nu in FHC or nubar in RHC)
- static const int kNSamples = 27;
+ static const int kNSamples = 30;
 
 // ---------------------------------------------------------------------
 // NOTE:
@@ -135,7 +139,11 @@ static const int kMaxNSamples = 37;
      ksNuMuLikeCChigh,  
      ksNuMuLikeCClow,  
      ksNuELikeCChigh,           
-     ksNuELikeCClow          
+     ksNuELikeCClow,
+     // SuperK selections
+     ksUndefined,
+     ksUndefined,
+     ksUndefined
    },
 
    {
@@ -167,7 +175,83 @@ static const int kMaxNSamples = 37;
      ksNuMuLikeCChigh,   
      ksNuMuLikeCClow,  
      ksNuELikeCChigh,     
-     ksNuELikeCClow        
+     ksNuELikeCClow,
+     // SuperK selections
+     ksUndefined,
+     ksUndefined,
+     ksUndefined
+   },
+
+   // kbJPARC_FHC
+   {
+     // DUNE selections
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     // SuperK selections
+     ks1Rmu,
+     ks1Re,
+     ksMultiRe
+   },
+
+  // kbJPARC_RHC
+   {
+     // DUNE selections
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     ksUndefined,
+     // SuperK selections
+     ks1Rmu,
+     ks1Re,
+     ksMultiRe
    }
 };
 // ---------------------------------------------------------------------
