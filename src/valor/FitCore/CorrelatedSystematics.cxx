@@ -235,7 +235,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   {
     const char * nc = xml_syst->GetNodeContent(curr_child_node);  
     string content(nc);
-    params.push_back(NameRegistry::Instance()->PhysParamFromString(TrimSpaces(content)));  
+    params.push_back(NameRegistry::Instance()->PhysParamFromString(TrimSpaces(content))); // TODO: This needs changing. Instead get the params by looping through ParamPool
     curr_child_node = xml_syst->GetNext(curr_child_node);
   }
   
