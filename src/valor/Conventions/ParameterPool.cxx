@@ -130,3 +130,15 @@ const Parameter & ParameterPool::ParamFromString(std::string str) const
   exit(-1);
 }
 //________________________________________________________________________________________
+void ParameterPool::PopulateNameRegistry(void)
+{
+  NameRegistry * nr = util::NameRegistry::MutableInstance();
+
+  for (const Parameter & param : fParams) {
+    conv::PhysParamId_t p = param.GetID();
+    nr->fParamNames      [p] = param.GetName(); // TODO: Put in the long name from the t2k_migration branch
+    nr->fParamNamesSimple[p] = param.GetName(); // If we start using proper names, will change this.
+  }
+  return;
+}
+//________________________________________________________________________________________

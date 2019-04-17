@@ -177,10 +177,6 @@ namespace valor {
       // Do we need this? If so, definitely not here
       bool OscProbIsAppliedTo(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s,
                               conv::ReacMode_t m);
-                              
-      // Probably needs to go into whatever the syst list is
-      // Tell the framework classes what our parameter names are
-      void PopulateNameRegistry(void);
 
     // TODO: I reckon we can delete all of this
     /*
