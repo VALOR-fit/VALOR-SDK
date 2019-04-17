@@ -23,6 +23,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <vector>
 
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/PhysParamId.h"
@@ -63,6 +64,8 @@ public:
    // Copy values to a PhysParamList 
    valor::PhysParamList AsPhysParamList(void) const;
    void CopyToPhysParamList(valor::PhysParamList & pl) const;
+
+   std::vector<conv::PhysParamId_t> GetParams(void) const;
 
 private:
 

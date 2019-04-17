@@ -271,3 +271,13 @@ bool PhysHypothesis::Contains(conv::PhysParamId_t p) const
   return (it != fParams.end());
 }
 //________________________________________________________________________________________
+std::vector<conv::PhysParamId_t> PhysHypothesis::GetParams(void) const
+{
+  std::vector<conv::PhysParamId_t> vec;
+  for (auto const& pair : fParams)
+  {
+    vec.push_back((conv::PhysParamId_t) pair.first);
+  }
+  return vec;
+}
+//________________________________________________________________________________________
