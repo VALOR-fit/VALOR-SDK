@@ -113,6 +113,9 @@ namespace valor {
       // Search the list of user-specified categories for an entry with content exactly matching to_find (after converting to lower case and removing whitespace)
       bool SearchCategories(std::string to_find, bool one_category_only = false) const;
 
+      double IsWithinLimits(double val) const;
+      double GetNearestPhysicalValue(double val) const;
+
     protected:
       // The ID number that will be used to store stuff in (eg) output TTrees/FPLs
       conv::PhysParamId_t fParam;

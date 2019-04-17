@@ -459,3 +459,18 @@ const std::pair<double,double> & Parameter::GetKineRange(conv::KineVar_t kv) con
   return max_limits;
 }
 //________________________________________________________________________________________
+double Parameter::IsWithinLimits(double val) const
+{
+  if (v >= fLimits.first && v <= fLimits.second) {
+    return true;
+  }
+  return false;
+}
+//________________________________________________________________________________________
+double Parameter::GetNearestPhysicalValue(double curr_val) const
+{
+  if (this->IsWithinLimits(curr_val)) {return curr_val;}
+  if (curr_val < fLimits.first)       {return fLimits.first;}
+  return fLimits.second;
+}
+//________________________________________________________________________________________
