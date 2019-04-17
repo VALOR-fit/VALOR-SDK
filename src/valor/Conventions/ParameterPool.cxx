@@ -15,6 +15,7 @@ Copyright (c) 2010-2019, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlStr.h"
+#include "valor/Utilities/NameRegistry.h"
 #include "valor/Conventions/ParameterPool.h"
 
 using namespace valor;
