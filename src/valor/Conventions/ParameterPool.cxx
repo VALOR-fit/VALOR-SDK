@@ -135,7 +135,7 @@ const Parameter & ParameterPool::ParamFromString(std::string str) const
 //________________________________________________________________________________________
 void ParameterPool::PopulateNameRegistry(void)
 {
-  NameRegistry * nr = util::NameRegistry::MutableInstance();
+  util::NameRegistry * nr = util::NameRegistry::MutableInstance();
 
   for (const Parameter & param : fParams) {
     conv::PhysParamId_t p = param.GetID();
