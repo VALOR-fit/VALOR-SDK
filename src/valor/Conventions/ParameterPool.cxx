@@ -128,6 +128,5 @@ const Parameter & ParameterPool::ParamFromString(std::string str) const
   }
   LOG("ParameterPool",pFATAL) << "No parameter named [" << str << "] in the ParameterPool";
   exit(-1);
-  return 0;
 }
 //________________________________________________________________________________________

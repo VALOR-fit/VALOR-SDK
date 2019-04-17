@@ -67,6 +67,7 @@
 #include <vector>
 #include <utility>
 #include <map>
+#include <iostream>
 
 #include "valor/Conventions/KineVar.h"
 #include "valor/Conventions/SystType.h"
