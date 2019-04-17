@@ -26,6 +26,8 @@
 #include "valor/Conventions/BeamConf.h"
 #include "valor/Conventions/NuclearTarget.h"
 #include "valor/Conventions/ReacMode.h"
+#include "valor/Conventions/Sample.h"
+#include "valor/Conventions/Detector.h"
 
 namespace valor {
 namespace conv {

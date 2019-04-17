@@ -71,6 +71,9 @@
 #include "valor/Conventions/KineVar.h"
 #include "valor/Conventions/SystType.h"
 #include "valor/Conventions/FitParamApply.h"
+#include "valor/Conventions/PhysParamId.h"
+#include "valor/Conventions/Sample.h"
+#include "valor/Conventions/Detector.h"
 
 using namespace valor;
 
