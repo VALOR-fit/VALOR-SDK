@@ -1002,5 +1002,11 @@ bool util::IsSystematic(PhysParamId_t p)
   if(p >= kNuis000) return true;
   return false;
 }
+//____________________________________________________________________________
+bool util::IsOscParam(PhysParamId_t p)
+{
+  if(util::IsMixingAngle(p) || util::IsMassSplitting(p) || util::IsPhase(p)) return true;
+  else return false;
+}
 //________________________________________________________________________________________
 

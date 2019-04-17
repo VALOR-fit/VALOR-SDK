@@ -1625,6 +1625,7 @@ namespace util {
   bool IsMassSplitting(conv::PhysParamId_t p);
   bool IsPhase        (conv::PhysParamId_t p);
   bool IsNormalization(conv::PhysParamId_t p);
+  bool IsOscParam     (conv::PhysParamId_t p);
 
 } // util
 
