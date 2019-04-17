@@ -66,6 +66,8 @@ void ParameterPool::ReadXML(std::string xml_path)
 
   xmleng->FreeDoc(xmldoc);
   delete xmleng;
+
+  this->PopulateNameRegistry();
 }
 //________________________________________________________________________________________
 const std::vector<Parameter> & ParameterPool::GetParams() const

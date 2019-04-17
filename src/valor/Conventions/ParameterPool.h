@@ -46,12 +46,12 @@ public:
   
   // Make sure we haven't added two parameters with the same name
   void CheckForCollisions() const;
+  
+private:
 
   // Tell the framework classes what our parameter names are
   void PopulateNameRegistry(void);
-  
-private:
-  
+
   std::vector<Parameter> fParams;
   
   ParameterPool();
