@@ -425,14 +425,22 @@ bool Parameter::SearchCategories(string to_find, bool one_category_only) const
 //________________________________________________________________________________________
 bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, ReacMode_t m, NuclearTarget_t nt) const
 {
-  if(b == kbUndefined) { return false; }
   if(m == kmUndefined) { return false; }
-  if(s == ksUndefined) { return false; }
-  if(d == kdUndefined) { return false; }
-  if(nt == kntUndefined) { return false; }
 
   NuFlavour_t f = kReacModeToInitFlavour[m];
   ReacType_t t = kReacModeToType[m];
+
+  return IsAppliedTo(b, s, d, f, t, nt);
+}
+//________________________________________________________________________________________
+bool IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t f, ReacType_t t, NuclearTarget_t nt) const
+{
+  if(b == kbUndefined)         { return false; }
+  if(s == ksUndefined)         { return false; }
+  if(d == kdUndefined)         { return false; }
+  if(nt == kntUndefined)       { return false; }
+  if(f == kNuFlavourUndefined) { return false; }
+  if(t == kmtUndefined)        { return false; }
 
   // Check whether or not to apply the param to this
   bool apply_to_beam     = (kApplyToBeamMode     [b]  & fApply.beam).any();
@@ -442,8 +450,7 @@ bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, ReacMode_t m
   bool apply_to_detector = (kApplyToDetector     [d]  & fApply.detector).any();
   bool apply_to_target   = (kApplyToNuclearTarget[nt] & fApply.target).any();
 
-  bool apply_to_mode = apply_to_flavour && apply_to_type;
-  bool apply = (apply_to_beam && apply_to_sample && apply_to_mode && apply_to_detector && apply_to_target);
+  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour && apply_to_type && apply_to_detector && apply_to_target);
 
   return apply;
 }

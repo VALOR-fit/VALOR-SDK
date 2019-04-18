@@ -109,6 +109,8 @@ namespace valor {
       conv::ApplyMask_t           GetApplyMask (void)               const { return fApply;         }
       bool IsAppliedTo(conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d,
                        conv::ReacMode_t m, conv::NuclearTarget_t nt) const;
+      bool IsAppliedTo(conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d, conv::NuFlavour_t f,
+                       conv::ReacType_t t, conv::NuclearTarget_t nt) const;
                             
       // Search the list of user-specified categories for an entry with content exactly matching to_find (after converting to lower case and removing whitespace)
       bool SearchCategories(std::string to_find, bool one_category_only = false) const;
