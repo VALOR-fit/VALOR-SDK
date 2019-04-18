@@ -433,7 +433,7 @@ bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, ReacMode_t m
   return IsAppliedTo(b, s, d, f, t, nt);
 }
 //________________________________________________________________________________________
-bool IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t f, ReacType_t t, NuclearTarget_t nt) const
+bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t f, ReacType_t t, NuclearTarget_t nt) const
 {
   if(b == kbUndefined)         { return false; }
   if(s == ksUndefined)         { return false; }
@@ -468,7 +468,7 @@ const std::pair<double,double> & Parameter::GetKineRange(conv::KineVar_t kv) con
 //________________________________________________________________________________________
 double Parameter::IsWithinLimits(double val) const
 {
-  if (v >= fLimits.first && v <= fLimits.second) {
+  if (val >= fLimits.first && val <= fLimits.second) {
     return true;
   }
   return false;
