@@ -285,14 +285,16 @@ bool valor::util::OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t 
 {
 
   // Long-baseline oscillations
-  bool is_LBL_osc = true;
-  if(h == kHypNuMuDisapp2F    || h == kHypOsc3F        || h == kHypOsc3FBar ||
-     h == kHypOsc3FBarNormBar || h == kHypOsc3FNormBar || h == kHypOsc3FBarDissap) {
-    is_LBL_osc = true;
+  if((h == kHypNuMuDisapp2F    || h == kHypOsc3F        || h == kHypOsc3FBar ||
+      h == kHypOsc3FBarNormBar || h == kHypOsc3FNormBar || h == kHypOsc3FBarDissap)
+     && util::IsLongBaseline(d)
+    ){
+    return true;
   }
   // Short-baseline oscillations
   else if(h == kHypOscSterile4F || h == kHypOscSterile5F || h == kHypOscSterileEff) {
-    is_LBL_osc = false;
+    // Apply to all detectors
+    return true;
   }
   else if(h == kHypDecay || h == kHypDecoh || h == kHypNSI3F){
     // TODO: How to deal with these cases?
@@ -302,12 +304,6 @@ bool valor::util::OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t 
   else {  // kHypVoid and kHypUndefined should fall into this
     return false;
   }
-
-  if(is_LBL_osc &&  util::IsLongBaseline(d) ||
-    !is_LBL_osc && !util::IsLongBaseline(d)) {
-    return true;
-  }
-  // TODO: other cases (kHypDecay, kHypDecoh, kHypNSI3F)?
 
   return false;
 }
