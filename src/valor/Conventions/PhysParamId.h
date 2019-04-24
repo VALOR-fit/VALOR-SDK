@@ -1617,7 +1617,8 @@ namespace util {
   string RawParamAsString       (conv::PhysParamId_t p);
   string RawParamAsStringTex    (conv::PhysParamId_t p);
   string RawParamAsStringRooTex (conv::PhysParamId_t p);
-  
+  string RawParamAsStringSimple (conv::PhysParamId_t p);
+
   conv::PhysParamId_t PhysParamIdFromRawString(string sh);
 
   bool IsSystematic   (conv::PhysParamId_t p);
