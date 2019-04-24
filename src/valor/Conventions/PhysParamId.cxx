@@ -298,8 +298,8 @@ string util::RawParamAsStringSimple (conv::PhysParamId_t p)
     case ( kPhypDelta34          ) : return "delta34";
     case ( kPhypDelta35          ) : return "delta35";
     case ( kPhypNSIepsMuTau      ) : return "nsi";
-    case ( kPhypMixingEE         ) : return "mixingee";
-    case ( kPhypMixingMuMu       ) : return "mixingmumu";
+    case ( kPhypMixingEE         ) : return "sinsq2thEE";
+    case ( kPhypMixingMuMu       ) : return "sinsq2thMuMu";
     default                        : return "--";
   }
 }
