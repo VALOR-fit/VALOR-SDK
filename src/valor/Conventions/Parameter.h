@@ -178,10 +178,6 @@ namespace valor {
 
       // For a specified node which should contain a string: Does this node exist and is the string not empty?
       bool IsNodeSpecified(const std::string node_path) const;
-      
-      // Do we need this? If so, definitely not here
-      bool OscProbIsAppliedTo(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s,
-                              conv::ReacMode_t m);
 
     // TODO: I reckon we can delete all of this
     /*
