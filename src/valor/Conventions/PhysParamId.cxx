@@ -960,8 +960,9 @@ valor::conv::PhysParamId_t
   string lsh = util::ToLowerCase(sh);
   for (int i = 0 ; i < knppmax ; i++) {
     PhysParamId_t k = (PhysParamId_t) i ;
-    string s = util::ToLowerCase(RawParamAsString(k));
-    if (k != kPhypUndefined && (lsh == s) ) return k;
+    string s        = util::ToLowerCase(RawParamAsString      (k));
+    string s_simple = util::ToLowerCase(RawParamAsStringSimple(k));
+    if (k != kPhypUndefined && (lsh == s || lsh == s_simple) ) return k;
   }
   std::cerr<<"util::PhysParamIdFromRawString >> Unmatched string: "<<sh<<std::endl;
   return kPhypUndefined;
