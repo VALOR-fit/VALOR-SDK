@@ -283,10 +283,10 @@ std::vector<conv::PhysParamId_t> PhysHypothesis::GetParams(void) const
 //________________________________________________________________________________________
 bool valor::util::OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t d)
 {
-
   // Long-baseline oscillations
-  if((h == kHypNuMuDisapp2F    || h == kHypOsc3F        || h == kHypOsc3FBar ||
-      h == kHypOsc3FBarNormBar || h == kHypOsc3FNormBar || h == kHypOsc3FBarDissap)
+  if( (h == kHypNuMuDisapp2F    || h == kHypOsc3F        || h == kHypOsc3FBar       ||
+       h == kHypOsc3FBarNormBar || h == kHypOsc3FNormBar || h == kHypOsc3FBarDissap ||
+       h == kHypDecay           || h == kHypDecoh        || h == kHypNSI3F)
      && util::IsLongBaseline(d)
     ){
     return true;
@@ -296,15 +296,8 @@ bool valor::util::OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t 
     // Apply to all detectors
     return true;
   }
-  else if(h == kHypDecay || h == kHypDecoh || h == kHypNSI3F){
-    // TODO: How to deal with these cases?
-    // TODO: For now just return false
-    return false;
-  }
   else {  // kHypVoid and kHypUndefined should fall into this
     return false;
   }
-
-  return false;
 }
 //________________________________________________________________________________________
