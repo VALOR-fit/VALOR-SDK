@@ -281,3 +281,34 @@ std::vector<conv::PhysParamId_t> PhysHypothesis::GetParams(void) const
   return vec;
 }
 //________________________________________________________________________________________
+bool valor::util::OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t d)
+{
+
+  // Long-baseline oscillations
+  bool is_LBL_osc = true;
+  if(h == kHypNuMuDisapp2F    || h == kHypOsc3F        || h == kHypOsc3FBar ||
+     h == kHypOsc3FBarNormBar || h == kHypOsc3FNormBar || h == kHypOsc3FBarDissap) {
+    is_LBL_osc = true;
+  }
+  // Short-baseline oscillations
+  else if(h == kHypOscSterile4F || h == kHypOscSterile5F || h == kHypOscSterileEff) {
+    is_LBL_osc = false;
+  }
+  else if(h == kHypDecay || h == kHypDecoh || h == kHypNSI3F){
+    // TODO: How to deal with these cases?
+    // TODO: For now just return false
+    return false;
+  }
+  else {  // kHypVoid and kHypUndefined should fall into this
+    return false;
+  }
+
+  if(is_LBL_osc &&  util::IsLongBaseline(d) ||
+    !is_LBL_osc && !util::IsLongBaseline(d)) {
+    return true;
+  }
+  // TODO: other cases (kHypDecay, kHypDecoh, kHypNSI3F)?
+
+  return false;
+}
+//________________________________________________________________________________________

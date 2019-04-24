@@ -27,6 +27,7 @@
 
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/PhysParamId.h"
+#include "valor/Conventions/Detector.h"
 #include "valor/FitCore/FitParamList.h"
 
 using std::ostream;
@@ -75,6 +76,10 @@ private:
 };
 
 ostream & operator<< (ostream & stream, const PhysHypothesis & plst);
+
+  namespace util {
+    bool OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t d);
+  }
 
 } // valor
 
