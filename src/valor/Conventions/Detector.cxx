@@ -10,8 +10,8 @@ ChangeLog:
 
 //fmwk
 #include "valor/Utilities/UtlStr.h"
-//dune
 #include "valor/Conventions/Detector.h"
+#include "valor/Messenger/Messenger.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -74,5 +74,28 @@ Detector_t util::DetectorFromString(string detector)
   }
     
   return kdUndefined;
+}
+//________________________________________________________________________________________
+bool util::IsLongBaseline(Detector_t d)
+{
+  switch(d) {
+    case (kdDUNEND   ) : return false;
+    case (kdDUNEFD1ph) : return true;
+    case (kdDUNEFD2ph) : return true;
+    case (kdSBND     ) : return false;
+    case (kdSBNuBooNE) : return false;
+    case (kdSBNICARUS) : return false;
+    case (kdSuperK   ) : return true;
+    case (kdHyperK   ) : return true;
+    case (kdND280    ) : return false;
+    case (kdND280Up  ) : return false;
+    case (kdINGRID   ) : return false;
+    case (kdNuPRISM  ) : return false;
+    case (kdNuTIT    ) : return false;
+    case (kdNOvAND   ) : return false;
+    case (kdNOvAFD   ) : return true;
+  }
+  LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'";
+  return false;
 }
 //________________________________________________________________________________________
