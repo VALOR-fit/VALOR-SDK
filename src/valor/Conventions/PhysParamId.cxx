@@ -301,6 +301,7 @@ string util::RawParamAsStringSimple (conv::PhysParamId_t p)
     case ( kPhypNSIepsMuTau      ) : return "nsi";
     case ( kPhypMixingEE         ) : return "sinsq2thEE";
     case ( kPhypMixingMuMu       ) : return "sinsq2thMuMu";
+    case ( kPhypMixingMuE        ) : return "sinsq2thMuE";
     default                        : return "--";
   }
 }
