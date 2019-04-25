@@ -102,7 +102,7 @@ namespace valor {
       const bool                                  & HasKinematicRange() const {return fHasKinematicRange;}
       const std::vector<conv::KineVar_t>          & GetKineVars      () const {return fKinematicVariables;}
       const std::vector<std::pair<double,double>> & GetKineRanges    () const {return fKinematicRange;}
-      const std::pair<double,double>              & GetKineRange(conv::KineVar_t) const; // Needs implementing
+      const std::pair<double,double>              & GetKineRange(conv::KineVar_t) const;
       
       
       // Does this need to be here?

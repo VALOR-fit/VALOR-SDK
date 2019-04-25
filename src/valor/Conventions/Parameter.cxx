@@ -56,12 +56,13 @@ Parameter::~Parameter()
 //________________________________________________________________________________________
 void Parameter::Init(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePointer_t param_node)
 {
-  fParam      = param_id;
-  fName       = "undefined";
-  fRooTeXName = "undefined";
-  fTeXName    = "undefined";
-  fType       = kSystUndefined;
-  fHasLimits  = false;
+  fParam             = param_id;
+  fName              = "undefined";
+  fRooTeXName        = "undefined";
+  fTeXName           = "undefined";
+  fType              = kSystUndefined;
+  fHasLimits         = false;
+  fHasKinematicRange = false;
 
   fxml = xml;
   fParamNode = param_node;
@@ -135,6 +136,7 @@ void Parameter::ReadRanges()
       string path = "apply_to_range/" + node_name;
       fKinematicVariables.push_back(kv);
       fKinematicRange.push_back(util::XML2DblDblPair(fxml, fParamNode, path));
+      fHasKinematicRange = true;
       if(fKinematicRange.back().second < fKinematicRange.back().first) {
         LOG("FitInputs", pFATAL) << "For parameter " << fName << " and kinematic variable " << node_name
                                  << ", the value specified for the upper limit of the range is smaller than the value specified for the lower limit";
