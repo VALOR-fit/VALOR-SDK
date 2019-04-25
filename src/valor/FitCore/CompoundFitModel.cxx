@@ -20,6 +20,7 @@ ChangeLog:
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/VThreadPool.h"
+#include "valor/Utilities/NameRegistry.h"
 #include "valor/FitCore/CompoundFitModel.h"
 
 using namespace valor;
