@@ -109,7 +109,7 @@ std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
     case (kvEreco     ) : return std::make_pair(0.  , kALargeNum);
     case (kvEvis      ) : return std::make_pair(0.  , kALargeNum);
     case (kvYreco     ) : return std::make_pair(0.  , 1.        );
-    case (kvThetareco ) : return std::make_pair(-kpi, kpi       );    // TODO: angle convention?
+    case (kvThetareco ) : return std::make_pair(0.  , 360.      );
     case (kvq0reco    ) : return std::make_pair(0.  , kALargeNum);
     case (kvmodqreco  ) : return std::make_pair(0.  , kALargeNum);
     default:
