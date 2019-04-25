@@ -39,6 +39,24 @@ string util::AsString(KineVar_t kv)
   return "";
 }
 //________________________________________________________________________________________
+string util::DSTBranchName(KineVar_t kv)
+{
+  switch(kv) {
+    case (kvEtrue     ) : return "enu_true";     break;
+    case (kvQ2true    ) : return "Q2_true";    break;
+    case (kvEreco     ) : return "enu_reco";     break;
+    case (kvEvis      ) : return "E_vis";      break;
+    case (kvYreco     ) : return "y_reco";     break;
+    case (kvThetareco ) : return "Theta_reco"; break;
+    case (kvq0reco    ) : return "q0_reco";    break;
+    case (kvmodqreco  ) : return "modq_reco";   break;
+    default : 
+     LOG("KineVar",pERROR) 
+        << "Unrecognized kinematic variable: " << kv;
+  }
+  return "";
+}
+//________________________________________________________________________________________
 string util::AsStringTeX(KineVar_t kv, bool root)
 {
   string name = "";
@@ -115,8 +133,11 @@ std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
     default:
       LOG("KineVar",pFATAL)
         << "Unrecognized kinematic variable: " << kv;
-      util::Die(1);
+      util::Die(1); return std::make_pair<double>(conv::kBadResult,conv::kBadResult);
   }
 }
 //________________________________________________________________________________________
-
+// aliases
+string util::KineVarAsString(KineVar_t kv) { return util::AsString(kv); }
+string util::KineVarAsStringTeX(KineVar_t kv, bool root) { return util::AsStringTeX(kv, root); }
+//________________________________________________________________________________________

@@ -17,17 +17,7 @@ include $(VALOR_FMWK)/make/Make.include
 BUILD_TARGETS =    print-make-info     \
 		   make-bin-lib-dir    \
 		   copy-scripts-to-bin \
-		   build-conventions   \
-		   build-utilities     \
-		   build-messenger     \
-		   build-varray        \
-		   build-oscillation   \
-		   build-ntuple        \
-		   build-registry      \
-		   build-cmdline       \
-		   build-core-fitter   \
-		   build-kinebinning   \
-		   build-testing       \
+		   build-libs \
 		   | copy-rootdict-to-lib
 
 # define targets
@@ -48,6 +38,20 @@ copy-scripts-to-bin: | make-bin-lib-dir FORCE
 	cp ${VALOR_FMWK}/make/valor_fmwk-config ${VALOR_FMWK}/bin
 	cp ${VALOR_FMWK}/root/valor ${VALOR_FMWK}/bin
 	[ ! -d "${VALOR_FMWK}/external/color/build/" ] || cp "${VALOR_FMWK}/external/color/build/"* "${VALOR_FMWK}/bin"
+
+
+build-libs: | build-conventions   \
+		   build-utilities     \
+		   build-messenger     \
+		   build-varray        \
+		   build-oscillation   \
+		   build-ntuple        \
+		   build-registry      \
+		   build-cmdline       \
+		   build-core-fitter   \
+		   build-kinebinning   \
+		   build-testing       \
+		   FORCE
 
 build-conventions: | make-bin-lib-dir FORCE
 	@echo " "
@@ -104,19 +108,17 @@ build-testing: | make-bin-lib-dir FORCE
 	@echo "** Building Testing package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Testing"
 
-copy-rootdict-to-lib: | make-bin-lib-dir FORCE
-	@echo " "
-	@echo -n "** Copying ROOT dictionary PCM files to ${VALOR_FMWK}/lib ..."
-	$(shell find "${VALOR_FMWK}/src/valor" -name "_RootDict*_rdict.pcm" | xargs -n 1 -I{} cp {} "${VALOR_FMWK}/lib/" )
-	@echo " done"
-	@echo
-
 make-bin-lib-dir: FORCE
 	@echo " "
 	@echo "** Creating VALOR framework lib and bin directories..."
 	cd ${VALOR_FMWK}; \
 	[ -d bin ] || mkdir bin; chmod 755 bin;\
 	[ -d lib ] || mkdir lib; chmod 755 lib;
+
+copy-rootdict-to-lib: make-bin-lib-dir build-libs FORCE
+	@echo " "
+	@echo "** Copying ROOT dictionary PCM files to ${VALOR_FMWK}/lib"
+	$(shell find "${VALOR_FMWK}/src/valor/" -name "_RootDict*_rdict.pcm" | xargs -n 1 -I{} cp {} "${VALOR_FMWK}/lib/" )
 
 static: FORCE
 	@echo " "

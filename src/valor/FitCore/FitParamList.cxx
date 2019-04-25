@@ -914,6 +914,12 @@ FitParamList * FitParamList::NamedParameterList(string name)
    return fp;
    }
    */
+   if(name == "sterile") {
+     FitParamList * fp = FitParamList::NuOscSterileEffectiveFit();
+     fp -> SetParListName(name);
+     fp -> SetSystMode(0);
+     return fp;
+   }
   
   return 0;
 }
@@ -1533,7 +1539,7 @@ void FitParamList::AppendEffectiveSterileOscillation(FitParamList * fparm, int s
 {
   int ip = start; // first unallocated element in the param list
   fparm->AddParam( ip++, kPhypDm41sq    , 1.,  0.0, 100, 0.10,  false, false);
-  fparm->AddParam( ip++, kPhypMixingEE  , 0.1, 0.0, 1.0, 0.01,  false, false);
+  fparm->AddParam( ip++, kPhypMixingMuE , 0.1, 0.0, 1.0, 0.01,  false, false);
   fparm->AddParam( ip++, kPhypMixingMuMu, 0.1, 0.0, 1.0, 0.01,  false, false);
   return;
 }

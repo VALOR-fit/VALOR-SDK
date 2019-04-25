@@ -152,6 +152,15 @@ bool KBCubHcmbMondrian::Read(string file)
    
   xml->FreeDoc(xmldoc);
   delete xml;
+  
+  if (fName=="" || fName=="uninitialised") {
+    std::ostringstream name;
+    name<<"mond";
+    for (const conv::KineVar_t kv : fKineVars) {
+      name<<"_"<<util::AsString(kv);
+    }
+    this->SetName(name.str().c_str());
+  }
 
   return true;
 }
@@ -388,8 +397,15 @@ unsigned int KBCubHcmbMondrian::FindBin(vector<double> & xarr) const
        }
     }
   }
+  else {
+     LOG("Binning",pFATAL) << this->GetName()<< " needs array of dimension "<<fNDimensions <<" but got size "<<xarr.size();
+     util::Die(-1);
+  }
 
-  LOG("Binning", pFATAL) << "Mondrian binning doesn't span all space?";
+  LOG("Binning", pFATAL) << this->GetName()<< ": Mondrian binning doesn't span all space?";
+  for (size_t i = 0 ; i < fNDimensions ; i++ ) {
+     LOG("Binning",pFATAL) << util::AsString(fKineVars[i]) << "\t= "<<xarr[i];
+  }
   util::Die(-1);
   return 0;
 }
@@ -549,5 +565,17 @@ void KBCubHcmbMondrian::CleanUp(void)
   this->Init();
 }
 //________________________________________________________________________________________
-
-
+void KBCubHcmbMondrian::Print(std::ostream & stream) const
+{
+  stream<<"Mondrian binning: "<<this->GetName()<<" "<<this->GetTitle()<<" ("<<fNBins<<" bins)"<<std::endl;
+  for (size_t ibin = 0; ibin < fNBins; ibin++) {
+    stream<<"  Bin "<<std::setw(4)<<ibin<<"\t";
+    for (const conv::KineVar_t & kv : fKineVars) {
+      stream<<std::setw(4)<<this->BinMinimum(ibin,kv)<<" < "
+            <<util::AsString(kv)
+            <<" < "<<std::setw(4)<<this->BinMaximum(ibin,kv)<<" ; ";
+    }
+    stream<<std::endl;
+  }
+}
+//________________________________________________________________________________________

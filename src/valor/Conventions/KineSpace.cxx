@@ -224,36 +224,38 @@ conv::KineSpace_t util::SubSpaceTrue(conv::KineSpace_t ks)
   }
   return kspUndefined;
 }
-
+//________________________________________________________________________________________
 std::vector<valor::conv::KineVar_t> util::KineVarSubset(conv::KineSpace_t original,
       conv::KineSpace_t target)
 {
-   // Check the new kinematic space is consistent with the current space
    std::vector<KineVar_t> originalKineVars = util::KineVar(original);
-   std::vector<KineVar_t> targetKineVars = util::KineVar(target);
-   if(targetKineVars.size() >= originalKineVars.size())
-   {  // New kinematic space not a strict subset of current space
-      LOG("KineSpace", pERROR) << "New kinematic space " <<
-         util::AsString(target) << " is not a strict subset of the current " <<
-         "kinematic space " << util::AsString(original) << ".";
-      util::Die(-1);
+   std::vector<KineVar_t> targetKineVars   = util::KineVar(target);
+   
+   std::vector<KineVar_t> in_both;
+   //~ std::vector<KineVar_t> in_original_but_not_target;
+   std::vector<KineVar_t> in_target_but_not_original;
+   
+   //~ for (const auto & kv_o : originalKineVars) {
+      //~ if (!util::KineSpaceContains(target,kv_o)) {
+        //~ in_original_but_not_target.push_back(kv_o);
+      //~ }
+   //~ }
+   
+   for (const auto & kv_t : targetKineVars) {
+     if (util::KineSpaceContains(original,kv_t)) {
+       in_both.push_back(kv_t);
+     }
+     else {
+       in_target_but_not_original.push_back(kv_t);
+     }
    }
-   else
-   {
-      for(auto kv : targetKineVars) 
-      {
-         if(std::find(originalKineVars.begin(), originalKineVars.end(), kv) ==
-               originalKineVars.end())
-         {  // Target kinematic space has values not in current space
-            LOG("KineSpace", pERROR) << "New kinematic space " <<
-               util::AsString(target) << " is not a strict subset of the current " <<
-               "kinematic space " << util::AsString(original) << ".";
-            util::Die(-1);
-         }
-      }
+   
+   if (in_target_but_not_original.size()) {
+     LOG("KineSpace",pFATAL) << "Phase space "<<util::AsString(target)<<" is not a string subset of "<<util::AsString(original);
+     util::Die(-1); return std::vector<KineVar_t>();
    }
-
-   return targetKineVars;
+   
+   return in_both;
 }
 
 //________________________________________________________________________________________
@@ -288,6 +290,7 @@ vector<KineVar_t> util::KineVar(conv::KineSpace_t ks)
     case (kspErecoThetareco)   :
       vv.push_back(kvEreco);
       vv.push_back(kvThetareco);
+      break;
     case (kspq0recomodqreco) :
       vv.push_back(kvq0reco);
       vv.push_back(kvmodqreco);
@@ -332,6 +335,7 @@ vector<KineVar_t> util::KineVarReco(conv::KineSpace_t ks)
     case (kspErecoThetareco)   :
       vv.push_back(kvEreco);
       vv.push_back(kvThetareco);
+      break;
     case (kspq0recomodqreco) :
       vv.push_back(kvq0reco);
       vv.push_back(kvmodqreco);
@@ -384,6 +388,12 @@ vector<KineVar_t> util::KineVarTrue(conv::KineSpace_t ks)
   return vv;
 }
 //________________________________________________________________________________________
+bool util::KineSpaceContains(conv::KineSpace_t ks, conv::KineVar_t kv)
+{
+  std::vector<valor::conv::KineVar_t> vars(util::KineVar(ks));
+  return std::find(vars.begin(), vars.end(), kv) != vars.end();
+}
+//________________________________________________________________________________________
 conv::KineSpace_t util::KineSpaceFromInt(int i_sp)
 {
   // Cast an integer to KineSpace_t, but with boundary check
@@ -403,6 +413,22 @@ conv::KineSpace_t util::KineSpaceFromString(string str_sp)
     }
   }
 
+  return kspUndefined;
+}
+//________________________________________________________________________________________
+conv::KineSpace_t util::KineSpaceFromKineVar(const KineVar_t & kv)
+{
+  switch (kv) {
+    case kvUndefined   : return kspUndefined;
+    case kvEtrue       : return kspEtrue;
+    case kvQ2true      : return kspUndefined;
+    case kvEreco       : return kspEreco;
+    case kvEvis        : return kspEvis;
+    case kvYreco       : return kspYreco;
+    case kvThetareco   : return kspThetareco;
+    case kvq0reco      : return kspUndefined;
+    case kvmodqreco    : return kspUndefined;
+  }
   return kspUndefined;
 }
 //________________________________________________________________________________________

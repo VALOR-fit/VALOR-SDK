@@ -23,6 +23,8 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <iostream>
+#include <iomanip>
 
 #include <TNamed.h>
 #include <TLine.h>
@@ -37,6 +39,12 @@ namespace valor {
 class VALORBinning: public TNamed
 {
 public:
+
+  // Returns new binning of appropriate type from file
+  // If read_now is true, it will read this immediately
+  // Otherwise just get the right type and return that, you must call Read() manually
+  static VALORBinning * BinningFromFile(const std::string & xml_file, bool read_now = false);
+  
   VALORBinning();
   VALORBinning(std::string name, std::string title);
   virtual ~VALORBinning();
@@ -94,6 +102,9 @@ public:
   
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const = 0;
+  
+  // Print a summary of the binning
+  virtual void Print(std::ostream & stream = std::cout) const = 0;
   
   
   using TObject::Read; // Tell clang we really do want this

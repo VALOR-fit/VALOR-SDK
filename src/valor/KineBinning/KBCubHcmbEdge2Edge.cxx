@@ -13,6 +13,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Messenger/Messenger.h"
 #include "valor/VArray/VALORArray.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/Env.h"
 #include "valor/KineBinning/KBCubHcmbEdge2Edge.h"
 
@@ -64,7 +65,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   XMLNodePointer_t root_node = xml->DocGetRootElement(xmldoc);
 
   //
-  string space = util::XML2String(xml,root_node,"space");
+  string space = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"space"));
   fKineSpace = util::KineSpaceFromString(space);
   if(fKineSpace == conv::kspUndefined) {
     LOG("Binning", pERROR) 
@@ -87,7 +88,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   fBinEdges   . reserve(fNDimensions);
 
   //
-  string type = util::XML2String(xml,root_node,"type");
+  string type = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"type"));
   if(type != "edge-to-edge") {
     LOG("Binning", pERROR) 
       << "Input binning scheme [" << type << "] not `edge-to-edge'";
@@ -101,8 +102,8 @@ bool KBCubHcmbEdge2Edge::Read(string file)
     string kine_var_str = util::AsString(kine_var);
     const char * kine_var_ccs = kine_var_str.c_str();
 
-    string bin_size = util::XML2String(
-       xml,root_node,Form("%s_binning/bin_size",kine_var_ccs));
+    string bin_size = util::RemoveAllWhitespace(util::XML2String(
+       xml,root_node,Form("%s_binning/bin_size",kine_var_ccs)));
     unsigned int nbins_this_dim = (unsigned int) 
         util::XML2Int(xml,root_node,Form("%s_binning/nbins",kine_var_ccs));
         
@@ -167,6 +168,15 @@ bool KBCubHcmbEdge2Edge::Read(string file)
    
   xml->FreeDoc(xmldoc);
   delete xml;
+  
+  if (fName=="" || fName=="uninitialised") {
+    std::ostringstream name;
+    name<<"e2e";
+    for (const conv::KineVar_t kv : fKineVars) {
+      name<<"_"<<util::AsString(kv);
+    }
+    this->SetName(name.str().c_str());
+  }
 
   return true;
 }
@@ -191,9 +201,11 @@ KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
    }
 
    // Reserve space for the bin minima, maxima and edges
-   binning->fMinimum.reserve(binning->fNDimensions);
-   binning->fMaximum.reserve(binning->fNDimensions);
+   binning->fMinimum .reserve(binning->fNDimensions);
+   binning->fMaximum .reserve(binning->fNDimensions);
    binning->fBinEdges.reserve(binning->fNDimensions);
+   
+   size_t nbins = 1;
 
    // Construct new bin edges from old
    for(unsigned int d = 0; d < fNDimensions; ++d)
@@ -202,12 +214,19 @@ KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
                fKineVars[d]) != binning->fKineVars.end())
       {  // Current dimension is for a kinematic variable in the target space
          // Add the edges for the current dimension, type, minima and maxima
-         binning->fBinEdges.push_back(fBinEdges[d]);
+         binning->fBinEdges.push_back  (fBinEdges[d]  );
          binning->fFixedWidth.push_back(fFixedWidth[d]);
-         binning->fMinimum.push_back(fMinimum[d]);
-         binning->fMaximum.push_back(fMaximum[d]);
+         binning->fMinimum.push_back   (fMinimum[d]   );
+         binning->fMaximum.push_back   (fMaximum[d]   );
+         
+         nbins *= fBinEdges[d].size()-1;
       }
    }
+   
+   binning->fNBins = nbins;
+   
+   TString new_name = TString::Format("%s_contracted_to_%s",this->GetName(),util::AsString(ks).c_str());
+   binning->SetName(new_name.Data());
 
    return binning;
 }
@@ -515,5 +534,19 @@ std::vector<TLine>  KBCubHcmbEdge2Edge::GetBinningTLines(void) const
     LOG("KBCubHcmbMondrian",pWARN) << "GetBinningTLines can only be used with 2D binnings.";
   }
   return lines;
+}
+//________________________________________________________________________________________
+void KBCubHcmbEdge2Edge::Print(std::ostream & stream) const
+{
+  stream<<"Edge to edge binning: "<<this->GetName()<<" "<<this->GetTitle()<<" ("<<fNBins<<" bins)"<<std::endl;
+  for (size_t ibin = 0; ibin < fNBins; ibin++) {
+    stream<<"  Bin "<<std::setw(4)<<ibin<<"\t";
+    for (const conv::KineVar_t & kv : fKineVars) {
+      stream<<std::setw(4)<<this->BinMinimum(ibin,kv)<<" < "
+            <<util::AsString(kv)
+            <<" < "<<std::setw(4)<<this->BinMaximum(ibin,kv)<<" ; ";
+    }
+    stream<<std::endl;
+  }
 }
 //________________________________________________________________________________________

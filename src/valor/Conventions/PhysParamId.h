@@ -85,7 +85,8 @@ typedef enum EPhysParamId
    kPhypNSIepsMuTau,           // Nonstandard matter interactions
    kPhypMixingEE,              // Effective steriles (e-e)
    kPhypMixingMuMu,            // Effective steriles (mu-mu)
-   
+   kPhypMixingMuE,             // Effective steriles (mu-e)
+
    // Generic nuisance parameters
   kNuis000 ,
   kNuis001 ,

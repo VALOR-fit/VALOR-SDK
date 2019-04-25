@@ -223,7 +223,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   //Reading systematics list file name
   string systfile = util::XML2String(xml,root_node,format.c_str());
   //Reading systematis list from the xml file
-  std::string syst_xml = util::CompleteConfigPath(std::string("systematics/")+systfile);
+  std::string syst_xml = util::CompleteConfigPath(std::string("parameter_matrices/")+systfile);
   //Parse syst list file and put parameters into a vector
   TXMLEngine * xml_syst = new TXMLEngine;
   XMLDocPointer_t doc_syst = xml_syst->ParseFile(syst_xml.c_str());

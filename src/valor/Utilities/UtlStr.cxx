@@ -41,13 +41,13 @@ vector<string> valor::util::Tokens (string input, string delimiter)
 {
 // split a string of 'delimiter' separated values and return each string
 // part as a vector<string> element.
-
   vector<string> tokens;
-
-  while(input.find_first_of(delimiter) < input.length()) {
-
-    tokens.push_back( input.substr(0, input.find_first_of(delimiter)) );
-    input = input.substr(input.find_first_of(delimiter)+1, input.length());
+  size_t pos = 0;
+  std::string token;
+  while ((pos = input.find(delimiter)) != std::string::npos) {
+    token = input.substr(0, pos);
+    input.erase(0, pos + delimiter.length());
+    tokens.push_back(token);
   }
   tokens.push_back(input);
   return tokens;

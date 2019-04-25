@@ -8,15 +8,23 @@ Copyright (c) 2010-2017, The VALOR Fitting Group, All Rights Reserved.
 
 #include "VALORBinning.h"
 
+#include "TSystem.h"
+#include "TXMLEngine.h"
+
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Utilities/UtlXML.h"
+#include "valor/Utilities/UtlStr.h"
+
+#include "valor/KineBinning/KBCubHcmbMondrian.h"
+#include "valor/KineBinning/KBCubHcmbEdge2Edge.h"
 
 using namespace valor;
 using std::vector;
 
 //________________________________________________________________________________________
 VALORBinning::VALORBinning() :
- TNamed(),
+ TNamed("uninitialised","uninitialised"),
  fKineSpace(conv::kspUndefined),
  fNDimensions(0),
  fKineVarToDim(conv::kNKineVarMax,-1),
@@ -144,5 +152,49 @@ conv::KineVar_t VALORBinning::KineVar(unsigned int dimension)
   if(dimension < fNDimensions) return fKineVars[dimension];
 
   return conv::kvUndefined;
+}
+//________________________________________________________________________________________
+VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool read_now)
+{
+  TString ts_file(util::CompleteConfigPath(xml_file).c_str());
+  gSystem->ExpandPathName(ts_file);
+  
+  FileStat_t dummy;
+  if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
+    LOG("VALORBinning", pERROR) << "Binning file not found: " << xml_file;
+    util::Die(1); return nullptr;
+  }
+
+  // Parse the input binning configuration XML file
+  TXMLEngine* xml = new TXMLEngine;   
+  XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
+  if (xmldoc==0) {
+    LOG("VALORBinning",pERROR) 
+        << "Can not parse input XML file [" << ts_file << "]";
+    delete xml;
+    util::Die(1); return nullptr;
+  }
+  XMLNodePointer_t root_node = xml->DocGetRootElement(xmldoc);
+
+  VALORBinning * binning = nullptr;
+  string type = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"type"));
+  if(type == "edge-to-edge") {
+    binning = new KBCubHcmbEdge2Edge;
+  }
+  else if (type == "mondrian") {
+    binning = new KBCubHcmbMondrian;
+  }
+  else {
+    LOG("VALORBinning",pFATAL) << "Unable to initialise binning type "<<type<<" in xml file "<<xml_file;
+    util::Die(-1) ; return nullptr;
+  }
+  if (read_now) {
+    bool success = binning->Read(xml_file);
+    if (!success) {
+      LOG("VALORBinning",pFATAL) << "Failed to read binning from file "<<xml_file;
+      util::Die(-1) ; return nullptr;
+    }
+  }
+  return binning;
 }
 //________________________________________________________________________________________
