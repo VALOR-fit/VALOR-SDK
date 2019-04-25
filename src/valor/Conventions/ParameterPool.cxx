@@ -139,8 +139,11 @@ void ParameterPool::PopulateNameRegistry(void)
 
   for (const Parameter & param : fParams) {
     conv::PhysParamId_t p = param.GetID();
-    nr->fParamNames      [p] = param.GetName(); // TODO: Put in the long name from the t2k_migration branch
-    nr->fParamNamesSimple[p] = param.GetName(); // If we start using proper names, will change this.
+    nr->fParamNames          [p] = param.GetName      (); // TODO: Put in the long name from the t2k_migration branch
+    nr->fParamNamesSimple    [p] = param.GetName      (); // If we start using proper names, will change this.
+    nr->fParamNamesVerySimple[p] = param.GetName      (); // If we start using proper names, will change this.
+    nr->fParamNamesTex       [p] = param.GetTeXName   (); // If we start using proper names, will change this.
+    nr->fParamNamesRooTex    [p] = param.GetRooTeXName(); // If we start using proper names, will change this.
   }
   return;
 }

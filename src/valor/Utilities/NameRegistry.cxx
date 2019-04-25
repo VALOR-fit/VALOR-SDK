@@ -45,6 +45,8 @@ void valor::util::NameRegistry::Init(void)
     fParamNames          .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsString      (p)));
     fParamNamesSimple    .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringRaw   (p)));
     fParamNamesVerySimple.insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringSimple(p)));
+    fParamNamesTex       .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringTex   (p)));
+    fParamNamesRooTex    .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringRooTex(p)));
   }
   return;
 }
@@ -70,9 +72,25 @@ std::string valor::util::NameRegistry::ParamAsStringVerySimple(PhysParamId_t p )
   return iter->second;
 }
 //________________________________________________________________________________________
+std::string valor::util::NameRegistry::ParamAsStringTex(PhysParamId_t p ) const
+{
+  map<PhysParamId_t, string>::const_iterator iter = fParamNamesTex.find(p);
+  assert(iter != fParamNamesTex.end());
+  return iter->second;
+}
+//________________________________________________________________________________________
+std::string valor::util::NameRegistry::ParamAsStringRooTex(PhysParamId_t p ) const
+{
+  map<PhysParamId_t, string>::const_iterator iter = fParamNamesRooTex.find(p);
+  assert(iter != fParamNamesRooTex.end());
+  return iter->second;
+}
+//________________________________________________________________________________________
 std::string valor::util::NameRegistry::AsString          (PhysParamId_t p) const { return this->ParamAsString          (p); }
 std::string valor::util::NameRegistry::AsStringSimple    (PhysParamId_t p) const { return this->ParamAsStringSimple    (p); }
 std::string valor::util::NameRegistry::AsStringVerySimple(PhysParamId_t p) const { return this->ParamAsStringVerySimple(p); }
+std::string valor::util::NameRegistry::AsStringTex       (PhysParamId_t p) const { return this->ParamAsStringTex       (p); }
+std::string valor::util::NameRegistry::AsStringRooTex    (PhysParamId_t p) const { return this->ParamAsStringRooTex    (p); }
 //________________________________________________________________________________________
 PhysParamId_t valor::util::NameRegistry::PhysParamFromString(std::string inp_name) const
 {
