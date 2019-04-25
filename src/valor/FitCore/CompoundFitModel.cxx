@@ -186,9 +186,7 @@ void CompoundFitModel::RandomizeSystematics (std::map<valor::conv::PhysParamId_t
 //________________________________________________________________________________________
 void CompoundFitModel::TweakSystematic (string syst_name, double twkdial, Option_t * opt)
 {
-  assert(!"Not implemented");
-  (void)syst_name;
-  PhysParamId_t syst = conv::kPhypUndefined; // util::PhysParamFromString(syst_name);
+  PhysParamId_t syst = util::NameRegistry::Instance()->PhysParamFromString(syst_name);
   this->TweakSystematic(syst,twkdial,opt);
 }
 //________________________________________________________________________________________
