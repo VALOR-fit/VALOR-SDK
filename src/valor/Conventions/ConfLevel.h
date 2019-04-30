@@ -27,7 +27,12 @@ typedef enum EConfLevel {
    kCL68, 
    kCL90, 
    kCL95, 
-   kCL99
+   kCL99,
+   kCL1Sigma,
+   kCL2Sigma,
+   kCL3Sigma,
+   kCL4Sigma,
+   kCL5Sigma
 } 
 ConfLevel_t; 
 

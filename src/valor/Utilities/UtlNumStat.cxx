@@ -88,10 +88,11 @@ double valor::util::DeltaChisquare(
   switch(cl) {
       case (kCLUndefined) : 
       {
-	return -99999;  
+        return -99999;  
         break;
       }
       case (kCL68) :
+      case (kCL1Sigma) :
       {
         if      (nfitparams == 1)  { return  1.00;  }
         else if (nfitparams == 2)  { return  2.30;  }
@@ -108,6 +109,7 @@ double valor::util::DeltaChisquare(
         break;
       }
       case (kCL95) :
+      case (kCL2Sigma):
       {
         if      (nfitparams == 1)  { return  3.84;  }
         else if (nfitparams == 2)  { return  5.99;  }
@@ -120,6 +122,30 @@ double valor::util::DeltaChisquare(
         if      (nfitparams == 1)  { return  6.63;  }
         else if (nfitparams == 2)  { return  9.21;  }
         else if (nfitparams == 3)  { return 11.34;  }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL3Sigma) :
+      {
+        if      (nfitparams == 1)  { return  9.00;  }
+        else if (nfitparams == 2)  { return 11.83;  }
+        else if (nfitparams == 3)  { return 14.16;  }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL4Sigma) :
+      {
+        if      (nfitparams == 1)  { return 16.00;  }
+        else if (nfitparams == 2)  { return -99999; } // calculate these properly later
+        else if (nfitparams == 3)  { return -99999; }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL5Sigma) :
+      {
+        if      (nfitparams == 1)  { return 25.00;  }
+        else if (nfitparams == 2)  { return -99999; } // calculate these properly later
+        else if (nfitparams == 3)  { return -99999; }
         else                       { return -99999; }
         break;
       }
@@ -167,6 +193,9 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
     LOG("UtlNumStat",pWARN)<<"Negative chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
   }
 #endif
+
+  LOG("UtlNumStat",pWARN)<<"Chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
+
   return TMath::Max(0.,chisq);
 }
 //____________________________________________________________________________
