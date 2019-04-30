@@ -44,7 +44,23 @@ using std::ofstream;
 using std::ostringstream;
 
 using namespace valor;
-
+//____________________________________________________________________________________________________
+vector<XMLNodePointer_t> valor::util::FindAllNodes(TXMLEngine* xml_eng, XMLNodePointer_t top_node)
+{
+  vector<XMLNodePointer_t> nodes;
+  // Retrieve the first node for the search
+  XMLNodePointer_t node = xml_eng->GetChild(top_node);
+  if(node)
+  {  // There is a node to examine
+    nodes.push_back(node);
+    // Iterate through the remaining nodes
+    while((node = xml_eng->GetNext(node)))
+    {
+      nodes.push_back(node);
+    }
+  }
+  return nodes;
+}
 //____________________________________________________________________________________________________
 XMLNodePointer_t valor::util::FindNode(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
