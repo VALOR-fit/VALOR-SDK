@@ -42,7 +42,9 @@ static const int kNNuFlavour = 6;
 namespace util {
 
   std::string AsString(conv::NuFlavour_t p);
+  std::string AsStringTeX(conv::NuFlavour_t p);
   std::string FlavourAsString(conv::NuFlavour_t p); //alias for python
+  std::string FlavourAsStringTeX(conv::NuFlavour_t p); //alias for python
 
   conv::NuFlavour_t FlavourFromString(std::string h);
   conv::NuFlavour_t FlavourFromPDG(int nu_pdg);
