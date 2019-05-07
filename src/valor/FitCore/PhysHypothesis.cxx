@@ -191,6 +191,11 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
   }
   //
   
+  if (fHypothesis == kHypOscSterileEff) {
+    fParams[kPhypMixingMuMu] = 0;
+    fParams[kPhypMixingMuE ] = 0;
+    fParams[kPhypDm41sq    ] = 0;
+  }
 
 
   // neutrino decay 
@@ -202,6 +207,11 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
   if(fHypothesis == kHypDecoh) {
     fParams[kPhypSinsq2ThetaDecoh] = 0;
     fParams[kPhypMusqDecoh]        = 0;
+  }
+  
+  if (fHypothesis != kHypUndefined && fParams.size()==0) {
+    LOG("PhysHypothesis",pFATAL) << "Warning - failed to initalise hypothesis "<<util::AsString(fHypothesis);
+    util::Die(-1) ; return;
   }
 
 }
