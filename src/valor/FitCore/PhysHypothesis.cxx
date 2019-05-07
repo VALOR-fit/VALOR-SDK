@@ -209,7 +209,8 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
     fParams[kPhypMusqDecoh]        = 0;
   }
   
-  if (fHypothesis != kHypUndefined && fParams.size()==0) {
+  if ( (fHypothesis != kHypUndefined && fHypothesis != kHypVoid) 
+       && fParams.size()==0) {
     LOG("PhysHypothesis",pFATAL) << "Warning - failed to initalise hypothesis "<<util::AsString(fHypothesis);
     util::Die(-1) ; return;
   }
