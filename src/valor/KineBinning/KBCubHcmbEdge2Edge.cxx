@@ -195,9 +195,20 @@ KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
    // the subset
    binning->fNDimensions = binning->fKineVars.size();
    // Set the mapping from kinematic variable to dimension
-   for(unsigned int i = 0; i < binning->fNDimensions; ++i)
+   unsigned int i = 0;
+   for(auto this_kv : fKineVars)
    {
-      binning->fKineVarToDim[fKineVars[i]] = i;
+      // Only add kinevars to the contracted binning scheme if they are included in the contracted kinespace
+      if(util::KineSpaceContains(ks, this_kv))
+      {
+         binning->fKineVarToDim[this_kv] = i;
+         i++;
+      }
+   }
+   if(i != binning->fNDimensions)
+   {
+     LOG("KBCubHcmbEdge2Edge",pFATAL) << "Wrong number of kinevars stored in contracted binning scheme.";
+     util::Die(-1) ; return nullptr;
    }
 
    // Reserve space for the bin minima, maxima and edges
