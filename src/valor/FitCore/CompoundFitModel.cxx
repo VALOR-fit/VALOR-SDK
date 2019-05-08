@@ -188,6 +188,10 @@ void CompoundFitModel::RandomizeSystematics (std::map<valor::conv::PhysParamId_t
 void CompoundFitModel::TweakSystematic (string syst_name, double twkdial, Option_t * opt)
 {
   PhysParamId_t syst = util::NameRegistry::Instance()->PhysParamFromString(syst_name);
+  if(syst == conv::kPhypUndefined) {
+    LOG("CompoundFitModel",pERROR) << "Could not recognise parameter with name \'" << content << "\'";
+    util.Die(-1);
+  }
   this->TweakSystematic(syst,twkdial,opt);
 }
 //________________________________________________________________________________________
