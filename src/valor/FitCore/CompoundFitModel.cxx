@@ -189,8 +189,8 @@ void CompoundFitModel::TweakSystematic (string syst_name, double twkdial, Option
 {
   PhysParamId_t syst = util::NameRegistry::Instance()->PhysParamFromString(syst_name);
   if(syst == conv::kPhypUndefined) {
-    LOG("CompoundFitModel",pERROR) << "Could not recognise parameter with name \'" << content << "\'";
-    util.Die(-1);
+    LOG("CompoundFitModel",pERROR) << "Could not recognise parameter with name \'" << syst_name << "\'";
+    util::Die(-1);
   }
   this->TweakSystematic(syst,twkdial,opt);
 }

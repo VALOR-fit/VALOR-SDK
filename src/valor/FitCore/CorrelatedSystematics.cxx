@@ -242,7 +242,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     else {
       LOG("CorrelatedSystematics",pERROR) << "Could not recognise parameter with name \'" << content
                                           << "\' in the input parameter list, \'" << syst_xml <<"\'";
-      util.Die(-1);
+      util::Die(-1);
     }
     curr_child_node = xml_syst->GetNext(curr_child_node);
   }
