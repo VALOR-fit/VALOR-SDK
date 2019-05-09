@@ -55,6 +55,7 @@ using namespace valor::conv;
 
 using std::cout;
 using std::endl;
+using std::vector;
    
 //____________________________________________________________________________ 
 FitterMinuit2::FitterMinuit2() :
