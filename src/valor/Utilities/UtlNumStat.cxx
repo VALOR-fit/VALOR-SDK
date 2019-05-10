@@ -85,6 +85,7 @@ using namespace valor::conv;
 double valor::util::DeltaChisquare(
   ConfLevel_t cl, int nfitparams) 
 {
+  // Get with TMath::ChisquareQuantile
   switch(cl) {
       case (kCLUndefined) : 
       {
@@ -141,16 +142,16 @@ double valor::util::DeltaChisquare(
       case (kCL4Sigma) :
       {
         if      (nfitparams == 1)  { return 16.00;  }
-        else if (nfitparams == 2)  { return -99999; } // calculate these properly later
-        else if (nfitparams == 3)  { return -99999; }
+        else if (nfitparams == 2)  { return 19.34;  }
+        else if (nfitparams == 3)  { return 22.07;  }
         else                       { return -99999; }
         break;
       }
       case (kCL5Sigma) :
       {
         if      (nfitparams == 1)  { return 25.00;  }
-        else if (nfitparams == 2)  { return -99999; } // calculate these properly later
-        else if (nfitparams == 3)  { return -99999; }
+        else if (nfitparams == 2)  { return 28.76;  }
+        else if (nfitparams == 3)  { return 31.82; }
         else                       { return -99999; }
         break;
       }
