@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import ROOT
 import sys
+import math
 import numpy as np
+import ROOT
 
 R=ROOT
 
@@ -37,5 +38,9 @@ for filename in files:
   
   graph.SetName(name)
   graph.Write()
+  
+  log_graph = R.TGraph(len(x_sorted),np.log10(np.array(x_sorted)),np.log10(np.array(y_sorted)))
+  log_graph.SetName(name+"_log")
+  log_graph.Write()
     
   print "Made",name
