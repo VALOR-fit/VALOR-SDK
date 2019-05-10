@@ -18,6 +18,8 @@
 #ifndef conf_level_h
 #define conf_level_h
 
+#include <string>
+
 namespace valor {
 
 namespace conv {
@@ -39,6 +41,9 @@ ConfLevel_t;
 } // conv
 
 namespace util {
+   
+  std::string AsString(conv::ConfLevel_t cl);
+  std::string ConfLevelAsString(conv::ConfLevel_t cl); //alias for above
 
 
 } // util
