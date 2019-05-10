@@ -109,7 +109,6 @@ double valor::util::DeltaChisquare(
         break;
       }
       case (kCL95) :
-      case (kCL2Sigma):
       {
         if      (nfitparams == 1)  { return  3.84;  }
         else if (nfitparams == 2)  { return  5.99;  }
@@ -125,6 +124,12 @@ double valor::util::DeltaChisquare(
         else                       { return -99999; }
         break;
       }
+      case (kCL2Sigma):
+        if      (nfitparams == 1)  { return  4.00;  }
+        else if (nfitparams == 2)  { return  6.18;  }
+        else if (nfitparams == 3)  { return  8.03;  }
+        else                       { return -99999; }
+        break;
       case (kCL3Sigma) :
       {
         if      (nfitparams == 1)  { return  9.00;  }
