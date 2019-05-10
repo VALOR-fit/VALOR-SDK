@@ -38,6 +38,8 @@ typedef enum EConfLevel {
 } 
 ConfLevel_t; 
 
+const size_t kNConfLevels = kCL5Sigma+1;
+
 } // conv
 
 namespace util {
