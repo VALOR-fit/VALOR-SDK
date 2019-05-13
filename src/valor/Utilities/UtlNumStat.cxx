@@ -86,6 +86,13 @@ double valor::util::DeltaChisquare(
   ConfLevel_t cl, int nfitparams) 
 {
   // Get with TMath::ChisquareQuantile
+  // eg in pydune
+  // for nsigma in xrange(1,6):
+  //   for ndim in xrange(1,4):
+  //     prob = R.TMath.Erf(nsigma/R.TMath.Sqrt2())
+  //     dchisq = R.TMath.ChisquareQuantile(prob,ndim)
+  //     print "Nsigma = %u ; ndim = %u ; deltachisq = %.2lf"%(nsigma,ndim,dchisq)
+
   switch(cl) {
       case (kCLUndefined) : 
       {
@@ -128,7 +135,7 @@ double valor::util::DeltaChisquare(
       case (kCL2Sigma):
         if      (nfitparams == 1)  { return  4.00;  }
         else if (nfitparams == 2)  { return  6.18;  }
-        else if (nfitparams == 3)  { return  8.03;  }
+        else if (nfitparams == 3)  { return  8.02;  }
         else                       { return -99999; }
         break;
       case (kCL3Sigma) :
@@ -142,16 +149,16 @@ double valor::util::DeltaChisquare(
       case (kCL4Sigma) :
       {
         if      (nfitparams == 1)  { return 16.00;  }
-        else if (nfitparams == 2)  { return 19.34;  }
-        else if (nfitparams == 3)  { return 22.07;  }
+        else if (nfitparams == 2)  { return 19.33;  }
+        else if (nfitparams == 3)  { return 22.06;  }
         else                       { return -99999; }
         break;
       }
       case (kCL5Sigma) :
       {
         if      (nfitparams == 1)  { return 25.00;  }
-        else if (nfitparams == 2)  { return 28.76;  }
-        else if (nfitparams == 3)  { return 31.82; }
+        else if (nfitparams == 2)  { return 28.74;  }
+        else if (nfitparams == 3)  { return 31.81; }
         else                       { return -99999; }
         break;
       }
