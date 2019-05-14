@@ -72,7 +72,7 @@ PhysParamId_t valor::util::NameRegistry::PhysParamFromString(std::string inp_nam
     string name = this->AsString(p);
     string name_simple = this->AsStringSimple(p);
     if((name == inp_name) || (name_simple == inp_name)) {
-	  return p;
+      return p;
     }
   }
   return kPhypUndefined;
