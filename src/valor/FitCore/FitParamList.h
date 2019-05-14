@@ -228,7 +228,7 @@ namespace valor {
     // - "numudisapp2f+nuisance"            : As "numudisapp2f" + all nuisance parameters
     // - "decay"                            : Fit for sin^2(2theta) and \alpha_{decay}
     // - "decoh"                            : Fit for sin^2(2theta) and \mu_{decoherence}
-    static FitParamList * NamedParameterList (string name);
+    static FitParamList * NamedParameterList (string name, size_t n_empty = 0);
     
     // Get the name used in NamedParameterList
     string GetParListName  (void) const { return fParListName; }
