@@ -205,9 +205,9 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
   if (chisq<conv.kAVerySmallNum) {
     LOG("UtlNumStat",pWARN)<<"Negative chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
   }
-#endif
 
-  LOG("UtlNumStat",pWARN)<<"Chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
+  LOG("UtlNumStat",pDEBUG)<<"Chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
+#endif
 
   return TMath::Max(0.,chisq);
 }
