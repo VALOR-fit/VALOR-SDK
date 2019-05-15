@@ -109,7 +109,10 @@ namespace valor {
     void SetMaxValue (valor::conv::PhysParamId_t p, double max) { fMaxValue [this->Id(p)] = max; }
     void SetMinValueByIndex (int i, double min) { fMinValue [i] = min; }
     void SetMaxValueByIndex (int i, double max) { fMaxValue [i] = max; }
-    
+
+    void SetStepSize (valor::conv::PhysParamId_t p, double step) { fStepSize [this->Id(p)] = step; }
+    void SetIsNuisance (valor::conv::PhysParamId_t p, bool is_nuisance) { fIsNuisance [this->Id(p)] = is_nuisance; }
+
     void SetParameterScaling(conv::PhysParamId_t p, double scaling) { fParameterScaling[this->Id(p)] = scaling;}
     void SetParameterScalingByIndex(int i , double scaling) { fParameterScaling[i] = scaling;}
     
