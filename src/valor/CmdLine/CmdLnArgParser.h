@@ -51,11 +51,13 @@ public:
   
   bool    OptionExists (std::string opt, bool set_used = true) const; ///< was option set?
   
-  std::string    ArgAsString       (std::string opt) const;
-  double         ArgAsDouble       (std::string opt) const;
-  int            ArgAsInt          (std::string opt) const;
-  unsigned int   ArgAsUInt         (std::string opt) const;
-  long           ArgAsLong         (std::string opt) const;
+  std::string         ArgAsString       (std::string opt) const;
+  double              ArgAsDouble       (std::string opt) const;
+  int                 ArgAsInt          (std::string opt) const;
+  unsigned int        ArgAsUInt         (std::string opt) const;
+  long                ArgAsLong         (std::string opt) const;
+  std::vector<double> ArgAsDoubleTokens (std::string opt, std::string delimeter) const;
+
   
   // Method to make sure all arguments given been identified
   bool RecognisedAllArgs() const;

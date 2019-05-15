@@ -154,6 +154,18 @@ vector<double> CmdLnArgParser::ArgAsDoubleTokens(char op, string delimeter) cons
   return tokens;
 }
 //____________________________________________________________________________
+vector<double> CmdLnArgParser::ArgAsDoubleTokens(string op, string delimeter) const
+{
+  vector<string> strtokens = this->ArgAsStringTokens(op, delimeter);
+  vector<double> tokens;
+  vector<string>::const_iterator iter = strtokens.begin();
+  for( ; iter != strtokens.end(); ++iter) {
+    string arg = *iter;
+    tokens.push_back(std::atof(arg.c_str()));
+  }
+  return tokens;
+}
+//____________________________________________________________________________
 int CmdLnArgParser::ArgAsInt(char op) const
 {
   std::string argument = this->ArgAsString(op);

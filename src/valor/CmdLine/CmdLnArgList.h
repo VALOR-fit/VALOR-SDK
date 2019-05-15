@@ -12,6 +12,7 @@
            # ..........................................................
              ntoys          |   integer      |  optional   |   1000
              dm32sq         |   double       |  optional   |   0.00232
+             mixing32       |   doublevec    |  mandatory  |   0.5,0.513
              input-file     |   string       |  mandatory  |   -
              with-xyz       |   boolean      |  optional   |   -         (a)
              red,green,blue |   boolean_list |  mandatory  |   -         (b)
