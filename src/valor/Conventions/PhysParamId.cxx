@@ -780,7 +780,7 @@ string util::RawParamAsStringTex(PhysParamId_t p)
     // Effective steriles
     case(kPhypMixingEE  ) : return "$\\sin^2(2\\theta_{ee})$"      ; break;
     case(kPhypMixingMuMu) : return "$\\sin^2(2\\theta_{\\mu\\mu})$"; break;
-    case(kPhypMixingMuE ) : return "$\\sin^2(2\\theta_{\\mu\\e})$" ; break;
+    case(kPhypMixingMuE ) : return "$\\sin^2(2\\theta_{\\mu e})$" ; break;
 
     default :
       return "--";

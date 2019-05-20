@@ -21,24 +21,22 @@
 #include <map>
 #include <string>
 #include <ostream>
+#include <vector>
 
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TTree.h>
 
-using std::pair;
-using std::string;
-using std::ostream;
-
-typedef string       RgKey;
+typedef std::string  RgKey;
 typedef int          RgInt;
 typedef bool         RgBool;
 typedef double       RgDbl;
-typedef string       RgStr;
+typedef std::string  RgStr;
 typedef const char * RgCChAr;
-typedef TH1F *       RgH1F;
-typedef TH2F *       RgH2F;
-typedef TTree *      RgTree;
-typedef TObject *    RgObject;
+typedef TH1F       * RgH1F;
+typedef TH2F       * RgH2F;
+typedef TTree      * RgTree;
+typedef TObject    * RgObject;
+typedef std::vector<double> RgDblVec;
 
 #endif // _valor_registry_item_type_def_h_

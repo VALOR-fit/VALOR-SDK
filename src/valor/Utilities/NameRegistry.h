@@ -51,7 +51,7 @@ namespace util {
       // Go the other way
       valor::conv::PhysParamId_t PhysParamFromString(std::string) const;
       
-	  // Maps for storing param names
+      // Maps for storing param names
       std::map<valor::conv::PhysParamId_t, std::string> fParamNames;
       std::map<valor::conv::PhysParamId_t, std::string> fParamNamesSimple;
       std::map<valor::conv::PhysParamId_t, std::string> fParamNamesVerySimple;

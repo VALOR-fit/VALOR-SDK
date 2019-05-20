@@ -23,8 +23,10 @@
 
 using namespace valor;
 
+using std::string;
 using std::setw;
 using std::setfill;
+using std::ostream;
 using std::istream;
 using std::cout;
 using std::endl;
@@ -33,12 +35,31 @@ using std::ostringstream;
 //____________________________________________________________________________
 namespace valor {
  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ template<> void SetRegistryItem(Registry * r, RgKey key, RgDblVec item)
+ {
+    string itemtype = typeid(item).name();
+    
+    ostringstream item_content;
+    item_content << "[";
+    for (size_t i = 0 ; i < item.size() ; i++) {
+      item_content << (i?",":"")<<item[i];
+    }
+    item_content<<"]";
+    LOG("Reg", pINFO)
+       << "Set item [" << itemtype << "]: key = "
+       << key << " --> value = "<<item_content.str();
+    bool lock = r->ItemIsLocked(key); // store, could be true but inhibited
+    RegistryItem<RgDblVec> * reg_item = new RegistryItem<RgDblVec>(item,lock);
+    RgIMapPair config_entry(key, reg_item);
+    r->Set(config_entry);
+ }
+ //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  template<class T> void SetRegistryItem(Registry * r, RgKey key, T item)
  {
     string itemtype = typeid(item).name();
     LOG("Reg", pINFO)
-             << "Set item [" << itemtype << "]: key = "
-                                      << key << " --> value = " << item;
+       << "Set item [" << itemtype << "]: key = "
+       << key << " --> value = " << item;
     bool lock = r->ItemIsLocked(key); // store, could be true but inhibited
     RegistryItem<T> * reg_item = new RegistryItem<T>(item,lock);
     RgIMapPair config_entry(key, reg_item);
@@ -48,27 +69,27 @@ namespace valor {
  template<class T> T GetValueOrUseDefault(
                           Registry * r, RgKey key, T def, bool set_def)
  {
-  // Return the requested registry item. If it does not exist return
-  // the input default value (in this case, if set_def is true it can 
-  // override a lock and add the input default as a new registry item)
-
-   T value;
-   if(r->Exists(key)) { 
-      if(r->ItemIsLocal(key)) {
-	 r->Get(key,value); 
-         return value;
-      }
-   }
-   value = def;
-   bool was_locked = r->IsLocked();
-   if(was_locked) r->UnLock();
-
-   if(set_def) {
-	r->Set(key, value);
-	r->LinkToGlobalDef(key);
-   }
-   if(was_locked) r->Lock();
-   return value;
+    // Return the requested registry item. If it does not exist return
+    // the input default value (in this case, if set_def is true it can 
+    // override a lock and add the input default as a new registry item)
+    
+    T value;
+    if(r->Exists(key)) { 
+       if(r->ItemIsLocal(key)) {
+          r->Get(key,value); 
+          return value;
+       }
+    }
+    value = def;
+    bool was_locked = r->IsLocked();
+    if(was_locked) r->UnLock();
+    
+    if(set_def) {
+        r->Set(key, value);
+        r->LinkToGlobalDef(key);
+     }
+     if(was_locked) r->Lock();
+     return value;
  }
  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  ostream & operator << (ostream & stream, const Registry & registry)
@@ -306,6 +327,11 @@ void Registry::Set(RgKey key, RgObject item)
   SetRegistryItem(this, key, item); // call templated set method
 }
 //____________________________________________________________________________
+void Registry::Set(RgKey key, RgDblVec item)
+{
+  SetRegistryItem(this, key, item); // call templated set method
+}
+//____________________________________________________________________________
 void Registry::Get(RgKey key, const RegistryItemI * & item) const
 {
   RgIMapConstIter entry = this->SafeFind(key);
@@ -392,6 +418,14 @@ void Registry::Get(RgKey key, RgObject & item) const
   }
 }
 //____________________________________________________________________________
+void Registry::Get(RgKey key, RgDblVec & item) const
+{
+  RgIMapConstIter entry = this->SafeFind(key);
+  RegistryItemI * rib = entry->second;
+  RegistryItem<RgDblVec> * ri = dynamic_cast<RegistryItem<RgDblVec>*> (rib);
+  item = ri->Data();
+}
+//____________________________________________________________________________
 RgBool Registry::GetBool(RgKey key) const
 {
   RgBool value;
@@ -460,6 +494,13 @@ RgObject Registry::GetObject(RgKey key) const
   return item;
 }
 //____________________________________________________________________________
+RgDblVec Registry::GetDoubleVec(RgKey key) const
+{
+  RgDblVec value;
+  this->Get(key, value);
+  return value;
+}
+//____________________________________________________________________________
 RgBool Registry::GetBoolDef(RgKey key, RgBool def_opt, bool set_def) 
 {
   return GetValueOrUseDefault(this, key, def_opt, set_def);
@@ -514,7 +555,7 @@ bool Registry::DeleteEntry(RgKey key)
 int Registry::NEntries(void) const
 {
   RgIMapSizeType reg_size = fRegistry.size();
-  return (const int) reg_size;
+  return (int) reg_size;
 }
 //____________________________________________________________________________
 void Registry::SetName(string name)
@@ -655,6 +696,8 @@ void Registry::Append(const Registry & registry, RgKey prefix)
            cri = new RegistryItem<RgInt> (registry.GetInt(name),ilk);
      else if (type == kRgStr)
            cri = new RegistryItem<RgStr> (registry.GetString(name),ilk);
+     else if (type == kRgDblVec)
+           cri = new RegistryItem<RgDblVec> (registry.GetDoubleVec(name),ilk);
      else if (type == kRgH1F) {
            RgH1F histo = registry.GetH1F(name);
            if(histo) {

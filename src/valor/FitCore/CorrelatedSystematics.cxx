@@ -715,6 +715,7 @@ double CorrelatedSystematics::ChisqPenalty(bool /*all_syst*/) const
 //________________________________________________________________________________________
 double CorrelatedSystematics::FitStatisticPenalty(Option_t * /*opt*/) const
 {
+  if (fNSystParameters==0) {return 0.;}
   //covariance matrix
   const TMatrixD & cov    (this->CovMatrix()   );
   const TMatrixD & covInv (this->CovMatrixInv());
