@@ -190,27 +190,6 @@ extern const SelecApplyMask_t ksApplyToAllNuECC;
 // Targets
 extern const NuclearTargetApplyMask_t kntApplyToAll;
 
-// Which masks apply to which beam modes
-// This is defined for all samples in the BeamConf_t enum.
-extern const BeamApplyMask_t kApplyToBeamMode[kNBeamConf];
-
-
-// Which masks apply to which samples
-// This is defined for all samples in the Sample_t enum.
-extern const SelecApplyMask_t kApplyToSample[kMaxNSamples];
-
-// Which masks apply to which parent particle flavour
-extern const DetectorApplyMask_t kApplyToDetector[conv::kNDetectorsDefined];
-
-// Which masks apply to which parent particle flavour
-extern const FlavApplyMask_t kApplyToFlavour[conv::kNNuFlavour];
-
-// Which masks apply to which reaction type
-extern const ReacTypeApplyMask_t kApplyToReacType[conv::kNReacType];
-
-// Which masks apply to which nucleus
-extern const NuclearTargetApplyMask_t kApplyToNuclearTarget[conv::kNNuclearTarget];
-
 
 
 
@@ -301,6 +280,24 @@ namespace util{
     inline conv::ReacTypeApplyMask_t      ReacTypeMaskFromString     (std::string name) { return util::ApplyMaskNaming::Instance()->GetReacTypeNameToMaskMap().at(name); }
     inline conv::DetectorApplyMask_t      DetectorMaskFromString     (std::string name) { return util::ApplyMaskNaming::Instance()->GetDetectorNameToMaskMap().at(name); }
     inline conv::NuclearTargetApplyMask_t NuclearTargetMaskFromString(std::string name) { return util::ApplyMaskNaming::Instance()->GetNuclearTargetNameToMaskMap().at(name); }
+
+  // Which masks apply to which beam modes
+  const conv::BeamApplyMask_t ApplyToBeamMode(conv::BeamConf_t b);
+
+  // Which masks apply to which samples
+  const conv::SelecApplyMask_t ApplyToSample(conv::Sample_t s);
+
+  // Which masks apply to which parent particle flavour
+  const conv::DetectorApplyMask_t ApplyToDetector(conv::Detector_t d);
+
+  // Which masks apply to which parent particle flavour
+  const conv::FlavApplyMask_t ApplyToFlavour(conv::NuFlavour_t f);
+
+  // Which masks apply to which reaction type
+  const conv::ReacTypeApplyMask_t ApplyToReacType(conv::ReacType_t t);
+
+  // Which masks apply to which nucleus
+  const conv::NuclearTargetApplyMask_t ApplyToNuclearTarget(conv::NuclearTarget_t nt);
 } //util
 } //valor
 

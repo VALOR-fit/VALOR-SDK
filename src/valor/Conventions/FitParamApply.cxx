@@ -75,120 +75,6 @@ const NuclearTargetApplyMask_t valor::conv::kntApplyToAll = (
   kntApplyToInclusive | kntApplyToOther | kntApplyToHydrogen | kntApplyToCarbon | kntApplyToOxygen | kntApplyToArgon | kntApplyToCalcium
 );
 
-// Which masks apply to which beam modes
-// This is defined for all samples in the BeamConf_t enum.
-const BeamApplyMask_t valor::conv::kApplyToBeamMode[kNBeamConf] = {
-  /* kbLBNF_FHC */ kbApplyToFHC ,
-  /* kbLBNF_RHC */ kbApplyToRHC ,
-};
-
-
-// Which masks apply to which samples
-// This is defined for all samples in the Sample_t enum.
-const SelecApplyMask_t valor::conv::kApplyToSample[kMaxNSamples] = {
-  /* ksNuMuCC         */ ksApplyToNuMuCC          ,
-  /* ksNuMuCC0pi1trk  */ ksApplyToNuMuCC0pi1trk   ,
-  /* ksNuMuCC0pi2trk  */ ksApplyToNuMuCC0pi2trk   ,
-  /* ksNuMuCC1piC     */ ksApplyToNuMuCC1piC      ,
-  /* ksNuMuCC2piC     */ ksApplyToNuMuCC2piC      ,
-  /* ksNuMuCC1pi0     */ ksApplyToNuMuCC1pi0      ,
-  /* ksNuMuCC1piC1pi0 */ ksApplyToNuMuCC1piC1pi0  ,
-  /* ksNuMuCCoth      */ ksApplyToNuMuCCoth       ,
-  /* ksNuECC          */ ksApplyToNuECC           ,
-  /* ksNuMuCCWS       */ ksApplyToNuMuCCWS        ,
-  /* ksNC             */ ksApplyToNC              ,
-  /* ksNuMuCC0piNtrk  */ ksApplyToNuMuCC0piNtrk   ,
-  /* ksNuMuCC3trkDelta*/ ksApplyToNuMuCC3trkDelta ,
-  /* ksNuMuCCWS0pi    */ ksApplyToNuMuCCWS0pi     ,
-  /* ksNuMuCCWS1piC   */ ksApplyToNuMuCCWS1piC    ,
-  /* ksNuMuCCWS1pi0   */ ksApplyToNuMuCCWS1pi0    ,
-  /* ksNuMuCCWSoth    */ ksApplyToNuMuCCWSoth     ,
-  /* ksNuECC0pi       */ ksApplyToNuECC0pi        ,
-  /* ksNuECC1piC      */ ksApplyToNuECC1piC       ,
-  /* ksNuECC1pi0      */ ksApplyToNuECC1pi0       ,
-  /* ksNuECCoth       */ ksApplyToNuECCoth        ,
-  /* ksNC0pi          */ ksApplyToNC0pi           ,
-  /* ksNC1piC         */ ksApplyToNC1piC          ,
-  /* ksNC1pi0         */ ksApplyToNC1pi0          ,
-  /* ksNCoth          */ ksApplyToNCoth           ,
-  /* ksNeutrinoElec   */ ksApplyToNuECC           , // ksApplyToNeutrinoElec    ,
-  /* ksInvMuDecay     */ ksApplyToNuMuCCoth       , // ksApplyToInvMuDecay      ,
-  /* ksNuECCWS        */ ksApplyToNuECCWS         ,
-  /* ksNuMuLikeCChigh */ ksApplyToHighRes         ,
-  /* ksNuMuLikeCClow  */ ksApplyToLowRes          ,
-  /* ksNuMuBarCChigh  */ ksApplyToHighRes         ,
-  /* ksNuMuBarCClow   */ ksApplyToLowRes          ,
-  /* ksNuELikeCChigh  */ ksApplyToHighRes         ,
-  /* ksNuELikeCClow   */ ksApplyToLowRes          ,
-  /* ksNuEBarCChigh   */ ksApplyToHighRes         ,
-  /* ksNuEBarCClow    */ ksApplyToLowRes
-};
-
-// Which masks apply to which parent particle flavour
-const DetectorApplyMask_t valor::conv::kApplyToDetector[conv::kNDetectorsDefined] = {
-  /* kdDUNEND    */  kdApplyToDUNEND,
-  /* kdDUNEFD1ph */  kdApplyToDUNEFD,
-  /* kdDUNEFD2ph */  kdApplyToDUNEFD,
-  /* kdSBND      */  kdApplyToSBND,
-  /* kdSBNuBooNE */  kdApplyToMicroBooNE,
-  /* kdSBNICARUS */  kdApplyToICARUS,
-  /* kdSuperK    */  0,
-  /* kdHyperK    */  0,
-  /* kdND280     */  0,
-  /* kdND280Up   */  0,
-  /* kdINGRID    */  0,
-  /* kdNuPRISM   */  0,
-  /* kdNuTIT     */  0
-};
-
-// Which masks apply to which parent particle flavour
-const FlavApplyMask_t valor::conv::kApplyToFlavour[conv::kNNuFlavour] = {
-  /* kNuE     */ kfApplyToNuE     ,
-  /* kNuMu    */ kfApplyToNuMu    ,
-  /* kNuTau   */ 0                ,
-  /* kNuEBar  */ kfApplyToNuEBar  ,
-  /* kNuMuBar */ kfApplyToNuMuBar ,
-  /* kNuTau   */ 0                ,
-};
-
-// Which masks apply to which reaction type
-const ReacTypeApplyMask_t valor::conv::kApplyToReacType[conv::kNReacType] = {
-  /* kmtCCQE,     */ ktApplyToCCQE    ,
-  /* kmtCCMEC,    */ ktApplyToCCMEC   ,
-  /* kmtCC1piC,   */ ktApplyToCC1piC  ,
-  /* kmtCC1pi0,   */ ktApplyToCC1pi0  ,
-  /* kmtCC2piC,   */ ktApplyToCC2piC  ,
-  /* kmtCC2pi0,   */ ktApplyToCC2pi0  ,
-  /* kmtCCpiCpi0, */ ktApplyToCCpiCpi0,
-  /* kmtCCcoh,    */ ktApplyToCCcoh   ,
-  /* kmtCCIMD,    */ ktApplyToCCELScat,
-  /* kmtCCELScat, */ ktApplyToCCELScat,
-  /* kmtCCoth,    */ ktApplyToCCoth,
-  /* kmtNCEL,     */ ktApplyToNCEL    ,
-  /* kmtNCMEC,    */ ktApplyToNCMEC   | ktApplyToNCEL,
-  /* kmtNC1piC,   */ ktApplyToNC1piC  | ktApplyToNCoth, //why | ktApplyToNCoth ?
-  /* kmtNC1pi0,   */ ktApplyToNC1pi0  | ktApplyToNCoth,
-  /* kmtNC2piC,   */ ktApplyToNC2piC  | ktApplyToNCoth,
-  /* kmtNC2pi0,   */ ktApplyToNC2pi0  | ktApplyToNCoth,
-  /* kmtNCpiCpi0, */ ktApplyToNCpiCpi0| ktApplyToNCoth,
-  /* kmtNCcoh,    */ ktApplyToNCcoh   | ktApplyToNCoth,
-  /* kmtNCELScat, */ ktApplyToNCELScat,
-  /* kmtNCoth,    */ ktApplyToNCoth   ,
-  /* kmtELScat  , */ ktApplyToNuEELScat,
-  /* kmtOther     */ 0
-};
-
-// Which masks apply to which nucleus
-const NuclearTargetApplyMask_t valor::conv::kApplyToNuclearTarget[conv::kNNuclearTarget] = {
-  /* kntInclusive */ kntApplyToInclusive ,
-  /* kntOther     */ kntApplyToOther     ,
-  /* kntHydrogen  */ kntApplyToHydrogen  ,
-  /* kntCarbon    */ kntApplyToCarbon    ,
-  /* kntOxygen    */ kntApplyToOxygen    ,
-  /* kntArgon     */ kntApplyToArgon     ,
-  /* kntCalcium   */ kntApplyToCalcium
-};
-
 //________________________________________________________________________________________
 valor::util::ApplyMaskNaming * valor::util::ApplyMaskNaming::fInstance = 0;
 //________________________________________________________________________________________
@@ -345,6 +231,154 @@ void valor::util::ApplyMaskNaming::Init(void)
   fNuclearTargetMaskToName.insert( std::make_pair(kntApplyToAll      , "all") );
   for(auto const& pair : fNuclearTargetMaskToName) {
     fNuclearTargetNameToMask.insert( std::make_pair(pair.second, pair.first) );
+  }
+}
+//________________________________________________________________________________________
+const BeamApplyMask_t valor::util::ApplyToBeamMode(BeamConf_t b)
+{
+  switch (b)
+  {
+    case kbLBNF_FHC  : return kbApplyToFHC;
+    case kbLBNF_RHC  : return kbApplyToRHC;
+    case kbJPARC_FHC : return kbApplyToFHC;
+    case kbJPARC_RHC : return kbApplyToRHC;
+    case kbNuMI_FHC  : return kbApplyToFHC;
+    case kbNuMI_RHC  : return kbApplyToRHC;
+    case kbBNB_FHC   : return kbApplyToFHC;
+    case kbBNB_RHC   : return kbApplyToRHC;
+    default:
+      LOG("ApplyMask",pWARN) << "No beam apply mask set for " << util::AsString(b) << ". Applying to none.";
+      return 0;
+  }
+}
+//________________________________________________________________________________________
+const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
+{
+  switch (s) {
+    case ksNuMuCC          : return ksApplyToNuMuCC;
+    case ksNuMuCC0pi1trk   : return ksApplyToNuMuCC0pi1trk;
+    case ksNuMuCC0pi2trk   : return ksApplyToNuMuCC0pi2trk;
+    case ksNuMuCC1piC      : return ksApplyToNuMuCC1piC;
+    case ksNuMuCC2piC      : return ksApplyToNuMuCC2piC;
+    case ksNuMuCC1pi0      : return ksApplyToNuMuCC1pi0;
+    case ksNuMuCC1piC1pi0  : return ksApplyToNuMuCC1piC1pi0;
+    case ksNuMuCCoth       : return ksApplyToNuMuCCoth;
+    case ksNuECC           : return ksApplyToNuECC;
+    case ksNuMuCCWS        : return ksApplyToNuMuCCWS;
+    case ksNC              : return ksApplyToNC;
+    case ksNuMuCC0piNtrk   : return ksApplyToNuMuCC0piNtrk;
+    case ksNuMuCC3trkDelta : return ksApplyToNuMuCC3trkDelta;
+    case ksNuMuCCWS0pi     : return ksApplyToNuMuCCWS0pi;
+    case ksNuMuCCWS1piC    : return ksApplyToNuMuCCWS1piC;
+    case ksNuMuCCWS1pi0    : return ksApplyToNuMuCCWS1pi0;
+    case ksNuMuCCWSoth     : return ksApplyToNuMuCCWSoth;
+    case ksNuECC0pi        : return ksApplyToNuECC0pi;
+    case ksNuECC1piC       : return ksApplyToNuECC1piC;
+    case ksNuECC1pi0       : return ksApplyToNuECC1pi0;
+    case ksNuECCoth        : return ksApplyToNuECCoth;
+    case ksNC0pi           : return ksApplyToNC0pi;
+    case ksNC1piC          : return ksApplyToNC1piC;
+    case ksNC1pi0          : return ksApplyToNC1pi0;
+    case ksNCoth           : return ksApplyToNCoth;
+    case ksNeutrinoElec    : return ksApplyToNuECC;     // ksApplyToNeutrinoElec
+    case ksInvMuDecay      : return ksApplyToNuMuCCoth; // ksApplyToInvMuDecay
+    case ksNuECCWS         : return ksApplyToNuECCWS;
+    case ksNuMuLikeCChigh  : return ksApplyToHighRes;
+    case ksNuMuLikeCClow   : return ksApplyToLowRes;
+    case ksNuMuBarCChigh   : return ksApplyToHighRes;
+    case ksNuMuBarCClow    : return ksApplyToLowRes;
+    case ksNuELikeCChigh   : return ksApplyToHighRes;
+    case ksNuELikeCClow    : return ksApplyToLowRes;
+    case ksNuEBarCChigh    : return ksApplyToHighRes;
+    case ksNuEBarCClow     : return ksApplyToLowRes;
+    default:
+      LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
+      return 0;
+  }
+}
+//________________________________________________________________________________________
+const DetectorApplyMask_t valor::util::ApplyToDetector(conv::Detector_t d) 
+{
+  switch (d) {
+    case kdDUNEND    : return kdApplyToDUNEND;
+    case kdDUNEFD1ph : return kdApplyToDUNEFD;
+    case kdDUNEFD2ph : return kdApplyToDUNEFD;
+    case kdSBND      : return kdApplyToSBND;
+    case kdSBNuBooNE : return kdApplyToMicroBooNE;
+    case kdSBNICARUS : return kdApplyToICARUS;
+    case kdSuperK    : return 0;
+    case kdHyperK    : return 0;
+    case kdND280     : return 0;
+    case kdND280Up   : return 0;
+    case kdINGRID    : return 0;
+    case kdNuPRISM   : return 0;
+    case kdNuTIT     : return 0;
+    default:
+      LOG("ApplyMask",pWARN) << "No detector apply mask set for " << util::AsString(d) << ". Applying to none.";
+      return 0;
+  }
+}
+//________________________________________________________________________________________
+const FlavApplyMask_t valor::util::ApplyToFlavour(conv::NuFlavour_t f)
+{
+  switch (f) {
+    case kNuE      : return kfApplyToNuE;
+    case kNuMu     : return kfApplyToNuMu;
+    case kNuTau    : return 0;
+    case kNuEBar   : return kfApplyToNuEBar;
+    case kNuMuBar  : return kfApplyToNuMuBar;
+    case kNuTauBar : return 0;
+    default:
+      LOG("ApplyMask",pWARN) << "No flavour apply mask set for " << util::AsString(f) << ". Applying to none.";
+      return 0;
+  }
+}
+//________________________________________________________________________________________
+const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t) 
+{
+  switch (t) {
+    case kmtCCQE     : return ktApplyToCCQE;
+    case kmtCCMEC    : return ktApplyToCCMEC;
+    case kmtCC1piC   : return ktApplyToCC1piC;
+    case kmtCC1pi0   : return ktApplyToCC1pi0;
+    case kmtCC2piC   : return ktApplyToCC2piC;
+    case kmtCC2pi0   : return ktApplyToCC2pi0;
+    case kmtCCpiCpi0 : return ktApplyToCCpiCpi0;
+    case kmtCCcoh    : return ktApplyToCCcoh;
+    case kmtCCIMD    : return ktApplyToCCELScat;
+    case kmtCCELScat : return ktApplyToCCELScat;
+    case kmtCCoth    : return ktApplyToCCoth;
+    case kmtNCEL     : return ktApplyToNCEL;
+    case kmtNCMEC    : return ktApplyToNCMEC    | ktApplyToNCEL;
+    case kmtNC1piC   : return ktApplyToNC1piC   | ktApplyToNCoth; //why | ktApplyToNCoth ?
+    case kmtNC1pi0   : return ktApplyToNC1pi0   | ktApplyToNCoth;
+    case kmtNC2piC   : return ktApplyToNC2piC   | ktApplyToNCoth;
+    case kmtNC2pi0   : return ktApplyToNC2pi0   | ktApplyToNCoth;
+    case kmtNCpiCpi0 : return ktApplyToNCpiCpi0 | ktApplyToNCoth;
+    case kmtNCcoh    : return ktApplyToNCcoh    | ktApplyToNCoth;
+    case kmtNCELScat : return ktApplyToNCELScat;
+    case kmtNCoth    : return ktApplyToNCoth;
+    case kmtELScat   : return ktApplyToNuEELScat;
+    case kmtOther    : return 0;
+    default:
+      LOG("ApplyMask",pWARN) << "No reac type apply mask set for " << util::AsString(t) << ". Applying to none.";
+      return 0;
+  }
+}
+//________________________________________________________________________________________
+const NuclearTargetApplyMask_t valor::util::ApplyToNuclearTarget(conv::NuclearTarget_t nt) 
+{
+  switch (nt) {
+    case kntInclusive : return kntApplyToInclusive;
+    case kntOther     : return kntApplyToOther;
+    case kntHydrogen  : return kntApplyToHydrogen;
+    case kntCarbon    : return kntApplyToCarbon;
+    case kntOxygen    : return kntApplyToOxygen;
+    case kntArgon     : return kntApplyToArgon;
+    case kntCalcium   : return kntApplyToCalcium;
+    default:
+      LOG("ApplyMask",pWARN) << "No nuclear target apply mask set for " << util::AsString(nt) << ". Applying to none.";
+      return 0;
   }
 }
 //________________________________________________________________________________________

@@ -445,12 +445,12 @@ bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t 
   if(t == kmtUndefined)        { return false; }
 
   // Check whether or not to apply the param to this
-  bool apply_to_beam     = (kApplyToBeamMode     [b]  & fApply.beam).any();
-  bool apply_to_sample   = (kApplyToSample       [s]  & fApply.selec).any();
-  bool apply_to_flavour  = (kApplyToFlavour      [f]  & fApply.flav).any();
-  bool apply_to_type     = (kApplyToReacType     [t]  & fApply.reactype).any();
-  bool apply_to_detector = (kApplyToDetector     [d]  & fApply.detector).any();
-  bool apply_to_target   = (kApplyToNuclearTarget[nt] & fApply.target).any();
+  bool apply_to_beam     = (util::ApplyToBeamMode     (b)  & fApply.beam    ).any();
+  bool apply_to_sample   = (util::ApplyToSample       (s)  & fApply.selec   ).any();
+  bool apply_to_flavour  = (util::ApplyToFlavour      (f)  & fApply.flav    ).any();
+  bool apply_to_type     = (util::ApplyToReacType     (t)  & fApply.reactype).any();
+  bool apply_to_detector = (util::ApplyToDetector     (d)  & fApply.detector).any();
+  bool apply_to_target   = (util::ApplyToNuclearTarget(nt) & fApply.target  ).any();
 
   bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour && apply_to_type && apply_to_detector && apply_to_target);
 
