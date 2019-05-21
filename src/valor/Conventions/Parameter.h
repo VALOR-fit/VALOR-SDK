@@ -84,8 +84,7 @@ namespace valor {
       Parameter(conv::PhysParamId_t param_id, TXMLEngine* xml, XMLNodePointer_t param_node);
       Parameter();
       ~Parameter();
-      
-      // Stuff I definitely want to keep
+
       const conv::PhysParamId_t      &   GetID        (void) const { return fParam;         }
       const std::string              &   GetName      (void) const { return fName;          }
       const std::string              &   GetRooTeXName(void) const { return fRooTeXName;    }
@@ -104,9 +103,8 @@ namespace valor {
       const std::vector<std::pair<double,double>> & GetKineRanges    () const {return fKinematicRange;}
       const std::pair<double,double>              & GetKineRange(conv::KineVar_t) const;
       
-      
-      // Does this need to be here?
-      conv::ApplyMask_t           GetApplyMask (void)               const { return fApply;         }
+
+      conv::ApplyMask_t GetApplyMask (void) const { return fApply; }
       bool IsAppliedTo(conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d,
                        conv::ReacMode_t m, conv::NuclearTarget_t nt) const;
       bool IsAppliedTo(conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d, conv::NuFlavour_t f,
@@ -163,7 +161,6 @@ namespace valor {
 
       void Init(conv::PhysParamId_t param_id, TXMLEngine* xml, XMLNodePointer_t param_node);
       void ReadNames       ();
-      // TODO: Sensible defaults for each kinevar in each used binning scheme should be set, but does each parameter apply to every kinevar in each binning scheme?
       void ReadRanges      ();
       void ReadType        ();
       void ReadCategories  ();
@@ -178,31 +175,6 @@ namespace valor {
 
       // For a specified node which should contain a string: Does this node exist and is the string not empty?
       bool IsNodeSpecified(const std::string node_path) const;
-
-    // TODO: I reckon we can delete all of this
-    /*
-      string  AsString    (conv::PhysParamId_t p);
-      string  AsStringSimple(conv::PhysParamId_t p);
-      string  AsStringTeX (conv::PhysParamId_t p, bool root = false);
-
-      // Aliases for above
-      string  ParamAsString    (conv::PhysParamId_t p) ;
-      string  ParamAsStringTeX (conv::PhysParamId_t p, bool root = false);
-
-      conv::PhysParamId_t PhysParamFromString(string p);
-
-      // If you give a CorrelatedSystematics object, it'll ignore your list's standard systematics and use this set instead
-      FitParamList * GetFitParameterList (Option_t * param_list = "standard", const CorrelatedSystematics * syst = 0);
-
-      conv::FitParamGroup_t GetParameterGroup(conv::PhysParamId_t p);
-      // Get the list of parameters associated with a set name (eg flux, int, ccqe, fsi, 3fosc)
-      std::vector<conv::PhysParamId_t> GetParameterSet(std::string set_name);
-
-      // Return pointer to array of min/max
-      const double * EtrueRange (conv::PhysParamId_t p);
-      const double * Q2trueRange(conv::PhysParamId_t p);
-
-     */
 
   };
 } // valor
