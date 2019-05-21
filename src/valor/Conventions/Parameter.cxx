@@ -100,11 +100,11 @@ void Parameter::ReadNames()
 void Parameter::ReadRanges()
 {
   if(util::NodeExists(fxml, fParamNode, "apply_to_range")) {
-    vector <XMLNodePointer_t> range_nodes = util::FindAllNodes(fxml,
-                                                               util::FindNode(fxml, fParamNode, "apply_to_range"));
+    vector <XMLNodePointer_t> range_nodes = util::FindAllNodes(fxml,util::FindNode(fxml, fParamNode, "apply_to_range"));
     if(range_nodes.size() == 0) {
-      LOG("FitInputs", pFATAL) << "No parameter apply ranges specified for parameter \'" << fName << "\'";
-      util::Die(1);
+      LOG("FitInputs", pINFO) << "No parameter apply ranges specified for parameter \'" << fName << "\'";
+      fHasKinematicRange = false;
+      return;
     }
     for(XMLNodePointer_t range_node : range_nodes) {
       KineVar_t kv = kvUndefined;
@@ -144,6 +144,7 @@ void Parameter::ReadRanges()
       }
     }
   }
+  fHasKinematicRange = (bool)fKinematicVariables.size();
 }
 //________________________________________________________________________________________
 void Parameter::ReadType()
@@ -378,8 +379,8 @@ bool Parameter::IsNodeSpecified(const string node_path) const
 //________________________________________________________________________________________
 void Parameter::Print(std::ostream & stream) const
 {
-  vector<string> cats = GetCategories();
-  vector<KineVar_t> kinevars = GetKineVars();
+  const vector<string>    & cats     = GetCategories();
+  const vector<KineVar_t> & kinevars = GetKineVars();
   std::pair<double,double> limits = GetLimits();
   stream << "Parameter info:\n"
          << "    Current numerical ID: "<<fParam<<"\n"
@@ -391,9 +392,14 @@ void Parameter::Print(std::ostream & stream) const
     stream << "        " << cat << "\n";
   }
   stream << "    Ranges:\n";
-  for(KineVar_t kv : kinevars) {
-    const pair<double,double> & range = this->GetKineRange(kv);
-    stream << "        For " << util::AsString(kv) << ", range = [" << range.first << ", " << range.second << "]\n";
+  if (fHasKinematicRange) {
+    for(KineVar_t kv : kinevars) {
+      const pair<double, double> &range = this->GetKineRange(kv);
+      stream << "        For " << util::AsString(kv) << ", range = [" << range.first << ", " << range.second << "]\n";
+    }
+  }
+  else {
+    stream << "      Universal\n";
   }
   stream << "    Apply parameter to:\n";
   stream << "        Detector = "        << util::DetectorMaskAsString(fApply.detector) << "\n";

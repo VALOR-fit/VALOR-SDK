@@ -57,7 +57,7 @@ private:
   
   ParameterPool();
   ParameterPool(const ParameterPool &) {};
- ~ParameterPool() {};
+ ~ParameterPool() {this->Print();};
 
   static ParameterPool * fInstance;
 

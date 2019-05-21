@@ -157,7 +157,7 @@ namespace valor {
       const conv::DetectorApplyMask_t      fDefApplyDetector      = conv::kdApplyToAll;
       const conv::BeamApplyMask_t          fDefApplyBeam          = conv::kbApplyToAll;
       const conv::FlavApplyMask_t          fDefApplyFlav          = conv::kfApplyToAll;
-      const conv::SelecApplyMask_t         fDefApplySelec         = conv::ksApplyToAllND;
+      const conv::SelecApplyMask_t         fDefApplySelec         = conv::ksApplyToAll;
       const conv::ReacTypeApplyMask_t      fDefApplyReacType      = conv::ktApplyToAll;
       const conv::NuclearTargetApplyMask_t fDefApplyNuclearTarget = conv::kntApplyToAll;
 
