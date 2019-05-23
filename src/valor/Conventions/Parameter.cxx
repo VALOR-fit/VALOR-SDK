@@ -78,6 +78,15 @@ void Parameter::ReadNames()
     util::Die(1);
   }
 
+  if(IsNodeSpecified("name/long")) {
+    fNameLong = util::XML2String(fxml, fParamNode, "name/long");
+  }
+  else {
+    LOG("FitInputs", pNOTICE) << "No long name specified for parameter \'"
+                              << fName << "\', instead using the simple name";
+    fNameLong = fName;
+  }
+
   if(IsNodeSpecified("name/rootex")) {
     fRooTeXName = util::XML2String(fxml, fParamNode, "name/rootex");
   }
@@ -86,8 +95,13 @@ void Parameter::ReadNames()
                               << fName << "\', instead using the simple name";
     fRooTeXName = fName;
   }
-  
-  if (!IsNodeSpecified("name/tex")) {
+
+  if(IsNodeSpecified("name/tex")) {
+    fTeXName = util::XML2String(fxml, fParamNode, "name/tex");
+  }
+  else {
+    LOG("FitInputs", pNOTICE) << "No Tex name specified for parameter \'"
+                              << fName << "\', instead using the RooTex name with \'\\\\\' replaced with \'#\'";
     fTeXName = fRooTeXName;
     replace( fTeXName.begin(), fTeXName.end(), '\\', '#' ); // Make slashes hashes for RooTeX
     // Get rid of hashes preceding sin
@@ -189,6 +203,7 @@ void Parameter::ReadApplyMaskAll()
   DetectorApplyMask_t      detector = fDefApplyDetector;
   BeamApplyMask_t          beam     = fDefApplyBeam;
   FlavApplyMask_t          flav     = fDefApplyFlav;
+  OscModeApplyMask_t       osc      = fDefApplyOscMode;
   SelecApplyMask_t         selec    = fDefApplySelec;
   ReacTypeApplyMask_t      reactype = fDefApplyReacType;
   NuclearTargetApplyMask_t target   = fDefApplyNuclearTarget;
@@ -196,6 +211,7 @@ void Parameter::ReadApplyMaskAll()
     detector = ReadDetectorApplyMask     ("detector");
     beam     = ReadBeamApplyMask         ("beam");
     flav     = ReadFlavApplyMask         ("flav");
+    osc      = ReadOscModeApplyMask      ("osc");
     selec    = ReadSelecApplyMask        ("selection");
     reactype = ReadReacTypeApplyMask     ("reac_type");
     target   = ReadNuclearTargetApplyMask("target");
@@ -204,7 +220,7 @@ void Parameter::ReadApplyMaskAll()
     LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", no apply masks have been set. Applying to all.";
     // No need to do anything here, as the the variables were initialised with the default values and have not been changed
   }
-  fApply = {detector, beam, flav, selec, reactype, target};
+  fApply = {detector, beam, flav, osc, selec, reactype, target};
 }
 //________________________________________________________________________________________
 DetectorApplyMask_t Parameter::ReadDetectorApplyMask(string node_name) const
@@ -279,6 +295,30 @@ FlavApplyMask_t Parameter::ReadFlavApplyMask(string node_name) const
   return mask;
 }
 //________________________________________________________________________________________
+OscModeApplyMask_t Parameter::ReadOscModeApplyMask(string node_name) const
+{
+  OscModeApplyMask_t mask = fDefApplyOscMode;
+  string node_path = "apply_to/" + node_name;
+  if(IsNodeSpecified(node_path)) {
+    string content = util::XML2String(fxml, fParamNode, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::OscModeMaskFromString(trimmed_content);
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content << "\') was not recognised - threw an out of Range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  else {
+    // The user hasn't tried to set any mask of this type for this param, so keep at the default mask
+    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
+    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", " << node_name << " apply mask not set. Setting to default (" << util::OscModeMaskAsString(mask) << ")";
+  }
+  return mask;
+}
+//________________________________________________________________________________________
 SelecApplyMask_t Parameter::ReadSelecApplyMask(string node_name) const
 {
   SelecApplyMask_t mask = fDefApplySelec;
@@ -310,11 +350,12 @@ ReacTypeApplyMask_t Parameter::ReadReacTypeApplyMask(string node_name) const
   if(IsNodeSpecified(node_path)) {
     string content = util::XML2String(fxml, fParamNode, node_path);
     std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    std::string reac_type_str = util::ReplaceAll(trimmed_content, "2p2h", "mec");  // 2p2h and MEC are the same thing, but we internally use MEC only
     try {
-      mask = util::ReacTypeMaskFromString(util::ToLowerCase(trimmed_content));
+      mask = util::ReacTypeMaskFromString(util::ToLowerCase(reac_type_str));
     }
     catch (const std::out_of_range& oor) {
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << trimmed_content
+      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << reac_type_str
                                << "\' (from user input \'" << content << "\') was not recognised - threw an out of range error: " << oor.what();
       util::Die(1);
     }
@@ -385,7 +426,9 @@ void Parameter::Print(std::ostream & stream) const
   stream << "Parameter info:\n"
          << "    Current numerical ID: "<<fParam<<"\n"
          << "    Name (simple) = " << GetName()       << "\n"
+         << "    Name (long) = "   << GetNameLong()   << "\n"
          << "    Name (RooTeX) = " << GetRooTeXName() << "\n"
+         << "    Name (TeX) = "    << GetTeXName()    << "\n"
          << "    Type = " << util::AsString(GetType()) << "\n"
          << "    Categories:\n";
   for(string cat : cats) {
@@ -407,6 +450,7 @@ void Parameter::Print(std::ostream & stream) const
   stream << "        Selection = "       << util::SelecMaskAsString(fApply.selec)    << "\n";
   stream << "        Reaction type = "   << util::ReacTypeMaskAsString(fApply.reactype) << "\n";
   stream << "        True nu flavour = " << util::FlavMaskAsString(fApply.flav)     << "\n";
+  stream << "        Osc/unosc modes = " << util::OscModeMaskAsString(fApply.osc)     << "\n";
   stream << "        Nuclear target = "  << util::NuclearTargetMaskAsString(fApply.target)   << "\n";
   stream << "    Physical limits = [" << limits.first << ", " << limits.second << "]" << "\n";
   stream << std::endl;
