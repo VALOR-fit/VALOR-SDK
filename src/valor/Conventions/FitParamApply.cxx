@@ -26,21 +26,26 @@ const FlavApplyMask_t valor::conv::kfApplyToNuEAny   = kfApplyToNuE     | kfAppl
 const FlavApplyMask_t valor::conv::kfApplyToNuMuAny  = kfApplyToNuMu    | kfApplyToNuMuBar;
 const FlavApplyMask_t valor::conv::kfApplyToAll      = kfApplyToNuAny   | kfApplyToNuBarAny;
 
+// Oscillated/unoscillated modes
+const OscModeApplyMask_t valor::conv::koApplyToAll = koApplyToUnOsc | koApplyToOsc;
+
 // Reaction type
 const ReacTypeApplyMask_t valor::conv::ktApplyToCCQELike    = ktApplyToCCQE     | ktApplyToCCMEC;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCCELScat = ktApplyToCCELScat | ktApplyToNuEELScat; // nu + e CC elastic scattering (inverse muon/tau decay) and nue+e
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC1pi    = ktApplyToCC1piC   | ktApplyToCC1pi0;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC2pi    = ktApplyToCC2piC   | ktApplyToCC2pi0 | ktApplyToCCpiCpi0;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC       = ktApplyToCCQELike | ktApplyToAllCC1pi | ktApplyToAllCC2pi | ktApplyToCCcoh | ktApplyToCCoth | ktApplyToCCELScat;
+const ReacTypeApplyMask_t valor::conv::ktApplyToCCnQE       = ktApplyToAllCC & (~ktApplyToCCQELike);
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToNCElLike    = ktApplyToNCEL     | ktApplyToNCMEC; //this is not used, modes disabled
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNCELScat = ktApplyToNCELScat | ktApplyToNuEELScat; //nu+e NC elastic scattering
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC1pi    = ktApplyToNC1piC   | ktApplyToNC1pi0;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC2pi    = ktApplyToNC2piC   | ktApplyToNC2pi0   | ktApplyToNCpiCpi0;
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC       = ktApplyToNCElLike | ktApplyToAllNC1pi | ktApplyToAllNC2pi | ktApplyToNCcoh | ktApplyToNCoth | ktApplyToNCELScat;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC       = ktApplyToNCElLike | ktApplyToAllNC1pi | ktApplyToAllNC2pi | ktApplyToNCcoh | ktApplyToNC1Gamma | ktApplyToNCoth | ktApplyToNCELScat;
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCoh = ktApplyToCCcoh | ktApplyToNCcoh;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllELScat = ktApplyToCCELScat | ktApplyToNuEELScat | ktApplyToNCELScat;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAll1pi = ktApplyToAllCC1pi | ktApplyToAllNC1pi;
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAll = ktApplyToAllCC | ktApplyToAllNC | ktApplyToAllELScat;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCoh    = ktApplyToAll & (~ktApplyToAllCoh);
@@ -51,24 +56,31 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithFSI   = ktApplyToAll & (~
 const DetectorApplyMask_t valor::conv::kdApplyToAllDUNE = kdApplyToDUNEND | kdApplyToDUNEFD;
 const DetectorApplyMask_t valor::conv::kdApplyToAllSBN  = kdApplyToSBND | kdApplyToMicroBooNE | kdApplyToICARUS;
 const DetectorApplyMask_t valor::conv::kdApplyToAllSBN2Det  = kdApplyToSBND | kdApplyToMicroBooNE;
-const DetectorApplyMask_t valor::conv::kdApplyToAllND  = kdApplyToDUNEND | kdApplyToSBND | kdApplyToMicroBooNE | kdApplyToICARUS;
-const DetectorApplyMask_t valor::conv::kdApplyToAll    = kdApplyToAllDUNE | kdApplyToAllSBN;
+const DetectorApplyMask_t valor::conv::kdApplyToAllND  = kdApplyToDUNEND | kdApplyToSBND | kdApplyToMicroBooNE | kdApplyToICARUS | kdApplyToND280;
+const DetectorApplyMask_t valor::conv::kdApplyToAllT2K  = kdApplyToND280 | kdApplyToSuperK;
+const DetectorApplyMask_t valor::conv::kdApplyToAll    = kdApplyToAllDUNE | kdApplyToAllSBN | kdApplyToAllT2K;
 
 
 // Samples
 const SelecApplyMask_t valor::conv::ksApplyToAllND = (
-  ksApplyToNuMuCC | ksApplyToNuMuCC0pi1trk| ksApplyToNuMuCC0pi2trk | ksApplyToNuMuCC0piNtrk | 
-  ksApplyToNuMuCC3trkDelta | ksApplyToNuMuCC1piC | ksApplyToNuMuCC2piC | ksApplyToNuMuCC1pi0 | 
-  ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 | 
-  ksApplyToNuMuCCWSoth | ksApplyToNuECC0pi | ksApplyToNuECC1piC | ksApplyToNuECC1pi0 | ksApplyToNuECCoth | 
-  ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth | ksApplyToNeutrinoElec | ksApplyToInvMuDecay | 
+  ksApplyToNuMuCC | ksApplyToNuMuCC0pi1trk| ksApplyToNuMuCC0pi2trk | ksApplyToNuMuCC0piNtrk |
+  ksApplyToNuMuCC3trkDelta | ksApplyToNuMuCC1piC | ksApplyToNuMuCC2piC | ksApplyToNuMuCC1pi0 |
+  ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 |
+  ksApplyToNuMuCCWSoth | ksApplyToNuECC0pi | ksApplyToNuECC1piC | ksApplyToNuECC1pi0 | ksApplyToNuECCoth |
+  ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth | ksApplyToNeutrinoElec | ksApplyToInvMuDecay |
   ksApplyToNuECCWS | ksApplyToNuECC | ksApplyToNuMuCCWS | ksApplyToNC
 );
 
-const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes;
+
+const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ksApplyToMultiRingE;                    // SuperK selections
+const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu;                       // SuperK selections
+const SelecApplyMask_t valor::conv::ksApplyToAllRings     = ksApplyTo1RingE | ksApplyTo1RingMu | ksApplyToMultiRingE; // SuperK selections
+
+const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes | ksApplyToAllRings;
 const SelecApplyMask_t valor::conv::ksApplyToAll = ksApplyToAllND | ksApplyToAllFD;
 const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
 const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
+
 
 // Targets
 const NuclearTargetApplyMask_t valor::conv::kntApplyToAll = (
@@ -123,6 +135,14 @@ void valor::util::ApplyMaskNaming::Init(void)
     fFlavNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
 
+  // Oscillated/unoscillated mode mask names
+  fOscModeMaskToName.insert( std::make_pair(koApplyToUnOsc, "unosc") );
+  fOscModeMaskToName.insert( std::make_pair(koApplyToOsc  , "osc") );
+  fOscModeMaskToName.insert( std::make_pair(koApplyToAll  , "all") );
+  for(auto const& pair : fOscModeMaskToName) {
+    fOscModeNameToMask.insert( std::make_pair(pair.second, pair.first) );
+  }
+
   // Selection mask names
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC         , "numucc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0pi1trk  , "numucc0pi1trk") );
@@ -159,6 +179,12 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToAll            , "all") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNC          , "allnc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuECC       , "allnuecc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu        , "1rmu") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE         , "1re") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE     , "multire") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeRingAny   , "e-likerings") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingAny       , "1rany") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllRings       , "allrings") );
   for(auto const& pair : fSelecMaskToName) {
     fSelecNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
@@ -182,6 +208,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNC2pi0      , "nc2pi0") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCpiCpi0    , "ncpicpi0") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCcoh       , "nccoh") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNC1Gamma    , "nc1gamma") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCELScat    , "ncelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCoth       , "ncoth") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNuEELScat   , "nueelscat") );
@@ -190,6 +217,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC1pi    , "allcc1pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC2pi    , "allcc2pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC       , "allcc") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCnQE       , "ccnqe") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCElLike    , "ncellike") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNCELScat , "allncelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNC1pi    , "allnc1pi") );
@@ -197,6 +225,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNC       , "allnc") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCoh      , "allcoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllELScat   , "allelscat") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll1pi      , "all1pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll         , "all") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCoh   , "allbutcoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButELScat, "allbutelscat") );
@@ -211,6 +240,9 @@ void valor::util::ApplyMaskNaming::Init(void)
   fDetectorMaskToName.insert( std::make_pair(kdApplyToSBND      , "sbnd") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToMicroBooNE, "microboone") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToICARUS    , "icarus") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToND280     , "nd280") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToSuperK    , "superk") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToAllT2K    , "allt2k") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllDUNE   , "alldune") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllSBN    , "allsbn") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllSBN2Det, "allsbn2det") );
@@ -291,6 +323,9 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksNuELikeCClow    : return ksApplyToLowRes;
     case ksNuEBarCChigh    : return ksApplyToHighRes;
     case ksNuEBarCClow     : return ksApplyToLowRes;
+    case ks1Rmu            : return ksApplyTo1RingMu;
+    case ks1Re             : return ksApplyTo1RingE;
+    case ksMultiRe         : return ksApplyToMultiRingE;
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
       return 0;
@@ -306,13 +341,8 @@ const DetectorApplyMask_t valor::util::ApplyToDetector(conv::Detector_t d)
     case kdSBND      : return kdApplyToSBND;
     case kdSBNuBooNE : return kdApplyToMicroBooNE;
     case kdSBNICARUS : return kdApplyToICARUS;
-    case kdSuperK    : return 0;
-    case kdHyperK    : return 0;
-    case kdND280     : return 0;
-    case kdND280Up   : return 0;
-    case kdINGRID    : return 0;
-    case kdNuPRISM   : return 0;
-    case kdNuTIT     : return 0;
+    case kdSuperK    : return kdApplyToSuperK;
+    case kdND280     : return kdApplyToND280;
     default:
       LOG("ApplyMask",pWARN) << "No detector apply mask set for " << util::AsString(d) << ". Applying to none.";
       return 0;
@@ -324,10 +354,8 @@ const FlavApplyMask_t valor::util::ApplyToFlavour(conv::NuFlavour_t f)
   switch (f) {
     case kNuE      : return kfApplyToNuE;
     case kNuMu     : return kfApplyToNuMu;
-    case kNuTau    : return 0;
     case kNuEBar   : return kfApplyToNuEBar;
     case kNuMuBar  : return kfApplyToNuMuBar;
-    case kNuTauBar : return 0;
     default:
       LOG("ApplyMask",pWARN) << "No flavour apply mask set for " << util::AsString(f) << ". Applying to none.";
       return 0;
@@ -356,6 +384,7 @@ const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t)
     case kmtNC2pi0   : return ktApplyToNC2pi0   | ktApplyToNCoth;
     case kmtNCpiCpi0 : return ktApplyToNCpiCpi0 | ktApplyToNCoth;
     case kmtNCcoh    : return ktApplyToNCcoh    | ktApplyToNCoth;
+    case kmtNC1Gamma : return ktApplyToNC1Gamma;
     case kmtNCELScat : return ktApplyToNCELScat;
     case kmtNCoth    : return ktApplyToNCoth;
     case kmtELScat   : return ktApplyToNuEELScat;
