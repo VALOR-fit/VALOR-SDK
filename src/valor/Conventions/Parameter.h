@@ -126,6 +126,9 @@ namespace valor {
       // Simple parameter name for printing etc.
       std::string fName;
 
+      // Longer, more descriptive parameter name for more verbose printing
+      std::string fNameLong;
+
       // ROOT TeX name for displaying on plots
       std::string fRooTeXName;
       // And in normal tex
