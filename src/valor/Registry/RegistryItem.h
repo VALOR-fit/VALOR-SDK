@@ -31,7 +31,7 @@ namespace valor {
 
 template<typename T> class RegistryItem;
 template<typename T>
-  ostream & operator << (ostream & stream, const RegistryItem<T> & rec);
+  std::ostream & operator << (std::ostream & stream, const RegistryItem<T> & rec);
 
 template<typename T> class RegistryItem : public RegistryItemI {
 
@@ -50,10 +50,10 @@ public:
   bool            IsLocal  (void) const {  return fIsLocal;    }
   void            SetLocal (bool isloc) {  fIsLocal  = isloc;  }
 
-  void Print(ostream& stream) const;
+  void Print(std::ostream& stream) const;
 
-  friend ostream & operator <<
-              <T>(ostream & stream, const RegistryItem<T> & rec);
+  friend std::ostream & operator <<
+              <T>(std::ostream & stream, const RegistryItem<T> & rec);
 
 private:
 

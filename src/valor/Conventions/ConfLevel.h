@@ -18,6 +18,8 @@
 #ifndef conf_level_h
 #define conf_level_h
 
+#include <string>
+
 namespace valor {
 
 namespace conv {
@@ -27,13 +29,23 @@ typedef enum EConfLevel {
    kCL68, 
    kCL90, 
    kCL95, 
-   kCL99
+   kCL99,
+   kCL1Sigma,
+   kCL2Sigma,
+   kCL3Sigma,
+   kCL4Sigma,
+   kCL5Sigma
 } 
 ConfLevel_t; 
+
+const size_t kNConfLevels = kCL5Sigma+1;
 
 } // conv
 
 namespace util {
+   
+  std::string AsString(conv::ConfLevel_t cl);
+  std::string ConfLevelAsString(conv::ConfLevel_t cl); //alias for above
 
 
 } // util

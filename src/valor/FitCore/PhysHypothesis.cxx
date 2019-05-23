@@ -191,6 +191,11 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
   }
   //
   
+  if (fHypothesis == kHypOscSterileEff) {
+    fParams[kPhypMixingMuMu] = 0;
+    fParams[kPhypMixingMuE ] = 0;
+    fParams[kPhypDm41sq    ] = 0;
+  }
 
 
   // neutrino decay 
@@ -202,6 +207,12 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
   if(fHypothesis == kHypDecoh) {
     fParams[kPhypSinsq2ThetaDecoh] = 0;
     fParams[kPhypMusqDecoh]        = 0;
+  }
+  
+  if ( (fHypothesis != kHypUndefined && fHypothesis != kHypVoid) 
+       && fParams.size()==0) {
+    LOG("PhysHypothesis",pFATAL) << "Warning - failed to initalise hypothesis "<<util::AsString(fHypothesis);
+    util::Die(-1) ; return;
   }
 
 }
@@ -269,5 +280,35 @@ bool PhysHypothesis::Contains(conv::PhysParamId_t p) const
 {
   map<int,double>::const_iterator it = fParams.find(p);
   return (it != fParams.end());
+}
+//________________________________________________________________________________________
+std::vector<conv::PhysParamId_t> PhysHypothesis::GetParams(void) const
+{
+  std::vector<conv::PhysParamId_t> vec;
+  for (auto const& pair : fParams)
+  {
+    vec.push_back((conv::PhysParamId_t) pair.first);
+  }
+  return vec;
+}
+//________________________________________________________________________________________
+bool valor::util::OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t d)
+{
+  // Long-baseline oscillations
+  if( (h == kHypNuMuDisapp2F    || h == kHypOsc3F        || h == kHypOsc3FBar       ||
+       h == kHypOsc3FBarNormBar || h == kHypOsc3FNormBar || h == kHypOsc3FBarDissap ||
+       h == kHypDecay           || h == kHypDecoh        || h == kHypNSI3F)
+     && util::IsLongBaseline(d)
+    ){
+    return true;
+  }
+  // Short-baseline oscillations
+  else if(h == kHypOscSterile4F || h == kHypOscSterile5F || h == kHypOscSterileEff) {
+    // Apply to all detectors
+    return true;
+  }
+  else {  // kHypVoid and kHypUndefined should fall into this
+    return false;
+  }
 }
 //________________________________________________________________________________________

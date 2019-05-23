@@ -32,22 +32,16 @@ class TH2F;
 class TTree;
 class TFolder;
 
-using std::map;
-using std::vector;
-using std::pair;
-using std::string;
-using std::ostream;
-
 namespace valor {
 
 // Type definitions
 //
-typedef map <RgKey, RegistryItemI *>                 RgIMap;
-typedef pair<RgKey, RegistryItemI *>                 RgIMapPair;
-typedef map <RgKey, RegistryItemI *>::size_type      RgIMapSizeType;
-typedef map <RgKey, RegistryItemI *>::iterator       RgIMapIter;
-typedef map <RgKey, RegistryItemI *>::const_iterator RgIMapConstIter;
-typedef vector<RgKey>                                RgKeyList;
+typedef std::map <RgKey, RegistryItemI *>                 RgIMap;
+typedef std::pair<RgKey, RegistryItemI *>                 RgIMapPair;
+typedef std::map <RgKey, RegistryItemI *>::size_type      RgIMapSizeType;
+typedef std::map <RgKey, RegistryItemI *>::iterator       RgIMapIter;
+typedef std::map <RgKey, RegistryItemI *>::const_iterator RgIMapConstIter;
+typedef std::vector<RgKey>                                RgKeyList;
 
 // Templated utility methods to set/get registry items
 //
@@ -60,7 +54,7 @@ template<class T>
 
 //
 //
-ostream & operator << (ostream & stream, const Registry & registry);
+std::ostream & operator << (std::ostream & stream, const Registry & registry);
 
 class Registry {
 
@@ -68,13 +62,13 @@ public:
   // Ctor's & dtor
   //
   Registry();
-  Registry(string name, bool isReadOnly = true);
+  Registry(std::string name, bool isReadOnly = true);
   Registry(const Registry &);
   virtual ~Registry();
 
   // Overloaded registry operators (<<, (), = , +=)
   //
-  friend ostream & operator << (ostream & stream, const Registry & registry);
+  friend std::ostream & operator << (std::ostream & stream, const Registry & registry);
 
   Registry & operator =  (const Registry & reg);
   Registry & operator += (const Registry & reg);
@@ -83,7 +77,7 @@ public:
   void operator () (RgKey key,  bool         item);
   void operator () (RgKey key,  double       item);
   void operator () (RgKey key,  const char * item);
-  void operator () (RgKey key,  string       item);
+  void operator () (RgKey key,  std::string  item);
 
   // Registry & registry item locks
   //
@@ -112,6 +106,7 @@ public:
   void   Set (RgKey key, RgH2F    item);
   void   Set (RgKey key, RgTree   item);
   void   Set (RgKey key, RgObject item);
+  void   Set (RgKey key, RgDblVec item);
 
   void   Get (RgKey key, const RegistryItemI * & item) const;
   void   Get (RgKey key, RgBool   & item) const;
@@ -122,6 +117,7 @@ public:
   void   Get (RgKey key, RgH2F    & item) const;
   void   Get (RgKey key, RgTree   & item) const;
   void   Get (RgKey key, RgObject & item) const;
+  void   Get (RgKey key, RgDblVec & item) const;
 
   RgBool   GetBool      (RgKey key) const;
   RgInt    GetInt       (RgKey key) const;
@@ -131,6 +127,7 @@ public:
   RgH2F    GetH2F       (RgKey key) const;
   RgTree   GetTree      (RgKey key) const;
   RgObject GetObject    (RgKey key) const;
+  RgDblVec GetDoubleVec (RgKey key) const;
   RgBool   GetBoolDef   (RgKey key, RgBool def_opt, bool set_def=true);
   RgInt    GetIntDef    (RgKey key, RgInt  def_opt, bool set_def=true);
   RgDbl    GetDoubleDef (RgKey key, RgDbl  def_opt, bool set_def=true);
@@ -142,9 +139,9 @@ public:
   bool   Exists       (RgKey key) const;                ///< item with input key exists?
   bool   CanSetItem   (RgKey key) const;                ///< can I set the specifed item?
   bool   DeleteEntry  (RgKey key);                      ///< delete the spcified item
-  void   SetName      (string name);                    ///< set the registry name
-  string Name         (void) const;                     ///< get the registry name
-  void   Print        (ostream & stream) const;         ///< print the registry to stream
+  void   SetName      (std::string name);               ///< set the registry name
+  std::string Name    (void) const;                     ///< get the registry name
+  void   Print        (std::ostream & stream) const;    ///< print the registry to stream
   void   Copy         (const Registry &);               ///< copy the input registry
   void   Append       (const Registry &, RgKey pfx=""); ///< append the input registry
   void   Clear        (bool force = false);             ///< clear the registry
@@ -167,7 +164,7 @@ private:
 
   // Registry's private data members
   //
-  string fName;              ///< registry's name
+  std::string fName;         ///< registry's name
   bool   fIsReadOnly;        ///< is read only?
   bool   fInhibitItemLocks;  ///<
   RgIMap fRegistry;          ///< 'key' -> 'value' map

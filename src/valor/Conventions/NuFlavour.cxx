@@ -32,7 +32,21 @@ string util::AsString(NuFlavour_t f)
   }
 }
 //________________________________________________________________________________________
-string util::FlavourAsString(NuFlavour_t f) { return AsString(f);}
+string util::AsStringTeX(NuFlavour_t f)
+{
+  switch(f) {
+   case (kNuE     ) : return "\\nu_{e}" ;
+   case (kNuMu    ) : return "\\nu_{\\mu}";
+   case (kNuTau   ) : return "\\nu_{\\tau}";
+   case (kNuEBar  ) : return "\\bar{\\nu}_{e}" ;
+   case (kNuMuBar ) : return "\\bar{\\nu}_{\\mu}";
+   case (kNuTauBar) : return "\\bar{\\nu}_{\\tau}";
+   default          : return "Undefined";
+  }
+}
+//________________________________________________________________________________________
+string util::FlavourAsString   (NuFlavour_t f) { return AsString(f);}
+string util::FlavourAsStringTeX(NuFlavour_t f) { return AsStringTeX(f);}
 //________________________________________________________________________________________
 NuFlavour_t util::FlavourFromString(string flavname)
 {

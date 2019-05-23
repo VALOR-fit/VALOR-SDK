@@ -235,7 +235,15 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   {
     const char * nc = xml_syst->GetNodeContent(curr_child_node);  
     string content(nc);
-    params.push_back(NameRegistry::Instance()->PhysParamFromString(TrimSpaces(content))); // TODO: This needs changing. Instead get the params by looping through ParamPool
+    conv::PhysParamId_t param = NameRegistry::Instance()->PhysParamFromString(TrimSpaces(content));
+    if(param != conv::kPhypUndefined) {
+      params.push_back(param);
+    }
+    else {
+      LOG("CorrelatedSystematics",pERROR) << "Could not recognise parameter with name \'" << content
+                                          << "\' in the input parameter list, \'" << syst_xml <<"\'";
+      util::Die(-1);
+    }
     curr_child_node = xml_syst->GetNext(curr_child_node);
   }
   
@@ -707,6 +715,7 @@ double CorrelatedSystematics::ChisqPenalty(bool /*all_syst*/) const
 //________________________________________________________________________________________
 double CorrelatedSystematics::FitStatisticPenalty(Option_t * /*opt*/) const
 {
+  if (fNSystParameters==0) {return 0.;}
   //covariance matrix
   const TMatrixD & cov    (this->CovMatrix()   );
   const TMatrixD & covInv (this->CovMatrixInv());

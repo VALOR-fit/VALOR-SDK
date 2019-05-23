@@ -42,8 +42,11 @@ void valor::util::NameRegistry::Init(void)
 {
   for (int ip = -1 ; ip < conv::kLastNuisParam; ip++) {
     conv::PhysParamId_t p = (conv::PhysParamId_t)ip;
-    fParamNames      .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsString   (p)));
-    fParamNamesSimple.insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringRaw(p)));
+    fParamNames          .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsString      (p)));
+    fParamNamesSimple    .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringRaw   (p)));
+    fParamNamesVerySimple.insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringSimple(p)));
+    fParamNamesTex       .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringTex   (p)));
+    fParamNamesRooTex    .insert(map<conv::PhysParamId_t, std::string>::value_type(p,util::RawParamAsStringRooTex(p)));
   }
   return;
 }
@@ -62,8 +65,32 @@ std::string valor::util::NameRegistry::ParamAsStringSimple(PhysParamId_t p ) con
   return iter->second;
 }
 //________________________________________________________________________________________
-std::string valor::util::NameRegistry::AsString      (PhysParamId_t p) const { return this->ParamAsString      (p); }
-std::string valor::util::NameRegistry::AsStringSimple(PhysParamId_t p) const { return this->ParamAsStringSimple(p); }
+std::string valor::util::NameRegistry::ParamAsStringVerySimple(PhysParamId_t p ) const
+{
+  map<PhysParamId_t, string>::const_iterator iter = fParamNamesVerySimple.find(p);
+  assert(iter != fParamNamesVerySimple.end());
+  return iter->second;
+}
+//________________________________________________________________________________________
+std::string valor::util::NameRegistry::ParamAsStringTex(PhysParamId_t p ) const
+{
+  map<PhysParamId_t, string>::const_iterator iter = fParamNamesTex.find(p);
+  assert(iter != fParamNamesTex.end());
+  return iter->second;
+}
+//________________________________________________________________________________________
+std::string valor::util::NameRegistry::ParamAsStringRooTex(PhysParamId_t p ) const
+{
+  map<PhysParamId_t, string>::const_iterator iter = fParamNamesRooTex.find(p);
+  assert(iter != fParamNamesRooTex.end());
+  return iter->second;
+}
+//________________________________________________________________________________________
+std::string valor::util::NameRegistry::AsString          (PhysParamId_t p) const { return this->ParamAsString          (p); }
+std::string valor::util::NameRegistry::AsStringSimple    (PhysParamId_t p) const { return this->ParamAsStringSimple    (p); }
+std::string valor::util::NameRegistry::AsStringVerySimple(PhysParamId_t p) const { return this->ParamAsStringVerySimple(p); }
+std::string valor::util::NameRegistry::AsStringTex       (PhysParamId_t p) const { return this->ParamAsStringTex       (p); }
+std::string valor::util::NameRegistry::AsStringRooTex    (PhysParamId_t p) const { return this->ParamAsStringRooTex    (p); }
 //________________________________________________________________________________________
 PhysParamId_t valor::util::NameRegistry::PhysParamFromString(std::string inp_name) const
 {
@@ -71,8 +98,9 @@ PhysParamId_t valor::util::NameRegistry::PhysParamFromString(std::string inp_nam
     PhysParamId_t p = conv::PhysParamId_t(ip);
     string name = this->AsString(p);
     string name_simple = this->AsStringSimple(p);
-    if((name == inp_name) || (name_simple == inp_name)) {
-	  return p;
+    string name_very_simple = this->AsStringVerySimple(p);
+    if((name == inp_name) || (name_simple == inp_name) || (name_very_simple == inp_name)) {
+	    return p;
     }
   }
   return kPhypUndefined;

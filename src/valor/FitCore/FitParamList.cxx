@@ -684,24 +684,18 @@ void FitParamList::Print(Option_t *) const
   this->Print(cout);
 }
 //________________________________________________________________________________________
-FitParamList * FitParamList::NamedParameterList(string name)
+FitParamList * FitParamList::NamedParameterList(string name, size_t n_empty)
 {
   //
   // 3-flavour oscillation fit with/without systematics included
   //
   
   if(name == "nuosc3f") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFit();
+    FitParamList * fp = FitParamList::NuOsc3FlavourFit(n_empty);
     fp -> SetParListName(name);
     fp -> SetSystMode(0);
     return fp;
   }
-  //~ if(name == "nuosc3f+nuisance") {
-  //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-  //~ fp -> SetParListName(name);
-  //~ fp -> SetSystMode(1);
-  //~ return fp;
-  //~ }
   
   //
   // 3-flavour oscillation fit with various oscillation param subsets either fixed or
@@ -709,84 +703,25 @@ FitParamList * FitParamList::NamedParameterList(string name)
   //
   
   if(name == "nuosc3f_12constrain") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFit();
+    FitParamList * fp = FitParamList::NuOsc3FlavourFit(n_empty);
     fp -> SetNuisance (kPhypMixing12, true);
     fp -> SetNuisance (kPhypDm12sq,   true);
     fp -> SetParListName(name);
     fp -> SetSystMode(0);
     return fp;
   }
-  //~ if(name == "nuosc3f_12constrain+nuisance") {
-  //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-  //~ fp -> SetNuisance (kPhypMixing12, true);
-  //~ fp -> SetNuisance (kPhypDm12sq,   true);
-  //~ fp -> SetParListName(name);
-  //~ fp -> SetSystMode(1);
-  //~ return fp;
-  //~ }
+  
   if(name == "nuosc3f_12fix") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFit();
+    FitParamList * fp = FitParamList::NuOsc3FlavourFit(n_empty);
     fp -> FixParameter (kPhypMixing12);
     fp -> FixParameter (kPhypDm12sq  );
     fp -> SetParListName(name);
     fp -> SetSystMode(0);
     return fp;
   }
-  //~ if(name == "nuosc3f_12fix+nuisance") {
-  //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-  //~ fp -> FixParameter (kPhypMixing12);
-  //~ fp -> FixParameter (kPhypDm12sq  );
-  //~ fp -> SetParListName(name);
-  //~ fp -> SetSystMode(1);
-  //~ return fp;
-  //~ }
-  
-  /*
-   if(name == "nuosc3f_numudisapp_fix4") {
-   FitParamList * fp = FitParamList::NuOsc3FlavourFit();
-   fp -> FixParameter (kPhypMixing13);
-   fp -> FixParameter (kPhypMixing12);
-   fp -> FixParameter (kPhypCPV);
-   fp -> FixParameter (kPhypDm12sq);
-   fp -> SetParListName(name);
-   fp -> SetSystMode(0);
-   return fp;
-   }
-   if(name == "nuosc3f_numudisapp_fix4+nuisance") {
-   FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSystDisap();
-   fp -> FixParameter (kPhypMixing13);
-   fp -> FixParameter (kPhypMixing12);
-   fp -> FixParameter (kPhypCPV);
-   fp -> FixParameter (kPhypDm12sq);
-   fp -> SetParListName(name);
-   fp -> SetSystMode(1);
-   return fp;
-   }
-   
-   if(name == "nuosc3f_nueapp_fix4") {
-   FitParamList * fp = FitParamList::NuOsc3FlavourFit();
-   fp -> FixParameter (kPhypMixing23);
-   fp -> FixParameter (kPhypMixing12);
-   fp -> FixParameter (kPhypDm23sq);
-   fp -> FixParameter (kPhypDm12sq);
-   fp -> SetParListName(name);
-   fp -> SetSystMode(0);
-   return fp;
-   }
-   if(name == "nuosc3f_nueapp_fix4+nuisance") {
-   FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSystApp();
-   fp -> FixParameter (kPhypMixing23);
-   fp -> FixParameter (kPhypMixing12);
-   fp -> FixParameter (kPhypDm23sq);
-   fp -> FixParameter (kPhypDm12sq);
-   fp -> SetParListName(name);
-   fp -> SetSystMode(1);
-   return fp;
-   }
-   */
   
   if(name == "nuosc3f_dcpsensitivity_fix5") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFit();
+    FitParamList * fp = FitParamList::NuOsc3FlavourFit(n_empty);
     fp -> FixParameter (kPhypMixing13);
     fp -> FixParameter (kPhypMixing12);
     fp -> FixParameter (kPhypMixing23);
@@ -798,7 +733,7 @@ FitParamList * FitParamList::NamedParameterList(string name)
   }
   
   if(name == "nuosc3f_dcpsensitivity_fix3") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFit();
+    FitParamList * fp = FitParamList::NuOsc3FlavourFit(n_empty);
     fp -> SetNuisance  (kPhypMixing23, true);
     fp -> SetNuisance  (kPhypDm23sq,   true);
     fp -> FixParameter (kPhypMixing13);
@@ -810,7 +745,7 @@ FitParamList * FitParamList::NamedParameterList(string name)
   }
   
   if(name == "nuosc3f_dcpsensitivity") {
-    FitParamList * fp = FitParamList::NuOsc3FlavourFit();
+    FitParamList * fp = FitParamList::NuOsc3FlavourFit(n_empty);
     fp -> SetNuisance  (kPhypMixing23, true);
     fp -> SetNuisance  (kPhypDm23sq,   true);
     fp -> SetNuisance  (kPhypMixing13, true);
@@ -821,105 +756,12 @@ FitParamList * FitParamList::NamedParameterList(string name)
     return fp;
   }
   
-  //~ if(name == "nuosc3f_dcpsensitivity_fix3+nuisance") {
-  //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-  //~ fp -> SetNuisance  (kPhypMixing23, true);
-  //~ fp -> SetNuisance  (kPhypDm23sq,   true);
-  //~ fp -> FixParameter (kPhypMixing13);
-  //~ fp -> FixParameter (kPhypMixing12);
-  //~ fp -> FixParameter (kPhypDm12sq);
-  //~ fp -> SetParListName(name);
-  //~ fp -> SetSystMode(5);//use future osc errors
-  //~ return fp;
-  //~ }
-  
-  //~ if(name == "nuosc3f_dcpsensitivity+nuisance") {
-  //~ FitParamList * fp = FitParamList::NuOsc3FlavourFitWithAllSyst();
-  //~ fp -> SetNuisance  (kPhypMixing23, true);
-  //~ fp -> SetNuisance  (kPhypDm23sq,   true);
-  //~ fp -> SetNuisance  (kPhypMixing13, true);
-  //~ fp -> SetNuisance  (kPhypMixing12, true);
-  //~ fp -> SetNuisance  (kPhypDm12sq,   true);
-  //~ fp -> SetParListName(name);
-  //~ fp -> SetSystMode(6);//use current osc errors
-  //~ return fp;
-  //~ }
-  
-  
-  /*
-   //
-   // 2-flavour numu-disappearance oscillation fit with/without systematics included
-   //
-   
-   if(name == "numudisapp2f") {
-   FitParamList * fp = FitParamList::NumuDisapFit();
-   fp -> SetParListName(name);
-   fp -> SetSystMode(0);
-   return fp;
-   }
-   if(name == "numudisapp2f+nuisance") {
-   FitParamList * fp = FitParamList::NumuDisapFitWithAllSyst();
-   fp -> SetParListName(name);
-   fp -> SetSystMode(1);
-   return fp;
-   }
-   
-   //
-   // numu decay fit
-   //
-   
-   if(name == "decay") {
-   FitParamList * fp = FitParamList::NumuDecayFit();
-   fp -> SetParListName(name);
-   fp -> SetSystMode(0);
-   return fp;
-   }
-   
-   //
-   // numu decoherence fit
-   //
-   
-   if(name == "decoh") {
-   FitParamList * fp = FitParamList::NumuDecohFit();
-   fp -> SetParListName(name);
-   fp -> SetSystMode(0);
-   return fp;
-   }
-   
-   //
-   // sterile neutrino fitting
-   //
-   if(name == "nuoscsterile4f") {
-   FitParamList * fp = FitParamList::NuOscSterile4FlavourFit();
-   fp -> SetParListName(name);
-   fp -> SetSystMode(0);
-   return fp;
-   }
-   if(name == "nuoscsterile4f+nuisance") {
-   FitParamList * fp = FitParamList::NuOscSterile4FlavourFitWithAllSyst();
-   fp -> SetParListName(name);
-   fp -> SetSystMode(1);
-   return fp;
-   }
-   if(name == "nuoscsterile5f") {
-   FitParamList * fp = FitParamList::NuOscSterile5FlavourFit();
-   fp -> SetParListName(name);
-   fp -> SetSystMode(0);
-   return fp;
-   }
-   if(name == "nuoscsterile5f+nuisance") {
-   FitParamList * fp = FitParamList::NuOscSterile5FlavourFitWithAllSyst();
-   fp -> SetParListName(name);
-   fp -> SetSystMode(1);
-   return fp;
-   }
-   */
-   if(name == "sterile") {
-     FitParamList * fp = FitParamList::NuOscSterileEffectiveFit();
-     fp -> SetParListName(name);
-     fp -> SetSystMode(0);
-     return fp;
-   }
+  if(name == "sterile") {
+    FitParamList * fp = FitParamList::NuOscSterileEffectiveFit(n_empty);
+    fp -> SetParListName(name);
+    fp -> SetSystMode(0);
+    return fp;
+  }
   
   return 0;
 }
@@ -1582,6 +1424,9 @@ PhysHypothesis_t FitParamList::PhysicsHypothesis(void) const
     return kHypOscSterile5F;
   }
   if(this->Exists(kPhypDm41sq) ) {
+    if (this->Exists(kPhypMixingMuMu)) {
+      return kHypOscSterileEff;
+    }
     return kHypOscSterile4F;
   }
   

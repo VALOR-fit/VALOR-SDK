@@ -23,8 +23,6 @@
 
 #include "valor/Registry/RegistryItemTypeId.h"
 
-using std::ostream;
-
 namespace valor {
 
 class RegistryItemI 
@@ -32,14 +30,14 @@ class RegistryItemI
 public:
   virtual ~RegistryItemI() { }
 
-  virtual RegistryItemI * Clone    (void)      const = 0;
-  virtual RgType_t        TypeInfo (void)      const = 0;
-  virtual bool            IsLocked (void)      const = 0;
-  virtual void            Lock     (void)            = 0;
-  virtual void            UnLock   (void)            = 0;
-  virtual bool            IsLocal  (void)      const = 0;
-  virtual void            SetLocal (bool)            = 0;
-  virtual void            Print    (ostream &) const = 0;
+  virtual RegistryItemI * Clone    (void)           const = 0;
+  virtual RgType_t        TypeInfo (void)           const = 0;
+  virtual bool            IsLocked (void)           const = 0;
+  virtual void            Lock     (void)                 = 0;
+  virtual void            UnLock   (void)                 = 0;
+  virtual bool            IsLocal  (void)           const = 0;
+  virtual void            SetLocal (bool)                 = 0;
+  virtual void            Print    (std::ostream &) const = 0;
 
 protected:
 

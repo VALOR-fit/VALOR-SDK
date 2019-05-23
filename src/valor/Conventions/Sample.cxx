@@ -325,16 +325,6 @@ bool valor::util::SampleIsFar      (conv::Sample_t s) {return util::IsFar     (s
 bool valor::util::SampleIsMuLike   (conv::Sample_t s) {return util::IsMuLike  (s);};
 bool valor::util::SampleIsELike    (conv::Sample_t s) {return util::IsELike   (s);};
 //________________________________________________________________________________________
-Sample_t util::GetActiveSample(int ibeam, int isample)
-{
-// Cast an integer to Sample_t, but with boundary check
-//             [first]                  [last]
-  if (ibeam >= 0 && ibeam < conv::kNBeamConf && isample >= 0 && isample < conv::kNSamples) {
-    return conv::kSample[ibeam][isample];
-  }
-  return ksUndefined;
-}
-//________________________________________________________________________________________
 bool util::IsMuLike(Sample_t s)
 {
   switch (s) {

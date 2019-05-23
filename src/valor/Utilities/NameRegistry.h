@@ -35,20 +35,29 @@ namespace util {
       static const NameRegistry * Instance();
       static NameRegistry * MutableInstance();
       
-      std::string ParamAsString      (valor::conv::PhysParamId_t p) const;
-      std::string ParamAsStringSimple(valor::conv::PhysParamId_t p) const;
-      
+      std::string ParamAsString          (valor::conv::PhysParamId_t p) const;
+      std::string ParamAsStringSimple    (valor::conv::PhysParamId_t p) const;
+      std::string ParamAsStringVerySimple(valor::conv::PhysParamId_t p) const;
+      std::string ParamAsStringTex       (valor::conv::PhysParamId_t p) const;
+      std::string ParamAsStringRooTex    (valor::conv::PhysParamId_t p) const;
+
       // Overloaded aliases for above
-      std::string AsString      (valor::conv::PhysParamId_t p) const;
-      std::string AsStringSimple(valor::conv::PhysParamId_t p) const;
-      
+      std::string AsString          (valor::conv::PhysParamId_t p) const;
+      std::string AsStringSimple    (valor::conv::PhysParamId_t p) const;
+      std::string AsStringVerySimple(valor::conv::PhysParamId_t p) const;
+      std::string AsStringTex       (valor::conv::PhysParamId_t p) const;
+      std::string AsStringRooTex    (valor::conv::PhysParamId_t p) const;
+
       // Go the other way
       valor::conv::PhysParamId_t PhysParamFromString(std::string) const;
       
-	  // Maps for storing param names
+      // Maps for storing param names
       std::map<valor::conv::PhysParamId_t, std::string> fParamNames;
       std::map<valor::conv::PhysParamId_t, std::string> fParamNamesSimple;
-      
+      std::map<valor::conv::PhysParamId_t, std::string> fParamNamesVerySimple;
+      std::map<valor::conv::PhysParamId_t, std::string> fParamNamesTex;
+      std::map<valor::conv::PhysParamId_t, std::string> fParamNamesRooTex;
+
     private:
         
       // Singleton

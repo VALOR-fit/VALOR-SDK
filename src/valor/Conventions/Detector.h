@@ -62,6 +62,7 @@ namespace util {
   string           DetectorAsString   (conv::Detector_t d, Option_t * opt=0);
   conv::Detector_t DetectorFromInt    (int b);
   conv::Detector_t DetectorFromString (std::string b);
+  bool             IsLongBaseline     (conv::Detector_t d);
   
 } // util
 
