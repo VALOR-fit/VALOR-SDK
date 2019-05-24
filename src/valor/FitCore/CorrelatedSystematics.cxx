@@ -235,7 +235,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   {
     const char * nc = xml_syst->GetNodeContent(curr_child_node);  
     string content(nc);
-    conv::PhysParamId_t param = NameRegistry::Instance()->PhysParamFromString(TrimSpaces(content));
+    conv::PhysParamId_t param = NameRegistry::Instance()->PhysParamFromString(RemoveAllWhitespace(content));
     if(param != conv::kPhypUndefined) {
       params.push_back(param);
     }
