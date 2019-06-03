@@ -29,6 +29,8 @@ namespace conv {
 
   static const int kNReacModes = 146; //excluding undefined and other
 
+    // TODO: I've added NC 1 gamma modes for T2K, but when reading the DUNE MC trees the mode is stored as an int, so the new modes will have ruined that.
+
 typedef enum EReacMode 
 {
    kmUndefined = -1, 
