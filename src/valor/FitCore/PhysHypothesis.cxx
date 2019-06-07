@@ -282,3 +282,33 @@ bool PhysHypothesis::Contains(conv::PhysParamId_t p) const
   return (it != fParams.end());
 }
 //________________________________________________________________________________________
+std::vector<conv::PhysParamId_t> PhysHypothesis::GetParams(void) const
+{
+  std::vector<conv::PhysParamId_t> vec;
+  for (auto const& pair : fParams)
+  {
+    vec.push_back((conv::PhysParamId_t) pair.first);
+  }
+  return vec;
+}
+//________________________________________________________________________________________
+bool valor::util::OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t d)
+{
+  // Long-baseline oscillations
+  if( (h == kHypNuMuDisapp2F    || h == kHypOsc3F        || h == kHypOsc3FBar       ||
+       h == kHypOsc3FBarNormBar || h == kHypOsc3FNormBar || h == kHypOsc3FBarDissap ||
+       h == kHypDecay           || h == kHypDecoh        || h == kHypNSI3F)
+     && util::IsLongBaseline(d)
+    ){
+    return true;
+  }
+  // Short-baseline oscillations
+  else if(h == kHypOscSterile4F || h == kHypOscSterile5F || h == kHypOscSterileEff) {
+    // Apply to all detectors
+    return true;
+  }
+  else {  // kHypVoid and kHypUndefined should fall into this
+    return false;
+  }
+}
+//________________________________________________________________________________________

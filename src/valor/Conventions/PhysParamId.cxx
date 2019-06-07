@@ -264,8 +264,47 @@ string util::RawParamAsStringRaw(PhysParamId_t p)
 
   return "?";
 }
-
-
+//________________________________________________________________________________________
+string util::RawParamAsStringSimple (conv::PhysParamId_t p)
+{
+  switch(p) {
+    case ( kPhypMixing23         ) : return "mixing23";
+    case ( kPhypMixing13         ) : return "mixing13";
+    case ( kPhypMixing12         ) : return "mixing12";
+    case ( kPhypCPV              ) : return "cpv";
+    case ( kPhypDm23sq           ) : return "dm23sq";
+    case ( kPhypDm12sq           ) : return "dm12sq";
+    case ( kPhypMixing23Bar      ) : return "mixing23bar";
+    case ( kPhypMixing13Bar      ) : return "mixing13bar";
+    case ( kPhypMixing12Bar      ) : return "mixing12bar";
+    case ( kPhypCPVBar           ) : return "cpvbar";
+    case ( kPhypDm23sqBar        ) : return "dm23sqbar";
+    case ( kPhypDm12sqBar        ) : return "dm12sqbar";
+    case ( kPhypBetaBar          ) : return "betabar";
+    case ( kPhypAlphaDecay       ) : return "alphadecay";
+    case ( kPhypSinsq2ThetaDecay ) : return "thetadecay";
+    case ( kPhypMusqDecoh        ) : return "musqdecoh";
+    case ( kPhypSinsq2ThetaDecoh ) : return "thetadecoh";
+    case ( kPhypMixing14         ) : return "mixing14";
+    case ( kPhypMixing15         ) : return "mixing15";
+    case ( kPhypMixing24         ) : return "mixing24";
+    case ( kPhypMixing25         ) : return "mixing25";
+    case ( kPhypMixing34         ) : return "mixing34";
+    case ( kPhypMixing35         ) : return "mixing35";
+    case ( kPhypDm41sq           ) : return "dm41sq";
+    case ( kPhypDm51sq           ) : return "dm51sq";
+    case ( kPhypDelta12          ) : return "delta12";
+    case ( kPhypDelta13          ) : return "delta13";
+    case ( kPhypDelta15          ) : return "delta15";
+    case ( kPhypDelta34          ) : return "delta34";
+    case ( kPhypDelta35          ) : return "delta35";
+    case ( kPhypNSIepsMuTau      ) : return "nsi";
+    case ( kPhypMixingEE         ) : return "sinsq2thEE";
+    case ( kPhypMixingMuMu       ) : return "sinsq2thMuMu";
+    case ( kPhypMixingMuE        ) : return "sinsq2thMuE";
+    default                        : return "--";
+  }
+}
 //________________________________________________________________________________________
 string util::RawParamAsString(PhysParamId_t p)
 {
@@ -926,8 +965,9 @@ valor::conv::PhysParamId_t
   string lsh = util::ToLowerCase(sh);
   for (int i = 0 ; i < knppmax ; i++) {
     PhysParamId_t k = (PhysParamId_t) i ;
-    string s = util::ToLowerCase(RawParamAsString(k));
-    if (k != kPhypUndefined && (lsh == s) ) return k;
+    string s        = util::ToLowerCase(RawParamAsString      (k));
+    string s_simple = util::ToLowerCase(RawParamAsStringSimple(k));
+    if (k != kPhypUndefined && (lsh == s || lsh == s_simple) ) return k;
   }
   std::cerr<<"util::PhysParamIdFromRawString >> Unmatched string: "<<sh<<std::endl;
   return kPhypUndefined;
@@ -1008,6 +1048,12 @@ bool util::IsSystematic(PhysParamId_t p)
 {
   if(p >= kNuis000) return true;
   return false;
+}
+//____________________________________________________________________________
+bool util::IsOscParam(PhysParamId_t p)
+{
+  if(util::IsMixingAngle(p) || util::IsMassSplitting(p) || util::IsPhase(p)) return true;
+  else return false;
 }
 //________________________________________________________________________________________
 

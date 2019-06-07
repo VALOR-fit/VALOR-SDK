@@ -1,0 +1,10 @@
+*.o
+*_RootDict_*
+*~
+make/Make.config
+src/valor/Conventions/Build.h
+src/valor/Conventions/Version.h
+
+bin/
+lib/
+

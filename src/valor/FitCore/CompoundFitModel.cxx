@@ -20,6 +20,7 @@ ChangeLog:
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/VThreadPool.h"
+#include "valor/Utilities/NameRegistry.h"
 #include "valor/FitCore/CompoundFitModel.h"
 
 using namespace valor;
@@ -186,9 +187,11 @@ void CompoundFitModel::RandomizeSystematics (std::map<valor::conv::PhysParamId_t
 //________________________________________________________________________________________
 void CompoundFitModel::TweakSystematic (string syst_name, double twkdial, Option_t * opt)
 {
-  assert(!"Not implemented");
-  (void)syst_name;
-  PhysParamId_t syst = conv::kPhypUndefined; // util::PhysParamFromString(syst_name);
+  PhysParamId_t syst = util::NameRegistry::Instance()->PhysParamFromString(syst_name);
+  if(syst == conv::kPhypUndefined) {
+    LOG("CompoundFitModel",pERROR) << "Could not recognise parameter with name \'" << syst_name << "\'";
+    util::Die(-1);
+  }
   this->TweakSystematic(syst,twkdial,opt);
 }
 //________________________________________________________________________________________

@@ -14,5 +14,7 @@
   <priority msgstream="NuOsc3Flavour">        NOTICE   </priority>
   <priority msgstream="CorrelatedSystematics">NOTICE   </priority>
   <priority msgstream="Reg">                  NOTICE   </priority>
+  <priority msgstream="ApplyMask">            NOTICE   </priority>
+  <priority msgstream="Parameter">            NOTICE   </priority>
 
 </messenger_config>

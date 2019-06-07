@@ -1618,7 +1618,8 @@ namespace util {
   string RawParamAsString       (conv::PhysParamId_t p);
   string RawParamAsStringTex    (conv::PhysParamId_t p);
   string RawParamAsStringRooTex (conv::PhysParamId_t p);
-  
+  string RawParamAsStringSimple (conv::PhysParamId_t p);
+
   conv::PhysParamId_t PhysParamIdFromRawString(string sh);
 
   bool IsSystematic   (conv::PhysParamId_t p);
@@ -1626,6 +1627,7 @@ namespace util {
   bool IsMassSplitting(conv::PhysParamId_t p);
   bool IsPhase        (conv::PhysParamId_t p);
   bool IsNormalization(conv::PhysParamId_t p);
+  bool IsOscParam     (conv::PhysParamId_t p);
 
 } // util
 
