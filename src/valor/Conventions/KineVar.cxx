@@ -137,6 +137,19 @@ std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
   }
 }
 //________________________________________________________________________________________
+conv::KineVar_t util::KineVarFromString(std::string kinevar)
+{
+  string lc_kinevar = util::ToLowerCase(kinevar);
+  for (int i = 0 ; i < kNKineVarMax ; i++ ) {
+    KineVar_t kv = (KineVar_t)i;
+    string this_kv = util::ToLowerCase(util::AsString(kv));
+    if(lc_kinevar==this_kv && this_kv!="--") {
+      return kv;
+    }
+  }
+  return kvUndefined;
+}
+//________________________________________________________________________________________
 // aliases
 string util::KineVarAsString(KineVar_t kv) { return util::AsString(kv); }
 string util::KineVarAsStringTeX(KineVar_t kv, bool root) { return util::AsStringTeX(kv, root); }
