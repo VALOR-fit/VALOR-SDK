@@ -12,6 +12,7 @@ ChangeLog:
 #include <iostream>
 
 #include "valor/Conventions/ReacMode.h"
+#include "valor/Utilities/UtlStr.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -739,3 +740,16 @@ conv::ReacMode_t util::ReacTypeToMode (conv::ReacType_t t, conv::NuFlavour_t nu_
   return conv::kmUndefined;
 }
 //________________________________________________________________________________________
+conv::ReacMode_t util::ReacModeFromString (std::string mode)
+{
+  string lc_mode = util::ToLowerCase(mode);
+  for (int i = 0 ; i < kmOther ; i++ ) {
+    ReacMode_t m = (ReacMode_t)i;
+    string this_mode = util::ToLowerCase(util::AsString(m));
+    if(lc_mode==this_mode && this_mode!="--") {
+      return m;
+    }
+  }
+
+  return kmUndefined;
+}
