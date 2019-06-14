@@ -110,8 +110,8 @@ public:
   void SetCompressionLevel(int level);
   
   // Print the contents
-  void PrintEntries(std::ostream & str = std::cout);
-  void PrintDimensions(std::ostream & str = std::cout);
+  void PrintEntries(std::ostream & str = std::cout) const;
+  void PrintDimensions(std::ostream & str = std::cout) const;
   
 private:
   int fNDim;

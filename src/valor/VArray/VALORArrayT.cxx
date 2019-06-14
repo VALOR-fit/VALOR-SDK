@@ -86,7 +86,7 @@ template<typename numtype> void VALORArrayT<numtype>::Construct(int nd, const in
   fNDim = nd;
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = (i<nd ? dimensions[i] : 1);
-    fNames[i] = "";
+    fNames[i] = "unnamed";
     fIncrement[i] = 0;
   }
   fSize = 1;
@@ -106,7 +106,7 @@ template<typename numtype> void VALORArrayT<numtype>::ConstructT(int nd, const I
   fNDim = nd;
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = (i<nd ? dimensions[i] : 1);
-    fNames[i] = "";
+    fNames[i] = "unnamed";
     fIncrement[i] = 0;
   }
   fSize = 1;
@@ -157,7 +157,7 @@ template<typename numtype> void VALORArrayT<numtype>::Cleanup()
   
   for (int i = 0 ; i < 6 ; i++) {
     fDimensions[i] = 1;
-    fNames[i] = "";
+    fNames[i] = "unnamed";
   }
 }
 //________________________________________________________________________________________
@@ -184,7 +184,10 @@ template<typename numtype> int VALORArrayT<numtype>::
     }
   }
   for (int i = fNDim ; i < 6 ; i++) {
-    assert(indices[i]==-1);
+    if (indices[i]!=-1) {
+      LOG("VALORArray",pFATAL) <<fName<<" bad index "<<indices[i]<< " for dimension "<<i<<" ("<<fNames[i]<<"), max = "<<fDimensions[i];
+      util::Die(-1) ; return 0;
+    }
     assert(fIncrement[i]==0);
   }
 #endif
@@ -682,7 +685,7 @@ template<typename numtype> void VALORArrayT<numtype>::
 }
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::
-  PrintEntries(std::ostream & stream)
+  PrintEntries(std::ostream & stream) const
 {
   for (int i1 = 0 ; i1 < fDimensions[0] ; i1++) {
     stream<<"{ ";
@@ -723,7 +726,7 @@ template<typename numtype> void VALORArrayT<numtype>::
 }
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::
-  PrintDimensions(std::ostream & stream)
+  PrintDimensions(std::ostream & stream) const
 {
   stream<<fName<<" {\n";
   for (int i = 0 ; i < fNDim ; i++) {
