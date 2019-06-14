@@ -266,6 +266,20 @@ void valor::util::ApplyMaskNaming::Init(void)
   }
 }
 //________________________________________________________________________________________
+std::ostream& valor::operator<<(std::ostream& s, const conv::ApplyMask_t & m)
+{
+  s << std::endl << "("
+    << "det: "       << util::DetectorMaskAsString     (m.detector) << ", "
+    << "beam: "      << util::BeamMaskAsString         (m.beam)     << ", "
+    << "flav: "      << util::FlavMaskAsString         (m.flav)     << ", "
+    << "osc: "       << util::OscModeMaskAsString      (m.osc)      << ", "
+    << "selec: "     << util::SelecMaskAsString        (m.selec)    << ", "
+    << "reac type: " << util::ReacTypeMaskAsString     (m.reactype) << ", "
+    << "target: "    << util::NuclearTargetMaskAsString(m.target)
+    << ")" << std::endl;
+  return s;
+}
+//________________________________________________________________________________________
 const BeamApplyMask_t valor::util::ApplyToBeamMode(BeamConf_t b)
 {
   switch (b)

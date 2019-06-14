@@ -43,7 +43,7 @@ namespace valor {
 
     typedef std::bitset<nbitsBeamApplyMask>           BeamApplyMask_t;
     typedef std::bitset<nbitsFlavApplyMask>           FlavApplyMask_t;
-    typedef std::bitset<nbitsOscModeApplyMask>        OscModeApplyMask_t;
+    typedef std::bitset<nbitsOscModeApplyMask>        OscModeApplyMask_t;   // TODO: maybe rename to 'apply_to_final_flav' or something?
     typedef std::bitset<nbitsSelecApplyMask>          SelecApplyMask_t;
     typedef std::bitset<nbitsReacTypeApplyMask>       ReacTypeApplyMask_t;
     typedef std::bitset<nbitsDetectorApplyMask>       DetectorApplyMask_t;
@@ -326,6 +326,9 @@ namespace valor {
   // Which masks apply to which nucleus
   const conv::NuclearTargetApplyMask_t ApplyToNuclearTarget(conv::NuclearTarget_t nt);
   } //util
+
+  std::ostream& operator<<(std::ostream& s, const conv::ApplyMask_t & m);
+
 } //valor
 
 #endif // _valor_apply_params_h_
