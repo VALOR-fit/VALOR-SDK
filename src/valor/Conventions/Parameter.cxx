@@ -481,11 +481,15 @@ bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, ReacMode_t m
 
   NuFlavour_t f = kReacModeToInitFlavour[m];
   ReacType_t t = kReacModeToType[m];
+  bool is_oscillated = false;
+  if(util::ReacModeToInitFlavor(m) != util::ReacModeToFinalFlavor(m)) {
+    is_oscillated = true;
+  }
 
-  return IsAppliedTo(b, s, d, f, t, nt);
+  return IsAppliedTo(b, s, d, f, t, nt, is_oscillated);
 }
 //________________________________________________________________________________________
-bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t f, ReacType_t t, NuclearTarget_t nt) const
+bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t f, ReacType_t t, NuclearTarget_t nt, bool o) const
 {
   if(b == kbUndefined)         { return false; }
   if(s == ksUndefined)         { return false; }
@@ -498,11 +502,13 @@ bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t 
   bool apply_to_beam     = (util::ApplyToBeamMode     (b)  & fApply.beam    ).any();
   bool apply_to_sample   = (util::ApplyToSample       (s)  & fApply.selec   ).any();
   bool apply_to_flavour  = (util::ApplyToFlavour      (f)  & fApply.flav    ).any();
+  bool apply_to_osc      = (util::ApplyToOsc          (o)  & fApply.osc     ).any();
   bool apply_to_type     = (util::ApplyToReacType     (t)  & fApply.reactype).any();
   bool apply_to_detector = (util::ApplyToDetector     (d)  & fApply.detector).any();
   bool apply_to_target   = (util::ApplyToNuclearTarget(nt) & fApply.target  ).any();
 
-  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour && apply_to_type && apply_to_detector && apply_to_target);
+  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour && apply_to_osc && apply_to_type &&
+                apply_to_detector && apply_to_target);
 
   return apply;
 }
