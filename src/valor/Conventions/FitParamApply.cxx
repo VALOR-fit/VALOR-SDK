@@ -376,6 +376,12 @@ const FlavApplyMask_t valor::util::ApplyToFlavour(conv::NuFlavour_t f)
   }
 }
 //________________________________________________________________________________________
+const OscModeApplyMask_t valor::util::ApplyToOsc(bool is_oscillated)
+{
+  if(is_oscillated) { return koApplyToOsc; }
+  else              { return koApplyToUnOsc; }
+}
+//________________________________________________________________________________________
 const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t) 
 {
   switch (t) {

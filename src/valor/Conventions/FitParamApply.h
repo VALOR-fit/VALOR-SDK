@@ -323,6 +323,9 @@ namespace valor {
   // Which masks apply to which reaction type
   const conv::ReacTypeApplyMask_t ApplyToReacType(conv::ReacType_t t);
 
+  // Which masks apply to whether the inital flavour = final flavour
+  const conv::OscModeApplyMask_t ApplyToOsc(bool is_oscillated);
+
   // Which masks apply to which nucleus
   const conv::NuclearTargetApplyMask_t ApplyToNuclearTarget(conv::NuclearTarget_t nt);
   } //util
