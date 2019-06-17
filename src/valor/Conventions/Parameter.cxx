@@ -513,6 +513,22 @@ bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t 
   return apply;
 }
 //________________________________________________________________________________________
+bool Parameter::IsAppliedTo(conv::ApplyMask_t mask) const
+{
+  bool apply_to_beam     = (mask.beam     & fApply.beam    ).any();
+  bool apply_to_sample   = (mask.selec    & fApply.selec   ).any();
+  bool apply_to_flavour  = (mask.flav     & fApply.flav    ).any();
+  bool apply_to_osc      = (mask.osc      & fApply.osc     ).any();
+  bool apply_to_type     = (mask.reactype & fApply.reactype).any();
+  bool apply_to_detector = (mask.detector & fApply.detector).any();
+  bool apply_to_target   = (mask.target   & fApply.target  ).any();
+
+  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour && apply_to_osc && apply_to_type &&
+                apply_to_detector && apply_to_target);
+
+  return apply;
+}
+//________________________________________________________________________________________
 const std::pair<double,double> & Parameter::GetKineRange(conv::KineVar_t kv) const
 {
   for (size_t it = 0 ; it < fKinematicVariables.size(); it++) {
