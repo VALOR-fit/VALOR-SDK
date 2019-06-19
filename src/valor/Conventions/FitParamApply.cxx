@@ -11,6 +11,7 @@ Copyright (c) 2010-2018, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Conventions/FitParamApply.h"
+#include "valor/Utilities/UtlSystem.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -25,9 +26,6 @@ const FlavApplyMask_t valor::conv::kfApplyToNuBarAny = kfApplyToNuMuBar | kfAppl
 const FlavApplyMask_t valor::conv::kfApplyToNuEAny   = kfApplyToNuE     | kfApplyToNuEBar;
 const FlavApplyMask_t valor::conv::kfApplyToNuMuAny  = kfApplyToNuMu    | kfApplyToNuMuBar;
 const FlavApplyMask_t valor::conv::kfApplyToAll      = kfApplyToNuAny   | kfApplyToNuBarAny;
-
-// Oscillated/unoscillated modes
-const OscModeApplyMask_t valor::conv::koApplyToAll = koApplyToUnOsc | koApplyToOsc;
 
 // Reaction type
 const ReacTypeApplyMask_t valor::conv::ktApplyToCCQELike    = ktApplyToCCQE     | ktApplyToCCMEC;
@@ -133,14 +131,6 @@ void valor::util::ApplyMaskNaming::Init(void)
   fFlavMaskToName.insert( std::make_pair(kfApplyToAll     , "all") );
   for(auto const& pair : fFlavMaskToName) {
     fFlavNameToMask.insert( std::make_pair(pair.second, pair.first) );
-  }
-
-  // Oscillated/unoscillated mode mask names
-  fOscModeMaskToName.insert( std::make_pair(koApplyToUnOsc, "unosc") );
-  fOscModeMaskToName.insert( std::make_pair(koApplyToOsc  , "osc") );
-  fOscModeMaskToName.insert( std::make_pair(koApplyToAll  , "all") );
-  for(auto const& pair : fOscModeMaskToName) {
-    fOscModeNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
 
   // Selection mask names
@@ -269,13 +259,13 @@ void valor::util::ApplyMaskNaming::Init(void)
 std::ostream& valor::operator<<(std::ostream& s, const conv::ApplyMask_t & m)
 {
   s << std::endl << "("
-    << "det: "       << util::DetectorMaskAsString     (m.detector) << ", "
-    << "beam: "      << util::BeamMaskAsString         (m.beam)     << ", "
-    << "flav: "      << util::FlavMaskAsString         (m.flav)     << ", "
-    << "osc: "       << util::OscModeMaskAsString      (m.osc)      << ", "
-    << "selec: "     << util::SelecMaskAsString        (m.selec)    << ", "
-    << "reac type: " << util::ReacTypeMaskAsString     (m.reactype) << ", "
-    << "target: "    << util::NuclearTargetMaskAsString(m.target)
+    << "det: "        << util::DetectorMaskAsString     (m.detector)   << ", "
+    << "beam: "       << util::BeamMaskAsString         (m.beam)       << ", "
+    << "init flav: "  << util::FlavMaskAsString         (m.flav_init)  << ", "
+    << "final flav: " << util::FlavMaskAsString         (m.flav_final) << ", "
+    << "selec: "      << util::SelecMaskAsString        (m.selec)      << ", "
+    << "reac type: "  << util::ReacTypeMaskAsString     (m.reactype)   << ", "
+    << "target: "     << util::NuclearTargetMaskAsString(m.target)
     << ")" << std::endl;
   return s;
 }
@@ -376,12 +366,6 @@ const FlavApplyMask_t valor::util::ApplyToFlavour(conv::NuFlavour_t f)
   }
 }
 //________________________________________________________________________________________
-const OscModeApplyMask_t valor::util::ApplyToOsc(bool is_oscillated)
-{
-  if(is_oscillated) { return koApplyToOsc; }
-  else              { return koApplyToUnOsc; }
-}
-//________________________________________________________________________________________
 const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t) 
 {
   switch (t) {
@@ -429,5 +413,195 @@ const NuclearTargetApplyMask_t valor::util::ApplyToNuclearTarget(conv::NuclearTa
       LOG("ApplyMask",pWARN) << "No nuclear target apply mask set for " << util::AsString(nt) << ". Applying to none.";
       return 0;
   }
+}
+//________________________________________________________________________________________
+conv::ApplyMask_t valor::util::ReadApplyMaskAll(TXMLEngine* xmleng, XMLNodePointer_t top_node)
+{
+  conv::DetectorApplyMask_t      detector   = conv::kdApplyToAll;
+  conv::BeamApplyMask_t          beam       = conv::kbApplyToAll;
+  conv::FlavApplyMask_t          flav_init  = conv::kfApplyToAll;
+  conv::FlavApplyMask_t          flav_final = conv::kfApplyToAll;
+  conv::SelecApplyMask_t         selec      = conv::ksApplyToAll;
+  conv::ReacTypeApplyMask_t      reactype   = conv::ktApplyToAll;
+  conv::NuclearTargetApplyMask_t target     = conv::kntApplyToAll;
+  if(util::NodeExists(xmleng, top_node, "apply_to")) {
+    detector   = util::ReadDetectorApplyMask     (xmleng, top_node, "detector");
+    beam       = util::ReadBeamApplyMask         (xmleng, top_node, "beam");
+    flav_init  = util::ReadFlavApplyMask         (xmleng, top_node, "flav_init");
+    flav_final = util::ReadFlavApplyMask         (xmleng, top_node, "flav_final");
+    selec      = util::ReadSelecApplyMask        (xmleng, top_node, "selection");
+    reactype   = util::ReadReacTypeApplyMask     (xmleng, top_node, "reac_type");
+    target     = util::ReadNuclearTargetApplyMask(xmleng, top_node, "target");
+  }
+  conv::ApplyMask_t apply_mask = {detector, beam, flav_init, flav_final, selec, reactype, target};
+  return apply_mask;
+}
+//________________________________________________________________________________________
+conv::DetectorApplyMask_t valor::util::ReadDetectorApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  conv::DetectorApplyMask_t mask = conv::kdApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::DetectorMaskFromString(util::ToLowerCase(trimmed_content));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::BeamApplyMask_t valor::util::ReadBeamApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  conv::BeamApplyMask_t mask = conv::kbApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::BeamMaskFromString(util::ToLowerCase(trimmed_content));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::FlavApplyMask_t valor::util::ReadFlavApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  FlavApplyMask_t mask = conv::kfApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::FlavMaskFromString(trimmed_content);
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::SelecApplyMask_t valor::util::ReadSelecApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  SelecApplyMask_t mask = conv::ksApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::SelecMaskFromString(util::ToLowerCase(trimmed_content));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::ReacTypeApplyMask_t valor::util::ReadReacTypeApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  ReacTypeApplyMask_t mask = conv::ktApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    std::string reac_type_str = util::ReplaceAll(trimmed_content, "2p2h", "mec");  // 2p2h and MEC are the same thing, but we internally use MEC only
+    try {
+      mask = util::ReacTypeMaskFromString(util::ToLowerCase(reac_type_str));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::NuclearTargetApplyMask_t valor::util::ReadNuclearTargetApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  NuclearTargetApplyMask_t mask = conv::kntApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::NuclearTargetMaskFromString(util::ToLowerCase(trimmed_content));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+bool valor::util::IsAppliedTo(conv::ApplyMask_t mask_to_check, conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d, conv::ReacMode_t m, conv::NuclearTarget_t nt)
+{
+  if(b  == conv::kbUndefined ) { return false; }
+  if(s  == conv::ksUndefined ) { return false; }
+  if(d  == conv::kdUndefined ) { return false; }
+  if(m  == conv::kmUndefined ) { return false; }
+  if(nt == conv::kntUndefined) { return false; }
+
+  NuFlavour_t f_init  = kReacModeToInitFlavour [m];
+  NuFlavour_t f_final = kReacModeToFinalFlavour[m];
+  conv::ReacType_t  t = conv::kReacModeToType[m];
+
+  if(f_init  == kNuFlavourUndefined) { return false; }
+  if(f_final == kNuFlavourUndefined) { return false; }
+  if(t == kmtUndefined)              { return false; }
+
+  // Check whether or not to apply the param to this
+  bool apply_to_beam          = (util::ApplyToBeamMode     (b)       & mask_to_check.beam      ).any();
+  bool apply_to_sample        = (util::ApplyToSample       (s)       & mask_to_check.selec     ).any();
+  bool apply_to_flavour_init  = (util::ApplyToFlavour      (f_init)  & mask_to_check.flav_init ).any();
+  bool apply_to_flavour_final = (util::ApplyToFlavour      (f_final) & mask_to_check.flav_final).any();
+  bool apply_to_type          = (util::ApplyToReacType     (t)       & mask_to_check.reactype  ).any();
+  bool apply_to_detector      = (util::ApplyToDetector     (d)       & mask_to_check.detector  ).any();
+  bool apply_to_target        = (util::ApplyToNuclearTarget(nt)      & mask_to_check.target    ).any();
+
+  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour_init && apply_to_flavour_final && apply_to_type &&
+                apply_to_detector && apply_to_target);
+
+  return apply;
+}
+//________________________________________________________________________________________
+bool valor::util::IsAppliedTo(conv::ApplyMask_t mask_to_check, conv::ApplyMask_t mask)
+{
+  bool apply_to_beam          = (mask_to_check.beam       & mask.beam      ).any();
+  bool apply_to_sample        = (mask_to_check.selec      & mask.selec     ).any();
+  bool apply_to_flavour_init  = (mask_to_check.flav_init  & mask.flav_init ).any();
+  bool apply_to_flavour_final = (mask_to_check.flav_final & mask.flav_final).any();
+  bool apply_to_type          = (mask_to_check.reactype   & mask.reactype  ).any();
+  bool apply_to_detector      = (mask_to_check.detector   & mask.detector  ).any();
+  bool apply_to_target        = (mask_to_check.target     & mask.target    ).any();
+
+  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour_init && apply_to_flavour_final &&
+                apply_to_type && apply_to_detector && apply_to_target);
+
+  return apply;
 }
 //________________________________________________________________________________________

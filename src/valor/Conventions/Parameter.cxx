@@ -40,7 +40,7 @@ Parameter::Parameter(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePoint
   ReadRanges();
   ReadType();
   ReadCategories();
-  ReadApplyMaskAll();
+  fApply = util::ReadApplyMaskAll(xml, fParamNode);
   ReadLimits();
   LOG("FitInputs", pINFO) << "Successfully read parameter \'" << GetName() << "\'";
 }
@@ -70,7 +70,7 @@ void Parameter::Init(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePoint
 //________________________________________________________________________________________
 void Parameter::ReadNames()
 {
-  if(IsNodeSpecified("name/simple")) {
+  if(util::IsNodeSpecified(fxml, fParamNode, "name/simple")) {
     fName = util::XML2String(fxml, fParamNode, "name/simple");
   }
   else {
@@ -78,7 +78,7 @@ void Parameter::ReadNames()
     util::Die(1);
   }
 
-  if(IsNodeSpecified("name/long")) {
+  if(util::IsNodeSpecified(fxml, fParamNode, "name/long")) {
     fNameLong = util::XML2String(fxml, fParamNode, "name/long");
   }
   else {
@@ -87,7 +87,7 @@ void Parameter::ReadNames()
     fNameLong = fName;
   }
 
-  if(IsNodeSpecified("name/rootex")) {
+  if(util::IsNodeSpecified(fxml, fParamNode, "name/rootex")) {
     fRooTeXName = util::XML2String(fxml, fParamNode, "name/rootex");
   }
   else {
@@ -96,7 +96,7 @@ void Parameter::ReadNames()
     fRooTeXName = fName;
   }
 
-  if(IsNodeSpecified("name/tex")) {
+  if(util::IsNodeSpecified(fxml, fParamNode, "name/tex")) {
     fTeXName = util::XML2String(fxml, fParamNode, "name/tex");
   }
   else {
@@ -163,7 +163,7 @@ void Parameter::ReadRanges()
 //________________________________________________________________________________________
 void Parameter::ReadType()
 {
-  if(IsNodeSpecified("type")) {
+  if(util::IsNodeSpecified(fxml, fParamNode, "type")) {
     std::string type_str = util::XML2String(fxml, fParamNode, "type");
     SystType_t type = util::SystTypeFromString(type_str);
     if(type == kSystUndefined) {
@@ -198,224 +198,15 @@ void Parameter::ReadCategories()
   }
 }
 //________________________________________________________________________________________
-void Parameter::ReadApplyMaskAll()
-{
-  DetectorApplyMask_t      detector = fDefApplyDetector;
-  BeamApplyMask_t          beam     = fDefApplyBeam;
-  FlavApplyMask_t          flav     = fDefApplyFlav;
-  OscModeApplyMask_t       osc      = fDefApplyOscMode;
-  SelecApplyMask_t         selec    = fDefApplySelec;
-  ReacTypeApplyMask_t      reactype = fDefApplyReacType;
-  NuclearTargetApplyMask_t target   = fDefApplyNuclearTarget;
-  if(util::NodeExists(fxml, fParamNode, "apply_to")) {
-    detector = ReadDetectorApplyMask     ("detector");
-    beam     = ReadBeamApplyMask         ("beam");
-    flav     = ReadFlavApplyMask         ("flav");
-    osc      = ReadOscModeApplyMask      ("osc");
-    selec    = ReadSelecApplyMask        ("selection");
-    reactype = ReadReacTypeApplyMask     ("reac_type");
-    target   = ReadNuclearTargetApplyMask("target");
-  }
-  else {
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", no apply masks have been set. Applying to all.";
-    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
-  }
-  fApply = {detector, beam, flav, osc, selec, reactype, target};
-}
-//________________________________________________________________________________________
-DetectorApplyMask_t Parameter::ReadDetectorApplyMask(string node_name) const
-{
-  DetectorApplyMask_t mask = fDefApplyDetector;
-  string node_path = "apply_to/" + node_name;
-  if(IsNodeSpecified(node_path)) {
-    string content = util::XML2String(fxml, fParamNode, node_path);
-    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
-    try {
-      mask = util::DetectorMaskFromString(util::ToLowerCase(trimmed_content));
-    }
-    catch (const std::out_of_range& oor) {
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << trimmed_content
-                               << "\' (from user input \'" << content << "\') was not recognised - threw an out of range error: " << oor.what();
-      util::Die(1);
-    }
-  }
-  else {
-    // The user hasn't tried to set any mask of this type for this param, so keep at the default mask
-    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", " << node_name << " apply mask not set. Setting to default (" << util::DetectorMaskAsString(mask) << ")";
-  }
-  return mask;
-}
-//________________________________________________________________________________________
-BeamApplyMask_t Parameter::ReadBeamApplyMask(string node_name) const
-{
-  BeamApplyMask_t mask = fDefApplyBeam;
-  string node_path = "apply_to/" + node_name;
-  if(IsNodeSpecified(node_path)) {
-    string content = util::XML2String(fxml, fParamNode, node_path);
-    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
-    try {
-      mask = util::BeamMaskFromString(util::ToLowerCase(trimmed_content));
-    }
-    catch (const std::out_of_range& oor) {
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << trimmed_content
-                               << "\' (from user input \'" << content << "\') was not recognised - threw an out of range error: " << oor.what();
-      util::Die(1);
-    }
-  }
-  else {
-    // The user hasn't tried to set any mask of this type for this param, so keep at the default mask
-    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", " << node_name << " apply mask not set. Setting to default (" << util::BeamMaskAsString(mask) << ")";
-  }
-  return mask;
-}
-//________________________________________________________________________________________
-FlavApplyMask_t Parameter::ReadFlavApplyMask(string node_name) const
-{
-  FlavApplyMask_t mask = fDefApplyFlav;
-  string node_path = "apply_to/" + node_name;
-  if(IsNodeSpecified(node_path)) {
-    string content = util::XML2String(fxml, fParamNode, node_path);
-    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
-    try {
-      mask = util::FlavMaskFromString(trimmed_content);
-    }
-    catch (const std::out_of_range& oor) {
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << trimmed_content
-                               << "\' (from user input \'" << content << "\') was not recognised - threw an out of Range error: " << oor.what();
-      util::Die(1);
-    }
-  }
-  else {
-    // The user hasn't tried to set any mask of this type for this param, so keep at the default mask
-    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", " << node_name << " apply mask not set. Setting to default (" << util::FlavMaskAsString(mask) << ")";
-  }
-  return mask;
-}
-//________________________________________________________________________________________
-OscModeApplyMask_t Parameter::ReadOscModeApplyMask(string node_name) const
-{
-  OscModeApplyMask_t mask = fDefApplyOscMode;
-  string node_path = "apply_to/" + node_name;
-  if(IsNodeSpecified(node_path)) {
-    string content = util::XML2String(fxml, fParamNode, node_path);
-    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
-    try {
-      mask = util::OscModeMaskFromString(trimmed_content);
-    }
-    catch (const std::out_of_range& oor) {
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << trimmed_content
-                               << "\' (from user input \'" << content << "\') was not recognised - threw an out of Range error: " << oor.what();
-      util::Die(1);
-    }
-  }
-  else {
-    // The user hasn't tried to set any mask of this type for this param, so keep at the default mask
-    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", " << node_name << " apply mask not set. Setting to default (" << util::OscModeMaskAsString(mask) << ")";
-  }
-  return mask;
-}
-//________________________________________________________________________________________
-SelecApplyMask_t Parameter::ReadSelecApplyMask(string node_name) const
-{
-  SelecApplyMask_t mask = fDefApplySelec;
-  string node_path = "apply_to/" + node_name;
-  if(IsNodeSpecified(node_path)) {
-    string content = util::XML2String(fxml, fParamNode, node_path);
-    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
-    try {
-      mask = util::SelecMaskFromString(util::ToLowerCase(trimmed_content));
-    }
-    catch (const std::out_of_range& oor) {
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << trimmed_content
-                               << "\' (from user input \'" << content << "\') was not recognised - threw an out of range error: " << oor.what();
-      util::Die(1);
-    }
-  }
-  else {
-    // The user hasn't tried to set any mask of this type for this param, so keep at the default mask
-    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", " << node_name << " apply mask not set. Setting to default (" << util::SelecMaskAsString(mask) << ")";
-  }
-  return mask;
-}
-//________________________________________________________________________________________
-ReacTypeApplyMask_t Parameter::ReadReacTypeApplyMask(string node_name) const
-{
-  ReacTypeApplyMask_t mask = fDefApplyReacType;
-  string node_path = "apply_to/" + node_name;
-  if(IsNodeSpecified(node_path)) {
-    string content = util::XML2String(fxml, fParamNode, node_path);
-    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
-    std::string reac_type_str = util::ReplaceAll(trimmed_content, "2p2h", "mec");  // 2p2h and MEC are the same thing, but we internally use MEC only
-    try {
-      mask = util::ReacTypeMaskFromString(util::ToLowerCase(reac_type_str));
-    }
-    catch (const std::out_of_range& oor) {
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << reac_type_str
-                               << "\' (from user input \'" << content << "\') was not recognised - threw an out of range error: " << oor.what();
-      util::Die(1);
-    }
-  }
-  else {
-    // The user hasn't tried to set any mask of this type for this param, so keep at the default mask
-    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", " << node_name << " apply mask not set. Setting to default (" << util::ReacTypeMaskAsString(mask) << ")";
-  }
-  return mask;
-}
-//________________________________________________________________________________________
-NuclearTargetApplyMask_t Parameter::ReadNuclearTargetApplyMask(string node_name) const
-{
-  NuclearTargetApplyMask_t mask = fDefApplyNuclearTarget;
-  string node_path = "apply_to/" + node_name;
-  if(IsNodeSpecified(node_path)) {
-    string content = util::XML2String(fxml, fParamNode, node_path);
-    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
-    try {
-      mask = util::NuclearTargetMaskFromString(util::ToLowerCase(trimmed_content));
-    }
-    catch (const std::out_of_range& oor) {
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", " << node_name << " apply mask name \'" << trimmed_content
-                               << "\' (from user input \'" << content << "\') was not recognised - threw an out of range error: " << oor.what();
-      util::Die(1);
-    }
-  }
-  else {
-    // The user hasn't tried to set any mask of this type for this param, so keep at the default mask
-    // No need to do anything here, as the the variables were initialised with the default values and have not been changed
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", " << node_name << " apply mask not set. Setting to default (" << util::NuclearTargetMaskAsString(mask) << ")";
-  }
-  return mask;
-}
-//________________________________________________________________________________________
 void Parameter::ReadLimits()
 {
-  if(IsNodeSpecified("limits")) {
+  if(util::IsNodeSpecified(fxml, fParamNode, "limits")) {
     fLimits = util::XML2DblDblPair(fxml, fParamNode, "limits");
   }
   else {
     fHasLimits = false;
     fLimits = max_limits;
   }
-}
-//________________________________________________________________________________________
-bool Parameter::IsNodeSpecified(const string node_path) const
-{
-  bool specified = true;
-  if(util::NodeExists(fxml, fParamNode, node_path)) {
-    std::string content = util::XML2String(fxml, fParamNode, node_path);
-    if(content == "") {
-      specified = false;
-    }
-  }
-  else {
-    specified = false;
-  }
-  return specified;
 }
 //________________________________________________________________________________________
 void Parameter::Print(std::ostream & stream) const
@@ -445,14 +236,14 @@ void Parameter::Print(std::ostream & stream) const
     stream << "      Universal\n";
   }
   stream << "    Apply parameter to:\n";
-  stream << "        Detector = "        << util::DetectorMaskAsString(fApply.detector) << "\n";
-  stream << "        Beam = "            << util::BeamMaskAsString(fApply.beam)     << "\n";
-  stream << "        Selection = "       << util::SelecMaskAsString(fApply.selec)    << "\n";
-  stream << "        Reaction type = "   << util::ReacTypeMaskAsString(fApply.reactype) << "\n";
-  stream << "        True nu flavour = " << util::FlavMaskAsString(fApply.flav)     << "\n";
-  stream << "        Osc/unosc modes = " << util::OscModeMaskAsString(fApply.osc)     << "\n";
-  stream << "        Nuclear target = "  << util::NuclearTargetMaskAsString(fApply.target)   << "\n";
-  stream << "    Physical limits = [" << limits.first << ", " << limits.second << "]" << "\n";
+  stream << "        Detector = "              << util::DetectorMaskAsString     (fApply.detector)   << "\n";
+  stream << "        Beam = "                  << util::BeamMaskAsString         (fApply.beam)       << "\n";
+  stream << "        Selection = "             << util::SelecMaskAsString        (fApply.selec)      << "\n";
+  stream << "        Reaction type = "         << util::ReacTypeMaskAsString     (fApply.reactype)   << "\n";
+  stream << "        True nu init flavour = "  << util::FlavMaskAsString         (fApply.flav_init)  << "\n";
+  stream << "        True nu final flavour = " << util::FlavMaskAsString         (fApply.flav_final) << "\n";
+  stream << "        Nuclear target = "        << util::NuclearTargetMaskAsString(fApply.target)     << "\n";
+  stream << "    Physical limits = ["          << limits.first << ", " << limits.second << "]"       << "\n";
   stream << std::endl;
 }
 //________________________________________________________________________________________
@@ -473,60 +264,6 @@ bool Parameter::SearchCategories(string to_find, bool one_category_only) const
     }
   }
   return false;
-}
-//________________________________________________________________________________________
-bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, ReacMode_t m, NuclearTarget_t nt) const
-{
-  if(m == kmUndefined) { return false; }
-
-  NuFlavour_t f = kReacModeToInitFlavour[m];
-  ReacType_t t = kReacModeToType[m];
-  bool is_oscillated = false;
-  if(util::ReacModeToInitFlavor(m) != util::ReacModeToFinalFlavor(m)) {
-    is_oscillated = true;
-  }
-
-  return IsAppliedTo(b, s, d, f, t, nt, is_oscillated);
-}
-//________________________________________________________________________________________
-bool Parameter::IsAppliedTo(BeamConf_t b, Sample_t s, Detector_t d, NuFlavour_t f, ReacType_t t, NuclearTarget_t nt, bool o) const
-{
-  if(b == kbUndefined)         { return false; }
-  if(s == ksUndefined)         { return false; }
-  if(d == kdUndefined)         { return false; }
-  if(nt == kntUndefined)       { return false; }
-  if(f == kNuFlavourUndefined) { return false; }
-  if(t == kmtUndefined)        { return false; }
-
-  // Check whether or not to apply the param to this
-  bool apply_to_beam     = (util::ApplyToBeamMode     (b)  & fApply.beam    ).any();
-  bool apply_to_sample   = (util::ApplyToSample       (s)  & fApply.selec   ).any();
-  bool apply_to_flavour  = (util::ApplyToFlavour      (f)  & fApply.flav    ).any();
-  bool apply_to_osc      = (util::ApplyToOsc          (o)  & fApply.osc     ).any();
-  bool apply_to_type     = (util::ApplyToReacType     (t)  & fApply.reactype).any();
-  bool apply_to_detector = (util::ApplyToDetector     (d)  & fApply.detector).any();
-  bool apply_to_target   = (util::ApplyToNuclearTarget(nt) & fApply.target  ).any();
-
-  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour && apply_to_osc && apply_to_type &&
-                apply_to_detector && apply_to_target);
-
-  return apply;
-}
-//________________________________________________________________________________________
-bool Parameter::IsAppliedTo(conv::ApplyMask_t mask) const
-{
-  bool apply_to_beam     = (mask.beam     & fApply.beam    ).any();
-  bool apply_to_sample   = (mask.selec    & fApply.selec   ).any();
-  bool apply_to_flavour  = (mask.flav     & fApply.flav    ).any();
-  bool apply_to_osc      = (mask.osc      & fApply.osc     ).any();
-  bool apply_to_type     = (mask.reactype & fApply.reactype).any();
-  bool apply_to_detector = (mask.detector & fApply.detector).any();
-  bool apply_to_target   = (mask.target   & fApply.target  ).any();
-
-  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour && apply_to_osc && apply_to_type &&
-                apply_to_detector && apply_to_target);
-
-  return apply;
 }
 //________________________________________________________________________________________
 const std::pair<double,double> & Parameter::GetKineRange(conv::KineVar_t kv) const

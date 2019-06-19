@@ -33,8 +33,8 @@
                 <beam>      all    </beam>
                 <selection> all    </selection>
                 <reac_type> ccqe   </reac_type>
-                <flav>      nu any </flav>
-                <osc>       unosc  </osc>
+                <flav_init>  nu any </flav_init>
+                <flav_final> numu  </flav_final>
                 <target>    all    </target>
               </apply_to>
 
@@ -109,11 +109,6 @@ namespace valor {
       
 
       conv::ApplyMask_t GetApplyMask (void) const { return fApply; }
-      bool IsAppliedTo(conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d,
-                       conv::ReacMode_t m, conv::NuclearTarget_t nt) const;
-      bool IsAppliedTo(conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d, conv::NuFlavour_t f,
-                       conv::ReacType_t t, conv::NuclearTarget_t nt, bool is_oscillated) const;
-      bool IsAppliedTo(conv::ApplyMask_t mask) const;
                             
       // Search the list of user-specified categories for an entry with content exactly matching to_find (after converting to lower case and removing whitespace)
       bool SearchCategories(std::string to_find, bool one_category_only = false) const;
@@ -159,33 +154,12 @@ namespace valor {
       std::vector<conv::KineVar_t> fKinematicVariables;
       std::vector<std::pair<double,double> >fKinematicRange;
 
-      // Default values of each apply mask
-      const conv::DetectorApplyMask_t      fDefApplyDetector      = conv::kdApplyToAll;
-      const conv::BeamApplyMask_t          fDefApplyBeam          = conv::kbApplyToAll;
-      const conv::FlavApplyMask_t          fDefApplyFlav          = conv::kfApplyToAll;
-      const conv::OscModeApplyMask_t       fDefApplyOscMode       = conv::koApplyToAll;
-      const conv::SelecApplyMask_t         fDefApplySelec         = conv::ksApplyToAll;
-      const conv::ReacTypeApplyMask_t      fDefApplyReacType      = conv::ktApplyToAll;
-      const conv::NuclearTargetApplyMask_t fDefApplyNuclearTarget = conv::kntApplyToAll;
-
       void Init(conv::PhysParamId_t param_id, TXMLEngine* xml, XMLNodePointer_t param_node);
       void ReadNames       ();
       void ReadRanges      ();
       void ReadType        ();
       void ReadCategories  ();
-      void ReadApplyMaskAll();
       void ReadLimits      ();
-      conv::DetectorApplyMask_t      ReadDetectorApplyMask     (std::string node_name) const;
-      conv::BeamApplyMask_t          ReadBeamApplyMask         (std::string node_name) const;
-      conv::FlavApplyMask_t          ReadFlavApplyMask         (std::string node_name) const;
-      conv::OscModeApplyMask_t       ReadOscModeApplyMask      (std::string node_name) const;
-      conv::SelecApplyMask_t         ReadSelecApplyMask        (std::string node_name) const;
-      conv::ReacTypeApplyMask_t      ReadReacTypeApplyMask     (std::string node_name) const;
-      conv::NuclearTargetApplyMask_t ReadNuclearTargetApplyMask(std::string node_name) const;
-
-      // For a specified node which should contain a string: Does this node exist and is the string not empty?
-      bool IsNodeSpecified(const std::string node_path) const;
-
   };
 } // valor
 

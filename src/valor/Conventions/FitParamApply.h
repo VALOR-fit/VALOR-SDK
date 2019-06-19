@@ -28,6 +28,7 @@
 #include "valor/Conventions/ReacMode.h"
 #include "valor/Conventions/Sample.h"
 #include "valor/Conventions/Detector.h"
+#include "valor/Utilities/UtlXML.h"
 
 namespace valor {
   namespace conv {
@@ -35,7 +36,6 @@ namespace valor {
     static const unsigned long kApplyMaskOne     = 1ul;
     static const int nbitsBeamApplyMask          = 2;
     static const int nbitsFlavApplyMask          = 4;
-    static const int nbitsOscModeApplyMask       = 2;
     static const int nbitsSelecApplyMask         = 33;
     static const int nbitsReacTypeApplyMask      = 22;
     static const int nbitsDetectorApplyMask      = 7;
@@ -43,7 +43,6 @@ namespace valor {
 
     typedef std::bitset<nbitsBeamApplyMask>           BeamApplyMask_t;
     typedef std::bitset<nbitsFlavApplyMask>           FlavApplyMask_t;
-    typedef std::bitset<nbitsOscModeApplyMask>        OscModeApplyMask_t;   // TODO: maybe rename to 'apply_to_final_flav' or something?
     typedef std::bitset<nbitsSelecApplyMask>          SelecApplyMask_t;
     typedef std::bitset<nbitsReacTypeApplyMask>       ReacTypeApplyMask_t;
     typedef std::bitset<nbitsDetectorApplyMask>       DetectorApplyMask_t;
@@ -54,8 +53,8 @@ namespace valor {
     typedef struct {
       DetectorApplyMask_t      detector;
       BeamApplyMask_t          beam;
-      FlavApplyMask_t          flav;
-      OscModeApplyMask_t       osc;
+      FlavApplyMask_t          flav_init;
+      FlavApplyMask_t          flav_final;
       SelecApplyMask_t         selec;
       ReacTypeApplyMask_t      reactype;
       NuclearTargetApplyMask_t target;
@@ -68,9 +67,6 @@ namespace valor {
     static const FlavApplyMask_t kfApplyToNuMuBar         = (kApplyMaskOne << 1 );
     static const FlavApplyMask_t kfApplyToNuE             = (kApplyMaskOne << 2 );
     static const FlavApplyMask_t kfApplyToNuEBar          = (kApplyMaskOne << 3 );
-
-    static const OscModeApplyMask_t koApplyToUnOsc        = (kApplyMaskOne << 0 ); // Apply to oscillated and/or unoscillated modes
-    static const OscModeApplyMask_t koApplyToOsc          = (kApplyMaskOne << 1 );
 
     static const SelecApplyMask_t ksApplyToNuMuCC          = (kApplyMaskOne <<  0 ); // Sample
     static const SelecApplyMask_t ksApplyToNuMuCC0pi1trk   = (kApplyMaskOne <<  1 );
@@ -161,9 +157,6 @@ namespace valor {
     extern const FlavApplyMask_t kfApplyToNuMuAny;
     extern const FlavApplyMask_t kfApplyToAll;
 
-    // Oscillated/unoscilalted
-    extern const OscModeApplyMask_t koApplyToAll;
-
     // Reaction type
     extern const ReacTypeApplyMask_t ktApplyToCCQELike;
     extern const ReacTypeApplyMask_t ktApplyToAllCCELScat; // nu + e CC elastic scattering (inverse muon/tau decay) and nue+e
@@ -237,7 +230,6 @@ namespace valor {
         // Return the apply mask naming maps with key = apply mask, value = name
         const std::map<conv::BeamApplyMask_t,          std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsBeamApplyMask>>          GetBeamMaskToNameMap         (void) const { return fBeamMaskToName; }
         const std::map<conv::FlavApplyMask_t,          std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsFlavApplyMask>>          GetFlavMaskToNameMap         (void) const { return fFlavMaskToName; }
-        const std::map<conv::OscModeApplyMask_t,       std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsOscModeApplyMask>>       GetOscModeMaskToNameMap      (void) const { return fOscModeMaskToName; }
         const std::map<conv::SelecApplyMask_t,         std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsSelecApplyMask>>         GetSelecMaskToNameMap        (void) const { return fSelecMaskToName; }
         const std::map<conv::ReacTypeApplyMask_t,      std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsReacTypeApplyMask>>      GetReacTypeMaskToNameMap     (void) const { return fReacTypeMaskToName; }
         const std::map<conv::DetectorApplyMask_t,      std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsDetectorApplyMask>>      GetDetectorMaskToNameMap     (void) const { return fDetectorMaskToName; }
@@ -246,7 +238,6 @@ namespace valor {
         // Return the apply mask naming maps with key = name, value = apply mask
         const std::map<std::string, conv::BeamApplyMask_t>          GetBeamNameToMaskMap         (void) const { return fBeamNameToMask; }
         const std::map<std::string, conv::FlavApplyMask_t>          GetFlavNameToMaskMap         (void) const { return fFlavNameToMask; }
-        const std::map<std::string, conv::OscModeApplyMask_t>       GetOscModeNameToMaskMap      (void) const { return fOscModeNameToMask; }
         const std::map<std::string, conv::SelecApplyMask_t>         GetSelecNameToMaskMap        (void) const { return fSelecNameToMask; }
         const std::map<std::string, conv::ReacTypeApplyMask_t>      GetReacTypeNameToMaskMap     (void) const { return fReacTypeNameToMask; }
         const std::map<std::string, conv::DetectorApplyMask_t>      GetDetectorNameToMaskMap     (void) const { return fDetectorNameToMask; }
@@ -263,7 +254,6 @@ namespace valor {
 
         std::map<conv::BeamApplyMask_t,          std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsBeamApplyMask>>          fBeamMaskToName;
         std::map<conv::FlavApplyMask_t,          std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsFlavApplyMask>>          fFlavMaskToName;
-        std::map<conv::OscModeApplyMask_t,       std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsOscModeApplyMask>>       fOscModeMaskToName;
         std::map<conv::SelecApplyMask_t,         std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsSelecApplyMask>>         fSelecMaskToName;
         std::map<conv::ReacTypeApplyMask_t,      std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsReacTypeApplyMask>>      fReacTypeMaskToName;
         std::map<conv::DetectorApplyMask_t,      std::string, ApplyMaskNaming::bitset_comparer<conv::nbitsDetectorApplyMask>>      fDetectorMaskToName;
@@ -272,7 +262,6 @@ namespace valor {
         // Reverse of the above maps
         std::map<std::string, conv::BeamApplyMask_t>          fBeamNameToMask;
         std::map<std::string, conv::FlavApplyMask_t>          fFlavNameToMask;
-        std::map<std::string, conv::OscModeApplyMask_t>       fOscModeNameToMask;
         std::map<std::string, conv::SelecApplyMask_t>         fSelecNameToMask;
         std::map<std::string, conv::ReacTypeApplyMask_t>      fReacTypeNameToMask;
         std::map<std::string, conv::DetectorApplyMask_t>      fDetectorNameToMask;
@@ -293,7 +282,6 @@ namespace valor {
     // Given an apply mask return the name of the mask
     inline std::string BeamMaskAsString         (conv::BeamApplyMask_t          mask) { return util::ApplyMaskNaming::Instance()->GetBeamMaskToNameMap().at(mask); }
     inline std::string FlavMaskAsString         (conv::FlavApplyMask_t          mask) { return util::ApplyMaskNaming::Instance()->GetFlavMaskToNameMap().at(mask); }
-    inline std::string OscModeMaskAsString      (conv::OscModeApplyMask_t       mask) { return util::ApplyMaskNaming::Instance()->GetOscModeMaskToNameMap().at(mask); }
     inline std::string SelecMaskAsString        (conv::SelecApplyMask_t         mask) { return util::ApplyMaskNaming::Instance()->GetSelecMaskToNameMap().at(mask); }
     inline std::string ReacTypeMaskAsString     (conv::ReacTypeApplyMask_t      mask) { return util::ApplyMaskNaming::Instance()->GetReacTypeMaskToNameMap().at(mask); }
     inline std::string DetectorMaskAsString     (conv::DetectorApplyMask_t      mask) { return util::ApplyMaskNaming::Instance()->GetDetectorMaskToNameMap().at(mask); }
@@ -302,32 +290,39 @@ namespace valor {
     // Given the name of a mask, return the apply mask bitset
     inline conv::BeamApplyMask_t          BeamMaskFromString         (std::string name) { return util::ApplyMaskNaming::Instance()->GetBeamNameToMaskMap().at(name); }
     inline conv::FlavApplyMask_t          FlavMaskFromString         (std::string name) { return util::ApplyMaskNaming::Instance()->GetFlavNameToMaskMap().at(name); }
-    inline conv::OscModeApplyMask_t       OscModeMaskFromString      (std::string name) { return util::ApplyMaskNaming::Instance()->GetOscModeNameToMaskMap().at(name); }
     inline conv::SelecApplyMask_t         SelecMaskFromString        (std::string name) { return util::ApplyMaskNaming::Instance()->GetSelecNameToMaskMap().at(name); }
     inline conv::ReacTypeApplyMask_t      ReacTypeMaskFromString     (std::string name) { return util::ApplyMaskNaming::Instance()->GetReacTypeNameToMaskMap().at(name); }
     inline conv::DetectorApplyMask_t      DetectorMaskFromString     (std::string name) { return util::ApplyMaskNaming::Instance()->GetDetectorNameToMaskMap().at(name); }
     inline conv::NuclearTargetApplyMask_t NuclearTargetMaskFromString(std::string name) { return util::ApplyMaskNaming::Instance()->GetNuclearTargetNameToMaskMap().at(name); }
 
-  // Which masks apply to which beam modes
-  const conv::BeamApplyMask_t ApplyToBeamMode(conv::BeamConf_t b);
+    // Which masks apply to which beam modes
+    const conv::BeamApplyMask_t ApplyToBeamMode(conv::BeamConf_t b);
 
-  // Which masks apply to which samples
-  const conv::SelecApplyMask_t ApplyToSample(conv::Sample_t s);
+    // Which masks apply to which samples
+    const conv::SelecApplyMask_t ApplyToSample(conv::Sample_t s);
 
-  // Which masks apply to which parent particle flavour
-  const conv::DetectorApplyMask_t ApplyToDetector(conv::Detector_t d);
+    // Which masks apply to which parent particle flavour
+    const conv::DetectorApplyMask_t ApplyToDetector(conv::Detector_t d);
 
-  // Which masks apply to which parent particle flavour
-  const conv::FlavApplyMask_t ApplyToFlavour(conv::NuFlavour_t f);
+    // Which masks apply to which parent particle flavour
+    const conv::FlavApplyMask_t ApplyToFlavour(conv::NuFlavour_t f);
 
-  // Which masks apply to which reaction type
-  const conv::ReacTypeApplyMask_t ApplyToReacType(conv::ReacType_t t);
+    // Which masks apply to which reaction type
+    const conv::ReacTypeApplyMask_t ApplyToReacType(conv::ReacType_t t);
 
-  // Which masks apply to whether the inital flavour = final flavour
-  const conv::OscModeApplyMask_t ApplyToOsc(bool is_oscillated);
+    // Which masks apply to which nucleus
+    const conv::NuclearTargetApplyMask_t ApplyToNuclearTarget(conv::NuclearTarget_t nt);
 
-  // Which masks apply to which nucleus
-  const conv::NuclearTargetApplyMask_t ApplyToNuclearTarget(conv::NuclearTarget_t nt);
+    conv::ApplyMask_t              ReadApplyMaskAll          (TXMLEngine* xmleng, XMLNodePointer_t top_node                  );
+    conv::DetectorApplyMask_t      ReadDetectorApplyMask     (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+    conv::BeamApplyMask_t          ReadBeamApplyMask         (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+    conv::FlavApplyMask_t          ReadFlavApplyMask         (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+    conv::SelecApplyMask_t         ReadSelecApplyMask        (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+    conv::ReacTypeApplyMask_t      ReadReacTypeApplyMask     (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+    conv::NuclearTargetApplyMask_t ReadNuclearTargetApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+    bool                           IsAppliedTo               (conv::ApplyMask_t mask_to_check, conv::BeamConf_t b, conv::Sample_t s,
+                                                              conv::Detector_t d, conv::ReacMode_t m, conv::NuclearTarget_t nt);
+    bool                           IsAppliedTo               (conv::ApplyMask_t mask_to_check, conv::ApplyMask_t mask);
   } //util
 
   std::ostream& operator<<(std::ostream& s, const conv::ApplyMask_t & m);
