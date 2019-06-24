@@ -337,7 +337,8 @@ vector<double> KBCubHcmbEdge2Edge::BinRange(
 {
   vector<double> range(2);
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension. Input dimension = " << dimension
+                                     << "; binning kine space = " << util::AsString(this->KineSpace());
     util::Die(-1) ; return range;
   }
   vector<unsigned int> binarr = this->Bin1DArr(linearized_bin);
@@ -354,7 +355,9 @@ vector<double> KBCubHcmbEdge2Edge::BinRange(
   vector<double> range(2);
   unsigned int dimension = this->Dimension(kv);
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension. Input kine var = " << util::AsString(kv)
+                                     << " gives dimension = " << dimension
+                                     << "; binning kine space = " << util::AsString(this->KineSpace());
     util::Die(-1) ; return range;
   }
   vector<unsigned int> binarr = this->Bin1DArr(linearized_bin);
