@@ -28,8 +28,10 @@ valor::util::Interpolator::Interpolator(const TSpline * spl, ROOT::Math::Interpo
       spl->GetKnot(i,x[i],y[i]);
     }
     this->SetData(n_knots,x.data(),y.data());
-    fXmin = *std::min_element(x.begin(),x.end());
-    fXmax = *std::max_element(x.begin(),x.end());
+    fXmin  = *std::min_element(x.begin(),x.end());
+    fXmax  = *std::max_element(x.begin(),x.end());
+    fName  = spl->GetName();
+    fTitle = spl->GetTitle();
   }
 }
 //________________________________________________________________________________________
@@ -45,6 +47,8 @@ valor::util::Interpolator::Interpolator(const TSpline & spl, ROOT::Math::Interpo
   this->SetData(n_knots,x.data(),y.data());
   fXmin = *std::min_element(x.begin(),x.end());
   fXmax = *std::max_element(x.begin(),x.end());
+  fName  = spl.GetName();
+  fTitle = spl.GetTitle();
 }
 //________________________________________________________________________________________
 double valor::util::Interpolator::EvalWithLimits(double x) const

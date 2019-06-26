@@ -3,7 +3,7 @@
 
 \class     valor::util::Interpolator
 
-\brief     Basically the same as ROOT::Math::Interpolator but stores its own X limits.
+\brief     Basically the same as ROOT::Math::Interpolator but stores its own X limits, name and title.
 
 \author    Steve Dennis <s.r.dennis \at liverpool.ac.uk
            University of Liverpool
@@ -37,10 +37,18 @@ class Interpolator : public ROOT::Math::Interpolator {
     double Xmin() const;
     double Xmax() const;
     double EvalWithLimits(double x) const;
-    
+
+    std::string GetName (void) const { return fName ; };
+    std::string GetTitle(void) const { return fTitle; };
+
+    void SetName (std::string s) { fName  = s; }
+    void SetTitle(std::string s) { fTitle = s; }
+
   private:
     double fXmin;
     double fXmax;
+    std::string fName;
+    std::string fTitle;
 };
 #else
 class Interpolator : public TObject {};
