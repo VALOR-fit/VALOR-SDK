@@ -75,6 +75,9 @@ public:
   KBCubHcmbEdge2Edge(string name, string title);
   virtual ~KBCubHcmbEdge2Edge();
 
+  // Inherited stuff from VALORBinning
+  using VALORBinning::GetNextBin;
+
   // Read binning from file
   virtual bool Read(string file);
 

@@ -99,16 +99,32 @@ public:
 
   // Find bin
   virtual unsigned int FindBin (std::vector<double> & xarr) const = 0;
-  
+
+  /**
+    Get the next bin in a loop over one kine var with all other kine vars fixed.
+    // TODO: This works fine when interating over 1 dimension only (in an Ndim binning scheme),
+    // TODO: but if you want to loop > 1 dimension this only works with rectangular binning. Fix this.
+
+    \param current_bin: The current (global) bin number. The function starts searching from this + 1.
+
+    \param kv: The varied kine var to get the next bins for.
+
+    \param other_kv_vals: A map containing all kine vars in the binning scheme except for kv and their bin centres.
+                          These are to be kept fixed.
+
+    \return The (global) bin number corresponding to the next bin, if there is a next bin. If not, -999 is returned.
+   */
+  int GetNextBin (int current_bin, conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const;
+
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const = 0;
-  
+
   // Print a summary of the binning
   virtual void Print(std::ostream & stream = std::cout) const = 0;
-  
-  
+
+
   using TObject::Read; // Tell clang we really do want this
-  
+
 protected:
 
   //~ void Init    (void);
@@ -121,7 +137,7 @@ protected:
   unsigned int                              fNBins;               // number of bins
   std::vector<double>                       fMinimum;             //
   std::vector<double>                       fMaximum;             //
-  
+
 ClassDef(VALORBinning, 1)
 
 };

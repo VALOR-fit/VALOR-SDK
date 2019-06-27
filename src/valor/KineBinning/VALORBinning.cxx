@@ -198,3 +198,49 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
   return binning;
 }
 //________________________________________________________________________________________
+int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const
+{
+  // Check that the input current bin number is sensible. Allow current_bin = -1 for the start of the iteration,
+  // as we immediately increment it
+  if(current_bin < -1 || current_bin >= (int)NBins()) {
+    LOG("KBCubHcmbMondrian", pERROR) << "Invalid input current bin number [" << current_bin << "]";
+    util::Die(-1);
+  }
+
+  //check that the kine vars from other_kv_vals + kv gives ALL of the binning kvs
+  unsigned int n_dims_match = 0;
+  for(std::map<conv::KineVar_t, double>::iterator iter = other_kv_vals.begin(); iter != other_kv_vals.end(); ++iter) {
+    conv::KineVar_t kv_fixed = iter->first;
+    if(this->Contains(kv_fixed)) { n_dims_match++; }
+    if(kv_fixed == kv) {
+      LOG("KBCubHcmbMondrian", pERROR) << "The kine var that we're getting the next bin of [" << util::AsString(kv)
+                                       << "] is also present in the fixed kine var map!";
+      util::Die(-1);
+    }
+  }
+  if(this->Contains(kv)) { n_dims_match++; }
+  if(n_dims_match != NDimensions()) {
+    LOG("KBCubHcmbMondrian", pERROR) << "The input kine vars don't match ALL of the binning kine vars";
+    util::Die(-1);
+  }
+
+  for(int iglob = current_bin+1; iglob < (int)NBins(); iglob++) {  // Start at the global bin number of the previous bin +1 (for efficiency)
+    // search for the first bin where the kvs we're NOT getting the bin number for have
+    // values that match the input constant values
+    int n_matches = 0;
+    for(std::map<conv::KineVar_t, double>::iterator iter = other_kv_vals.begin(); iter != other_kv_vals.end(); ++iter) {
+      conv::KineVar_t kv_fixed = iter->first;
+      double kv_val_fixed = iter->second;
+      double min = BinMinimum(iglob, kv_fixed);
+      double max = BinMaximum(iglob, kv_fixed);
+      if(kv_val_fixed >= min && kv_val_fixed < max) { n_matches++; }
+    }
+    if(n_matches != NDimensions() - 1) { continue; }
+    // This global bin number must correspond to the next x bin that we want
+    return iglob;
+  }
+  // If we've reached the end of the binning scheme without finding a next bin, return a nonsense value
+  // to signal that we should stop iterating
+  return -999;
+}
+//________________________________________________________________________________________

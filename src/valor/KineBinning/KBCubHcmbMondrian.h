@@ -139,6 +139,8 @@ public:
         
   // Inherited stuff from VALORBinning
   using VALORBinning::NBins;
+  using VALORBinning::GetNextBin;
+
   // Bin min and max values
   virtual double BinMinimum (unsigned int bin, unsigned int dimension ) const;
   virtual double BinMaximum (unsigned int bin, unsigned int dimension ) const;
