@@ -410,6 +410,40 @@ unsigned int KBCubHcmbMondrian::FindBin(vector<double> & xarr) const
   return 0;
 }
 //________________________________________________________________________________________
+unsigned int KBCubHcmbMondrian::FindBin(std::map<conv::KineVar_t, double> & xarr) const
+{
+  std::vector<conv::KineVar_t> kvs = KineVars();
+  if (xarr.size() == fNDimensions) {
+    for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
+      bool inside = true;
+      for(unsigned int idim = 0; idim < fNDimensions; idim++) {
+        conv::KineVar_t kv = kvs[idim];
+        double x   = xarr.at(kv);
+        unsigned int idx = (2 * fNDimensions * ibin) + (2 * idim);
+        double min = fBinEdges[idx];
+        double max = fBinEdges[idx+1];
+        inside = inside && (x >= min && x < max);
+        if(!inside) break;
+      }
+      if(inside) {
+        return ibin;
+      }
+    }
+  }
+  else {
+    LOG("Binning",pFATAL) << this->GetName()<< " needs array of dimension "<<fNDimensions <<" but got size "<<xarr.size();
+    util::Die(-1);
+  }
+
+  LOG("Binning", pFATAL) << this->GetName()<< ": Mondrian binning doesn't span all space?";
+  for (size_t i = 0 ; i < fNDimensions ; i++ ) {
+    conv::KineVar_t kv = kvs[i];
+    LOG("Binning",pFATAL) << util::AsString(fKineVars[i]) << "\t= "<<xarr.at(kv);
+  }
+  util::Die(-1);
+  return 0;
+}
+//________________________________________________________________________________________
 void KBCubHcmbMondrian::UseEdge2EdgeBinning(
   const KBCubHcmbEdge2Edge * kbe2e)
 {
@@ -577,5 +611,17 @@ void KBCubHcmbMondrian::Print(std::ostream & stream) const
     }
     stream<<std::endl;
   }
+}
+//________________________________________________________________________________________
+unsigned int KBCubHcmbMondrian::NBins(conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const
+{
+  int nbins = 0;
+  int ibin_global = -1;
+  while(true) {
+    ibin_global = GetNextBin(ibin_global, kv, other_kv_vals);
+    if(ibin_global < 0) { break; }
+    nbins++;
+  }
+  return nbins;
 }
 //________________________________________________________________________________________

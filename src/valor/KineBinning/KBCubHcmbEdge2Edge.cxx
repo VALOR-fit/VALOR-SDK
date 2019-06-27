@@ -253,6 +253,11 @@ unsigned int KBCubHcmbEdge2Edge::NBins(conv::KineVar_t kv) const
   return this->NBins(dimension);
 }
 //________________________________________________________________________________________
+unsigned int KBCubHcmbEdge2Edge::NBins(conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const
+{
+  return NBins(kv);
+}
+//________________________________________________________________________________________
 bool KBCubHcmbEdge2Edge::FixedWidth(unsigned int dimension) const
 {
   if (dimension >= fNDimensions) {
@@ -445,13 +450,24 @@ unsigned int KBCubHcmbEdge2Edge::FindBin1D(double x, conv::KineVar_t kv) const
   unsigned int dimension = this->Dimension(kv);
   return this->FindBin1D(x,dimension);
 }
-
+//________________________________________________________________________________________
 unsigned int KBCubHcmbEdge2Edge::FindBin(vector<double> & xarr) const
 {
   vector<unsigned int> binarr = this->FindBin1DArr(xarr);
   return this->LinearizedBin(binarr);
 }
-
+//________________________________________________________________________________________
+unsigned int KBCubHcmbEdge2Edge::FindBin(std::map<conv::KineVar_t, double> & xarr) const
+{
+  std::vector<double> xarr_odered;
+  std::vector<conv::KineVar_t> kvs = KineVars();
+  for(unsigned int idim = 0; idim < fNDimensions; idim++) {
+    conv::KineVar_t kv = kvs[idim];
+    xarr_odered.push_back(xarr.at(kv));
+  }
+  vector<unsigned int> binarr = this->FindBin1DArr(xarr_odered);
+  return this->LinearizedBin(binarr);
+}
 //________________________________________________________________________________________
 vector<unsigned int> KBCubHcmbEdge2Edge::FindBin1DArr(vector<double> & xarr) const
 {

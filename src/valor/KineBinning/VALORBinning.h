@@ -70,6 +70,18 @@ public:
 
   // Number of multi-dimensional bins 
   unsigned int NBins (void) const { return fNBins; }
+
+  /**
+    Get the number of bins for a one dimension with all other kine vars fixed.
+
+    \param kv: The varied kine var to get the next bins for.
+
+    \param other_kv_vals: Only used for Mondiran binning. A map containing all kine vars in the binning scheme except
+                          for kv and their bin centres. These are to be kept fixed.
+
+    \return The number of bins.
+   */
+  virtual unsigned int NBins (conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const = 0;
   
   // Global bin and max values
   double Minimum (unsigned int dimension ) const;
@@ -99,6 +111,7 @@ public:
 
   // Find bin
   virtual unsigned int FindBin (std::vector<double> & xarr) const = 0;
+  virtual unsigned int FindBin (std::map<conv::KineVar_t, double> & xarr) const = 0;
 
   /**
     Get the next bin in a loop over one kine var with all other kine vars fixed.
