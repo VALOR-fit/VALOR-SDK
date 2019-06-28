@@ -129,6 +129,16 @@ public:
    */
   int GetNextBin (int current_bin, conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const;
 
+  /**
+    Takes this binning and creates a new binning using the specified subset of
+    kinematic variables.
+
+    \param ks The target kinematic space. This must be a strict subset of the
+      kinematic space used by the current binning.
+    \return The binning with the specified kinematic space.
+  */
+  virtual VALORBinning* Contract(conv::KineSpace_t ks) const = 0;
+
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const = 0;
 

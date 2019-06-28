@@ -181,7 +181,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   return true;
 }
 //________________________________________________________________________________________
-KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
+VALORBinning* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
 {
    KBCubHcmbEdge2Edge* binning = new KBCubHcmbEdge2Edge();
 
@@ -239,7 +239,7 @@ KBCubHcmbEdge2Edge* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
    TString new_name = TString::Format("%s_contracted_to_%s",this->GetName(),util::AsString(ks).c_str());
    binning->SetName(new_name.Data());
 
-   return binning;
+   return dynamic_cast<VALORBinning*>(binning);
 }
 //________________________________________________________________________________________
 unsigned int KBCubHcmbEdge2Edge::NBins(unsigned int dimension) const

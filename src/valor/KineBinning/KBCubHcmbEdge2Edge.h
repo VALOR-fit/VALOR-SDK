@@ -89,7 +89,7 @@ public:
       kinematic space used by the current binning.
     \return The binning with the specified kinematic space.
   */
-  KBCubHcmbEdge2Edge* Contract(conv::KineSpace_t ks) const;
+  VALORBinning* Contract(conv::KineSpace_t ks) const;
   
   // Fixed or variable width?
   bool FixedWidth    (unsigned int dimension ) const;

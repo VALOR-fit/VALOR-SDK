@@ -165,7 +165,7 @@ bool KBCubHcmbMondrian::Read(string file)
   return true;
 }
 
-KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
+VALORBinning* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
 {
    KBCubHcmbMondrian* mond = new KBCubHcmbMondrian();
 
@@ -279,7 +279,7 @@ KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
    }
    mond->fNBins -= duplicateBins.size();
 
-   return mond;
+   return dynamic_cast<VALORBinning*>(mond);
 }
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinMinimum(unsigned int bin, unsigned int dimension) const

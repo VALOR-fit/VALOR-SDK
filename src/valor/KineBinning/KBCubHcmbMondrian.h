@@ -98,7 +98,7 @@ public:
       kinematic space used by the current binning.
     \return The binning with the specified kinematic space.
   */
-  KBCubHcmbMondrian* Contract(conv::KineSpace_t ks) const;
+  VALORBinning* Contract(conv::KineSpace_t ks) const;
 
   // An alternative `edge-to-edge' binning of the same kiematical space may be 
   // specified to simplify plotting. If specified, a bin mapping bwteen the
