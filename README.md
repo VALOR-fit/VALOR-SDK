@@ -27,14 +27,16 @@ Past authors:
 
 Dr. **Costas Andreopoulos** < constantinos.andreopoulos \at cern.ch >
  
-**University of Liverpool** | Faculty of Science & Engineering | School of Physical Sciences | Dept. of Physics <br>
+**University of Liverpool** | Faculty of Science & Engineering <br> 
+School of Physical Sciences | Dept. of Physics <br>
 *Oliver Lodge Lab 316, Liverpool L69 7ZE, UK (tel: +44-(0)1517-943201)* <br>
-**U.K. Research & Innovation** | Science & Technology Facilities Council | Rutherford Appleton Lab | Particle Physics Dept. <br>
+**U.K. Research & Innovation** | Science & Technology Facilities Council 
+Rutherford Appleton Lab | Particle Physics Dept. <br>
 *Harwell Oxford Campus, R1 2.89, Oxfordshire OX11 0QX, UK (tel: +44-(0)1235-445091)* <br>
 
 ## Copyright
 
-Copyright (c) 2010-2018, The VALOR Fitting Group. **All Rights Reserved.**
+Copyright (c) 2010-2019, The VALOR Fitting Group. **All Rights Reserved.**
 
 ## What is the role of the SDK
 
@@ -47,3 +49,23 @@ The SDK is a **highly-abstracted** neutrino oscillation fit. Specific applicatio
 - The prior errors for systematic parameters as well as input correlations between systematic parameters.
 - A specification of how each systematic parameter affects a kinematical bin in each MC template (for each mode of every fit sample).
 - A physics hypothesis (e.g. 3-flavour oscillations, 3+1 oscillations, etc) and a list of the parameters of interest, their ranges and external constraints, if any.
+
+## Configuration and installation 
+
+External dependency setup:
+
+- **colorgcc** (makes g++ output more readable)
+   - To install colorgcc (optional), type: *shell%* **make color**
+   - To uninstall, type : *shell%* **make colorclean**
+- **python virtualenv, with ipython and numpy** (ensure support for the VALOR python scripts)
+   - To install, type: *shell%* make python
+   - To uninstall, type *shell%* make pythonclean
+
+Configuring VALOR-SDK:
+
+*shell%* ./configure
+
+Building VALOR-SDK:
+
+*shell%* make
+
