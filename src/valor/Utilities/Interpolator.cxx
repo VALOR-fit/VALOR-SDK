@@ -83,6 +83,7 @@ double valor::util::Interpolator::Eval(double x) const
     x = std::max(x,fXmin);
     x = std::min(x,fXmax);
   }
+  else if(x < fXmin || x > fXmax) { std::cerr << "Evaluating spline outside of its limits" << std::endl; }
   if(fGSLSpline) { return fGSLSpline ->Eval(x); }
   else           { return fROOTSpline->Eval(x); }
 }
@@ -115,7 +116,17 @@ void valor::util::Interpolator::SetUseLimits(bool u)
     LOG("Messenger",pWARN)
       << "GSL splines can't be evaluated outside of their limits, so ignoring the call to Interpolator::SetUseLimits(false)";
   }
-  else { fUseLimits = u; }
+  else {
+#ifdef __LET_ME_DO_STUPID_STUFF_WITH_MY_SPLINES__
+    fUseLimits = u;
+#else
+    fUseLimits = true;
+    if(!u) {
+      LOG("Messenger",pWARN)
+        << "If you want to evaluate splines outside of their limits, configure the SDK with the flag --enable-spline-stupidity";
+    }
+#endif
+  }
 }
 //________________________________________________________________________________________
 valor::util::Interpolator::~Interpolator()
