@@ -55,11 +55,11 @@ The SDK is a **highly-abstracted** neutrino oscillation fit. Specific applicatio
 External dependency setup:
 
 - **colorgcc** (makes g++ output more readable)
-   - To install colorgcc (optional), type: *shell%* **make color**
-   - To uninstall, type : *shell%* **make colorclean**
+   - To install colorgcc (optional), type: *shell%* <span style="color: red"> make color</span>
+   - To uninstall, type : *shell%* <span style="color: red"> make colorclean</span>
 - **python virtualenv, with ipython and numpy** (ensure support for the VALOR python scripts)
-   - To install, type: *shell%* make python
-   - To uninstall, type *shell%* make pythonclean
+   - To install, type: *shell%* <span style="color: red"> make python</span>
+   - To uninstall, type *shell%* <span style="color: red"> make pythonclean</span>
 
 Configuring VALOR-SDK:
 
