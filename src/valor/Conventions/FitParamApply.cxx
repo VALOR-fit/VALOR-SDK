@@ -381,13 +381,13 @@ const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t)
     case kmtCCELScat : return ktApplyToCCELScat;
     case kmtCCoth    : return ktApplyToCCoth;
     case kmtNCEL     : return ktApplyToNCEL;
-    case kmtNCMEC    : return ktApplyToNCMEC    | ktApplyToNCEL;
-    case kmtNC1piC   : return ktApplyToNC1piC   | ktApplyToNCoth; //why | ktApplyToNCoth ?
-    case kmtNC1pi0   : return ktApplyToNC1pi0   | ktApplyToNCoth;
-    case kmtNC2piC   : return ktApplyToNC2piC   | ktApplyToNCoth;
-    case kmtNC2pi0   : return ktApplyToNC2pi0   | ktApplyToNCoth;
-    case kmtNCpiCpi0 : return ktApplyToNCpiCpi0 | ktApplyToNCoth;
-    case kmtNCcoh    : return ktApplyToNCcoh    | ktApplyToNCoth;
+    case kmtNCMEC    : return ktApplyToNCMEC;
+    case kmtNC1piC   : return ktApplyToNC1piC;
+    case kmtNC1pi0   : return ktApplyToNC1pi0;
+    case kmtNC2piC   : return ktApplyToNC2piC;
+    case kmtNC2pi0   : return ktApplyToNC2pi0;
+    case kmtNCpiCpi0 : return ktApplyToNCpiCpi0;
+    case kmtNCcoh    : return ktApplyToNCcoh;
     case kmtNC1Gamma : return ktApplyToNC1Gamma;
     case kmtNCELScat : return ktApplyToNCELScat;
     case kmtNCoth    : return ktApplyToNCoth;
