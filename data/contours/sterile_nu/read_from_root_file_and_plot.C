@@ -6,77 +6,144 @@
 //
 
 {
-  TCanvas * c = new TCanvas("c","",20,20,1500,600);
-  c->Divide(2,1);
-  c->Draw();
 
   TFile * f = new TFile("./sterile_3p1_limits.root","read");
 
   //
-  // Appearance
+  // nue apearance
   //
 
-  TH2F * hfapp = (TH2F*) c->cd(1)->DrawFrame(3E-4,6E-2,2E-1,1.5E+1);
-  hfapp->Draw();
-  hfapp->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu e}");
-  hfapp->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2}/c^{4})");
-  c->cd(1)->SetLogx();
-  c->cd(1)->SetLogy();
+  TCanvas * cnueapp = new TCanvas("cnueapp","",20,20,900,600);
+  cnueapp->Draw();
 
-  c->cd(1);
+  TH2F * hfnueapp = (TH2F*) cnueapp->DrawFrame(1E-4,6E-2,2E-1,1.5E+1);
+  hfnueapp->Draw();
+  hfnueapp->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu e}");
+  hfnueapp->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2}/c^{4})");
+  cnueapp->SetLogx();
+  cnueapp->SetLogy();
 
-  TGraph * lim_app_3p1_nomad_99pctCL        = (TGraph *) f->Get( "lim_app_3p1_nomad_99pctCL"        );
-  TGraph * lim_app_3p1_bnl776_99pctCL       = (TGraph *) f->Get( "lim_app_3p1_bnl776_99pctCL"       );
-  TGraph * lim_app_3p1_karmen_99pctCL       = (TGraph *) f->Get( "lim_app_3p1_karmen_99pctCL"       );
-  TGraph * lim_app_3p1_icarus_99pctCL       = (TGraph *) f->Get( "lim_app_3p1_icarus_99pctCL"       );
-  TGraph * lim_app_3p1_opera_99pctCL        = (TGraph *) f->Get( "lim_app_3p1_opera_99pctCL"        );
-  TGraph * lim_app_3p1_miniboonenu_99pctCL  = (TGraph *) f->Get( "lim_app_3p1_miniboonenu_99pctCL"  );
-  TGraph * lim_app_3p1_lsndr1_99pctCL       = (TGraph *) f->Get( "lim_app_3p1_lsndr1_99pctCL"       );
-  TGraph * lim_app_3p1_lsndr2_99pctCL       = (TGraph *) f->Get( "lim_app_3p1_lsndr2_99pctCL"       );
-  TGraph * lim_app_3p1_lsndr3_99pctCL       = (TGraph *) f->Get( "lim_app_3p1_lsndr3_99pctCL"       );
+  TGraph * lim_nueapp_3p1_sbnproposal_90pctCL  = (TGraph *) f->Get( "lim_nueapp_3p1_sbnproposal_90pctCL"  );
+  TGraph * lim_nueapp_3p1_sbnproposal_3sigCL   = (TGraph *) f->Get( "lim_nueapp_3p1_sbnproposal_3sigCL"   );
+  TGraph * lim_nueapp_3p1_sbnproposal_5sigCL   = (TGraph *) f->Get( "lim_nueapp_3p1_sbnproposal_5sigCL"   );
+  TGraph * lim_nueapp_3p1_nomad_99pctCL        = (TGraph *) f->Get( "lim_nueapp_3p1_nomad_99pctCL"        );
+  TGraph * lim_nueapp_3p1_bnl776_99pctCL       = (TGraph *) f->Get( "lim_nueapp_3p1_bnl776_99pctCL"       );
+  TGraph * lim_nueapp_3p1_karmen_99pctCL       = (TGraph *) f->Get( "lim_nueapp_3p1_karmen_99pctCL"       );
+  TGraph * lim_nueapp_3p1_icarus_99pctCL       = (TGraph *) f->Get( "lim_nueapp_3p1_icarus_99pctCL"       );
+  TGraph * lim_nueapp_3p1_opera_99pctCL        = (TGraph *) f->Get( "lim_nueapp_3p1_opera_99pctCL"        );
+  TGraph * lim_nueapp_3p1_miniboonenu_99pctCL  = (TGraph *) f->Get( "lim_nueapp_3p1_miniboonenu_99pctCL"  );
+  TGraph * lim_nueapp_3p1_lsndr1_99pctCL       = (TGraph *) f->Get( "lim_nueapp_3p1_lsndr1_99pctCL"       );
+  TGraph * lim_nueapp_3p1_lsndr2_99pctCL       = (TGraph *) f->Get( "lim_nueapp_3p1_lsndr2_99pctCL"       );
+  TGraph * lim_nueapp_3p1_lsndr3_99pctCL       = (TGraph *) f->Get( "lim_nueapp_3p1_lsndr3_99pctCL"       );
 
-  lim_app_3p1_nomad_99pctCL        -> Draw("l");
-  lim_app_3p1_bnl776_99pctCL       -> Draw("l");
-  lim_app_3p1_karmen_99pctCL       -> Draw("l");
-  lim_app_3p1_icarus_99pctCL       -> Draw("l");
-  lim_app_3p1_opera_99pctCL        -> Draw("l");
-  lim_app_3p1_miniboonenu_99pctCL  -> Draw("l");
-  lim_app_3p1_lsndr1_99pctCL       -> Draw("l");
-  lim_app_3p1_lsndr2_99pctCL       -> Draw("l");
-  lim_app_3p1_lsndr3_99pctCL       -> Draw("l");
+  lim_nueapp_3p1_sbnproposal_90pctCL  -> Draw("l");
+  lim_nueapp_3p1_sbnproposal_3sigCL   -> Draw("l");
+  lim_nueapp_3p1_sbnproposal_5sigCL   -> Draw("l");
+  lim_nueapp_3p1_nomad_99pctCL        -> Draw("l");
+  lim_nueapp_3p1_bnl776_99pctCL       -> Draw("l");
+  lim_nueapp_3p1_karmen_99pctCL       -> Draw("l");
+  lim_nueapp_3p1_icarus_99pctCL       -> Draw("l");
+  lim_nueapp_3p1_opera_99pctCL        -> Draw("l");
+  lim_nueapp_3p1_miniboonenu_99pctCL  -> Draw("l");
+  lim_nueapp_3p1_lsndr1_99pctCL       -> Draw("l");
+  lim_nueapp_3p1_lsndr2_99pctCL       -> Draw("l");
+  lim_nueapp_3p1_lsndr3_99pctCL       -> Draw("l");
 
-  TLegend * lgapp = new TLegend(0.7,0.8,0.9,0.9);
-  lgapp->SetFillColor(0);
-  lgapp->SetBorderSize(0);
-  lgapp->AddEntry(lim_app_3p1_nomad_99pctCL,       "NOMAD 99\% CL",           "L");
-  lgapp->AddEntry(lim_app_3p1_bnl776_99pctCL,      "BNL776 99\% CL",          "L");
-  lgapp->AddEntry(lim_app_3p1_karmen_99pctCL,      "KARMEN 99\% CL",          "L");
-  lgapp->AddEntry(lim_app_3p1_icarus_99pctCL,      "ICARUS 99\% CL",          "L");
-  lgapp->AddEntry(lim_app_3p1_opera_99pctCL,       "OPERA 99\% CL",           "L");
-  lgapp->AddEntry(lim_app_3p1_miniboonenu_99pctCL, "MiniBooNE (#nu) 99\% CL", "L");
-  lgapp->AddEntry(lim_app_3p1_lsndr1_99pctCL,      "LSBD w/ DiF 99\% CL",     "LF");
-  lgapp->Draw();
+  TLegend * lgnueapp = new TLegend(0.13,0.1,0.35,0.4);
+  lgnueapp->SetFillColor(0);
+  lgnueapp->SetBorderSize(0);
+  lgnueapp->AddEntry(lim_nueapp_3p1_sbnproposal_90pctCL, "SBN proposal 90\% CL",    "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_sbnproposal_3sigCL,  "SBN proposal 3#sigma CL", "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_sbnproposal_5sigCL,  "SBN proposal 5#sigma CL", "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_nomad_99pctCL,       "NOMAD 99\% CL",           "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_bnl776_99pctCL,      "BNL776 99\% CL",          "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_karmen_99pctCL,      "KARMEN 99\% CL",          "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_icarus_99pctCL,      "ICARUS 99\% CL",          "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_opera_99pctCL,       "OPERA 99\% CL",           "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_miniboonenu_99pctCL, "MiniBooNE (#nu) 99\% CL", "L");
+  lgnueapp->AddEntry(lim_nueapp_3p1_lsndr1_99pctCL,      "LSBD w/ DiF 99\% CL",     "LF");
+  lgnueapp->Draw();
 
   //
-  // Disappearance
+  // numu disappearance
   //
 
-  TH2F * hfdis = (TH2F*) c->cd(2)->DrawFrame(3E-4,2E-4,1,8E+2);
-  hfdis->Draw();
-  hfdis->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu #mu}");
-  hfdis->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2}/c^{4})");
-  c->cd(2)->SetLogx();
-  c->cd(2)->SetLogy();
+  TCanvas * cnumudis = new TCanvas("cnumudis","",20,20,900,600);
+  cnumudis->Draw();
 
-  c->cd(2);
+  TH2F * hfnumudis = (TH2F*) cnumudis->DrawFrame(3E-4,2E-4,1,8E+2);
+  hfnumudis->Draw();
+  hfnumudis->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu #mu}");
+  hfnumudis->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2}/c^{4})");
+  cnumudis->SetLogx();
+  cnumudis->SetLogy();
 
-  TGraph * lim_dis_3p1_minosp_90pctCL = (TGraph *) f->Get( "lim_dis_3p1_minosp_90pctCL");
+  TGraph * lim_numudis_3p1_sbnproposal_90pctCL  = (TGraph *) f->Get( "lim_numudis_3p1_sbnproposal_90pctCL"  );
+  TGraph * lim_numudis_3p1_sbnproposal_3sigCL   = (TGraph *) f->Get( "lim_numudis_3p1_sbnproposal_3sigCL"   );
+  TGraph * lim_numudis_3p1_sbnproposal_5sigCL   = (TGraph *) f->Get( "lim_numudis_3p1_sbnproposal_5sigCL"   );
+  TGraph * lim_numudis_3p1_minosp_90pctCL       = (TGraph *) f->Get( "lim_numudis_3p1_minosp_90pctCL"       );
+  TGraph * lim_numudis_3p1_minisciboone_90pctCL = (TGraph *) f->Get( "lim_numudis_3p1_minisciboone_90pctCL" );
 
-  lim_dis_3p1_minosp_90pctCL->Draw("l");
+  lim_numudis_3p1_sbnproposal_90pctCL  -> Draw("l");
+  lim_numudis_3p1_sbnproposal_3sigCL   -> Draw("l");
+  lim_numudis_3p1_sbnproposal_5sigCL   -> Draw("l");
+  lim_numudis_3p1_minosp_90pctCL       -> Draw("l");
+  lim_numudis_3p1_minisciboone_90pctCL -> Draw("l");
 
-  TLegend * lgdis = new TLegend(0.7,0.8,0.9,0.9);
-  lgdis->SetFillColor(0);
-  lgdis->SetBorderSize(0);
-  lgdis->AddEntry(lim_dis_3p1_minosp_90pctCL,  "MINOS/MINOS+ 90\% CL",  "L");
-  lgdis->Draw();
+  TLegend * lgnumudis = new TLegend(0.13,0.5,0.38,0.9);
+  lgnumudis->SetFillColor(0);
+  lgnumudis->SetBorderSize(0);
+  lgnumudis->AddEntry(lim_numudis_3p1_sbnproposal_90pctCL,  "SBN proposal 90\% CL",       "L");
+  lgnumudis->AddEntry(lim_numudis_3p1_sbnproposal_3sigCL,   "SBN proposal 3#sigma CL",    "L");
+  lgnumudis->AddEntry(lim_numudis_3p1_sbnproposal_5sigCL,   "SBN proposal 5#sigma CL",    "L");
+  lgnumudis->AddEntry(lim_numudis_3p1_minosp_90pctCL,       "MINOS/MINOS+ 90\% CL",       "L");
+  lgnumudis->AddEntry(lim_numudis_3p1_minisciboone_90pctCL, "MiniBooNE/SciBooNE 90\% CL",  "L");
+  lgnumudis->Draw();
+
+  //
+  // nue disappearance
+  //
+
+  TCanvas * cnuedis = new TCanvas("cnuedis","",20,20,900,600);
+  cnumudis->Draw();
+
+  TH2F * hfnuedis = (TH2F*) cnuedis->DrawFrame(1E-2,1E-2,1,1E+2);
+  hfnuedis->Draw();
+  hfnuedis->GetXaxis()->SetTitle("sin^{2}2#theta_{e e}");
+  hfnuedis->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2}/c^{4})");
+  cnuedis->SetLogx();
+  cnuedis->SetLogy();
+
+  TGraph * lim_nuedis_3p1_t2knd280excluded_95pctCL  = (TGraph *) f->Get("lim_nuedis_3p1_t2knd280excluded_95pctCL");
+  TGraph * lim_nuedis_3p1_t2knd280allowed_90pctCL   = (TGraph *) f->Get("lim_nuedis_3p1_t2knd280allowed_90pctCL");
+  TGraph * lim_nuedis_3p1_t2knd280allowed_68pctCL   = (TGraph *) f->Get("lim_nuedis_3p1_t2knd280allowed_68pctCL");
+  TGraph * lim_nueapp_3p1_reactor_allowed_1_95pctCL = (TGraph *) f->Get("lim_nueapp_3p1_reactor_allowed_1_95pctCL");
+  TGraph * lim_nueapp_3p1_reactor_allowed_2_95pctCL = (TGraph *) f->Get("lim_nueapp_3p1_reactor_allowed_2_95pctCL");
+  TGraph * lim_nueapp_3p1_reactor_allowed_3_95pctCL = (TGraph *) f->Get("lim_nueapp_3p1_reactor_allowed_3_95pctCL");
+  TGraph * lim_nueapp_3p1_gallium_allowed_95pctCL   = (TGraph *) f->Get("lim_nueapp_3p1_gallium_allowed_95pctCL");
+  TGraph * lim_nueapp_3p1_solar_excluded_95pctCL    = (TGraph *) f->Get("lim_nueapp_3p1_solar_excluded_95pctCL");
+  TGraph * lim_nueapp_3p1_nueC_excluded_95pctCL     = (TGraph *) f->Get("lim_nueapp_3p1_nueC_excluded_95pctCL");
+
+  lim_nuedis_3p1_t2knd280excluded_95pctCL  -> Draw("l");
+  lim_nuedis_3p1_t2knd280allowed_90pctCL   -> Draw("l");
+  lim_nuedis_3p1_t2knd280allowed_68pctCL   -> Draw("l");
+  lim_nueapp_3p1_reactor_allowed_1_95pctCL -> Draw("l");
+  lim_nueapp_3p1_reactor_allowed_2_95pctCL -> Draw("l");
+  lim_nueapp_3p1_reactor_allowed_3_95pctCL -> Draw("l");
+  lim_nueapp_3p1_gallium_allowed_95pctCL   -> Draw("l");
+  lim_nueapp_3p1_solar_excluded_95pctCL    -> Draw("l");
+  lim_nueapp_3p1_nueC_excluded_95pctCL     -> Draw("l");
+
+  TLegend * lgnuedis = new TLegend(0.13,0.1,0.35,0.34);
+  lgnuedis->SetFillColor(0);
+  lgnuedis->SetBorderSize(0);
+  lgnuedis->AddEntry(lim_nuedis_3p1_t2knd280excluded_95pctCL,  "T2K/ND280 excluded 95\% CL",    "L");
+  lgnuedis->AddEntry(lim_nuedis_3p1_t2knd280allowed_90pctCL,   "T2K/ND280 allowed 90\% CL",   "LF");
+  lgnuedis->AddEntry(lim_nuedis_3p1_t2knd280allowed_68pctCL,   "T2K/ND280 allowed 68\% CL",   "LF");
+  lgnuedis->AddEntry(lim_nueapp_3p1_reactor_allowed_1_95pctCL, "Reactor allowed 95\% CL",      "L");
+  lgnuedis->AddEntry(lim_nueapp_3p1_gallium_allowed_95pctCL,   "Gallium allowed 95\% CL",      "L");
+  lgnuedis->AddEntry(lim_nueapp_3p1_solar_excluded_95pctCL,    "Solar excluded 95\% CL",       "L");
+  lgnuedis->AddEntry(lim_nueapp_3p1_nueC_excluded_95pctCL,     "#nu_{e}+C excluded 95\% CL",   "L");
+  lgnuedis->Draw();
+
 }
