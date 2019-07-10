@@ -83,7 +83,10 @@ double valor::util::Interpolator::Eval(double x) const
     x = std::max(x,fXmin);
     x = std::min(x,fXmax);
   }
-  else if(x < fXmin || x > fXmax) { std::cerr << "Evaluating spline outside of its limits" << std::endl; }
+  else if(x < fXmin || x > fXmax) {
+    std::cerr << "Evaluating spline [" << fName << "] at point " << x << " outside of its limits of ["
+              << fXmin << ", " << fXmax << "]" << std::endl;
+  }
   if(fGSLSpline) { return fGSLSpline ->Eval(x); }
   else           { return fROOTSpline->Eval(x); }
 }
