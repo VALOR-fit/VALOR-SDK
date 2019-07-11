@@ -18,6 +18,7 @@
 #ifndef _valor_fit_data_abc_h_
 #define _valor_fit_data_abc_h_
 
+#include <fstream>
 #include <string>
 #include <map>
 #include <TROOT.h>
@@ -43,7 +44,8 @@ public:
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
   // Return true if data were succesfully read out
-  virtual bool Read(string file, Option_t * opt = 0) = 0;  
+  virtual bool Read(string file, Option_t * opt = 0) = 0;
+  virtual bool Read(std::ifstream& stream, Option_t * read_opt = 0) = 0;
 
   // Generate mock data (toy-MC)
   // Toy-MC is generated from using the input model 
@@ -69,6 +71,7 @@ public:
   // If null, the default is "recreate".
   virtual bool Write (TObjArray * collection, const char * tag = "data", Option_t * write_opt = 0) = 0;
   virtual bool Write (const char * filename,  const char * tag = "data", Option_t * write_opt = 0, Option_t * file_opt = 0) = 0;
+  virtual bool Write (std::ofstream& stream, Option_t * write_opt = 0) = 0;
 
   // Number of bins in fit data, or number of events for unbinned fits
   virtual int NumOfBins (Option_t * opt = 0) const = 0;
