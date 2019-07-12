@@ -201,6 +201,7 @@ void Parameter::ReadCategories()
 void Parameter::ReadLimits()
 {
   if(util::IsNodeSpecified(fxml, fParamNode, "limits")) {
+    fHasLimits = true;
     fLimits = util::XML2DblDblPair(fxml, fParamNode, "limits");
   }
   else {
