@@ -65,7 +65,8 @@ public:
   conv::KineVar_t KineVar(unsigned int dimension);
 
   // Variable -> Dimension
-  unsigned int Dimension(conv::KineVar_t kv) const;
+  const unsigned int & Dimension(conv::KineVar_t kv) const;
+  unsigned int         Dimension(conv::KineVar_t kv) const;
   bool Contains(conv::KineVar_t kv) const;
 
   // Number of multi-dimensional bins 
@@ -84,8 +85,8 @@ public:
   virtual double BinMaximum (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin range
-  virtual std::vector<double> BinRange (unsigned int bin, unsigned int dimension ) const = 0;
-  virtual std::vector<double> BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
+  virtual const std::vector<double> & BinRange (unsigned int bin, unsigned int dimension ) const = 0;
+  virtual const std::vector<double> & BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin width
   virtual double              BinWidth (unsigned int bin, unsigned int dimension ) const;
