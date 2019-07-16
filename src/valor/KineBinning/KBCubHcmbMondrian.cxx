@@ -111,8 +111,9 @@ bool KBCubHcmbMondrian::Read(string file)
   fNBins = (unsigned int) nbins;
   LOG("Binning", pNOTICE) << "Number of bins = " << fNBins;
 
-  fBinEdges.reserve(fNBins * fNDimensions * 2);
-  
+  fBinEdges .reserve(fNBins * fNDimensions * 2);
+  fBinRanges = vector<vector<vector<double>>>(fNDimensions, vector<vector<double>>(fNBins, vector<double>(2)));
+
   unsigned int l = 0;
   for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
      LOG("Binning", pINFO) << "Reading edges of bin: " << ibin;
@@ -140,6 +141,10 @@ bool KBCubHcmbMondrian::Read(string file)
            fMinimum[idim] = TMath::Min(fMinimum[idim], min);
            fMaximum[idim] = TMath::Max(fMaximum[idim], max);
          }
+
+         // Build a vector of ranges in each dimension for each bin
+         fBinRanges[idim][ibin][0] = min;
+         fBinRanges[idim][ibin][1] = max;
      }
   }
   
@@ -219,6 +224,18 @@ VALORBinning* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
    // Compute number of bins based on edge count
    mond->fNBins = mond->fBinEdges.size() / EDGES_PER_BIN;
 
+   mond->fBinRanges = vector<vector<vector<double>>>(mond->fNDimensions, vector<vector<double>>(mond->fNBins, vector<double>(2)));
+   for(unsigned int i = 0; i < mond->fNBins; ++i)
+   {
+     for(unsigned int d = 0; d < mond->fNDimensions; ++d)
+     {
+       // Add the bin ranges for the current dimension to the current bin
+       int index = i * EDGES_PER_BIN + d * EDGES_PER_DIM;
+       mond->fBinRanges[d][i][0] = mond->fBinEdges[index];
+       mond->fBinRanges[d][i][1] = mond->fBinEdges[index+1];
+     }
+   }
+
    // It's possible that the contracted set of bins might contain duplicates, so
    // we need to remove those
    
@@ -275,6 +292,12 @@ VALORBinning* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
          auto begin = mond->fBinEdges.begin() + i * EDGES_PER_BIN;
          auto end = mond->fBinEdges.begin() + (i + 1) * EDGES_PER_BIN;
          mond->fBinEdges.erase(begin, end);
+         for(unsigned int d = 0; d < mond->fNDimensions; ++d)
+         {
+           auto begin = mond->fBinRanges[d][i].begin();
+           auto end   = mond->fBinRanges[d][i].begin() + 1;
+           mond->fBinRanges[d][i].erase(begin, end);
+         }
       }
    }
    mond->fNBins -= duplicateBins.size();
@@ -310,41 +333,37 @@ double KBCubHcmbMondrian::BinMaximum(unsigned int bin, unsigned int dimension) c
   return fBinEdges[idx];
 }
 //________________________________________________________________________________________
-vector<double> KBCubHcmbMondrian::BinRange(
+const vector<double> & KBCubHcmbMondrian::BinRange(
   unsigned int bin, unsigned int dimension) const
 {
-  vector<double> range(2);
   if (bin >= fNBins) {
     LOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
-    util::Die(-1) ; return range;
+    util::Die(-1) ; return fBinRanges[0][0];
   }
   if (dimension >= fNDimensions) {
     LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
-    util::Die(-1) ; return range;
+    util::Die(-1) ; return fBinRanges[0][0];
   }
-  unsigned int idx_base = (2 * fNDimensions * bin) + (2 * dimension);
-  range[0] = fBinEdges[idx_base];
-  range[1] = fBinEdges[idx_base+1];
-  return range;
+  return fBinRanges[dimension][bin];
 }
 //________________________________________________________________________________________
-vector<double> KBCubHcmbMondrian::BinRange(
+const vector<double> & KBCubHcmbMondrian::BinRange(
   unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinRange(bin,dimension);
 }
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinWidth(unsigned int bin, unsigned int dimension) const
 {
-  vector<double> range = this->BinRange(bin,dimension);
+  const vector<double> & range = this->BinRange(bin,dimension);
   double width = range[1] - range[0];
   return width;
 }
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinWidth(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinWidth(bin,dimension);
 }
 //________________________________________________________________________________________
@@ -359,14 +378,14 @@ vector<double> KBCubHcmbMondrian::BinWidth(unsigned int bin) const
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinCentre(unsigned int bin, unsigned int dimension) const
 {
-  vector<double> range = this->BinRange(bin,dimension);
+  const vector<double> & range = this->BinRange(bin,dimension);
   double centre = 0.5 * (range[1] + range[0]);
   return centre;
 }
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinCentre(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinCentre(bin,dimension);
 }
 //________________________________________________________________________________________

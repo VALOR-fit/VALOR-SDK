@@ -47,6 +47,15 @@ VALORBinning::~VALORBinning()
 {
 }
 //________________________________________________________________________________________
+const unsigned int & VALORBinning::Dimension(conv::KineVar_t kv) const
+{
+  if (fKineVarToDim[kv] < 0 ) {
+    LOG("VALORBinning",pFATAL) << "Bad KineVar: "<<util::AsString(kv) << " ("<<kv<<")"<< " in "<<util::AsString(fKineSpace);
+    util::Die(-1) ; return 0;
+  }
+  return fKineVarToDim[kv];
+}
+//________________________________________________________________________________________
 unsigned int VALORBinning::Dimension(conv::KineVar_t kv) const
 {
   int dim = fKineVarToDim[kv];
@@ -69,7 +78,7 @@ double VALORBinning::Minimum(unsigned int dimension) const
 //________________________________________________________________________________________
 double VALORBinning::Minimum(conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->Minimum(dimension);
 }
 //________________________________________________________________________________________
@@ -80,39 +89,39 @@ double VALORBinning::Maximum(unsigned int dimension) const
 //________________________________________________________________________________________
 double VALORBinning::Maximum(conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->Maximum(dimension);
 }
 //________________________________________________________________________________________
 double VALORBinning::BinMinimum(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinMinimum(bin,dimension);
 }
 //________________________________________________________________________________________
 double VALORBinning::BinMaximum(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinMaximum(bin,dimension);
 }
 //________________________________________________________________________________________
-vector<double> VALORBinning::BinRange(
+const vector<double> & VALORBinning::BinRange(
   unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinRange(bin,dimension);
 }
 //________________________________________________________________________________________
 double VALORBinning::BinWidth(unsigned int bin, unsigned int dimension) const
 {
-  vector<double> range = this->BinRange(bin,dimension);
+  const vector<double> & range = this->BinRange(bin,dimension);
   double width = range[1] - range[0];
   return width;
 }
 //________________________________________________________________________________________
 double VALORBinning::BinWidth(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinWidth(bin,dimension);
 }
 //________________________________________________________________________________________
@@ -127,14 +136,14 @@ vector<double> VALORBinning::BinWidth(unsigned int bin) const
 //________________________________________________________________________________________
 double VALORBinning::BinCentre(unsigned int bin, unsigned int dimension) const
 {
-  vector<double> range = this->BinRange(bin,dimension);
+  const vector<double> & range = this->BinRange(bin,dimension);
   double centre = 0.5 * (range[1] + range[0]);
   return centre;
 }
 //________________________________________________________________________________________
 double VALORBinning::BinCentre(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinCentre(bin,dimension);
 }
 //________________________________________________________________________________________

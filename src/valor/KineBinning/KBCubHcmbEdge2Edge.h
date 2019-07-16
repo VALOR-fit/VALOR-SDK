@@ -107,11 +107,7 @@ public:
   unsigned int              FindBin1D         (double x, conv::KineVar_t kv) const;
   std::vector<unsigned int> FindBin1DArr      (std::vector<double> & xarr) const;
 
-  unsigned int              LinearizedBin (std::vector<unsigned int> & binarr) const;
-  std::vector<unsigned int> Bin1DArr      (unsigned int linearized_bin) const; 
-  unsigned int              Bin1D         (unsigned int linearized_bin, unsigned int dimension) const;  
-  unsigned int              Bin1D         (unsigned int linearized_bin, conv::KineVar_t kv) const;  
-  
+  unsigned int                      LinearizedBin (std::vector<unsigned int> & binarr) const;
   
   // Bin Edges
   const double * BinEdgeArr(unsigned int dimension ) const;
@@ -126,8 +122,8 @@ public:
   virtual double BinMaximum (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin range
-  virtual std::vector<double> BinRange (unsigned int bin, unsigned int dimension ) const;
-  virtual std::vector<double> BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
+  virtual const std::vector<double> & BinRange (unsigned int bin, unsigned int dimension ) const;
+  virtual const std::vector<double> & BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin width
   virtual double              BinWidth (unsigned int bin, unsigned int dimension ) const;
@@ -157,9 +153,11 @@ protected:
   void Init    (void);
   void CleanUp (void);
   
-  std::vector<bool>                 fFixedWidth; // Are the bins fixed or variable in this dimension?
-  std::vector<std::vector<double> > fBinEdges;      // bin edges
-  
+  std::vector<bool>                               fFixedWidth; // Are the bins fixed or variable in this dimension?
+  std::vector<std::vector<double> >               fBinEdges;   // bin edges
+  std::vector<std::vector<std::vector<double> > > fBinRanges;  // bin ranges: dim 0 = kinematic no.; dim 1 = bin number; dim 2 = low/high bin edge
+  std::vector<std::vector<unsigned int>>          fBin1DArrs;  // bin numbers for each linearized bin: dim 0 = kinematic dimension no.; dim 1 = linearized bin no.
+
 ClassDef(KBCubHcmbEdge2Edge, 1)
 };
 

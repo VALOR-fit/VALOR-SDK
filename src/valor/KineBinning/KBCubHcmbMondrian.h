@@ -148,8 +148,8 @@ public:
   using VALORBinning::BinMaximum;
   
   // Bin range
-  virtual std::vector<double> BinRange (unsigned int bin, unsigned int dimension ) const;
-  virtual std::vector<double> BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
+  virtual const std::vector<double> & BinRange (unsigned int bin, unsigned int dimension ) const;
+  virtual const std::vector<double> & BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin width
   virtual double              BinWidth (unsigned int bin, unsigned int dimension ) const;
@@ -180,10 +180,11 @@ protected:
   void Init    (void);
   void CleanUp (void);
 
-  std::vector<double>                       fBinEdges;            // (xmin,xmax,ymin,ymax,...)_bin0,(xmin,xmax,ymin,ymax,...)_bin1,... 
-  const KBCubHcmbEdge2Edge *                fKBE2E;               //
-  std::map<unsigned int, unsigned int>      fBinMondrianFromE2E;  // e2e linearized bin --> mondrian bin (1:1)
-  std::multimap<unsigned int, unsigned int> fBinMondrianToE2E;    // mondrian bin --> e2e linearized bin (1:N) 
+  std::vector<double>                             fBinEdges;            // (xmin,xmax,ymin,ymax,...)_bin0,(xmin,xmax,ymin,ymax,...)_bin1,...
+  const KBCubHcmbEdge2Edge *                      fKBE2E;               //
+  std::map<unsigned int, unsigned int>            fBinMondrianFromE2E;  // e2e linearized bin --> mondrian bin (1:1)
+  std::multimap<unsigned int, unsigned int>       fBinMondrianToE2E;    // mondrian bin --> e2e linearized bin (1:N)
+  std::vector<std::vector<std::vector<double> > > fBinRanges;           // bin ranges: dim 0 = kinematic dimension; dim 1 = bin number; dim 2 = low/high bin edge
   
 ClassDef(KBCubHcmbMondrian, 1)
 
