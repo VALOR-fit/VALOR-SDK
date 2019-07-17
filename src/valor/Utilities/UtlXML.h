@@ -68,6 +68,9 @@ namespace util {
 
   bool             NodeExists        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
+  // For a specified node which should contain a string: Does this node exist and is the string not empty?
+  bool             IsNodeSpecified   (TXMLEngine * xml_eng, XMLNodePointer_t top_node, const string node_path);
+
   bool             XML2Bool          (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   int              XML2Int           (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   double           XML2Dbl           (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);

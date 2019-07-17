@@ -11,6 +11,7 @@ Copyright (c) 2010-2018, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Conventions/FitParamApply.h"
+#include "valor/Utilities/UtlSystem.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -32,15 +33,17 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAllCCELScat = ktApplyToCCELScat 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC1pi    = ktApplyToCC1piC   | ktApplyToCC1pi0;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC2pi    = ktApplyToCC2piC   | ktApplyToCC2pi0 | ktApplyToCCpiCpi0;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC       = ktApplyToCCQELike | ktApplyToAllCC1pi | ktApplyToAllCC2pi | ktApplyToCCcoh | ktApplyToCCoth | ktApplyToCCELScat;
+const ReacTypeApplyMask_t valor::conv::ktApplyToCCnQE       = ktApplyToAllCC & (~ktApplyToCCQELike);
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToNCElLike    = ktApplyToNCEL     | ktApplyToNCMEC; //this is not used, modes disabled
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNCELScat = ktApplyToNCELScat | ktApplyToNuEELScat; //nu+e NC elastic scattering
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC1pi    = ktApplyToNC1piC   | ktApplyToNC1pi0;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC2pi    = ktApplyToNC2piC   | ktApplyToNC2pi0   | ktApplyToNCpiCpi0;
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC       = ktApplyToNCElLike | ktApplyToAllNC1pi | ktApplyToAllNC2pi | ktApplyToNCcoh | ktApplyToNCoth | ktApplyToNCELScat;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC       = ktApplyToNCElLike | ktApplyToAllNC1pi | ktApplyToAllNC2pi | ktApplyToNCcoh | ktApplyToNC1Gamma | ktApplyToNCoth | ktApplyToNCELScat;
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCoh = ktApplyToCCcoh | ktApplyToNCcoh;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllELScat = ktApplyToCCELScat | ktApplyToNuEELScat | ktApplyToNCELScat;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAll1pi = ktApplyToAllCC1pi | ktApplyToAllNC1pi;
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAll = ktApplyToAllCC | ktApplyToAllNC | ktApplyToAllELScat;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCoh    = ktApplyToAll & (~ktApplyToAllCoh);
@@ -51,8 +54,9 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithFSI   = ktApplyToAll & (~
 const DetectorApplyMask_t valor::conv::kdApplyToAllDUNE = kdApplyToDUNEND | kdApplyToDUNEFD;
 const DetectorApplyMask_t valor::conv::kdApplyToAllSBN  = kdApplyToSBND | kdApplyToMicroBooNE | kdApplyToICARUS;
 const DetectorApplyMask_t valor::conv::kdApplyToAllSBN2Det  = kdApplyToSBND | kdApplyToMicroBooNE;
-const DetectorApplyMask_t valor::conv::kdApplyToAllND  = kdApplyToDUNEND | kdApplyToSBND | kdApplyToMicroBooNE | kdApplyToICARUS;
-const DetectorApplyMask_t valor::conv::kdApplyToAll    = kdApplyToAllDUNE | kdApplyToAllSBN;
+const DetectorApplyMask_t valor::conv::kdApplyToAllND  = kdApplyToDUNEND | kdApplyToSBND | kdApplyToMicroBooNE | kdApplyToICARUS | kdApplyToND280;
+const DetectorApplyMask_t valor::conv::kdApplyToAllT2K  = kdApplyToND280 | kdApplyToSuperK;
+const DetectorApplyMask_t valor::conv::kdApplyToAll    = kdApplyToAllDUNE | kdApplyToAllSBN | kdApplyToAllT2K;
 
 
 // Samples
@@ -71,6 +75,7 @@ const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToAllFDMuLike | ksAp
 const SelecApplyMask_t valor::conv::ksApplyToAll = ksApplyToAllND | ksApplyToAllFD;
 const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
 const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
+
 
 // Targets
 const NuclearTargetApplyMask_t valor::conv::kntApplyToAll = (
@@ -188,6 +193,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNC2pi0      , "nc2pi0") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCpiCpi0    , "ncpicpi0") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCcoh       , "nccoh") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNC1Gamma    , "nc1gamma") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCELScat    , "ncelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCoth       , "ncoth") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNuEELScat   , "nueelscat") );
@@ -196,6 +202,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC1pi    , "allcc1pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC2pi    , "allcc2pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC       , "allcc") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCnQE       , "ccnqe") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCElLike    , "ncellike") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNCELScat , "allncelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNC1pi    , "allnc1pi") );
@@ -203,6 +210,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNC       , "allnc") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCoh      , "allcoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllELScat   , "allelscat") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll1pi      , "all1pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll         , "all") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCoh   , "allbutcoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButELScat, "allbutelscat") );
@@ -217,6 +225,9 @@ void valor::util::ApplyMaskNaming::Init(void)
   fDetectorMaskToName.insert( std::make_pair(kdApplyToSBND      , "sbnd") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToMicroBooNE, "microboone") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToICARUS    , "icarus") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToND280     , "nd280") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToSuperK    , "superk") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToAllT2K    , "allt2k") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllDUNE   , "alldune") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllSBN    , "allsbn") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllSBN2Det, "allsbn2det") );
@@ -238,6 +249,20 @@ void valor::util::ApplyMaskNaming::Init(void)
   for(auto const& pair : fNuclearTargetMaskToName) {
     fNuclearTargetNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
+}
+//________________________________________________________________________________________
+std::ostream& valor::operator<<(std::ostream& s, const conv::ApplyMask_t & m)
+{
+  s << std::endl << "("
+    << "det: "        << util::DetectorMaskAsString     (m.detector)   << ", "
+    << "beam: "       << util::BeamMaskAsString         (m.beam)       << ", "
+    << "init flav: "  << util::FlavMaskAsString         (m.flav_init)  << ", "
+    << "final flav: " << util::FlavMaskAsString         (m.flav_final) << ", "
+    << "selec: "      << util::SelecMaskAsString        (m.selec)      << ", "
+    << "reac type: "  << util::ReacTypeMaskAsString     (m.reactype)   << ", "
+    << "target: "     << util::NuclearTargetMaskAsString(m.target)
+    << ")" << std::endl;
+  return s;
 }
 //________________________________________________________________________________________
 const BeamApplyMask_t valor::util::ApplyToBeamMode(BeamConf_t b)
@@ -312,9 +337,8 @@ const DetectorApplyMask_t valor::util::ApplyToDetector(conv::Detector_t d)
     case kdSBND      : return kdApplyToSBND;
     case kdSBNuBooNE : return kdApplyToMicroBooNE;
     case kdSBNICARUS : return kdApplyToICARUS;
-    case kdSuperK    : return 0;
-    case kdHyperK    : return 0;
-    case kdND280     : return 0;
+    case kdSuperK    : return kdApplyToSuperK;
+    case kdND280     : return kdApplyToND280;
     case kdND280Up   : return 0;
     case kdINGRID    : return 0;
     case kdNuPRISM   : return 0;
@@ -355,13 +379,14 @@ const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t)
     case kmtCCELScat : return ktApplyToCCELScat;
     case kmtCCoth    : return ktApplyToCCoth;
     case kmtNCEL     : return ktApplyToNCEL;
-    case kmtNCMEC    : return ktApplyToNCMEC    | ktApplyToNCEL;
-    case kmtNC1piC   : return ktApplyToNC1piC   | ktApplyToNCoth; //why | ktApplyToNCoth ?
-    case kmtNC1pi0   : return ktApplyToNC1pi0   | ktApplyToNCoth;
-    case kmtNC2piC   : return ktApplyToNC2piC   | ktApplyToNCoth;
-    case kmtNC2pi0   : return ktApplyToNC2pi0   | ktApplyToNCoth;
-    case kmtNCpiCpi0 : return ktApplyToNCpiCpi0 | ktApplyToNCoth;
-    case kmtNCcoh    : return ktApplyToNCcoh    | ktApplyToNCoth;
+    case kmtNCMEC    : return ktApplyToNCMEC;
+    case kmtNC1piC   : return ktApplyToNC1piC;
+    case kmtNC1pi0   : return ktApplyToNC1pi0;
+    case kmtNC2piC   : return ktApplyToNC2piC;
+    case kmtNC2pi0   : return ktApplyToNC2pi0;
+    case kmtNCpiCpi0 : return ktApplyToNCpiCpi0;
+    case kmtNCcoh    : return ktApplyToNCcoh;
+ //~case kmtNC1Gamma : return ktApplyToNC1Gamma;
     case kmtNCELScat : return ktApplyToNCELScat;
     case kmtNCoth    : return ktApplyToNCoth;
     case kmtELScat   : return ktApplyToNuEELScat;
@@ -386,5 +411,195 @@ const NuclearTargetApplyMask_t valor::util::ApplyToNuclearTarget(conv::NuclearTa
       LOG("ApplyMask",pWARN) << "No nuclear target apply mask set for " << util::AsString(nt) << ". Applying to none.";
       return 0;
   }
+}
+//________________________________________________________________________________________
+conv::ApplyMask_t valor::util::ReadApplyMaskAll(TXMLEngine* xmleng, XMLNodePointer_t top_node)
+{
+  conv::DetectorApplyMask_t      detector   = conv::kdApplyToAll;
+  conv::BeamApplyMask_t          beam       = conv::kbApplyToAll;
+  conv::FlavApplyMask_t          flav_init  = conv::kfApplyToAll;
+  conv::FlavApplyMask_t          flav_final = conv::kfApplyToAll;
+  conv::SelecApplyMask_t         selec      = conv::ksApplyToAll;
+  conv::ReacTypeApplyMask_t      reactype   = conv::ktApplyToAll;
+  conv::NuclearTargetApplyMask_t target     = conv::kntApplyToAll;
+  if(util::NodeExists(xmleng, top_node, "apply_to")) {
+    detector   = util::ReadDetectorApplyMask     (xmleng, top_node, "detector");
+    beam       = util::ReadBeamApplyMask         (xmleng, top_node, "beam");
+    flav_init  = util::ReadFlavApplyMask         (xmleng, top_node, "flav_init");
+    flav_final = util::ReadFlavApplyMask         (xmleng, top_node, "flav_final");
+    selec      = util::ReadSelecApplyMask        (xmleng, top_node, "selection");
+    reactype   = util::ReadReacTypeApplyMask     (xmleng, top_node, "reac_type");
+    target     = util::ReadNuclearTargetApplyMask(xmleng, top_node, "target");
+  }
+  conv::ApplyMask_t apply_mask = {detector, beam, flav_init, flav_final, selec, reactype, target};
+  return apply_mask;
+}
+//________________________________________________________________________________________
+conv::DetectorApplyMask_t valor::util::ReadDetectorApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  conv::DetectorApplyMask_t mask = conv::kdApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::DetectorMaskFromString(util::ToLowerCase(trimmed_content));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::BeamApplyMask_t valor::util::ReadBeamApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  conv::BeamApplyMask_t mask = conv::kbApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::BeamMaskFromString(util::ToLowerCase(trimmed_content));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::FlavApplyMask_t valor::util::ReadFlavApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  FlavApplyMask_t mask = conv::kfApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::FlavMaskFromString(trimmed_content);
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::SelecApplyMask_t valor::util::ReadSelecApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  SelecApplyMask_t mask = conv::ksApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::SelecMaskFromString(util::ToLowerCase(trimmed_content));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::ReacTypeApplyMask_t valor::util::ReadReacTypeApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  ReacTypeApplyMask_t mask = conv::ktApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    std::string reac_type_str = util::ReplaceAll(trimmed_content, "2p2h", "mec");  // 2p2h and MEC are the same thing, but we internally use MEC only
+    try {
+      mask = util::ReacTypeMaskFromString(util::ToLowerCase(reac_type_str));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+conv::NuclearTargetApplyMask_t valor::util::ReadNuclearTargetApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name)
+{
+  NuclearTargetApplyMask_t mask = conv::kntApplyToAll;
+  string node_path = "apply_to/" + node_name;
+  if(util::IsNodeSpecified(xmleng, top_node, node_path)) {
+    string content = util::XML2String(xmleng, top_node, node_path);
+    std::string trimmed_content = util::ToLowerCase(util::RemoveAllWhitespace(content));
+    try {
+      mask = util::NuclearTargetMaskFromString(util::ToLowerCase(trimmed_content));
+    }
+    catch (const std::out_of_range& oor) {
+      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+                               << "\' (from user input \'" << content
+                               << "\') was not recognised - threw an out of range error: " << oor.what();
+      util::Die(1);
+    }
+  }
+  return mask;
+}
+//________________________________________________________________________________________
+bool valor::util::IsAppliedTo(conv::ApplyMask_t mask_to_check, conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d, conv::ReacMode_t m, conv::NuclearTarget_t nt)
+{
+  if(b  == conv::kbUndefined ) { return false; }
+  if(s  == conv::ksUndefined ) { return false; }
+  if(d  == conv::kdUndefined ) { return false; }
+  if(m  == conv::kmUndefined ) { return false; }
+  if(nt == conv::kntUndefined) { return false; }
+
+  NuFlavour_t f_init  = kReacModeToInitFlavour [m];
+  NuFlavour_t f_final = kReacModeToFinalFlavour[m];
+  conv::ReacType_t  t = conv::kReacModeToType[m];
+
+  if(f_init  == kNuFlavourUndefined) { return false; }
+  if(f_final == kNuFlavourUndefined) { return false; }
+  if(t == kmtUndefined)              { return false; }
+
+  // Check whether or not to apply the param to this
+  bool apply_to_beam          = (util::ApplyToBeamMode     (b)       & mask_to_check.beam      ).any();
+  bool apply_to_sample        = (util::ApplyToSample       (s)       & mask_to_check.selec     ).any();
+  bool apply_to_flavour_init  = (util::ApplyToFlavour      (f_init)  & mask_to_check.flav_init ).any();
+  bool apply_to_flavour_final = (util::ApplyToFlavour      (f_final) & mask_to_check.flav_final).any();
+  bool apply_to_type          = (util::ApplyToReacType     (t)       & mask_to_check.reactype  ).any();
+  bool apply_to_detector      = (util::ApplyToDetector     (d)       & mask_to_check.detector  ).any();
+  bool apply_to_target        = (util::ApplyToNuclearTarget(nt)      & mask_to_check.target    ).any();
+
+  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour_init && apply_to_flavour_final && apply_to_type &&
+                apply_to_detector && apply_to_target);
+
+  return apply;
+}
+//________________________________________________________________________________________
+bool valor::util::IsAppliedTo(conv::ApplyMask_t mask_to_check, conv::ApplyMask_t mask)
+{
+  bool apply_to_beam          = (mask_to_check.beam       & mask.beam      ).any();
+  bool apply_to_sample        = (mask_to_check.selec      & mask.selec     ).any();
+  bool apply_to_flavour_init  = (mask_to_check.flav_init  & mask.flav_init ).any();
+  bool apply_to_flavour_final = (mask_to_check.flav_final & mask.flav_final).any();
+  bool apply_to_type          = (mask_to_check.reactype   & mask.reactype  ).any();
+  bool apply_to_detector      = (mask_to_check.detector   & mask.detector  ).any();
+  bool apply_to_target        = (mask_to_check.target     & mask.target    ).any();
+
+  bool apply = (apply_to_beam && apply_to_sample && apply_to_flavour_init && apply_to_flavour_final &&
+                apply_to_type && apply_to_detector && apply_to_target);
+
+  return apply;
 }
 //________________________________________________________________________________________

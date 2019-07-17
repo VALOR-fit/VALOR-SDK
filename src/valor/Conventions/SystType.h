@@ -33,6 +33,7 @@ namespace valor {
       kSystUndefined = -1,
       kSystNorm,
       kSystLateral,
+      kSystLateralPostOsc,
       kSystResponse,
       kSystDisabled
     }

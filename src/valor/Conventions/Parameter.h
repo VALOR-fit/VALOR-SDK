@@ -10,8 +10,10 @@
 
             <param>
               <name>
-              <simple> int_ccqe_nu_1 </simple>              <!-- must be specified -->
-              <rootex> f_{int^{ccqe}_{#nu ; 1}} </rootex>   <!-- default: simple name -->
+                <simple> int_ccqe_nu_1 </simple>              <!-- must be specified -->
+                <long> nu-mode CCQE; Qsq 0-0.3 GeVsq </long>
+                <rootex> f_{int^{ccqe}_{#nu ; 1}} </rootex>   <!-- default: simple name -->
+                <tex> f_{int^{ccqe}_{\nu ; 1}} </tex>
               </name>
               <apply_to_range>
                 <etrue> 0, inf  </etrue>
@@ -31,7 +33,8 @@
                 <beam>      all    </beam>
                 <selection> all    </selection>
                 <reac_type> ccqe   </reac_type>
-                <flav>      nu any </flav>
+                <flav_init>  nu any </flav_init>
+                <flav_final> numu  </flav_final>
                 <target>    all    </target>
               </apply_to>
 
@@ -87,6 +90,7 @@ namespace valor {
 
       const conv::PhysParamId_t      &   GetID        (void) const { return fParam;         }
       const std::string              &   GetName      (void) const { return fName;          }
+      const std::string              &   GetNameLong  (void) const { return fNameLong;      }
       const std::string              &   GetRooTeXName(void) const { return fRooTeXName;    }
       const std::string              &   GetTeXName   (void) const { return fTeXName;       }
       const conv::SystType_t         &   GetType      (void) const { return fType;          }
@@ -105,15 +109,11 @@ namespace valor {
       
 
       conv::ApplyMask_t GetApplyMask (void) const { return fApply; }
-      bool IsAppliedTo(conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d,
-                       conv::ReacMode_t m, conv::NuclearTarget_t nt) const;
-      bool IsAppliedTo(conv::BeamConf_t b, conv::Sample_t s, conv::Detector_t d, conv::NuFlavour_t f,
-                       conv::ReacType_t t, conv::NuclearTarget_t nt) const;
                             
       // Search the list of user-specified categories for an entry with content exactly matching to_find (after converting to lower case and removing whitespace)
       bool SearchCategories(std::string to_find, bool one_category_only = false) const;
 
-      bool   IsWithinLimits(double val) const;
+      bool IsWithinLimits(double val) const;
       double GetNearestPhysicalValue(double val) const;
 
     protected:
@@ -121,6 +121,9 @@ namespace valor {
       conv::PhysParamId_t fParam;
       // Simple parameter name for printing etc.
       std::string fName;
+
+      // Longer, more descriptive parameter name for more verbose printing
+      std::string fNameLong;
 
       // ROOT TeX name for displaying on plots
       std::string fRooTeXName;
@@ -151,31 +154,12 @@ namespace valor {
       std::vector<conv::KineVar_t> fKinematicVariables;
       std::vector<std::pair<double,double> >fKinematicRange;
 
-      // Default values of each apply mask
-      const conv::DetectorApplyMask_t      fDefApplyDetector      = conv::kdApplyToAll;
-      const conv::BeamApplyMask_t          fDefApplyBeam          = conv::kbApplyToAll;
-      const conv::FlavApplyMask_t          fDefApplyFlav          = conv::kfApplyToAll;
-      const conv::SelecApplyMask_t         fDefApplySelec         = conv::ksApplyToAll;
-      const conv::ReacTypeApplyMask_t      fDefApplyReacType      = conv::ktApplyToAll;
-      const conv::NuclearTargetApplyMask_t fDefApplyNuclearTarget = conv::kntApplyToAll;
-
       void Init(conv::PhysParamId_t param_id, TXMLEngine* xml, XMLNodePointer_t param_node);
       void ReadNames       ();
       void ReadRanges      ();
       void ReadType        ();
       void ReadCategories  ();
-      void ReadApplyMaskAll();
       void ReadLimits      ();
-      conv::DetectorApplyMask_t      ReadDetectorApplyMask     (std::string node_name) const;
-      conv::BeamApplyMask_t          ReadBeamApplyMask         (std::string node_name) const;
-      conv::FlavApplyMask_t          ReadFlavApplyMask         (std::string node_name) const;
-      conv::SelecApplyMask_t         ReadSelecApplyMask        (std::string node_name) const;
-      conv::ReacTypeApplyMask_t      ReadReacTypeApplyMask     (std::string node_name) const;
-      conv::NuclearTargetApplyMask_t ReadNuclearTargetApplyMask(std::string node_name) const;
-
-      // For a specified node which should contain a string: Does this node exist and is the string not empty?
-      bool IsNodeSpecified(const std::string node_path) const;
-
   };
 } // valor
 
