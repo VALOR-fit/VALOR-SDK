@@ -170,7 +170,7 @@ bool KBCubHcmbMondrian::Read(string file)
   return true;
 }
 
-KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
+VALORBinning* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
 {
    KBCubHcmbMondrian* mond = new KBCubHcmbMondrian();
 
@@ -289,20 +289,20 @@ KBCubHcmbMondrian* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
       if(std::find(duplicateBins.begin(), duplicateBins.end(), i) !=
             duplicateBins.end())
       {  // This bin is a duplicate, remove the edges
-         auto begin = mond->fBinEdges.begin() + i * EDGES_PER_BIN;
-         auto end = mond->fBinEdges.begin() + (i + 1) * EDGES_PER_BIN;
+         auto begin = mond->fBinEdges.cbegin() + i * EDGES_PER_BIN;
+         auto end = mond->fBinEdges.cbegin() + (i + 1) * EDGES_PER_BIN;
          mond->fBinEdges.erase(begin, end);
          for(unsigned int d = 0; d < mond->fNDimensions; ++d)
          {
-           auto begin = mond->fBinRanges[d][i].begin();
-           auto end   = mond->fBinRanges[d][i].begin() + 1;
+           auto begin = mond->fBinRanges[d][i].cbegin();
+           auto end   = mond->fBinRanges[d][i].cbegin() + 1;
            mond->fBinRanges[d][i].erase(begin, end);
          }
       }
    }
    mond->fNBins -= duplicateBins.size();
 
-   return mond;
+   return dynamic_cast<VALORBinning*>(mond);
 }
 //________________________________________________________________________________________
 double KBCubHcmbMondrian::BinMinimum(unsigned int bin, unsigned int dimension) const
@@ -391,14 +391,14 @@ double KBCubHcmbMondrian::BinCentre(unsigned int bin, conv::KineVar_t kv) const
 //________________________________________________________________________________________
 vector<double> KBCubHcmbMondrian::BinCentre(unsigned int bin) const
 {
- vector<double> centre(fNDimensions);
+  vector<double> centre(fNDimensions);
   for(unsigned int idim = 0; idim < fNDimensions; idim++) {
     centre[idim] = this->BinCentre(bin, idim);
   }
   return centre;
 }
 //________________________________________________________________________________________
-unsigned int KBCubHcmbMondrian::FindBin(vector<double> & xarr) const
+unsigned int KBCubHcmbMondrian::FindBin(const vector<double> & xarr) const
 {
   if (xarr.size() == fNDimensions) {
     for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
@@ -424,6 +424,40 @@ unsigned int KBCubHcmbMondrian::FindBin(vector<double> & xarr) const
   LOG("Binning", pFATAL) << this->GetName()<< ": Mondrian binning doesn't span all space?";
   for (size_t i = 0 ; i < fNDimensions ; i++ ) {
      LOG("Binning",pFATAL) << util::AsString(fKineVars[i]) << "\t= "<<xarr[i];
+  }
+  util::Die(-1);
+  return 0;
+}
+//________________________________________________________________________________________
+unsigned int KBCubHcmbMondrian::FindBin(const std::map<conv::KineVar_t, double> & xarr) const
+{
+  const std::vector<conv::KineVar_t> & kvs = KineVars();
+  if (xarr.size() == fNDimensions) {
+    for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
+      bool inside = true;
+      for(unsigned int idim = 0; idim < fNDimensions; idim++) {
+        conv::KineVar_t kv = kvs[idim];
+        double x   = xarr.at(kv);
+        unsigned int idx = (2 * fNDimensions * ibin) + (2 * idim);
+        double min = fBinEdges[idx];
+        double max = fBinEdges[idx+1];
+        inside = inside && (x >= min && x < max);
+        if(!inside) break;
+      }
+      if(inside) {
+        return ibin;
+      }
+    }
+  }
+  else {
+    LOG("Binning",pFATAL) << this->GetName()<< " needs array of dimension "<<fNDimensions <<" but got size "<<xarr.size();
+    util::Die(-1);
+  }
+
+  LOG("Binning", pFATAL) << this->GetName()<< ": Mondrian binning doesn't span all space?";
+  for (size_t i = 0 ; i < fNDimensions ; i++ ) {
+    conv::KineVar_t kv = kvs[i];
+    LOG("Binning",pFATAL) << util::AsString(fKineVars[i]) << "\t= "<<xarr.at(kv);
   }
   util::Die(-1);
   return 0;
@@ -596,5 +630,17 @@ void KBCubHcmbMondrian::Print(std::ostream & stream) const
     }
     stream<<std::endl;
   }
+}
+//________________________________________________________________________________________
+unsigned int KBCubHcmbMondrian::NBins(conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const
+{
+  int nbins = 0;
+  int ibin_global = -1;
+  while(true) {
+    ibin_global = GetNextBin(ibin_global, kv, other_kv_vals);
+    if(ibin_global < 0) { break; }
+    nbins++;
+  }
+  return nbins;
 }
 //________________________________________________________________________________________
