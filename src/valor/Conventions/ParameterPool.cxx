@@ -148,7 +148,7 @@ void ParameterPool::PopulateNameRegistry(void)
   return;
 }
 //________________________________________________________________________________________
-const bool ParameterPool::IsParamInPool (conv::PhysParamId_t p_search) const
+bool ParameterPool::IsParamInPool (conv::PhysParamId_t p_search) const
 {
   for (const Parameter & param : fParams) {
     conv::PhysParamId_t p = param.GetID();
@@ -158,3 +158,4 @@ const bool ParameterPool::IsParamInPool (conv::PhysParamId_t p_search) const
   }
   return false;
 }
+//________________________________________________________________________________________
