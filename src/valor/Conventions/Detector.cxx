@@ -94,8 +94,9 @@ bool util::IsLongBaseline(Detector_t d)
     case (kdNuTIT    ) : return false;
     case (kdNOvAND   ) : return false;
     case (kdNOvAFD   ) : return true;
+    default: break;
   }
-  LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'";
+  LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);
   return false;
 }
 //________________________________________________________________________________________
