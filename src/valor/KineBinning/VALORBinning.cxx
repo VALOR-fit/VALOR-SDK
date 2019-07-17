@@ -228,7 +228,7 @@ int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, const std::ma
   for(int iglob = current_bin+1; iglob < (int)NBins(); iglob++) {  // Start at the global bin number of the previous bin +1 (for efficiency)
     // search for the first bin where the kvs we're NOT getting the bin number for have
     // values that match the input constant values
-    int n_matches = 0;
+    unsigned int n_matches = 0;
     for(auto iter = other_kv_vals.cbegin(); iter != other_kv_vals.cend(); ++iter) {
       conv::KineVar_t kv_fixed = iter->first;
       double kv_val_fixed = iter->second;
