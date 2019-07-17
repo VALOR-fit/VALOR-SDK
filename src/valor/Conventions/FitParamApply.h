@@ -35,7 +35,7 @@ namespace conv {
 static const unsigned long kApplyMaskOne = 1ul;
 static const int nbitsBeamApplyMask            = 2;
   static const int nbitsFlavApplyMask          = 4;
-  static const int nbitsSelecApplyMask         = 30;
+  static const int nbitsSelecApplyMask         = 32;
   static const int nbitsReacTypeApplyMask      = 21;
   static const int nbitsDetectorApplyMask  = 5;
   static const int nbitsNuclearTargetApplyMask = 7;
@@ -44,7 +44,7 @@ typedef std::bitset<nbitsBeamApplyMask>           BeamApplyMask_t;
 typedef std::bitset<nbitsFlavApplyMask>           FlavApplyMask_t;
 typedef std::bitset<nbitsSelecApplyMask>          SelecApplyMask_t;
 typedef std::bitset<nbitsReacTypeApplyMask>       ReacTypeApplyMask_t;
-typedef std::bitset<nbitsDetectorApplyMask>   DetectorApplyMask_t;
+typedef std::bitset<nbitsDetectorApplyMask>       DetectorApplyMask_t;
 typedef std::bitset<nbitsNuclearTargetApplyMask>  NuclearTargetApplyMask_t;
 
 // Which physics parameters are applied to which beam/sample/mode
@@ -94,8 +94,10 @@ static const SelecApplyMask_t ksApplyToNuECCWS         = (kApplyMaskOne << 24 );
 static const SelecApplyMask_t ksApplyToNuECC           = (kApplyMaskOne << 25 );
 static const SelecApplyMask_t ksApplyToNuMuCCWS        = (kApplyMaskOne << 26 );
 static const SelecApplyMask_t ksApplyToNC              = (kApplyMaskOne << 27 );
-static const SelecApplyMask_t ksApplyToHighRes         = (kApplyMaskOne << 28 ); // Far detector selections
-static const SelecApplyMask_t ksApplyToLowRes          = (kApplyMaskOne << 29 ); // Far detector selections
+static const SelecApplyMask_t ksApplyToMuLikeHighRes   = (kApplyMaskOne << 28 );
+static const SelecApplyMask_t ksApplyToMuLikeLowRes    = (kApplyMaskOne << 29 );
+static const SelecApplyMask_t ksApplyToELikeHighRes    = (kApplyMaskOne << 30 );
+static const SelecApplyMask_t ksApplyToELikeLowRes     = (kApplyMaskOne << 31 );
 
 static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 ); // Reaction type
 static const ReacTypeApplyMask_t ktApplyToCCMEC        = (kApplyMaskOne <<  1 );
@@ -184,7 +186,8 @@ extern const SelecApplyMask_t ksApplyToAllFD;
 extern const SelecApplyMask_t ksApplyToAll;
 extern const SelecApplyMask_t ksApplyToAllNC;
 extern const SelecApplyMask_t ksApplyToAllNuECC;
-
+extern const SelecApplyMask_t ksApplyToAllFDMuLike;
+extern const SelecApplyMask_t ksApplyToAllFDELike ;
 
 
 // Targets

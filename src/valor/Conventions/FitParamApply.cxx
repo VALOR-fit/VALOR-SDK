@@ -65,7 +65,9 @@ const SelecApplyMask_t valor::conv::ksApplyToAllND = (
   ksApplyToNuECCWS | ksApplyToNuECC | ksApplyToNuMuCCWS | ksApplyToNC
 );
 
-const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes;
+const SelecApplyMask_t valor::conv::ksApplyToAllFDMuLike = ksApplyToMuLikeLowRes | ksApplyToMuLikeHighRes;
+const SelecApplyMask_t valor::conv::ksApplyToAllFDELike =  ksApplyToELikeLowRes  | ksApplyToELikeHighRes;
+const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToAllFDMuLike | ksApplyToAllFDELike;
 const SelecApplyMask_t valor::conv::ksApplyToAll = ksApplyToAllND | ksApplyToAllFD;
 const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
 const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
@@ -152,8 +154,12 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC          , "nuecc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS       , "numuccws") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToNC             , "nc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToHighRes        , "highres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToLowRes         , "lowres") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeHighRes  , "mulikehighres") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeLowRes   , "mulikelowres") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeHighRes   , "elikehighres") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeLowRes    , "elikelowres") );
+  //~ fSelecMaskToName.insert( std::make_pair(ksApplyToHighRes        , "highres") );
+  //~ fSelecMaskToName.insert( std::make_pair(ksApplyToLowRes         , "lowres") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllND          , "allnd") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllFD          , "allfd") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAll            , "all") );
@@ -283,14 +289,14 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksNeutrinoElec    : return ksApplyToNuECC;     // ksApplyToNeutrinoElec
     case ksInvMuDecay      : return ksApplyToNuMuCCoth; // ksApplyToInvMuDecay
     case ksNuECCWS         : return ksApplyToNuECCWS;
-    case ksNuMuLikeCChigh  : return ksApplyToHighRes;
-    case ksNuMuLikeCClow   : return ksApplyToLowRes;
-    case ksNuMuBarCChigh   : return ksApplyToHighRes;
-    case ksNuMuBarCClow    : return ksApplyToLowRes;
-    case ksNuELikeCChigh   : return ksApplyToHighRes;
-    case ksNuELikeCClow    : return ksApplyToLowRes;
-    case ksNuEBarCChigh    : return ksApplyToHighRes;
-    case ksNuEBarCClow     : return ksApplyToLowRes;
+    case ksNuMuLikeCChigh  : return ksApplyToMuLikeHighRes;
+    case ksNuMuLikeCClow   : return ksApplyToMuLikeLowRes;
+    case ksNuMuBarCChigh   : return ksApplyToMuLikeHighRes;
+    case ksNuMuBarCClow    : return ksApplyToMuLikeLowRes;
+    case ksNuELikeCChigh   : return ksApplyToELikeHighRes;
+    case ksNuELikeCClow    : return ksApplyToELikeLowRes;
+    case ksNuEBarCChigh    : return ksApplyToELikeHighRes;
+    case ksNuEBarCClow     : return ksApplyToELikeLowRes;
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
       return 0;
