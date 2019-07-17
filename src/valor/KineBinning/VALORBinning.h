@@ -65,8 +65,7 @@ public:
   conv::KineVar_t KineVar(unsigned int dimension);
 
   // Variable -> Dimension
-  const unsigned int & Dimension(conv::KineVar_t kv) const;
-  unsigned int         Dimension(conv::KineVar_t kv) const;
+  const int & Dimension(conv::KineVar_t kv) const;
   bool Contains(conv::KineVar_t kv) const;
 
   // Number of multi-dimensional bins 
@@ -82,8 +81,8 @@ public:
 
     \return The number of bins.
    */
-  virtual unsigned int NBins (conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const = 0;
-  
+  virtual unsigned int NBins (conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const = 0;
+
   // Global bin and max values
   double Minimum (unsigned int dimension ) const;
   double Minimum (conv::KineVar_t kv     ) const;
@@ -111,8 +110,8 @@ public:
   virtual std::vector<double> BinCentre (unsigned int bin                         ) const;
 
   // Find bin
-  virtual unsigned int FindBin (std::vector<double> & xarr) const = 0;
-  virtual unsigned int FindBin (std::map<conv::KineVar_t, double> & xarr) const = 0;
+  virtual unsigned int FindBin (const std::vector<double> & xarr) const = 0;
+  virtual unsigned int FindBin (const std::map<conv::KineVar_t, double> & xarr) const = 0;
 
   /**
     Get the next bin in a loop over one kine var with all other kine vars fixed.
@@ -128,7 +127,7 @@ public:
 
     \return The (global) bin number corresponding to the next bin, if there is a next bin. If not, -999 is returned.
    */
-  int GetNextBin (int current_bin, conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const;
+  int GetNextBin (int current_bin, conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const;
 
   /**
     Takes this binning and creates a new binning using the specified subset of
@@ -142,13 +141,13 @@ public:
 
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const = 0;
-
+  
   // Print a summary of the binning
   virtual void Print(std::ostream & stream = std::cout) const = 0;
-
-
+  
+  
   using TObject::Read; // Tell clang we really do want this
-
+  
 protected:
 
   //~ void Init    (void);
@@ -161,7 +160,7 @@ protected:
   unsigned int                              fNBins;               // number of bins
   std::vector<double>                       fMinimum;             //
   std::vector<double>                       fMaximum;             //
-
+  
 ClassDef(VALORBinning, 1)
 
 };

@@ -100,14 +100,14 @@ public:
   // Numbers of bins (by dimension)
   unsigned int NBins (unsigned int dim  ) const;
   unsigned int NBins (conv::KineVar_t kv) const;
-  unsigned int NBins (conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const;
-  
+  unsigned int NBins (conv::KineVar_t kv, const std::map<conv::KineVar_t, double> &/* other_kv_vals*/) const;
+
   // Find bin
   unsigned int              FindBin1D         (double x, unsigned int dimension) const;
   unsigned int              FindBin1D         (double x, conv::KineVar_t kv) const;
-  std::vector<unsigned int> FindBin1DArr      (std::vector<double> & xarr) const;
+  std::vector<unsigned int> FindBin1DArr      (const std::vector<double> & xarr) const;
 
-  unsigned int                      LinearizedBin (std::vector<unsigned int> & binarr) const;
+  unsigned int              LinearizedBin (const std::vector<unsigned int> & binarr) const;
   
   // Bin Edges
   const double * BinEdgeArr(unsigned int dimension ) const;
@@ -136,8 +136,8 @@ public:
   virtual std::vector<double> BinCentre (unsigned int bin                         ) const;
 
   // Find bin
-  virtual unsigned int FindBin (std::vector<double> & xarr) const;
-  virtual unsigned int FindBin (std::map<conv::KineVar_t, double> & xarr) const;
+  virtual unsigned int FindBin (const std::vector<double> & xarr) const;
+  virtual unsigned int FindBin (const std::map<conv::KineVar_t, double> & xarr) const;
 
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const;

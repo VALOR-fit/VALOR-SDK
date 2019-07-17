@@ -47,23 +47,15 @@ VALORBinning::~VALORBinning()
 {
 }
 //________________________________________________________________________________________
-const unsigned int & VALORBinning::Dimension(conv::KineVar_t kv) const
+const int & VALORBinning::Dimension(conv::KineVar_t kv) const
 {
   if (fKineVarToDim[kv] < 0 ) {
     LOG("VALORBinning",pFATAL) << "Bad KineVar: "<<util::AsString(kv) << " ("<<kv<<")"<< " in "<<util::AsString(fKineSpace);
-    util::Die(-1) ; return 0;
+    util::Die(-1) ;
+    static const int zero = 0;
+    return zero;
   }
   return fKineVarToDim[kv];
-}
-//________________________________________________________________________________________
-unsigned int VALORBinning::Dimension(conv::KineVar_t kv) const
-{
-  int dim = fKineVarToDim[kv];
-  if (dim < 0 ) {
-    LOG("VALORBinning",pFATAL) << "Bad KineVar: "<<util::AsString(kv) << " ("<<kv<<")"<< " in "<<util::AsString(fKineSpace);
-    util::Die(-1) ; return 0;
-  }
-  return dim;
 }
 //________________________________________________________________________________________
 bool VALORBinning::Contains(conv::KineVar_t kv) const
@@ -127,7 +119,7 @@ double VALORBinning::BinWidth(unsigned int bin, conv::KineVar_t kv) const
 //________________________________________________________________________________________
 vector<double> VALORBinning::BinWidth(unsigned int bin) const
 {
- vector<double> bwidth(fNDimensions);
+  vector<double> bwidth(fNDimensions);
   for(unsigned int idim = 0; idim < fNDimensions; idim++) {
     bwidth[idim] = this->BinWidth(bin, idim);
   }
@@ -149,7 +141,7 @@ double VALORBinning::BinCentre(unsigned int bin, conv::KineVar_t kv) const
 //________________________________________________________________________________________
 vector<double> VALORBinning::BinCentre(unsigned int bin) const
 {
- vector<double> centre(fNDimensions);
+  vector<double> centre(fNDimensions);
   for(unsigned int idim = 0; idim < fNDimensions; idim++) {
     centre[idim] = this->BinCentre(bin, idim);
   }
@@ -207,7 +199,7 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
   return binning;
 }
 //________________________________________________________________________________________
-int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const
+int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const
 {
   // Check that the input current bin number is sensible. Allow current_bin = -1 for the start of the iteration,
   // as we immediately increment it
@@ -218,7 +210,7 @@ int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, std::map<conv
 
   //check that the kine vars from other_kv_vals + kv gives ALL of the binning kvs
   unsigned int n_dims_match = 0;
-  for(std::map<conv::KineVar_t, double>::iterator iter = other_kv_vals.begin(); iter != other_kv_vals.end(); ++iter) {
+  for(auto iter = other_kv_vals.cbegin(); iter != other_kv_vals.cend(); ++iter) {
     conv::KineVar_t kv_fixed = iter->first;
     if(this->Contains(kv_fixed)) { n_dims_match++; }
     if(kv_fixed == kv) {
@@ -237,7 +229,7 @@ int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, std::map<conv
     // search for the first bin where the kvs we're NOT getting the bin number for have
     // values that match the input constant values
     int n_matches = 0;
-    for(std::map<conv::KineVar_t, double>::iterator iter = other_kv_vals.begin(); iter != other_kv_vals.end(); ++iter) {
+    for(auto iter = other_kv_vals.cbegin(); iter != other_kv_vals.cend(); ++iter) {
       conv::KineVar_t kv_fixed = iter->first;
       double kv_val_fixed = iter->second;
       double min = BinMinimum(iglob, kv_fixed);

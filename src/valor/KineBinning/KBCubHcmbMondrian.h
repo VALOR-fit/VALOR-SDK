@@ -162,11 +162,11 @@ public:
   virtual std::vector<double> BinCentre (unsigned int bin                         ) const;
 
   // Find bin
-  virtual unsigned int FindBin (std::vector<double> & xarr) const;
-  virtual unsigned int FindBin (std::map<conv::KineVar_t, double> & xarr) const;
+  virtual unsigned int FindBin (const std::vector<double> & xarr) const;
+  virtual unsigned int FindBin (const std::map<conv::KineVar_t, double> & xarr) const;
 
   // Number of bins by dimension
-  unsigned int NBins (conv::KineVar_t kv, std::map<conv::KineVar_t, double> other_kv_vals) const;
+  unsigned int NBins (conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const;
 
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const;
