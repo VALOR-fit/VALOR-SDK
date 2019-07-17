@@ -326,7 +326,7 @@ void ConfigurationHandler::ReadSimpleBinning(const std::string& filename,
       for(int i = 0; i < nbins; ++i)
       {
          std::vector<std::string> tokens = util::Tokens(edges, ",");
-         if(tokens.size() != (nbins + 1))
+         if((int)tokens.size() != (nbins + 1))
          {  // Wrong number of bin edges specified
             LOG("ConfigurationHandler", pERROR) << "bin_" << i << " has " <<
                tokens.size() << " edges specifed. Expected 4.";
