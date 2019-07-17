@@ -763,7 +763,7 @@ int CorrelatedSystematics::Param2Idx(PhysParamId_t p) const
 {
   assert(p!=kPhypUndefined);
   int idx = fParam2Idx[p];
-#ifdef __VALOR_FMWK_DEBUG_ENABLED__
+#ifdef __VALOR_FMWK_LOW_LEVEL_DEBUG_ENABLED__
   if (idx < 0 || idx > (int)fNSystParameters) {
     LOG("CorrelatedSystematics",pFATAL)<<this->GetName()<<" got bad index "<<idx<<" for param "<<util::NameRegistry::Instance()->AsString(p);
     util::Die(-1);
