@@ -474,8 +474,11 @@ const std::pair<double,double> & Parameter::GetKineRange(conv::KineVar_t kv) con
   return max_limits;
 }
 //________________________________________________________________________________________
-double Parameter::IsWithinLimits(double val) const
+bool Parameter::IsWithinLimits(double val) const
 {
+  if (!fHasLimits) {
+    return true;
+  }
   if (val >= fLimits.first && val <= fLimits.second) {
     return true;
   }
