@@ -289,9 +289,11 @@ VALORBinning* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
       if(std::find(duplicateBins.begin(), duplicateBins.end(), i) !=
             duplicateBins.end())
       {  // This bin is a duplicate, remove the edges
-         auto begin = mond->fBinEdges.cbegin() + i * EDGES_PER_BIN;
-         auto end = mond->fBinEdges.cbegin() + (i + 1) * EDGES_PER_BIN;
-         mond->fBinEdges.erase(begin, end);
+         { //just scoping
+            auto begin = mond->fBinEdges.cbegin() + i * EDGES_PER_BIN;
+            auto end   = mond->fBinEdges.cbegin() + (i + 1) * EDGES_PER_BIN;
+            mond->fBinEdges.erase(begin, end);
+         }
          for(unsigned int d = 0; d < mond->fNDimensions; ++d)
          {
            auto begin = mond->fBinRanges[d][i].cbegin();
@@ -569,33 +571,50 @@ TH2D* KBCubHcmbMondrian::ToTH2D(conv::KineVar_t kv1, conv::KineVar_t kv2) const
 //________________________________________________________________________________________
 TH2Poly * KBCubHcmbMondrian::ToTH2Poly(conv::KineVar_t kv1, conv::KineVar_t kv2) const
 {
-   // Set default dimensions
-   int dim1 = 0;
-   int dim2 = 1;
-   if(fNDimensions > 2)
-   {  // Get the dimensions for the specified kinematics
-      if(kv1 == conv::kvUndefined || kv2 == conv::kvUndefined)
-      {
-         LOG("KBCubHcmbMondrian", pERROR) << "Kinematic variables must be " <<
-            "specified for Mondrian binnings with more than 2 dimensions.";
-         util::Die(-1);
-      }
-      dim1 = Dimension(kv1);
-      dim2 = Dimension(kv2);
-   }
+  if (fNDimensions < 2) {
+    LOG("KBCubHcmbMondrian", pERROR) << "You can't turn a 1D hist into a TH2Poly";
+    util::Die(-1); return nullptr;
+  }
+  
+  int dim1 = -1; 
+  int dim2 = -1;
    
-   std::vector<double> edges[4]; // 0 is xlow, 1 is xhigh, 2 ylow, 3 yhigh
-   for (unsigned int i = 0 ; i < fBinEdges.size() ; i++) {
-     edges[i%4].push_back(fBinEdges[i]);
-   }
-   TH2Poly * histo = new TH2Poly("mondtoth2poly","",
-     this->Minimum(0),this->Maximum(0),this->Minimum(1),this->Maximum(1));
-   
-   for (unsigned int i = 0 ; i < edges[0].size(); i++) {
-     histo->AddBin(edges[0][i],edges[2][i],edges[1][i],edges[3][i]);
-   }
+  // Get the dimensions for the specified kinematics
+  if (kv1 == conv::kvUndefined && kv2 == conv::kvUndefined) {
+    //default to our first two dimensions
+    dim1 = 0;
+    dim2 = 1;
+  }
+  else if(!Contains(kv1) || !Contains(kv2))
+  {
+    LOG("KBCubHcmbMondrian", pERROR) << "Can't make TH2Poly with dimensions "
+      <<util::AsString(kv1)<<" - "<<util::AsString(kv2) <<" from binning in "<<util::AsString(fKineSpace);
+    util::Die(-1);
+  }
+  else {
+    dim1 = Dimension(kv1);
+    dim2 = Dimension(kv2);
+  }
+  
+  std::vector<double> xlow;
+  std::vector<double> xhigh;
+  std::vector<double> ylow;
+  std::vector<double> yhigh;
+  for (unsigned int i = 0 ; i < fNBins ; i++) {
+    unsigned int offset = 4*i;
+    xlow .push_back(fBinEdges[offset+dim1+0]);
+    xhigh.push_back(fBinEdges[offset+dim1+1]);
+    ylow .push_back(fBinEdges[offset+dim2+0]);
+    yhigh.push_back(fBinEdges[offset+dim2+1]);
+  }
+  TH2Poly * histo = new TH2Poly("mondtoth2poly","",
+    this->Minimum(dim1),this->Maximum(dim1),this->Minimum(dim2),this->Maximum(dim2));
+  
+  for (unsigned int i = 0 ; fNBins; i++) {
+    histo->AddBin(xlow[i],ylow[i],xhigh[i],yhigh[i]);
+  }
 
-   return histo;
+  return histo;
 }
 
 //________________________________________________________________________________________
