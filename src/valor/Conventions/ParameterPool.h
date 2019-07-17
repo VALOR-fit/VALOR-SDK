@@ -38,7 +38,7 @@ public:
   
   const std::vector<Parameter> & GetParams() const;
   const Parameter & GetParam (conv::PhysParamId_t) const;
-  const bool IsParamInPool (conv::PhysParamId_t) const;
+  bool IsParamInPool (conv::PhysParamId_t) const;
 
   // Get the Parameter corresponding to the input simple name
   const Parameter & ParamFromString (std::string str) const;
