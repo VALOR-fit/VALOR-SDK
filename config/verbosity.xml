@@ -16,5 +16,6 @@
   <priority msgstream="Reg">                  NOTICE   </priority>
   <priority msgstream="ApplyMask">            NOTICE   </priority>
   <priority msgstream="Parameter">            NOTICE   </priority>
+  <priority msgstream="Interpolator">         WARN     </priority>
 
 </messenger_config>

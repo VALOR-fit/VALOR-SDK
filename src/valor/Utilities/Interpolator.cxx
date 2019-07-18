@@ -84,8 +84,8 @@ double valor::util::Interpolator::Eval(double x) const
     x = std::min(x,fXmax);
   }
   else if(x < fXmin || x > fXmax) {
-    std::cerr << "Evaluating spline [" << fName << "] at point " << x << " outside of its limits of ["
-              << fXmin << ", " << fXmax << "]" << std::endl;
+    LOG("Interpolator",pWARN)  << "Evaluating spline [" << fName << "] at point " << x << " outside of its limits of ["
+                               << fXmin << ", " << fXmax << "]" << std::endl;
   }
   if(fGSLSpline) { return fGSLSpline ->Eval(x); }
   else           { return fROOTSpline->Eval(x); }
@@ -94,11 +94,11 @@ double valor::util::Interpolator::Eval(double x) const
 void valor::util::Interpolator::CheckSplineType(void) const
 {
   if(fGSLSpline && fROOTSpline) {
-    LOG("Messenger",pFATAL) << "Both GSL and ROOT splines are defined. This shouldn't happen!";
+    LOG("Interpolator",pFATAL) << "Both GSL and ROOT splines are defined. This shouldn't happen!";
     util::Die(-1);
   }
   if(!fGSLSpline && !fROOTSpline) {
-    LOG("Messenger",pFATAL) << "Neither GSL or ROOT splines are defined. This shouldn't happen!";
+    LOG("Interpolator",pFATAL) << "Neither GSL or ROOT splines are defined. This shouldn't happen!";
     util::Die(-1);
   }
 }
@@ -116,7 +116,7 @@ double valor::util::Interpolator::Xmax() const
 void valor::util::Interpolator::SetUseLimits(bool u)
 {
   if(!u && fGSLSpline) {
-    LOG("Messenger",pWARN)
+    LOG("Interpolator",pWARN)
       << "GSL splines can't be evaluated outside of their limits, so ignoring the call to Interpolator::SetUseLimits(false)";
   }
   else {
@@ -125,7 +125,7 @@ void valor::util::Interpolator::SetUseLimits(bool u)
 #else
     fUseLimits = true;
     if(!u) {
-      LOG("Messenger",pWARN)
+      LOG("Interpolator",pWARN)
         << "If you want to evaluate splines outside of their limits, configure the SDK with the flag --enable-spline-stupidity";
     }
 #endif
