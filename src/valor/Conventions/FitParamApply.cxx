@@ -256,18 +256,21 @@ void valor::util::ApplyMaskNaming::Init(void)
   }
 }
 //________________________________________________________________________________________
-std::ostream& valor::operator<<(std::ostream& s, const conv::ApplyMask_t & m)
+std::string valor::util::AsString(const conv::ApplyMask_t & mask)
 {
-  s << std::endl << "("
-    << "det: "        << util::DetectorMaskAsString     (m.detector)   << ", "
-    << "beam: "       << util::BeamMaskAsString         (m.beam)       << ", "
-    << "init flav: "  << util::FlavMaskAsString         (m.flav_init)  << ", "
-    << "final flav: " << util::FlavMaskAsString         (m.flav_final) << ", "
-    << "selec: "      << util::SelecMaskAsString        (m.selec)      << ", "
-    << "reac type: "  << util::ReacTypeMaskAsString     (m.reactype)   << ", "
-    << "target: "     << util::NuclearTargetMaskAsString(m.target)
-    << ")" << std::endl;
-  return s;
+  return "\n("
+    "det: "        + util::DetectorMaskAsString     (mask.detector)   + ", "
+    "beam: "       + util::BeamMaskAsString         (mask.beam)       + ", "
+    "init flav: "  + util::FlavMaskAsString         (mask.flav_init)  + ", "
+    "final flav: " + util::FlavMaskAsString         (mask.flav_final) + ", "
+    "selec: "      + util::SelecMaskAsString        (mask.selec)      + ", "
+    "reac type: "  + util::ReacTypeMaskAsString     (mask.reactype)   + ", "
+    "target: "     + util::NuclearTargetMaskAsString(mask.target)     + ")\n";
+}
+//________________________________________________________________________________________
+std::string valor::util::ApplyMaskAsString(const conv::ApplyMask_t & mask)
+{
+  return util::AsString(mask);
 }
 //________________________________________________________________________________________
 const BeamApplyMask_t valor::util::ApplyToBeamMode(BeamConf_t b)

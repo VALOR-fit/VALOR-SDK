@@ -323,10 +323,9 @@ namespace valor {
     bool                           IsAppliedTo               (conv::ApplyMask_t mask_to_check, conv::BeamConf_t b, conv::Sample_t s,
                                                               conv::Detector_t d, conv::ReacMode_t m, conv::NuclearTarget_t nt);
     bool                           IsAppliedTo               (conv::ApplyMask_t mask_to_check, conv::ApplyMask_t mask);
+    std::string                    AsString                  (const conv::ApplyMask_t & mask);
+    std::string                    ApplyMaskAsString         (const conv::ApplyMask_t & mask);
   } //util
-
-  std::ostream& operator<<(std::ostream& s, const conv::ApplyMask_t & m);
-
 } //valor
 
 #endif // _valor_apply_params_h_
