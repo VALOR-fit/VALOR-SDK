@@ -655,6 +655,7 @@ template<typename numtype> void VALORArrayT<numtype>::
    int dimensions[6] = {0};
    stream.read((char*)&n_dim, sizeof(int));
    stream.read((char*)dimensions, 6 * sizeof(int));
+   if(fArray) { delete fArray; }    // Delete any existing stored memory before making a new array
    this->Construct(n_dim, dimensions);
 
    LOG("VALORArrayT", pDEBUG) << "Reading " << this->GetName() << " " <<
