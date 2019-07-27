@@ -347,6 +347,35 @@ FitParamList * FitParamList::FreeParameterSubset(void)
   return fparm;
 }
 //________________________________________________________________________________________
+FitParamList * FitParamList::ParameterOfInterestSubset(void)
+{
+  int ninterest = this->GetNumberParametersOfInterest();
+
+  FitParamList * fparm = new FitParamList(ninterest);
+
+  int ipc = 0;
+  for(int ip = 0; ip < fNParams; ip++) {
+    if(fDoMarg[ip]) continue;
+    PhysParamId_t p = this->WhichParam(ip);
+    double init = fInitValue[ip];
+    double min  = fMinValue[ip];
+    double max  = fMaxValue[ip];
+    double step = fStepSize[ip];
+    bool   nuis = fIsNuisance[ip];
+    fparm->AddParam(ipc, p, init, min, max, step, false, nuis);
+    fparm->fBestFitValue[ipc] = this->fBestFitValue[ip];
+    fparm->fCurrValue   [ipc] = this->fCurrValue   [ip];
+    fparm->fMigradError [ipc] = this->fMigradError [ip];
+    fparm->fHesseError  [ipc] = this->fHesseError  [ip];
+    fparm->fPlusError   [ipc] = this->fPlusError   [ip];
+    fparm->fMinusError  [ipc] = this->fMinusError  [ip];
+
+    ipc++;
+  }
+
+  return fparm;
+}
+//________________________________________________________________________________________
 void FitParamList::SetTo(TVirtualFitter * fitter)
 {
   if(!fitter) return;
@@ -562,6 +591,19 @@ int FitParamList::GetNumberFreeParameters(void) const
   for(int ip=0; ip<fNParams;  ip++) {
     bool is_fixed = fIsFixed[ip];
     if(!is_fixed) {
+      nparams++;
+    }
+  }
+  return nparams;
+}
+//________________________________________________________________________________________
+int FitParamList::GetNumberParametersOfInterest(void) const
+{
+  int nparams = 0;
+
+  for(int ip=0; ip<fNParams;  ip++) {
+    bool is_marg = fDoMarg[ip];
+    if(!is_marg) {
       nparams++;
     }
   }
