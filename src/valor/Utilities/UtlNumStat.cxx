@@ -1168,6 +1168,30 @@ double valor::util::DoubleAngleToSingleAngle(double sinsq2theta)
   return sinsqtheta;
 }
 //____________________________________________________________________________
+double valor::util::SingleAngleSigmaToDoubleAngleSigma(double sinsqtheta_mean, double sinsqtheta_sigma)
+{
+  return 0.5 * ( util::SingleAngleToDoubleAngle(sinsqtheta_mean + sinsqtheta_sigma) -
+                 util::SingleAngleToDoubleAngle(sinsqtheta_mean - sinsqtheta_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::DoubleAngleSigmaToSingleAngleSigma(double sinsq2theta_mean, double sinsq2theta_sigma)
+{
+  return 0.5 * ( util::DoubleAngleToSingleAngle(sinsq2theta_mean + sinsq2theta_sigma) -
+                 util::DoubleAngleToSingleAngle(sinsq2theta_mean - sinsq2theta_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::PhaseSigmaToSinPhaseSigma(double phase_mean, double phase_sigma)
+{
+  return 0.5 * ( TMath::Sin(phase_mean + phase_sigma) -
+                 TMath::Sin(phase_mean - phase_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::SinPhaseSigmaToPhaseSigma(double sinphase_mean, double sinphase_sigma)
+{
+  return 0.5 * ( TMath::ASin(sinphase_mean + sinphase_sigma) -
+                 TMath::ASin(sinphase_mean - sinphase_sigma) );
+}
+//____________________________________________________________________________
 TAxis valor::util::EstimateOptimalBinning(int npoints, double * points)
 {
   // Uses Freedman-Diaconis rule to guess a (fixed size) binning scheme as a starting point.

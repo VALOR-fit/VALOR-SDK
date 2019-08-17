@@ -76,6 +76,14 @@ namespace util {
   double SingleAngleToDoubleAngle(double sinsqtheta);
   double DoubleAngleToSingleAngle(double sinsq2theta);
 
+  // Convert the sigma of a Gaussian from double angle to single angle and vice-versa
+  double SingleAngleSigmaToDoubleAngleSigma(double sinsqtheta_mean , double sinsqtheta_sigma );
+  double DoubleAngleSigmaToSingleAngleSigma(double sinsq2theta_mean, double sinsq2theta_sigma);
+
+  // Convert the sigma of a Gaussian from phase to sin(phase) and vice-versa
+  double PhaseSigmaToSinPhaseSigma(double phase_mean   , double phase_sigma   );
+  double SinPhaseSigmaToPhaseSigma(double sinphase_mean, double sinphase_sigma);
+
   // Other Matrix Functions
   TMatrixD CovarianceMatrixToCorrelationMatrix(const TMatrixD & cov_m);
   TVectorD CovarianceMatrixToErrorVector(const TMatrixD & cov_m);
