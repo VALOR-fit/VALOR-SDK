@@ -2011,6 +2011,7 @@ void FitParamList::SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior)
   char name[200];
   sprintf(name,"%s_%s","hPrior",util::RawParamAsStringRaw(p).c_str());
   fPriorHisto [this->Id(p)] = (TH1D*) hprior->Clone(name);
+  fPriorHisto [this->Id(p)]->SetDirectory(0);
   
   this->SetPriorDimension2D(p,false); // The prior is 1D
 }
@@ -2021,6 +2022,7 @@ void FitParamList::SetPriorHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior)
   char name[200];
   sprintf(name,"%s_%s","hPrior",util::RawParamAsStringRaw(p).c_str());
   fPriorHisto2D [this->Id(p)] = (TH2D*) hprior->Clone(name);
+  fPriorHisto2D [this->Id(p)]->SetDirectory(0);
   
   this->SetPriorDimension2D(p,true); // The prior is 2D
 }
