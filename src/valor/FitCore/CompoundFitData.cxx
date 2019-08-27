@@ -101,16 +101,18 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitData::Read(std::ifstream& stream, Option_t * read_opt)
+bool CompoundFitData::Read(std::ifstream& stream, FitModelABC * model, Option_t * read_opt)
 {
+  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
+  bool status = true;
+  int ientry = 0;
+  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it,++ientry)
+  {
+    FitModelABC * m = (cfm ? cfm->GetSubModel(ientry) : model);
+    status = status && (*it)->Read(stream, m, read_opt);
+  }
 
-   bool status = true;
-   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it)
-   {
-      status = status && (*it)->Read(stream, read_opt);
-   }
-   
-   return status;
+  return status;
 }
 //________________________________________________________________________________________
 bool CompoundFitData::Generate (FitModelABC * model, const PhysHypothesis & ph, bool stat_fluct)
