@@ -55,6 +55,7 @@ namespace util {
   double ChisqGauss         (double ndata, double nmc);
   double ChisqPoisson       (double ndata, double nmc);
   double Chisq_Penalty_TH2D (TH2D* hobs, TH2D* hexp);
+  double ConfLevelToFrac    (conv::ConfLevel_t cl);
   
   double ChisqMeanLikelihood(std::vector<double> chisqs); // Performs a mean of the non-logged values, returns chisq
 
