@@ -197,6 +197,8 @@ string util::AsString(ReacMode_t m)
   case (kmNuEBarToNuTauBarCCELScat     ): return "nuebartonutaubarCCELscat"; break;      
   case (kmNuEBarToNuTauBarCCoth        ): return "nuebartonutaubarCCoth";    break;
 
+  case (kmCosmic                       ): return "cosmic"; break  
+
     case (kmOther           ): return "other";  break;     
     default                  : return "--"; 
   }
@@ -382,6 +384,8 @@ string util::AsStringTeX(ReacMode_t m, bool root)
     case (kmNuEBarToNuTauBarCCcoh       ): name = "#bar{#nu}_{e} #rightarrow #bar{#nu}_{#tau} CCcoh";                  break;       
     case (kmNuEBarToNuTauBarCCELScat    ): name = "#bar{#nu}_{e} #rightarrow #bar{#nu}_{#tau} CC e^{-} elastic scat";  break;        
     case (kmNuEBarToNuTauBarCCoth       ): name = "#bar{#nu}_{e} #rightarrow #bar{#nu}_{#tau} CCoth";                  break; 
+
+    case (kmCosmic ): name "Cosmic"; break;
  
     case (kmOther           ): name = "Other";                            break;     
     default                  : name = "--"; 
@@ -539,6 +543,15 @@ bool util::IsNuEBarToNuTauBar(conv::ReacMode_t m)
   else
     return false; 
 }
+//________________________________________________________________________________________
+bool util::IsCosmic(conv::ReacMode_t m)
+{
+  if (m == kmCosmic)
+    return true;
+  else
+    return false; 
+}
+
 //________________________________________________________________________________________
 bool util::IsCC(conv::ReacMode_t m)
 {
