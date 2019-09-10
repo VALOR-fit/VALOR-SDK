@@ -45,7 +45,6 @@ public:
   // Use input option as needed to specify what exactly to read from the input file.
   // Return true if data were succesfully read out
   virtual bool Read(string file, Option_t * opt = 0);
-  virtual bool Read(std::ifstream& stream, FitModelABC * model = 0, Option_t * read_opt = 0);
 
   // Generate mock data (toy-MC)
   // Toy-MC is generated from using the input model 
