@@ -8,9 +8,9 @@
 #
 
 
-# Setup LArSoft. This gives us g++4.9, ROOT and GENIE
+# Setup LArSoft. This gives us modern g++, ROOT and GENIE
 # The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
-if [ -z "$SETUP_LARSOFT" ] ; then
+if [ -z "$SETUP_GENIE" ] ; then
   . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
   setup genie v3_00_04_rc -q e17:prof
 fi

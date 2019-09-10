@@ -138,7 +138,7 @@ namespace util {
   double Logit(double p);
   
   // Gives the fraction of bin 1 that lies inside bin 2
-  double FractionOfBinContained(double min1, double max1, double min2, double max2);
+  double FractionOfBinContained(const double & min1, const double &  max1, const double &  min2, const double &  max2);
   
   // Check if a spline is flat
   bool SplineIsFlat(const TSpline * spl);

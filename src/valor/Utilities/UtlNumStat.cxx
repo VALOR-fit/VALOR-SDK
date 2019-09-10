@@ -1198,7 +1198,7 @@ int valor::util::EstimateOptimalNumberOfBinsForGaussian(int npoints, double nsig
   return nbins;
 }
 //____________________________________________________________________________
-double valor::util::FractionOfBinContained(double min1, double max1, double min2, double max2)
+double valor::util::FractionOfBinContained(const double &  min1, const double &  max1, const double &  min2, const double &  max2)
 {
   double range1 = max1-min1;
   double overlap;

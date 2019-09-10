@@ -749,6 +749,7 @@ namespace util {
   std::string        AsStringTeX          (conv::ReacMode_t m, bool root = false);
   std::string        AsString             (conv::ReacType_t t);
   conv::ReacMode_t   ReacModeFromInt      (int m);
+  conv::ReacMode_t   ReacModeFromString   (std::string s);
   conv::NuFlavour_t  ReacModeToInitFlavor (conv::ReacMode_t m);
   conv::NuFlavour_t  ReacModeToFinalFlavor(conv::ReacMode_t m);
   conv::ReacType_t   ReacModeToType       (conv::ReacMode_t m);

@@ -47,14 +47,15 @@ VALORBinning::~VALORBinning()
 {
 }
 //________________________________________________________________________________________
-unsigned int VALORBinning::Dimension(conv::KineVar_t kv) const
+const int & VALORBinning::Dimension(conv::KineVar_t kv) const
 {
-  int dim = fKineVarToDim[kv];
-  if (dim < 0 ) {
+  if (fKineVarToDim[kv] < 0 ) {
     LOG("VALORBinning",pFATAL) << "Bad KineVar: "<<util::AsString(kv) << " ("<<kv<<")"<< " in "<<util::AsString(fKineSpace);
-    util::Die(-1) ; return 0;
+    util::Die(-1) ;
+    static const int zero = 0;
+    return zero;
   }
-  return dim;
+  return fKineVarToDim[kv];
 }
 //________________________________________________________________________________________
 bool VALORBinning::Contains(conv::KineVar_t kv) const
@@ -69,7 +70,7 @@ double VALORBinning::Minimum(unsigned int dimension) const
 //________________________________________________________________________________________
 double VALORBinning::Minimum(conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->Minimum(dimension);
 }
 //________________________________________________________________________________________
@@ -80,45 +81,45 @@ double VALORBinning::Maximum(unsigned int dimension) const
 //________________________________________________________________________________________
 double VALORBinning::Maximum(conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->Maximum(dimension);
 }
 //________________________________________________________________________________________
 double VALORBinning::BinMinimum(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinMinimum(bin,dimension);
 }
 //________________________________________________________________________________________
 double VALORBinning::BinMaximum(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinMaximum(bin,dimension);
 }
 //________________________________________________________________________________________
-vector<double> VALORBinning::BinRange(
+const vector<double> & VALORBinning::BinRange(
   unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinRange(bin,dimension);
 }
 //________________________________________________________________________________________
 double VALORBinning::BinWidth(unsigned int bin, unsigned int dimension) const
 {
-  vector<double> range = this->BinRange(bin,dimension);
+  const vector<double> & range = this->BinRange(bin,dimension);
   double width = range[1] - range[0];
   return width;
 }
 //________________________________________________________________________________________
 double VALORBinning::BinWidth(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinWidth(bin,dimension);
 }
 //________________________________________________________________________________________
 vector<double> VALORBinning::BinWidth(unsigned int bin) const
 {
- vector<double> bwidth(fNDimensions);
+  vector<double> bwidth(fNDimensions);
   for(unsigned int idim = 0; idim < fNDimensions; idim++) {
     bwidth[idim] = this->BinWidth(bin, idim);
   }
@@ -127,20 +128,20 @@ vector<double> VALORBinning::BinWidth(unsigned int bin) const
 //________________________________________________________________________________________
 double VALORBinning::BinCentre(unsigned int bin, unsigned int dimension) const
 {
-  vector<double> range = this->BinRange(bin,dimension);
+  const vector<double> & range = this->BinRange(bin,dimension);
   double centre = 0.5 * (range[1] + range[0]);
   return centre;
 }
 //________________________________________________________________________________________
 double VALORBinning::BinCentre(unsigned int bin, conv::KineVar_t kv) const
 {
-  unsigned int dimension = this->Dimension(kv);
+  const unsigned int & dimension = this->Dimension(kv);
   return this->BinCentre(bin,dimension);
 }
 //________________________________________________________________________________________
 vector<double> VALORBinning::BinCentre(unsigned int bin) const
 {
- vector<double> centre(fNDimensions);
+  vector<double> centre(fNDimensions);
   for(unsigned int idim = 0; idim < fNDimensions; idim++) {
     centre[idim] = this->BinCentre(bin, idim);
   }
@@ -196,5 +197,51 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
     }
   }
   return binning;
+}
+//________________________________________________________________________________________
+int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const
+{
+  // Check that the input current bin number is sensible. Allow current_bin = -1 for the start of the iteration,
+  // as we immediately increment it
+  if(current_bin < -1 || current_bin >= (int)NBins()) {
+    LOG("KBCubHcmbMondrian", pERROR) << "Invalid input current bin number [" << current_bin << "]";
+    util::Die(-1);
+  }
+
+  //check that the kine vars from other_kv_vals + kv gives ALL of the binning kvs
+  unsigned int n_dims_match = 0;
+  for(auto iter = other_kv_vals.cbegin(); iter != other_kv_vals.cend(); ++iter) {
+    conv::KineVar_t kv_fixed = iter->first;
+    if(this->Contains(kv_fixed)) { n_dims_match++; }
+    if(kv_fixed == kv) {
+      LOG("KBCubHcmbMondrian", pERROR) << "The kine var that we're getting the next bin of [" << util::AsString(kv)
+                                       << "] is also present in the fixed kine var map!";
+      util::Die(-1);
+    }
+  }
+  if(this->Contains(kv)) { n_dims_match++; }
+  if(n_dims_match != NDimensions()) {
+    LOG("KBCubHcmbMondrian", pERROR) << "The input kine vars don't match ALL of the binning kine vars";
+    util::Die(-1);
+  }
+
+  for(int iglob = current_bin+1; iglob < (int)NBins(); iglob++) {  // Start at the global bin number of the previous bin +1 (for efficiency)
+    // search for the first bin where the kvs we're NOT getting the bin number for have
+    // values that match the input constant values
+    unsigned int n_matches = 0;
+    for(auto iter = other_kv_vals.cbegin(); iter != other_kv_vals.cend(); ++iter) {
+      conv::KineVar_t kv_fixed = iter->first;
+      double kv_val_fixed = iter->second;
+      double min = BinMinimum(iglob, kv_fixed);
+      double max = BinMaximum(iglob, kv_fixed);
+      if(kv_val_fixed >= min && kv_val_fixed < max) { n_matches++; }
+    }
+    if(n_matches != NDimensions() - 1) { continue; }
+    // This global bin number must correspond to the next x bin that we want
+    return iglob;
+  }
+  // If we've reached the end of the binning scheme without finding a next bin, return a nonsense value
+  // to signal that we should stop iterating
+  return -999;
 }
 //________________________________________________________________________________________

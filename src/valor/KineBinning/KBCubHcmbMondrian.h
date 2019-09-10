@@ -98,7 +98,7 @@ public:
       kinematic space used by the current binning.
     \return The binning with the specified kinematic space.
   */
-  KBCubHcmbMondrian* Contract(conv::KineSpace_t ks) const;
+  VALORBinning* Contract(conv::KineSpace_t ks) const;
 
   // An alternative `edge-to-edge' binning of the same kiematical space may be 
   // specified to simplify plotting. If specified, a bin mapping bwteen the
@@ -139,6 +139,8 @@ public:
         
   // Inherited stuff from VALORBinning
   using VALORBinning::NBins;
+  using VALORBinning::GetNextBin;
+
   // Bin min and max values
   virtual double BinMinimum (unsigned int bin, unsigned int dimension ) const;
   virtual double BinMaximum (unsigned int bin, unsigned int dimension ) const;
@@ -146,8 +148,8 @@ public:
   using VALORBinning::BinMaximum;
   
   // Bin range
-  virtual std::vector<double> BinRange (unsigned int bin, unsigned int dimension ) const;
-  virtual std::vector<double> BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
+  virtual const std::vector<double> & BinRange (unsigned int bin, unsigned int dimension ) const;
+  virtual const std::vector<double> & BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin width
   virtual double              BinWidth (unsigned int bin, unsigned int dimension ) const;
@@ -160,8 +162,12 @@ public:
   virtual std::vector<double> BinCentre (unsigned int bin                         ) const;
 
   // Find bin
-  virtual unsigned int FindBin (std::vector<double> & xarr) const;
-  
+  virtual unsigned int FindBin (const std::vector<double> & xarr) const;
+  virtual unsigned int FindBin (const std::map<conv::KineVar_t, double> & xarr) const;
+
+  // Number of bins by dimension
+  unsigned int NBins (conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const;
+
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const;
   
@@ -174,10 +180,11 @@ protected:
   void Init    (void);
   void CleanUp (void);
 
-  std::vector<double>                       fBinEdges;            // (xmin,xmax,ymin,ymax,...)_bin0,(xmin,xmax,ymin,ymax,...)_bin1,... 
-  const KBCubHcmbEdge2Edge *                fKBE2E;               //
-  std::map<unsigned int, unsigned int>      fBinMondrianFromE2E;  // e2e linearized bin --> mondrian bin (1:1)
-  std::multimap<unsigned int, unsigned int> fBinMondrianToE2E;    // mondrian bin --> e2e linearized bin (1:N) 
+  std::vector<double>                             fBinEdges;            // (xmin,xmax,ymin,ymax,...)_bin0,(xmin,xmax,ymin,ymax,...)_bin1,...
+  const KBCubHcmbEdge2Edge *                      fKBE2E;               //
+  std::map<unsigned int, unsigned int>            fBinMondrianFromE2E;  // e2e linearized bin --> mondrian bin (1:1)
+  std::multimap<unsigned int, unsigned int>       fBinMondrianToE2E;    // mondrian bin --> e2e linearized bin (1:N)
+  std::vector<std::vector<std::vector<double> > > fBinRanges;           // bin ranges: dim 0 = kinematic dimension; dim 1 = bin number; dim 2 = low/high bin edge
   
 ClassDef(KBCubHcmbMondrian, 1)
 

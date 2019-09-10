@@ -46,7 +46,9 @@ typedef enum EBeamConf
    kbBNB_FHC,              // forward horn current beam @ FNAL/Booster
    kbBNB_RHC               // reverse horn current beam @ FNAL/Booster
 } 
-BeamConf_t; 
+BeamConf_t;
+
+static const int kNBeamsDefined = 8;
 
 } // conv
 

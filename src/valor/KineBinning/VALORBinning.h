@@ -65,11 +65,23 @@ public:
   conv::KineVar_t KineVar(unsigned int dimension);
 
   // Variable -> Dimension
-  unsigned int Dimension(conv::KineVar_t kv) const;
+  const int & Dimension(conv::KineVar_t kv) const;
   bool Contains(conv::KineVar_t kv) const;
 
   // Number of multi-dimensional bins 
   unsigned int NBins (void) const { return fNBins; }
+
+  /**
+    Get the number of bins for a one dimension with all other kine vars fixed.
+
+    \param kv: The varied kine var to get the next bins for.
+
+    \param other_kv_vals: Only used for Mondiran binning. A map containing all kine vars in the binning scheme except
+                          for kv and their bin centres. These are to be kept fixed.
+
+    \return The number of bins.
+   */
+  virtual unsigned int NBins (conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const = 0;
   
   // Global bin and max values
   double Minimum (unsigned int dimension ) const;
@@ -84,8 +96,8 @@ public:
   virtual double BinMaximum (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin range
-  virtual std::vector<double> BinRange (unsigned int bin, unsigned int dimension ) const = 0;
-  virtual std::vector<double> BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
+  virtual const std::vector<double> & BinRange (unsigned int bin, unsigned int dimension ) const = 0;
+  virtual const std::vector<double> & BinRange (unsigned int bin, conv::KineVar_t kv     ) const;
 
   // Bin width
   virtual double              BinWidth (unsigned int bin, unsigned int dimension ) const;
@@ -98,8 +110,35 @@ public:
   virtual std::vector<double> BinCentre (unsigned int bin                         ) const;
 
   // Find bin
-  virtual unsigned int FindBin (std::vector<double> & xarr) const = 0;
-  
+  virtual unsigned int FindBin (const std::vector<double> & xarr) const = 0;
+  virtual unsigned int FindBin (const std::map<conv::KineVar_t, double> & xarr) const = 0;
+
+  /**
+    Get the next bin in a loop over one kine var with all other kine vars fixed.
+    // TODO: This works fine when interating over 1 dimension only (in an Ndim binning scheme),
+    // TODO: but if you want to loop > 1 dimension this only works with rectangular binning. Fix this.
+
+    \param current_bin: The current (global) bin number. The function starts searching from this + 1.
+
+    \param kv: The varied kine var to get the next bins for.
+
+    \param other_kv_vals: A map containing all kine vars in the binning scheme except for kv and their bin centres.
+                          These are to be kept fixed.
+
+    \return The (global) bin number corresponding to the next bin, if there is a next bin. If not, -999 is returned.
+   */
+  int GetNextBin (int current_bin, conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const;
+
+  /**
+    Takes this binning and creates a new binning using the specified subset of
+    kinematic variables.
+
+    \param ks The target kinematic space. This must be a strict subset of the
+      kinematic space used by the current binning.
+    \return The binning with the specified kinematic space.
+  */
+  virtual VALORBinning* Contract(conv::KineSpace_t ks) const = 0;
+
   // Returns a vector of TLines that mark the edges of each bin
   virtual std::vector<TLine>  GetBinningTLines(void) const = 0;
   
@@ -121,7 +160,7 @@ protected:
   unsigned int                              fNBins;               // number of bins
   std::vector<double>                       fMinimum;             //
   std::vector<double>                       fMaximum;             //
-  
+
 ClassDef(VALORBinning, 1)
 
 };

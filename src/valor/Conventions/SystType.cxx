@@ -21,10 +21,11 @@ string util::AsString(SystType_t t, Option_t * opt)
   string name = "";
 
   switch(t) {
-    case (kSystNorm    ) : name = "normalisation";     break;
-    case (kSystLateral ) : name = "lateral";           break;
-    case (kSystResponse) : name = "response";          break;
-    case (kSystDisabled) : name = "disabled";          break;
+    case (kSystNorm    )        : name = "normalisation";     break;
+    case (kSystLateral )        : name = "lateral";           break;
+    case (kSystLateralPostOsc ) : name = "lateral_post_osc";  break;
+    case (kSystResponse)        : name = "response";          break;
+    case (kSystDisabled)        : name = "disabled";          break;
     default : name = "--";
   }
 

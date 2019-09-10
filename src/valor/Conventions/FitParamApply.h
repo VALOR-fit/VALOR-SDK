@@ -28,6 +28,7 @@
 #include "valor/Conventions/ReacMode.h"
 #include "valor/Conventions/Sample.h"
 #include "valor/Conventions/Detector.h"
+#include "valor/Utilities/UtlXML.h"
 
 namespace valor {
 namespace conv {
@@ -35,28 +36,29 @@ namespace conv {
 static const unsigned long kApplyMaskOne = 1ul;
 static const int nbitsBeamApplyMask            = 2;
   static const int nbitsFlavApplyMask          = 4;
-  static const int nbitsSelecApplyMask         = 30;
-  static const int nbitsReacTypeApplyMask      = 21;
-  static const int nbitsDetectorApplyMask  = 5;
+  static const int nbitsSelecApplyMask         = 32;
+  static const int nbitsReacTypeApplyMask      = 22;
+  static const int nbitsDetectorApplyMask      = 7;
   static const int nbitsNuclearTargetApplyMask = 7;
 
 typedef std::bitset<nbitsBeamApplyMask>           BeamApplyMask_t;
 typedef std::bitset<nbitsFlavApplyMask>           FlavApplyMask_t;
 typedef std::bitset<nbitsSelecApplyMask>          SelecApplyMask_t;
 typedef std::bitset<nbitsReacTypeApplyMask>       ReacTypeApplyMask_t;
-typedef std::bitset<nbitsDetectorApplyMask>   DetectorApplyMask_t;
+typedef std::bitset<nbitsDetectorApplyMask>       DetectorApplyMask_t;
 typedef std::bitset<nbitsNuclearTargetApplyMask>  NuclearTargetApplyMask_t;
 
-// Which physics parameters are applied to which beam/sample/mode
-// This one uses only the parameters listed in kFitParam and ArrIdx must be used to get the right value.
-typedef struct {
-  DetectorApplyMask_t      detector;
-  BeamApplyMask_t          beam;
-  FlavApplyMask_t          flav;
-  SelecApplyMask_t         selec;
-  ReacTypeApplyMask_t      reactype;
-  NuclearTargetApplyMask_t target;
-} ApplyMask_t;
+    // Which physics parameters are applied to which beam/sample/mode
+    // This one uses only the parameters listed in kFitParam and ArrIdx must be used to get the right value.
+    typedef struct {
+      DetectorApplyMask_t      detector;
+      BeamApplyMask_t          beam;
+      FlavApplyMask_t          flav_init;
+      FlavApplyMask_t          flav_final;
+      SelecApplyMask_t         selec;
+      ReacTypeApplyMask_t      reactype;
+      NuclearTargetApplyMask_t target;
+    } ApplyMask_t;
 
 static const BeamApplyMask_t kbApplyToFHC         = (kApplyMaskOne <<  0 ); // Current
 static const BeamApplyMask_t kbApplyToRHC         = (kApplyMaskOne <<  1 );
@@ -94,8 +96,10 @@ static const SelecApplyMask_t ksApplyToNuECCWS         = (kApplyMaskOne << 24 );
 static const SelecApplyMask_t ksApplyToNuECC           = (kApplyMaskOne << 25 );
 static const SelecApplyMask_t ksApplyToNuMuCCWS        = (kApplyMaskOne << 26 );
 static const SelecApplyMask_t ksApplyToNC              = (kApplyMaskOne << 27 );
-static const SelecApplyMask_t ksApplyToHighRes         = (kApplyMaskOne << 28 ); // Far detector selections
-static const SelecApplyMask_t ksApplyToLowRes          = (kApplyMaskOne << 29 ); // Far detector selections
+static const SelecApplyMask_t ksApplyToMuLikeHighRes   = (kApplyMaskOne << 28 );
+static const SelecApplyMask_t ksApplyToMuLikeLowRes    = (kApplyMaskOne << 29 );
+static const SelecApplyMask_t ksApplyToELikeHighRes    = (kApplyMaskOne << 30 );
+static const SelecApplyMask_t ksApplyToELikeLowRes     = (kApplyMaskOne << 31 );
 
 static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 ); // Reaction type
 static const ReacTypeApplyMask_t ktApplyToCCMEC        = (kApplyMaskOne <<  1 );
@@ -115,15 +119,18 @@ static const ReacTypeApplyMask_t ktApplyToNC2piC       = (kApplyMaskOne << 14 );
 static const ReacTypeApplyMask_t ktApplyToNC2pi0       = (kApplyMaskOne << 15 );
 static const ReacTypeApplyMask_t ktApplyToNCpiCpi0     = (kApplyMaskOne << 16 );
 static const ReacTypeApplyMask_t ktApplyToNCcoh        = (kApplyMaskOne << 17 );
-static const ReacTypeApplyMask_t ktApplyToNCELScat     = (kApplyMaskOne << 18 );
-static const ReacTypeApplyMask_t ktApplyToNCoth        = (kApplyMaskOne << 19 );
-static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 20 ); //only for nue: CC + NC + interference
+static const ReacTypeApplyMask_t ktApplyToNC1Gamma     = (kApplyMaskOne << 18 );
+static const ReacTypeApplyMask_t ktApplyToNCELScat     = (kApplyMaskOne << 19 );
+static const ReacTypeApplyMask_t ktApplyToNCoth        = (kApplyMaskOne << 20 );
+static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 21 ); //only for nue: CC + NC + interference
 
 static const DetectorApplyMask_t kdApplyToDUNEND          = (kApplyMaskOne << 0 ); // Dectectors
 static const DetectorApplyMask_t kdApplyToDUNEFD          = (kApplyMaskOne << 1 );
 static const DetectorApplyMask_t kdApplyToSBND            = (kApplyMaskOne << 2 );
 static const DetectorApplyMask_t kdApplyToMicroBooNE      = (kApplyMaskOne << 3 );
 static const DetectorApplyMask_t kdApplyToICARUS          = (kApplyMaskOne << 4 );
+static const DetectorApplyMask_t kdApplyToND280           = (kApplyMaskOne << 5 );
+static const DetectorApplyMask_t kdApplyToSuperK          = (kApplyMaskOne << 6 );
 
 // Nuclear Targets
 static const NuclearTargetApplyMask_t kntApplyToInclusive = (kApplyMaskOne << 0 ); // Nuclear targets.
@@ -155,6 +162,7 @@ extern const ReacTypeApplyMask_t ktApplyToAllCCELScat; // nu + e CC elastic scat
 extern const ReacTypeApplyMask_t ktApplyToAllCC1pi;
 extern const ReacTypeApplyMask_t ktApplyToAllCC2pi;
 extern const ReacTypeApplyMask_t ktApplyToAllCC;
+extern const ReacTypeApplyMask_t ktApplyToCCnQE;
 
 extern const ReacTypeApplyMask_t ktApplyToNCElLike; //this is not used, modes disabled
 extern const ReacTypeApplyMask_t ktApplyToAllNCELScat; //nu+e NC elastic scattering
@@ -164,6 +172,7 @@ extern const ReacTypeApplyMask_t ktApplyToAllNC;
 
 extern const ReacTypeApplyMask_t ktApplyToAllCoh;
 extern const ReacTypeApplyMask_t ktApplyToAllELScat;
+extern const ReacTypeApplyMask_t ktApplyToAll1pi;
 
 extern const ReacTypeApplyMask_t ktApplyToAll;
 extern const ReacTypeApplyMask_t ktApplyToAllButCoh;
@@ -174,6 +183,7 @@ extern const ReacTypeApplyMask_t ktApplyToAllWithFSI;
 extern const DetectorApplyMask_t kdApplyToAllDUNE;
 extern const DetectorApplyMask_t kdApplyToAllSBN;
 extern const DetectorApplyMask_t kdApplyToAllSBN2Det;
+extern const DetectorApplyMask_t kdApplyToAllT2K;
 extern const DetectorApplyMask_t kdApplyToAllND;
 extern const DetectorApplyMask_t kdApplyToAll;
 
@@ -184,7 +194,8 @@ extern const SelecApplyMask_t ksApplyToAllFD;
 extern const SelecApplyMask_t ksApplyToAll;
 extern const SelecApplyMask_t ksApplyToAllNC;
 extern const SelecApplyMask_t ksApplyToAllNuECC;
-
+extern const SelecApplyMask_t ksApplyToAllFDMuLike;
+extern const SelecApplyMask_t ksApplyToAllFDELike ;
 
 
 // Targets
@@ -298,7 +309,21 @@ namespace util{
 
   // Which masks apply to which nucleus
   const conv::NuclearTargetApplyMask_t ApplyToNuclearTarget(conv::NuclearTarget_t nt);
-} //util
+
+  conv::ApplyMask_t              ReadApplyMaskAll          (TXMLEngine* xmleng, XMLNodePointer_t top_node                  );
+  conv::DetectorApplyMask_t      ReadDetectorApplyMask     (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+  conv::BeamApplyMask_t          ReadBeamApplyMask         (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+  conv::FlavApplyMask_t          ReadFlavApplyMask         (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+  conv::SelecApplyMask_t         ReadSelecApplyMask        (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+  conv::ReacTypeApplyMask_t      ReadReacTypeApplyMask     (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+  conv::NuclearTargetApplyMask_t ReadNuclearTargetApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+  bool                           IsAppliedTo               (conv::ApplyMask_t mask_to_check, conv::BeamConf_t b, conv::Sample_t s,
+                                                              conv::Detector_t d, conv::ReacMode_t m, conv::NuclearTarget_t nt);
+  bool                           IsAppliedTo               (conv::ApplyMask_t mask_to_check, conv::ApplyMask_t mask);
+  } //util
+
+  std::ostream& operator<<(std::ostream& s, const conv::ApplyMask_t & m);
+
 } //valor
 
 #endif // _valor_apply_params_h_

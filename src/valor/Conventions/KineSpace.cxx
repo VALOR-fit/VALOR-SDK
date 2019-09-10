@@ -432,6 +432,22 @@ conv::KineSpace_t util::KineSpaceFromKineVar(const KineVar_t & kv)
   return kspUndefined;
 }
 //________________________________________________________________________________________
+conv::KineSpace_t util::KineSpaceFromKineVars(std::vector<valor::conv::KineVar_t> kvs)
+{
+  for (int i = 0 ; i < conv::kMaxKineSpaces; i++) {
+    KineSpace_t sp = (KineSpace_t)i;
+    if(util::NDim(sp) != kvs.size()) { continue; }
+    int matching_dim = 0;
+    for (const conv::KineVar_t kv : kvs) {
+      if(kv == conv::kvUndefined) { return kspUndefined; }
+      if(util::KineSpaceContains(sp, kv)) { matching_dim++; }
+    }
+    if(matching_dim == util::NDim(sp)) { return sp; }
+  }
+
+  return kspUndefined;
+}
+//________________________________________________________________________________________
 // aliases
 string util::KineSpaceAsString(KineSpace_t ks) { return util::AsString(ks); }
 string util::KineSpaceAsStringTeX(KineSpace_t ks, bool root) { return util::AsStringTeX(ks, root); }

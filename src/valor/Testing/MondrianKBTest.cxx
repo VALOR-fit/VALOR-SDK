@@ -11,7 +11,7 @@ namespace testing
 bool MondrianKBTestCase::TestContract()
 {
    KBCubHcmbMondrian& binning = *(dynamic_cast<MondrianKBTest*>(_test)->_binning);
-   KBCubHcmbMondrian* newBinning = binning.Contract(conv::kspEreco);
+   KBCubHcmbMondrian* newBinning = dynamic_cast<KBCubHcmbMondrian*>(binning.Contract(conv::kspEreco));
 
    bool passed = true;
 

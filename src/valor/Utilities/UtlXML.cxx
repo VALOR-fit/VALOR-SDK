@@ -825,4 +825,18 @@ TAxis *  valor::util::XML2BinInfo(
   return 0;
 }
 //____________________________________________________________________________________________________
-
+bool valor::util::IsNodeSpecified(TXMLEngine* xmleng, XMLNodePointer_t top_node, const string node_path)
+{
+  bool specified = true;
+  if(util::NodeExists(xmleng, top_node, node_path)) {
+    std::string content = util::XML2String(xmleng, top_node, node_path);
+    if(content == "") {
+      specified = false;
+    }
+  }
+  else {
+    specified = false;
+  }
+  return specified;
+}
+//________________________________________________________________________________________
