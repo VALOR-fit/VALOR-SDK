@@ -167,7 +167,7 @@ bool CompoundFitData::Generate (FitModelABC * model, const FitParamList & fp, bo
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitData::Generate (FitModelABC * model, bool stat_fluct)
+bool CompoundFitData::Generate (FitModelABC * model, bool stat_fluct, Option_t* read_opt)
 {
   CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
 #ifdef __VALOR_FMWK_PARALLEL__
@@ -183,7 +183,7 @@ bool CompoundFitData::Generate (FitModelABC * model, bool stat_fluct)
     std::function<void(void)> f = [&]{status = status && d.Generate(&m, stat_fluct);};
     util::VThreadPool::Instance()->AddTask(f);
 #else
-    status = status && d.Generate(&m, stat_fluct);
+    status = status && d.Generate(&m, stat_fluct, read_opt);
 #endif
   }
 #ifdef __VALOR_FMWK_PARALLEL__

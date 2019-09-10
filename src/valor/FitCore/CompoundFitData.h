@@ -55,7 +55,7 @@ public:
   // If no parameters are specified then the pre-generated model will be used.
   virtual bool Generate (FitModelABC * model, const FitParamList & fp,   bool fluctuate=true);
   virtual bool Generate (FitModelABC * model, const PhysHypothesis & ph, bool fluctuate=true);
-  virtual bool Generate (FitModelABC * model, bool fluctuate=true);
+  virtual bool Generate (FitModelABC * model, bool fluctuate=true, Option_t* read_opt = "+SB");
 
   // Write datasets to the input container or to the input file
 
