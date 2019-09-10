@@ -47,6 +47,9 @@ namespace util {
   std::string AsString(conv::ConfLevel_t cl);
   std::string ConfLevelAsString(conv::ConfLevel_t cl); //alias for above
 
+  std::string AsStringRooTex(conv::ConfLevel_t cl);
+  std::string ConfLevelAsStringRooTex(conv::ConfLevel_t cl); //alias for above
+
 
 } // util
 
