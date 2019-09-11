@@ -11,6 +11,7 @@ ChangeLog:
 #include "valor/Utilities/UtlStr.h"
 
 #include <algorithm>
+#include <iostream>
 
 //___________________________________________________________________________
 string valor::util::TrimSpaces(string input)
@@ -83,3 +84,13 @@ string valor::util::PadToLength(string data, unsigned int length, char pad_with)
   return data;
 }
 //___________________________________________________________________________
+string valor::util::GetStringBetweenDelimiters(const std::string &s, const std::string &start_delim,
+                                               const std::string &stop_delim)
+{
+  unsigned first_delim_pos = s.find(start_delim);
+  unsigned end_pos_of_first_delim = first_delim_pos + start_delim.length();
+  unsigned last_delim_pos = s.find_last_of(stop_delim);
+
+  return s.substr(end_pos_of_first_delim,
+                  last_delim_pos - end_pos_of_first_delim);
+}

@@ -168,6 +168,24 @@ double valor::util::DeltaChisquare(
   return -99999;
 } 
 //____________________________________________________________________________
+double valor::util::ConfLevelToFrac(conv::ConfLevel_t cl)
+{
+  double nsigma = -1;
+  switch (cl) {
+    case kCL68:        return 0.68;   break;
+    case kCL90:        return 0.90;   break;
+    case kCL95:        return 0.95;   break;
+    case kCL99:        return 0.99;   break;
+    case kCL1Sigma:    nsigma = 1;    break;
+    case kCL2Sigma:    nsigma = 2;    break;
+    case kCL3Sigma:    nsigma = 3;    break;
+    case kCL4Sigma:    nsigma = 4;    break;
+    case kCL5Sigma:    nsigma = 5;    break;
+    case kCLUndefined: return -99999; break;
+  }
+  return TMath::Erf(nsigma / TMath::Sqrt2());
+}
+//____________________________________________________________________________
 double valor::util::ChisqGauss(
   double ndata, double nmc)
 {
@@ -1166,6 +1184,30 @@ double valor::util::DoubleAngleToSingleAngle(double sinsq2theta)
 {
   double sinsqtheta = 0.5 * (1 - sqrt(1 - sinsq2theta));
   return sinsqtheta;
+}
+//____________________________________________________________________________
+double valor::util::SingleAngleSigmaToDoubleAngleSigma(double sinsqtheta_mean, double sinsqtheta_sigma)
+{
+  return 0.5 * ( util::SingleAngleToDoubleAngle(sinsqtheta_mean + sinsqtheta_sigma) -
+                 util::SingleAngleToDoubleAngle(sinsqtheta_mean - sinsqtheta_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::DoubleAngleSigmaToSingleAngleSigma(double sinsq2theta_mean, double sinsq2theta_sigma)
+{
+  return 0.5 * ( util::DoubleAngleToSingleAngle(sinsq2theta_mean + sinsq2theta_sigma) -
+                 util::DoubleAngleToSingleAngle(sinsq2theta_mean - sinsq2theta_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::PhaseSigmaToSinPhaseSigma(double phase_mean, double phase_sigma)
+{
+  return 0.5 * ( TMath::Sin(phase_mean + phase_sigma) -
+                 TMath::Sin(phase_mean - phase_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::SinPhaseSigmaToPhaseSigma(double sinphase_mean, double sinphase_sigma)
+{
+  return 0.5 * ( TMath::ASin(sinphase_mean + sinphase_sigma) -
+                 TMath::ASin(sinphase_mean - sinphase_sigma) );
 }
 //____________________________________________________________________________
 TAxis valor::util::EstimateOptimalBinning(int npoints, double * points)

@@ -40,6 +40,7 @@ namespace util {
 
   string AsString (conv::NuOscDeltaCP_t d);
   string CPVChoiceAsString (conv::NuOscDeltaCP_t d); //alias
+  string CPVChoiceAsStringSimple (conv::NuOscDeltaCP_t d);
 
   conv::NuOscDeltaCP_t CPVChoiceFromString (string d);
 

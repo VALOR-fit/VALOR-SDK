@@ -347,7 +347,10 @@ pair<double,double> valor::util::XML2DblDblPair(
 string valor::util::XML2RootFileName(
    TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-  string filename = XML2String(xml_eng,top_node,node_path+"/filename");
+  string path = "";
+  if(node_path != "") { path = node_path+"/"; }
+  path += "filename";
+  string filename = XML2String(xml_eng,top_node,path);
   LOG("XML", pINFO) << "Filename: " << filename;
   return filename;
 }
@@ -355,7 +358,10 @@ string valor::util::XML2RootFileName(
 string valor::util::XML2RootObjName (
    TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-  string objname = XML2String(xml_eng,top_node,node_path+"/objname");
+  string path = "";
+  if(node_path != "") { path = node_path+"/"; }
+  path += "objname";
+  string objname = XML2String(xml_eng,top_node,path);
   LOG("XML", pINFO) << "Object name: " << objname;
   return objname;
 }
@@ -363,7 +369,10 @@ string valor::util::XML2RootObjName (
 string valor::util::XML2RootObjType (
    TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-  string objtype = XML2String(xml_eng,top_node,node_path+"/objtype");
+  string path = "";
+  if(node_path != "") { path = node_path+"/"; }
+  path += "objtype";
+  string objtype = XML2String(xml_eng,top_node,path);
   LOG("XML", pINFO) << "Object type: " << objtype;
   return objtype;
 }
