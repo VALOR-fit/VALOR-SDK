@@ -168,6 +168,24 @@ double valor::util::DeltaChisquare(
   return -99999;
 } 
 //____________________________________________________________________________
+double valor::util::ConfLevelToFrac(conv::ConfLevel_t cl)
+{
+  double nsigma = -1;
+  switch (cl) {
+    case kCL68:        return 0.68;   break;
+    case kCL90:        return 0.90;   break;
+    case kCL95:        return 0.95;   break;
+    case kCL99:        return 0.99;   break;
+    case kCL1Sigma:    nsigma = 1;    break;
+    case kCL2Sigma:    nsigma = 2;    break;
+    case kCL3Sigma:    nsigma = 3;    break;
+    case kCL4Sigma:    nsigma = 4;    break;
+    case kCL5Sigma:    nsigma = 5;    break;
+    case kCLUndefined: return -99999; break;
+  }
+  return TMath::Erf(nsigma / TMath::Sqrt2());
+}
+//____________________________________________________________________________
 double valor::util::ChisqGauss(
   double ndata, double nmc)
 {
@@ -1168,6 +1186,30 @@ double valor::util::DoubleAngleToSingleAngle(double sinsq2theta)
   return sinsqtheta;
 }
 //____________________________________________________________________________
+double valor::util::SingleAngleSigmaToDoubleAngleSigma(double sinsqtheta_mean, double sinsqtheta_sigma)
+{
+  return 0.5 * ( util::SingleAngleToDoubleAngle(sinsqtheta_mean + sinsqtheta_sigma) -
+                 util::SingleAngleToDoubleAngle(sinsqtheta_mean - sinsqtheta_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::DoubleAngleSigmaToSingleAngleSigma(double sinsq2theta_mean, double sinsq2theta_sigma)
+{
+  return 0.5 * ( util::DoubleAngleToSingleAngle(sinsq2theta_mean + sinsq2theta_sigma) -
+                 util::DoubleAngleToSingleAngle(sinsq2theta_mean - sinsq2theta_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::PhaseSigmaToSinPhaseSigma(double phase_mean, double phase_sigma)
+{
+  return 0.5 * ( TMath::Sin(phase_mean + phase_sigma) -
+                 TMath::Sin(phase_mean - phase_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::SinPhaseSigmaToPhaseSigma(double sinphase_mean, double sinphase_sigma)
+{
+  return 0.5 * ( TMath::ASin(sinphase_mean + sinphase_sigma) -
+                 TMath::ASin(sinphase_mean - sinphase_sigma) );
+}
+//____________________________________________________________________________
 TAxis valor::util::EstimateOptimalBinning(int npoints, double * points)
 {
   // Uses Freedman-Diaconis rule to guess a (fixed size) binning scheme as a starting point.
@@ -1362,22 +1404,26 @@ double valor::util::Chisq_Penalty_TH2D(TH2D* hobs, TH2D* hexp)
   return chisq;
 }
 //____________________________________________________________________________
-double valor::util::ChisqMeanLikelihood(std::vector<double> chisqs)
+double valor::util::ChisqMeanLikelihood(const std::vector<double> & chisqs)
 {
-  // Use log(sum) = log(a0) + log( 1 + sum(a0/ai) ), a0 > a1 > ... > aN
+  // Use log(sum) = log(a0) + log( 1 + sum(exp(log_ai-loga0) ), a0 > a1 > ... > aN
   // From https://en.wikipedia.org/wiki/List_of_logarithmic_identities
   
-  //~ std::sort(chisqs.begin(),chisqs.end(),std::greater<int>());
-  std::sort(chisqs.begin(),chisqs.end());
+  std::vector<double> log_likelihoods(chisqs.size());
+  for (size_t ii = 0 ; ii < chisqs.size(); ii++) {
+    log_likelihoods[ii] = -0.5*chisqs[ii];
+  }
   
-  double log_a0 = -0.5 * chisqs[0];
-  double internal_sum = 1.;
-  for (unsigned int ii = 1 ; ii < chisqs.size() ; ii++) {
-    double log_ai = -0.5 * chisqs[ii];
+  std::sort(log_likelihoods.rbegin(),log_likelihoods.rend());
+  
+  const double & log_a0 = log_likelihoods[0];
+  double internal_sum = 0.;
+  for (unsigned int ii = 1 ; ii < log_likelihoods.size() ; ii++) {
+    const double & log_ai = log_likelihoods[ii];
     internal_sum += std::exp(log_ai-log_a0);
   }
-  double log_sum = log_a0 + std::log(internal_sum);
-  double log_mean = log_sum - std::log(chisqs.size());
+  double log_sum = log_a0 + std::log1p(internal_sum);
+  double log_mean = log_sum - std::log(log_likelihoods.size());
   double chisq_mean = -2. * log_mean;
   return chisq_mean;
 }

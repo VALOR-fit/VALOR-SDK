@@ -22,7 +22,7 @@
 #include <iostream>
 #include <map>
 
-#include <TObject.h>
+#include <TNamed.h>
 #include <TMatrixD.h>
 #include <TVectorD.h>
 #include <TMatrixTSym.h>

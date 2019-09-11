@@ -42,6 +42,26 @@ string util::AsString(conv::NuOscDmsqScheme_t dmsqs)
 //________________________________________________________________________________________
 string util::DmsqSchemeAsString(conv::NuOscDmsqScheme_t dmsqs) { return AsString(dmsqs); }
 //________________________________________________________________________________________
+string util::DmsqSchemeAsStringSimple(conv::NuOscDmsqScheme_t dmsqs)
+{
+  switch(dmsqs) {
+    case(kNuDmsq12andAbs23) :
+      return "abs23";
+      break;
+    case(kNuDmsq12andAbs31) :
+      return "abs31";
+      break;
+    case(kNuDmsqFogliLisi ) :
+      return "fogli";
+      break;
+    case(kNuDmsqAuto ) :
+      return "auto";
+    default :
+      return "Undefined";
+      break;
+  }
+}
+//________________________________________________________________________________________
 NuOscDmsqScheme_t util::DmsqSchemeFromString(string h)
 {
   if(h == "abs23"    ) return kNuDmsq12andAbs23;
