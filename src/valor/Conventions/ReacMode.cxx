@@ -198,7 +198,7 @@ string util::AsString(ReacMode_t m)
   case (kmNuEBarToNuTauBarCCELScat     ): return "nuebartonutaubarCCELscat"; break;      
   case (kmNuEBarToNuTauBarCCoth        ): return "nuebartonutaubarCCoth";    break;
 
-  case (kmCosmic                       ): return "cosmic"; break  
+  case (kmCosmic                       ): return "cosmic"; break;
 
     case (kmOther           ): return "other";  break;     
     default                  : return "--"; 
@@ -386,7 +386,7 @@ string util::AsStringTeX(ReacMode_t m, bool root)
     case (kmNuEBarToNuTauBarCCELScat    ): name = "#bar{#nu}_{e} #rightarrow #bar{#nu}_{#tau} CC e^{-} elastic scat";  break;        
     case (kmNuEBarToNuTauBarCCoth       ): name = "#bar{#nu}_{e} #rightarrow #bar{#nu}_{#tau} CCoth";                  break; 
 
-    case (kmCosmic ): name "Cosmic"; break;
+    case (kmCosmic ): name = "Cosmic"; break;
  
     case (kmOther           ): name = "Other";                            break;     
     default                  : name = "--"; 

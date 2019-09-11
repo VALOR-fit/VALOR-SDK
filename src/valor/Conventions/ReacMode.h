@@ -769,7 +769,7 @@ namespace util {
   bool               IsNuMuBarToNuTauBar(conv::ReacMode_t m);
   bool               IsNuEBarToNuMuBar  (conv::ReacMode_t m);
   bool               IsNuEBarToNuTauBar (conv::ReacMode_t m);
-  bool               IsCosmic           (conv::ReacType_t t);
+  bool               IsCosmic           (conv::ReacMode_t m);
 
   conv::ReacMode_t   NuEModeToOscNuEMode(conv::ReacMode_t m);
 
