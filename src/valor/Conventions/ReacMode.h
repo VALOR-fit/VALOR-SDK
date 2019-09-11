@@ -27,7 +27,7 @@
 namespace valor {
 namespace conv {
 
-  static const int kNReacModes = 146; //excluding undefined and other
+  static const int kNReacModes = 147; //excluding undefined and other
 
 typedef enum EReacMode 
 {
@@ -199,6 +199,7 @@ typedef enum EReacMode
    kmNuEBarToNuTauBarCCcoh,          // nuebar to nutaubar    CC coherent
    kmNuEBarToNuTauBarCCELScat,       // nuebar to nutaubar: nutaubar + e- elastic scattering
    kmNuEBarToNuTauBarCCoth,          // nuebar to nutaubar    CC other
+   kmCosmic,
    kmOther                // other, eg contributions from interactions outside the fiducial etc
 } 
  ReacMode_t; 
@@ -235,7 +236,7 @@ typedef enum EReacType
 }
 ReacType_t;
 
-static const int kNReacType = 24;
+static const int kNReacType = 25;
 
 // Map the reaction modes to their type
 static const ReacType_t kReacModeToType[kNReacModes] =
@@ -785,7 +786,8 @@ namespace util {
   bool               IsNuMuBarToNuTauBar(conv::ReacMode_t m);
   bool               IsNuEBarToNuMuBar  (conv::ReacMode_t m);
   bool               IsNuEBarToNuTauBar (conv::ReacMode_t m);
-  
+  bool               IsCosmic           (conv::ReacMode_t m);
+
   conv::ReacMode_t   NuEModeToOscNuEMode(conv::ReacMode_t m);
 
   // Aliases for above
