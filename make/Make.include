@@ -228,7 +228,7 @@ CCFLAGS      = -m64 -pipe \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
 		$(OPT_WITH_CXX_MISC_FLAGS) \
 		$(OPT_WITH_CXX_USERDEF_FLAGS) 
-CXXFLAGS      = -$(CCFLAGS) -Wshadow -W -Wall -Woverloaded-virtual
+CXXFLAGS      = $(CCFLAGS) -Wshadow -W -Wall -Woverloaded-virtual
 ifneq ($(strip $(GCC_GE_4_2_1)), YES) 
   ifneq ($(USING_CLANG), YES)
     CXXFLAGS   += -flat_namespace

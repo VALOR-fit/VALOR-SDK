@@ -17,7 +17,7 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    FLAG              DESCRIPTION                                                 DEFAULT\n\n";
   print "    --prefix          installation location (for 'make install')                  /usr/local/\n";
   print "    --slack           slack token (optional, to post notifications to slack)       none\n";
-  print "\n enable/disable options with either --enable- or --disable- (eg --enable-lhapdf --disable-flux-drivers)\n\n";
+  print "\n enable/disable options with either --enable- or --disable- (eg --enable-parallel --disable-spline-stupidity)\n\n";
   print "    debug             Adds -g in the compiler options to request debug info       default: disabled \n";
   print "    asan              Build and link against AddressSanitizer.                    default: disabled \n";
   print "    parallel          Use N threads for updating the templates (requires C++11)   default: disabled \n";
@@ -27,6 +27,8 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
   print "    log4cpp-inc       Path to log4cpp includes                                    default: - (auto-detection enabled) \n";
   print "    log4cpp-lib       Path to log4cpp library                                     default: - (auto-detection enabled) \n";
+  print "    gsl-inc           Path to GSL includes                                        default: - (auto-detection enabled) \n";
+  print "    gsl-lib           Path to GSL library                                         default: - (auto-detection enabled) \n";
   print "    compiler          Compiler to use (any of clang,g++)                          default: g++ \n";
   print "If the printout was too long then pipe it through a pager, eg: \n";
   print "./configure --help | more \n";
@@ -147,7 +149,7 @@ if( $options=~m/--with-optimiz-level=(\S*)/i ) {
 }
 
 #
-# Get libxml2 and log4cpp include and library paths
+# Get log4cpp include and library paths
 #
 
 my $opt_with_log4cpp_inc = "";
@@ -189,17 +191,33 @@ if(! -d $opt_with_log4cpp_lib) {
   exit 1;
 }
 
+#
 # Find GSL include and library paths
+#
+
 my $opt_with_gsl_lib = "";
 my $opt_with_gsl_inc = "";
-$root_config = `root-config --config`;
-$root_config =~m /--with-gsl-libdir=(\S*)/;
-$opt_with_gsl_lib = $1 unless not defined $1;
-$root_config =~m /--with-gsl-incdir=(\S*)/;
-$opt_with_gsl_inc = $1 unless not defined $1;
 
+# Get from configure inputs
+if($options=~m/--with-gsl-lib=(\S*)/i) {
+  $opt_with_gsl_lib = $1;
+}
+if($options=~m/--with-gsl-inc=(\S*)/i) {
+  $opt_with_gsl_inc = $1;
+}
+
+# If they were not set explicitly above, get paths from ROOT
+if(! -d $opt_with_gsl_lib || ! -d  $opt_with_gsl_inc) {
+  $root_config = `root-config --config`;
+  $root_config =~m /--with-gsl-libdir=(\S*)/;
+  $opt_with_gsl_lib = $1 unless not defined $1;
+  $root_config =~m /--with-gsl-incdir=(\S*)/;
+  $opt_with_gsl_inc = $1 unless not defined $1;
+}
+
+# If can not get from ROOT, autodetect
 if(! -d $opt_with_gsl_inc && $auto_detect)  {
-  print "\n*** Warning *** You didn't specify the log4cpp include path \n";
+  print "\n*** Warning *** You didn't specify the GSL include path \n";
   print "Auto-detecting...\n";
   $matched = auto_detect("gsl_vector.h");
   if( $matched=~m/(\S*)\/gsl\/gsl_vector.h/i ) {
