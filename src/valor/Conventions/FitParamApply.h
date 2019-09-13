@@ -161,6 +161,7 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToCCQELike;
     extern const ReacTypeApplyMask_t ktApplyToAllCCELScat; // nu + e CC elastic scattering (inverse muon/tau decay) and nue+e
     extern const ReacTypeApplyMask_t ktApplyToAllCC1pi;
+    extern const ReacTypeApplyMask_t ktApplyToAllCC1piC;
     extern const ReacTypeApplyMask_t ktApplyToAllCC2pi;
     extern const ReacTypeApplyMask_t ktApplyToAllCC;
     extern const ReacTypeApplyMask_t ktApplyToCCnQE;

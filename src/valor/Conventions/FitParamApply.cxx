@@ -31,6 +31,7 @@ const FlavApplyMask_t valor::conv::kfApplyToAll      = kfApplyToNuAny   | kfAppl
 const ReacTypeApplyMask_t valor::conv::ktApplyToCCQELike    = ktApplyToCCQE     | ktApplyToCCMEC;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCCELScat = ktApplyToCCELScat | ktApplyToNuEELScat; // nu + e CC elastic scattering (inverse muon/tau decay) and nue+e
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC1pi    = ktApplyToCC1piC   | ktApplyToCC1pi0;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC1piC   = ktApplyToCC1piC   | ktApplyToCCcoh;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC2pi    = ktApplyToCC2piC   | ktApplyToCC2pi0 | ktApplyToCCpiCpi0;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC       = ktApplyToCCQELike | ktApplyToAllCC1pi | ktApplyToAllCC2pi | ktApplyToCCcoh | ktApplyToCCoth | ktApplyToCCELScat;
 const ReacTypeApplyMask_t valor::conv::ktApplyToCCnQE       = ktApplyToAllCC & (~ktApplyToCCQELike);
@@ -206,6 +207,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCCELScat , "allccelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC1pi    , "allcc1pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC2pi    , "allcc2pi") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC1piC   , "allcc1piC") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC       , "allcc") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCnQE       , "ccnqe") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCElLike    , "ncellike") );
