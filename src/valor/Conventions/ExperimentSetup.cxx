@@ -37,6 +37,11 @@ void ExperimentSetup::Print(std::ostream & stream) const
   stream<<ExperimentName()<<std::endl;
 }
 //________________________________________________________________________________________
+bool ExperimentSetup::IsSetup() const
+{
+  return fIsSetup;
+}
+//________________________________________________________________________________________
 const string & ExperimentSetup::ExperimentName() const
 {
   return fExperimentName;

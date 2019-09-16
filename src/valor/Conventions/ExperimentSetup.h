@@ -42,6 +42,8 @@ public:
   
   void Print(std::ostream & stream = std::cout) const;
   
+  bool IsSetup() const;
+  
   // Simple getter methods for all elements
   const std::string & ExperimentName() const;
   const std::vector<conv::BeamConf_t> & BeamConfs() const;
@@ -70,6 +72,8 @@ private:
   friend struct Cleaner;
   
   std::string fExperimentName;
+  
+  bool fIsSetup;
   
   std::vector<conv::BeamConf_t> fBeamConfs;
   // NBeamConf -> NSamples
