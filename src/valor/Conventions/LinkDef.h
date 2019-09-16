@@ -27,6 +27,9 @@
 #pragma link C++ enum  valor::conv::PhysParamId_t;
 #pragma link C++ enum  valor::conv::PhysHypothesis_t;
 
+#pragma link C++ enum valor::conv::ReacMode_t;
+#pragma link C++ enum valor::conv::ReacModeCoarse_t;
+
 #pragma link C++ enum valor::conv::BeamConf_t;
 #pragma link C++ enum valor::conv::Sample_t;
 #pragma link C++ enum valor::conv::Detector_t;
@@ -36,6 +39,8 @@
 
 #pragma link C++ class valor::Opt+;
 #pragma link C++ class valor::Opt::Persistable+;
+
+#pragma link C++ class valor::ExperimentSetup+;
 
 // Part of FitParamList
 #pragma link C++ class std::map <valor::conv::PhysParamId_t,int>;
