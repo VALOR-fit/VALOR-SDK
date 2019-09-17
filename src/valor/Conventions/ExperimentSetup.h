@@ -52,6 +52,11 @@ public:
   const std::vector<std::vector<std::vector<conv::ReacModeCoarse_t> > > & ReactionModesCoarse() const;
   const std::vector<std::vector<std::vector<std::vector<int> > > > & PlotStyle() const;
   
+  // Get the array index a specific enum value represents for this experiment
+  int BeamConfIndex(conv::BeamConf_t) const;
+  int SampleIndex(conv::BeamConf_t b, conv::Sample_t s) const;
+  int ReacModeIndex(conv::BeamConf_t b, conv::Sample_t s, conv::ReacMode_t m) const;
+  
 private:
 
   ExperimentSetup();

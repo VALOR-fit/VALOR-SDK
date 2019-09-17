@@ -9,6 +9,7 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <iostream>
+#include <iterator>
 
 #include "valor/Conventions/ExperimentSetup.h"
 
@@ -73,7 +74,7 @@ const vector<vector<vector<vector<int> > > > & ExperimentSetup::PlotStyle() cons
 }
 //____________________________________________________________________________
 const valor::ExperimentSetup * valor::ExperimentSetup::Instance() {return MutableInstance();}
-//____________________________________________________________________________
+//________________________________________________________________________________________
 valor::ExperimentSetup * valor::ExperimentSetup::MutableInstance() 
 {
   if(fInstance == 0) {
@@ -82,5 +83,35 @@ valor::ExperimentSetup * valor::ExperimentSetup::MutableInstance()
     fInstance = new valor::ExperimentSetup;
   }
   return fInstance;
+}
+//________________________________________________________________________________________
+// Next three methods are ugly replacements for ArrIdx, which only had to exist for speed in the first place
+int valor::ExperimentSetup::BeamConfIndex(conv::BeamConf_t b) const
+{
+  for (size_t ib = 0 ; ib < fBeamConfs.size(); ib++ ) {
+    if (fBeamConfs[ib] == b) {
+      return ib;
+    }
+  }
+  return -1;
+}
+//________________________________________________________________________________________
+int valor::ExperimentSetup::SampleIndex(conv::BeamConf_t b, conv::Sample_t s) const
+{
+  int ib = this->BeamConfIndex(b);
+  for (size_t is = 0 ; is < fSamples[ib].size() ; ib++) {
+    if (fSamples[ib][is] == s) {return is;}
+  }
+  return -1;
+}
+//________________________________________________________________________________________
+int valor::ExperimentSetup::ReacModeIndex(conv::BeamConf_t b, conv::Sample_t s, conv::ReacMode_t m) const
+{
+  int ib = this->BeamConfIndex(b);
+  int is = this->SampleIndex(b,s);
+  for (size_t im = 0 ; im < fReactionModes[ib][is].size() ; im++) {
+    if (fReactionModes[ib][is][im]==m) {return im;}
+  }
+  return -1;
 }
 //________________________________________________________________________________________
