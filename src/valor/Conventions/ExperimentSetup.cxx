@@ -99,7 +99,7 @@ int valor::ExperimentSetup::BeamConfIndex(conv::BeamConf_t b) const
 int valor::ExperimentSetup::SampleIndex(conv::BeamConf_t b, conv::Sample_t s) const
 {
   int ib = this->BeamConfIndex(b);
-  for (size_t is = 0 ; is < fSamples[ib].size() ; ib++) {
+  for (size_t is = 0 ; is < fSamples[ib].size() ; is++) {
     if (fSamples[ib][is] == s) {return is;}
   }
   return -1;
