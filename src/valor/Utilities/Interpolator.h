@@ -51,14 +51,15 @@ class Interpolator {
   private:
 
     void CheckSplineType(void) const;
-
+    
+    ROOT::Math::Interpolator* fGSLSpline;
+    TSpline3* fROOTSpline;  // For when we don't want to use GSL splines
+    
     double fXmin;
     double fXmax;
     std::string fName;
     std::string fTitle;
     bool fUseLimits;
-    ROOT::Math::Interpolator* fGSLSpline;
-    TSpline3* fROOTSpline;  // For when we don't want to use GSL splines
 };
 #else
 class Interpolator : public TObject {};
