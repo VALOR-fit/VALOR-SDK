@@ -458,7 +458,7 @@ conv::KineSpace_t util::KineSpaceFromKineVars(std::vector<valor::conv::KineVar_t
 {
   for (int i = 0 ; i < conv::kMaxKineSpaces; i++) {
     KineSpace_t sp = (KineSpace_t)i;
-    if(util::NDim(sp) != kvs.size()) { continue; }
+    if(util::NDim(sp) != (int)kvs.size()) { continue; }
     int matching_dim = 0;
     for (const conv::KineVar_t kv : kvs) {
       if(kv == conv::kvUndefined) { return kspUndefined; }
