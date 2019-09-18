@@ -64,11 +64,10 @@ double valor::util::Calculate2FSterileOscMuE(int init_pdg, int final_pdg, double
   double sindm = std::sin(kOscDimensFactor * lOverE * dmsq);
   double sinsqdm = sindm * sindm;
   
-  double sinsq2thee = 4 * sinsq2thmue / sinsq2thmumu;
-  
   // Right now, we are NOT oscillating nuE-nuMu since we want to be able to go to sinsq2thmumu point where that is nan
   if (ipdg == kPdgNuE) {
-    double prob = sinsq2thee * sinsqdm;
+    //~ double sinsq2thee = 4 * sinsq2thmue / sinsq2thmumu;
+    //~ double prob = sinsq2thee * sinsqdm;
     if (fpdg == kPdgNuMu) {
       return 0.;
       //~ return prob;
