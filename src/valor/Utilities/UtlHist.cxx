@@ -278,3 +278,72 @@ TObjArray valor::util::GetHistsFromCanvas(TVirtualPad * canv, const char * name)
   return output;
 }
 //___________________________________________________________________________
+void valor::util::SwapAxes(TH2D*& hist)
+{
+  TAxis* x_axis = hist->GetXaxis();
+  const int x_nbins = x_axis->GetNbins();
+  double x_edges[x_nbins+1];
+  for(int i = 1; i <= x_nbins; i++){
+    x_edges[i-1] = x_axis->GetBinLowEdge(i);
+    if(i == x_nbins){
+      x_edges[i] = x_axis->GetBinUpEdge(i);
+    }
+  }
+
+  TAxis* y_axis = hist->GetYaxis();
+  const int y_nbins = y_axis->GetNbins();
+  double y_edges[y_nbins+1];
+  for(int i = 1; i <= y_nbins; i++){
+    y_edges[i-1] = y_axis->GetBinLowEdge(i);
+    if(i == y_nbins){
+      y_edges[i] = y_axis->GetBinUpEdge(i);
+    }
+  }
+
+  std::string old_name = hist->GetName();
+  TH2D* swapped_hist = new TH2D("temp_name_swapped_axes", hist->GetTitle(), y_nbins, y_edges, x_nbins, x_edges);
+  swapped_hist->GetXaxis()->SetTitle(y_axis->GetTitle());
+  swapped_hist->GetYaxis()->SetTitle(x_axis->GetTitle());
+
+  swapped_hist->SetAxisColor  (hist->GetAxisColor  ("Y"),"X");
+  swapped_hist->SetAxisColor  (hist->GetAxisColor  ("X"),"Y");
+  swapped_hist->SetLabelColor (hist->GetLabelColor ("Y"),"X");
+  swapped_hist->SetLabelColor (hist->GetLabelColor ("X"),"Y");
+  swapped_hist->SetLabelFont  (hist->GetLabelFont  ("Y"),"X");
+  swapped_hist->SetLabelFont  (hist->GetLabelFont  ("X"),"Y");
+  swapped_hist->SetLabelOffset(hist->GetLabelOffset("Y"),"X");
+  swapped_hist->SetLabelOffset(hist->GetLabelOffset("X"),"Y");
+  swapped_hist->SetLabelSize  (hist->GetLabelSize  ("Y"),"X");
+  swapped_hist->SetLabelSize  (hist->GetLabelSize  ("X"),"Y");
+  swapped_hist->SetNdivisions (hist->GetNdivisions ("Y"),"X");
+  swapped_hist->SetNdivisions (hist->GetNdivisions ("X"),"Y");
+  swapped_hist->SetTickLength (hist->GetTickLength ("Y"),"X");
+  swapped_hist->SetTickLength (hist->GetTickLength ("X"),"Y");
+  swapped_hist->SetTitleFont  (hist->GetTitleFont  ("Y"),"X");
+  swapped_hist->SetTitleFont  (hist->GetTitleFont  ("X"),"Y");
+  swapped_hist->SetTitleOffset(hist->GetTitleOffset("Y"),"X");
+  swapped_hist->SetTitleOffset(hist->GetTitleOffset("X"),"Y");
+  swapped_hist->SetTitleSize  (hist->GetTitleSize  ("Y"),"X");
+  swapped_hist->SetTitleSize  (hist->GetTitleSize  ("X"),"Y");
+  swapped_hist->SetOption     (hist->GetOption     ()       );
+  swapped_hist->SetLineColor  (hist->GetLineColor  ()       );
+  swapped_hist->SetLineStyle  (hist->GetLineStyle  ()       );
+  swapped_hist->SetLineWidth  (hist->GetLineWidth  ()       );
+  swapped_hist->SetFillColor  (hist->GetFillColor  ()       );
+  swapped_hist->SetFillStyle  (hist->GetFillStyle  ()       );
+  swapped_hist->SetMarkerColor(hist->GetMarkerColor()       );
+  swapped_hist->SetMarkerStyle(hist->GetMarkerStyle()       );
+
+  for(int i = 0; i <= x_nbins + 1; i++){
+    for(int j = 0; j <= y_nbins + 1; j++){
+      double centre_x = swapped_hist->GetXaxis()->GetBinCenter(j);
+      double centre_y = swapped_hist->GetYaxis()->GetBinCenter(i);
+      swapped_hist->Fill(centre_x,centre_y,hist->GetBinContent(i,j));
+    }
+  }
+
+  delete hist;
+  hist = swapped_hist;
+  hist->SetName(old_name.c_str());
+}
+//___________________________________________________________________________
