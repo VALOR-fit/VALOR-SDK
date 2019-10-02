@@ -90,7 +90,7 @@ void rj_read_osc_fit_results(const char * filename)
       for (int ibin = 1 ; ibin <= width_norm->GetXaxis()->GetNbins(); ibin++) {
         double old_bin_content = width_norm->GetBinContent(ibin);
         double bin_width = width_norm->GetXaxis()->GetBinWidth(ibin);
-        double new_bin_content = old_bin_content / bin_width;
+        double new_bin_content = old_bin_content; // / bin_width;
         width_norm->SetBinContent(ibin,new_bin_content);
       }
       hists_width.push_back(width_norm);
