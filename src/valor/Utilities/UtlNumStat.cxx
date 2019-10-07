@@ -111,7 +111,8 @@ double valor::util::DeltaChisquare(
       case (kCL90) :
       {
         if      (nfitparams == 1)  { return  2.71;  }
-        else if (nfitparams == 2)  { return  4.61;  }
+        else if (nfitparams == 2)  { return  4.61;  } 
+        //else if (nfitparams == 2)  { return  1.64;  }
         else if (nfitparams == 3)  { return  6.25;  }
         else                       { return -99999; }
         break;

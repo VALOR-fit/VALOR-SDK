@@ -38,7 +38,9 @@ typedef enum EKineVar
    kvYreco,           // reconstructed inelasticity (y)
    kvThetareco,       // reconstructed lepton angle
    kvq0reco,          // reconstructed 1st component of the 4-momentum
-   kvmodqreco         // reconstructed magnitude of the 3-momentum
+   kvmodqreco,        // reconstructed magnitude of the 3-momentum
+   kvL,               // Variable baseline
+   kvLoverEtrue       // Variable baseline/true neutrino energy, this will require dedicated binning changes
 } 
 KineVar_t;
 

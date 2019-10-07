@@ -32,6 +32,8 @@ string util::AsString(KineVar_t kv)
     case (kvThetareco ) : return "Thetareco"; break;
     case (kvq0reco    ) : return "q0reco";    break;
     case (kvmodqreco  ) : return "|q|reco";   break;
+    case (kvL         ) : return "L";         break;
+    case (kvLoverEtrue) : return "L/Etrue";   break;
     default : 
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
@@ -42,17 +44,18 @@ string util::AsString(KineVar_t kv)
 string util::DSTBranchName(KineVar_t kv)
 {
   switch(kv) {
-    case (kvEtrue     ) : return "enu_true";     break;
+    case (kvEtrue     ) : return "enu_true";   break;
     case (kvQ2true    ) : return "Q2_true";    break;
-    case (kvEreco     ) : return "enu_reco";     break;
+    case (kvEreco     ) : return "enu_reco";   break;
     case (kvEvis      ) : return "E_vis";      break;
     case (kvYreco     ) : return "y_reco";     break;
     case (kvThetareco ) : return "Theta_reco"; break;
     case (kvq0reco    ) : return "q0_reco";    break;
-    case (kvmodqreco  ) : return "modq_reco";   break;
+    case (kvmodqreco  ) : return "modq_reco";  break;
+    case (kvL         ) : return "baseline";   break;
     default : 
      LOG("KineVar",pERROR) 
-        << "Unrecognized kinematic variable: " << kv;
+        << "Kinematic variable doesn't have branch in DST: " << kv;
   }
   return "";
 }
@@ -70,9 +73,10 @@ string util::AsStringTeX(KineVar_t kv, bool root)
     case (kvThetareco ) : name = "\theta_{reco}";                 break;
     case (kvq0reco    ) : name = "q_{0 reco}";                    break;
     case (kvmodqreco  ) : name = "|\\overrightarrow{q}|_{reco}";  break;
+    case (kvL         ) : name = "L (m)";                         break;
+    case (kvLoverEtrue) : name = "L/E_{true} (m/GeV)";            break;
     default : 
-                          LOG("KineVar",pERROR) 
-                            << "Unrecognized kinematic variable: " << kv;
+     LOG("KineVar",pERROR) << "Unrecognized kinematic variable: " << kv;
   }
 
   if(root) {
@@ -97,6 +101,8 @@ bool util::IsReco(KineVar_t kv)
     case (kvThetareco ) : return true;
     case (kvq0reco    ) : return true;
     case (kvmodqreco  ) : return true;
+    case (kvL         ) : return false;
+    case (kvLoverEtrue) : return false;
     default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
@@ -130,6 +136,8 @@ std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
     case (kvThetareco ) : return std::make_pair(0.  , 360.      );
     case (kvq0reco    ) : return std::make_pair(0.  , kALargeNum);
     case (kvmodqreco  ) : return std::make_pair(0.  , kALargeNum);
+    case (kvL         ) : return std::make_pair(0.  , kALargeNum);
+    case (kvLoverEtrue) : return std::make_pair(0.  , kALargeNum);
     default:
       LOG("KineVar",pFATAL)
         << "Unrecognized kinematic variable: " << kv;
