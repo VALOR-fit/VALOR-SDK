@@ -101,6 +101,7 @@ public:
 
   void ReadStream(std::ifstream& stream);
   void WriteStream(std::ofstream& stream);
+  long StreamSize();
   
   // Resize the array, clearing contents
   void Resize(const std::vector<int> dimensions);   // List of dimension sizes
