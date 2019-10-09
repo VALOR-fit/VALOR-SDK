@@ -22,6 +22,7 @@
 #include <string>
 #include <TROOT.h>
 
+#include "valor/FitCore/CompoundFitModel.h"
 #include "valor/FitCore/FitDataABC.h"
 
 namespace valor {
@@ -86,7 +87,7 @@ public:
 protected:
   std::string fName;
   std::vector<FitDataABC *> fSubData;
-  FitModelABC *fFMABC;
+  CompoundFitModel *fCFM;
 };
 
 } // valor
