@@ -276,4 +276,8 @@ void CompoundFitData::SetName(std::string name)
 {
   fName = name;
 }
+void SetAssociatedModel(FitModelABC *model_abc)
+{
+  fFMABC = model_abc;
+}
 //________________________________________________________________________________________

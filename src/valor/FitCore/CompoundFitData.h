@@ -80,9 +80,13 @@ public:
   
   void SetName(std::string name);
 
+  // Associate a FitModelABC with the data to define the binning, POT and fiducial mass of the experiment
+  virtual void SetAssociatedModel(FitModelABC *model_abc);
+
 protected:
   std::string fName;
   std::vector<FitDataABC *> fSubData;
+  FitModelABC *fFMABC;
 };
 
 } // valor

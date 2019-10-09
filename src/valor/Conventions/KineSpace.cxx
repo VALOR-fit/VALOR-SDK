@@ -32,7 +32,7 @@ string util::AsString(KineSpace_t ks)
     case (kspq0recomodqreco)   : return "q0reco,|q|reco";         break;
     case (kspErecoEvis)        : return "Ereco,Evis";             break;
     case (kspLvsEtrue)         : return "L,Etrue";                break;
-    case (kspLoverEtrue)       : return "L/Etrue";                break;
+    case (kspLoverEtrue)       : return "LoverEtrue";             break;
 
 
     default : 
