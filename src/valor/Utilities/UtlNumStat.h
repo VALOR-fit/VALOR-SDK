@@ -51,10 +51,12 @@ namespace util {
   // Statistics
   //
 
-  double DeltaChisquare     (conv::ConfLevel_t cl, int nfitparams);
-  double ChisqGauss         (double ndata, double nmc);
-  double ChisqPoisson       (double ndata, double nmc);
-  double Chisq_Penalty_TH2D (TH2D* hobs, TH2D* hexp);
+  double DeltaChisquare        (conv::ConfLevel_t cl, int nfitparams);
+  double DeltaChisquareOneSided(conv::ConfLevel_t cl, int nfitparams);
+  double ChisqGauss            (double ndata, double nmc);
+  double ChisqPoisson          (double ndata, double nmc);
+  double Chisq_Penalty_TH2D    (TH2D* hobs, TH2D* hexp);
+  double ConfLevelToFrac       (conv::ConfLevel_t cl);
   
   double ChisqMeanLikelihood(const std::vector<double> & chisqs); // Performs a mean of the non-logged values, returns chisq
 
@@ -75,6 +77,14 @@ namespace util {
   // Simple maths
   double SingleAngleToDoubleAngle(double sinsqtheta);
   double DoubleAngleToSingleAngle(double sinsq2theta);
+
+  // Convert the sigma of a Gaussian from double angle to single angle and vice-versa
+  double SingleAngleSigmaToDoubleAngleSigma(double sinsqtheta_mean , double sinsqtheta_sigma );
+  double DoubleAngleSigmaToSingleAngleSigma(double sinsq2theta_mean, double sinsq2theta_sigma);
+
+  // Convert the sigma of a Gaussian from phase to sin(phase) and vice-versa
+  double PhaseSigmaToSinPhaseSigma(double phase_mean   , double phase_sigma   );
+  double SinPhaseSigmaToPhaseSigma(double sinphase_mean, double sinphase_sigma);
 
   // Other Matrix Functions
   TMatrixD CovarianceMatrixToCorrelationMatrix(const TMatrixD & cov_m);
