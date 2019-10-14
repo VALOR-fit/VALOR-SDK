@@ -14,6 +14,9 @@
 #pragma link C++ class valor::Env+;
 #pragma link C++ class valor::Rnd+;
 
+#pragma link C++ class valor::util::KinematicBin;
+#pragma link C++ class valor::util::KinematicPoint;
+
 #pragma link C++ class valor::util::NameRegistry+;
 #pragma link C++ class valor::util::Interpolator+;
 #pragma link C++ class valor::util::Configuration+;
