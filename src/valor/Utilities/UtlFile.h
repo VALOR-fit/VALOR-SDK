@@ -1,9 +1,8 @@
 /*!
 
-\class     valor::util::FitParamListFactory
+\class     valor::util::file
 
-\brief     This factory class constructs FitParamLists based on configuration
-           files.
+\brief     Gets a file from the relevant location
 
 \author    Andy Chappell <A.Chappell \t warwick.ac.uk
            University of Warwick
