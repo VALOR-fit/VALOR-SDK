@@ -27,6 +27,8 @@
 #pragma link C++ enum  valor::conv::PhysParamId_t;
 #pragma link C++ enum  valor::conv::PhysHypothesis_t;
 
+#pragma link C++ enum valor::conv::FitParamGroup_t;
+
 #pragma link C++ enum valor::conv::ReacMode_t;
 #pragma link C++ enum valor::conv::ReacModeCoarse_t;
 
