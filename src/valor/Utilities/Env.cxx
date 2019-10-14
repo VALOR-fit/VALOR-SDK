@@ -32,8 +32,18 @@ Env::Env()
   fTopLevelDir     = "";
   fTopLevelDataDir = "";
   fTopLevelConfDir = "";
-  fAppName         = "";
   fBanner          = "";
+  
+  // Set defaults
+  const char * topdir = gSystem->Getenv("VALOR_EXPT");
+  if(!topdir) {
+    topdir = gSystem->Getenv("VALOR_FMWK");
+    assert(topdir);
+  }
+  fTopLevelDir = topdir;
+  fTopLevelDataDir = fTopLevelDir + "/data/";
+  fTopLevelConfDir = fTopLevelDir + "/config/";
+  fBanner          = fTopLevelDir + "/data/banner/banner.dat";
 
   fInstance = 0;
 }
@@ -48,7 +58,12 @@ Env::~Env()
 
 }
 //________________________________________________________________________________________
-Env * Env::Instance()
+const Env * Env::Instance()
+{
+  return MutableInstance();
+}
+//________________________________________________________________________________________
+Env * Env::MutableInstance()
 {
   if(fInstance == 0) {
     static Env::Cleaner cleaner;
@@ -58,51 +73,11 @@ Env * Env::Instance()
   return fInstance;
 }
 //________________________________________________________________________________________
-void Env::AutoSet(Option_t * app)
-{
-  string valor_app = app;
-
-  if(valor_app.find("t2xk") != string::npos) {
-    const char * topdir = gSystem->Getenv("T2KOSCANA");
-    if(topdir) {
-       fTopLevelDir     = topdir;
-       fTopLevelDataDir = fTopLevelDir + "/inputs/";
-       fTopLevelConfDir = fTopLevelDir + "/config/";
-       fAppName         = "t2xk";
-       fBanner          = fTopLevelDir + "/inputs/banner/banner.dat";
-    }//topdir
-  }
-  else if(valor_app.find("dune") != string::npos) {
-    const char * topdir = gSystem->Getenv("VALOR_DUNE");
-    if(topdir) {
-       fTopLevelDir     = topdir;
-       fTopLevelDataDir = fTopLevelDir + "/data/";
-       fTopLevelConfDir = fTopLevelDir + "/config/";
-       fAppName         = "dune";
-       fBanner          = fTopLevelDir + "/data/banner/banner.dat";
-    }//topdir
-  }
-  else if(valor_app.find("fmwk") != string::npos) {
-    const char * topdir = gSystem->Getenv("VALOR_FMWK");
-    if(topdir) {
-       fTopLevelDir     = topdir;
-       fTopLevelDataDir = fTopLevelDir + "/data/";
-       fTopLevelConfDir = fTopLevelDir + "/config/";
-       fAppName         = "fmwk";
-       fBanner          = fTopLevelDir + "/data/banner/banner.dat";
-    }//topdir
-  }
-  else {
-    std::cerr<<"Failed to Autoset Environment variables for app: "<<app<<endl;
-  }
-}
-//________________________________________________________________________________________
 void Env::Print(ostream & stream) const
 {
   stream << "[Environment]" << endl;
   stream << " - top dir      : " << fTopLevelDir     << endl;
   stream << " - top data dir : " << fTopLevelDataDir << endl;
   stream << " - top conf dir : " << fTopLevelConfDir << endl;
-  stream << " - running app  : " << fAppName         << endl;
 }
 //________________________________________________________________________________________

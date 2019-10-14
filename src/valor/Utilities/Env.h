@@ -30,20 +30,17 @@ class Env {
 
 public:
 
-  static Env * Instance();
+  static const Env * Instance();
+  static Env * MutableInstance();
   
-  string TopLevelDir     (void) { return fTopLevelDir;     }
-  string TopLevelDataDir (void) { return fTopLevelDataDir; }
-  string TopLevelConfDir (void) { return fTopLevelConfDir; }
-  string AppName         (void) { return fAppName;         }
-  string Banner          (void) { return fBanner;          }
-
-  void AutoSet (const char* valor_application);
+  string TopLevelDir     (void) const { return fTopLevelDir;     }
+  string TopLevelDataDir (void) const { return fTopLevelDataDir; }
+  string TopLevelConfDir (void) const { return fTopLevelConfDir; }
+  string Banner          (void) const { return fBanner;          }
 
   void SetTopLevelDir     (string dir) { fTopLevelDir     = dir; }
   void SetTopLevelDataDir (string dir) { fTopLevelDataDir = dir; }
   void SetTopLevelConfDir (string dir) { fTopLevelConfDir = dir; }
-  void SetAppName         (string app) { fAppName         = app; }
 
   void Print(ostream & stream) const;
   friend ostream & operator << (ostream & stream, const Env & env);
@@ -59,7 +56,6 @@ private:
   string fTopLevelDir;
   string fTopLevelDataDir;
   string fTopLevelConfDir;
-  string fAppName;  
   string fBanner;  
 
   struct Cleaner {

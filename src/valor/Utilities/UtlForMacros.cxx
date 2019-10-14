@@ -10,12 +10,14 @@ ChangeLog:
 
 
 #include "valor/Utilities/UtlForMacros.h"
-#include "valor/Utilities/Env.h"
+
+#include "valor/Conventions/ExperimentSetup.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/Constants.h"
 #include "valor/FitCore/PhysHypothesis.h"
+#include "valor/Utilities/Env.h"
 #include "valor/Utilities/UtlXML.h"
 
 #include "TSystem.h"
@@ -48,36 +50,36 @@ std::string valor::util::FormFilePath(const char * file, const char * dir)
 string valor::util::SysThrowIdToString(unsigned int tweak_systematics)
 {
   string tweak_sys_str;
-  string appname = Env::Instance()->AppName();
-  if(!appname.compare("t2xk")) {
+  string exptname = ExperimentSetup::Instance()->ExperimentName();
+  if(!exptname.compare("t2xk")) {
     switch(tweak_systematics)
-      {
+    {
       case(0):
-	tweak_sys_str = "None"; break;
+        tweak_sys_str = "None"; break;
       case(1):
-	tweak_sys_str = "All"; break;
+        tweak_sys_str = "All"; break;
       case(2):
-	tweak_sys_str = "Special low energy numu flux increase"; break;
+        tweak_sys_str = "Special low energy numu flux increase"; break;
       case(3):
-	tweak_sys_str = "Tweak all but SK and FSI"; break;
+        tweak_sys_str = "Tweak all but SK and FSI"; break;
       case(4):
-	tweak_sys_str = "NC1pi norm = 0.5"; break;
+        tweak_sys_str = "NC1pi norm = 0.5"; break;
       case(5):
-	tweak_sys_str = "High energy >1.5 GeV flux increase"; break;
+        tweak_sys_str = "High energy >1.5 GeV flux increase"; break;
       case(6):
-	tweak_sys_str = "BANFF"; break;
+        tweak_sys_str = "BANFF"; break;
       case(7):
-	tweak_sys_str = "XSec"; break;
+        tweak_sys_str = "XSec"; break;
       case(8):
-	tweak_sys_str = "SK+FSI"; break;
+        tweak_sys_str = "SK+FSI"; break;
       default:
-	cerr << "SysThrowIdToString() tweak_systematics = " << tweak_systematics
-	     << " not implemented" << endl;
-	exit(-1);
-      }
+        cerr << "SysThrowIdToString() tweak_systematics = " << tweak_systematics
+             << " not implemented" << endl;
+        exit(-1);
+    }
   }
   else {
-    cerr << "util::SysThrowIdToString() not implemented for VALOR app " << appname << endl;
+    cerr << "util::SysThrowIdToString() not implemented for VALOR experiment " << exptname << endl;
     exit(-1);
   }
   return tweak_sys_str;
