@@ -10,6 +10,7 @@
 #pragma link C++ namespace valor::util::file;
 #pragma link C++ namespace valor::util::init;
 #pragma link C++ namespace valor::util::plotting;
+#pragma link C++ namespace valor::util::binning;
 
 #pragma link C++ class valor::Env+;
 #pragma link C++ class valor::Rnd+;

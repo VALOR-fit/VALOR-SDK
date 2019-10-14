@@ -6,7 +6,7 @@
 */
 //________________________________________________________________________________________
 
-#include "valor/Utilities/UtlBinning.h"
+#include "valor/KineBinning/UtlBinning.h"
 
 #include <algorithm>
 #include <numeric>
