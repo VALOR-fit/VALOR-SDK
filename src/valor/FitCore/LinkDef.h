@@ -9,6 +9,12 @@
 #pragma link C++ namespace valor;
 #pragma link C++ namespace valor::util;
 
+//~ #pragma link C++ class valor::CompoundFitElements;
+#pragma link C++ class valor::SingleSampleFitModelABC;
+#pragma link C++ class valor::SingleSampleFitDataABC;
+//~ #pragma link C++ class valor::GenericSingleSampleFitModel+;
+//~ #pragma link C++ class valor::GenericSingleSampleFitData+;
+
 #pragma link C++ class valor::CorrelatedSystematics+;
 #pragma link C++ class valor::CompoundCorrelatedSystematics+;
 
@@ -30,5 +36,7 @@
 #pragma link C++ class valor::FitterMinuit2+;
 
 #pragma link C++ class valor::FitterABC_new+;
+
+#pragma link C++ class std::vector<std::vector<float> >;
 
 #endif
