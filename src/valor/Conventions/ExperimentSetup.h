@@ -60,7 +60,7 @@ public:
 private:
 
   ExperimentSetup();
-  ExperimentSetup(const ExperimentSetup &);
+  //~ ExperimentSetup(const ExperimentSetup &);
  ~ExperimentSetup();
 
   static ExperimentSetup * fInstance;

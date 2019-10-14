@@ -21,13 +21,14 @@ using std::vector;
 //________________________________________________________________________________________
 ExperimentSetup * ExperimentSetup::fInstance = 0;
 //________________________________________________________________________________________
-ExperimentSetup::ExperimentSetup()
+ExperimentSetup::ExperimentSetup() :
+ fExperimentName("No experiment set up")
 {
 }
 //________________________________________________________________________________________
-ExperimentSetup::ExperimentSetup(const ExperimentSetup &)
-{
-}
+//~ ExperimentSetup::ExperimentSetup(const ExperimentSetup &)
+//~ {
+//~ }
 //________________________________________________________________________________________
 ExperimentSetup::~ExperimentSetup()
 {
