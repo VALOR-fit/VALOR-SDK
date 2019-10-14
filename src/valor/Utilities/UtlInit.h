@@ -36,7 +36,7 @@ namespace init
       \param argc The standard argument count from the command line.
       \param argv The standard argument array from the command line.
    */
-   CmdLnArgList Init(const std::string& environment, const std::string& appArgs,
+   CmdLnArgList Init(const std::string& appArgs,
          const std::string& seedArgs, const int argc, const char* argv[]);
 
 }

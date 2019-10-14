@@ -14,13 +14,9 @@ namespace util
 namespace init
 {
 
-CmdLnArgList Init(const std::string& environment, const std::string& appArgs,
+CmdLnArgList Init(const std::string& appArgs,
       const std::string& seedArgs, const int argc, const char* argv[])
 {
-   // Set DUNE param names inside framework
-   // util::PopulateNameRegistry();
-
-   Env::Instance()->AutoSet(environment.c_str());
    PrintBanner(Env::Instance()->Banner(), 500);
   
    CmdLnArgList arg;
