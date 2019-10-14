@@ -23,7 +23,7 @@ if [ -z $ROOTSYS ] ; then
 fi
 
 export LD_LIBRARY_PATH="${VALOR_FMWK}/lib:${LOG4CPP_LIB}:${LD_LIBRARY_PATH}"
-export PATH="${VALOR_FMWK}/root:${VALOR_FMWK}/production:${PATH}"
+export PATH="${VALOR_FMWK}/bin:${VALOR_FMWK}/production:${PATH}"
 
 alias root2k="root2k -l"
 
