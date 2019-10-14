@@ -102,10 +102,9 @@ void define_valor_style()
 
 void print_banner()
 {
-  TString data_dir = valor::Env::Instance()->TopLevelDataDir();
-  TString banner   = data_dir + "/banner/banner.dat";
+  const valor::Env * env = valor::Env::Instance();
 
-  valor::util::PrintBanner(banner.Data(),500);
+  valor::util::PrintBanner(env->Banner(),500);
 }
 
 void config_mesg()
@@ -120,9 +119,6 @@ void valor_utils()
 {
     define_valor_style();
     gROOT->SetStyle("VALOR");
-
-    valor::Env * env = valor::Env::Instance();
-    env->AutoSet("fmwk");
 
     print_banner();
     config_mesg();
