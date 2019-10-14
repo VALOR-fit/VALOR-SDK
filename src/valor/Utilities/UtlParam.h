@@ -36,7 +36,6 @@
 #include "valor/Conventions/ReacMode.h"
 #include "valor/Conventions/KineVar.h"
 #include "valor/FitCore/CorrelatedSystematics.h"
-#include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/PhysHypothesis.h"
 
 using std::string;
