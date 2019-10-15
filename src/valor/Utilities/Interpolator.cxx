@@ -64,4 +64,17 @@ double valor::util::Interpolator::Xmax() const
   return fXmax;
 }
 //________________________________________________________________________________________
+TGraph valor::util::Interpolator::AsGraph(unsigned int npoints) const
+{
+  std::vector<double> x(npoints),y(npoints);
+  double min = fXmin;
+  double max = fXmax;
+  double step = (max-min)/(npoints-1);
+  for (unsigned int i = 0 ; i < npoints ; i++) {
+    x[i] = min+(step*i);
+    y[i] = this->Eval(x[i]);
+  }
+  return TGraph(npoints,x.data(),y.data());
+}
+//________________________________________________________________________________________
 #endif // __VALOR_FMWK_GSL_ENABLED__

@@ -18,6 +18,7 @@
 #ifndef valor_interpolator_h
 #define valor_interpolator_h
 
+#include "TGraph.h"
 #include "TSpline.h"
 #include "valor/Conventions/Build.h"
 
@@ -37,6 +38,8 @@ class Interpolator : public ROOT::Math::Interpolator {
     double Xmin() const;
     double Xmax() const;
     double EvalWithLimits(double x) const;
+    
+    TGraph AsGraph(unsigned int npoints = 100) const;
     
   private:
     double fXmin;
