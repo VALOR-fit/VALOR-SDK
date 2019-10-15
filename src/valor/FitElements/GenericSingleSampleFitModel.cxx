@@ -27,7 +27,7 @@
 #include <TPRegexp.h>
 
 //fmwk
-#include "valor/FitCore/GenericSingleSampleFitModel.h"
+#include "valor/FitElements/GenericSingleSampleFitModel.h"
 
 #include "valor/Conventions/Build.h"
 #include "valor/Conventions/ExperimentSetup.h"

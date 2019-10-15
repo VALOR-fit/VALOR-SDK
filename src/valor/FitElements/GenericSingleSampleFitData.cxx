@@ -16,10 +16,10 @@
 #include <TSystem.h>
 
 // fmwk
-#include "valor/FitCore/GenericSingleSampleFitData.h"
+#include "valor/FitElements/GenericSingleSampleFitData.h"
 
 #include "valor/Conventions/Names.h"
-#include "valor/FitCore/GenericSingleSampleFitModel.h"
+#include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/PhysHypothesis.h"

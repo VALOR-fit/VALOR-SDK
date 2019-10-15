@@ -12,8 +12,6 @@
 #pragma link C++ class valor::CompoundFitElements;
 #pragma link C++ class valor::SingleSampleFitModelABC;
 #pragma link C++ class valor::SingleSampleFitDataABC;
-#pragma link C++ class valor::GenericSingleSampleFitModel+;
-#pragma link C++ class valor::GenericSingleSampleFitData+;
 
 #pragma link C++ class valor::CorrelatedSystematics+;
 #pragma link C++ class valor::CompoundCorrelatedSystematics+;

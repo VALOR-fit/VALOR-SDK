@@ -51,6 +51,7 @@ build-libs: | build-conventions   \
 		   build-cmdline       \
 		   build-core-fitter   \
 		   build-kinebinning   \
+		   build-fit-elements  \
 		   build-testing       \
 		   FORCE
 
@@ -98,6 +99,11 @@ build-core-fitter: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building FitCore package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/FitCore"
+
+build-fit-elements: | make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building FitElements package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/FitElements"
 
 build-kinebinning: | make-bin-lib-dir FORCE
 	@echo " "
@@ -157,6 +163,7 @@ purge: FORCE
 	cd CmdLine;                   make purge; cd ..; \
 	cd FitCore;                   make purge; cd ..; \
 	cd KineBinning;               make purge; cd ..; \
+	cd FitElements;               make purge; cd ..; \
 	cd Testing;                   make purge; cd ..; \
 	cd ${VALOR_FMWK}
 
@@ -177,6 +184,7 @@ clean-files: FORCE
 	cd CmdLine;                 make clean; cd ..; \
 	cd FitCore;                 make clean; cd ..; \
 	cd KineBinning;             make clean; cd ..; \
+	cd FitElements;             make clean; cd ..; \
 	cd Testing;                 make clean; cd ..; \
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm -f ./bin/*;\
