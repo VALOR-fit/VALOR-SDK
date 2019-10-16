@@ -83,28 +83,27 @@ void rj_read_osc_fit_results(const char * filename)
     hists.clear(); hists_width.clear();
     hists.push_back(mc);
     hists.push_back(bestfit);
-    std::cout << " MC integral : " << mc->Integral() << std::endl;
 
     for(unsigned int ihists = 0; ihists < hists.size(); ++ihists){
       TH1D *width_norm = new TH1D(*hists[ihists]);
       for (int ibin = 1 ; ibin <= width_norm->GetXaxis()->GetNbins(); ibin++) {
         double old_bin_content = width_norm->GetBinContent(ibin);
         double bin_width = width_norm->GetXaxis()->GetBinWidth(ibin);
-        double new_bin_content = old_bin_content; // / bin_width;
+        double new_bin_content = old_bin_content / bin_width;
         width_norm->SetBinContent(ibin,new_bin_content);
       }
       hists_width.push_back(width_norm);
     }
-    std::cout << " Normalised histograms : " << hists_width.size() << ", integral 0: " << hists_width[0]->Integral("width") << std::endl;
+    std::cout << " Normalised histograms : " << hists_width.size() << ", integral 0: " << hists_width[0]->Integral() << std::endl;
     hists_width[0]->Draw("e1x0");
     hists_width[0]->Draw("same");
     hists_width[1]->Draw("same");
     hists_width[1]->Draw("e1x0same");
     hists_width[0]->GetYaxis()->SetTitle("Event Rate");
     hists_width[0]->GetXaxis()->SetTitle("Reconstructed neutrino energy [GeV]");
-    //bestfitsig->Draw("same");
-    //bestfitbkg->Draw("same");
-    c->Update();
+    bestfitsig->Draw("same");
+    bestfitbkg->Draw("same");
     c->SaveAs("spectra.root");
+    c->Update();
   }
 }
