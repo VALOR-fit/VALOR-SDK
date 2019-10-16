@@ -71,7 +71,7 @@ fNBinsReco     (1),
 fSplineNamePattern("spl_[BEAM]_[SAMPLE]_[MODE]_[PARAM]_[ZONE]_[TRUE1]_[TRUE2]_[RECO1]_[RECO2]"),
 fSplineWghtMethod(conv::kSplEvalUndefined),
 fAllowNegativeSplines(false),
-fGSLSplineType(ROOT::Math::Interpolation::kAKIMA),
+fSplineType(Interpolator::Type::kAKIMA),
 fForceNegWghtTo(0.0)
 {
   
@@ -95,7 +95,7 @@ fNBinsReco     (1),
 fSplineNamePattern("spl_[BEAM]_[SAMPLE]_[MODE]_[PARAM]_[TRUE]_[RECO]"),
 fSplineWghtMethod(conv::kSplEvalUndefined),
 fAllowNegativeSplines(false),
-fGSLSplineType(ROOT::Math::Interpolation::kAKIMA),
+fSplineType(Interpolator::Type::kAKIMA),
 fForceNegWghtTo(0.0)
 {
   fParams = new PhysParamId_t[fNParams];
@@ -228,7 +228,6 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
   string spl_file_pattern           = util::XML2String(xml,root_node,"splines/pattern");
   string spl_stored_as              = "";
   string spl_array_pattern          = "";
-  bool use_root_spline              = false;
   bool use_spline_limits            = true;
   bool reorder_out_of_order_splines = false;
   if (util::NodeExists(xml,root_node,"splines/stored_as") && util::NodeExists(xml,root_node,"splines/array_pattern")) {
@@ -255,13 +254,14 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
   if (util::NodeExists(xml,root_node,"splines/type")) {
     std::string type_str = util::XML2String(xml,root_node,"splines/type");
     type_str = util::ToLowerCase(util::RemoveAllWhitespace(type_str));
-         if(type_str == "linear")         { fGSLSplineType = ROOT::Math::Interpolation::kLINEAR;          }
-    else if(type_str == "polynomial")     { fGSLSplineType = ROOT::Math::Interpolation::kPOLYNOMIAL;      }
-    else if(type_str == "cubic")          { fGSLSplineType = ROOT::Math::Interpolation::kCSPLINE;         }
-    else if(type_str == "cubic_periodic") { fGSLSplineType = ROOT::Math::Interpolation::kCSPLINE_PERIODIC;}
-    else if(type_str == "akima")          { fGSLSplineType = ROOT::Math::Interpolation::kAKIMA;           }
-    else if(type_str == "akima_periodic") { fGSLSplineType = ROOT::Math::Interpolation::kAKIMA_PERIODIC;  }
-    else if(type_str == "tspline3")       { use_root_spline = true; }
+         if(type_str == "linear")         { fSplineType = Interpolator::Type::kLINEAR;          }
+    else if(type_str == "polynomial")     { fSplineType = Interpolator::Type::kPOLYNOMIAL;      }
+    else if(type_str == "cubic")          { fSplineType = Interpolator::Type::kCSPLINE;         }
+    else if(type_str == "cubic_periodic") { fSplineType = Interpolator::Type::kCSPLINE_PERIODIC;}
+    else if(type_str == "akima")          { fSplineType = Interpolator::Type::kAKIMA;           }
+    else if(type_str == "akima_periodic") { fSplineType = Interpolator::Type::kAKIMA_PERIODIC;  }
+    else if(type_str == "tspline3")       { fSplineType = Interpolator::Type::kTSpline3;        }
+    else if(type_str == "tspline5")       { fSplineType = Interpolator::Type::kTSpline5;        }
     else {
      LOG("RFL",pFATAL) << "Did not recognise spline type [" << type_str << "]";
      util::Die(-1); return false;
@@ -385,8 +385,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
               this->SortSpline(dynamic_cast<TSpline3*>(spline), reorder_out_of_order_splines);
 
               util::Interpolator *  valor_spline = nullptr;
-              if(use_root_spline) { valor_spline = new util::Interpolator(spline, false); }
-              else                { valor_spline = new util::Interpolator(spline, true, fGSLSplineType); }
+              valor_spline = new util::Interpolator(spline, fSplineType);
               valor_spline->SetUseLimits(use_spline_limits);
 
               delete spline;

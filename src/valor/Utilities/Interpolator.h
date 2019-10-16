@@ -32,8 +32,22 @@ namespace util {
 
 class Interpolator {
   public:
-    Interpolator(const TSpline * spl = 0, bool use_gsl = true, ROOT::Math::Interpolation::Type type = ROOT::Math::Interpolation::kCSPLINE);
-    Interpolator(const TSpline & spl    , bool use_gsl = true, ROOT::Math::Interpolation::Type type = ROOT::Math::Interpolation::kCSPLINE);
+  
+    enum class Type {
+      // same as ROOT::Math::Interpolation::Type
+      kLINEAR,
+      kPOLYNOMIAL,
+      kCSPLINE,
+      kCSPLINE_PERIODIC,
+      kAKIMA,
+      kAKIMA_PERIODIC,
+      // and ROOT options
+      kTSpline3,
+      kTSpline5
+    };
+    
+    Interpolator(const TSpline * spl = 0, valor::util::Interpolator::Type type = valor::util::Interpolator::Type::kCSPLINE);
+    Interpolator(const TSpline & spl    , valor::util::Interpolator::Type type = valor::util::Interpolator::Type::kCSPLINE);
 
     ~Interpolator();
 
@@ -53,7 +67,7 @@ class Interpolator {
     void CheckSplineType(void) const;
     
     ROOT::Math::Interpolator* fGSLSpline;
-    TSpline3* fROOTSpline;  // For when we don't want to use GSL splines
+    TSpline* fROOTSpline;  // For when we don't want to use GSL splines
     
     double fXmin;
     double fXmax;

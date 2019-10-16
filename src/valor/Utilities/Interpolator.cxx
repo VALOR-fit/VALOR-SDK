@@ -19,62 +19,52 @@ using namespace valor;
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 //________________________________________________________________________________________
-valor::util::Interpolator::Interpolator(const TSpline * spl, bool use_gsl, ROOT::Math::Interpolation::Type type)
+valor::util::Interpolator::Interpolator(const TSpline * spl, valor::util::Interpolator::Type type)
   : fGSLSpline(nullptr),fROOTSpline(nullptr),fXmin(0),fXmax(0),fName(""),fTitle(""),fUseLimits(true)
 {
+  assert(spl);
+  bool use_gsl = type < Type::kTSpline3;
   if(use_gsl){
-    fGSLSpline = new ROOT::Math::Interpolator(0,type);
-    if (spl) {
-      int n_knots = spl->GetNp();
-      std::vector<double> x(n_knots);
-      std::vector<double> y(n_knots);
-      for (int i = 0 ; i < n_knots; i++) {
-        spl->GetKnot(i,x[i],y[i]);
-      }
-      fGSLSpline->SetData(n_knots,x.data(),y.data());
-      fXmin      = *std::min_element(x.begin(),x.end());
-      fXmax      = *std::max_element(x.begin(),x.end());
-      fName      = spl->GetName();
-      fTitle     = spl->GetTitle();
-      fUseLimits = true;   // GSL splines can't be evaluated outside their limits
-    }
-  }
-  else {
-    fROOTSpline = new TSpline3(*((TSpline3*)spl));
-    if (spl) {
-      fXmin       = spl->GetXmin();
-      fXmax       = spl->GetXmax();
-      fName       = spl->GetName();
-      fTitle      = spl->GetTitle();
-    }
-  }
-}
-//________________________________________________________________________________________
-valor::util::Interpolator::Interpolator(const TSpline & spl, bool use_gsl, ROOT::Math::Interpolation::Type type)
-  : fGSLSpline(nullptr),fROOTSpline(nullptr),fXmin(0),fXmax(0),fName(""),fTitle(""),fUseLimits(true)
-{
-  if(use_gsl){
-    fGSLSpline = new ROOT::Math::Interpolator(0,type);
-    int n_knots = spl.GetNp();
+    int type_int = static_cast<int>(type);
+    ROOT::Math::Interpolation::Type type_root = static_cast<ROOT::Math::Interpolation::Type>(type_int);
+    fGSLSpline = new ROOT::Math::Interpolator(0,type_root);
+    
+    int n_knots = spl->GetNp();
     std::vector<double> x(n_knots);
     std::vector<double> y(n_knots);
     for (int i = 0 ; i < n_knots; i++) {
-      spl.GetKnot(i,x[i],y[i]);
+      spl->GetKnot(i,x[i],y[i]);
     }
     fGSLSpline->SetData(n_knots,x.data(),y.data());
     fXmin      = *std::min_element(x.begin(),x.end());
     fXmax      = *std::max_element(x.begin(),x.end());
-    fName      = spl.GetName();
-    fTitle     = spl.GetTitle();
+    fName      = spl->GetName();
+    fTitle     = spl->GetTitle();
+    fUseLimits = true;   // GSL splines can't be evaluated outside their limits
   }
   else {
-    fROOTSpline = new TSpline3(static_cast<const TSpline3 &>(spl));
-    fXmin       = spl.GetXmin();
-    fXmax       = spl.GetXmax();
-    fName       = spl.GetName();
-    fTitle      = spl.GetTitle();
+    const int n_knots = spl->GetNp();
+    std::vector<double> x(n_knots),y(n_knots);
+    for (int ik = 0 ; ik < n_knots; ik++) {
+      spl->GetKnot(ik,x[ik],y[ik]);
+    }
+    if (type == Type::kTSpline3) {
+      fROOTSpline = new TSpline3(spl->GetTitle(),x.data(),y.data(),n_knots);
+    }
+    else if (type == Type::kTSpline5) {
+      fROOTSpline = new TSpline5(spl->GetTitle(),x.data(),y.data(),n_knots);
+    }
+    else {
+      std::cerr<<"Unknown spline type: "<<(int)type<<std::endl;
+      util::Die(-1); return;
+    }
+    fXmin       = spl->GetXmin();
+    fXmax       = spl->GetXmax();
+    fName       = spl->GetName();
   }
 }
+valor::util::Interpolator::Interpolator(const TSpline & spl, valor::util::Interpolator::Type type)
+ : Interpolator(&spl,type) {}
 //________________________________________________________________________________________
 double valor::util::Interpolator::Eval(double x) const
 {
