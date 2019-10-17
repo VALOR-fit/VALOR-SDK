@@ -9,6 +9,4 @@
 #pragma link C++ class valor::CmdLnArgList+;
 #pragma link C++ class valor::CmdLnArgParser+;
 
-#pragma link C++ class valor::RunOpt+;
-
 #endif
