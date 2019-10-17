@@ -32,9 +32,9 @@ es    = valor.ExperimentSetup.Instance()
 
 expt_name = es.ExperimentName();
 print "\n=============================="
-print   "Loading Python",
+print   "Loading VALOR Python",
 if has_genie: print " with GENIE",
-print   "==============================\n"
+print "\n==============================\n"
 
 try:
   import numpy as np
@@ -51,8 +51,9 @@ for n in xrange(1,9):
   
 # Touch every VALOR object so they appear in tab completion
 import os
-folders = os.walk(os.environ['VALOR_FMWK'])
-for root, dirs, files in itertools.chain(map(os.walk,folders)):
+folders = [os.environ['VALOR_FMWK']]
+walk = os.walk(*folders)
+for root, dirs, files in itertools.chain(walk):
   for f in files:
     if f.endswith(".cxx"):
       classname = f[:-4]
