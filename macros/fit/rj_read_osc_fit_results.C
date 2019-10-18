@@ -95,15 +95,13 @@ void rj_read_osc_fit_results(const char * filename)
       hists_width.push_back(width_norm);
     }
     std::cout << " Normalised histograms : " << hists_width.size() << ", integral 0: " << hists_width[0]->Integral() << std::endl;
-    hists_width[0]->Draw("e1x0");
-    hists_width[0]->Draw("same");
-    hists_width[1]->Draw("same");
+    //hists_width[0]->Draw("e1x0");
+    //hists_width[0]->Draw("same");
+    //hists_width[1]->Draw("same");
     hists_width[1]->Draw("e1x0same");
     hists_width[0]->GetYaxis()->SetTitle("Event Rate");
     hists_width[0]->GetXaxis()->SetTitle("Reconstructed neutrino energy [GeV]");
-    bestfitsig->Draw("same");
-    bestfitbkg->Draw("same");
-    c->SaveAs("spectra.root");
+    c->SaveAs("modern_mdc_spectra.root");
     c->Update();
   }
 }
