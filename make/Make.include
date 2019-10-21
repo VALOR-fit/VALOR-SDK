@@ -8,6 +8,13 @@ ifndef OPT_WITH_CXX_USERDEF_FLAGS
  OPT_WITH_CXX_USERDEF_FLAGS=
 endif
 
+# Check if this is a "clean" command, we can skip some stuff
+ifeq (clean,$(findstring clean,$(MAKECMDGOALS)))
+  is_cln="true"
+else
+  is_cln="false"
+endif
+
 #-------------------------------------------------------------------
 #                           ARCHITECTURE 
 #-------------------------------------------------------------------
@@ -28,14 +35,56 @@ VALOR_VERSION  = $(shell awk '{print $0}' $(VALOR_FMWK)/VERSION)
 #
 VALOR_INCLUDES := -I$(VALOR_FMWK)/src/
 
+# VALOR FMWK libraries
+#
+ifeq ("false",$(is_cln))
+  VALOR_FMWK_LIBRARIES = $(shell valor_fmwk-config --libs)
+endif
+
+
+#-------------------------------------------------------------------
+#                  VALOR APPLICATION-SPECIFIC CODE
+#-------------------------------------------------------------------
+
+# VALOR application release info
+#
+VALOR_APP_VERSION  = $(shell awk '{print $0}' $(VALOR_EXPT)/VERSION)
+
+# VALOR application include path
+#
+VALOR_APP_INCLUDES := -I$(VALOR_EXPT)/src/
+
+# VALOR application libraries
+#
+ifeq ("false",$(is_cln))
+  VALOR_APP_LIBRARIES = $(shell valor_expt-config --libs)
+endif
+
+#-------------------------------------------------------------------
+#                      GENIE MC
+#-------------------------------------------------------------------
+ifdef GENIE
+  GENIE_INCLUDES  = -I$(shell genie-config --topsrcdir)
+endif
+
+# hack for the FNAL UPS approach
+ifdef GENIE_FQ_DIR
+  GENIE_INCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
+endif
+
+
 #-------------------------------------------------------------------
 #                              ROOT
 #-------------------------------------------------------------------
 # ROOT headers and libraries
 ROOT_FLAGS  = $(shell root-config --cflags)
 ROOT_INCLUDES  = -I$(shell root-config --incdir)
-ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore -lEGPythia6
+ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore -lXMLIO -lXMLParser
 ROOT_CINT_FLAGS = -c -p
+
+ifdef GENIE
+  ROOT_LIBRARIES += -lEGPythia6 -lGeom -lGenVector
+endif
 
 # If ROOT doesn't specify a C++ standard, use 0x:
 ifeq (,$(findstring -std=,$(ROOT_FLAGS)))
@@ -76,13 +125,13 @@ LOG_LIBRARIES := -L$(LOG_LIB_DIR) -llog4cpp
 
 # GSL libraries and headers
 
-ifneq ($(strip $(OPT_WITH_GSL_INC)),)
+ifeq ($(strip $(OPT_WITH_GSL_INC)),undefined)
   GSL_INCLUDES  := -I$(OPT_WITH_GSL_INC)
 else
   GSL_INCLUDES  := 
 endif
 
-ifneq ($(strip $(OPT_WITH_GSL_LIB)),)
+ifeq ($(strip $(OPT_WITH_GSL_LIB)),undefined)
   GSL_LIBRARIES  := -L$(OPT_WITH_GSL_LIB)
 else
   GSL_LIBRARIES  := 
@@ -152,7 +201,6 @@ CXXVRS_MIN  = $(shell awk 'BEGIN {\
 CXXVRS_REV  = $(shell awk 'BEGIN {\
 		str="$(CXXVRS)"; split(str, tk, "."); print tk[3]}')
 		
-				
 ifeq ($(CXXVRS_MIN),)
   CXXVRS_MIN = 0
 endif
@@ -171,13 +219,13 @@ ifeq ($(strip $(ARCH)),macosx)
 ARCH_OK       = YES
 IS_MACOSX     = YES
 CCFLAGS      = -pipe \
-		-fsigned-char -fno-common \
-		$(ROOT_FLAGS)  \
+		-fsigned-char -fno-common -flat_namespace \
+		$(ROOT_FLAGS) \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
-		$(OPT_WITH_CXX_MISC_FLAGS) \
-		$(OPT_WITH_CXX_USERDEF_FLAGS) 
+		$(OPT_WITH_CXX_USERDEF_FLAGS) \
+		$(OPT_WITH_CXX_MISC_FLAGS)
 CXXFLAGS      = $(CCFLAGS) -W -Wall -Wno-long-double
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
@@ -204,7 +252,7 @@ endif
 
 # MAC OS X with gcc, 64-bit mode
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ifeq ($(strip $(ARCH)),macosx64)
+ifeq ($(strip $(ARCH)),macosx64) 
 OSX_VERSION = $(shell sw_vers | grep 'ProductVersion:' | grep -o '[0-9]*\.[0-9]*\.[0-9]*')  
 OSXVRS_MAJ  = $(shell awk 'BEGIN {\
 		str="$(OSX_VERSION)"; split(str, tk, "."); print tk[1]}')
@@ -221,14 +269,14 @@ OSX_GE_10_9_0  = $(shell awk 'BEGIN {\
 ARCH_OK       = YES
 IS_MACOSX     = YES
 CCFLAGS      = -m64 -pipe \
-		-fsigned-char -fno-common \
-		$(ROOT_FLAGS)  \
+		-fsigned-char -fno-common  \
+		$(ROOT_FLAGS) \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
-		$(OPT_WITH_CXX_MISC_FLAGS) \
-		$(OPT_WITH_CXX_USERDEF_FLAGS) 
-CXXFLAGS      = $(CCFLAGS) -Wshadow -W -Wall -Woverloaded-virtual
+		$(OPT_WITH_CXX_USERDEF_FLAGS) \
+		$(OPT_WITH_CXX_MISC_FLAGS)
+CXXFLAGS      = $(CCFLAGS) -Wshadow -W -Wall -Wno-overloaded-virtual
 ifneq ($(strip $(GCC_GE_4_2_1)), YES) 
   ifneq ($(USING_CLANG), YES)
     CXXFLAGS   += -flat_namespace
@@ -245,8 +293,11 @@ ifeq ($(GCC_GE_4_1_0),YES)
   CXXFLAGS += -Wno-strict-aliasing
 endif
 LDFLAGS       = -bind_at_load
-SOFLAGS       = -dynamiclib -flat_namespace \
+SOFLAGS       = -dynamiclib \
 		-single_module -undefined dynamic_lookup
+ifneq ($(strip $(GCC_GE_4_2_1)), YES) 
+  SOFLAGS    += -flat_namespace
+endif
 DllSuf       := dylib
 DllLinkSuf   := so
 StaticLibSuf := a
@@ -266,17 +317,17 @@ endif
 ifeq ($(strip $(ARCH)),linux) 
 ARCH_OK       = YES
 CCFLAGS      = -fPIC \
-		$(ROOT_FLAGS)  \
+		$(ROOT_FLAGS) \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
-		$(OPT_WITH_CXX_MISC_FLAGS) \
-		$(OPT_WITH_CXX_USERDEF_FLAGS) 
-CXXFLAGS      = $(CCFLAGS) -Wall -Wextra -Wshadow
+		$(OPT_WITH_CXX_USERDEF_FLAGS)  \
+		$(OPT_WITH_CXX_MISC_FLAGS)
+CXXFLAGS      = $(CCFLAGS) -Wshadow -W -Wall 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
 endif
-LDFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) 
+LDFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) -Wl,--no-as-needed -ldl
 SOFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) -shared
 DllSuf       := so
 DllLinkSuf   := 
@@ -297,17 +348,17 @@ endif
 ifeq ($(strip $(ARCH)),linuxx8664gcc) 
 ARCH_OK       = YES
 CCFLAGS      = -fPIC \
-		$(ROOT_FLAGS)  \
+		$(ROOT_FLAGS) \
 		$(OPT_WITH_CXX_DEBUG_FLAG) \
 		$(OPT_WITH_CXX_OPTIMIZ_FLAG) \
 		$(OPT_WITH_CXX_VERSION_FLAG) \
-		$(OPT_WITH_CXX_MISC_FLAGS) \
-		$(OPT_WITH_CXX_USERDEF_FLAGS)
+		$(OPT_WITH_CXX_USERDEF_FLAGS)  \
+		$(OPT_WITH_CXX_MISC_FLAGS)
 CXXFLAGS      = $(CCFLAGS) -Wall -Wextra -Wshadow 
 ifeq ($(strip $(GCC_GE_4_1_0)), YES) 
   CXXFLAGS += -Wno-strict-aliasing 
 endif
-LDFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) $(OPT_WITH_CXX_MISC_FLAGS)
+LDFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) $(OPT_WITH_CXX_MISC_FLAGS) -Wl,--no-as-needed
 SOFLAGS       = $(OPT_WITH_CXX_DEBUG_FLAG) $(OPT_WITH_CXX_MISC_FLAGS) -shared
 DllSuf       := so
 DllLinkSuf   := 
@@ -330,12 +381,14 @@ endif
 # includes and libraries needed to compile programs. 
 
 INCLUDES  := $(VALOR_INCLUDES) \
-	     $(LOG_INCLUDES) \
-	     $(ROOT_INCLUDES) \
-	     $(LINUX_SYS_INCLUDES)\
-	     $(GSL_INCLUDES)
+             $(LOG_INCLUDES) \
+             $(ROOT_INCLUDES) \
+             $(GSL_INCLUDES) \
+             $(LINUX_SYS_INCLUDES)
 
 LIBRARIES := $(SYSLIBS) \
+	     $(VALOR_APP_LIBRARIES) \
+	     $(VALOR_FMWK_LIBRARIES) \
 	     $(LOG_LIBRARIES) \
 	     $(ROOT_LIBRARIES) \
 	     $(GPROF_LIBRARIES) \
