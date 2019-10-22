@@ -13,6 +13,8 @@ ChangeLog:
 
 #include "valor/Conventions/ExperimentSetup.h"
 
+#include "valor/Messenger/Messenger.h"
+
 using namespace valor;
 using namespace valor::conv;
 using std::string;
@@ -22,7 +24,8 @@ using std::vector;
 ExperimentSetup * ExperimentSetup::fInstance = 0;
 //________________________________________________________________________________________
 ExperimentSetup::ExperimentSetup() :
- fExperimentName("No experiment set up")
+ fExperimentName("No experiment set up"),
+ fIsSetup(false)
 {
 }
 //________________________________________________________________________________________
@@ -94,6 +97,8 @@ int valor::ExperimentSetup::BeamConfIndex(conv::BeamConf_t b) const
       return ib;
     }
   }
+  LOG("ExperimentSetup",pFATAL)<<"BeamConf "<<util::AsString(b)<<" ("<<b<<")"<<" not set up.";
+  exit(-1);
   return -1;
 }
 //________________________________________________________________________________________
@@ -103,6 +108,9 @@ int valor::ExperimentSetup::SampleIndex(conv::BeamConf_t b, conv::Sample_t s) co
   for (size_t is = 0 ; is < fSamples[ib].size() ; is++) {
     if (fSamples[ib][is] == s) {return is;}
   }
+  LOG("ExperimentSetup",pFATAL)<<"Sample "<<util::AsString(s)<<" ("<<s<<") for "
+    <<"BeamConf "<<util::AsString(b)<<" ("<<b<<")"<<" not set up.";
+  exit(-1);
   return -1;
 }
 //________________________________________________________________________________________
@@ -113,6 +121,10 @@ int valor::ExperimentSetup::ReacModeIndex(conv::BeamConf_t b, conv::Sample_t s, 
   for (size_t im = 0 ; im < fReactionModes[ib][is].size() ; im++) {
     if (fReactionModes[ib][is][im]==m) {return im;}
   }
+  LOG("ExperimentSetup",pFATAL)<<"Reaction Mode "<<util::AsString(m)<<" ("<<m<<") for "
+    <<"Sample "<<util::AsString(s)<<" ("<<s<<") and "
+    <<"BeamConf "<<util::AsString(b)<<" ("<<b<<")"<<" not set up.";
+  exit(-1);
   return -1;
 }
 //________________________________________________________________________________________
