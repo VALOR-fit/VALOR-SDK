@@ -7,10 +7,13 @@
 # If no argument given, just use the directory containing the script
 #
 
-export VALOR_FMWK=$1
+if [ ! -z ${1} ] ; then
+  export VALOR_FMWK="$(readlink -m ${1})"
+fi
 
-if [ -z $VALOR_FMWK ]; then
+if [ -z ${VALOR_FMWK} ]; then
   export VALOR_FMWK="$( dirname `cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd `)/" # Directory above the one containing this file
+  export VALOR_FMWK="$(readlink -m ${VALOR_FMWK} )"
 fi
 
 #~ if [ -z $LOG4CPP_LIB ]; then
