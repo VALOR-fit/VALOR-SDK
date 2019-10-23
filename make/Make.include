@@ -63,8 +63,11 @@ endif
 #-------------------------------------------------------------------
 #                      GENIE MC
 #-------------------------------------------------------------------
-ifdef GENIE
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
   GENIE_INCLUDES  = -I$(shell genie-config --topsrcdir)
+ifdef GENIE_REWEIGHT
+  GENIE_INCLUDES += -I$(GENIE_REWEIGHT)/src
+endif
 endif
 
 # hack for the FNAL UPS approach
