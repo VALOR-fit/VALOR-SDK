@@ -25,6 +25,7 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    penalty-only      Do not generate templates, for rapid penalty-only fits      default: disabled \n";
   print "    spline-stupidity  Allow splines to be varied outside of their valid range     default: disabled \n";
   print "    negative-norm     Allow the current value of norm params to go negative       default: disabled \n";
+  print "    genie             Turns on GENIE/reweight integration                         default: if_exists \n";
   print "\n options for 3rd party software, prefix with --with- (eg --with-lhapdf-lib=/some/path/)\n\n";
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
   print "    log4cpp-inc       Path to log4cpp includes                                    default: - (auto-detection enabled) \n";
@@ -237,6 +238,43 @@ if(! -d $opt_with_gsl_inc && $auto_detect)  {
 
 print "\n";
 
+# Work out the GENIE version
+$GENIE_ENABLED = 0;
+
+if ($ENV{GENIE}) {
+  my $genie_version_string = `genie-config --version`;
+  chomp($genie_version_string);
+  my @genie_version_parts = split('\.',$genie_version_string);
+  my $rew_exists = 0;
+  if ($genie_version_parts[0] >= 3) {
+    $GENIE_VERSION = 3;
+    # Check for reweight
+    if (is_file_in_dir("libGRwClc.so",$ENV{GENIE}."/lib")) {
+      $rew_exists = 1;
+    }
+    if (is_file_in_dir("libGRwClc.so",$ENV{GENIE_REWEIGHT}."/lib")) {
+      $rew_exists = 1;
+    }
+  }
+  else {
+    $GENIE_VERSION = 2;
+    if (is_file_in_dir("libGReWeight.so",$ENV{GENIE}."/lib")) {
+      $rew_exists = 1;
+    }
+  }
+  if ($rew_exists) {
+    $GENIE_ENABLED = 1;
+    print "Enabling GENIE utilities\n";
+  }
+  else {
+    print "Disabling GENIE utilities due to no GENIE reweight\n";
+  }
+}
+else {
+  print "Disabling GENIE utilities due to no GENIE\n";
+}
+  
+
 # 
 # Read version info and automatically generate a header file with relevant flags that
 # can be used to make code conditional upon specific version numbers
@@ -349,6 +387,12 @@ foreach(<LOG4CPP_FILE>) {
 if($log4cpp_vrs_set==0) {
   print BLD_HEADER_FILE "//#define __VALOR_FMWK_USES_LOG4CPP_VERSION__ <unknown> \n";
 }
+
+print BLD_HEADER_FILE "#define GENIE_ENABLED $GENIE_ENABLED\n";
+if ($GENIE_ENABLED) {
+  print BLD_HEADER_FILE "#define GENIE_VERSION $GENIE_VERSION\n\n";
+}
+
 close LOG4CPP_FILE;
 print BLD_HEADER_FILE "\n\n";
 print BLD_HEADER_FILE "#endif\n\n";
@@ -379,6 +423,9 @@ print MKCONF "OPT_WITH_GSL_LIB=$opt_with_gsl_lib\n";
 print MKCONF "OPT_WITH_LOG4CPP_INC=$opt_with_log4cpp_inc\n";
 print MKCONF "OPT_WITH_LOG4CPP_LIB=$opt_with_log4cpp_lib\n";
 print MKCONF "OPT_WITH_COMPILER=$opt_with_compiler\n";
+
+print MKCONF "OPT_ENABLE_GENIE=".($GENIE_ENABLED?"YES":"NO")."\n";
+
 close(MKCONF);
 if(-e $MKCONF_FILENAME) {
   print "\nThe following config options were set in Make.config: \n";
@@ -448,3 +495,22 @@ sub unique_entries {
   my %seen;
   return grep { !$seen{$_}++ } @_;
 }
+
+# Check if file exists in directory
+sub is_file_in_dir {
+  $searchfile = shift;
+  $dirname = shift;
+  
+  unless (-d $dirname) {
+    print "Not a directory: $dirname \n";
+    return 0;
+  }
+  opendir my $dir, $dirname or die "Cannot open directory: $! \n";
+  while (my $file = readdir($dir)) {
+    if ($file eq $searchfile) {
+      return 1;
+    }
+  }
+  return 0;
+}
+  
