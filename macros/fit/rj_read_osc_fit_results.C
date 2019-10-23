@@ -69,7 +69,7 @@ void rj_read_osc_fit_results(const char * filename)
     // Adapt trivially for other fits
     // The names of objects used in TObjArray::FindObject() below 
     // is what gets printed out by the TObjArray::Print() methods above.
-    TH1D * mc         = (TH1D*) data_array->FindObject("toymc_data_sb_rf_sbn_nd__BNB_FHC__numulikeCChigh_Ereco");
+    TH1D * mc         = (TH1D*) data_array->FindObject("toymc_data_ob_vf_sbn_nd__BNB_FHC__numulikeCChigh");
     TH1D * bestfit    = (TH1D*) bfmodel_array->FindObject("best_fit_pdfts_sb_rf_sbn_nd__BNB_FHC__numulikeCChigh_Ereco");
     // Fix binning to be per 1 GeV
     mc->SetFillStyle(3325);
