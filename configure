@@ -249,12 +249,18 @@ if ($ENV{GENIE}) {
   if ($genie_version_parts[0] >= 3) {
     $GENIE_VERSION = 3;
     # Check for reweight
-    if (is_file_in_dir("libGRwClc.so",$ENV{GENIE}."/lib")) {
+    # Default location
+    if (defined($ENV{GENIE_REWEIGHT}) && is_file_in_dir("libGRwClc.so",$ENV{GENIE_REWEIGHT}."/lib")) {
       $rew_exists = 1;
     }
-    if (is_file_in_dir("libGRwClc.so",$ENV{GENIE_REWEIGHT}."/lib")) {
+    # FNAL location
+    if (defined($ENV{GENIE_FQ_DIR}) && is_file_in_dir("libGRwClc.so",$ENV{GENIE_FQ_DIR}."/lib")) {
       $rew_exists = 1;
     }
+    # Shouldn't be necessary
+    #~ if (defined($ENV{GENIE}) && is_file_in_dir("libGRwClc.so",$ENV{GENIE}."/lib")) {
+      #~ $rew_exists = 1;
+    #~ }
   }
   else {
     $GENIE_VERSION = 2;
