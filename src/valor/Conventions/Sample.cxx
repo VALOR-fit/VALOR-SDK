@@ -60,10 +60,7 @@ string util::AsString(Sample_t s)
     case (ksNuELikeCChigh  ) : return "nuelikeCChigh";   break;
     case (ksNuEBarCClow    ) : return "nuebarCClow";     break;
     case (ksNuEBarCChigh   ) : return "nuebarCChigh";    break;
-    case (ks1Rmu           ) : return "1rmu";            break;
-    case (ks1Re            ) : return "1re";             break;
-    case (ksMultiRe        ) : return "multire";         break;
-    default                  : return "--";
+    default                  : return "--"; 
   }
   return "";
 }
@@ -109,10 +106,7 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksNuELikeCChigh  ) : name = "#nu_{e} CC high-resolution";           break;
     case (ksNuEBarCClow    ) : name = "#bar{#nu}_{e} CC low-resolution";      break;
     case (ksNuEBarCChigh   ) : name = "#bar{#nu}_{e} CC high-resolution";     break;
-    case (ks1Rmu           ) : name = "Single-ring mu-like";                  break;
-    case (ks1Re            ) : name = "Single-ring e-like";                   break;
-    case (ksMultiRe        ) : name = "Multi-ring e-like";                    break;
-    default                  : name = "--";
+    default                  : name = "--"; 
   }
 
   if(root) return name;
@@ -134,9 +128,6 @@ bool util::IsFar(Sample_t s)
     case (ksNuELikeCChigh      ) :
     case (ksNuEBarCClow        ) :
     case (ksNuEBarCChigh       ) :  return true; break;
-    case (ks1Rmu               ) : // intentional fallthrough
-    case (ks1Re                ) :
-    case (ksMultiRe            ) :  return true; break;
     default: return false;
   }
   return false; 
@@ -183,11 +174,7 @@ bool util::IsCC(Sample_t s)
     case (ksNC1pi0         ) : 
     case (ksNCoth          ) : 
     case (ksNC             ) : return false; break;
-
-    case (ks1Rmu           ) : // intentional fallthrough
-    case (ks1Re            ) :
-    case (ksMultiRe        ) : return true; break;
-
+    
     case (ksUndefined      ) : return false;
   }
   return false;
@@ -234,11 +221,8 @@ bool util::IsCCQELike(Sample_t s)
     case (ksNuMuLikeCClow  ) : 
     case (ksNuMuBarCClow   ) : 
     case (ksNuELikeCClow   ) : 
-    case (ksNuEBarCClow    ) :
-    case (ks1Re            ) :
-    case (ks1Rmu           ) :
-    case (ksMultiRe        ) : return false; break;
-    default: return false;
+    case (ksNuEBarCClow    ) : return false; break;
+    default: return false; 
   }
   return false;
 }
@@ -276,10 +260,7 @@ bool util::IsNC(Sample_t s)
     case (ksNuELikeCClow   ) : 
     case (ksNuELikeCChigh  ) : 
     case (ksNuEBarCClow    ) : 
-    case (ksNuEBarCChigh   ) :
-    case (ks1Rmu           ) :
-    case (ks1Re            ) :
-    case (ksMultiRe        ) : return false;
+    case (ksNuEBarCChigh   ) : return false;
 
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) : 
@@ -296,7 +277,7 @@ Sample_t util::SampleFromInt(int s)
 {
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
-  if((s >= (int)ksNuMuCC && s <= (int) ksMultiRe)) //RHC
+  if((s >= (int)ksNuMuCC && s <= (int) ksNuELikeCClow)) //RHC
     return (Sample_t)s;
   return ksUndefined;
 }
@@ -365,9 +346,6 @@ bool util::IsMuLike(Sample_t s)
     case ksNuELikeCClow    : return false ;
     case ksNuEBarCChigh    : return false ;
     case ksNuEBarCClow     : return false ;
-    case ks1Rmu            : return true  ;
-    case ks1Re             : return false ;
-    case ksMultiRe         : return false ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
@@ -413,9 +391,6 @@ bool util::IsELike(Sample_t s)
     case ksNuELikeCClow    : return true  ;
     case ksNuEBarCChigh    : return true  ;
     case ksNuEBarCClow     : return true  ;
-    case ks1Rmu            : return false ;
-    case ks1Re             : return true  ;
-    case ksMultiRe         : return true  ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;

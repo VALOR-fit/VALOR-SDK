@@ -30,22 +30,6 @@ string util::AsString(conv::NuOscMixParam_t p)
 //____________________________________________________________________________
 string util::MixingTypeAsString(conv::NuOscMixParam_t p) { return AsString(p);}
 //____________________________________________________________________________
-string util::MixingTypeAsStringSimple(conv::NuOscMixParam_t p)
-{
-  switch(p) {
-    case (kNuMixSinsq2Theta) :
-      return "sinsq2theta";
-      break;
-    case (kNuMixSinsqTheta) :
-      return "sinsqtheta";
-      break;
-    default :
-      return "Undefined";
-      break;
-  }
-  return "";
-}
-//____________________________________________________________________________
 NuOscMixParam_t util::MixingTypeFromString(string h)
 {
   if(h == "sinsq2theta") return kNuMixSinsq2Theta;

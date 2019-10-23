@@ -153,7 +153,7 @@ bool CompoundFitData::Generate (FitModelABC * model, const FitParamList & fp, bo
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitData::Generate (FitModelABC * model, bool stat_fluct, Option_t* read_opt)
+bool CompoundFitData::Generate (FitModelABC * model, bool stat_fluct)
 {
   CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
 #ifdef __VALOR_FMWK_PARALLEL__
@@ -169,7 +169,7 @@ bool CompoundFitData::Generate (FitModelABC * model, bool stat_fluct, Option_t* 
     std::function<void(void)> f = [&]{status = status && d.Generate(&m, stat_fluct);};
     util::VThreadPool::Instance()->AddTask(f);
 #else
-    status = status && d.Generate(&m, stat_fluct, read_opt);
+    status = status && d.Generate(&m, stat_fluct);
 #endif
   }
 #ifdef __VALOR_FMWK_PARALLEL__
@@ -186,18 +186,6 @@ bool CompoundFitData::Write (TObjArray* collection, const char * tag, Option_t *
     status = status && (*it)->Write(collection,tag,write_opt);
   }
   return status;
-}
-//________________________________________________________________________________________
-bool CompoundFitData::Write (std::ofstream& stream, Option_t * write_opt)
-{
-
-   bool status = true;
-   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it)
-   {
-      status = status && (*it)->Write(stream, write_opt);
-   }
-   
-   return status;
 }
 //________________________________________________________________________________________
 double CompoundFitData::GetFitStatistic (FitModelABC * model, const PhysHypothesis & ph, Option_t * opt, std::map<std::string,double> * likelihood_components)

@@ -38,7 +38,6 @@ namespace util {
 
    string AsString (conv::NuOscMixParam_t o);
    string MixingTypeAsString (conv::NuOscMixParam_t o); //alias of above
-   string MixingTypeAsStringSimple (conv::NuOscMixParam_t o);
 
    conv::NuOscMixParam_t MixingTypeFromString (string h);
 

@@ -29,14 +29,13 @@ using std::vector;
 namespace valor {
 namespace util {
 
-  string         TrimSpaces                (string input);
-  string         RemoveAllWhitespace       (string input);
-  vector<string> Tokens                    (string input, string delimiter);
-  string         ToLowerCase               (string data);
-  string         ReplaceAll                (string data,string from, string to);
-  string         PadToLength               (string data, unsigned int length, char pad_with = ' ');
-  string         PadToLengthFromLeft       (string data, unsigned int length, char pad_with = ' ');
-  string         GetStringBetweenDelimiters(const string &s, const string &start_delim, const string &stop_delim);
+  string         TrimSpaces         (string input);
+  string         RemoveAllWhitespace(string input);
+  vector<string> Tokens             (string input, string delimiter);
+  string         ToLowerCase        (string data);
+  string         ReplaceAll         (string data,string from, string to);
+  string         PadToLength        (string data, unsigned int length, char pad_with = ' ');
+  string         PadToLengthFromLeft(string data, unsigned int length, char pad_with = ' ');
   
 } // util
 } // valor

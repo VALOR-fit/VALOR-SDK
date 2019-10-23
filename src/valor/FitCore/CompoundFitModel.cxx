@@ -103,17 +103,6 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Read(std::ifstream& stream, Option_t* read_opt)
-{
-   bool status = true;
-   for(std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
-   {
-      status = status && (*it)->Read(stream, read_opt);
-   }
-
-   return status;
-}
-//________________________________________________________________________________________
 bool CompoundFitModel::Generate (const PhysHypothesis & ph, Option_t * opt)
 {
   bool status = true;
@@ -281,17 +270,6 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
   f.Close();
 
   return status;
-}
-//________________________________________________________________________________________
-bool CompoundFitModel::Write(std::ofstream& stream, Option_t* write_opt)
-{
-   bool status = true;
-   for(std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
-   {
-      status = status && (*it)->Write(stream, write_opt);
-   }
-
-   return status;
 }
 //________________________________________________________________________________________
 double CompoundFitModel::GetFitStatisticPenalty(Option_t * opt) const

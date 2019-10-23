@@ -23,8 +23,6 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    parallel          Use N threads for updating the templates (requires C++11)   default: disabled \n";
   print "    fault-on-die      Segfault when util::Die() is called, giving a stacktrace    default: disabled \n";
   print "    penalty-only      Do not generate templates, for rapid penalty-only fits      default: disabled \n";
-  print "    spline-stupidity  Allow splines to be varied outside of their valid range     default: disabled \n";
-  print "    negative-norm     Allow the current value of norm params to go negative       default: disabled \n";
   print "\n options for 3rd party software, prefix with --with- (eg --with-lhapdf-lib=/some/path/)\n\n";
   print "    optimiz-level     Compiler optimization (any of O,O2,O3,OO,Os)                default: O2 \n";
   print "    log4cpp-inc       Path to log4cpp includes                                    default: - (auto-detection enabled) \n";
@@ -117,18 +115,14 @@ my $opt_enable_asan       = "NO";
 my $opt_enable_parallel   = "NO";
 my $opt_enable_fault      = "NO";
 my $opt_penalty_only      = "NO";
-my $opt_spline_stupidity  = "NO";
-my $opt_negative_norm     = "NO";
 
 # Check configure's command line arguments for non-default values
 #
-if(($match = grep(/--enable-debug/i,            @ARGV)) > 0) { $opt_enable_debug     = "YES"; }
-if(($match = grep(/--enable-asan/i,             @ARGV)) > 0) { $opt_enable_asan      = "YES"; }
-if(($match = grep(/--enable-parallel/i,         @ARGV)) > 0) { $opt_enable_parallel  = "YES"; }
-if(($match = grep(/--enable-fault-on-die/i,     @ARGV)) > 0) { $opt_enable_fault     = "YES"; }
-if(($match = grep(/--enable-penalty-only/i,     @ARGV)) > 0) { $opt_penalty_only     = "YES"; }
-if(($match = grep(/--enable-spline-stupidity/i, @ARGV)) > 0) { $opt_spline_stupidity = "YES"; }
-if(($match = grep(/--enable-negative-norm/i,    @ARGV)) > 0) { $opt_negative_norm    = "YES"; }
+if(($match = grep(/--enable-debug/i,        @ARGV)) > 0) { $opt_enable_debug    = "YES"; }
+if(($match = grep(/--enable-asan/i,         @ARGV)) > 0) { $opt_enable_asan     = "YES"; }
+if(($match = grep(/--enable-parallel/i,     @ARGV)) > 0) { $opt_enable_parallel = "YES"; }
+if(($match = grep(/--enable-fault-on-die/i, @ARGV)) > 0) { $opt_enable_fault    = "YES"; }
+if(($match = grep(/--enable-penalty-only/i, @ARGV)) > 0) { $opt_penalty_only    = "YES"; }
 
 # Just enable GSL if available
 if (`root-config --features` =~ m/mathmore/) { $opt_enable_gsl    = "YES"; }
@@ -319,18 +313,6 @@ if($opt_penalty_only eq "YES") {
   print BLD_HEADER_FILE   "#define __VALOR_FMWK_PENALTY_ONLY__\n"; 
 } else {
   print BLD_HEADER_FILE "//#define __VALOR_FMWK_PENALTY_ONLY__\n"; 
-}
-# Let splines vary outside of the range in which they're valid
-if($opt_spline_stupidity eq "YES") {
-  print BLD_HEADER_FILE   "#define __LET_ME_DO_STUPID_STUFF_WITH_MY_SPLINES__\n";
-} else {
-  print BLD_HEADER_FILE "//#define __LET_ME_DO_STUPID_STUFF_WITH_MY_SPLINES__\n";
-}
-# Let the current (i.e. applied) value of normalisation parameters go negative
-if($opt_negative_norm eq "YES") {
-  print BLD_HEADER_FILE   "#define __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__\n";
-} else {
-  print BLD_HEADER_FILE "//#define __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__\n";
 }
 # grab log4cpp version information
 open(LOG4CPP_FILE, "$opt_with_log4cpp_inc/log4cpp/config.h") or warn("$opt_with_log4cpp_inc/log4cpp/config.h!");

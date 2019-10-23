@@ -10,7 +10,6 @@ ChangeLog:
 
 #include <cassert>
 #include "valor/Utilities/NameRegistry.h"
-#include "valor/Utilities/UtlStr.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -95,12 +94,11 @@ std::string valor::util::NameRegistry::AsStringRooTex    (PhysParamId_t p) const
 //________________________________________________________________________________________
 PhysParamId_t valor::util::NameRegistry::PhysParamFromString(std::string inp_name) const
 {
-  inp_name = util::ToLowerCase(inp_name);
   for(int ip = 0; ip < kLastNuisParam; ip++) {
     PhysParamId_t p = conv::PhysParamId_t(ip);
-    string name             = util::ToLowerCase(this->AsString(p));
-    string name_simple      = util::ToLowerCase(this->AsStringSimple(p));
-    string name_very_simple = util::ToLowerCase(this->AsStringVerySimple(p));
+    string name = this->AsString(p);
+    string name_simple = this->AsStringSimple(p);
+    string name_very_simple = this->AsStringVerySimple(p);
     if((name == inp_name) || (name_simple == inp_name) || (name_very_simple == inp_name)) {
 	    return p;
     }

@@ -19,7 +19,6 @@
 #define _valor_array_template_h_
 
 #include <TNamed.h>
-#include <fstream>
 #include <vector>
 
 #include "valor/Conventions/Build.h"
@@ -98,9 +97,6 @@ public:
                       
   void ReadFile (std::string file_to_read);
   void WriteFile(std::string file_to_write);
-
-  void ReadStream(std::ifstream& stream);
-  void WriteStream(std::ofstream& stream);
   
   // Resize the array, clearing contents
   void Resize(const std::vector<int> dimensions);   // List of dimension sizes
