@@ -45,6 +45,7 @@ build-libs: | build-conventions   \
 		   build-utilities     \
 		   build-messenger     \
 		   build-varray        \
+		   build-genie-utilities \
 		   build-oscillation   \
 		   build-ntuple        \
 		   build-registry      \
@@ -115,6 +116,16 @@ build-testing: | make-bin-lib-dir FORCE
 	@echo "** Building Testing package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/Testing"
 
+build-genie-utilities: | make-bin-lib-dir FORCE
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
+	@echo " "
+	@echo "** Building GENIE Utilities package..."
+	$(MAKE) -C ${VALOR_FMWK}/src/valor/GENIEUtilities;
+else
+	@echo " "
+	@echo "** GENIE not enabled - skipping GENIEUtilities"
+endif
+
 make-bin-lib-dir: FORCE
 	@echo " "
 	@echo "** Creating VALOR framework lib and bin directories..."
@@ -157,6 +168,7 @@ purge: FORCE
 	cd Utilities;                 make purge; cd ..; \
 	cd Messenger;                 make purge; cd ..; \
 	cd VArray;                    make purge; cd ..; \
+	cd GENIEUtilities;            make purge; cd ..; \
 	cd Oscillation;               make purge; cd ..; \
 	cd Ntuple;                    make purge; cd ..; \
 	cd Registry;                  make purge; cd ..; \
@@ -178,6 +190,7 @@ clean-files: FORCE
 	cd Utilities;               make clean; cd ..; \
 	cd Messenger;               make clean; cd ..; \
 	cd VArray;                  make clean; cd ..; \
+	cd GENIEUtilities;          make clean; cd ..; \
 	cd Oscillation;             make clean; cd ..; \
 	cd Ntuple;                  make clean; cd ..; \
 	cd Registry;                make clean; cd ..; \
