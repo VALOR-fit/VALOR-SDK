@@ -33,6 +33,7 @@
 #include "valor/Utilities/Interpolator.h"
 #include "valor/Utilities/KinematicPoint.h"
 #include "valor/Utilities/KinematicBin.h"
+#include "valor/Conventions/Detector.h"
 #include "valor/Conventions/BeamConf.h"
 #include "valor/Conventions/ReacMode.h"
 #include "valor/Conventions/Sample.h"
