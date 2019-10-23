@@ -38,7 +38,7 @@ VALOR_INCLUDES := -I$(VALOR_FMWK)/src/
 # VALOR FMWK libraries
 #
 ifeq ("false",$(is_cln))
-  VALOR_FMWK_LIBRARIES = $(shell valor_fmwk-config --libs)
+  VALOR_FMWK_LIBRARIES = $(shell valor_fmwk-config --libs 2>/dev/null)
 endif
 
 
@@ -57,7 +57,7 @@ VALOR_APP_INCLUDES := -I$(VALOR_EXPT)/src/
 # VALOR application libraries
 #
 ifeq ("false",$(is_cln))
-  VALOR_APP_LIBRARIES = $(shell valor_expt-config --libs)
+  VALOR_APP_LIBRARIES = $(shell valor_expt-config --libs 2>/dev/null)
 endif
 
 #-------------------------------------------------------------------
@@ -128,13 +128,13 @@ LOG_LIBRARIES := -L$(LOG_LIB_DIR) -llog4cpp
 
 # GSL libraries and headers
 
-ifeq ($(strip $(OPT_WITH_GSL_INC)),undefined)
+ifneq ($(OPT_WITH_GSL_INC),)
   GSL_INCLUDES  := -I$(OPT_WITH_GSL_INC)
 else
   GSL_INCLUDES  := 
 endif
 
-ifeq ($(strip $(OPT_WITH_GSL_LIB)),undefined)
+ifneq ($(OPT_WITH_GSL_LIB),)
   GSL_LIBRARIES  := -L$(OPT_WITH_GSL_LIB)
 else
   GSL_LIBRARIES  := 
