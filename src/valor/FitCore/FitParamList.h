@@ -152,9 +152,12 @@ namespace valor {
     // Set as nuisance parameter (contributes to \chi^{2}_{penalty})
     void SetNuisance (valor::conv::PhysParamId_t p, bool tf);
     
-    // Create a new fit parameter list that includes only the free parameters of the original list
+    // Create a new fit parameter list that includes only the free (i.e. not fixed) parameters of the original list
     FitParamList * FreeParameterSubset(void);
-    
+
+    // Create a new fit parameter list that includes only the non-marginalised parameters of the original list
+    FitParamList * ParameterOfInterestSubset(void);
+
     // Set parameter list to input TVirtualFitter
     void SetTo (TVirtualFitter * fitter);
     void SetTo (ROOT::Minuit2::MnUserParameters & params);
@@ -175,6 +178,9 @@ namespace valor {
     // Get number of free (not fixed) parameters
     int GetNumberFreeParameters(void) const;
     int GetNumberParameters    (void) const;
+
+    // Get number of parameters of interest (i.e. non-marginalised parameters)
+    int GetNumberParametersOfInterest(void) const;
     
     // Set and get other fit properties: statistic at best-fit point, fit time, status codes etc
     void   ClearStatusCodes    (void);

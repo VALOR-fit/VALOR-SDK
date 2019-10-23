@@ -1,23 +1,19 @@
 //____________________________________________________________________________
 /*!
-
 \class     valor::util::Interpolator
-
 \brief     Basically the same as ROOT::Math::Interpolator but stores its own X limits.
-
 \author    Steve Dennis <s.r.dennis \at liverpool.ac.uk
            University of Liverpool
           
 \created   August 2016
-
 \copyright (c) 2010-2016, The VALOR group
-
 */
 //____________________________________________________________________________
 
 #ifndef valor_interpolator_h
 #define valor_interpolator_h
 
+#include "TGraph.h"
 #include "TSpline.h"
 #include "valor/Conventions/Build.h"
 
@@ -37,6 +33,8 @@ class Interpolator : public ROOT::Math::Interpolator {
     double Xmin() const;
     double Xmax() const;
     double EvalWithLimits(double x) const;
+    
+    TGraph AsGraph(unsigned int npoints = 100) const;
     
   private:
     double fXmin;

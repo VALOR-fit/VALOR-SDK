@@ -33,5 +33,24 @@ string util::AsString(ConfLevel_t cl)
   return "shouldneverhappen";
 }
 //________________________________________________________________________________________
+string util::AsStringRooTex(ConfLevel_t cl)
+{
+  switch (cl) {
+    case kCL68: return "68%";
+    case kCL90: return "90%";
+    case kCL95: return "95%";
+    case kCL99: return "99%";
+    case kCL1Sigma: return "1#sigma";
+    case kCL2Sigma: return "2#sigma";
+    case kCL3Sigma: return "3#sigma";
+    case kCL4Sigma: return "4#sigma";
+    case kCL5Sigma: return "5#sigma";
+    case kCLUndefined: return "undefinedcl";
+  }
+  return "shouldneverhappen";
+}
+//________________________________________________________________________________________
 std::string util::ConfLevelAsString(ConfLevel_t cl) {return AsString(cl);};
+//________________________________________________________________________________________
+std::string util::ConfLevelAsStringRooTex(ConfLevel_t cl) {return AsStringRooTex(cl);};
 //________________________________________________________________________________________

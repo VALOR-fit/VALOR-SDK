@@ -111,9 +111,8 @@ double valor::util::DeltaChisquare(
       case (kCL90) :
       {
         if      (nfitparams == 1)  { return  2.71;  }
-        else if (nfitparams == 2)  { return  4.61;  } 
-        else if (nfitparams == 2)  { return  1.64;  }
-        //else if (nfitparams == 3)  { return  6.25;  }
+        else if (nfitparams == 2)  { return  4.61;  }
+        else if (nfitparams == 3)  { return  6.25;  }
         else                       { return -99999; }
         break;
       }
@@ -168,6 +167,111 @@ double valor::util::DeltaChisquare(
     }
   return -99999;
 } 
+//____________________________________________________________________________
+double valor::util::DeltaChisquareOneSided(
+  ConfLevel_t cl, int nfitparams) 
+{
+  // Get with TMath::ChisquareQuantile
+  // eg in pydune
+  // for nsigma in xrange(1,6):
+  //   for ndim in xrange(1,4):
+  //     prob_twosided = R.TMath.Erf(nsigma/R.TMath.Sqrt2())
+  //     prob_onesided = 1.-((1.-prob_twosided)*2)
+  //     dchisq_onesided = R.TMath.ChisquareQuantile(prob_onesided,ndim)
+  //     print "Nsigma = %u ; ndim = %u ; deltachisq_onesided = %.2lf"%(nsigma,ndim,dchisq_onesided)
+
+  switch(cl) {
+      case (kCLUndefined) : 
+      {
+        return -99999;  
+        break;
+      }
+      case (kCL68) :
+      case (kCL1Sigma) :
+      {
+        if      (nfitparams == 1)  { return  0.23;  }
+        else if (nfitparams == 2)  { return  0.91;  }
+        else if (nfitparams == 3)  { return  1.71;  }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL90) :
+      {
+        if      (nfitparams == 1)  { return  1.64;  }
+        else if (nfitparams == 2)  { return  3.22;  }
+        else if (nfitparams == 3)  { return  4.64;  }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL95) :
+      {
+        if      (nfitparams == 1)  { return  2.71;  }
+        else if (nfitparams == 2)  { return  4.61;  }
+        else if (nfitparams == 3)  { return  6.25;  }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL99) :
+      {
+        if      (nfitparams == 1)  { return  5.41;  }
+        else if (nfitparams == 2)  { return  7.82;  }
+        else if (nfitparams == 3)  { return  9.84;  }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL2Sigma):
+        if      (nfitparams == 1)  { return  2.86;  }
+        else if (nfitparams == 2)  { return  4.79;  }
+        else if (nfitparams == 3)  { return  6.47;  }
+        else                       { return -99999; }
+        break;
+      case (kCL3Sigma) :
+      {
+        if      (nfitparams == 1)  { return  7.74;  }
+        else if (nfitparams == 2)  { return 10.44;  }
+        else if (nfitparams == 3)  { return 12.67;  }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL4Sigma) :
+      {
+        if      (nfitparams == 1)  { return 14.69;  }
+        else if (nfitparams == 2)  { return 17.95;  }
+        else if (nfitparams == 3)  { return 20.61;  }
+        else                       { return -99999; }
+        break;
+      }
+      case (kCL5Sigma) :
+      {
+        if      (nfitparams == 1)  { return 23.66;  }
+        else if (nfitparams == 2)  { return 27.36;  }
+        else if (nfitparams == 3)  { return 30.38;  }
+        else                       { return -99999; }
+        break;
+      }
+      default:
+        return -99999;     
+    }
+  return -99999;
+} 
+//____________________________________________________________________________
+double valor::util::ConfLevelToFrac(conv::ConfLevel_t cl)
+{
+  double nsigma = -1;
+  switch (cl) {
+    case kCL68:        return 0.68;   break;
+    case kCL90:        return 0.90;   break;
+    case kCL95:        return 0.95;   break;
+    case kCL99:        return 0.99;   break;
+    case kCL1Sigma:    nsigma = 1;    break;
+    case kCL2Sigma:    nsigma = 2;    break;
+    case kCL3Sigma:    nsigma = 3;    break;
+    case kCL4Sigma:    nsigma = 4;    break;
+    case kCL5Sigma:    nsigma = 5;    break;
+    case kCLUndefined: return -99999; break;
+  }
+  return TMath::Erf(nsigma / TMath::Sqrt2());
+}
 //____________________________________________________________________________
 double valor::util::ChisqGauss(
   double ndata, double nmc)
@@ -1167,6 +1271,30 @@ double valor::util::DoubleAngleToSingleAngle(double sinsq2theta)
 {
   double sinsqtheta = 0.5 * (1 - sqrt(1 - sinsq2theta));
   return sinsqtheta;
+}
+//____________________________________________________________________________
+double valor::util::SingleAngleSigmaToDoubleAngleSigma(double sinsqtheta_mean, double sinsqtheta_sigma)
+{
+  return 0.5 * ( util::SingleAngleToDoubleAngle(sinsqtheta_mean + sinsqtheta_sigma) -
+                 util::SingleAngleToDoubleAngle(sinsqtheta_mean - sinsqtheta_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::DoubleAngleSigmaToSingleAngleSigma(double sinsq2theta_mean, double sinsq2theta_sigma)
+{
+  return 0.5 * ( util::DoubleAngleToSingleAngle(sinsq2theta_mean + sinsq2theta_sigma) -
+                 util::DoubleAngleToSingleAngle(sinsq2theta_mean - sinsq2theta_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::PhaseSigmaToSinPhaseSigma(double phase_mean, double phase_sigma)
+{
+  return 0.5 * ( TMath::Sin(phase_mean + phase_sigma) -
+                 TMath::Sin(phase_mean - phase_sigma) );
+}
+//____________________________________________________________________________
+double valor::util::SinPhaseSigmaToPhaseSigma(double sinphase_mean, double sinphase_sigma)
+{
+  return 0.5 * ( TMath::ASin(sinphase_mean + sinphase_sigma) -
+                 TMath::ASin(sinphase_mean - sinphase_sigma) );
 }
 //____________________________________________________________________________
 TAxis valor::util::EstimateOptimalBinning(int npoints, double * points)
