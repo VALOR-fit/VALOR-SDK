@@ -71,11 +71,15 @@ typedef enum ESample
    ksNuELikeCChigh       , // nue-like (for the moment both nue and nuebar), high resolution (CCQE-like)
    ksNuELikeCClow        , // nue-like (for the moment both nue and nuebar), low resolution (nonCCQE-like)   
    ksNuEBarCChigh        , // nuebar, high resolution (CCQE-like)    - CURRENTLY UNUSED
-   ksNuEBarCClow           // nuebar, low resolution (nonCCQE-like)  - CURRENTLY UNUSED
+   ksNuEBarCClow         , // nuebar, low resolution (nonCCQE-like)  - CURRENTLY UNUSED
+   // SuperK selections
+   ks1Rmu                , // Single-ring muon-like
+   ks1Re                 , // Single-ring electron-like
+   ksMultiRe               // Multi-ring electron-like
 } 
 Sample_t; 
 
-static const int kMaxNSamples = 37;
+static const int kMaxNSamples = 39;
 
 } // conv
 

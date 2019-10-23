@@ -1,17 +1,12 @@
 //____________________________________________________________________________
 /*!
-
 \class     valor::util::Interpolator
-
 \brief     Basically the same as ROOT::Math::Interpolator but stores its own X limits.
-
 \author    Steve Dennis <s.r.dennis \at liverpool.ac.uk
            University of Liverpool
           
 \created   August 2016
-
 \copyright (c) 2010-2016, The VALOR group
-
 */
 //____________________________________________________________________________
 

@@ -57,7 +57,6 @@ namespace util {
   double ChisqPoisson          (double ndata, double nmc);
   double Chisq_Penalty_TH2D    (TH2D* hobs, TH2D* hexp);
   double ConfLevelToFrac       (conv::ConfLevel_t cl);
-  
   double ChisqMeanLikelihood(const std::vector<double> & chisqs); // Performs a mean of the non-logged values, returns chisq
 
   TAxis EstimateOptimalBinning(int npoints, double * points);

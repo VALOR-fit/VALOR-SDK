@@ -31,6 +31,21 @@ string util::AsString(NuOscDeltaCP_t d)
 //________________________________________________________________________________________
 string util::CPVChoiceAsString(NuOscDeltaCP_t d) { return AsString(d); }
 //________________________________________________________________________________________
+string util::CPVChoiceAsStringSimple(NuOscDeltaCP_t d)
+{
+  switch(d) {
+    case(kNuDeltaCPPhase) :
+      return "delta";
+      break;
+    case(kNuDeltaCPSin) :
+      return "sindelta";
+      break;
+    default :
+      return "Undefined";
+      break;
+  }
+}
+//________________________________________________________________________________________
 NuOscDeltaCP_t util::CPVChoiceFromString (string d)
 {
   if(d == "sindelta" ) return kNuDeltaCPSin;
