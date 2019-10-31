@@ -54,7 +54,7 @@ public:
   // If no parameters are specified then the pre-generated model will be used.
   virtual bool Generate (FitModelABC * model, const FitParamList & fp,   bool fluctuate=true) = 0;
   virtual bool Generate (FitModelABC * model, const PhysHypothesis & ph, bool fluctuate=true) = 0;
-  virtual bool Generate (FitModelABC * model, bool fluctuate=true, Option_t* read_opt = "+SB") = 0;
+  virtual bool Generate (FitModelABC * model, bool fluctuate=true, Option_t* read_opt = "+SB") {}
 
   // Write datasets to the input container or to the input file
   // The input tag will be appended to the return value of Name() and the name of each stored object.
@@ -70,7 +70,7 @@ public:
   // If null, the default is "recreate".
   virtual bool Write (TObjArray * collection, const char * tag = "data", Option_t * write_opt = 0) = 0;
   virtual bool Write (const char * filename,  const char * tag = "data", Option_t * write_opt = 0, Option_t * file_opt = 0) = 0;
-  virtual bool Write (std::ofstream& stream, Option_t * write_opt = 0) = 0;
+  virtual bool Write (std::ofstream& stream, Option_t * write_opt = 0) {}
 
   // Number of bins in fit data, or number of events for unbinned fits
   virtual int NumOfBins (Option_t * opt = 0) const = 0;
