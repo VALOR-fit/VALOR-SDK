@@ -123,6 +123,7 @@ void rj_read_osc_fit_results(const char * filename)
     // BestFitValueByIndex(i)
     // InitValueByIndex(i)
     // IsNuisanceByIndex(i)
+    /*
     unsigned int totalNumParams = gbfparm->GetNumberParameters();
     unsigned int freeParams     = gbfparm->GetNumberFreeParameters();
     unsigned int interestParams = gbfparm->GetNumberParametersOfInterest();
@@ -147,5 +148,5 @@ void rj_read_osc_fit_results(const char * filename)
     std::cout << " Number of fixed params           : " << fixedParams    << std::endl;
     std::cout << " Number of parameters of interest : " << interestParams << std::endl;
     std::cout << " Number of nuisance parameters    : " << nuisanceParams << std::endl; 
-  }
+  }*/
 }
