@@ -69,7 +69,7 @@ void rj_read_osc_fit_results(const char * filename)
     // Adapt trivially for other fits
     // The names of objects used in TObjArray::FindObject() below 
     // is what gets printed out by the TObjArray::Print() methods above.
-    TH1D * mc         = (TH1D*) data_array->FindObject("toymc_data_ob_vf_sbn_nd__BNB_FHC__numulikeCChigh");
+    TH1D * mc         = (TH1D*) data_array->FindObject("toymc_data_sb_rf_sbn_nd__BNB_FHC__numulikeCChigh_Ereco");
     TH1D * bestfit    = (TH1D*) bfmodel_array->FindObject("best_fit_pdfts_sb_rf_sbn_nd__BNB_FHC__numulikeCChigh_Ereco");
     // Fix binning to be per 1 GeV
     mc->SetFillStyle(3325);
@@ -107,21 +107,45 @@ void rj_read_osc_fit_results(const char * filename)
     //bestfitbkg->Draw("same");
     c->Update();
     c->SaveAs("spectra_test.root");
+
     /**************************************************
      *            FITPARAMLIST
      **************************************************/
     // GetNumberParameters()
-    // GetNumberFreeParameters() 
-    // GetNumberParametersOfInterest() -- should be osc params
+    // GetNumberFreeParameters() 'if Not fixed'
+    // GetNumberParametersOfInterest() -- should be osc params, 'if Do Marginalisation'
+    //
+    // What's the relationship between these 3 values?
+    //
     // Probably want to plot all of the parameters
     // But then highlight the fixed parameters later
     // NameByIndex(i)
-    // BestFitValuesByIndex(i)
-    // InitValuesByIndex(i)
+    // BestFitValueByIndex(i)
+    // InitValueByIndex(i)
     // IsNuisanceByIndex(i)
     unsigned int totalNumParams = gbfparm->GetNumberParameters();
-    for(unsigned int i = 0; i < totalNumParams; ++i){
-      
+    unsigned int freeParams     = gbfparm->GetNumberFreeParameters();
+    unsigned int interestParams = gbfparm->GetNumberParametersOfInterest();
+    unsigned int fixedParams    = totalNumParams - freeParams;
+    unsigned int nuisanceParams = 0;
+
+    if(interestParams != fixedParams){
+      std::cout << " Number of parameters of interest does not match the number of fixed parameters in the list " << std::endl;
     }
+
+    std::map<std::string, double> nameBestFitValueFixed;
+    std::map<std::string, double> nameBestFitValueFree;
+    std::map<std::string, double> nameInitValueFixed;
+    std::map<std::string, double> nameInitValueFree;
+
+    for(unsigned int i = 0; i < totalNumParams; ++i){
+      bool isNuisance = gbfparm->IsNuisanceByIndex(i);
+      if(isNuisance)
+        nuisanceParams++;
+    }
+    std::cout << " Total number of params           : " << totalNumParams << std::endl;
+    std::cout << " Number of fixed params           : " << fixedParams    << std::endl;
+    std::cout << " Number of parameters of interest : " << interestParams << std::endl;
+    std::cout << " Number of nuisance parameters    : " << nuisanceParams << std::endl; 
   }
 }
