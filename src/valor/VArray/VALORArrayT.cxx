@@ -119,6 +119,30 @@ template<typename numtype> void VALORArrayT<numtype>::ConstructT(int nd, const I
   this->SetAll(0.);
 }
 //________________________________________________________________________________________
+template<typename numtype> void VALORArrayT<numtype>::Reshape(int nd, const Int_t * dimensions)
+{
+  assert(nd > 0 && nd <= 6);
+  int new_size = 1.;
+  for (int i = nd-1 ; i >= 0 ; i--) {
+    new_size *= dimensions[i];
+  }
+  if (new_size != fSize) {
+    LOG("VALORArray",pWARN) << "Failed to reshape VALORArray with size "<<fSize<<" to size "<<new_size;
+    return;
+  }
+  fNDim = nd;
+  for (int i = 0 ; i < 6 ; i++) {
+    fDimensions[i] = (i<nd ? dimensions[i] : 1);
+    fNames[i] = "unnamed";
+    fIncrement[i] = 0;
+  }
+  fSize = 1;
+  for (int i = fNDim-1 ; i >= 0 ; i--) {
+    fIncrement[i] = fSize;
+    fSize *= dimensions[i];
+  }
+}
+//________________________________________________________________________________________
 template<typename numtype> VALORArrayT<numtype>::VALORArrayT(const VALORArrayT<numtype> & arr) :
 TNamed(arr),
 fNDim(arr.fNDim),
