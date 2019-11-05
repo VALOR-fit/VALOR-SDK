@@ -41,7 +41,7 @@ void rj_read_osc_fit_results(const char * filename)
   fitnt->SetBranchAddress("best_fit_model",         &bfmodel_array);
   fitnt->SetBranchAddress("data",                   &data_array);
 
-  TCanvas * c = new TCanvas("c","",20,20,500,500);
+  TCanvas * c   = new TCanvas("c","",20,20,500,500);
 
   for(int i=0; i<2; i++) {
     fitnt->GetEntry(i);
@@ -84,14 +84,13 @@ void rj_read_osc_fit_results(const char * filename)
     hists.clear(); hists_width.clear();
     hists.push_back(mc);
     hists.push_back(bestfit);
-    std::cout << " MC integral : " << mc->Integral() << std::endl;
 
     for(unsigned int ihists = 0; ihists < hists.size(); ++ihists){
       TH1D *width_norm = new TH1D(*hists[ihists]);
       for (int ibin = 1 ; ibin <= width_norm->GetXaxis()->GetNbins(); ibin++) {
         double old_bin_content = width_norm->GetBinContent(ibin);
         double bin_width = width_norm->GetXaxis()->GetBinWidth(ibin);
-        double new_bin_content = old_bin_content; // / bin_width;
+        double new_bin_content = old_bin_content / bin_width;
         width_norm->SetBinContent(ibin,new_bin_content);
       }
       hists_width.push_back(width_norm);
@@ -103,11 +102,11 @@ void rj_read_osc_fit_results(const char * filename)
     hists_width[1]->Draw("e1x0same");
     hists_width[0]->GetYaxis()->SetTitle("Event Rate");
     hists_width[0]->GetXaxis()->SetTitle("Reconstructed neutrino energy [GeV]");
-    //bestfitsig->Draw("same");
-    //bestfitbkg->Draw("same");
+    
     c->Update();
-    c->SaveAs("spectra_test.root");
-
+    c->SaveAs("spectra_mdc_1.root");
+    c->Clear();
+  
     /**************************************************
      *            FITPARAMLIST
      **************************************************/
@@ -123,30 +122,68 @@ void rj_read_osc_fit_results(const char * filename)
     // BestFitValueByIndex(i)
     // InitValueByIndex(i)
     // IsNuisanceByIndex(i)
-    /*
+
     unsigned int totalNumParams = gbfparm->GetNumberParameters();
     unsigned int freeParams     = gbfparm->GetNumberFreeParameters();
     unsigned int interestParams = gbfparm->GetNumberParametersOfInterest();
     unsigned int fixedParams    = totalNumParams - freeParams;
     unsigned int nuisanceParams = 0;
 
-    if(interestParams != fixedParams){
-      std::cout << " Number of parameters of interest does not match the number of fixed parameters in the list " << std::endl;
+    TMatrixDSym &cov = *gbfparm->GetCovMatrix();
+    std::vector<double> paramErrors;
+    paramErrors.clear();
+
+    int nRows = cov.GetNrows();
+    int nCols = cov.GetNcols();
+
+    for(int j = 0; j < nRows; ++j){
+      for(int k = 0; k < nCols; ++k){
+        if(j != k) continue; // Only look at diagonal elements
+        paramErrors.push_back(cov(j,k));
+      }
     }
 
-    std::map<std::string, double> nameBestFitValueFixed;
-    std::map<std::string, double> nameBestFitValueFree;
-    std::map<std::string, double> nameInitValueFixed;
-    std::map<std::string, double> nameInitValueFree;
+    if(paramErrors.size() != totalNumParams) 
+      std::cout << " Error: The number of parameters and errors don't match. Params : " << totalNumParams << " vs. errors: " << paramErrors.size() << std::endl;
 
-    for(unsigned int i = 0; i < totalNumParams; ++i){
-      bool isNuisance = gbfparm->IsNuisanceByIndex(i);
-      if(isNuisance)
-        nuisanceParams++;
+    const char *nameInit    = ("h_initial_"+std::to_string(i)).c_str();
+    const char *nameBestfit = ("h_bestfit_"+std::to_string(i)).c_str();
+
+    TH1D *h_initial = new TH1D(nameInit,    "Nuisance parameters pre & post fit", 76, 0, 77);
+    TH1D *h_bestfit = new TH1D(nameBestfit, "Nuisance parameters pre & post fit", 76, 0, 77);
+
+    unsigned int nPhysicsParams = 0;
+    unsigned int nuisanceIt = 0;
+
+    for(unsigned int j = 1; j <= totalNumParams; ++j){
+      bool isNuisance = gbfparm->IsNuisanceByIndex(j);
+      if(!isNuisance) {
+        nPhysicsParams++;
+        continue; // Only want to plot nuisance parameters for now
+      }
+      nuisanceParams++;
+      nuisanceIt = j-nPhysicsParams; // Bin number for nuisance parameters
+
+      h_initial->SetBinContent(nuisanceIt,gbfparm->InitValueByIndex(j));
+      h_bestfit->SetBinContent(nuisanceIt,gbfparm->BestFitValueByIndex(j));
+      h_initial->GetXaxis()->SetBinLabel(nuisanceIt,gbfparm->NameByIndex(j).c_str());
+      h_bestfit->GetXaxis()->SetBinLabel(nuisanceIt,gbfparm->NameByIndex(j).c_str());
+      h_bestfit->SetBinError(nuisanceIt,paramErrors[j]);
     }
-    std::cout << " Total number of params           : " << totalNumParams << std::endl;
-    std::cout << " Number of fixed params           : " << fixedParams    << std::endl;
-    std::cout << " Number of parameters of interest : " << interestParams << std::endl;
-    std::cout << " Number of nuisance parameters    : " << nuisanceParams << std::endl; 
-  }*/
+
+    h_bestfit->Draw("E3");
+    h_initial->Draw("same hist");
+    h_bestfit->GetXaxis()->SetLabelSize(0.02);
+    h_bestfit->SetMarkerSize(0);
+    h_bestfit->SetLineColor(8);
+    h_bestfit->SetFillColor(8);
+    h_initial->SetLineStyle(7);
+    h_initial->SetLineWidth(1);
+    h_initial->SetLineColor(9);
+
+    c->Update();
+    c->Draw();
+    c->SaveAs("nuisiance_params_mdc_1.root");
+    c->Clear();
+  }
 }
