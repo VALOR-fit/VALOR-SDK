@@ -405,6 +405,7 @@ const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t)
     case kmtNCELScat : return ktApplyToNCELScat;
     case kmtNCoth    : return ktApplyToNCoth;
     case kmtELScat   : return ktApplyToNuEELScat;
+    case kmtCosmic   : return 0; 
     case kmtOther    : return 0;
     default:
       LOG("ApplyMask",pWARN) << "No reac type apply mask set for " << util::AsString(t) << ". Applying to none.";

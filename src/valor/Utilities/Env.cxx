@@ -41,9 +41,18 @@ Env::Env()
     assert(topdir);
   }
   fTopLevelDir = topdir;
-  fTopLevelDataDir = fTopLevelDir + "/data/";
+  //fTopLevelDataDir = fTopLevelDir + "/data/";
   fTopLevelConfDir = fTopLevelDir + "/config/";
   fBanner          = fTopLevelDir + "/data/banner/banner.dat";
+
+  const char * datadir = gSystem->Getenv("VALOR_DATA");
+  if(!datadir) {
+    datadir = gSystem->Getenv("VALOR_FMWK");
+    assert(datadir);
+  }
+
+  fTopLevelDataDir = datadir;
+  
 
   fInstance = 0;
 }

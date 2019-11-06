@@ -434,6 +434,7 @@ std::string util::AsString(conv::ReacType_t t)
     case (kmtNCELScat ) : return "NCnuEEl";
     case (kmtNCoth    ) : return "NCother";
     case (kmtELScat   ) : return "nuEEl";
+    case (kmtCosmic   ) : return "Cosmic";
     case (kmtOther    ) : return "misc";
     default             : return "--";
   }

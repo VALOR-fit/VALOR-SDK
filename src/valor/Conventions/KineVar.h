@@ -38,7 +38,8 @@ typedef enum EKineVar
    kvYreco,           // reconstructed inelasticity (y)
    kvThetareco,       // reconstructed lepton angle
    kvq0reco,          // reconstructed 1st component of the 4-momentum
-   kvmodqreco         // reconstructed magnitude of the 3-momentum
+   kvmodqreco,        // reconstructed magnitude of the 3-momentum
+   kvNone             // a fake holder to mc events with no true energy 
 } 
 KineVar_t;
 

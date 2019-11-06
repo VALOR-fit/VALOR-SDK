@@ -29,7 +29,7 @@
 namespace valor {
 namespace conv {
 
-static const int kMaxKineSpaces = 11;
+static const int kMaxKineSpaces = 12;
 
 typedef enum EKineSpace
 {

@@ -214,20 +214,29 @@ bool SingleSampleKineBinning::Read(string file)
   for(size_t im = 0; im < fReactionModes.size(); im++) {
     conv::ReacMode_t m = fReactionModes[im];
     if(m == conv::kmUndefined) continue;
+
     string node_path = "true_simple/" + util::AsString(m);
     bool mode_true_smp_exists = util::NodeExists(xml,root_node,node_path);
+
+   
     if(mode_true_smp_exists) {
+
       string mode_true_smp_binning_file = util::XML2String(xml,root_node,node_path);
+      
       LOG("SampleBinning", pINFO)
         << "\n ** Overriding default / Reading simple true binning ** " 
         << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample) << " / mode: " <<  util::AsString(m)
         << "\n    From file: " << mode_true_smp_binning_file;
-      VALORBinning * mode_true_smp_binning = VALORBinning::BinningFromFile(mode_true_smp_binning_file,false);;
+      VALORBinning * mode_true_smp_binning = VALORBinning::BinningFromFile(mode_true_smp_binning_file,false);
+
+      std::cout << "test"<< std::endl;
       read_ok = mode_true_smp_binning->Read(mode_true_smp_binning_file);
+      std::cout << "test2"<< std::endl;
+
       if(!read_ok) {
-         LOG("SampleBinning", pINFO)
-            << "Could not read simple true binning from: " << mode_true_smp_binning_file;
-         return false;
+	LOG("SampleBinning", pINFO)
+	  << "Could not read simple true binning from: " << mode_true_smp_binning_file;
+	return false;
       }
       fTrueSimpleBinningUnique.push_back(mode_true_smp_binning);
       fTrueSimpleBinning [im] = mode_true_smp_binning;
@@ -306,6 +315,7 @@ bool SingleSampleKineBinning::Read(string file)
       string mode_xsec_true_binning_file = "";
       string node_path = "xsec_true/" + util::AsString(m);
       bool mode_xsec_true_exists = false;
+
       if(util::NodeExists(xml,root_node,node_path)) {
         mode_xsec_true_exists = true;
         mode_xsec_true_binning_file = util::XML2String(xml, root_node, node_path);
@@ -338,8 +348,11 @@ bool SingleSampleKineBinning::Read(string file)
           << "\n ** Overriding default / Reading xsec true binning ** " 
           << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample) << " / mode: " <<  util::AsString(m)
           << "\n    From file: " << mode_xsec_true_binning_file;
+
         VALORBinning * mode_xsec_true_binning = VALORBinning::BinningFromFile(mode_xsec_true_binning_file,false);
+	std::cout << "reading sskb: " << std::endl;
         read_ok = mode_xsec_true_binning->Read(mode_xsec_true_binning_file);
+	std::cout << "reading sskb: " << std::endl;
         if(!read_ok) {
            LOG("SampleBinning", pINFO)
               << "Could not read xsec true binning from: " << mode_xsec_true_binning_file;

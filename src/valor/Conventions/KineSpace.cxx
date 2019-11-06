@@ -20,6 +20,7 @@ using namespace valor::conv;
 //________________________________________________________________________________________
 string util::AsString(KineSpace_t ks)
 {
+
   switch(ks) {
     case (kspEtrue)            : return "Etrue";                  break;
     case (kspEreco)            : return "Ereco";                  break;
@@ -318,6 +319,9 @@ vector<KineVar_t> util::KineVar(conv::KineSpace_t ks)
       vv.push_back(kvEreco);
       vv.push_back(kvEvis);
       break;
+    case (kspNone):
+      vv.push_back(kvNone);
+      break;
     default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
@@ -402,6 +406,9 @@ vector<KineVar_t> util::KineVarTrue(conv::KineSpace_t ks)
       break;
     case (kspErecoEvis):
       break;
+    case (kspNone):
+      vv.push_back(kvNone);
+      break;
      default:
       LOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
@@ -450,6 +457,7 @@ conv::KineSpace_t util::KineSpaceFromKineVar(const KineVar_t & kv)
     case kvThetareco   : return kspThetareco;
     case kvq0reco      : return kspUndefined;
     case kvmodqreco    : return kspUndefined;
+    case kvNone        : return kspNone;
   }
   return kspUndefined;
 }

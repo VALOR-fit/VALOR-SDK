@@ -66,7 +66,7 @@ bool CompoundFitElements::Read(string xmlfile, Option_t * opt)
 //
 
   this->Book();
-  
+
   vector<const CorrelatedSystematics*> syst_objects;
 
   LOG("CompoundFitElements", pNOTICE) 

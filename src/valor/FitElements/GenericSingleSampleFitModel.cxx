@@ -53,6 +53,7 @@
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/KineBinning/UtlBinning.h"
+#include "valor/KineBinning/NoBinning.h"
 #include "valor/Oscillation/NuOsc3Flavour.h"
 #include "valor/Oscillation/SimpleOsc.h"
 #include "valor/Messenger/Messenger.h"
@@ -390,6 +391,7 @@ bool GenericSingleSampleFitModel::Read(std::ifstream& stream, Option_t* read_opt
 //________________________________________________________________________________________
 bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
 {
+
   LOG("GenericSingleSampleFitModel",pINFO) << "Configuring the Response Function Library... \n\n";
   // And now get the RFL
   fRFL = new util::RFL(fBinning, fSplineParams);
@@ -415,6 +417,7 @@ bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
     // Optimised binning
     util::KinematicPoint kp;
     for (int itrue = 0 ; itrue < n_true_bins_sb ; itrue++) {
+
       std::vector<double> true_centers = true_sb->BinCentre(itrue);
       if (true_centers.size() > 0) { kp.true1 = true_centers[0]; }
       if (true_centers.size() > 1) { kp.true2 = true_centers[1]; }
@@ -691,6 +694,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
   if(write_pdfc_vf || write_pdfc_rf) {
 
     for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+
       ReacMode_t m = fReactionModes[imode];
       if(m == kmUndefined) continue;
 
@@ -758,6 +762,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       }
 
     if(write_sb) {
+
       // in VALORArray format
       if (write_pdft_vf) {
         fPDFTotSb->SetName(TString::Format("%s_%s_%s",tag,"pdft_sb_vf",fName.c_str()));
@@ -832,7 +837,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       // This will work when we fix Make1DHistogram() to be happy using truth
       std::vector<KineVar_t> vars;//= binning.TrueSmpBinning(imode)->KineVars();
       vars.insert(vars.end(),reco_vars.begin(),reco_vars.end());
-      
+
       for (const conv::KineVar_t kv : vars) {
         conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
         if (ks == conv::kspUndefined) {continue;}
@@ -843,7 +848,6 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
           hob->SetName(hobname.Data());
           array->Add(hob);
         }
-        
         if (write_sb) {
           TH1 * hsb = util::binning::Make1DHistogram(*fPDFCompSb[imode],binning,ks,true);
           if(hsb) {
@@ -1436,6 +1440,10 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   bool any_bad_status = (bstat_sample || bstat_beam || bstat_reac_mode);
   
   for(const conv::KineVar_t & kv : kinevars) {
+
+    //The abstract none space does not have a branch.
+    if(kv == kvNone){continue;}
+
     bool bstat = t->SetBranchAddress(kinematic_branch_names[kv].c_str(),&kinematics[kv]);
     any_bad_status = any_bad_status || bstat;
   }
@@ -1458,7 +1466,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     }
     delete matches;
   }
-  
+
   // Let's see if we need the universe weight branch
   bool apply_universe_weights = fSystUniverseToApply.size();
   // And if so, get the information we need
@@ -1492,7 +1500,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   else {
     t->SetBranchStatus("variation_weights",0);
   }
-  
+
   Long_t nev = t->GetEntries();
   LOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
   
@@ -1596,17 +1604,21 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         << ", mode: " << util::AsString(m) << " ??";
       util::Die(-1);return;
     }
-    
+
     // Get the mode appropriate binning
     const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
-    
+
     // check kinematic values against built-in limits and make vectors
     std::vector<double> true_vars;
     std::vector<double> reco_vars;
     bool out_of_range = false;
     // in true
     for (conv::KineVar_t kv : true_sb->KineVars()) {
+
+      if(kv == kvNone){continue;}
+
       double val = kinematics.at(kv);
+
       if (val < true_sb->Minimum(kv) || val > true_sb->Maximum(kv)) {
         LOG("GenericSingleSampleFitModel",pWARN) 
           << "MC event: " << iev << " has true kinematic value outside range: "<<util::AsString(kv) << " = "<<val
@@ -1615,9 +1627,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       }
       true_vars.push_back(val);
     }
+  
     // and in reco
     for (conv::KineVar_t kv : reco_ob->KineVars()) {
       double val = kinematics.at(kv);
+
       if (val < reco_ob->Minimum(kv) || val > reco_ob->Maximum(kv)) {
 #ifdef T2K
         // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
@@ -1632,8 +1646,9 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       }
       reco_vars.push_back(val);
     }
+
     if (out_of_range) {continue;}
-    
+
     // Exposure for assumed data - Weight MC templates to that exposure
     double data_pot = fPOT;
 
@@ -1649,12 +1664,12 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     double ext_wght = GetExternalWeight(kinematics, m, conv::kntInclusive);
 
     // Find the appropriate bins
-    
     int true_bin    = true_sb->FindBin(true_vars);
     int reco_bin_sb = reco_sb->FindBin(reco_vars);
     int reco_bin_ob = reco_ob->FindBin(reco_vars);
 
-    LOG("GenericSingleSampleFitModel",pDEBUG) 
+    //Log Breaks as no there is no truth in the cosmics - Fix Dom Barker
+    LOG("GenericSingleSampleFitModel",pNOTICE) 
       << "Inserting to MC teplates --> MC event #" << iev 
       << "\n sample      = " << s        << " (" << util::AsString(s) << ")"
       << "\n beam        = " << beam     << " (" << util::AsString(b) << ")"
@@ -1664,12 +1679,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       << "\n ext_wght    = " << ext_wght
       << "\n true_bin    = " << true_bin
       << "\n reco_bin_ob = " << reco_bin_ob
-      << "\n reco_bin_sb = " << reco_bin_sb
-      << "\n  True: "<<true_vars[0]<<" , "<<true_vars[1]
-      << "\n  Reco: "<<reco_vars[0]<<" , "<<reco_vars[1];
+      << "\n reco_bin_sb = " << reco_bin_sb;
+      //      << "\n  True: "<<true_vars[0]<<" , "<<true_vars[1]
+      //<< "\n  Reco: "<<reco_vars[0]<<" , "<<reco_vars[1];
       
     double this_entry = wght;
-    
     this_entry *= pot_wght * ext_wght;
     
 #ifdef APPLY_ALL_AUTOWGHT_BRANCHES
@@ -1994,7 +2008,7 @@ void GenericSingleSampleFitModel::ApplyBinnedRatioTuningToTemplates (TH1* numera
     std::vector<std::string> templates_to_update, bool use_simple_binning)
 {
   // TODO: This needs slightly modifying (and renaming) so that bin-by-bin tuning can be applied. Currently this
-  // TODO: function assumes that you've got 2 input hists and then their ratio is taken as weights. Instead
+  // TODO: function assumes that you've got 2 input hists and then their ratio is taken as weights. Instead.
   // TODO: just take in a single hist, and put in an operation type (multiply or divide) into the XML files
 
   // TODO: This function needs some efficiency improvements, as it's too slow right now. Things to try:
@@ -2117,6 +2131,28 @@ void GenericSingleSampleFitModel::FluctuateMCStat(Option_t * option)
     if(!update_mct_sb) {
       bool is_null = fMCTNullOb[imode];
       if(is_null) continue;
+
+      // if(n_true_bins < 1){
+      // 	const NoBinning *true_nobinning  = dynamic_cast<const NoBinning*>(true_sb);
+      // 	//Make sure that we are in the no binning world.   
+      // 	if(true_nobinning != NULL){
+      // 	  for (int ireco = 0 ; ireco < n_reco_bins_ob ; ireco++) {
+      // 	    double val  = fMCTTunOb[imode]->GetEntry(ireco,itrue);
+      // 	    double nmc  = fMCStatOb[imode]->GetEntry(ireco,itrue);
+      // 	    // Fluctuate MC statistics and get the tweak factor
+      // 	    double nmcf = rnd->RndToyMCstat().Poisson(nmc); 
+      // 	    //double twk  = (nmc > 0) ? nmcf/nmc ? 1;
+      // 	    double twk  = (nmc > 0) ? nmcf/nmc : 1;
+      // 	    // Apply the tweak factor in the template, obviously a small effect for 
+      // 	    // large MC statistics. Again noting that this is not the statistical error
+      // 	    // for the current exposure. That one will be applied later in toy-MC generation.
+      // 	    double valf = val * twk; 
+      // 	    fMCTTunOb[imode]->SetEntry(valf,ireco,itrue);
+      // 	  }
+      // 	}
+      }
+
+
       for(int itrue = 0; itrue < n_true_bins; itrue++) {
         for(int ireco = 0; ier < n_reco_bins_ob; ier++) {
           double val  = fMCTTunOb[imode]->GetEntry(ireco,itrue);
@@ -2142,6 +2178,29 @@ void GenericSingleSampleFitModel::FluctuateMCStat(Option_t * option)
       
       // Reset
       fMCTTunOb[imode]->setAll(0.);
+
+      // if(n_true_bins < 1){
+      // 	const NoBinning *true_nobinning  = dynamic_cast<const NoBinning*>(true_sb);
+      // 	//Make sure that we are in the no binning world.   
+      // 	if(true_nobinning != NULL){
+      // 	  for(int ireco = 0; ireco < n_reco_bins; ireco++) {
+      // 	    double val  = fMCTTunSb[imode]->GetEntry(ireco,99999);
+      // 	    double nmc  = fMCStatSb[imode]->GetEntry(ireco,99999);
+      // 	    double nmcf = rnd->RndToyMCstat().Poisson(nmc); 
+      // 	    //double twk  = (nmc > 0) ? nmcf/nmc ? 1;
+      // 	    double twk  = (nmc > 0) ? nmcf/nmc : 1;
+      // 	    double valf = val * twk; 
+      // 	    fMCTTunSb[imode]->SetEntry(valf,ireco,99999);
+      // 	    std::vector<double> reco_vars = reco_sb->BinCentre(ireco);
+      // 	    int ireco_ob = reco_ob->FindBin(reco_vars);
+      // 	    double valf_ob = fMCTTunOb[imode]->GetEntry(ireco_ob,99999);
+      // 	    valf_ob += valf;
+      // 	    fMCTTunOb[imode]->SetEntry(valf_ob,ireco_ob,99999);
+      // 	  }
+      // 	}
+      // }
+
+
 
       // Start by fluctuation the templates using the simple binning.
       // Then map each simple bin to an optimized bin and add to its contents. 
@@ -3015,7 +3074,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     }
     return;
   }
-  
+
   PhysHypothesis_t hypid = fPhysHypothesis.Hypothesis();
   // Variables for the sterile oscillations if we need them, since they don't come in an object
   double sinsq2thmue = -1, sinsq2thmumu = -1, dm41sq = -1;
@@ -3116,6 +3175,9 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     if(fBeam     == kbUndefined) continue;
     if(fSample   == ksUndefined) continue;
 
+    //Make sure the mode is not a cosmic as oscilalting a cosmic would be silly. 
+    if(m == kmCosmic) continue;
+
     //check if oscillation probabilities should be applied to this combination of phys hypothesis and detector
     if(!fSkipOscProbApplyCheck) {
      if(!util::OscProbIsAppliedTo(hypid, fDetector)) {continue; }
@@ -3133,7 +3195,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     for(int itrue = 0; itrue < n_true_bins_sb; itrue++) {
       //get the true energy to calculate osc prob 
       double Etrue = true_sb->BinCentre(itrue,conv::kvEtrue);
-      
+
       if (hypid == kHypOsc3F) {
         double p_osc    [3][3];
         double p_osc_bar[3][3];
@@ -3242,7 +3304,7 @@ void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
     if(m == kmUndefined) continue;
     
     const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
-    const int n_true_bins_sb = true_sb->NBins();
+    int n_true_bins_sb = true_sb->NBins();
 
     // Recast VALORArray blocks so they can be used addressed like normal arrays (fast).
     // Hard to read, so should only be used in code for which speed is essential.
@@ -3257,9 +3319,19 @@ void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
     
     for(int ireco=0; ireco < n_reco_bins_ob; ireco++) {
       double sum = 0.;
+
+      // if(n_true_bins_sb < 1){
+      // 	const NoBinning *true_nobinning  = dynamic_cast<const NoBinning*>(true_sb);
+      // 	//Make sure that we are in the no binning world.   
+      // 	if(true_nobinning != NULL){ 
+      // 	    sum += mctFinObArr[0][ireco];
+      // 	}
+      // }
+
       for(int itrue=0; itrue < n_true_bins_sb; itrue++) {
-        sum += mctFinObArr[ireco][itrue];
+	sum += mctFinObArr[ireco][itrue];
       }//itrue
+      
       pdfCompObArr[ireco] = sum;
     }//ireco
 
@@ -3268,7 +3340,16 @@ void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
       if(is_null) continue;
       for(int ireco=0; ireco < n_reco_bins_sb; ireco++) {
         double sum = 0.;
-        for(int itrue=0; itrue < n_true_bins_sb; itrue++) {
+
+	// if(n_true_bins_sb < 1){
+	//   const NoBinning *true_nobinning  = dynamic_cast<const NoBinning*>(true_sb);
+	//   //Make sure that we are in the no binning world.   
+	//   if(true_nobinning != NULL){ 
+	//     sum += mctFinSbArr[0][ireco];
+	//   }
+	// }
+	
+	for(int itrue=0; itrue < n_true_bins_sb; itrue++) {
           sum += mctFinSbArr[ireco][itrue];
         }//itrue
         pdfCompSbArr[ireco] = sum;
@@ -3359,7 +3440,7 @@ void valor::GenericSingleSampleFitModel::UpdateObservableBinningFromSimple(Optio
     
     const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
     const int n_true_bins_sb = true_sb->NBins();
-    
+
     // Zero it out, since we'll just be adding to elements
     fMCTFinOb[imode]->SetAll(0.);
     
@@ -3367,6 +3448,34 @@ void valor::GenericSingleSampleFitModel::UpdateObservableBinningFromSimple(Optio
     for(int ireco_sb = 0; ireco_sb < n_reco_bins_sb; ireco_sb++) {
       // And optimised reco bins
       for(int ireco_ob = 0; ireco_ob < n_reco_bins_ob; ireco_ob++) {
+
+	//There is the potential that there is no truth binning so in this case just addup the reco.
+	// if(n_true_bins_sb < 1){
+	//   const NoBinning *true_nobinning  = dynamic_cast<const NoBinning*>(true_sb);
+	//   //Make sure that we are in the no binning world.
+	//   if(true_nobinning != NULL){
+	//     // Fraction of the observable bin held in the simple bin.
+	//     const std::vector<double> & frac_sb_range1 = reco_sb->BinRange(ireco_sb,0);
+	//     const std::vector<double> & frac_ob_range1 = reco_ob->BinRange(ireco_ob,0);
+	//     double frac_sb_1 = util::FractionOfBinContained(frac_sb_range1[0],frac_sb_range1[1], frac_ob_range1[0],frac_ob_range1[1]);
+	    
+	//     double frac_sb_2 = 1;
+	//     if (reco_sb->NDimensions() > 1) {
+	//       const std::vector<double> & frac_sb_range2 = reco_sb->BinRange(ireco_sb,1);
+	//       const std::vector<double> & frac_ob_range2 = reco_ob->BinRange(ireco_ob,1);
+	//       frac_sb_1 = util::FractionOfBinContained(frac_sb_range2[0],frac_sb_range2[1],frac_ob_range2[0],frac_ob_range2[1]);
+	//     }
+	    
+	//     double frac_sb = frac_sb_1 * frac_sb_2;
+	//     if (frac_sb < conv::kASmallNum) {
+	//       continue;
+	//     }
+	//     double sb_content = fMCTFinSb[imode]->GetEntry(ireco_sb,99999);
+	//     double content_to_add = frac_sb * sb_content;
+	//     fMCTFinOb[imode]->AddToEntry(content_to_add,ireco_ob,99999);
+	//   }
+	// }
+	
         // Now loop over the truth bins
         for(int itrue_sb = 0; itrue_sb < n_true_bins_sb; itrue_sb++) {
           // Fraction of the observable bin held in the simple bin.
@@ -3833,6 +3942,24 @@ void GenericSingleSampleFitModel::FillNonEmptyBinVectors()
 
     unsigned int i_nonempty_bin_ob = 0;
     unsigned int i_nonempty_bin_sb = 0;
+
+    // if(n_true_bins < 1){
+    //   const NoBinning *true_nobinning  = dynamic_cast<const NoBinning*>(true_sb);
+    //   //Make sure that we are in the no binning world.   
+    //   if(true_nobinning != NULL){
+    // 	for(int ireco = 0; ireco < n_reco_bins_ob; ireco++) {
+    // 	  if(fMCTFinOb[imode]->GetEntryRef(ireco,99999) > conv::kASmallNum) {
+    // 	    fNonEmptyBinsOb[imode][i_nonempty_bin_ob++] = ireco;
+    // 	  }
+    // 	}
+    // 	for(int ireco = 0; ireco < n_reco_bins_sb; ireco++) {
+    // 	  if(fMCTFinSb[imode]->GetEntryRef(ireco,99999) > conv::kASmallNum) {
+    // 	    fNonEmptyBinsSb[imode][i_nonempty_bin_sb++] = ireco;
+    // 	  }
+    // 	}
+    //   }
+    // }
+
     for(int itrue = 0; itrue < n_true_bins; itrue++) {
       for(int ireco = 0; ireco < n_reco_bins_ob; ireco++) {
         if(fMCTFinOb[imode]->GetEntryRef(ireco,itrue) > conv::kASmallNum) {

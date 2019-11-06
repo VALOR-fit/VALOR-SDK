@@ -407,7 +407,16 @@ TFile * valor::util::XML2TFile(
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile * file = new TFile(full_filename.Data(),"read");
+  TFile * file;
+  
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+    file = TFile::Open(full_filename.Data(),"read");
+  }
+  else{ 
+    file = new TFile(full_filename.Data(),"read");
+  }
+
   if(!file) {
     LOG("XML",pFATAL) << "No file: " << full_filename << " found";
     util::Die(1); return 0;
@@ -436,6 +445,10 @@ TH1F * valor::util::XML2TH1F(
   }
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
+  
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
 
   TFile file(full_filename,"read");
   TH1F * h = (TH1F*)file.Get(objname.c_str());
@@ -469,7 +482,12 @@ TGraph * valor::util::XML2TGraph(
     }
     
     TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
-    
+   
+    if(filename.find("xroot") != std::string::npos){
+      full_filename = TString::Format("%s",filename.c_str());
+    }
+
+ 
     TFile file(full_filename,"read");
     TGraph * h = (TGraph*)file.Get(objname.c_str());
     if(!h) {
@@ -502,6 +520,10 @@ TH1D * valor::util::XML2TH1D(
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+  
   TFile file(full_filename,"read");
   TH1D * h = (TH1D*)file.Get(objname.c_str());
   if(!h) {
@@ -536,6 +558,10 @@ TH2D * valor::util::XML2TH2D(
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+
   TFile file(full_filename,"read");
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
@@ -569,7 +595,12 @@ TH3D * valor::util::XML2TH3D(
     }
     
     TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+    if(filename.find("xroot") != std::string::npos){
+      full_filename = TString::Format("%s",filename.c_str());
+    }
     
+      
     TFile file(full_filename,"read");
     TH3D * h2 = (TH3D*)file.Get(objname.c_str());
     if(!h2) {
@@ -601,10 +632,18 @@ TTree * valor::util::XML2TTree(
   if(base_dir.find("<env>") != string::npos) {
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
-
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile * file = new TFile(full_filename.Data(),"read");
+  TFile * file;
+  
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+    file = TFile::Open(full_filename.Data(),"read");
+  }
+  else{ 
+    file = new TFile(full_filename.Data(),"read");
+  }
+
   TTree * tree = (TTree*)file->Get(objname.c_str());
   if(!tree) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -634,6 +673,10 @@ TVectorD * valor::util::XML2TVectorD(
   }
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
 
   TFile file(full_filename,"read");
   TVectorD * vec = (TVectorD*)file.Get(objname.c_str());
@@ -666,6 +709,10 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
   }
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
 
   TFile file(full_filename,"read");
   TMatrixDSym * matrix = (TMatrixDSym*)file.Get(objname.c_str());
@@ -701,7 +748,16 @@ TMatrixD * valor::util::XML2TMatrixD(
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile * file = new TFile(full_filename.Data(),"read"); 
+  TFile * file;
+  
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+    file = TFile::Open(full_filename.Data(),"read");
+  }
+  else{ 
+    file = new TFile(full_filename.Data(),"read");
+  }
+  
   TMatrixD * matrix = (TMatrixD*) file->Get(objname.c_str());
   if(!matrix) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -733,7 +789,11 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
-  TFile file(full_filename.Data(),"read");
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+
+  TFile file(full_filename.Data(),"read"); 
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
@@ -771,6 +831,10 @@ TSpline3 * valor::util::XML2TSpline3(
   }
 
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
+
+  if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
 
   TFile file(full_filename.Data(),"read"); 
   TSpline3 * spl = (TSpline3*) file.Get(objname.c_str());

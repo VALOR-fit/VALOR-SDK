@@ -261,7 +261,7 @@ VALORBinning* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
          nbins *= fBinEdges[d].size()-1;
       }
    }
-   
+  
    binning->fNBins = nbins;
 
    binning->fBin1DArrs = vector< vector<unsigned int> > (binning->fNDimensions, vector<unsigned int>(binning->NBins()));

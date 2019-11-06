@@ -44,6 +44,8 @@ public:
   // If read_now is true, it will read this immediately
   // Otherwise just get the right type and return that, you must call Read() manually
   static VALORBinning * BinningFromFile(const std::string & xml_file, bool read_now = false);
+
+  static std::string GetType(const std::string & xml_file, bool read_now = false);
   
   VALORBinning();
   VALORBinning(std::string name, std::string title);

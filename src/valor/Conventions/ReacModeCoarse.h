@@ -89,7 +89,8 @@ typedef enum EReacModeCoarse
    kmcOscNuEBarCC,           // numubar->nuebar  CC all
    kmcUnOscNuEBarCC,         // nuebar->nuebar  CC all
    kmcNuTauCC,               // numu(nue)->nutau CC all (separated from nutaubar)
-   kmcNuTauBarCC             // numubar(nuebar)->nutaubar CC all (separated from nutau)
+   kmcNuTauBarCC,             // numubar(nuebar)->nutaubar CC all (separated from nutau)
+   kmcCosmic
 } 
 ReacModeCoarse_t;
 
@@ -270,6 +271,7 @@ static const ReacModeCoarse_t kCoarseReacPriority[kNReacModes][kMaxCoarseReacOpt
    /* kmNuEBarToNuTauBarCCcoh      */ {kmcNuTauBarCC   , kmcNuTauNuTauBarCC, kmcUndefined     , kmcUndefined   , kmcUndefined, kmcUndefined},
    /* kmNuEBarToNuTauBarCCELScat   */ {kmcNuTauBarCC   , kmcNuTauNuTauBarCC, kmcUndefined     , kmcUndefined   , kmcUndefined, kmcUndefined},
    /* kmNuEBarToNuTauBarCCoth      */ {kmcNuTauBarCC   , kmcNuTauNuTauBarCC, kmcUndefined     , kmcUndefined   , kmcUndefined, kmcUndefined},
+   /* kmCosmic                     */ {kmcCosmic       , kmcCosmic         , kmcCosmic        , kmcCosmic      , kmcCosmic   , kmcCosmic },
 // /* kmOther                      */ {kmcUndefined , kmcUndefined   , kmcUndefined, kmcUndefined, kmcUndefined },
 
 }; //

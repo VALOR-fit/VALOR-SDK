@@ -12,6 +12,7 @@
 #pragma link C++ class valor::VALORBinning;
 #pragma link C++ class valor::KBCubHcmbEdge2Edge;
 #pragma link C++ class valor::KBCubHcmbMondrian;
+#pragma link C++ class valor::NoBinning;
 
 // Standard ROOT Objects STL containers
 #pragma link C++ class std::vector<TLine>;                                                 

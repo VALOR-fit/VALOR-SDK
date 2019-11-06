@@ -232,6 +232,7 @@ typedef enum EReacType
   kmtNCELScat,    // NC nu + e elastic scattering (not nue)
   kmtNCoth,       // NC other
   kmtELScat,      // nue + e elastic scattering (nue, NC + CC + interference) 
+  kmtCosmic,
   kmtOther        // misc
 }
 ReacType_t;
@@ -407,6 +408,7 @@ static const ReacType_t kReacModeToType[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCcoh        */ kmtCCcoh    ,
    /*   kmNuEBarToNuTauBarELScat       */ kmtCCELScat ,
    /*   kmNuEBarToNuTauBarCCoth        */ kmtCCoth    ,
+                                          kmtCosmic   ,
 // /*   kmOther             */ kmtOther 
 };
 

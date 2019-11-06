@@ -18,6 +18,7 @@ Copyright (c) 2010-2017, The VALOR Fitting Group, All Rights Reserved.
 
 #include "valor/KineBinning/KBCubHcmbMondrian.h"
 #include "valor/KineBinning/KBCubHcmbEdge2Edge.h"
+#include "valor/KineBinning/NoBinning.h"
 
 using namespace valor;
 using std::vector;
@@ -179,11 +180,16 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
 
   VALORBinning * binning = nullptr;
   string type = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"type"));
+
   if(type == "edge-to-edge") {
     binning = new KBCubHcmbEdge2Edge;
   }
   else if (type == "mondrian") {
     binning = new KBCubHcmbMondrian;
+  }
+  else if ( type == "none"){
+    std::cout << "is non"<< std::endl;
+    binning = new NoBinning;
   }
   else {
     LOG("VALORBinning",pFATAL) << "Unable to initialise binning type "<<type<<" in xml file "<<xml_file;
@@ -196,9 +202,40 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
       util::Die(-1) ; return nullptr;
     }
   }
+
   return binning;
 }
 //________________________________________________________________________________________
+
+std::string VALORBinning::GetType(const std::string & xml_file, bool read_now)
+{
+  TString ts_file(util::CompleteConfigPath(xml_file).c_str());
+  gSystem->ExpandPathName(ts_file);
+  
+  FileStat_t dummy;
+  if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
+    LOG("VALORBinning", pERROR) << "Binning file not found: " << xml_file;
+    util::Die(1); return nullptr;
+  }
+
+  // Parse the input binning configuration XML file
+  TXMLEngine* xml = new TXMLEngine;   
+  XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
+  if (xmldoc==0) {
+    LOG("VALORBinning",pERROR) 
+        << "Can not parse input XML file [" << ts_file << "]";
+    delete xml;
+    util::Die(1); return nullptr;
+  }
+  XMLNodePointer_t root_node = xml->DocGetRootElement(xmldoc);
+
+  VALORBinning * binning = nullptr;
+  string type = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"type"));
+
+  return type;
+}
+//________________________________________________________________________________________
+
 int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const
 {
   // Check that the input current bin number is sensible. Allow current_bin = -1 for the start of the iteration,
