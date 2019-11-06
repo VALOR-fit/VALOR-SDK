@@ -673,6 +673,12 @@ template<typename numtype> void VALORArrayT<numtype>::
    stream.write((char*)fArray, fSize * sizeof(numtype));
 }
 //________________________________________________________________________________________
+template<typename numtype> long VALORArrayT<numtype>::
+  StreamSize()
+{
+  return 7 * sizeof(int) + fSize * sizeof(numtype);
+}
+//________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::
   Resize(const std::vector<int> dimensions)
 {

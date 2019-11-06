@@ -114,6 +114,17 @@ bool CompoundFitModel::Read(std::ifstream& stream, Option_t* read_opt)
    return status;
 }
 //________________________________________________________________________________________
+long CompoundFitModel::StreamSize(Option_t* opt) const
+{
+  long size = 0;
+  for(std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
+  {
+    size += (*it)->StreamSize(opt);
+  }
+
+  return size;
+}
+//________________________________________________________________________________________
 bool CompoundFitModel::Generate (const PhysHypothesis & ph, Option_t * opt)
 {
   bool status = true;

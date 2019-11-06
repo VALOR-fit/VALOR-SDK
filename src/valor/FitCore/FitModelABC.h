@@ -42,6 +42,7 @@ public:
   // Read configuration data from file
   virtual bool Read(std::string file, Option_t * opt = 0) = 0;
   virtual bool Read(std::ifstream& stream, Option_t* read_opt = 0) = 0;
+  virtual long StreamSize(Option_t* opt = 0) const = 0;
 
   // Below are a set methods to generate model predictions for a given physics hypothesis and a set of nuisance parameters.
   // The model is first tweaked appropriately by setting systematics to particular values or by randomizing them.
