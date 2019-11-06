@@ -41,7 +41,7 @@ void rj_read_osc_fit_results(const char * filename)
   fitnt->SetBranchAddress("best_fit_model",         &bfmodel_array);
   fitnt->SetBranchAddress("data",                   &data_array);
 
-  TCanvas * c   = new TCanvas("c","",20,20,500,500);
+  TCanvas *c = new TCanvas("c","",20,20,500,500);
 
   for(int i=0; i<2; i++) {
     fitnt->GetEntry(i);
@@ -69,20 +69,20 @@ void rj_read_osc_fit_results(const char * filename)
     // Adapt trivially for other fits
     // The names of objects used in TObjArray::FindObject() below 
     // is what gets printed out by the TObjArray::Print() methods above.
-    TH1D * mc         = (TH1D*) data_array->FindObject("toymc_data_sb_rf_sbn_nd__BNB_FHC__numulikeCChigh_Ereco");
+    TH1D * data         = (TH1D*) data_array->FindObject("toymc_data_sb_rf_sbn_nd__BNB_FHC__numulikeCChigh_Ereco");
     TH1D * bestfit    = (TH1D*) bfmodel_array->FindObject("best_fit_pdfts_sb_rf_sbn_nd__BNB_FHC__numulikeCChigh_Ereco");
     // Fix binning to be per 1 GeV
-    mc->SetFillStyle(3325);
-    mc->SetFillColor(kBlue-3);
-    mc->SetLineWidth(1);
-    mc->SetLineStyle(7);
-    mc->SetLineColor(kBlue-2);
+    data->SetFillStyle(3325);
+    data->SetFillColor(9);
+    data->SetLineWidth(1);
+    data->SetLineColor(9);
     bestfit->SetFillColor(kWhite);
-    bestfit->SetLineWidth(1);
-    bestfit->SetLineColor(kRed+2);
+    bestfit->SetLineWidth(2);
+    bestfit->SetLineStyle(7);
+    bestfit->SetLineColor(8);
     std::vector<TH1D*> hists, hists_width;
     hists.clear(); hists_width.clear();
-    hists.push_back(mc);
+    hists.push_back(data);
     hists.push_back(bestfit);
 
     for(unsigned int ihists = 0; ihists < hists.size(); ++ihists){
@@ -139,7 +139,7 @@ void rj_read_osc_fit_results(const char * filename)
     for(int j = 0; j < nRows; ++j){
       for(int k = 0; k < nCols; ++k){
         if(j != k) continue; // Only look at diagonal elements
-        paramErrors.push_back(cov(j,k));
+        paramErrors.push_back(sqrt(cov(j,k)));
       }
     }
 
@@ -151,6 +151,8 @@ void rj_read_osc_fit_results(const char * filename)
 
     TH1D *h_initial = new TH1D(nameInit,    "Nuisance parameters pre & post fit", 76, 0, 77);
     TH1D *h_bestfit = new TH1D(nameBestfit, "Nuisance parameters pre & post fit", 76, 0, 77);
+  
+    TLegend *l = new TLegend(0.23,0.28,0.58,0.48);
 
     unsigned int nPhysicsParams = 0;
     unsigned int nuisanceIt = 0;
@@ -171,15 +173,30 @@ void rj_read_osc_fit_results(const char * filename)
       h_bestfit->SetBinError(nuisanceIt,paramErrors[j]);
     }
 
-    h_bestfit->Draw("E3");
+    l->AddEntry(h_initial, "Initial", "lf");
+    l->AddEntry(h_bestfit, "Bestfit", "lf");
+
+    h_bestfit->Draw("E4");
     h_initial->Draw("same hist");
-    h_bestfit->GetXaxis()->SetLabelSize(0.02);
+    h_bestfit->GetXaxis()->SetLabelSize(0.025);
+    h_bestfit->GetXaxis()->SetTitleSize(0.035);
+    h_bestfit->GetXaxis()->SetTitleOffset(2.2);
+    h_bestfit->GetYaxis()->SetLabelSize(0.03);
+    h_bestfit->GetYaxis()->SetTitleSize(0.035);
+    h_bestfit->GetYaxis()->SetTitleOffset(1);
+    h_bestfit->GetXaxis()->SetTitle("Nuisance param.");
+    h_bestfit->GetYaxis()->SetTitle("Parameter value");
     h_bestfit->SetMarkerSize(0);
     h_bestfit->SetLineColor(8);
     h_bestfit->SetFillColor(8);
     h_initial->SetLineStyle(7);
-    h_initial->SetLineWidth(1);
+    h_initial->SetLineWidth(2);
     h_initial->SetLineColor(9);
+
+    l->Draw();
+    l->SetBorderSize(0);
+    l->SetFillColor(0);
+    l->SetTextFont(132);
 
     c->Update();
     c->Draw();
