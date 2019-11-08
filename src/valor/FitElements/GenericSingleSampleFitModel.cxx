@@ -1416,8 +1416,8 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   
   std::map<KineVar_t,double> kinematics;
   
-  std::vector<std::vector<float> > * variation_weights = nullptr;
-  
+  std::map<int,std::vector<float>* > variation_weights;
+
   // Set up a list of the branches associated with each kinematic variable
   std::map<KineVar_t,std::string> kinematic_branch_names;
   for (const KineVar_t & kv : kinevars) {
@@ -1484,18 +1484,31 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       LOG("GenericSingleSampleFitModel",pFATAL) << "Can't get names of variation weights";
       util::Die(-1);
     }
+
     for (int i = 0 ; i < variation_names->GetEntries(); i++) {
       TObjString * tos = dynamic_cast<TObjString*>(variation_names->At(i));
       assert(tos);
       std::string proper_string(tos->GetString().Data());
       variation_name_to_index[proper_string] = i;
+      variation_weights[i] = nullptr;
+
+
+      //Get the weights
+      std::string variation_branch_name = "variation_" + proper_string;
+
+      bool variation_noset = t->SetBranchAddress(variation_branch_name.c_str(), &(variation_weights.at(i)));
+      if (variation_noset) {
+	  LOG("GenericSingleSampleFitModel",pFATAL) << "Trying to apply variation weights but cannot read branch: " << variation_branch_name;
+	  util::Die(-1);
+	}
     }
-    // and set up to read the tree
-    bool bstat_var_weights = t->SetBranchAddress("variation_weights", &variation_weights);
-    if (bstat_var_weights) {
-      LOG("GenericSingleSampleFitModel",pFATAL) << "Trying to apply variation weights but cannot read branch.";
-      util::Die(-1);
-    }
+
+    // // and set up to read the tree
+    // bool bstat_var_weights = t->SetBranchAddress("variation_weights", &variation_weights);
+    // if (bstat_var_weights) {
+    //   LOG("GenericSingleSampleFitModel",pFATAL) << "Trying to apply variation weights but cannot read branch.";
+    //   util::Die(-1);
+    // }
   }
   else {
     t->SetBranchStatus("variation_weights",0);
@@ -1513,6 +1526,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   
   for(Long_t iev = 0; iev < nev; iev++) 
   {
+
     t->GetEntry(iev);
 
     if(iev%(nev/20)==0) {
@@ -1698,7 +1712,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       const std::string & name = variation_name_and_id.first;
       const int & universe_id  = variation_name_and_id.second;
       const int & parameter_id = variation_name_to_index.at(name);
-      this_entry *= (*variation_weights)[parameter_id][universe_id];
+      this_entry *= variation_weights.at(parameter_id)->at(universe_id);
     }
     
     // Add `nom' array entry (and init `tun', `sys' and `fin' arrays = `nom')
@@ -2705,7 +2719,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       } // i non-empty bin
     } // iparams (splines)
 #endif //SPLINE_WEIGHTS_ARE_ONE
-    
+  
 // Same again but for simple binning
     if(update_mct_sb) {
       if (!imode) {
@@ -2732,7 +2746,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           LOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
           continue;
         }
-
+    
         assert(!util::IsOscParam(p));
         
         bool has_kinematic_dependence = param.HasKinematicRange();
@@ -2785,24 +2799,25 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             LOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
             util::Die(-1); break;
           }
-
+     
           // Work out how many true and reco dimensions to apply this param to
           unsigned int apply_true_ndims = std::min(param_true_kv_size, (unsigned int)true_kinevars.size());
           unsigned int apply_reco_ndims = std::min(param_reco_kv_size, (unsigned int)reco_kinevars.size());
-
+      
           // Get the true kine var ranges
           if (apply_true_ndims == 1) {
             const std::pair<double,double> & pair1 = param.GetKineRange(true_kinevars[0]);
             true1_min = pair1.first;
             true1_max = pair1.second;
+	  }
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
             LOG("GenericSingleSampleFitModel",pINFO)
               << fName << ", " << util::AsString(m) << ": "
               << "Applying parameter: " << param_name << " with value = " << f
               << " in "  << util::AsString(true_kinevars[0]) << " bin range: [" << true1_min << ", " << true1_max << "]";
 #endif
-          }
-          else if (apply_true_ndims == 2) {
+	
+	 else if (apply_true_ndims == 2) {
             const std::pair<double,double> & pair1 = param.GetKineRange(true_kinevars[0]);
             const std::pair<double,double> & pair2 = param.GetKineRange(true_kinevars[1]);
             true1_min = pair1.first;
@@ -2821,12 +2836,12 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             LOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
             util::Die(-1); break;
           }
-
+      
           // Get the reco kine var ranges
           if (apply_reco_ndims == 1) {
             const std::pair<double,double> & pair1 = param.GetKineRange(reco_kinevars[0]);
             reco1_min = pair1.first;
-            reco1_max = pair1.second;
+	    reco1_max = pair1.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
             LOG("GenericSingleSampleFitModel",pINFO)
               << fName << ", " << util::AsString(m) << ": "
@@ -2853,7 +2868,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             LOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
             util::Die(-1); break;
           }
-
+    
           int last_itrue = -1;
           double frac_true = 1.;
           for(int i_non_empty = 0; i_non_empty < fNumOfNonEmptyBinsSb[imode]; i_non_empty++) {
@@ -2873,7 +2888,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
                 const vector<double> & true2_range (true_sb->BinRange(itrue,true_kinevars[1]));
                 frac_true *= util::FractionOfBinContained(true2_range[0],true2_range[1],true2_min,true2_max);
               }
-            }
+	    }
             double frac_reco = 1.;
             if (apply_reco_ndims == 1 || apply_reco_ndims == 2) {
               const vector<double> & reco1_range (reco_sb->BinRange(ireco,reco_kinevars[0]));
