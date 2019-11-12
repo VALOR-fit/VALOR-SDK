@@ -43,6 +43,7 @@ extern "C" void R__unzip(int *srcsize, unsigned char *src, int *tgtsize, unsigne
 template<typename numtype> VALORArrayT<numtype>::VALORArrayT() :
   TNamed(),
   fNDim(0),
+  fSize(0),
   fArray(NULL),
   fCompressionLevel(conv::kDefaultCompressionLevel)
 {
@@ -414,7 +415,10 @@ template<typename numtype> std::string VALORArrayT<numtype>::
 template<typename numtype> VALORArrayT<numtype> VALORArrayT<numtype>::
   GetSlice(int dimension, int min_bin, int max_bin) const
 {
-  if (fNDim < 2) return VALORArrayT();
+  if (fNDim < 2) {
+    LOG("VALORArray",pFATAL) << "Trying to slice array without enough dimensions "<<fName;
+    util::Die(-1); return VALORArrayT();
+  }
   // Find out dimensions of new array
   int new_ndim = fNDim-1;
   int new_dims[new_ndim];
