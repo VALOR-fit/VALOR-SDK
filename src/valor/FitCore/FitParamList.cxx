@@ -763,6 +763,13 @@ FitParamList * FitParamList::NamedParameterList(string name, size_t n_empty)
     return fp;
   }
   
+  if(name == "void") {
+    FitParamList * fp = new FitParamList(n_empty);
+    fp -> SetParListName(name);
+    fp -> SetSystMode(0);
+    return fp;
+  }
+  
   return 0;
 }
 //________________________________________________________________________________________
