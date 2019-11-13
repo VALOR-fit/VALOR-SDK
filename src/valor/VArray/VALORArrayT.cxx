@@ -12,7 +12,10 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 #include <iostream>
 #include <fstream>
 #include <numeric>
+#include <cmath>
+#include <type_traits>
 
+#include "valor/Conventions/Constants.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/VArray/VALORArrayT.h"
@@ -462,6 +465,17 @@ template<typename numtype> VALORArrayT<numtype> VALORArrayT<numtype>::
     }
   }
   
+  /*
+  numtype orig_int  = Integral();
+  if (std::is_floating_point<numtype>::value) {
+    if (std::abs(orig_int) > conv::kAVerySmallNum) {
+      numtype slice_int = slice.Integral();
+      numtype diff = std::abs(orig_int - slice_int);
+      //~ assert( diff/orig_int<conv::kASmallNum);
+      assert( diff<conv::kASmallNum);
+    }
+  }
+  */
   return slice;
 }
 //________________________________________________________________________________________
