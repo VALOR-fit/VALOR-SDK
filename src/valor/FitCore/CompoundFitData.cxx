@@ -289,3 +289,8 @@ void CompoundFitData::SetName(std::string name)
   fName = name;
 }
 //________________________________________________________________________________________
+void CompoundFitData::SetAssociatedModel(FitModelABC *model_abc)
+{
+  fCFM = dynamic_cast<CompoundFitModel*>(model_abc);
+}
+//________________________________________________________________________________________

@@ -46,6 +46,8 @@ public:
   FitDataABC *  FitData  (void) const { return fCompoundFitData;  }
   FitModelABC * FitModel (void) const { return fCompoundFitModel; }
 
+  bool DataGiven(void) const { return fDataFileGiven; }
+
 private:
 
   void Init  (void);
@@ -57,13 +59,14 @@ private:
   bool ReadElement      (TXMLEngine* xmleng, XMLNodePointer_t top_node, Option_t * opt = "");
   CorrelatedSystematics * ReadSystematicGroup (TXMLEngine* xmleng, XMLNodePointer_t top_node, Option_t * opt = "");
 
-  FitDataABC *  AdoptFitData  (string config_file, conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, string class_name, Option_t * opt = "");
+  FitDataABC *  AdoptFitData  (string config_file, conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, string class_name, FitModelABC *model_abc, Option_t * opt = "");
   FitModelABC * AdoptFitModel (string config_file, conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, string class_name, Option_t * opt = "");
   void *        InstantiateUsingDictionaryRegistration (string class_name);
 
   CompoundFitData  * fCompoundFitData;
   CompoundFitModel * fCompoundFitModel;
   
+  bool fDataFileGiven = false;
 };
 
 } // valor

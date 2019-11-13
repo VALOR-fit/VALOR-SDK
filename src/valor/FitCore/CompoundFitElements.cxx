@@ -228,15 +228,18 @@ bool CompoundFitElements::ReadElement(TXMLEngine* xmleng, XMLNodePointer_t top_n
   if (!binning.empty()) {
     model_opt = TString::Format("%s binning=%s",opt,binning.c_str());
   }
+
+  if(!data_file.empty()) // The data tag has been filled
+    fDataFileGiven = true;
   
   if (success) {
-    FitDataABC *  fit_data  = 
-       this->AdoptFitData (data_file, detector, beam, sample, observable, data_class , opt);
     FitModelABC * fit_model = 
        this->AdoptFitModel(mc_file,   detector, beam, sample, observable, model_class, model_opt.Data());
-
-    assert(fit_data);
     assert(fit_model);
+
+    FitDataABC *  fit_data  = 
+       this->AdoptFitData (data_file, detector, beam, sample, observable, data_class, fit_model, opt);
+    assert(fit_data);
     
     fCompoundFitModel->AddSubModel(fit_model);
     fCompoundFitData ->AddSubData (fit_data);
@@ -293,14 +296,28 @@ void CompoundFitElements::Clean(void)
 }
 //________________________________________________________________________________________
 FitDataABC * CompoundFitElements::AdoptFitData(
-  string /*config_file*/, 
+  string config_file, 
   conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, 
   string class_name,
-  Option_t * /*opt*/)
+  FitModelABC *model_abc, 
+  Option_t * opt)
 {
   void * vbase = this->InstantiateUsingDictionaryRegistration(class_name);
   SingleSampleFitDataABC * s_dataset = (SingleSampleFitDataABC *) (vbase);
   s_dataset->Configure(d,b,s,o);
+  s_dataset->SetAssociatedModel(model_abc);
+  if(fDataFileGiven){
+    LOG("CompoundFitElements", pNOTICE)
+      << "Data file given so will Read it. Will be overwritten if Generate is called later";
+    s_dataset->Read(config_file, opt);
+  }
+  else{
+    LOG("CompoundFitElements", pNOTICE)
+      << "No data file given so cannot Read, will have to Generate";
+    //LOG("CompoundFitElements", pFATAL)
+    //  << "Need to write GSSFM association and Generate does not currently work yet, please pass data file to read instead";
+    //util::Die(1);
+  }
   FitDataABC * dataset = (FitDataABC *) (s_dataset);
   return dataset;
 }

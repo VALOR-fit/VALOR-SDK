@@ -83,6 +83,8 @@ public:
   virtual double GetFitStatistic (FitModelABC * pred, const PhysHypothesis & ph, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
   virtual double GetFitStatistic (FitModelABC * pred, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
 
+  // Associate a FitModelABC with the data to define the binning, POT and fiducial mass of the experiment
+  virtual void SetAssociatedModel(FitModelABC *model_abc) = 0;
 protected:
    FitDataABC();
 };
