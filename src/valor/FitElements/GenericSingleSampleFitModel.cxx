@@ -829,14 +829,13 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       ReacMode_t m = fReactionModes[imode];
       if(m == kmUndefined) continue;
       
-      // This will work when we fix Make1DHistogram() to be happy using truth
-      std::vector<KineVar_t> vars;//= binning.TrueSmpBinning(imode)->KineVars();
-      vars.insert(vars.end(),reco_vars.begin(),reco_vars.end());
+      const std::vector<KineVar_t> & true_vars = binning.TrueSmpBinning(imode)->KineVars();
       
-      for (const conv::KineVar_t kv : vars) {
+      // Write reco, using the PDF comp objects (which have lateral systematics applied)
+      for (const conv::KineVar_t kv : reco_vars) {
         conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
         if (ks == conv::kspUndefined) {continue;}
-        TH1 * hob = util::binning::Make1DHistogram(*fPDFCompOb[imode],binning,ks,false);
+        TH1 * hob = util::binning::Make1DHistogram(*fPDFCompOb[imode],binning,ks,false, m);
         if(hob) {
           TString hobname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfcs_ob_rf",
             fName.c_str(),util::AsString(kv).c_str(),util::AsString(m).c_str());
@@ -845,7 +844,28 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         }
         
         if (write_sb) {
-          TH1 * hsb = util::binning::Make1DHistogram(*fPDFCompSb[imode],binning,ks,true);
+          TH1 * hsb = util::binning::Make1DHistogram(*fPDFCompSb[imode],binning,ks,true, m);
+          if(hsb) {
+            TString hsbname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfcs_sb_rf",
+              fName.c_str(),util::AsString(kv).c_str(),util::AsString(m).c_str());
+            hsb->SetName(hsbname.Data());
+            array->Add(hsb);
+          }
+        }
+      }
+      for (const conv::KineVar_t kv : true_vars) {
+        conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
+        if (ks == conv::kspUndefined) {continue;}
+        TH1 * hob = util::binning::Make1DHistogram(*fMCTFinOb[imode],binning,ks,false, m);
+        if(hob) {
+          TString hobname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfcs_ob_rf",
+            fName.c_str(),util::AsString(kv).c_str(),util::AsString(m).c_str());
+          hob->SetName(hobname.Data());
+          array->Add(hob);
+        }
+        
+        if (write_sb) {
+          TH1 * hsb = util::binning::Make1DHistogram(*fMCTFinSb[imode],binning,ks,true, m);
           if(hsb) {
             TString hsbname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfcs_sb_rf",
               fName.c_str(),util::AsString(kv).c_str(),util::AsString(m).c_str());
@@ -1085,6 +1105,7 @@ void GenericSingleSampleFitModel::Book(void)
     fPDFCompSb[imode] = 
       new VALORArray(n_reco_bins_sb);
     fPDFCompSb[imode]->SetName(TString::Format("%s_%s_%s_%s",tag,"pdfc_sb_vf",fName.c_str(),util::AsString(m).c_str()));
+    fPDFCompSb[imode]->SetDimensionName(0,"reco");
     
     // >> PDF total
     // should get here for at least one imode value
@@ -1096,6 +1117,7 @@ void GenericSingleSampleFitModel::Book(void)
       fPDFTotNullSb = false;
       fPDFTotSb     = new VALORArray(n_reco_bins_sb); 
       fPDFTotSb->SetName(TString::Format("%s_%s_%s",tag,"pdft_sb_vf",fName.c_str()).Data());
+      fPDFTotSb->SetDimensionName(0,"reco");
     }
     
     // >> MC templates 
@@ -1141,6 +1163,8 @@ void GenericSingleSampleFitModel::Book(void)
     fPDFCompOb[imode] = 
       new VALORArray(n_reco_bins_ob);
     fPDFCompOb[imode]->SetName(TString::Format("%s_%s_%s_%s",tag,"pdfc_ob_vf",fName.c_str(),util::AsString(m).c_str()));
+    fPDFCompOb[imode]->SetDimensionName(0,"reco");
+    fPDFCompOb[imode]->SetDimensionName(1,"true");
     // >> PDF total
     // should get here for at least one imode value
     if(fPDFTotNullOb) {              
@@ -1152,6 +1176,9 @@ void GenericSingleSampleFitModel::Book(void)
       fPDFTotNullOb  = false;
       fPDFTotOb      = new VALORArray(n_reco_bins_ob);
       fPDFTotOb->SetName(TString::Format("%s_%s_%s",tag,"pdft_ob_vf",fName.c_str()).Data());
+      fPDFTotOb->SetDimensionName(0,"reco");
+      fPDFTotOb->SetDimensionName(1,"true");
+    
     }
 
   }//imode

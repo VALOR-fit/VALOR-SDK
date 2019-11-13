@@ -46,7 +46,7 @@ namespace binning
    */
    TH1D* Make1DHistogram(const VALORArray& v,
          const SingleSampleKineBinning& b, const conv::KineSpace_t ks,
-         bool use_simple = false);
+         bool use_simple = false, conv::ReacMode_t m = conv::kmUndefined);
 
    /**
       Produce a 2D ROOT-compatible, optimised histogram of specified kinematic
