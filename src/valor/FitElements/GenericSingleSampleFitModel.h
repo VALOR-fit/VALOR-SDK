@@ -97,6 +97,9 @@ public:
   
   // Get POT
   const double & GetPOT() const;
+
+  // Get Fiducial mass
+  const double & GetFiducialMass(void) const;
   
   const std::string & GetLastConfigFileRead() const;
   

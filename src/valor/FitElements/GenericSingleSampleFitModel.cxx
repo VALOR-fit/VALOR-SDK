@@ -3467,6 +3467,11 @@ const double &  GenericSingleSampleFitModel::GetPOT() const
   return fPOT;
 }
 //________________________________________________________________________________________
+const double & GenericSingleSampleFitModel::GetFiducialMass() const
+{
+  return fFiducialMass;
+}
+//________________________________________________________________________________________
 void GenericSingleSampleFitModel::ApplyPostOscLateralSystematics(VALORArray * pdf, bool simple_binning)
 {
   for(size_t ip = 0; ip < fLateralPostOscParams.size(); ip++) {

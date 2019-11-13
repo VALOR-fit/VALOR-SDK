@@ -33,6 +33,7 @@
 #include "valor/Conventions/Sample.h"
 #include "valor/Conventions/Detector.h"
 #include "valor/FitCore/SingleSampleFitDataABC.h"
+#include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/VArray/VALORArray.h"
 #include "valor/Utilities/SingleSampleKineBinning.h"
 
@@ -67,6 +68,7 @@ public:
   double GetFitStatistic(FitModelABC * pred, const FitParamList & fp,   Option_t * opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0);
   double GetFitStatistic(FitModelABC * pred, const PhysHypothesis & ph, Option_t * opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0);
   double GetFitStatistic(FitModelABC * pred, Option_t * opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0);
+  void   SetAssociatedModel(FitModelABC *model_abc); // Call this before Read to set the model which should be associated to the data
   
 private:
 
@@ -74,6 +76,8 @@ private:
   void Book  (void);
   void Clean (void);
   void Zero  (Option_t * opt);
+  void FillFromDST  (TTree * t); // <----- NOTE: Some code duplication with GSSFM - eliminate in future
+  void SetFromModel(void); // Set various parameters from the GSSFM
 
   // Name of this VALOR fit dataset (see Conventions/Names.h)
   string fName;
@@ -88,9 +92,18 @@ private:
   // Below are versions the use a simple (~fine and ~regular) binning throughout the whole range.
   bool         fDataSbNull;
   VALORArray * fDataSb;
-  
+
+ // Actual or fake/mock data?
+  bool fIsFakeData;
+
   // Binning booked with. Does not own
   const SingleSampleKineBinning * fBinning;
+
+  double fFiducialMass;
+  double fPOT;         
+
+  // Define associated GSSFM
+  GenericSingleSampleFitModel *fGSSFM;  
   
 };
 
