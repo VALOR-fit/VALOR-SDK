@@ -34,6 +34,7 @@ namespace valor {
       kSystNorm,
       kSystLateral,
       kSystLateralPostOsc,
+      kSystLateralPostOscMigrate,
       kSystResponse,
       kSystDisabled
     }
