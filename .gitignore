@@ -1,4 +1,5 @@
 *.o
+*.pyc
 *_RootDict_*
 *~
 make/Make.config
