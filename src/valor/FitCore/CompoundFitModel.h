@@ -88,6 +88,9 @@ public:
   virtual const CorrelatedSystematics * GetSystematics(Option_t * opt = "") const;
   
   void SetName(std::string name);
+
+  // Get the total PDF integral of each submodel as a string
+  std::string GetSubIntegrals(Option_t * opt = 0) const;
   
 protected:
   std::string fName;

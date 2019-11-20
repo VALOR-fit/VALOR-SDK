@@ -81,6 +81,9 @@ public:
   
   void SetName(std::string name);
 
+  // Get the total PDF integral of each subdata as a string
+  std::string GetSubIntegrals(Option_t * opt = 0) const;
+
 protected:
   std::string fName;
   std::vector<FitDataABC *> fSubData;
