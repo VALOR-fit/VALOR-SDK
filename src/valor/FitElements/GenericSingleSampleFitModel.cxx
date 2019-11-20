@@ -580,6 +580,83 @@ bool GenericSingleSampleFitModel::Generate (const FitParamList & fp, Option_t * 
   return this->Generate(ph, opt);
 }
 //________________________________________________________________________________________
+void GenericSingleSampleFitModel::GenerateNextUniverse (size_t universe)
+{
+  //  LOG("GenericSingleSampleFitModel",pDEBUG)  
+  //     << "Input fit parameter list before converting to a physics hypothesis: " << fp;
+  PhysHypothesis ph(conv::kHypVoid);
+  Option_t * generate_opt = "";
+
+  //Apply the reweigths
+  this->ApplyReweights(universe);
+
+  // call the main Generate() method
+  this->Generate(ph, generate_opt);
+
+
+  this->UnApplyReweights(universe);
+
+}
+
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::ApplyReweights (size_t universe)
+{
+
+  const VALORBinning  * reco_ob = fBinning->RecoOptBinning();
+  const int n_reco_bins_ob  = reco_ob->NBins();
+    
+  for(int ireco=0; ireco < n_reco_bins_ob; ireco++) {
+    
+    double weight = fUniverse_weights[universe]->GetEntry(ireco);
+    double nweight = fUniverse_nentries[universe]->GetEntry(ireco);
+
+    if(nweight>0){
+      weight /= nweight;
+    }
+    else{
+      weight = 1;
+    }
+
+
+    double val_ob = fPDFTotOb->GetEntry(ireco);
+    val_ob *= weight;
+
+    fPDFTotOb->SetEntry(val_ob,ireco);
+
+  }
+  return;
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::UnApplyReweights (size_t universe)
+{
+
+  const VALORBinning  * reco_ob = fBinning->RecoOptBinning();
+  const int n_reco_bins_ob  = reco_ob->NBins();
+    
+  for(int ireco=0; ireco < n_reco_bins_ob; ireco++) {
+    
+    double weight = fUniverse_weights[universe]->GetEntry(ireco);
+    double nweight = fUniverse_nentries[universe]->GetEntry(ireco);
+
+    if(nweight>0){
+      weight /= nweight;
+    }
+    else{
+      weight = 1;
+    }
+
+    double val_ob = fPDFTotOb->GetEntry(ireco);
+    val_ob /= weight;
+
+    fPDFTotOb->SetEntry(val_ob,ireco);
+
+  }
+  return;
+}
+
+
+
+//________________________________________________________________________________________
 bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Option_t * write_opt)
 {
   //
@@ -1514,6 +1591,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     t->SetBranchStatus("variation_weights",0);
   }
 
+
   Long_t nev = t->GetEntries();
   LOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
   
@@ -1527,7 +1605,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   for(Long_t iev = 0; iev < nev; iev++) 
   {
 
-    t->GetEntry(iev);
+        t->GetEntry(iev);
 
     if(iev%(nev/20)==0) {
       double pct = (100 * (double)(iev+1)) / (double)nev;
@@ -1707,12 +1785,35 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     }
 #endif
 
+    std::map<const int,double> universe_weights;
+
     // If necessary, get the weight from the systematic variations
     for (const auto & variation_name_and_id : fSystUniverseToApply) {
-      const std::string & name = variation_name_and_id.first;
-      const int & universe_id  = variation_name_and_id.second;
+      const std::string & name = variation_name_and_id.second;
+      //const int & universe_id  = variation_name_and_id.second;
       const int & parameter_id = variation_name_to_index.at(name);
-      this_entry *= variation_weights.at(parameter_id)->at(universe_id);
+      const int & universe_id  = variation_name_and_id.first;
+      
+      //      this_entry *= variation_weights.at(parameter_id)->at(universe_id);
+      if(universe_weights.find(universe_id) == universe_weights.end()){universe_weights[universe_id] = 1;}
+      universe_weights[universe_id] *= variation_weights.at(parameter_id)->at(universe_id);
+    }
+
+    
+
+    //Save the average weight per bin to apply after reading.
+    for(auto const& universe_weight: universe_weights){
+      //      fUniverse_weights[0]->AddToEntry(universe_weight.second,reco_bin_ob);
+
+      double current_entries = fUniverse_nentries[universe_weight.first]->GetEntry(reco_bin_ob);
+      ++current_entries;
+
+      double uweight = fUniverse_weights[universe_weight.first]->GetEntry(reco_bin_ob);
+      uweight += universe_weight.second;
+
+      fUniverse_weights[universe_weight.first]->SetEntry(uweight,reco_bin_ob);
+      fUniverse_nentries[universe_weight.first]->SetEntry(current_entries,reco_bin_ob);
+      //fUniverse_nentries[universe_weight.first]->AddToEntry(current_entries,reco_bin_ob);
     }
     
     // Add `nom' array entry (and init `tun', `sys' and `fin' arrays = `nom')
@@ -4233,7 +4334,32 @@ void GenericSingleSampleFitModel::ResetSystematicVariationIDs()
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::SetSystematicVariationIDToApply(const std::string & param_name,size_t id)
 {
-  fSystUniverseToApply[param_name] = id;
+  //  fSystUniverseToApply[param_name] = id;
+  fSystUniverseToApply[id] = param_name;
+
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::BookUniverses(int n_universes_to_run)
+{
+
+  const VALORBinning  * reco_ob = fBinning->RecoOptBinning();
+
+  int ibeam   = es.BeamConfIndex(fBeam);
+  int isample = es.SampleIndex(fBeam,fSample);
+  fReactionModes = es.ReactionModes()[ibeam][isample];
+
+  const int n_reco_bins_ob = reco_ob->NBins();
+  
+  for(int universe=0; universe<n_universes_to_run; ++universe){
+      fUniverse_weights[universe]  = new VALORArray(n_reco_bins_ob);
+      fUniverse_nentries[universe] = new VALORArray(n_reco_bins_ob); 
+
+      for(int bin=0; bin<n_reco_bins_ob; ++bin){
+	fUniverse_weights[universe]->SetEntry(1,bin);
+	fUniverse_nentries[universe]->SetEntry(0,bin);
+      }
+  }
+  return;
 }
 //________________________________________________________________________________________
 const std::string & GenericSingleSampleFitModel::GetLastConfigFileRead() const

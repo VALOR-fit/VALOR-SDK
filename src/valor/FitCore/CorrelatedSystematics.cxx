@@ -747,7 +747,6 @@ double CorrelatedSystematics::FitStatisticPenalty(Option_t * /*opt*/) const
 #ifdef __show_chisqpenalty_mesg_debug__
     LOG("CorrelatedSystematics",pDEBUG) << "ChisqPenalty = " << chisq_penalty;
 #endif
-
   return chisq_penalty;
 }
 //________________________________________________________________________________________ 

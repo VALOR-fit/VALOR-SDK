@@ -408,10 +408,14 @@ TFile * valor::util::XML2TFile(
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   TFile * file;
-  
+
   if(filename.find("xroot") != std::string::npos){
     full_filename = TString::Format("%s",filename.c_str());
     file = TFile::Open(full_filename.Data(),"read");
+  }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+    file = new TFile(full_filename.Data(),"read");
   }
   else{ 
     file = new TFile(full_filename.Data(),"read");
@@ -449,6 +453,10 @@ TH1F * valor::util::XML2TH1F(
   if(filename.find("xroot") != std::string::npos){
     full_filename = TString::Format("%s",filename.c_str());
   }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+
 
   TFile file(full_filename,"read");
   TH1F * h = (TH1F*)file.Get(objname.c_str());
@@ -486,6 +494,10 @@ TGraph * valor::util::XML2TGraph(
     if(filename.find("xroot") != std::string::npos){
       full_filename = TString::Format("%s",filename.c_str());
     }
+    else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
+      full_filename = TString::Format("%s",filename.c_str());
+    }
+
 
  
     TFile file(full_filename,"read");
@@ -523,6 +535,10 @@ TH1D * valor::util::XML2TH1D(
   if(filename.find("xroot") != std::string::npos){
     full_filename = TString::Format("%s",filename.c_str());
   }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+
   
   TFile file(full_filename,"read");
   TH1D * h = (TH1D*)file.Get(objname.c_str());
@@ -561,6 +577,10 @@ TH2D * valor::util::XML2TH2D(
   if(filename.find("xroot") != std::string::npos){
     full_filename = TString::Format("%s",filename.c_str());
   }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+
 
   TFile file(full_filename,"read");
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
@@ -597,6 +617,9 @@ TH3D * valor::util::XML2TH3D(
     TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
     if(filename.find("xroot") != std::string::npos){
+      full_filename = TString::Format("%s",filename.c_str());
+    }
+    else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
       full_filename = TString::Format("%s",filename.c_str());
     }
     
@@ -640,11 +663,16 @@ TTree * valor::util::XML2TTree(
     full_filename = TString::Format("%s",filename.c_str());
     file = TFile::Open(full_filename.Data(),"read");
   }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+    file = new TFile(full_filename.Data(),"read",full_filename.Data());
+  }
   else{ 
-    file = new TFile(full_filename.Data(),"read");
+    file = new TFile(full_filename.Data(),"read",full_filename.Data());
   }
 
   TTree * tree = (TTree*)file->Get(objname.c_str());
+
   if(!tree) {
     LOG("XML",pFATAL) << "No " << objname << " in " << filename;
 //  file.Close();
@@ -675,6 +703,9 @@ TVectorD * valor::util::XML2TVectorD(
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
     full_filename = TString::Format("%s",filename.c_str());
   }
 
@@ -711,6 +742,9 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
     full_filename = TString::Format("%s",filename.c_str());
   }
 
@@ -754,6 +788,9 @@ TMatrixD * valor::util::XML2TMatrixD(
     full_filename = TString::Format("%s",filename.c_str());
     file = TFile::Open(full_filename.Data(),"read");
   }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
   else{ 
     file = new TFile(full_filename.Data(),"read");
   }
@@ -792,6 +829,10 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
   if(filename.find("xroot") != std::string::npos){
     full_filename = TString::Format("%s",filename.c_str());
   }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+
 
   TFile file(full_filename.Data(),"read"); 
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
@@ -833,6 +874,9 @@ TSpline3 * valor::util::XML2TSpline3(
   TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
 
   if(filename.find("xroot") != std::string::npos){
+    full_filename = TString::Format("%s",filename.c_str());
+  }
+  else if(filename.find("sbnd.osgstorage.org") != std::string::npos){
     full_filename = TString::Format("%s",filename.c_str());
   }
 

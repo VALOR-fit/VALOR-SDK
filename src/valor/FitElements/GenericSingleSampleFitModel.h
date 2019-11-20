@@ -115,6 +115,11 @@ public:
   void ResetSystematicVariationIDs();
   void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
 
+  void UnApplyReweights (size_t universe);
+  void BookUniverses(int n_universes_to_run);
+  void GenerateNextUniverse (size_t universe);
+
+
 private:
 
   void Init  (void);
@@ -159,7 +164,9 @@ private:
   // There are many large vectors used when applying lateral systematics. They only depend on the PDF reco binning
   // and the applied kine var, so pre-compute them instead of calculating them for every event and mode.
   void PreComputeLateralSystVectors(bool use_simple_binning);
-  
+
+  void ApplyReweights (size_t universe);
+
   // Keep track of the parameters we need to loop over
   // Normalisation, spline and post-oscillation lateral parameters divided
   std::vector<conv::PhysParamId_t> fNormParams;
@@ -237,6 +244,9 @@ private:
   VALORArray * fMCTFinSb  [conv::kNReacModes]; 
   VALORArray * fMCStatSb  [conv::kNReacModes]; // MC statistics
 
+  std::map<const int,VALORArray* > fUniverse_weights;
+  std::map<const int,VALORArray* > fUniverse_nentries;
+
   // MC PDFs
   // Each PDF is (currently always) a 2-D Nev = Nev(Enu_reco, y_reco) array that can be directly compared with data.
   // The PDFs are computed from the `fin' MC templates, integrated over true kinematic variables, and include all effects.
@@ -267,7 +277,8 @@ private:
   
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices
-  std::map<std::string,size_t> fSystUniverseToApply; // param name in DST to universe ID in DST
+  //  std::map<std::string,size_t> fSystUniverseToApply; // param name in DST to universe ID in DST
+  std::map<size_t,std::string> fSystUniverseToApply; 
 
   // Vector of tuning hists and the apply masks and kine vars that they should be used for
   std::vector<TuningInfo> fEventByEventTuningHists;
