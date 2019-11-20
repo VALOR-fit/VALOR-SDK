@@ -37,6 +37,7 @@ public:
 // Fit Model ABC interface
   // Identify fit model with a name (to be propagated in output files, etc)
   virtual std::string Name(void) const ;
+  virtual string CompoundName(void) const;  // Concatenates the Name() of each submodel
 
   // Read configuration data from file
   virtual bool Read(std::string file, Option_t * opt = 0) ;

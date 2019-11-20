@@ -40,6 +40,8 @@ public:
 
   // Identify fit data with a name (to be propagated in output files, etc)
   virtual string Name(void) const;  
+  virtual string CompoundName(void) const;  // Concatenates the Name() of each subdata
+  virtual long StreamSize(Option_t* opt = 0) const;
 
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.

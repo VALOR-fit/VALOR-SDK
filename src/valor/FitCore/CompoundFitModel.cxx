@@ -47,6 +47,15 @@ CompoundFitModel::~CompoundFitModel()
   }
 }
 //________________________________________________________________________________________
+std::string CompoundFitModel::CompoundName() const
+{
+  std::string name = "--";
+  for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+    name += (*it)->Name() + "--";
+  }
+  return name;
+}
+//________________________________________________________________________________________
 std::string CompoundFitModel::Name() const
 {
   return fName;

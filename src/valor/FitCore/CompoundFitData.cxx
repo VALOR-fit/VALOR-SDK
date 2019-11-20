@@ -44,6 +44,26 @@ CompoundFitData::~CompoundFitData()
   }
 }
 //________________________________________________________________________________________
+std::string CompoundFitData::CompoundName() const
+{
+  std::string name = "--";
+  for(std::vector<FitDataABC*>::const_iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
+    name += (*it)->Name() + "--";
+  }
+  return name;
+}
+//________________________________________________________________________________________
+long CompoundFitData::StreamSize(Option_t* opt) const
+{
+  long size = 0;
+  for(std::vector<FitDataABC*>::const_iterator it = fSubData.begin(); it != fSubData.end(); ++it)
+  {
+    size += (*it)->StreamSize(opt);
+  }
+
+  return size;
+}
+//________________________________________________________________________________________
 std::string CompoundFitData::Name() const
 {
   return fName;

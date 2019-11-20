@@ -39,7 +39,9 @@ public:
   virtual ~FitDataABC();
 
   // Identify fit data with a name (to be propagated in output files, etc)
-  virtual string Name(void) const = 0;  
+  virtual string Name(void) const = 0;
+
+  virtual long StreamSize(Option_t* opt = 0) const = 0;
 
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
