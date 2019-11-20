@@ -21,6 +21,7 @@ ChangeLog:
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/VThreadPool.h"
 #include "valor/Utilities/NameRegistry.h"
+#include "valor/VArray/VALORArray.h"
 #include "valor/FitCore/CompoundFitModel.h"
 
 using namespace valor;
@@ -375,13 +376,13 @@ void CompoundFitModel::SetName(std::string name)
   fName = name;
 }
 //________________________________________________________________________________________
-std::string CompoundFitModel::GetSubIntegrals(Option_t * opt_in = 0) const
+std::string CompoundFitModel::GetSubIntegrals(Option_t * opt_in)
 {
   std::string to_print = "";
 
   std::string opt = (opt_in) ? opt_in : "";
-  char *write_opt = "pdft_vf";
-  char *read_opt  = "pdft_ob_vf";
+  const char *write_opt = "pdft_vf";
+  const char *read_opt  = "pdft_ob_vf";
   if(opt.find("SB") != string::npos) {
     write_opt = "pdft_vf+SB";
     read_opt  = "pdft_sb_vf";

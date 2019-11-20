@@ -20,6 +20,7 @@ ChangeLog:
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/VThreadPool.h"
+#include "valor/VArray/VALORArray.h"
 #include "valor/FitCore/CompoundFitData.h"
 #include "valor/FitCore/CompoundFitModel.h"
 
@@ -284,13 +285,13 @@ unsigned int CompoundFitData::GetNSubData(Option_t * /*opt*/) const
   return fSubData.size();
 }
 //________________________________________________________________________________________
-std::string CompoundFitModel::GetSubIntegrals(Option_t * opt_in = 0) const
+std::string CompoundFitData::GetSubIntegrals(Option_t * opt_in)
 {
   std::string to_print = "";
 
   std::string opt = (opt_in) ? opt_in : "";
-  char *write_opt = "data_vf";
-  char *read_opt  = "data_ob_vf";
+  const char *write_opt = "data_vf";
+  const char *read_opt  = "data_ob_vf";
   if(opt.find("SB") != string::npos) {
     write_opt = "data_vf+SB";
     read_opt  = "data_sb_vf";
@@ -299,7 +300,7 @@ std::string CompoundFitModel::GetSubIntegrals(Option_t * opt_in = 0) const
   TObjArray *array = new TObjArray();
   const char *tag = "temp";
   this->Write(array, tag, write_opt);
-  for (std::vector<FitModelABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
+  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     TString name = TString::Format("%s_%s_%s", tag, read_opt, (*it)->Name().c_str());
     VALORArray *pdf = (VALORArray *) array->FindObject(name.Data());
     double integral = pdf->Integral();
