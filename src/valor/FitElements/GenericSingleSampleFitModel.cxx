@@ -1439,8 +1439,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   
   std::map<KineVar_t,double> kinematics;
   
-  std::vector<std::vector<float> > * variation_weights = nullptr;
-  
   // Set up a list of the branches associated with each kinematic variable
   std::map<KineVar_t,std::string> kinematic_branch_names;
   for (const KineVar_t & kv : kinevars) {
@@ -1459,6 +1457,13 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   // Weight is not required - use one if failed
   t->SetBranchAddress("wght"       , &wght);
   t->SetBranchAddress("wght_pot"   , &wght_pot);
+  
+  // And turn all those branches on
+  t->SetBranchStatus("sample"   , 1);
+  t->SetBranchStatus("beam"     , 1);
+  t->SetBranchStatus("reac_mode", 1);
+  t->SetBranchStatus("wght"     , 1);
+  t->SetBranchStatus("wght_pot" , 1);
   
   bool any_bad_status = (bstat_sample || bstat_beam || bstat_reac_mode);
   
@@ -1482,42 +1487,25 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     if (matches->GetEntries()==1) {
       wght_branches[branchname] = -1.;
       t->SetBranchAddress(branchname,&(wght_branches[branchname]));
+      t->SetBranchStatus(branchname,1);
     }
     delete matches;
   }
   
-  // Let's see if we need the universe weight branch
-  bool apply_universe_weights = fSystUniverseToApply.size();
-  // And if so, get the information we need
-  std::map<std::string,int> variation_name_to_index;
-  TObjArray * variation_names = nullptr;
-  if (apply_universe_weights) {
-    TFile * containing_file = t->GetCurrentFile();
-    if (!containing_file) {
-      LOG("GenericSingleSampleFitModel",pFATAL) << "Can't identify tree's parent file to get names of variation weights";
-      util::Die(-1);
-    }
-    TObject * tmp = containing_file->Get("variation_names");
-    variation_names = dynamic_cast<TObjArray*>(tmp);
-    if (!variation_names) {
-      LOG("GenericSingleSampleFitModel",pFATAL) << "Can't get names of variation weights";
-      util::Die(-1);
-    }
-    for (int i = 0 ; i < variation_names->GetEntries(); i++) {
-      TObjString * tos = dynamic_cast<TObjString*>(variation_names->At(i));
-      assert(tos);
-      std::string proper_string(tos->GetString().Data());
-      variation_name_to_index[proper_string] = i;
-    }
-    // and set up to read the tree
-    bool bstat_var_weights = t->SetBranchAddress("variation_weights", &variation_weights);
-    if (bstat_var_weights) {
-      LOG("GenericSingleSampleFitModel",pFATAL) << "Trying to apply variation weights but cannot read branch.";
-      util::Die(-1);
-    }
-  }
-  else {
-    t->SetBranchStatus("variation_weights",0);
+  // Let's work out what universe branches we need
+  //~ bool apply_universe_weights = fSystUniverseToApply.size();
+  const size_t max_n_universes = 10000;
+  std::map<std::string,int> branch_n_universes;
+  std::map<std::string,std::vector<float>> branch_universes;
+  for (const auto & entry : fSystUniverseToApply) {
+    const std::string & variation_name = entry.first;
+    branch_universes.emplace(variation_name,std::vector<float>(max_n_universes));
+    std::string branch_name   = Form("variation_%s",variation_name.c_str());
+    std::string branch_name_n = Form("variation_n_%s",variation_name.c_str());
+    t->SetBranchAddress(branch_name_n.c_str(),&branch_n_universes[variation_name]);
+    t->SetBranchAddress(branch_name.  c_str(),branch_universes  [variation_name].data());
+    t->SetBranchStatus (branch_name_n.c_str(),1);
+    t->SetBranchStatus (branch_name  .c_str(),1);
   }
   
   Long_t nev = t->GetEntries();
@@ -1710,8 +1698,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     for (const auto & variation_name_and_id : fSystUniverseToApply) {
       const std::string & name = variation_name_and_id.first;
       const int & universe_id  = variation_name_and_id.second;
-      const int & parameter_id = variation_name_to_index.at(name);
-      this_entry *= (*variation_weights)[parameter_id][universe_id];
+      this_entry *= branch_universes[name][universe_id];
     }
     
     // Add `nom' array entry (and init `tun', `sys' and `fin' arrays = `nom')
@@ -1731,8 +1718,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     fMCTFinSb [imode]->SetEntry(curr_wght_sb, reco_bin_sb, true_bin);
     fMCStatSb [imode]->SetEntry(           1, reco_bin_sb, true_bin);
   }//iev
-  
-  if (variation_names) {delete variation_names;}
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::ReadTune(
