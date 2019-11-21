@@ -45,8 +45,9 @@ public:
 
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
-  // Return true if data were succesfully read out
+  // Return true if data were successfully read out
   virtual bool Read(string file, Option_t * opt = 0);
+  virtual bool Read(util::ToyStream* stream, Option_t * opt = 0);
 
   // Generate mock data (toy-MC)
   // Toy-MC is generated from using the input model 
@@ -62,7 +63,7 @@ public:
 
   virtual bool Write (TObjArray * collection, const char * tag = "data", Option_t * write_opt = 0);
   virtual bool Write (const char * filename,  const char * tag = "data", Option_t * write_opt = 0, Option_t * file_opt = 0);
-  virtual bool Write (std::ofstream& stream, Option_t * write_opt = 0);
+  virtual bool Write (util::ToyStream* stream, Option_t * write_opt = 0);
 
   // Number of bins in fit data, or number of events for unbinned fits
   virtual int NumOfBins (Option_t * opt = 0) const;

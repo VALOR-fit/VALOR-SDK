@@ -99,8 +99,8 @@ public:
   void ReadFile (std::string file_to_read);
   void WriteFile(std::string file_to_write);
 
-  void ReadStream(std::ifstream& stream);
-  void WriteStream(std::ofstream& stream);
+  void ReadStream(std::fstream& stream);
+  void WriteStream(std::fstream& stream);
   long StreamSize();
   
   // Resize the array, clearing contents
