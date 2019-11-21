@@ -41,8 +41,10 @@ Env::Env()
     assert(topdir);
   }
   fTopLevelDir = topdir;
-  fTopLevelDataDir = fTopLevelDir + "/data/";
-  fTopLevelConfDir = fTopLevelDir + "/config/";
+  const char * datadir = gSystem->Getenv("VALOR_DATA");
+  fTopLevelDataDir = (datadir?datadir:fTopLevelDir+"/data/");
+  const char * confdir = gSystem->Getenv("VALOR_CONFIG");
+  fTopLevelConfDir = (confdir?confdir:fTopLevelDir+"/config/");
   fBanner          = fTopLevelDir + "/data/banner/banner.dat";
 
   fInstance = 0;
