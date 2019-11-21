@@ -20,5 +20,6 @@
 #pragma link C++ class valor::util::ConfigurationHandler+;
 #pragma link C++ class valor::ConfidenceInterval+;
 #pragma link C++ class valor::ConfidenceIntervalPlotter+;
+#pragma link C++ class valor::util::ToyStream+;
 
 #endif
