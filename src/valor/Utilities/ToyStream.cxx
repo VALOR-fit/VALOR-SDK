@@ -39,8 +39,8 @@ valor::util::ToyStream::ToyStream(const string file_name, const string read_or_w
 
     if(read_validation_string != fValidationString) {
       LOG("ToyStream",pFATAL) << "Tried to read toys from file \'" << fFileName
-                              << "\', but the constructed validation string \'" << fValidationString
-                              << "\' did not match the stored validation string \'" << read_validation_string << "\'";
+                              << "\', but the constructed validation string \n\'" << fValidationString
+                              << "\'\ndid not match the stored validation string \n\'" << read_validation_string << "\'";
       util::Die(-1);
     }
 
