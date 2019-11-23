@@ -155,6 +155,12 @@ void valor::util::ToyStream::Write(VALORArray* va)
 //______________________________________________________________________________
 void valor::util::ToyStream::Read(VALORArray* va)
 {
+  fStream->peek();
+  if(!fStream->good()) {   // Checks end-of-file bit
+    LOG("ToyStream",pFATAL) << "Could not read from toy file \'" << fFileName << "\'";
+    util::Die(-1);
+  }
+
   va->ReadStream(*fStream);
 
   // Check status of stream AFTER we try to read, as std::fstream allows read()
