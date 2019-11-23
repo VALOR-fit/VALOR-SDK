@@ -75,7 +75,9 @@ public:
   virtual double GetFitStatistic (FitModelABC * pred, const FitParamList & fp,   Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0);
   virtual double GetFitStatistic (FitModelABC * pred, const PhysHypothesis & ph, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0);
   virtual double GetFitStatistic (FitModelABC * pred, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0);
-  
+
+  virtual void AdoptBinningFromModel(FitModelABC * model);
+
 // Own interface
   virtual void AddSubData(FitDataABC * data, Option_t * opt = 0);
   virtual const FitDataABC * GetSubData(int data_idx, Option_t * opt = 0) const;

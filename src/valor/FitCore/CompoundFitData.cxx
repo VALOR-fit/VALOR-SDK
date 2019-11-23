@@ -348,3 +348,15 @@ void CompoundFitData::SetName(std::string name)
   fName = name;
 }
 //________________________________________________________________________________________
+void CompoundFitData::AdoptBinningFromModel(FitModelABC * model_abc)
+{
+  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model_abc);
+  if (!cfm) {
+    LOG("CompoundFitData",pERROR) << "Could not adopt the binning from an invalid model";
+    util::Die(-1);
+  }
+  for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
+    fSubData[imodel]->AdoptBinningFromModel(cfm->GetSubModel(imodel));
+  }
+}
+//________________________________________________________________________________________
