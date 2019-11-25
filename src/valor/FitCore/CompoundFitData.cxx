@@ -345,3 +345,8 @@ void CompoundFitData::AdoptBinningFromModel(FitModelABC * model_abc)
   }
 }
 //________________________________________________________________________________________
+util::ToyStream* CompoundFitData::InitToyStream(const string file_name, const string read_or_write, const string opt)
+{
+  return new util::ToyStream(file_name, read_or_write, typeid(this), this->CompoundName(), opt, this->StreamSize());
+}
+//________________________________________________________________________________________

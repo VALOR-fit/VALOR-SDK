@@ -87,6 +87,9 @@ public:
   virtual       CorrelatedSystematics * GetSystematics(Option_t * opt = "") = 0;
   virtual const CorrelatedSystematics * GetSystematics(Option_t * opt = "") const = 0;
 
+  // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
+  virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", const string opt = "") = 0;
+
 protected:
    FitModelABC();
 };

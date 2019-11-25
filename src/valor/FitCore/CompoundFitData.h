@@ -86,6 +86,9 @@ public:
   
   void SetName(std::string name);
 
+  // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
+  virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", const string opt = "");
+
   // Get the total PDF integral of each subdata as a string
   virtual std::string GetPDFIntegralAsString(Option_t * opt = 0);
 
