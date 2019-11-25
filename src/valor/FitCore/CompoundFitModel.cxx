@@ -385,27 +385,12 @@ void CompoundFitModel::SetName(std::string name)
   fName = name;
 }
 //________________________________________________________________________________________
-std::string CompoundFitModel::GetSubIntegrals(Option_t * opt_in)
+std::string CompoundFitModel::GetPDFIntegralAsString(Option_t * opt)
 {
   std::string to_print = "";
 
-  std::string opt = (opt_in) ? opt_in : "";
-  const char *write_opt = "pdft_vf";
-  const char *read_opt  = "pdft_ob_vf";
-  if(opt.find("SB") != string::npos) {
-    write_opt = "pdft_vf+SB";
-    read_opt  = "pdft_sb_vf";
-  }
-
-  TObjArray *array = new TObjArray();
-  const char *tag = "temp";
-  this->Write(array, tag, write_opt);
   for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    TString name = TString::Format("%s_%s_%s", tag, read_opt, (*it)->Name().c_str());
-    VALORArray *pdf = (VALORArray *) array->FindObject(name.Data());
-    double integral = pdf->Integral();
-    TString temp = TString::Format("%s total PDF integral = %.5lf \n", (*it)->Name().c_str(), integral);
-    to_print += temp.Data();
+    to_print += (*it)->GetPDFIntegralAsString(opt) + "\n";
   }
 
   return to_print;

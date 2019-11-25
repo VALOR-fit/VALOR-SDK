@@ -317,27 +317,12 @@ unsigned int CompoundFitData::GetNSubData(Option_t * /*opt*/) const
   return fSubData.size();
 }
 //________________________________________________________________________________________
-std::string CompoundFitData::GetSubIntegrals(Option_t * opt_in)
+std::string CompoundFitData::GetPDFIntegralAsString(Option_t * opt)
 {
   std::string to_print = "";
 
-  std::string opt = (opt_in) ? opt_in : "";
-  const char *write_opt = "data_vf";
-  const char *read_opt  = "data_ob_vf";
-  if(opt.find("SB") != string::npos) {
-    write_opt = "data_vf+SB";
-    read_opt  = "data_sb_vf";
-  }
-
-  TObjArray *array = new TObjArray();
-  const char *tag = "temp";
-  this->Write(array, tag, write_opt);
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
-    TString name = TString::Format("%s_%s_%s", tag, read_opt, (*it)->Name().c_str());
-    VALORArray *pdf = (VALORArray *) array->FindObject(name.Data());
-    double integral = pdf->Integral();
-    TString temp = TString::Format("%s total PDF integral = %.5lf \n", (*it)->Name().c_str(), integral);
-    to_print += temp.Data();
+    to_print += (*it)->GetPDFIntegralAsString(opt) + "\n";
   }
 
   return to_print;

@@ -77,6 +77,9 @@ public:
   
   // Get penalty term for current systematics
   virtual double GetFitStatisticPenalty(Option_t * opt = 0) const = 0;
+
+  // Get a string including the model name and the total PDF integral
+  virtual std::string GetPDFIntegralAsString(Option_t * opt = 0) = 0;
   
   // Interface for the systematic parameters
   // By default SetSystConf just points at an external syst object. Use opt="copy" or "adopt" if you want control.

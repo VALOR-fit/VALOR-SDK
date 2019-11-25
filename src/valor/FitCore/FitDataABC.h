@@ -88,6 +88,9 @@ public:
   virtual double GetFitStatistic (FitModelABC * pred, const PhysHypothesis & ph, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
   virtual double GetFitStatistic (FitModelABC * pred, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
 
+  // Get a string including the data name and the total PDF integral
+  virtual std::string GetPDFIntegralAsString(Option_t * opt = 0) = 0;
+
   virtual void AdoptBinningFromModel(FitModelABC * model) = 0;
 
 protected:

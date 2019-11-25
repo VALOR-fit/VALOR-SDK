@@ -91,7 +91,7 @@ public:
   void SetName(std::string name);
 
   // Get the total PDF integral of each submodel as a string
-  std::string GetSubIntegrals(Option_t * opt = 0);
+  virtual std::string GetPDFIntegralAsString(Option_t * opt = 0);
   
 protected:
   std::string fName;
