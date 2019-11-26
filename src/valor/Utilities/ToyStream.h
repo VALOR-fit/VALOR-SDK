@@ -47,11 +47,11 @@ namespace util
        * @param type The std::type_info of the class used to read/write the toy. i.e. pass typeid(class)
        * @param name A name used to identify the beam/detector/sample etc. enums held by the class used to
        *             read/write the toy. e.g. CFM::CompoundName() or GSSFM::Name()
-       * @param opt The read/write option passed to the class used to read/write the toy
+       * @param valor_array_format The read/write VALORArray format passed to the class used to read/write the toy
        * @param toy_size The size of each toy in bytes. Pass e.g. CFM::StreamSize()
        */
       ToyStream(const string file_name, const string read_or_write, const std::type_info& type,
-                const std::string name, const string opt, const long toy_size);
+                const std::string name, const string valor_array_format, const long toy_size);
 
       /***
        * Closes the toy file
@@ -83,11 +83,7 @@ namespace util
       /***
        * Get the format used to read/write the toys from/to VALOR Arrays.
        *
-       * NOTE: It's perfectly fine for this to be an empty string, in which case the
-       * data or model class using ToyStream will use whatever defaults they have set.
-       *
        */
-      // TODO: change this behaviour, so that it can't be empty (as changing the default could silently cause problems reading toys)
       Option_t* GetVALORArrayFormat(void) const;
 
     private:

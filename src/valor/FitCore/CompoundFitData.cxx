@@ -18,6 +18,7 @@ ChangeLog:
 #include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/Constants.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/VThreadPool.h"
 #include "valor/VArray/VALORArray.h"
@@ -32,7 +33,8 @@ using std::cerr;
 using std::endl;
 
 //________________________________________________________________________________________
-CompoundFitData::CompoundFitData()
+CompoundFitData::CompoundFitData() :
+  fDefVALORArrayFormat("data_vf")
 {
   fName = "UninitialisedCompoundFitData";
 }
@@ -345,8 +347,14 @@ void CompoundFitData::AdoptBinningFromModel(FitModelABC * model_abc)
   }
 }
 //________________________________________________________________________________________
-util::ToyStream* CompoundFitData::InitToyStream(const string file_name, const string read_or_write, const string opt)
+util::ToyStream* CompoundFitData::InitToyStream(const string file_name, const string read_or_write, string valor_array_format)
 {
-  return new util::ToyStream(file_name, read_or_write, typeid(this), this->CompoundName(), opt, this->StreamSize());
+  valor_array_format = util::RemoveAllWhitespace(valor_array_format);
+  if(valor_array_format.empty()) {
+    valor_array_format = fDefVALORArrayFormat;
+  }
+
+  return new util::ToyStream(file_name, read_or_write, typeid(this), this->CompoundName(),
+                             valor_array_format, this->StreamSize());
 }
 //________________________________________________________________________________________

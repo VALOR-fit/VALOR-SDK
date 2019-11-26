@@ -19,11 +19,18 @@ using std::string;
 
 //______________________________________________________________________________
 valor::util::ToyStream::ToyStream(const string file_name, const string read_or_write, const std::type_info& type,
-                                  const std::string name, const string opt, const long toy_size)
+                                  const std::string name, const string valor_array_format, const long toy_size)
 {
   fToySize          = toy_size;
   fFileName         = file_name;
-  fVALORArrayFormat = opt;
+
+  if(valor_array_format.empty()) {
+    LOG("ToyStream",pFATAL) << "Tried to setup a ToyStream object for \'" << fFileName
+                            << "\', but did not specify a non-empty VALORArray format";
+    util::Die(-1);
+  }
+  fVALORArrayFormat = valor_array_format;
+
   fValidationString = this->MakeValidationString(type, name);
 
   if(read_or_write == "read") {
@@ -193,7 +200,12 @@ void valor::util::ToyStream::SetPositionToToy(unsigned int toy_index)
 //______________________________________________________________________________
 Option_t* valor::util::ToyStream::GetVALORArrayFormat(void) const
 {
-  if(fVALORArrayFormat.empty()) { return nullptr; }   // Needed for checks like opt = (format) ? format : "some_string"
+  if(fVALORArrayFormat.empty()) {
+    // Needed for checks like opt = (format) ? format : "some_string"
+    LOG("ToyStream",pWARN) << "The VALORArray format string is empty, this shouldn't happen!";
+    return nullptr;
+  }
+
   return fVALORArrayFormat.c_str();
 }
 //______________________________________________________________________________

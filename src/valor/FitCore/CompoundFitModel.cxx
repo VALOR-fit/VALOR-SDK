@@ -19,6 +19,7 @@ ChangeLog:
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
+#include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/VThreadPool.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/VArray/VALORArray.h"
@@ -34,7 +35,8 @@ using std::endl;
 //________________________________________________________________________________________
 CompoundFitModel::CompoundFitModel() :
  fSystematics(0),
- fOwnerOfSystematics(false)
+ fOwnerOfSystematics(false),
+ fDefVALORArrayFormat("pdft_vf")
 {
   fName = "UninitialisedCompoundFitModel";
 }
@@ -396,8 +398,14 @@ std::string CompoundFitModel::GetPDFIntegralAsString(Option_t * opt)
   return to_print;
 }
 //________________________________________________________________________________________
-util::ToyStream* CompoundFitModel::InitToyStream(const string file_name, const string read_or_write, const string opt)
+util::ToyStream* CompoundFitModel::InitToyStream(const string file_name, const string read_or_write, string valor_array_format)
 {
-  return new util::ToyStream(file_name, read_or_write, typeid(this), this->CompoundName(), opt, this->StreamSize());
+  valor_array_format = util::RemoveAllWhitespace(valor_array_format);
+  if(valor_array_format.empty()) {
+    valor_array_format = fDefVALORArrayFormat;
+  }
+
+  return new util::ToyStream(file_name, read_or_write, typeid(this), this->CompoundName(),
+                             valor_array_format, this->StreamSize());
 }
 //________________________________________________________________________________________
