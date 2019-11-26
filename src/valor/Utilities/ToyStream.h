@@ -80,10 +80,20 @@ namespace util
        */
       void SetPositionToToy(unsigned int toy_index);
 
+      /***
+       * Get the format used to read/write the toys from/to VALOR Arrays.
+       *
+       * NOTE: It's perfectly fine for this to be an empty string, in which case the
+       * data or model class using ToyStream will use whatever defaults they have set.
+       *
+       */
+      // TODO: change this behaviour, so that it can't be empty (as changing the default could silently cause problems reading toys)
+      Option_t* GetVALORArrayFormat(void) const;
+
     private:
       void         Init                    (string file_name, string read_or_write, string validation_string, long toy_size);
       bool         FileIsEmpty             () const;
-      const string MakeValidationString    (const std::type_info& type, const string compound_name, const string opt) const;
+      const string MakeValidationString    (const std::type_info& type, const string compound_name) const;
       void         WriteValidationString   ();
       const string ReadValidationString    () const;
       size_t       ReadValidationStringSize() const;
@@ -92,6 +102,7 @@ namespace util
       long          fToySize;
       string        fFileName;
       string        fValidationString;
+      string        fVALORArrayFormat;
   };
 }
 }

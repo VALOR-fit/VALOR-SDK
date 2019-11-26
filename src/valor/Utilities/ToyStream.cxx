@@ -23,7 +23,8 @@ valor::util::ToyStream::ToyStream(const string file_name, const string read_or_w
 {
   fToySize          = toy_size;
   fFileName         = file_name;
-  fValidationString = this->MakeValidationString(type, name, opt);
+  fVALORArrayFormat = opt;
+  fValidationString = this->MakeValidationString(type, name);
 
   if(read_or_write == "read") {
     fStream = new std::fstream(file_name, std::ios::binary | std::ios::in);
@@ -89,9 +90,9 @@ bool valor::util::ToyStream::FileIsEmpty() const
   return fStream->peek() == std::ifstream::traits_type::eof();
 }
 //______________________________________________________________________________
-const string valor::util::ToyStream::MakeValidationString(const std::type_info& type, const string compound_name, const string opt) const
+const string valor::util::ToyStream::MakeValidationString(const std::type_info& type, const string compound_name) const
 {
-  return ((string) type.name()) + "__" + compound_name + "__" + opt;
+  return ((string) type.name()) + "__" + compound_name + "__" + fVALORArrayFormat;
 }
 //______________________________________________________________________________
 void valor::util::ToyStream::WriteValidationString()
@@ -188,5 +189,11 @@ void valor::util::ToyStream::SetPositionToToy(unsigned int toy_index)
                             << ", but there are not this many toys stored";
     util::Die(-1);
   }
+}
+//______________________________________________________________________________
+Option_t* valor::util::ToyStream::GetVALORArrayFormat(void) const
+{
+  if(fVALORArrayFormat.empty()) { return nullptr; }   // Needed for checks like opt = (format) ? format : "some_string"
+  return fVALORArrayFormat.c_str();
 }
 //______________________________________________________________________________

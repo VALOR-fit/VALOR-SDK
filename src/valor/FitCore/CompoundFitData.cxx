@@ -122,13 +122,13 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitData::Read(util::ToyStream* stream, Option_t * read_opt)
+bool CompoundFitData::Read(util::ToyStream* stream)
 {
 
   bool status = true;
   for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it)
   {
-    status = status && (*it)->Read(stream, read_opt);
+    status = status && (*it)->Read(stream);
   }
 
   return status;
@@ -221,13 +221,13 @@ bool CompoundFitData::Write (TObjArray* collection, const char * tag, Option_t *
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitData::Write(util::ToyStream* stream, Option_t * write_opt)
+bool CompoundFitData::Write(util::ToyStream* stream)
 {
 
    bool status = true;
    for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it)
    {
-      status = status && (*it)->Write(stream, write_opt);
+      status = status && (*it)->Write(stream);
    }
    
    return status;

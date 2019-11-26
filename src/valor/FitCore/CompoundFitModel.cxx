@@ -113,12 +113,12 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Read(util::ToyStream* stream, Option_t* read_opt)
+bool CompoundFitModel::Read(util::ToyStream* stream)
 {
    bool status = true;
    for(std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
    {
-      status = status && (*it)->Read(stream, read_opt);
+      status = status && (*it)->Read(stream);
    }
 
    return status;
@@ -304,12 +304,12 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Write(util::ToyStream* stream, Option_t* write_opt)
+bool CompoundFitModel::Write(util::ToyStream* stream)
 {
    bool status = true;
    for(std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
    {
-      status = status && (*it)->Write(stream, write_opt);
+      status = status && (*it)->Write(stream);
    }
 
    return status;

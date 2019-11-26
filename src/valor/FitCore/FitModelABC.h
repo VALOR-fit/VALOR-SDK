@@ -42,7 +42,7 @@ public:
 
   // Read configuration data from file
   virtual bool Read(std::string file, Option_t * opt = 0) = 0;
-  virtual bool Read(util::ToyStream* stream, Option_t* read_opt = 0) = 0;
+  virtual bool Read(util::ToyStream* stream) = 0;
   virtual long StreamSize(Option_t* opt = 0) const = 0;
 
   // Below are a set methods to generate model predictions for a given physics hypothesis and a set of nuisance parameters.
@@ -73,7 +73,7 @@ public:
   // Write all predictions to the input container or to the input file
   virtual bool Write (TObjArray* collection, const char * tag = "model", Option_t * write_opt = 0) = 0;
   virtual bool Write (const char * filename, const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0) = 0;
-  virtual bool Write(util::ToyStream* stream, Option_t* write_opt = 0) = 0;
+  virtual bool Write(util::ToyStream* stream) = 0;
   
   // Get penalty term for current systematics
   virtual double GetFitStatisticPenalty(Option_t * opt = 0) const = 0;
