@@ -340,15 +340,10 @@ void CompoundFitData::SetAssociatedModel(FitModelABC *model_abc)
   fCFM = dynamic_cast<CompoundFitModel*>(model_abc);
 }
 //________________________________________________________________________________________
-void CompoundFitData::AdoptBinningFromModel(FitModelABC * model_abc)
+void CompoundFitData::SetFromModel(void)
 {
-  CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model_abc);
-  if (!cfm) {
-    LOG("CompoundFitData",pERROR) << "Could not adopt the binning from an invalid model";
-    util::Die(-1);
-  }
-  for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
-    fSubData[imodel]->AdoptBinningFromModel(cfm->GetSubModel(imodel));
+  for (unsigned int isubdata = 0; isubdata < fSubData.size() ; isubdata++) {
+    fSubData[isubdata]->SetFromModel();
   }
 }
 //________________________________________________________________________________________

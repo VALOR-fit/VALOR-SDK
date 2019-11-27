@@ -91,7 +91,7 @@ public:
   // Get a string including the data name and the total PDF integral
   virtual std::string GetPDFIntegralAsString(Option_t * opt = 0) = 0;
 
-  virtual void AdoptBinningFromModel(FitModelABC * model) = 0;
+  virtual void SetFromModel(void) = 0; // Set various parameters from the model
 
   // Associate a FitModelABC with the data to define the binning, POT and fiducial mass of the experiment
   virtual void SetAssociatedModel(FitModelABC *model_abc) = 0;
