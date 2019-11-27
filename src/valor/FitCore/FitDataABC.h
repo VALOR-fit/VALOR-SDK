@@ -93,6 +93,9 @@ public:
 
   virtual void AdoptBinningFromModel(FitModelABC * model) = 0;
 
+  // Associate a FitModelABC with the data to define the binning, POT and fiducial mass of the experiment
+  virtual void SetAssociatedModel(FitModelABC *model_abc) = 0;
+
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "") = 0;
 

@@ -22,6 +22,7 @@
 #include <string>
 #include <TROOT.h>
 
+#include "valor/FitCore/CompoundFitModel.h"
 #include "valor/FitCore/FitDataABC.h"
 
 namespace valor {
@@ -86,6 +87,9 @@ public:
   
   void SetName(std::string name);
 
+  // Associate a FitModelABC with the data to define the binning and other attributes of the experimental setup
+  virtual void SetAssociatedModel(FitModelABC *model_abc);
+
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
@@ -95,6 +99,7 @@ public:
 protected:
   std::string fName;
   std::vector<FitDataABC *> fSubData;
+  CompoundFitModel *fCFM;
   std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
 };
 
