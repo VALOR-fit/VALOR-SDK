@@ -83,8 +83,12 @@ GenericSingleSampleFitModel::GenericSingleSampleFitModel() :
   SingleSampleFitModelABC(),
   fBinning(NULL),
   fReactionModes(),
+  fRFL(NULL),
   fSystematics(NULL),
   fOwnerOfSystematics(false),
+  fApplyUniverseVariations(false),
+  fFirstUniverseToSave(0),
+  fLastUniverseToSave (0),
   fNonEmptyBinsOb(),
   fNonEmptyBinsSb(),
   fNumOfNonEmptyBinsOb(),
@@ -877,6 +881,11 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
     }
   }
   
+  // Warn the user if SB is combined with universes
+  if (write_sb && fApplyUniverseVariations) {
+    LOG("GenericSingleSampleFitModel", pWARN)
+      << "Wrote simple binning with universe variations on. Be aware these are applied only to OB";
+  }
 
   return true;
 }
@@ -1180,6 +1189,20 @@ void GenericSingleSampleFitModel::Book(void)
       fPDFTotOb->SetDimensionName(1,"true");
     
     }
+    
+    // If we need to save universe variations, make arrays for that
+    size_t n_universes = fLastUniverseToSave-fFirstUniverseToSave+1;
+    for (const std::string & param : fUniverseParametersToSave) {
+      std::vector<VALORArrayF> & vec = fUniverseVariations[param];
+      vec.resize(imode); // dumb but easier than making it reserve earlier
+      assert(fLastUniverseToSave>=fFirstUniverseToSave);
+      auto it = vec.begin();
+      vec.insert(it+imode,VALORArrayF(n_reco_bins_ob,n_true_bins,n_universes));
+      vec[imode].SetDimensionName(0,"reco");
+      vec[imode].SetDimensionName(1,"true");
+      vec[imode].SetDimensionName(2,"universe");
+      vec[imode].SetAll(0.0f);
+    }
 
   }//imode
 
@@ -1375,6 +1398,7 @@ void GenericSingleSampleFitModel::Clean(void)
   }
   
   this->ResetSystematicVariationIDs();
+  this->ResetUniversesToRead();
   
   fConfigFileRead = "";
 }
@@ -1502,8 +1526,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   const size_t max_n_universes = 10000;
   std::map<std::string,int> branch_n_universes;
   std::map<std::string,std::vector<float>> branch_universes;
-  for (const auto & entry : fSystUniverseToApply) {
-    const std::string & variation_name = entry.first;
+  for (const auto & variation_name : fUniverseParametersToSave) {
     branch_universes.emplace(variation_name,std::vector<float>(max_n_universes));
     std::string branch_name   = Form("variation_%s",variation_name.c_str());
     std::string branch_name_n = Form("variation_n_%s",variation_name.c_str());
@@ -1527,9 +1550,9 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   {
     t->GetEntry(iev);
 
-    if(iev%(nev/20)==0) {
+    if(iev && iev%(nev/1000)==0) {
       double pct = (100 * (double)(iev+1)) / (double)nev;
-      LOG("GenericSingleSampleFitModel",pINFO) << "Reading "<< util::AsString(fBeam)<<" MC DST: "<< TMath::Nint(pct) << "% done";
+      LOG("GenericSingleSampleFitModel",pINFO) << "Reading "<< fName <<" MC DST: "<< TMath::Nint(pct) << "% done";
     }
 
     // Get sample index
@@ -1642,11 +1665,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 #ifdef T2K
         // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
         // that they're all intrinsic nue so we don't care about them
-        LOG("GenericSingleSampleFitModel",pDEBUG)
+        SLOG("GenericSingleSampleFitModel",pDEBUG)
 #else
-        LOG("GenericSingleSampleFitModel",pWARN)
+        SLOG("GenericSingleSampleFitModel",pWARN)
 #endif
-          << "MC event: " << iev << " has reco kinematic value outside range: "<<util::AsString(kv) << " = "<<val
+          << fName<<" > MC event: " << iev << " has reco kinematic value outside range: "<<util::AsString(kv) << " = "<<val
           << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
         out_of_range = true;
       }
@@ -1700,10 +1723,17 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 #endif
 
     // If necessary, get the weight from the systematic variations
-    for (const auto & variation_name_and_id : fSystUniverseToApply) {
-      const std::string & name = variation_name_and_id.first;
-      const int & universe_id  = variation_name_and_id.second;
-      this_entry *= branch_universes[name][universe_id];
+    for (const std::string & name : fUniverseParametersToSave) {
+      for (size_t universe_id = fFirstUniverseToSave ; universe_id <= fLastUniverseToSave ; universe_id++) {
+        size_t universe_offset = universe_id - fFirstUniverseToSave;
+        const std::vector<float> & universes = branch_universes.at(name);
+        // Right now we'll sum up the weighted bin totals
+        float universe_entry = this_entry*universes.at(universe_id);
+        fUniverseVariations[name][imode].AddToEntry(
+          universe_entry,
+          reco_bin_ob, true_bin, universe_offset
+        );
+      }
     }
     
     // Add `nom' array entry (and init `tun', `sys' and `fin' arrays = `nom')
@@ -1723,6 +1753,33 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     fMCTFinSb [imode]->SetEntry(curr_wght_sb, reco_bin_sb, true_bin);
     fMCStatSb [imode]->SetEntry(           1, reco_bin_sb, true_bin);
   }//iev
+  
+  // If we're storing the weights from the universes, here we should
+  // divide out the unweighted total to get back to a simple weight
+  size_t n_universes_to_save = fLastUniverseToSave - fFirstUniverseToSave + 1;
+  int n_reco_bins_ob = reco_ob->NBins();
+  for (const std::string & name : fUniverseParametersToSave) {
+    for (size_t universe_offset = 0 ; universe_offset < n_universes_to_save ; universe_offset++) {
+      for(size_t imode = 0; imode < fReactionModes.size(); imode++){
+        ReacMode_t m = fReactionModes[imode];
+        if(m == kmUndefined) continue;
+        const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
+        const int n_true_bins = true_sb->NBins();
+        
+        for(int reco_bin_ob = 0 ; reco_bin_ob < n_reco_bins_ob ; reco_bin_ob++) {
+          for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
+            float varied_entry = fUniverseVariations[name][imode].GetEntry(reco_bin_ob,true_bin,universe_offset);
+            const float & orig_entry = fMCTFinOb [imode]->GetEntryRef(reco_bin_ob,true_bin);
+            float universe_weight = 1.;
+            if (std::abs(orig_entry) > conv::kASmallNum) {
+              universe_weight = varied_entry/orig_entry;
+            }
+            fUniverseVariations[name][imode].SetEntry(universe_weight, reco_bin_ob,true_bin,universe_offset);
+          }//true bins
+        }//reco bins
+      }//modes
+    }//universe
+  }//param
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::ReadTune(
@@ -2982,6 +3039,24 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
         
     }//update_mct_sb?
+    
+    
+    
+    // If we need to apply universes, do so now (only to OB)
+    if (fApplyUniverseVariations) {
+      for (const auto & variation_name_and_id : fSystUniverseToApply) {
+        const std::string & name = variation_name_and_id.first;
+        const int & universe_id  = variation_name_and_id.second;
+        size_t universe_offset = universe_id - fFirstUniverseToSave;
+        for (int ireco = 0 ; ireco < n_reco_bins_ob ; ireco++) {
+          for (int itrue = 0 ; itrue < n_true_bins_sb ; itrue++) {
+            float & wght = fUniverseVariations[name][imode].GetEntryRef(ireco,itrue,universe_offset);
+            double & val = templFinOb[ireco][itrue];
+            val *= wght;
+          } // true
+        } //reco
+      } // parameters to apply
+    }
   }//imode
   if (update_mct_sb) {
     LOG("GenericSingleSampleFitModel",pINFO) << "Simple binning update completed.";
@@ -4109,11 +4184,32 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
 void GenericSingleSampleFitModel::ResetSystematicVariationIDs()
 {
   fSystUniverseToApply.clear();
+  fApplyUniverseVariations = false;
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::SetSystematicVariationIDToApply(const std::string & param_name,size_t id)
 {
+  assert(id >= fFirstUniverseToSave && id <=fLastUniverseToSave);
   fSystUniverseToApply[param_name] = id;
+  fApplyUniverseVariations = true;
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::SetUniverseRangeToRead(size_t first, size_t last)
+{
+  fFirstUniverseToSave = first;
+  fLastUniverseToSave = last;
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::SetUniverseParameterToRead(const std::string & param_name)
+{
+  fUniverseParametersToSave.push_back(param_name);
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::ResetUniversesToRead()
+{
+  fFirstUniverseToSave = 0;
+  fLastUniverseToSave = 0;
+  fUniverseParametersToSave.clear();
 }
 //________________________________________________________________________________________
 const std::string & GenericSingleSampleFitModel::GetLastConfigFileRead() const

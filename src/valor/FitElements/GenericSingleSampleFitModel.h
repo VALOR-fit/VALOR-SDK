@@ -43,6 +43,7 @@ brief      A generic implementation of the fit model for a single sample,
 #include "valor/FitCore/SingleSampleFitModelABC.h"
 #include "valor/Oscillation/NuOsc3Flavour.h"
 #include "valor/VArray/VALORArray.h"
+#include "valor/VArray/VALORArrayF.h"
 #include "valor/VArray/VALORArrayBin.h"
 #include "valor/Utilities/RFL.h"
 
@@ -113,10 +114,14 @@ public:
   // Calculate the OB manually from the content of the simple bins. Can be used to verify the spectra are the same for SB/OB
   void UpdateObservableBinningFromSimple (Option_t * opt = 0);
   
-  // Add information on which systematic universe to apply for which parameter
+  // Add information on which systematic universes to read in if they're coming from the DST.
   // Must be called *before* Read() since these are event-by-event
-  void ResetSystematicVariationIDs();
+  void SetUniverseRangeToRead(size_t first, size_t last);
+  void SetUniverseParameterToRead(const std::string & param_name);
+  void ResetUniversesToRead();
+  
   void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
+  void ResetSystematicVariationIDs();
 
 private:
 
@@ -270,7 +275,16 @@ private:
   
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices
-  std::map<std::string,size_t> fSystUniverseToApply; // param name in DST to universe ID in DST
+  bool fApplyUniverseVariations;
+  std::map<std::string,size_t> fSystUniverseToApply; // uses universe in DST, not universe in here.
+  // For caching which universes to store so they can be rapidly applied
+  std::vector<std::string> fUniverseParametersToSave;
+  size_t fFirstUniverseToSave;
+  size_t fLastUniverseToSave;
+  // and the actual variations
+  // param name, mode(nmodes)->universe variations(reco,true,universe)
+  std::map<std::string,std::vector<VALORArrayF> > fUniverseVariations;
+  
 
   // Vector of tuning hists and the apply masks and kine vars that they should be used for
   std::vector<TuningInfo> fEventByEventTuningHists;
