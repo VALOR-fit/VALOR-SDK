@@ -1431,11 +1431,14 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   // Get a list of all the kinematic variables we care about
   const std::vector<conv::KineVar_t> & kinevars = fBinning->KineVars();
 
-  int    sample        = 0;
-  int    beam          = 0;
-  int    reac_mode     = 0;
-  double wght          = 1.;
-  double wght_pot      = 1.;
+  int    sample        = -1;
+  int    beam          = -1;
+  int    reac_mode     = -1;
+  double wght          = 1 ; //conv::kBadResult;
+  double wght_pot      = conv::kBadResult;
+  
+  // Turn off all the branches by default
+  t->SetBranchStatus("*",0);
   
   std::map<KineVar_t,double> kinematics;
   
@@ -1450,6 +1453,13 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   int bstat_reac_mode  = 0;  
   std::map<KineVar_t,int> bstat_kinematics;
   
+  // And turn all the base branches on
+  t->SetBranchStatus("sample"   , 1);
+  t->SetBranchStatus("beam"     , 1);
+  t->SetBranchStatus("reac_mode", 1);
+  t->SetBranchStatus("wght"     , 1);
+  t->SetBranchStatus("wght_pot" , 1);
+  
   bstat_sample    = t->SetBranchAddress("sample",    &sample);
   bstat_sample    = t->SetBranchAddress("beam"  ,    &beam);
   bstat_reac_mode = t->SetBranchAddress("reac_mode", &reac_mode);
@@ -1458,17 +1468,12 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   t->SetBranchAddress("wght"       , &wght);
   t->SetBranchAddress("wght_pot"   , &wght_pot);
   
-  // And turn all those branches on
-  t->SetBranchStatus("sample"   , 1);
-  t->SetBranchStatus("beam"     , 1);
-  t->SetBranchStatus("reac_mode", 1);
-  t->SetBranchStatus("wght"     , 1);
-  t->SetBranchStatus("wght_pot" , 1);
-  
   bool any_bad_status = (bstat_sample || bstat_beam || bstat_reac_mode);
   
   for(const conv::KineVar_t & kv : kinevars) {
-    bool bstat = t->SetBranchAddress(kinematic_branch_names[kv].c_str(),&kinematics[kv]);
+    const char * branchname = kinematic_branch_names[kv].c_str();
+    t->SetBranchStatus(branchname,1);
+    bool bstat = t->SetBranchAddress(branchname,&kinematics[kv]);
     any_bad_status = any_bad_status || bstat;
   }
 
@@ -1483,11 +1488,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   TObjArray * branch_list = t->GetListOfBranches();
   for (int ib = 0 ; ib < branch_list->GetEntries(); ib++) {
     const char * branchname = branch_list->At(ib)->GetName();
+    t->SetBranchStatus(branchname,1);
     TObjArray * matches = wght_branch_pattern.MatchS(branchname);
     if (matches->GetEntries()==1) {
       wght_branches[branchname] = -1.;
       t->SetBranchAddress(branchname,&(wght_branches[branchname]));
-      t->SetBranchStatus(branchname,1);
     }
     delete matches;
   }
@@ -1502,10 +1507,10 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     branch_universes.emplace(variation_name,std::vector<float>(max_n_universes));
     std::string branch_name   = Form("variation_%s",variation_name.c_str());
     std::string branch_name_n = Form("variation_n_%s",variation_name.c_str());
-    t->SetBranchAddress(branch_name_n.c_str(),&branch_n_universes[variation_name]);
-    t->SetBranchAddress(branch_name.  c_str(),branch_universes  [variation_name].data());
     t->SetBranchStatus (branch_name_n.c_str(),1);
     t->SetBranchStatus (branch_name  .c_str(),1);
+    t->SetBranchAddress(branch_name_n.c_str(),&branch_n_universes[variation_name]);
+    t->SetBranchAddress(branch_name.  c_str(),branch_universes  [variation_name].data());
   }
   
   Long_t nev = t->GetEntries();
