@@ -55,7 +55,7 @@ string GenericSingleSampleFitData::Name(void) const
   return fName;
 }
 //________________________________________________________________________________________
-bool GenericSingleSampleFitData::Read(string file, Option_t * opt)
+bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
 {
 
  // Set various parameters from the associated GSSFM
@@ -567,6 +567,11 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     LOG("GenericSingleSampleFitData", pWARN)
       << "MiniDST branches not found";
     util::Die(-1);
+  }
+  
+  if(bstat_wght) {
+    LOG("GenericSingleSampleFitData",pINFO)
+      << fName<<" - No wght branch found.";
   }
 
   Long_t nev = t->GetEntries();
