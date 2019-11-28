@@ -77,6 +77,34 @@ const vector<vector<vector<vector<int> > > > & ExperimentSetup::PlotStyle() cons
   return fPlotStyle;
 }
 //____________________________________________________________________________
+const std::vector<conv::Sample_t> & ExperimentSetup::Samples(conv::BeamConf_t b) const
+{
+  int ib = BeamConfIndex(b);
+  return fSamples.at(ib);
+}
+//____________________________________________________________________________
+const std::vector<conv::ReacMode_t> & ExperimentSetup::ReactionModes(conv::BeamConf_t b, conv::Sample_t s) const
+{
+  int ib = BeamConfIndex(b);
+  int is = SampleIndex(b,s);
+  return fReactionModes.at(ib).at(is);
+}
+//____________________________________________________________________________
+const std::vector<conv::ReacModeCoarse_t> & ExperimentSetup::ReactionModesCoarse(conv::BeamConf_t b, conv::Sample_t s) const
+{
+  int ib = BeamConfIndex(b);
+  int is = SampleIndex(b,s);
+  return fReactionModesCoarse.at(ib).at(is);
+}
+//____________________________________________________________________________
+const std::vector<int> & ExperimentSetup::PlotStyle(conv::BeamConf_t b, conv::Sample_t s, conv::ReacModeCoarse_t mc) const
+{
+  int ib = BeamConfIndex(b);
+  int is = SampleIndex(b,s);
+  int im = ReacModeCoarseIndex(b,s,mc);
+  return fPlotStyle.at(ib).at(is).at(im);
+}
+//____________________________________________________________________________
 const valor::ExperimentSetup * valor::ExperimentSetup::Instance() {return MutableInstance();}
 //________________________________________________________________________________________
 valor::ExperimentSetup * valor::ExperimentSetup::MutableInstance() 
@@ -122,6 +150,20 @@ int valor::ExperimentSetup::ReacModeIndex(conv::BeamConf_t b, conv::Sample_t s, 
     if (fReactionModes[ib][is][im]==m) {return im;}
   }
   LOG("ExperimentSetup",pFATAL)<<"Reaction Mode "<<util::AsString(m)<<" ("<<m<<") for "
+    <<"Sample "<<util::AsString(s)<<" ("<<s<<") and "
+    <<"BeamConf "<<util::AsString(b)<<" ("<<b<<")"<<" not set up.";
+  exit(-1);
+  return -1;
+}
+//________________________________________________________________________________________
+int valor::ExperimentSetup::ReacModeCoarseIndex(conv::BeamConf_t b, conv::Sample_t s, conv::ReacModeCoarse_t mc) const
+{
+  int ib = this->BeamConfIndex(b);
+  int is = this->SampleIndex(b,s);
+  for (size_t im = 0 ; im < fReactionModesCoarse[ib][is].size() ; im++) {
+    if (fReactionModesCoarse[ib][is][im]==mc) {return im;}
+  }
+  LOG("ExperimentSetup",pFATAL)<<"Coarse Reaction Mode "<<util::AsString(mc)<<" ("<<mc<<") for "
     <<"Sample "<<util::AsString(s)<<" ("<<s<<") and "
     <<"BeamConf "<<util::AsString(b)<<" ("<<b<<")"<<" not set up.";
   exit(-1);

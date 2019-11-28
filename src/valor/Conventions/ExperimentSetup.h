@@ -48,14 +48,19 @@ public:
   const std::string & ExperimentName() const;
   const std::vector<conv::BeamConf_t> & BeamConfs() const;
   const std::vector< std::vector<conv::Sample_t> > & Samples() const;
+  const std::vector<conv::Sample_t> & Samples(conv::BeamConf_t) const;
   const std::vector<std::vector<std::vector<conv::ReacMode_t> > > & ReactionModes() const;
+  const std::vector<conv::ReacMode_t> & ReactionModes(conv::BeamConf_t, conv::Sample_t) const;
   const std::vector<std::vector<std::vector<conv::ReacModeCoarse_t> > > & ReactionModesCoarse() const;
+  const std::vector<conv::ReacModeCoarse_t> & ReactionModesCoarse(conv::BeamConf_t, conv::Sample_t) const;
   const std::vector<std::vector<std::vector<std::vector<int> > > > & PlotStyle() const;
+  const std::vector<int> & PlotStyle(conv::BeamConf_t, conv::Sample_t, conv::ReacModeCoarse_t) const;
   
   // Get the array index a specific enum value represents for this experiment
   int BeamConfIndex(conv::BeamConf_t) const;
   int SampleIndex(conv::BeamConf_t b, conv::Sample_t s) const;
   int ReacModeIndex(conv::BeamConf_t b, conv::Sample_t s, conv::ReacMode_t m) const;
+  int ReacModeCoarseIndex(conv::BeamConf_t b, conv::Sample_t s, conv::ReacModeCoarse_t mc) const;
   
 private:
 
