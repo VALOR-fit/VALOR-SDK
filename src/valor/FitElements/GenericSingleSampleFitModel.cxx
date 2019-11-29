@@ -1532,8 +1532,12 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     std::string branch_name_n = Form("variation_n_%s",variation_name.c_str());
     t->SetBranchStatus (branch_name_n.c_str(),1);
     t->SetBranchStatus (branch_name  .c_str(),1);
-    t->SetBranchAddress(branch_name_n.c_str(),&branch_n_universes[variation_name]);
-    t->SetBranchAddress(branch_name.  c_str(),branch_universes  [variation_name].data());
+    bool bstat_univ_n = t->SetBranchAddress(branch_name_n.c_str(),&branch_n_universes[variation_name]);
+    bool bstat_univ   = t->SetBranchAddress(branch_name.  c_str(),branch_universes  [variation_name].data());
+    if (bstat_univ_n || bstat_univ) {
+      LOG("GenericSingleSampleModel",pFATAL) << fName<<" Failed to load needed universe branch.";
+      util::Die(-1) ; return;
+    }
   }
   
   Long_t nev = t->GetEntries();
