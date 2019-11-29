@@ -93,7 +93,8 @@ void Parameter::ReadNames()
   else {
     LOG("FitInputs", pNOTICE) << "No rootex name specified for parameter \'"
                               << fName << "\', instead using the simple name";
-    fRooTeXName = fName;
+    // with underscores escaped
+    fRooTeXName = util::ReplaceAll(fName,"_","#_");
   }
 
   if(util::IsNodeSpecified(fxml, fParamNode, "name/tex")) {
@@ -101,12 +102,11 @@ void Parameter::ReadNames()
   }
   else {
     LOG("FitInputs", pNOTICE) << "No Tex name specified for parameter \'"
-                              << fName << "\', instead using the RooTex name with \'\\\\\' replaced with \'#\'";
+                              << fName << "\', instead using the RooTex name with \'#\'replaced with \'\\\\\'";
     fTeXName = fRooTeXName;
-    replace( fTeXName.begin(), fTeXName.end(), '\\', '#' ); // Make slashes hashes for RooTeX
+    fTeXName = util::ReplaceAll(fTeXName,"#","\\"); // Make hashes slahes from RooTeX
     // Get rid of hashes preceding sin
-    size_t ind = fTeXName.find("#sin",0);
-    if (ind !=  string::npos) (fTeXName.replace(ind,4," sin"));
+    fTeXName = util::ReplaceAll(fTeXName,"#sin","sin");
     fTeXName = util::TrimSpaces(fTeXName);
   }
 }
