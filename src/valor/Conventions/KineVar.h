@@ -63,6 +63,9 @@ namespace util {
 
   bool IsReco (conv::KineVar_t kv);
   bool IsTrue (conv::KineVar_t kv);
+  // aliases
+  bool KineVarIsReco (conv::KineVar_t kv);
+  bool KineVarIsTrue (conv::KineVar_t kv);
 
   conv::KineVar_t KineVarFromInt(int k);
 

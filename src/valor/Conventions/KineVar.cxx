@@ -110,6 +110,9 @@ bool util::IsTrue(KineVar_t kv)
   return (!is_reco);
 }
 //________________________________________________________________________________________
+bool util::KineVarIsTrue(conv::KineVar_t kv) {return IsTrue(kv);}
+bool util::KineVarIsReco(conv::KineVar_t kv) {return IsReco(kv);}
+//________________________________________________________________________________________
 KineVar_t util::KineVarFromInt(int k)
 {
   // Cast an integer to KineVar_t, but with boundary check
