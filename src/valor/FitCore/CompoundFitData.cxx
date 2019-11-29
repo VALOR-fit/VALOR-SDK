@@ -358,3 +358,12 @@ util::ToyStream* CompoundFitData::InitToyStream(const string file_name, const st
                              valor_array_format, this->StreamSize());
 }
 //________________________________________________________________________________________
+bool CompoundFitData::DataExists(Option_t * opt) const
+{
+  bool exists = true;
+  for (unsigned int isubdata = 0; isubdata < fSubData.size() ; isubdata++) {
+    exists = exists && fSubData[isubdata]->DataExists(opt);
+  }
+  return exists;
+}
+//________________________________________________________________________________________

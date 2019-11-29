@@ -96,6 +96,9 @@ public:
 
   virtual void SetFromModel(void); // Set various parameters from the model
 
+  // Are the data arrays non-empty?
+  virtual bool DataExists(Option_t * opt = 0) const;
+
 protected:
   std::string fName;
   std::vector<FitDataABC *> fSubData;

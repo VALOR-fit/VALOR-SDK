@@ -99,6 +99,9 @@ public:
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "") = 0;
 
+  // Are the data arrays non-empty?
+  virtual bool DataExists(Option_t * opt = 0) const = 0;
+
 protected:
    FitDataABC();
 
