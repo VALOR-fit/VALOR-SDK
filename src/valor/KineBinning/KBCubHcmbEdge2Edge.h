@@ -101,6 +101,8 @@ public:
   unsigned int NBins (unsigned int dim  ) const;
   unsigned int NBins (conv::KineVar_t kv) const;
   unsigned int NBins (conv::KineVar_t kv, const std::map<conv::KineVar_t, double> &/* other_kv_vals*/) const;
+  // alias for above
+  unsigned int NBinsByKV (conv::KineVar_t kv) const;
   
   // Find bin
   unsigned int              FindBin1D         (double x, unsigned int dimension) const;

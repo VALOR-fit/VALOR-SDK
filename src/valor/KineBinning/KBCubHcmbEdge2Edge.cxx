@@ -294,6 +294,11 @@ unsigned int KBCubHcmbEdge2Edge::NBins(conv::KineVar_t kv) const
   return this->NBins(dimension);
 }
 //________________________________________________________________________________________
+unsigned int KBCubHcmbEdge2Edge::NBinsByKV(conv::KineVar_t kv) const
+{
+  return this->NBins(kv);
+}
+//________________________________________________________________________________________
 unsigned int KBCubHcmbEdge2Edge::NBins(conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & /*other_kv_vals*/) const
 {
   return NBins(kv);
