@@ -323,6 +323,16 @@ FitModelABC * CompoundFitModel::GetSubModel(int model_idx, Option_t * /*opt*/)
   return fSubModels.at(model_idx);
 }
 //________________________________________________________________________________________
+const std::vector<FitModelABC*> CompoundFitModel::GetSubModels(Option_t * /*opt*/) const
+{
+  return fSubModels;
+}
+//________________________________________________________________________________________
+std::vector<FitModelABC*> CompoundFitModel::GetSubModels(Option_t * /*opt*/)
+{
+  return fSubModels;
+}
+//________________________________________________________________________________________
 unsigned int CompoundFitModel::GetNSubModels(Option_t * /*opt*/) const
 {
   return fSubModels.size();
