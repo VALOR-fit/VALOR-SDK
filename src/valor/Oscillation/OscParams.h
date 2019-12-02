@@ -59,30 +59,30 @@ namespace valor {
       
       // Toy histograms
       void FillOscToyHisto(PhysHypothesis &ph);
-      TH1D *GetToyHisto(string oscparam,string MH="normal");
+      TH1D *GetToyHisto(std::string oscparam,std::string MH="normal");
       
       // Write the histograms in the OscParams
       void Write(TFile * f);
       
       // Print values of oscillation parameters (or whether they're set to be randomized)
-      void Print (ostream & stream) const;
-      void Print_Toys (ostream & stream) const;
-      friend ostream & operator << (ostream & stream, const OscParams & oscparams);
+      void Print (std::ostream & stream) const;
+      void Print_Toys (std::ostream & stream) const;
+      friend std::ostream & operator << (std::ostream & stream, const OscParams & oscparams);
       
-      void SetPrior(conv::PhysParamId_t physpar,string mode,double par1,double par2, string mixmode="");
+      void SetPrior(conv::PhysParamId_t physpar,std::string mode,double par1,double par2, std::string mixmode="");
       
-      double ExtractParam(conv::PhysParamId_t physpar,string mode,double par1,double par2,string mixmode="");
+      double ExtractParam(conv::PhysParamId_t physpar,std::string mode,double par1,double par2,std::string mixmode="");
       
-      string mixmode_mixing12; // "sinsqth" or "sinsq2th"
-      string mixmode_mixing13; // "sinsqth" or "sinsq2th"
-      string mixmode_mixing23; // "sinsqth" or "sinsq2th"
+      std::string mixmode_mixing12; // "sinsqth" or "sinsq2th"
+      std::string mixmode_mixing13; // "sinsqth" or "sinsq2th"
+      std::string mixmode_mixing23; // "sinsqth" or "sinsq2th"
       
-      string priormode_mixing12; // "user","gaus" or "flat"
-      string priormode_mixing13; // "user","gaus" or "flat"
-      string priormode_mixing23; // "user","gaus" or "flat"
-      string priormode_dcp;      // "user","gaus" or "flat"
-      string priormode_dm12sq;   // "user","gaus" or "flat"
-      string priormode_dm23sq;   // "user","gaus" or "flat"
+      std::string priormode_mixing12; // "user","gaus" or "flat"
+      std::string priormode_mixing13; // "user","gaus" or "flat"
+      std::string priormode_mixing23; // "user","gaus" or "flat"
+      std::string priormode_dcp;      // "user","gaus" or "flat"
+      std::string priormode_dm12sq;   // "user","gaus" or "flat"
+      std::string priormode_dm23sq;   // "user","gaus" or "flat"
       
       double params_mixing12[2]; // (mean,sigma) or (low,up)
       double params_mixing13[2]; // (mean,sigma) or (low,up)
@@ -227,7 +227,7 @@ namespace valor {
       friend struct Cleaner;
     };
     
-    ostream & operator << (ostream & stream, const OscParams & oscparams);
+    std::ostream & operator << (std::ostream & stream, const OscParams & oscparams);
     
   } // util
 } // valor
