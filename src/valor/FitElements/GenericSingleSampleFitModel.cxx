@@ -294,8 +294,8 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   // Splines
   bool any_splines_needed = false;
   // Check there are actually any splines needed for this sample/parameterisation
-  for (int im = 0 ; im < conv::kNReacModes ; im++) {
-    if (fSplineParamsAppliedTo[im].size()) {
+  for (const std::vector<PhysParamId_t> & par_to_apply_to_mode : fSplineParamsAppliedTo) {
+    if (par_to_apply_to_mode.size()) {
       any_splines_needed = true;
       break;
     }
@@ -1009,32 +1009,6 @@ void GenericSingleSampleFitModel::Init(void)
 
   fSkipOscProbApplyCheck = false;
 
-  for(size_t imode = 0; imode < conv::kNReacModes; imode++) {
-
-    // MC templates (simple binning)
-    fMCTNullSb[imode] = true;
-    fMCTNomSb [imode] = 0;
-    fMCTTunSb [imode] = 0;
-    fMCTSysSb [imode] = 0;
-    fMCTFinSb [imode] = 0;
-    fMCStatSb [imode] = 0;
-    // PDF (simple binning)
-    fPDFCompSb[imode] = 0;
-
-    // MC templates
-    fMCTNullOb [imode] = true;
-    fMCTNomOb  [imode] = 0;
-    fMCTTunOb  [imode] = 0;
-    fMCTSysOb  [imode] = 0;
-    fMCTFinOb  [imode] = 0;
-    fMCStatOb  [imode] = 0;
-    // Splines
-    fRFPtr     [imode] = 0;
-    // PDF
-    fPDFCompOb [imode] = 0;
-    
-  }//imode
-
   fSystematics = 0;
 }
 //________________________________________________________________________________________
@@ -1047,23 +1021,35 @@ void GenericSingleSampleFitModel::Book(void)
   
   const char * tag = "init"; // initial name for the array on booking
   
-  // Modes should eventually move to being fully runtime configurable
-  // Which means that this will end up going in read
-  // And we may have to completely merge Book/Read
-  int ibeam   = es.BeamConfIndex(fBeam);
-  int isample = es.SampleIndex(fBeam,fSample);
-  fReactionModes = es.ReactionModes()[ibeam][isample];
-  
   fNonEmptyBinsOb = std::vector<std::vector<int>>(fReactionModes.size());
   fNonEmptyBinsSb = std::vector<std::vector<int>>(fReactionModes.size());
   fNumOfNonEmptyBinsOb = std::vector<int>(fReactionModes.size());
   fNumOfNonEmptyBinsSb = std::vector<int>(fReactionModes.size());
+  
+  fMCTNullSb.resize(fReactionModes.size(),true);
+  fMCTNomSb .resize(fReactionModes.size(),nullptr);
+  fMCTTunSb .resize(fReactionModes.size(),nullptr);
+  fMCTSysSb .resize(fReactionModes.size(),nullptr);
+  fMCTFinSb .resize(fReactionModes.size(),nullptr);
+  fMCStatSb .resize(fReactionModes.size(),nullptr);
+  fPDFCompSb.resize(fReactionModes.size(),nullptr);
+  
+  fMCTNullOb.resize(fReactionModes.size(),true);
+  fMCTNomOb .resize(fReactionModes.size(),nullptr);
+  fMCTTunOb .resize(fReactionModes.size(),nullptr);
+  fMCTSysOb .resize(fReactionModes.size(),nullptr);
+  fMCTFinOb .resize(fReactionModes.size(),nullptr);
+  fMCStatOb .resize(fReactionModes.size(),nullptr);
+  fPDFCompOb.resize(fReactionModes.size(),nullptr);
+  
+  fNormParamsAppliedTo  .resize(fReactionModes.size());
+  fSplineParamsAppliedTo.resize(fReactionModes.size());
 
   this->BuildParamLists();
 
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
-    if(m == kmUndefined) continue;
+    assert(m!=conv::kmUndefined);
     
     const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
 
