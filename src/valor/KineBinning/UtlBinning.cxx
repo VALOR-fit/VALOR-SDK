@@ -18,6 +18,9 @@
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Messenger/Messenger.h"
 
+using std::string;
+using std::vector;
+
 namespace valor
 {
 namespace util

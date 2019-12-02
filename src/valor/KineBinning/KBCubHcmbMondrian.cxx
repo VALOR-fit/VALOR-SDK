@@ -19,6 +19,9 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/KineBinning/KBCubHcmbMondrian.h"
 
 using std::pair;
+using std::string;
+using std::vector;
+
 using namespace valor;
 
 ClassImp(KBCubHcmbMondrian)

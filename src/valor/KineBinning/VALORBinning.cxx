@@ -21,6 +21,7 @@ Copyright (c) 2010-2017, The VALOR Fitting Group, All Rights Reserved.
 
 using namespace valor;
 using std::vector;
+using std::string;
 
 //________________________________________________________________________________________
 VALORBinning::VALORBinning() :

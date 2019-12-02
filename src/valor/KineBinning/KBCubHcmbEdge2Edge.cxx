@@ -19,6 +19,8 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 
 using namespace valor;
 using std::vector;
+using std::string;
+using std::ostream;
 
 ClassImp(KBCubHcmbEdge2Edge)
 
