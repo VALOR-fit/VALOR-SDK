@@ -24,6 +24,10 @@ using std::cerr;
 using std::endl;
 using std::setw;
 using std::setprecision;
+using std::map;
+using std::vector;
+using std::string;
+using std::ostream;
 
 using namespace valor;
 using namespace valor::conv;

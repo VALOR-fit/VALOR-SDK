@@ -30,6 +30,7 @@ Copyright (c) 2010-2016, The VALOR group. All rights reserved.
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::string;
 
 using namespace valor;
 using namespace valor::conv;

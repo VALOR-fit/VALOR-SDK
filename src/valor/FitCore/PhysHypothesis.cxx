@@ -25,6 +25,9 @@ using std::cout;
 using std::endl;
 using std::setw;
 using std::setprecision;
+using std::string;
+using std::map;
+using std::ostream;
 
 using namespace valor;
 using namespace valor::conv;
