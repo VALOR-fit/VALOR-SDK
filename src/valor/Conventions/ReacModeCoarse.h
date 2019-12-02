@@ -24,8 +24,6 @@
 #include <string>
 #include "valor/Conventions/ReacMode.h"
 
-using std::string;
-
 namespace valor {
 namespace conv {
 
@@ -284,8 +282,8 @@ static const ReacModeCoarse_t kCoarseReacPriority[kNReacModes][kMaxCoarseReacOpt
 //
 namespace util {
 
-  string AsString    (conv::ReacModeCoarse_t m);
-  string AsStringTex (conv::ReacModeCoarse_t m, bool root);
+  std::string AsString    (conv::ReacModeCoarse_t m);
+  std::string AsStringTex (conv::ReacModeCoarse_t m, bool root);
 
   conv::ReacModeCoarse_t CoarseModeFromString (std::string s);
 

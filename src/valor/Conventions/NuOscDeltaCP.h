@@ -20,8 +20,6 @@
 
 #include <string>
 
-using std::string;
-
 namespace valor {
 
 namespace conv {
@@ -38,11 +36,11 @@ NuOscDeltaCP_t;
 
 namespace util {
 
-  string AsString (conv::NuOscDeltaCP_t d);
-  string CPVChoiceAsString (conv::NuOscDeltaCP_t d); //alias
-  string CPVChoiceAsStringSimple (conv::NuOscDeltaCP_t d);
+  std::string AsString (conv::NuOscDeltaCP_t d);
+  std::string CPVChoiceAsString (conv::NuOscDeltaCP_t d); //alias
+  std::string CPVChoiceAsStringSimple (conv::NuOscDeltaCP_t d);
 
-  conv::NuOscDeltaCP_t CPVChoiceFromString (string d);
+  conv::NuOscDeltaCP_t CPVChoiceFromString (std::string d);
 
 } // util
 

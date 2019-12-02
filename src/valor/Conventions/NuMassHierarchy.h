@@ -20,8 +20,6 @@
 
 #include <string>
 
-using std::string;
-
 namespace valor {
 
 namespace conv {
@@ -38,10 +36,10 @@ NuMassHierarchy_t;
 
 namespace util {
 
-  string AsString (conv::NuMassHierarchy_t  m);
-  string HierarchyAsString (conv::NuMassHierarchy_t  m); // alias of above for python
+  std::string AsString (conv::NuMassHierarchy_t  m);
+  std::string HierarchyAsString (conv::NuMassHierarchy_t  m); // alias of above for python
 
-  conv::NuMassHierarchy_t HierarchyFromString (string h);
+  conv::NuMassHierarchy_t HierarchyFromString (std::string h);
 
 } // util
 

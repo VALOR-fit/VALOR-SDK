@@ -20,8 +20,6 @@
 
 #include <string>
 
-using std::string;
-
 namespace valor {
 
 namespace conv {
@@ -38,10 +36,10 @@ NuOscOctant_t;
 
 namespace util {
 
-  string AsString(conv::NuOscOctant_t p);
-  string OctantAsString(conv::NuOscOctant_t p); //alias for python
+  std::string AsString(conv::NuOscOctant_t p);
+  std::string OctantAsString(conv::NuOscOctant_t p); //alias for python
 
-  conv::NuOscOctant_t OctantFromString(string h);
+  conv::NuOscOctant_t OctantFromString(std::string h);
 
 } // util
 

@@ -20,8 +20,6 @@
 
 #include <string>
 
-using std::string;
-
 namespace valor {
   
   namespace conv {
@@ -55,16 +53,16 @@ namespace valor {
   
   namespace util {
     
-    string AsString (conv::PhysHypothesis_t h);
-    string PhysHypAsString (conv::PhysHypothesis_t h); //alias
-    string AsString (conv::PhysHypothesis_t hyp, double mix12, double mix13, double mix23, double deltacp, double dm12sq, double dm23sq);
+    std::string AsString (conv::PhysHypothesis_t h);
+    std::string PhysHypAsString (conv::PhysHypothesis_t h); //alias
+    std::string AsString (conv::PhysHypothesis_t hyp, double mix12, double mix13, double mix23, double deltacp, double dm12sq, double dm23sq);
     
     // NEW BETABAR + 23barDissap
-    string AsString (conv::PhysHypothesis_t hyp, double mix12, double mix13, double mix23, double deltacp,
+    std::string AsString (conv::PhysHypothesis_t hyp, double mix12, double mix13, double mix23, double deltacp,
                      double dm12sq, double dm23sq, double betabar, double mix23bar, double dm23sqbar);
     //
     
-    conv::PhysHypothesis_t PhysHypFromString (string h);
+    conv::PhysHypothesis_t PhysHypFromString (std::string h);
     
   } // util
   

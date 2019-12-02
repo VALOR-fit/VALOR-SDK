@@ -29,8 +29,6 @@
 #include "valor/Conventions/NuOscOctant.h"
 #include "valor/Conventions/NuOscDeltaCP.h"
 
-using std::ostream;
-
 namespace valor {
 
 class Opt {
@@ -69,11 +67,11 @@ public:
 
   // Set the 'global' oscillation parameter options
   void SetValues(const char * dmsqscheme, const char * hierarchy,
-		 const char * mixparamchoice, const char * mixparamoctant,
-		 const char * cpvchoice, bool print = true);
+                 const char * mixparamchoice, const char * mixparamoctant,
+                 const char * cpvchoice, bool print = true);
 
-  void Print(ostream & stream) const;
-  friend ostream & operator << (ostream & stream, const Opt & opt);
+  void Print(std::ostream & stream) const;
+  friend std::ostream & operator << (std::ostream & stream, const Opt & opt);
   
   // Storage for parameters to throw around
   double GetGlobalBestFit     (conv::PhysParamId_t p) const;
@@ -152,7 +150,7 @@ private:
   friend struct Cleaner;
 };
 
-ostream & operator<< (ostream & stream, const Opt & plst);
+std::ostream & operator<< (std::ostream & stream, const Opt & plst);
 
 
 }      // valor namespace

@@ -52,7 +52,7 @@ namespace valor {
     // Alias for above
     std::string      SystTypeAsString   (conv::SystType_t t, Option_t * opt=0);
     conv::SystType_t SystTypeFromInt    (int t);
-    conv::SystType_t SystTypeFromString (string t);
+    conv::SystType_t SystTypeFromString (std::string t);
 
   } // util
 } // valor

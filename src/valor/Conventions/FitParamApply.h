@@ -318,12 +318,12 @@ namespace valor {
     const conv::NuclearTargetApplyMask_t ApplyToNuclearTarget(conv::NuclearTarget_t nt);
 
     conv::ApplyMask_t              ReadApplyMaskAll          (TXMLEngine* xmleng, XMLNodePointer_t top_node                  );
-    conv::DetectorApplyMask_t      ReadDetectorApplyMask     (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
-    conv::BeamApplyMask_t          ReadBeamApplyMask         (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
-    conv::FlavApplyMask_t          ReadFlavApplyMask         (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
-    conv::SelecApplyMask_t         ReadSelecApplyMask        (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
-    conv::ReacTypeApplyMask_t      ReadReacTypeApplyMask     (TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
-    conv::NuclearTargetApplyMask_t ReadNuclearTargetApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, string node_name);
+    conv::DetectorApplyMask_t      ReadDetectorApplyMask     (TXMLEngine* xmleng, XMLNodePointer_t top_node, std::string node_name);
+    conv::BeamApplyMask_t          ReadBeamApplyMask         (TXMLEngine* xmleng, XMLNodePointer_t top_node, std::string node_name);
+    conv::FlavApplyMask_t          ReadFlavApplyMask         (TXMLEngine* xmleng, XMLNodePointer_t top_node, std::string node_name);
+    conv::SelecApplyMask_t         ReadSelecApplyMask        (TXMLEngine* xmleng, XMLNodePointer_t top_node, std::string node_name);
+    conv::ReacTypeApplyMask_t      ReadReacTypeApplyMask     (TXMLEngine* xmleng, XMLNodePointer_t top_node, std::string node_name);
+    conv::NuclearTargetApplyMask_t ReadNuclearTargetApplyMask(TXMLEngine* xmleng, XMLNodePointer_t top_node, std::string node_name);
     bool                           IsAppliedTo               (conv::ApplyMask_t mask_to_check, conv::BeamConf_t b, conv::Sample_t s,
                                                               conv::Detector_t d, conv::ReacMode_t m, conv::NuclearTarget_t nt);
     bool                           IsAppliedTo               (conv::ApplyMask_t mask_to_check, conv::ApplyMask_t mask);

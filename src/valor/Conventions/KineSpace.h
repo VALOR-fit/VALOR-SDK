@@ -88,14 +88,14 @@ namespace util {
   std::vector<valor::conv::KineVar_t> KineVarReco         (conv::KineSpace_t ks);
   std::vector<valor::conv::KineVar_t> KineVarTrue         (conv::KineSpace_t ks);
   conv::KineSpace_t                   KineSpaceFromInt    (int is);
-  conv::KineSpace_t                   KineSpaceFromString (string s);
+  conv::KineSpace_t                   KineSpaceFromString (std::string s);
 
   conv::KineSpace_t KineSpaceFromKineVar(const conv::KineVar_t & kv);
   conv::KineSpace_t KineSpaceFromKineVars(std::vector<valor::conv::KineVar_t>);
   
   // Aliases to prevent overloading ambiguity
-  string                  KineSpaceAsString    (conv::KineSpace_t ks);
-  string                  KineSpaceAsStringTeX (conv::KineSpace_t ks, bool root);
+  std::string KineSpaceAsString    (conv::KineSpace_t ks);
+  std::string KineSpaceAsStringTeX (conv::KineSpace_t ks, bool root);
 
 
 } // util

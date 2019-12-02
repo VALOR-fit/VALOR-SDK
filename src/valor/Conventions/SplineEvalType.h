@@ -45,7 +45,7 @@ namespace valor {
     std::string      AsString                 (conv::SplEvalType_t t, Option_t * opt=0);
     // Alias for above
     std::string         SplEvalTypeAsString   (conv::SplEvalType_t t, Option_t * opt=0);
-    conv::SplEvalType_t SplEvalTypeFromString (string t);
+    conv::SplEvalType_t SplEvalTypeFromString (std::string t);
 
   } // util
 } // valor

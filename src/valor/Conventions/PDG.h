@@ -19,8 +19,6 @@
 
 #include "valor/Conventions/NuFlavour.h"
 
-using std::string;
-
 namespace valor {
 namespace conv   {
 
@@ -53,8 +51,8 @@ namespace util {
   bool IsNeutrino         (int pdg_code);
   bool IsAntiNeutrino     (int pdg_code);
 
-  string Pdg2String       (int pdg_code);
-  string Pdg2StringTex    (int pdg_code);
+  std::string Pdg2String       (int pdg_code);
+  std::string Pdg2StringTex    (int pdg_code);
 
 } // util
 

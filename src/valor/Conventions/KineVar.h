@@ -23,8 +23,6 @@
 #include <string>
 #include <utility>
 
-using std::string;
-
 namespace valor {
 namespace conv {
 
@@ -52,12 +50,12 @@ const int kNKineVarMax = conv::kvmodqreco+1;
 //
 namespace util {
 
-  string  AsString         (conv::KineVar_t kv);
-  string  AsStringTeX      (conv::KineVar_t kv, bool root);
+  std::string AsString         (conv::KineVar_t kv);
+  std::string AsStringTeX      (conv::KineVar_t kv, bool root);
   std::string DSTBranchName(conv::KineVar_t kv);
   
-  string  KineVarAsString     (conv::KineVar_t kv);
-  string  KineVarAsStringTeX  (conv::KineVar_t kv, bool root);
+  std::string  KineVarAsString     (conv::KineVar_t kv);
+  std::string  KineVarAsStringTeX  (conv::KineVar_t kv, bool root);
 
   conv::KineVar_t KineVarFromString (std::string s);
 

@@ -20,8 +20,6 @@
 
 #include <string>
 
-using std::string;
-
 namespace valor {
 namespace conv {
 

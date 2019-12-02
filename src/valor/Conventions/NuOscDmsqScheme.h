@@ -21,8 +21,6 @@
 
 #include "valor/Conventions/NuMassHierarchy.h"
 
-using std::string;
-
 namespace valor {
 
 namespace conv {
@@ -41,11 +39,11 @@ NuOscDmsqScheme_t;
 
 namespace util {
 
-  string AsString(conv::NuOscDmsqScheme_t dmsqs);
-  string DmsqSchemeAsString(conv::NuOscDmsqScheme_t dmsqs); //alias of above
-  string DmsqSchemeAsStringSimple(conv::NuOscDmsqScheme_t dmsqs);
+  std::string AsString(conv::NuOscDmsqScheme_t dmsqs);
+  std::string DmsqSchemeAsString(conv::NuOscDmsqScheme_t dmsqs); //alias of above
+  std::string DmsqSchemeAsStringSimple(conv::NuOscDmsqScheme_t dmsqs);
 
-  conv::NuOscDmsqScheme_t DmsqSchemeFromString (string h);
+  conv::NuOscDmsqScheme_t DmsqSchemeFromString (std::string h);
   conv::NuOscDmsqScheme_t GetAutoDmsqSchemeFromHierarchy(conv::NuMassHierarchy_t hierarchy = conv::kNmhUndefined); // If given undefined, reads Opt class
 
 } // util

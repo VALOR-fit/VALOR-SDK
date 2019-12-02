@@ -18,8 +18,6 @@
 
 #include <string>
 
-using std::string;
-
 namespace valor {
 
 namespace conv {
@@ -36,11 +34,11 @@ NuOscMixParam_t;
 
 namespace util {
 
-   string AsString (conv::NuOscMixParam_t o);
-   string MixingTypeAsString (conv::NuOscMixParam_t o); //alias of above
-   string MixingTypeAsStringSimple (conv::NuOscMixParam_t o);
+   std::string AsString (conv::NuOscMixParam_t o);
+   std::string MixingTypeAsString (conv::NuOscMixParam_t o); //alias of above
+   std::string MixingTypeAsStringSimple (conv::NuOscMixParam_t o);
 
-   conv::NuOscMixParam_t MixingTypeFromString (string h);
+   conv::NuOscMixParam_t MixingTypeFromString (std::string h);
 
 } // util
 
