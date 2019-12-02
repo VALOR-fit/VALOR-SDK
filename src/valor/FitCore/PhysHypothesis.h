@@ -30,17 +30,13 @@
 #include "valor/Conventions/Detector.h"
 #include "valor/FitCore/FitParamList.h"
 
-using std::ostream;
-using std::string;
-using std::map;
-
 namespace valor {
 
 class PhysHypothesis
 {
 public:
    PhysHypothesis(conv::PhysHypothesis_t hypothesis = conv::kHypUndefined);
-   PhysHypothesis(string hypothesis);
+   PhysHypothesis(std::string hypothesis);
    PhysHypothesis(const PhysHypothesis & ph);
    PhysHypothesis(const FitParamList & fp);
   ~PhysHypothesis();
@@ -59,8 +55,8 @@ public:
    bool IsNuisance (conv::PhysParamId_t p) const;
 
    // Print
-   void Print (ostream & stream) const;
-   friend ostream & operator << (ostream & stream, const PhysHypothesis & ph);
+   void Print (std::ostream & stream) const;
+   friend std::ostream & operator << (std::ostream & stream, const PhysHypothesis & ph);
 
    // Copy values to a PhysParamList 
    valor::PhysParamList AsPhysParamList(void) const;
@@ -71,11 +67,11 @@ public:
 private:
 
    conv::PhysHypothesis_t fHypothesis;
-   map<int,double>        fParams;
-   map<int,bool>          fIsNuisance;
+   std::map<int,double>   fParams;
+   std::map<int,bool>     fIsNuisance;
 };
 
-ostream & operator<< (ostream & stream, const PhysHypothesis & plst);
+std::ostream & operator<< (std::ostream & stream, const PhysHypothesis & plst);
 
   namespace util {
     bool OscProbIsAppliedTo(conv::PhysHypothesis_t h, conv::Detector_t d);

@@ -58,7 +58,7 @@ protected:
   conv::KineSpace_t fKSp;
 
   // Name of this VALOR fit model (see Conventions/Names.h)
-  string fName;
+  std::string fName;
 
   // Pointer to our systematics
   CorrelatedSystematics * fSystematics;

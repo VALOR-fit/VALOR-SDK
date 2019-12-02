@@ -20,6 +20,8 @@
 #ifndef _valor_fit_inputs_h_
 #define _valor_fit_inputs_h_
 
+#include <string>
+
 #include <Minuit2/FumiliFCNBase.h>
 #include <Math/IFunction.h>
 #include <Math/FitMethodFunction.h>
@@ -73,7 +75,7 @@ class FitMethodFunc : public ROOT::Math::FitMethodFunction
 class FitInputs: public ROOT::Minuit2::FCNBase, public TObject
 {
 public :
-  FitInputs(FitDataABC * o, FitModelABC * e, FitParamList * p, string opt = "poisson", double errdef = 1, bool goodnessoffit = false);
+  FitInputs(FitDataABC * o, FitModelABC * e, FitParamList * p, std::string opt = "poisson", double errdef = 1, bool goodnessoffit = false);
   ~FitInputs();
   
   FitDataABC &    Observation (void);
@@ -116,7 +118,7 @@ private:
   FitDataABC *            fObs;
   mutable FitModelABC *   fExp;
   mutable FitParamList *  fFitParams;
-  string                  fOpt;
+  std::string             fOpt;
   int                     fMode;
   double                  fErrDef;
   bool                    fGoodnessOfFit;

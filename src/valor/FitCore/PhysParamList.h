@@ -28,10 +28,6 @@
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/FitCore/FitParamList.h"
 
-using std::ostream;
-using std::string;
-using std::map;
-
 namespace valor {
   
 class CorrelatedSystematics;
@@ -50,15 +46,15 @@ public:
    void   Clear    (Option_t * option = "");
    void   Append   (const PhysParamList & pl);
    using TNamed::Print; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
-   void   Print    (ostream & stream) const;
+   void   Print    (std::ostream & stream) const;
    
    bool Contains (conv::PhysParamId_t p) const;
    void Remove   (conv::PhysParamId_t p);
 
-   double           operator () (conv::PhysParamId_t p) const;
-   friend ostream & operator << (ostream & stream, const PhysParamList & pl);
+   double                operator () (conv::PhysParamId_t p) const;
+   friend std::ostream & operator << (std::ostream & stream, const PhysParamList & pl);
 
-   const map<int,double> & Map(void) const { return fParams; }
+   const std::map<int,double> & Map(void) const { return fParams; }
    
    // Get the contents of another PPL.
    void CopyFrom(const PhysParamList & ppl); // Wipes current contents
@@ -69,12 +65,12 @@ public:
 
 private:
 
-   map<int,double> fParams;
+   std::map<int,double> fParams;
 
 ClassDef(PhysParamList,1)
 };
 
-ostream & operator<< (ostream & stream, const PhysParamList & plst);
+std::ostream & operator<< (std::ostream & stream, const PhysParamList & plst);
 
 } // valor
 

@@ -39,9 +39,6 @@
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/Build.h"
 
-using std::string;
-using std::map;
-
 namespace valor {
   
   class PhysParamList;
@@ -56,7 +53,7 @@ namespace valor {
     
     // Get information for the fit parameters
     int    Size               (void)                         const { return fNParams;  }
-    string Name               (valor::conv::PhysParamId_t p) const { return fName[this->Id(p)].GetString().Data();   }
+    std::string Name          (valor::conv::PhysParamId_t p) const { return fName[this->Id(p)].GetString().Data();   }
     double BestFitValue       (valor::conv::PhysParamId_t p) const { return fBestFitValue    [this->Id(p)]; }
     double CurrValue          (valor::conv::PhysParamId_t p) const { return fCurrValue       [this->Id(p)]; }
     double InitValue          (valor::conv::PhysParamId_t p) const { return fInitValue       [this->Id(p)]; }
@@ -72,7 +69,7 @@ namespace valor {
     double ParameterScaling   (valor::conv::PhysParamId_t p) const { return fParameterScaling[this->Id(p)]; }
     
     // Same as Above, but by index
-    string NameByIndex            (int i) const  { return fName[i].GetString().Data();   }
+    std::string NameByIndex       (int i) const  { return fName[i].GetString().Data();   }
     double BestFitValueByIndex    (int i) const  { return fBestFitValue    [i]; }
     double CurrValueByIndex       (int i) const  { return fCurrValue       [i]; }
     double InitValueByIndex       (int i) const  { return fInitValue       [i]; }
@@ -90,7 +87,7 @@ namespace valor {
     // Add a parameter
     bool AddParam (
        int ip, valor::conv::PhysParamId_t p, double init,
-       double min, double max, double step, bool fix=false, bool nuisance=false, string name="");
+       double min, double max, double step, bool fix=false, bool nuisance=false, std::string name="");
     
     // Check whether the input parameter was included in the physics param list
     bool Exists (valor::conv::PhysParamId_t p) const;
@@ -237,10 +234,10 @@ namespace valor {
     // - "numudisapp2f+nuisance"            : As "numudisapp2f" + all nuisance parameters
     // - "decay"                            : Fit for sin^2(2theta) and \alpha_{decay}
     // - "decoh"                            : Fit for sin^2(2theta) and \mu_{decoherence}
-    static FitParamList * NamedParameterList (string name, size_t n_empty = 0);
+    static FitParamList * NamedParameterList (std::string name, size_t n_empty = 0);
     
     // Get the name used in NamedParameterList
-    string GetParListName  (void) const { return fParListName; }
+    std::string GetParListName  (void) const { return fParListName; }
     int    GetSystMode     (void) const { return fSystMode;     }
     
     // Work-out the physics hypothesis
@@ -258,7 +255,7 @@ namespace valor {
     // MARGINALIZATION
     void SetDoMarg(valor::conv::PhysParamId_t p,bool domarg);
     void SetPriorMode(valor::conv::PhysParamId_t p,int priormode);
-    void SetPriorMode(valor::conv::PhysParamId_t p,string priormodename);
+    void SetPriorMode(valor::conv::PhysParamId_t p,std::string priormodename);
     void SetMeanGaus(valor::conv::PhysParamId_t p,double mean);
     void SetSigmaGaus(valor::conv::PhysParamId_t p,double sigma);
     void SetMinValueFlat(valor::conv::PhysParamId_t p,double minvalmarg);
@@ -273,7 +270,7 @@ namespace valor {
     
     bool   IsMarginalized   (valor::conv::PhysParamId_t p) const { return fDoMarg        [this->Id(p)]; }
     int    GetPriorMode     (valor::conv::PhysParamId_t p) const { return fPriorMode     [this->Id(p)]; }
-    string GetPriorModeName (valor::conv::PhysParamId_t p) const;
+    std::string GetPriorModeName (valor::conv::PhysParamId_t p) const;
     double GetMeanGaus      (valor::conv::PhysParamId_t p) const { return fMeanGaus      [this->Id(p)]; }
     double GetSigmaGaus     (valor::conv::PhysParamId_t p) const { return fSigmaGaus     [this->Id(p)]; }
     double GetMinValueFlat  (valor::conv::PhysParamId_t p) const { return fMinValueFlat  [this->Id(p)]; }
@@ -321,8 +318,8 @@ namespace valor {
     static void           AppendEffectiveSterileOscillation         (FitParamList * fp, int start);
     static void           AppendAllSystematics                      (FitParamList * fp, int start);
     
-    void SetParListName (string s)   { fParListName = s; }
-    void SetSystMode    (int m)      { fSystMode    = m; }
+    void SetParListName (std::string s)  { fParListName = s; }
+    void SetSystMode    (int m)          { fSystMode    = m; }
     
   private:
     
@@ -345,9 +342,9 @@ namespace valor {
     //
     
     
-    map<valor::conv::PhysParamId_t, int> fIdMap;
+    std::map<valor::conv::PhysParamId_t, int> fIdMap;
     
-    string       fParListName;
+    std::string  fParListName;
     int          fSystMode; // used in FitInputs to make deciding on what to include in the chisq penalty faster. 0 no syst, 1 all syst, 2 selected syst, ...
     
     int          fNParams;

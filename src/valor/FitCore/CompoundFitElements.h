@@ -39,7 +39,7 @@ public:
   CompoundFitElements();
  ~CompoundFitElements();
 
-  bool Read(string xmlconfig, Option_t * opt = "");
+  bool Read(std::string xmlconfig, Option_t * opt = "");
 
   FitDataABC *  FitData  (void) const { return fCompoundFitData;  }
   FitModelABC * FitModel (void) const { return fCompoundFitModel; }
@@ -57,9 +57,9 @@ private:
   bool ReadElement      (TXMLEngine* xmleng, XMLNodePointer_t top_node, Option_t * opt = "");
   CorrelatedSystematics * ReadSystematicGroup (TXMLEngine* xmleng, XMLNodePointer_t top_node, Option_t * opt = "");
 
-  FitDataABC *  AdoptFitData  (string config_file, conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, string class_name, FitModelABC *model_abc, Option_t * opt = "");
-  FitModelABC * AdoptFitModel (string config_file, conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, string class_name, Option_t * opt = "");
-  void *        InstantiateUsingDictionaryRegistration (string class_name);
+  FitDataABC *  AdoptFitData  (std::string config_file, conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, std::string class_name, FitModelABC *model_abc, Option_t * opt = "");
+  FitModelABC * AdoptFitModel (std::string config_file, conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, std::string class_name, Option_t * opt = "");
+  void *        InstantiateUsingDictionaryRegistration (std::string class_name);
 
   CompoundFitData  * fCompoundFitData;
   CompoundFitModel * fCompoundFitModel;

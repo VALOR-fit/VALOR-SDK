@@ -40,12 +40,12 @@ public:
 // FitDataABC interface
 
   // Identify fit data with a name (to be propagated in output files, etc)
-  virtual string Name(void) const;  
+  virtual std::string Name(void) const;  
 
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
   // Return true if data were succesfully read out
-  virtual bool Read(string file, Option_t * opt = 0);
+  virtual bool Read(std::string file, Option_t * opt = 0);
 
   // Generate mock data (toy-MC)
   // Toy-MC is generated from using the input model 
