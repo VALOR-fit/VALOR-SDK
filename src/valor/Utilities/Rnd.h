@@ -30,8 +30,6 @@
 
 #include <TRandom3.h>
 
-using std::ostream;
-
 namespace valor {
   
 class CmdLnArgList;
@@ -51,8 +49,8 @@ public:
   TRandom3 & RndFitter     (void) { return fRndFitter;     }
   TRandom3 & RndOther      (void) { return fRndOther;      }
 
-  void Print(ostream & stream) const;
-  friend ostream & operator << (ostream & stream, const Rnd & rnd);
+  void Print(std::ostream & stream) const;
+  friend std::ostream & operator << (std::ostream & stream, const Rnd & rnd);
 
 private:
 
@@ -86,7 +84,7 @@ private:
   friend struct Cleaner;
 };
 
-ostream & operator<< (ostream & stream, const Rnd & plst);
+std::ostream & operator<< (std::ostream & stream, const Rnd & plst);
 
 }      // valor namespace
 #endif // __valor_rnd__

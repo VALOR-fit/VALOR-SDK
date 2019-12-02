@@ -38,9 +38,6 @@ class TH2D;
 #include "valor/Conventions/ConfLevel.h"
 #include "valor/Conventions/PhysParamId.h"
 
-using std::string;
-using std::vector;
-
 // mathmore forward decl
 namespace ROOT{ namespace Math { class Interpolator;}}
 

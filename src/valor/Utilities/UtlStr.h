@@ -3,7 +3,7 @@
 
 \class     valor::utils
 
-\brief     Utilities for string manipulation
+\brief     Utilities for std::string manipulation
 
 \author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
            University of Liverpool & STFC Rutherford Appleton Laboratory
@@ -23,20 +23,17 @@
 #include <vector>
 #include <map>
 
-using std::string;
-using std::vector;
-
 namespace valor {
 namespace util {
 
-  string         TrimSpaces                (string input);
-  string         RemoveAllWhitespace       (string input);
-  vector<string> Tokens                    (string input, string delimiter);
-  string         ToLowerCase               (string data);
-  string         ReplaceAll                (string data,string from, string to);
-  string         PadToLength               (string data, unsigned int length, char pad_with = ' ');
-  string         PadToLengthFromLeft       (string data, unsigned int length, char pad_with = ' ');
-  string         GetStringBetweenDelimiters(const string &s, const string &start_delim, const string &stop_delim);
+  std::string              TrimSpaces                (std::string input);
+  std::string              RemoveAllWhitespace       (std::string input);
+  std::vector<std::string> Tokens                    (std::string input, std::string delimiter);
+  std::string              ToLowerCase               (std::string data);
+  std::string              ReplaceAll                (std::string data, std::string from, std::string to);
+  std::string              PadToLength               (std::string data, unsigned int length, char pad_with = ' ');
+  std::string              PadToLengthFromLeft       (std::string data, unsigned int length, char pad_with = ' ');
+  std::string              GetStringBetweenDelimiters(const std::string &s, const std::string &start_delim, const std::string &stop_delim);
   
 } // util
 } // valor

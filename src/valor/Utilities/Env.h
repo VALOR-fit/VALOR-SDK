@@ -21,9 +21,6 @@
 #include <iostream>
 #include <string>
 
-using std::ostream;
-using std::string;
-
 namespace valor {
 
 class Env {
@@ -33,17 +30,17 @@ public:
   static const Env * Instance();
   static Env * MutableInstance();
   
-  string TopLevelDir     (void) const { return fTopLevelDir;     }
-  string TopLevelDataDir (void) const { return fTopLevelDataDir; }
-  string TopLevelConfDir (void) const { return fTopLevelConfDir; }
-  string Banner          (void) const { return fBanner;          }
+  std::string TopLevelDir     (void) const { return fTopLevelDir;     }
+  std::string TopLevelDataDir (void) const { return fTopLevelDataDir; }
+  std::string TopLevelConfDir (void) const { return fTopLevelConfDir; }
+  std::string Banner          (void) const { return fBanner;          }
 
-  void SetTopLevelDir     (string dir) { fTopLevelDir     = dir; }
-  void SetTopLevelDataDir (string dir) { fTopLevelDataDir = dir; }
-  void SetTopLevelConfDir (string dir) { fTopLevelConfDir = dir; }
+  void SetTopLevelDir     (std::string dir) { fTopLevelDir     = dir; }
+  void SetTopLevelDataDir (std::string dir) { fTopLevelDataDir = dir; }
+  void SetTopLevelConfDir (std::string dir) { fTopLevelConfDir = dir; }
 
-  void Print(ostream & stream) const;
-  friend ostream & operator << (ostream & stream, const Env & env);
+  void Print(std::ostream & stream) const;
+  friend std::ostream & operator << (std::ostream & stream, const Env & env);
   
 private:
 
@@ -53,10 +50,10 @@ private:
 
   static Env * fInstance;
 
-  string fTopLevelDir;
-  string fTopLevelDataDir;
-  string fTopLevelConfDir;
-  string fBanner;  
+  std::string fTopLevelDir;
+  std::string fTopLevelDataDir;
+  std::string fTopLevelConfDir;
+  std::string fBanner;  
 
   struct Cleaner {
       void DummyMethodAndSilentCompiler() { }
@@ -70,7 +67,7 @@ private:
   friend struct Cleaner;
 };
 
-ostream & operator<< (ostream & stream, const Env & env);
+std::ostream & operator<< (std::ostream & stream, const Env & env);
 
 
 }      // valor namespace

@@ -31,14 +31,12 @@
 
 #include "valor/Conventions/PhysParamId.h"
 
-using std::string;
-
 namespace valor {
     class ConfidenceInterval;
 
     class ConfidenceInterval: public TNamed {
     public:
-        ConfidenceInterval(string in_file_name, string confidence, conv::PhysParamId_t par_x, conv::PhysParamId_t par_y, bool avg_or_min_delta_chi2, bool find_delta_chi2);
+        ConfidenceInterval(std::string in_file_name, std::string confidence, conv::PhysParamId_t par_x, conv::PhysParamId_t par_y, bool avg_or_min_delta_chi2, bool find_delta_chi2);
         ~ConfidenceInterval();
 
         // Get the coordinates of the best-fit point as (param x coord, param y coord, delta chi^2). Histogram bin centres are used to approximate the coordinates
@@ -58,7 +56,7 @@ namespace valor {
 
     private:
         ConfidenceInterval();
-        void Generate(string in_file_name, string confidence, bool avg_or_min_delta_chi2, bool find_delta_chi2);
+        void Generate(std::string in_file_name, std::string confidence, bool avg_or_min_delta_chi2, bool find_delta_chi2);
 
         // Works out the histogram binning based on the input data
         void GetBinningAndData(TChain* chain);
@@ -73,7 +71,7 @@ namespace valor {
         void FindDelta();
 
         // Converts the input confidence level (in units of % or standard deviations) into a critical delta chi^2
-        double FindCriticalChi2(string confidence, bool find_delta_chi2);
+        double FindCriticalChi2(std::string confidence, bool find_delta_chi2);
 
         // Accounts for bins where all fits failed or where there are no data. This prevents them from being considered as delta chi^2 = 0 bins
         void FixFailure(double chi2_crit);
@@ -90,7 +88,7 @@ namespace valor {
         double scale_limits;     //TODO: Maybe it would be better to just add on an extra bin to the end of all histograms, but this works for now
         std::vector<double> x_vals, y_vals, chi2_vals;
         double best_fit_point[3];   // (x, y, delta chi^2 min)
-        double hist_limits[4];		// (x_low, x_high, y_low, y_high)
+        double hist_limits[4];      // (x_low, x_high, y_low, y_high)
         TObjArray *output_graphs;
 
         // Setup the histograms with arbitrary binning (to be defined later)

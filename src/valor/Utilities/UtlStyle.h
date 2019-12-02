@@ -29,10 +29,6 @@
 class TGraph;
 class TH1;
 
-using std::string;
-using std::vector;
-using std::cout;
-
 namespace valor {
 namespace util {
 
@@ -43,9 +39,9 @@ namespace util {
   void Format(TH1* hst,
         int lcol, int lsty, int lwid, int mcol, int msty, double msiz);
 
-  void PrintBanner(string filename, UInt_t wait_msec);
+  void PrintBanner(std::string filename, UInt_t wait_msec);
 
-  void Verbosity(string filename);
+  void Verbosity(std::string filename);
 
 //  void PrintCompact    (const TVectorD & v, int w=15, int prec=9, Option_t * opt="", ostream & stream = cout);
 //  void PrintCompact    (const TVectorD & current, const TVectorD & nominal, int w, int prec, Option_t * option, ostream & stream = cout);

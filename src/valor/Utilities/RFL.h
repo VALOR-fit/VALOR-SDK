@@ -77,7 +77,7 @@ public:
                           const int & itrue, const int & ireco) const;
                           
   // Read splines from config file
-  bool Read (string file, Option_t * opt = 0);
+  bool Read (std::string file, Option_t * opt = 0);
   
   // Get the bin corresponding to a point in kinematical space, returns pair<itrue,ireco>
   std::pair<int,int> GetBin(const util::KinematicPoint & kp, conv::ReacMode_t m = conv::kmUndefined) const;

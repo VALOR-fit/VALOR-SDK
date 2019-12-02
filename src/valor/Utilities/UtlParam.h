@@ -38,8 +38,6 @@
 #include "valor/FitCore/CorrelatedSystematics.h"
 #include "valor/FitCore/PhysHypothesis.h"
 
-using std::string;
-
 namespace valor {
 namespace util {
 

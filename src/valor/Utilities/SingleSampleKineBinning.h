@@ -81,7 +81,7 @@ public:
   SingleSampleKineBinning(UniqueSampleID usid);
  ~SingleSampleKineBinning();
 
-  bool Read(string file);
+  bool Read(std::string file);
 
   const VALORBinning * RecoOptBinning(void)   const { return fRecoOptimizedBinning;    }
   const VALORBinning * RecoSmpBinning(void)   const { return fRecoSimpleBinning;       }
