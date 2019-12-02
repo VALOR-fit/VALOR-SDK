@@ -33,6 +33,7 @@
 #include "valor/Conventions/ExperimentSetup.h"
 
 #include "valor/Conventions/Constants.h"
+#include "valor/Conventions/ModeList.h"
 #include "valor/Conventions/Names.h"
 #include "valor/Conventions/NuFlavour.h"
 #include "valor/Conventions/NuOscMixParam.h"
@@ -65,6 +66,7 @@
 #include "valor/Conventions/FitParamApply.h"
 
 using std::endl;
+using std::string;
 
 using namespace valor;
 using namespace valor::conv;
@@ -133,16 +135,6 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   if (fSample   == conv::ksUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Sample"    << fSample   ; util::Die(-1); }
   if (fKSp      == conv::kspUndefined) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad KineSpace" << fKSp      ; util::Die(-1); }
   
-  int ibeam   = es.BeamConfIndex(fBeam);
-  int isample = es.SampleIndex(fBeam,fSample);
-  if (isample == -1) {
-    LOG("GenericSingleSampleFitModel",pFATAL)
-      << "Sample not included in analysis build: "<<util::AsString(fBeam)<<" "<<util::AsString(fSample);
-    util::Die(-1);
-  }
-  
-  fReactionModes = es.ReactionModes()[ibeam][isample];
-
   fName = util::nm::MdlName(fDetector, fBeam, fSample, fKSp);
   
   TString ts_opt(opt);
@@ -152,17 +144,6 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
 #ifdef SPLINE_WEIGHTS_ARE_ONE
   skip_spline_read = true;
 #endif
-  
-  bool any_splines_needed = false;
-  // Check there are actually any splines needed for this sample/parameterisation
-  for (int im = 0 ; im < conv::kNReacModes ; im++) {
-    if (fSplineParamsAppliedTo[im].size()) {
-      any_splines_needed = true;
-      break;
-    }
-  }
-  
-  if (!any_splines_needed) {skip_spline_read = true;}
   
   // Set up the initial XML reader
   LOG("GenericSingleSampleFitModel", pNOTICE) 
@@ -180,6 +161,11 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
     util::Die(1); return false;
   }
   XMLNodePointer_t root_node = xml->DocGetRootElement(xmldoc);
+  
+  // Get the modes
+  string modelist_file = util::XML2String(xml,root_node,"modelist");
+  ModeList ml(util::CompleteConfigPath(modelist_file));
+  fReactionModes = ml.Modes();
   
   
   // Get binning file name, potentially from option string
@@ -304,6 +290,18 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   // Release memory
   xml->FreeDoc(xmldoc);
   delete xml;
+  
+  // Splines
+  bool any_splines_needed = false;
+  // Check there are actually any splines needed for this sample/parameterisation
+  for (int im = 0 ; im < conv::kNReacModes ; im++) {
+    if (fSplineParamsAppliedTo[im].size()) {
+      any_splines_needed = true;
+      break;
+    }
+  }
+  
+  if (!any_splines_needed) {skip_spline_read = true;}
   
   if (!skip_spline_read) {
     if (! this->FillSplines(file,opt)) { return false; }
@@ -3088,12 +3086,10 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
   
   //first, check that there are actually osc params in the fit params list 
   bool apply_osc_prob = false;
-  for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
-    for(int ip = 0; ip < conv::kNuis000; ip++) {
-      PhysParamId_t p = (PhysParamId_t) ip;
-      if(fPhysHypothesis.Contains(p)) {
-        apply_osc_prob = true;
-      }
+  for(int ip = 0; ip < conv::kNuis000; ip++) {
+    PhysParamId_t p = (PhysParamId_t) ip;
+    if(fPhysHypothesis.Contains(p)) {
+      apply_osc_prob = true;
     }
   }
 
