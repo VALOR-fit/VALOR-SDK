@@ -32,6 +32,7 @@
 #include "valor/Conventions/Build.h"
 
 #include "valor/Conventions/Constants.h"
+#include "valor/Conventions/ModeList.h"
 #include "valor/Conventions/Names.h"
 #include "valor/Conventions/NuFlavour.h"
 #include "valor/Conventions/NuOscMixParam.h"
@@ -131,7 +132,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   if (fBeam     == conv::kbUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Beam"      << fBeam     ; util::Die(-1); }
   if (fSample   == conv::ksUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Sample"    << fSample   ; util::Die(-1); }
   if (fKSp      == conv::kspUndefined) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad KineSpace" << fKSp      ; util::Die(-1); }
-
+  
   fName = util::nm::MdlName(fDetector, fBeam, fSample, fKSp);
   
   TString ts_opt(opt);
@@ -167,7 +168,6 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
     conv::ReacMode_t m = fReactionModes[im];
     fReactionModeIndex[m] = im;
   }
-
 
   // Get binning file name, potentially from option string
   string binning_file;
@@ -304,9 +304,9 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
       break;
     }
   }
-
+  
   if (!any_splines_needed) {skip_spline_read = true;}
-
+  
   if (!skip_spline_read) {
     if (! this->FillSplines(file,opt)) { return false; }
   }
