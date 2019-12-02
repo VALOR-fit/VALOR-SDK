@@ -53,8 +53,8 @@ public:
   // See FitDataABC for method decription
   //
 
-  string Name           (void) const;
-  bool   Read           (string file, Option_t * opt = 0);
+  std::string Name      (void) const;
+  bool   Read           (std::string file, Option_t * opt = 0);
   bool   Generate       (FitModelABC * pred, const FitParamList & fp,   bool fluctuate=true);
   bool   Generate       (FitModelABC * pred, const PhysHypothesis & ph, bool fluctuate=true);
   bool   Generate       (FitModelABC * pred, bool fluctuate=true, Option_t* read_opt = "+SB");
@@ -77,9 +77,9 @@ private:
   void SetFromModel(void); // Set various parameters from the GSSFM
 
   // Name of this VALOR fit dataset (see Conventions/Names.h)
-  string fName;
+  std::string fName;
   // And the corresponding model (used to get the right PDFs)
-  string fModelName;
+  std::string fModelName;
 
   // Data distributions:
   // Each distribution is an array that can be directly compared with data.

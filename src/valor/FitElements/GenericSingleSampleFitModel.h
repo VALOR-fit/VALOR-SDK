@@ -26,6 +26,7 @@ brief      A generic implementation of the fit model for a single sample,
 
 #include <string>
 #include <utility>
+#include <ostream>
 
 #include <TMatrixD.h>
 #include <TObjArray.h>
@@ -47,8 +48,6 @@ brief      A generic implementation of the fit model for a single sample,
 #include "valor/VArray/VALORArrayBin.h"
 #include "valor/Utilities/RFL.h"
 
-using std::string;
-
 namespace valor {
 
 // --------------------------------------
@@ -65,19 +64,19 @@ public:
   // See FitModelABC for method decription
   //
 
-  string        Name                   (void) const;
+  std::string   Name                   (void) const;
   
   // Options available to Read() include nosplines, nomc, forcedst, pot_override, binning=myfile.xml 
-  bool          Read                   (string file, Option_t * opt = 0);
+  bool          Read                   (std::string file, Option_t * opt = 0);
   virtual bool  Read(std::ifstream& stream, Option_t* read_opt = 0);
   bool          Generate               (const PhysHypothesis & ph, Option_t * opt = 0);
   void          RandomizeSystematics   (Option_t * opt = 0);
   void          RandomizeSystematics   (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
   void          RandomizeSystematics   (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0);
-  void          TweakSystematic        (string syst_name, double twkdial=0., Option_t * opt = 0); 
+  void          TweakSystematic        (std::string syst_name, double twkdial=0., Option_t * opt = 0); 
   void          TweakSystematic        (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
   void          ResetSystematics       (Option_t * opt = 0);  
-  void          PrintSystematics       (ostream & stream = std::cout, Option_t * opt = 0) const;
+  void          PrintSystematics       (std::ostream & stream = std::cout, Option_t * opt = 0) const;
   PhysParamList Tweaks                 (Option_t * opt = 0) const;
   bool          Generate               (const FitParamList & fp, Option_t * opt = 0);
   bool          Write                  (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
@@ -131,7 +130,7 @@ private:
   void Zero  (void);
   void FillFromDST  (TTree * t);
   bool FillFromTemplateFile (TFile * f, std::string tag, double desired_POT); // If desired_POT is a positive number, assume template being read is 1E21 and reweight accordingly.
-  bool FillSplines(string file, Option_t * opt);
+  bool FillSplines(std::string file, Option_t * opt);
 
   void ApplyTuning                       (Option_t * opt = 0);
   void FluctuateMCStat                   (Option_t * opt = 0);
@@ -185,7 +184,7 @@ private:
   PhysHypothesis fPhysHypothesis;
 
   // Name of this VALOR fit model (see Conventions/Names.h)
-  string fName;
+  std::string fName;
 
   // Exposure for corresponding sample (in POT)
   double fPOT;
