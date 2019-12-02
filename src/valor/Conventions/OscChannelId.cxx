@@ -15,7 +15,7 @@ using namespace valor;
 using namespace valor::conv;
 
 //________________________________________________________________________________________
-string util::AsString(OscChannelId_t osch)
+std::string util::AsString(OscChannelId_t osch)
 {
   switch(osch) {
      case ( kOscNuE2NuE           ) : return "nue -> nue";            break;
@@ -67,7 +67,7 @@ string util::AsString(OscChannelId_t osch)
   return "--";
 }
 //________________________________________________________________________________________
-string util::OscChannelAsString(OscChannelId_t osch) { return AsString(osch); }
+std::string util::OscChannelAsString(OscChannelId_t osch) { return AsString(osch); }
 //________________________________________________________________________________________
 OscChannelId_t util::GetOscChannel(int nu_start, int nu_end)
 {

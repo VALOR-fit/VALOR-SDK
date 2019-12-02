@@ -19,6 +19,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 
 
 using std::vector;
+using std::string;
 
 //________________________________________________________________________________________
 string valor::util::nm::DSetName(

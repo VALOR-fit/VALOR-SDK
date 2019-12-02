@@ -14,7 +14,7 @@ using namespace valor;
 using namespace valor::conv;
 
 //________________________________________________________________________________________
-string util::AsString(NuOscOctant_t o)
+std::string util::AsString(NuOscOctant_t o)
 {
   switch(o) {
    case (kNuOctantOne) :
@@ -30,9 +30,9 @@ string util::AsString(NuOscOctant_t o)
   return "";
 }
 //________________________________________________________________________________________
-string util::OctantAsString(NuOscOctant_t o) { return AsString(o);}
+std::string util::OctantAsString(NuOscOctant_t o) { return AsString(o);}
 //________________________________________________________________________________________
-NuOscOctant_t util::OctantFromString(string h)
+NuOscOctant_t util::OctantFromString(std::string h)
 {
   if(h == "one") return kNuOctantOne;
   if(h == "two") return kNuOctantTwo;

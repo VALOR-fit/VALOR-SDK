@@ -19,7 +19,7 @@ Copyright (c) 2010-2019, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Conventions/ParameterPool.h"
 
 using namespace valor;
-
+using std::string;
 
 valor::conv::PhysParamId_t gFirstParam = conv::kNuis000;
 

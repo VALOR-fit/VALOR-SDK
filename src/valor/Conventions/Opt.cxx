@@ -19,6 +19,7 @@ ChangeLog:
 
 using std::endl;
 using std::string;
+using std::ostream;
 
 using namespace valor;
 using namespace valor::conv;

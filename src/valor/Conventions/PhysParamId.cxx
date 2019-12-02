@@ -18,8 +18,7 @@ ChangeLog:
 using namespace valor;
 using namespace valor::conv;
 
-
-
+using std::string;
 
 //________________________________________________________________________________________
 string util::RawParamAsStringRaw(PhysParamId_t p)

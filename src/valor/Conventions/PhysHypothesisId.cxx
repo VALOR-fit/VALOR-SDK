@@ -16,6 +16,7 @@
 #include "valor/Conventions/Opt.h"
 
 using std::ostringstream;
+using std::string;
 
 using namespace valor;
 using namespace valor::conv;

@@ -17,6 +17,9 @@
 using namespace valor;
 using namespace valor::conv;
 
+using std::string;
+using std::vector;
+
 //________________________________________________________________________________________
 string util::AsString(KineSpace_t ks)
 {

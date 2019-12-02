@@ -11,6 +11,8 @@
 using namespace valor;
 using namespace valor::conv;
 
+using std::string;
+
 //____________________________________________________________________________
 string util::AsString(conv::NuOscMixParam_t p)
 {

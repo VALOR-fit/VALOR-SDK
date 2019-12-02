@@ -15,6 +15,8 @@ Copyright (c) 2010-2018, The VALOR Fitting Group, All Rights Reserved.
 
 using namespace valor;
 using namespace valor::conv;
+using std::string;
+using std::vector;
 
 // Groups of systematics
 // Beam

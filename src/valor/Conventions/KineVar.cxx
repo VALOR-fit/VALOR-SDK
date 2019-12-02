@@ -20,6 +20,8 @@ ChangeLog:
 using namespace valor;
 using namespace valor::conv;
 
+using std::string;
+
 //________________________________________________________________________________________
 string util::AsString(KineVar_t kv)
 {

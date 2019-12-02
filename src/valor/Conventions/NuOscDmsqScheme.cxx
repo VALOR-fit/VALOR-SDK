@@ -17,7 +17,7 @@ using namespace valor;
 using namespace valor::conv;
 
 //________________________________________________________________________________________
-string util::AsString(conv::NuOscDmsqScheme_t dmsqs)
+std::string util::AsString(conv::NuOscDmsqScheme_t dmsqs)
 {
   switch(dmsqs) {
   case(kNuDmsq12andAbs23) :
@@ -40,9 +40,9 @@ string util::AsString(conv::NuOscDmsqScheme_t dmsqs)
   }
 }
 //________________________________________________________________________________________
-string util::DmsqSchemeAsString(conv::NuOscDmsqScheme_t dmsqs) { return AsString(dmsqs); }
+std::string util::DmsqSchemeAsString(conv::NuOscDmsqScheme_t dmsqs) { return AsString(dmsqs); }
 //________________________________________________________________________________________
-string util::DmsqSchemeAsStringSimple(conv::NuOscDmsqScheme_t dmsqs)
+std::string util::DmsqSchemeAsStringSimple(conv::NuOscDmsqScheme_t dmsqs)
 {
   switch(dmsqs) {
     case(kNuDmsq12andAbs23) :
@@ -62,7 +62,7 @@ string util::DmsqSchemeAsStringSimple(conv::NuOscDmsqScheme_t dmsqs)
   }
 }
 //________________________________________________________________________________________
-NuOscDmsqScheme_t util::DmsqSchemeFromString(string h)
+NuOscDmsqScheme_t util::DmsqSchemeFromString(std::string h)
 {
   if(h == "abs23"    ) return kNuDmsq12andAbs23;
   if(h == "abs31"    ) return kNuDmsq12andAbs31;

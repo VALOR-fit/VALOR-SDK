@@ -40,7 +40,7 @@ bool util::IsAntiNeutrino(int pdg_code)
   return false;
 }
 //________________________________________________________________________________________
-string util::Pdg2String(int pdg_code)
+std::string util::Pdg2String(int pdg_code)
 {
   switch(pdg_code) {
      case ( kPdgNuE      ) : return "nue";      break;
@@ -54,7 +54,7 @@ string util::Pdg2String(int pdg_code)
   return "";
 }
 //________________________________________________________________________________________
-string util::Pdg2StringTex(int pdg_code)
+std::string util::Pdg2StringTex(int pdg_code)
 {
   switch(pdg_code) {
      case ( kPdgNuE      ) : return "$\\nu_e$";      break;

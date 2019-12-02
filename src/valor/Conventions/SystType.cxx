@@ -15,6 +15,8 @@ ChangeLog:
 using namespace valor;
 using namespace valor::conv;
 
+using std::string;
+
 //________________________________________________________________________________________
 string util::AsString(SystType_t t, Option_t * opt)
 {
