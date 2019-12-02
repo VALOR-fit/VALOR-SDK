@@ -83,12 +83,12 @@ class KBCubHcmbMondrian: public VALORBinning
 {
 public:
   KBCubHcmbMondrian();
-  KBCubHcmbMondrian(string name, string title);
+  KBCubHcmbMondrian(std::string name, std::string title);
   virtual ~KBCubHcmbMondrian();
 
   // Read binning from file
   using TObject::Read; // Tell clang we really do want this
-  virtual bool Read(string file);
+  virtual bool Read(std::string file);
 
   /**
     Takes this binning and creates a new binning using the specified subset of

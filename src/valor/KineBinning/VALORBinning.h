@@ -50,7 +50,7 @@ public:
   virtual ~VALORBinning();
 
   // Read binning from file
-  virtual bool Read(string file) = 0;
+  virtual bool Read(std::string file) = 0;
 
   // Get the corresponding kinematical space
   conv::KineSpace_t KineSpace(void) const { return fKineSpace; }

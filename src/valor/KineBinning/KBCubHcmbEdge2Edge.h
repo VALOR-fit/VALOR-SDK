@@ -72,14 +72,14 @@ class KBCubHcmbEdge2Edge: public VALORBinning
 {
 public:
   KBCubHcmbEdge2Edge();
-  KBCubHcmbEdge2Edge(string name, string title);
+  KBCubHcmbEdge2Edge(std::string name, std::string title);
   virtual ~KBCubHcmbEdge2Edge();
 
   // Inherited stuff from VALORBinning
   using VALORBinning::GetNextBin;
 
   // Read binning from file
-  virtual bool Read(string file);
+  virtual bool Read(std::string file);
 
   /**
     Takes this binning and creates a new binning using the specified subset of
