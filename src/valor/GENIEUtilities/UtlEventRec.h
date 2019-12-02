@@ -36,7 +36,7 @@ namespace genie {
 namespace valor {
 namespace util {
   
-  bool GetHadronicSystems(const genie::EventRecord * event, vector<int> & prim_had_syst, vector<int> & final_had_syst);
+  bool GetHadronicSystems(const genie::EventRecord * event, std::vector<int> & prim_had_syst, std::vector<int> & final_had_syst);
   conv::ReacMode_t DetermineReactionMode(const genie::EventRecord * event, bool use_final_state = false);
   
   // Does not respect bar/nonbar
