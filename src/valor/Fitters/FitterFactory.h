@@ -22,17 +22,12 @@
 #include <string>
 #include <iostream>
 
-using std::map;
-using std::pair;
-using std::string;
-using std::ostream;
-
 namespace valor {
 
 class FitterABC_new;
 class FitterFactory;
 
-ostream & operator << (ostream & stream, const valor::FitterFactory & ff);
+std::ostream & operator << (std::ostream & stream, const valor::FitterFactory & ff);
 
 class FitterFactory {
 
@@ -41,14 +36,14 @@ public:
   static FitterFactory * Instance();
 
   // 
-  bool AddFitter(string name, string implementation);
+  bool AddFitter(std::string name, string implementation);
 
   //
   FitterABC_new * GetFitter (string name);
 
   // Print available fitters and their configuration
-  void Print(ostream & stream) const;
-  friend ostream & operator << (ostream & stream, const FitterFactory & ff);
+  void Print(std::ostream & stream) const;
+  friend std::ostream & operator << (std::ostream & stream, const FitterFactory & ff);
 
 private:
 
@@ -60,7 +55,7 @@ private:
   static FitterFactory * fgInstance;
 
   // name -> fitter map
-  map<string, FitterABC_new *> fFitterPool;
+  std::map<string, FitterABC_new *> fFitterPool;
 
   //! singleton cleaner
   struct Cleaner {

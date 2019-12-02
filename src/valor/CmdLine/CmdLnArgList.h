@@ -54,9 +54,6 @@
 
 #include "valor/Registry/Registry.h"
 
-using std::string;
-using std::vector;
-
 namespace valor {
 
 class CmdLnArgList: public Registry {
@@ -65,7 +62,7 @@ public:
   CmdLnArgList();
  ~CmdLnArgList();
 
-  bool Read (int argc, const char* const* argv, string arg_spec_files);
+  bool Read (int argc, const char* const* argv, std::string arg_spec_files);
 };
 
 }
