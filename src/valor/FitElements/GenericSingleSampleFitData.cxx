@@ -34,6 +34,9 @@
 using namespace valor;
 using namespace valor::conv;
 
+using std::string;
+using std::ostream;
+
 //________________________________________________________________________________________
 GenericSingleSampleFitData::GenericSingleSampleFitData() :
   SingleSampleFitDataABC(),

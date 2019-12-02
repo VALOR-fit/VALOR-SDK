@@ -65,6 +65,9 @@
 #include "valor/Conventions/FitParamApply.h"
 
 using std::endl;
+using std::string;
+using std::ostream;
+using std::vector;
 
 using namespace valor;
 using namespace valor::conv;

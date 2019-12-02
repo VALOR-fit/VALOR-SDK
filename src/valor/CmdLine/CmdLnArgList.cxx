@@ -19,6 +19,9 @@
 #include "valor/CmdLine/CmdLnArgParser.h"
 
 using std::ifstream;
+using std::string;
+using std::vector;
+
 using namespace valor;
 
 //________________________________________________________________________________________
