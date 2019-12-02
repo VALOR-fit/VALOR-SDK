@@ -37,13 +37,7 @@ ChangeLog:
 #include "valor/Utilities/Rnd.h"
 #include "valor/Utilities/Env.h"
 
-using std::setw;
-using std::setfill;
-using std::fixed;
-using std::scientific;
-using std::setprecision;
-using std::ofstream;
-using std::ostringstream;
+using namespace std;
 
 using namespace valor;
 

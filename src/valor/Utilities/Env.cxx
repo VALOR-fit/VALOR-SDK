@@ -13,6 +13,8 @@ ChangeLog:
 #include "valor/Utilities/Env.h"
 
 using std::endl;
+using std::string;
+using std::ostream;
 
 using namespace valor;
 

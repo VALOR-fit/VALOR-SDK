@@ -13,6 +13,9 @@ ChangeLog:
 #include <algorithm>
 #include <iostream>
 
+using std::string;
+using std::vector;
+
 //___________________________________________________________________________
 string valor::util::TrimSpaces(string input)
 {

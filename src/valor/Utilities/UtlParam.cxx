@@ -25,6 +25,9 @@ Copyright (c) 2010-2019, The VALOR Fitting Group, All Rights Reserved.
 using namespace valor;
 using namespace valor::conv;
 
+using std::vector;
+using std::string;
+
 //____________________________________________________________________________
 conv::FitParamGroup_t util::GetParameterGroup(conv::PhysParamId_t p)
 {

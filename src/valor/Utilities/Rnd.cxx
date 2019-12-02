@@ -16,8 +16,7 @@ ChangeLog:
 #include "valor/Messenger/Messenger.h"
 //#include "Build.h"
 
-using std::cerr;
-using std::endl;
+using namespace std;
 
 using namespace valor;
 

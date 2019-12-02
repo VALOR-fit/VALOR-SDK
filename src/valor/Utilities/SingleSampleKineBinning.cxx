@@ -24,6 +24,8 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/KineBinning/VALORBinning.h"
 
 using namespace valor;
+using std::string;
+using std::vector;
 
 // Keep a static copy of the experimental setup
 static const ExperimentSetup & es = *ExperimentSetup::Instance();

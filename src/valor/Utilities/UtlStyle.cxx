@@ -24,6 +24,7 @@ using std::cout;
 using std::endl;
 using std::ios;
 using std::ifstream;
+using std::string;
 
 using namespace valor;
 

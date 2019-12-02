@@ -10,6 +10,8 @@
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlXML.h"
 
+using std::string;
+
 namespace valor
 {
 namespace util

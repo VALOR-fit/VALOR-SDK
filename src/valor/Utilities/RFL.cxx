@@ -29,6 +29,9 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #define USE_FLAT_SPLINE_FOR_MISSING
 
 using std::endl;
+using std::string;
+using std::ostream;
+using std::vector;
 
 using namespace valor;
 using namespace valor::conv;
