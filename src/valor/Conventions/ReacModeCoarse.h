@@ -90,7 +90,7 @@ typedef enum EReacModeCoarse
    kmcUnOscNuEBarCC,         // nuebar->nuebar  CC all
    kmcNuTauCC,               // numu(nue)->nutau CC all (separated from nutaubar)
    kmcNuTauBarCC,            // numubar(nuebar)->nutaubar CC all (separated from nutau)
-   kmcCosmic                 // cosmics  
+   kmcCosmic                 // cosmics
 } 
 ReacModeCoarse_t;
 

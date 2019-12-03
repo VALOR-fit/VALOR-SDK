@@ -99,16 +99,17 @@ public:
   void ReadFile (std::string file_to_read);
   void WriteFile(std::string file_to_write);
 
-  void ReadStream(std::ifstream& stream);
-  void WriteStream(std::ofstream& stream);
-  
+  void ReadStream(std::fstream& stream);
+  void WriteStream(std::fstream& stream);
+  long StreamSize();
+
   // Resize the array, clearing contents
   void Resize(const std::vector<int> dimensions);   // List of dimension sizes
   void Resize(int nd, const int * dimensions);      // List of dimension sizes
   void Resize(int dim1, int dim2=-1, int dim3=-1, int dim4=-1, int dim5=-1, int dim6=-1); // Dimension sizes individually
   
   void Reshape(int nd, const Int_t * dimensions); // changes the dimensions of an array leaving the total size and data intact
-  
+
   void CopyFrom(const VALORArrayT<numtype> & arr);
   void CopyDataOnlyFrom(const VALORArrayT<numtype> & arr);
   

@@ -23,6 +23,8 @@
 #include <map>
 #include <TROOT.h>
 
+#include "valor/Utilities/ToyStream.h"
+
 class TObjArray;
 
 using std::string;
@@ -39,12 +41,15 @@ public:
   virtual ~FitDataABC();
 
   // Identify fit data with a name (to be propagated in output files, etc)
-  virtual string Name(void) const = 0;  
+  virtual string Name(void) const = 0;
+
+  virtual long StreamSize(Option_t* opt = 0) const = 0;
 
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
   // Return true if data were succesfully read out
   virtual bool Read(string file, Option_t * opt = 0) = 0;
+  virtual bool Read(util::ToyStream* stream) = 0;
 
   // Generate mock data (toy-MC)
   // Toy-MC is generated from using the input model 
@@ -70,7 +75,7 @@ public:
   // If null, the default is "recreate".
   virtual bool Write (TObjArray * collection, const char * tag = "data", Option_t * write_opt = 0) = 0;
   virtual bool Write (const char * filename,  const char * tag = "data", Option_t * write_opt = 0, Option_t * file_opt = 0) = 0;
-  virtual bool Write (std::ofstream& stream, Option_t * write_opt = 0) = 0;
+  virtual bool Write (util::ToyStream* stream) = 0;
 
   // Number of bins in fit data, or number of events for unbinned fits
   virtual int NumOfBins (Option_t * opt = 0) const = 0;
@@ -83,10 +88,24 @@ public:
   virtual double GetFitStatistic (FitModelABC * pred, const PhysHypothesis & ph, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
   virtual double GetFitStatistic (FitModelABC * pred, Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) = 0;
 
+  // Get a string including the data name and the total PDF integral
+  virtual std::string GetPDFIntegralAsString(Option_t * opt = 0) = 0;
+
+  virtual void SetFromModel(void) = 0; // Set various parameters from the model
+
   // Associate a FitModelABC with the data to define the binning, POT and fiducial mass of the experiment
   virtual void SetAssociatedModel(FitModelABC *model_abc) = 0;
+
+  // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
+  virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "") = 0;
+
+  // Are the data arrays non-empty?
+  virtual bool DataExists(Option_t * opt = 0) const = 0;
+
 protected:
    FitDataABC();
+
+  std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
 };
 
 } // valor

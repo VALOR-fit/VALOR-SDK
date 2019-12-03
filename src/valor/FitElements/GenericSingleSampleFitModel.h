@@ -46,6 +46,9 @@ brief      A generic implementation of the fit model for a single sample,
 #include "valor/VArray/VALORArrayF.h"
 #include "valor/VArray/VALORArrayBin.h"
 #include "valor/Utilities/RFL.h"
+#include "valor/Utilities/ToyStream.h"
+#include "valor/Utilities/UtlParam.h"
+#include "valor/Utilities/SingleSampleKineBinning.h
 
 using std::string;
 
@@ -66,10 +69,10 @@ public:
   //
 
   string        Name                   (void) const;
-  
-  // Options available to Read() include nosplines, nomc, forcedst, pot_override, binning=myfile.xml 
+
+  // Options available to Read() include nosplines, nomc, forcedst, pot_override, binning=myfile.xml
   bool          Read                   (string file, Option_t * opt = 0);
-  virtual bool  Read(std::ifstream& stream, Option_t* read_opt = 0);
+  virtual bool  Read                   (util::ToyStream* stream);
   bool          Generate               (const PhysHypothesis & ph, Option_t * opt = 0);
   void          RandomizeSystematics   (Option_t * opt = 0);
   void          RandomizeSystematics   (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
@@ -82,9 +85,10 @@ public:
   bool          Generate               (const FitParamList & fp, Option_t * opt = 0);
   bool          Write                  (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
   bool          Write                  (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
-  virtual bool  Write(std::ofstream& stream, Option_t* write_opt = 0);
+  virtual bool  Write                  (util::ToyStream* stream);
+  virtual long  StreamSize             (Option_t * opt = 0) const;
   double        GetFitStatisticPenalty (Option_t * opt = 0) const;
-  
+
   void          SetSystConf            (CorrelatedSystematics * syst, Option_t * opt = "");
   CorrelatedSystematics *       GetSystematics(Option_t * opt = "");
   const CorrelatedSystematics * GetSystematics(Option_t * opt = "") const;
@@ -103,7 +107,7 @@ public:
   const double & GetFiducialMass(void) const;
   
   const std::string & GetLastConfigFileRead() const;
-  
+
   // Get the response function library and binning
   const util::RFL * GetRFL(void) const;
   const SingleSampleKineBinning * GetBinning(void) const;
@@ -111,17 +115,23 @@ public:
   PhysParamList OneSigmaErrors (Option_t * opt = "");
 //  TMatrixD CovarianceMatrix(Option_t * opt = "");
 
+  // Get a string including the model name and the total PDF integral
+  virtual std::string GetPDFIntegralAsString(Option_t * opt = 0);
+
   // Calculate the OB manually from the content of the simple bins. Can be used to verify the spectra are the same for SB/OB
   void UpdateObservableBinningFromSimple (Option_t * opt = 0);
-  
-  // Add information on which systematic universes to read in if they're coming from the DST.
-  // Must be called *before* Read() since these are event-by-event
-  void SetUniverseRangeToRead(size_t first, size_t last);
-  void SetUniverseParameterToRead(const std::string & param_name);
-  void ResetUniversesToRead();
-  
-  void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
-  void ResetSystematicVariationIDs();
+
+    // Add information on which systematic universes to read in if they're coming from the DST.
+    // Must be called *before* Read() since these are event-by-event
+    void SetUniverseRangeToRead(size_t first, size_t last);
+    void SetUniverseParameterToRead(const std::string & param_name);
+    void ResetUniversesToRead();
+
+    void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
+    void ResetSystematicVariationIDs();
+
+  // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
+  virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
 private:
 
@@ -192,7 +202,7 @@ private:
 
   // Fiducial mass (ktonnes)
   double fFiducialMass;
-  
+
   // Name of the config file read
   std::string fConfigFileRead;
 
@@ -268,11 +278,11 @@ private:
   
   // Spline library
   util::RFL * fRFL;
-  
+
   // Pointer to our systematics
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;
-  
+
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices
   bool fApplyUniverseVariations;
@@ -284,7 +294,7 @@ private:
   // and the actual variations
   // param name, mode(nmodes)->universe variations(reco,true,universe)
   std::map<std::string,std::vector<VALORArrayF> > fUniverseVariations;
-  
+
 
   // Vector of tuning hists and the apply masks and kine vars that they should be used for
   std::vector<TuningInfo> fEventByEventTuningHists;
@@ -313,6 +323,8 @@ private:
   std::map<conv::KineVar_t, std::vector<unsigned int>       > fUnscaledBinToGlobalBinSb;
   std::map<conv::KineVar_t, std::vector<std::vector<bool> > > fSkipBinSb;
   std::map<conv::KineVar_t, unsigned int                    > fNOverflowBinsSb;
+
+  std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
 };
 
 } // valor

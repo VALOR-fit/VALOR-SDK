@@ -106,7 +106,8 @@ GenericSingleSampleFitModel::GenericSingleSampleFitModel() :
   fScaledBinToGlobalBinSb(),
   fUnscaledBinToGlobalBinSb(),
   fSkipBinSb(),
-  fNOverflowBinsSb()
+  fNOverflowBinsSb(),
+  fDefVALORArrayFormat("pdft_vf")
 {
   this->Init();
 }
@@ -140,7 +141,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
       << "Sample not included in analysis build: "<<util::AsString(fBeam)<<" "<<util::AsString(fSample);
     util::Die(-1);
   }
-  
+
   fReactionModes = es.ReactionModes()[ibeam][isample];
 
   fName = util::nm::MdlName(fDetector, fBeam, fSample, fKSp);
@@ -161,13 +162,13 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
       break;
     }
   }
-  
+
   if (!any_splines_needed) {skip_spline_read = true;}
   
   // Set up the initial XML reader
   LOG("GenericSingleSampleFitModel", pNOTICE) 
     << "Reading configuration from XML file [" << file << "]";
-  
+
   fConfigFileRead = util::CompleteConfigPath(file);
   TString ts_file = fConfigFileRead.c_str();
 
@@ -319,12 +320,14 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   return true;
 }
 //________________________________________________________________________________________
-bool GenericSingleSampleFitModel::Read(std::ifstream& stream, Option_t* read_opt)
+bool GenericSingleSampleFitModel::Read(util::ToyStream* stream)
 {
    LOG("GenericSingleSampleFitModel",pDEBUG) << "Reading model from stream";
 
-   string opt = (read_opt) ? read_opt : "pdft";
+   Option_t* read_opt = stream->GetVALORArrayFormat();
+   string opt = (read_opt) ? read_opt : fDefVALORArrayFormat;
 
+   int isample = fArrIdx->SampleIdx(fBeam, fSample);
    // Read in the MC templates
    if(opt.find("mct") != string::npos)
    {
@@ -335,10 +338,10 @@ bool GenericSingleSampleFitModel::Read(std::ifstream& stream, Option_t* read_opt
          {
             continue;
          }
-         fMCTNomOb[imode]->ReadStream(stream);
-         fMCTTunOb[imode]->ReadStream(stream);
-         fMCTSysOb[imode]->ReadStream(stream);
-         fMCTFinOb[imode]->ReadStream(stream);
+         stream->Read(fMCTNomOb[imode]);
+         stream->Read(fMCTTunOb[imode]);
+         stream->Read(fMCTSysOb[imode]);
+         stream->Read(fMCTFinOb[imode]);
 
          if(opt.find("+SB") != string::npos)
          {
@@ -346,10 +349,10 @@ bool GenericSingleSampleFitModel::Read(std::ifstream& stream, Option_t* read_opt
             {
                continue;
             }
-            fMCTNomSb[imode]->ReadStream(stream);
-            fMCTTunSb[imode]->ReadStream(stream);
-            fMCTSysSb[imode]->ReadStream(stream);
-            fMCTFinSb[imode]->ReadStream(stream);
+            stream->Read(fMCTNomSb[imode]);
+            stream->Read(fMCTTunSb[imode]);
+            stream->Read(fMCTSysSb[imode]);
+            stream->Read(fMCTFinSb[imode]);
          }
       }
    }
@@ -364,7 +367,7 @@ bool GenericSingleSampleFitModel::Read(std::ifstream& stream, Option_t* read_opt
          {
             continue;
          }
-         fPDFCompOb[imode]->ReadStream(stream);
+         stream->Read(fPDFCompOb[imode]);
 
          if(opt.find("+SB") != string::npos)
          {
@@ -372,7 +375,7 @@ bool GenericSingleSampleFitModel::Read(std::ifstream& stream, Option_t* read_opt
             {
                continue;
             }
-            fPDFCompSb[imode]->ReadStream(stream);
+            stream->Read(fPDFCompSb[imode]);
          }
       }
    }
@@ -380,11 +383,11 @@ bool GenericSingleSampleFitModel::Read(std::ifstream& stream, Option_t* read_opt
    // Write out the total PDF
    if(opt.find("pdft") != string::npos)
    {
-      fPDFTotOb->ReadStream(stream);
+      stream->Read(fPDFTotOb);
 
       if(opt.find("+SB") != string::npos)
       {
-        fPDFTotSb->ReadStream(stream);
+        stream->Read(fPDFTotSb);
       }
    }
 
@@ -403,10 +406,10 @@ bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
 
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
   const int n_reco_bins_ob = reco_ob->NBins();
-  
+
   // no SB splines for now
   //~ const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
-  //~ const int n_reco_bins_sb = reco_sb->NBins(); 
+  //~ const int n_reco_bins_sb = reco_sb->NBins();
   
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
@@ -610,18 +613,18 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
   //  rpf   -> ROOT format (TH2Poly for 2-d histograms)
   //  ob    -> Optimized binning (for fit)
   //  sb    -> Simple binning (for plots)
-  
-    
+
+
   LOG("GenericSingleSampleFitModel", pINFO)  << "Writing results to input object array...";
   LOG("GenericSingleSampleFitModel", pINFO) << "tag = " << tag << ", write option = " << write_opt;
   LOG("GenericSingleSampleFitModel", pINFO)  << "sample = " << util::AsString(fSample) << ", detector = "
                                              << util::AsString(fDetector) << ", beam = " << util::AsString(fBeam);
 
-  string opt = (write_opt) ? write_opt : "pdft_vf";
-  
+  string opt = (write_opt) ? write_opt : fDefVALORArrayFormat;
+
   bool write_all = opt.find("all") != string::npos;
   bool write_sb  = opt.find("+SB") != string::npos;
-    
+
   bool write_mct_vf   = (opt.find("mct_vf"  ) != string::npos) || write_all;
   bool write_pdft_vf  = (opt.find("pdft_vf" ) != string::npos) || write_all;
   bool write_pdft_rf  = (opt.find("pdft_rf" ) != string::npos) || write_all;
@@ -632,15 +635,15 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
   //~ bool write_pdfcs_vf = (opt.find("pdfcs_vf") != string::npos) || write_all;
   bool write_pdfcs_rf = (opt.find("pdfcs_rf") != string::npos) || write_all;
 
-  if(write_pdft_rf || write_pdfc_rf) {
-    LOG("GenericSingleSampleFitModel",pWARN) << "Options pdft_rf, pdfc_rf are not yet implemented.";
+  if(write_pdfc_rf) {
+    LOG("GenericSingleSampleFitModel",pWARN) << "The option pdfc_rf is not yet implemented.";
   }
 
   if(!array) {
     LOG("GenericSingleSampleFitModel",pERROR) << "Null input object array.";
     return false;
   }
-  
+
   const SingleSampleKineBinning & binning = *fBinning;
   const VALORBinning & reco_smp = *(binning.RecoSmpBinning());
   const VALORBinning & reco_opt = *(binning.RecoOptBinning());
@@ -799,7 +802,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
     }//+SB?
 
   }//pdft_vf,pdft_rf
-  
+
   // Write 1d slices for the total in reco only
   if (write_pdfts_rf) {
     const std::vector<KineVar_t>  & reco_vars = reco_opt.KineVars();
@@ -812,7 +815,6 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         hob->SetName(hobname.Data());
         array->Add(hob);
       }
-      
       if (write_sb) {
         TH1 * hsb = util::binning::Make1DHistogram(*fPDFTotSb,binning,ks,true);
         if(hsb) {
@@ -823,18 +825,18 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       }
     }
   }
-  
+
   // Write 1d slices for the components in both reco and true
-  
+
   if (write_pdfcs_rf) {
     const std::vector<KineVar_t>  & reco_vars = reco_opt.KineVars();
-    
+
     for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
       ReacMode_t m = fReactionModes[imode];
       if(m == kmUndefined) continue;
       
       const std::vector<KineVar_t> & true_vars = binning.TrueSmpBinning(imode)->KineVars();
-      
+
       // Write reco, using the PDF comp objects (which have lateral systematics applied)
       for (const conv::KineVar_t kv : reco_vars) {
         conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
@@ -846,7 +848,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
           hob->SetName(hobname.Data());
           array->Add(hob);
         }
-        
+
         if (write_sb) {
           TH1 * hsb = util::binning::Make1DHistogram(*fPDFCompSb[imode],binning,ks,true, m);
           if(hsb) {
@@ -867,7 +869,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
           hob->SetName(hobname.Data());
           array->Add(hob);
         }
-        
+
         if (write_sb) {
           TH1 * hsb = util::binning::Make1DHistogram(*fMCTFinSb[imode],binning,ks,true, m);
           if(hsb) {
@@ -880,7 +882,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       }
     }
   }
-  
+
   // Warn the user if SB is combined with universes
   if (write_sb && fApplyUniverseVariations) {
     LOG("GenericSingleSampleFitModel", pWARN)
@@ -907,12 +909,16 @@ bool GenericSingleSampleFitModel::Write(
   return true;
 }
 //________________________________________________________________________________________
-bool GenericSingleSampleFitModel::Write(std::ofstream& stream, Option_t *write_opt)
+bool GenericSingleSampleFitModel::Write(util::ToyStream* stream)
 {
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
    LOG("GenericSingleSampleFitModel",pINFO) << "Writing results to stream";
+#endif
 
-   string opt = (write_opt) ? write_opt : "pdft";
+   Option_t* write_opt = stream->GetVALORArrayFormat();
+   string opt = (write_opt) ? write_opt : fDefVALORArrayFormat;
 
+   int isample = fArrIdx->SampleIdx(fBeam, fSample);
    // Write out the MC templates
    if(opt.find("mct") != string::npos)
    {
@@ -923,10 +929,10 @@ bool GenericSingleSampleFitModel::Write(std::ofstream& stream, Option_t *write_o
          {
             continue;
          }
-         fMCTNomOb[imode]->WriteStream(stream);
-         fMCTTunOb[imode]->WriteStream(stream);
-         fMCTSysOb[imode]->WriteStream(stream);
-         fMCTFinOb[imode]->WriteStream(stream);
+         stream->Write(fMCTNomOb[imode]);
+         stream->Write(fMCTTunOb[imode]);
+         stream->Write(fMCTSysOb[imode]);
+         stream->Write(fMCTFinOb[imode]);
 
          if(opt.find("+SB") != string::npos)
          {
@@ -934,10 +940,10 @@ bool GenericSingleSampleFitModel::Write(std::ofstream& stream, Option_t *write_o
             {
                continue;
             }
-            fMCTNomSb[imode]->WriteStream(stream);
-            fMCTTunSb[imode]->WriteStream(stream);
-            fMCTSysSb[imode]->WriteStream(stream);
-            fMCTFinSb[imode]->WriteStream(stream);
+            stream->Write(fMCTNomSb[imode]);
+            stream->Write(fMCTTunSb[imode]);
+            stream->Write(fMCTSysSb[imode]);
+            stream->Write(fMCTFinSb[imode]);
          }
       }
    }
@@ -952,7 +958,7 @@ bool GenericSingleSampleFitModel::Write(std::ofstream& stream, Option_t *write_o
          {
             continue;
          }
-         fPDFCompOb[imode]->WriteStream(stream);
+         stream->Write(fPDFCompOb[imode]);
 
          if(opt.find("+SB") != string::npos)
          {
@@ -960,7 +966,7 @@ bool GenericSingleSampleFitModel::Write(std::ofstream& stream, Option_t *write_o
             {
                continue;
             }
-            fPDFCompSb[imode]->WriteStream(stream);
+            stream->Write(fPDFCompSb[imode]);
          }
       }
    }
@@ -968,17 +974,87 @@ bool GenericSingleSampleFitModel::Write(std::ofstream& stream, Option_t *write_o
    // Write out the total PDF
    if(opt.find("pdft") != string::npos)
    {
-      fPDFTotOb->WriteStream(stream);
+      stream->Write(fPDFTotOb);
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitModel", pINFO) << "Sample integral: " <<
          fPDFTotOb->Integral();
+#endif
 
       if(opt.find("+SB") != string::npos)
       {
-        fPDFTotSb->WriteStream(stream);
+        stream->Write(fPDFTotSb);
       }
    }
 
    return true;
+}
+//________________________________________________________________________________________
+long GenericSingleSampleFitModel::StreamSize (Option_t* opt_in) const
+{
+  string opt = (opt_in) ? opt_in : fDefVALORArrayFormat;
+  long size = 0;
+
+  int isample = fArrIdx->SampleIdx(fBeam, fSample);
+  if(opt.find("mct") != string::npos)
+  {
+    for(size_t imode = 0; imode < fReactionModes.size(); imode++)
+    {
+      ReacMode_t m = fReactionModes[imode];
+      if(m == kmUndefined || fMCTNullOb[imode])
+      {
+        continue;
+      }
+      size += fMCTNomOb[imode]->StreamSize();
+      size += fMCTTunOb[imode]->StreamSize();
+      size += fMCTSysOb[imode]->StreamSize();
+      size += fMCTFinOb[imode]->StreamSize();
+
+      if(opt.find("+SB") != string::npos)
+      {
+        if(fMCTNullSb[imode])
+        {
+          continue;
+        }
+        size += fMCTNomSb[imode]->StreamSize();
+        size += fMCTTunSb[imode]->StreamSize();
+        size += fMCTSysSb[imode]->StreamSize();
+        size += fMCTFinSb[imode]->StreamSize();
+      }
+    }
+  }
+
+  if(opt.find("pdfc") != string::npos)
+  {
+    for(size_t imode = 0; imode < fReactionModes.size(); imode++)
+    {
+      ReacMode_t m = fReactionModes[imode];
+      if(m == kmUndefined || fMCTNullOb[imode])
+      {
+        continue;
+      }
+      size += fPDFCompOb[imode]->StreamSize();
+
+      if(opt.find("+SB") != string::npos)
+      {
+        if(fMCTNullSb[imode])
+        {
+          continue;
+        }
+        size += fPDFCompSb[imode]->StreamSize();
+      }
+    }
+  }
+
+  if(opt.find("pdft") != string::npos)
+  {
+    size += fPDFTotOb->StreamSize();
+    if(opt.find("+SB") != string::npos)
+    {
+      size += fPDFTotSb->StreamSize();
+    }
+  }
+
+  return size;
 }
 //________________________________________________________________________________________
 double GenericSingleSampleFitModel::GetFitStatisticPenalty (Option_t * /*opt*/) const
@@ -1002,7 +1078,7 @@ void GenericSingleSampleFitModel::Init(void)
   fPOT          = 0;
   fUseMCDST     = false;
   fRFL          = 0;
-  
+
   fPDFTotOb      = 0;
   fPDFTotNullOb  = true;
 
@@ -1046,16 +1122,16 @@ void GenericSingleSampleFitModel::Book(void)
   
   const VALORBinning  * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning  * reco_sb = fBinning->RecoSmpBinning();
-  
+
   const char * tag = "init"; // initial name for the array on booking
-  
+
   // Modes should eventually move to being fully runtime configurable
   // Which means that this will end up going in read
   // And we may have to completely merge Book/Read
   int ibeam   = es.BeamConfIndex(fBeam);
   int isample = es.SampleIndex(fBeam,fSample);
   fReactionModes = es.ReactionModes()[ibeam][isample];
-  
+
   fNonEmptyBinsOb = std::vector<std::vector<int>>(fReactionModes.size());
   fNonEmptyBinsSb = std::vector<std::vector<int>>(fReactionModes.size());
   fNumOfNonEmptyBinsOb = std::vector<int>(fReactionModes.size());
@@ -1097,13 +1173,13 @@ void GenericSingleSampleFitModel::Book(void)
     fMCTSysSb [imode]->SetDimensionName(0,"reco");
     fMCTFinSb [imode]->SetDimensionName(0,"reco");
     fMCStatSb [imode]->SetDimensionName(0,"reco");
-    
+
     fMCTNomSb [imode]->SetDimensionName(1,"true");
     fMCTTunSb [imode]->SetDimensionName(1,"true");
     fMCTSysSb [imode]->SetDimensionName(1,"true");
     fMCTFinSb [imode]->SetDimensionName(1,"true");
     fMCStatSb [imode]->SetDimensionName(1,"true");
-    
+
     fMCTNomSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctnom_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
     fMCTTunSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mcttun_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
     fMCTSysSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctsys_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
@@ -1150,13 +1226,14 @@ void GenericSingleSampleFitModel::Book(void)
     fMCTSysOb [imode]->SetDimensionName(0,"reco");
     fMCTFinOb [imode]->SetDimensionName(0,"reco");
     fMCStatOb [imode]->SetDimensionName(0,"reco");
-    
+
     fMCTNomOb [imode]->SetDimensionName(1,"true");
     fMCTTunOb [imode]->SetDimensionName(1,"true");
     fMCTSysOb [imode]->SetDimensionName(1,"true");
     fMCTFinOb [imode]->SetDimensionName(1,"true");
     fMCStatOb [imode]->SetDimensionName(1,"true");
-    
+
+
     fMCTNomOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctnom_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
     fMCTTunOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mcttun_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
     fMCTSysOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctsys_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
@@ -1187,9 +1264,9 @@ void GenericSingleSampleFitModel::Book(void)
       fPDFTotOb->SetName(TString::Format("%s_%s_%s",tag,"pdft_ob_vf",fName.c_str()).Data());
       fPDFTotOb->SetDimensionName(0,"reco");
       fPDFTotOb->SetDimensionName(1,"true");
-    
+
     }
-    
+
     // If we need to save universe variations, make arrays for that
     size_t n_universes = fLastUniverseToSave-fFirstUniverseToSave+1;
     for (const std::string & param : fUniverseParametersToSave) {
@@ -1263,22 +1340,22 @@ void GenericSingleSampleFitModel::BuildParamLists()
       bool is_applied = false;
       ReacMode_t m = fReactionModes[imode];
       if(m == kmUndefined) continue;
-      
+
       for (size_t itarget = 0; itarget < kNNuclearTarget ; itarget++ ) {
         NuclearTarget_t nt = static_cast<NuclearTarget_t>(itarget);
         is_applied = is_applied || util::IsAppliedTo(param.GetApplyMask(),fBeam,fSample,fDetector,m,nt);
       } // itarget
-      
+
       // Add them to our lists. This will be need to be updated if new parameter types are added
       if (is_applied) {
         PhysParamId_t p = param.GetID();
         SystType_t type = param.GetType();
-        
+
         std::vector<KineVar_t> binning_kv = fBinning->RecoSmpBinning()->KineVars();
         const std::vector<KineVar_t> & true_kv = fBinning->TrueSmpBinning(m)->KineVars();
-          
+
         switch (type) {
-            
+
           case kSystNorm    :
             fNormParamsAppliedTo[imode].push_back(p);
             norm_params_set.insert(p);
@@ -1286,7 +1363,7 @@ void GenericSingleSampleFitModel::BuildParamLists()
             // Check if the normalisations only depend on parameters we're actually binned in
 
             binning_kv.insert(binning_kv.end(),true_kv.begin(),true_kv.end());
-            
+
             for (const KineVar_t & kv : param.GetKineVars() ) {
               if (std::find(binning_kv.begin(),binning_kv.end(),kv) == binning_kv.end()) {
                 LOG("GenericSingleSampleFitModel",pFATAL) << "Parameter "<<param.GetName()
@@ -1323,9 +1400,9 @@ void GenericSingleSampleFitModel::BuildParamLists()
       }
 
     } // imode
-    
+
   } // parameters
-  
+
   // And just the total list
   fNormParams = std::vector<PhysParamId_t>(norm_params_set.begin(),norm_params_set.end());
   std::sort(fNormParams.begin(),fNormParams.end());
@@ -1396,10 +1473,10 @@ void GenericSingleSampleFitModel::Clean(void)
   for(TuningInfo pairpair : fBinByBinTuningHists) {
     delete pairpair.second;
   }
-  
+
   this->ResetSystematicVariationIDs();
   this->ResetUniversesToRead();
-  
+
   fConfigFileRead = "";
 }
 //________________________________________________________________________________________
@@ -1460,30 +1537,30 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   int    reac_mode     = -1;
   double wght          = 1 ; //conv::kBadResult;
   double wght_pot      = conv::kBadResult;
-  
+
   // Turn off all the branches by default
   t->SetBranchStatus("*",0);
-  
+
   std::map<KineVar_t,double> kinematics;
-  
+
   // Set up a list of the branches associated with each kinematic variable
   std::map<KineVar_t,std::string> kinematic_branch_names;
   for (const KineVar_t & kv : kinevars) {
     kinematic_branch_names[kv] = util::DSTBranchName(kv);
   }
-  
-  int bstat_sample     = 0; 
-  int bstat_beam       = 0; 
-  int bstat_reac_mode  = 0;  
+
+  int bstat_sample     = 0;
+  int bstat_beam       = 0;
+  int bstat_reac_mode  = 0;
   std::map<KineVar_t,int> bstat_kinematics;
-  
+
   // And turn all the base branches on
   t->SetBranchStatus("sample"   , 1);
   t->SetBranchStatus("beam"     , 1);
   t->SetBranchStatus("reac_mode", 1);
   t->SetBranchStatus("wght"     , 1);
   t->SetBranchStatus("wght_pot" , 1);
-  
+
   bstat_sample    = t->SetBranchAddress("sample",    &sample);
   bstat_sample    = t->SetBranchAddress("beam"  ,    &beam);
   bstat_reac_mode = t->SetBranchAddress("reac_mode", &reac_mode);
@@ -1491,9 +1568,9 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   // Weight is not required - use one if failed
   t->SetBranchAddress("wght"       , &wght);
   t->SetBranchAddress("wght_pot"   , &wght_pot);
-  
+
   bool any_bad_status = (bstat_sample || bstat_beam || bstat_reac_mode);
-  
+
   for(const conv::KineVar_t & kv : kinevars) {
     const char * branchname = kinematic_branch_names[kv].c_str();
     t->SetBranchStatus(branchname,1);
@@ -1520,7 +1597,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     }
     delete matches;
   }
-  
+
   // Let's work out what universe branches we need
   //~ bool apply_universe_weights = fSystUniverseToApply.size();
   const size_t max_n_universes = 10000;
@@ -1539,7 +1616,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       util::Die(-1) ; return;
     }
   }
-  
+
   Long_t nev = t->GetEntries();
   LOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
   
@@ -1646,7 +1723,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     
     // Get the mode appropriate binning
     const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
-    
+
     // check kinematic values against built-in limits and make vectors
     std::vector<double> true_vars;
     std::vector<double> reco_vars;
@@ -1739,7 +1816,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         );
       }
     }
-    
+
     // Add `nom' array entry (and init `tun', `sys' and `fin' arrays = `nom')
     double curr_wght = fMCTNomOb[imode]->GetEntry(reco_bin_ob, true_bin);
     curr_wght += this_entry;
@@ -1757,7 +1834,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     fMCTFinSb [imode]->SetEntry(curr_wght_sb, reco_bin_sb, true_bin);
     fMCStatSb [imode]->SetEntry(           1, reco_bin_sb, true_bin);
   }//iev
-  
+
   // If we're storing the weights from the universes, here we should
   // divide out the unweighted total to get back to a simple weight
   size_t n_universes_to_save = fLastUniverseToSave - fFirstUniverseToSave + 1;
@@ -1769,7 +1846,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         if(m == kmUndefined) continue;
         const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
         const int n_true_bins = true_sb->NBins();
-        
+
         for(int reco_bin_ob = 0 ; reco_bin_ob < n_reco_bins_ob ; reco_bin_ob++) {
           for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
             float varied_entry = fUniverseVariations[name][imode].GetEntry(reco_bin_ob,true_bin,universe_offset);
@@ -1784,6 +1861,18 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       }//modes
     }//universe
   }//param
+
+  LOG("GenericSingleSampleFitModel",pDEBUG)
+    << "\n\nAfter filling MC templates from the input MC tree, the fMCTNomOb integrals for each mode are:";
+  double fMCTNomOb_tot_integral = 0;
+  for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+    ReacMode_t m = fReactionModes[imode];
+    if(m == kmUndefined) continue;
+    fMCTNomOb_tot_integral += fMCTNomOb[imode]->Integral();
+    LOG("GenericSingleSampleFitModel",pDEBUG)
+      << "fMCTFinOb[" << util::AsString(m) << "] integral = " << fMCTNomOb[imode]->Integral();
+  }
+  LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTNomOb integral summed over all modes = " << fMCTNomOb_tot_integral;
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::ReadTune(
@@ -1907,7 +1996,7 @@ double GenericSingleSampleFitModel::GetExternalWeight(std::map<KineVar_t,double>
 bool GenericSingleSampleFitModel::FillFromTemplateFile (TFile * f, string tag, double desired_POT)
 {
   bool success = true;
-  
+
   //~ BeamConf_t b = fBeam;
   //~ Sample_t   s = fSample;
   
@@ -2179,7 +2268,7 @@ void GenericSingleSampleFitModel::FluctuateMCStat(Option_t * option)
   
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
-  
+
   const int n_reco_bins_ob  = reco_ob->NBins();
   const int n_reco_bins_sb  = reco_sb->NBins();
   
@@ -2266,7 +2355,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 {
   // This method maps sys -> fin MC templates.
   // Applying correlated flux and cross-section systematics
-  
+
   LOG("GenericSingleSampleFitModel",pINFO) 
     << fName
     << " - Applying physics params (option: " 
@@ -2316,8 +2405,8 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
     const std::vector<conv::KineVar_t> true_kinevars = util::KineVarTrue(true_ks);
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-    LOG("GenericSingleSampleFitModel",pDEBUG) 
-      << "Handing templates for: " 
+    LOG("GenericSingleSampleFitModel",pDEBUG)
+      << "Handing templates for: "
       << util::AsString(fBeam) << ", " << util::AsString(fSample) << ", " << util::AsString(m);
 
     LOG("GenericSingleSampleFitModel",pDEBUG) 
@@ -2328,7 +2417,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
     
     // copy sys -> fin MC templates
     fMCTFinOb[imode]->CopyDataOnlyFrom(*fMCTSysOb[imode]);
-    
+
     // Recast VALORArray blocks so they can be used addressed like normal arrays (fast).
     // Hard to read, so should only be used in code for which speed is essential.
     typedef double (templtypeOb)[n_reco_bins_ob][n_true_bins_sb];
@@ -2436,7 +2525,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         double reco1_max  = 0.;
         double reco2_min  = 0.;
         double reco2_max  = 0.;
-                
+
         // Work out whether the parameter is applied to true, reco or both
         unsigned int param_true_kv_size = 0;
         unsigned int param_reco_kv_size = 0;
@@ -2573,8 +2662,8 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             double & val = templFinOb[ireco][itrue];
             val *= effective_tweak;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel",pDEBUG) 
-              << "MCT[" << imode << "] = " 
+            LOG("GenericSingleSampleFitModel",pDEBUG)
+              << "MCT[" << imode << "] = "
               << val/f << " --> " << val;
 #endif
 #ifdef DEBUG_SINGLE_BIN
@@ -2738,7 +2827,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       // Hard to read, so should only be used in code for which speed is essential.
       typedef double (templtypeSb)[n_reco_bins_sb][n_true_bins_sb];
       templtypeSb & templFinSb = *reinterpret_cast<templtypeSb *>(&(fMCTFinSb[imode]->GetEntryRef(0,0)));
-      
+
       // First do the normalisation parameters
       for(size_t ip = 0; ip < fNormParamsAppliedTo[imode].size(); ip++) {
         PhysParamId_t p = fNormParamsAppliedTo[imode][ip];
@@ -2753,7 +2842,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         }
 
         assert(!util::IsOscParam(p));
-        
+
         bool has_kinematic_dependence = param.HasKinematicRange();
          
         double f = fPhysHypothesis.CurrValue(p);
@@ -2784,7 +2873,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           double reco1_max  = 0.;
           double reco2_min  = 0.;
           double reco2_max  = 0.;
-          
+
           // Work out whether the parameter is applied to true, reco or both
           unsigned int param_true_kv_size = 0;
           unsigned int param_reco_kv_size = 0;
@@ -3043,9 +3132,9 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
         
     }//update_mct_sb?
-    
-    
-    
+
+
+
     // If we need to apply universes, do so now (only to OB)
     if (fApplyUniverseVariations) {
       for (const auto & variation_name_and_id : fSystUniverseToApply) {
@@ -3085,7 +3174,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       update_mct_sb = true;
     }
   }
-  
+
   //first, check that there are actually osc params in the fit params list 
   bool apply_osc_prob = false;
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
@@ -3440,8 +3529,7 @@ valor::PhysParamList valor::GenericSingleSampleFitModel::OneSigmaErrors(Option_t
 void valor::GenericSingleSampleFitModel::UpdateObservableBinningFromSimple(Option_t * /*opt*/)
 {
   LOG("GenericSingleSampleFitModel",pNOTICE)<<"Updating observable binning from simple: "<<fName;
-  
-  
+
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
 
@@ -3512,7 +3600,7 @@ void GenericSingleSampleFitModel::SetSystConf(CorrelatedSystematics * syst, Opti
     fSystematics = syst;
     fOwnerOfSystematics = ts.Contains("adopt");
   }
-  
+
   return;
 }
 //________________________________________________________________________________________
@@ -3919,6 +4007,24 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
   }
 }
 //________________________________________________________________________________________
+std::string GenericSingleSampleFitModel::GetPDFIntegralAsString(Option_t * opt_in)
+{
+  double integral = -999;
+
+  std::string opt = (opt_in) ? opt_in : "";
+  if(opt.find("SB") != string::npos) {
+    integral = fPDFTotSb->Integral();
+  }
+  else {
+    integral = fPDFTotOb->Integral();
+  }
+
+  TString temp = TString::Format("%s total model PDF integral = %.5lf", this->Name().c_str(), integral);
+  std::string to_print = temp.Data();
+
+  return to_print;
+}
+//________________________________________________________________________________________
 void GenericSingleSampleFitModel::FillNonEmptyBinVectors()
 {
   const VALORBinning  * reco_ob = fBinning->RecoOptBinning();
@@ -4045,7 +4151,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
     end_bins.push_back(nbins-1);  // The above loop won't catch the very last bin in the entire binning scheme, so add it here
     *n_overflow_bins           = end_bins.size();
     unsigned int n_upper_edges = end_bins.size();
-    
+
     unsigned int bad_bin_number = 99999999;
 
     *unscaled_bin_edges         = std::vector<double>            (nbins + n_upper_edges + *n_overflow_bins, conv::kBadResult);
@@ -4219,5 +4325,16 @@ void GenericSingleSampleFitModel::ResetUniversesToRead()
 const std::string & GenericSingleSampleFitModel::GetLastConfigFileRead() const
 {
   return fConfigFileRead;
+}
+//________________________________________________________________________________________
+util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_name, const string read_or_write, string valor_array_format)
+{
+  valor_array_format = util::RemoveAllWhitespace(valor_array_format);
+  if(valor_array_format.empty()) {
+    valor_array_format = fDefVALORArrayFormat;
+  }
+
+  return new util::ToyStream(file_name, read_or_write, typeid(this), this->Name(),
+                             valor_array_format, this->StreamSize());
 }
 //________________________________________________________________________________________

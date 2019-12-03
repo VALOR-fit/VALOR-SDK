@@ -88,7 +88,7 @@ public:
   const VALORBinning * TrueSmpBinning(int im) const { return fTrueSimpleBinning [im];  }
   // Return Simple Binning for the reaction mode, m
   const VALORBinning * TrueSmpBinning(conv::ReacMode_t m) const;
-  
+
   // Cross sections binnings. For now truth is always the same as the simple binning, and reco is always optimised
   const VALORBinning * XsecRecoBinning(void              )  const { return fXsecRecoBinning  ;}
   const VALORBinning * XsecTrueBinning(conv::ReacMode_t m)  const;
@@ -103,6 +103,8 @@ public:
   
   // Get a list of all the kinematic variables included in this binning
   const std::vector<conv::KineVar_t> & KineVars() const;
+  const std::vector<conv::KineVar_t> & TrueKineVars() const;
+  const std::vector<conv::KineVar_t> & RecoKineVars() const;
 
 private:
 
@@ -110,7 +112,7 @@ private:
   void CleanUp (void);
 
   void CheckBinEdges(VALORBinning *opt_binning, VALORBinning *smp_binning) const;
-  
+
   // The list of reaction modes we're using
   std::vector<conv::ReacMode_t> fReactionModes;
 
@@ -120,14 +122,16 @@ private:
   VALORBinning *                    fRecoOptimizedBinning;     //
   VALORBinning *                    fRecoSimpleBinning;        //
   std::vector<VALORBinning *>       fTrueSimpleBinning;        // Per mode
-  std::vector<VALORBinning *>       fTrueSimpleBinningUnique;  // 
-  
-  
+  std::vector<VALORBinning *>       fTrueSimpleBinningUnique;  //
+
+
   VALORBinning *              fXsecRecoBinning;        // Binning for Xsec splines
   std::vector<VALORBinning *> fXsecTrueBinning;        // Per mode
-  std::vector<VALORBinning *> fXsecTrueBinningUnique;  // 
-  
+  std::vector<VALORBinning *> fXsecTrueBinningUnique;  //
+
   std::vector<conv::KineVar_t> fKineVars;
+  std::vector<conv::KineVar_t> fRecoKineVars;
+  std::vector<conv::KineVar_t> fTrueKineVars;
 };
 
 } // valor namespace

@@ -18,8 +18,10 @@ ChangeLog:
 #include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/Constants.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/VThreadPool.h"
+#include "valor/VArray/VALORArray.h"
 #include "valor/FitCore/CompoundFitData.h"
 #include "valor/FitCore/CompoundFitModel.h"
 
@@ -31,7 +33,8 @@ using std::cerr;
 using std::endl;
 
 //________________________________________________________________________________________
-CompoundFitData::CompoundFitData()
+CompoundFitData::CompoundFitData() :
+  fDefVALORArrayFormat("data_vf")
 {
   fName = "UninitialisedCompoundFitData";
 }
@@ -41,6 +44,26 @@ CompoundFitData::~CompoundFitData()
   for (FitDataABC *& d : fSubData) {
     delete d; d = 0;
   }
+}
+//________________________________________________________________________________________
+std::string CompoundFitData::CompoundName() const
+{
+  std::string name = "--";
+  for(std::vector<FitDataABC*>::const_iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
+    name += (*it)->Name() + "--";
+  }
+  return name;
+}
+//________________________________________________________________________________________
+long CompoundFitData::StreamSize(Option_t* opt) const
+{
+  long size = 0;
+  for(std::vector<FitDataABC*>::const_iterator it = fSubData.begin(); it != fSubData.end(); ++it)
+  {
+    size += (*it)->StreamSize(opt);
+  }
+
+  return size;
 }
 //________________________________________________________________________________________
 std::string CompoundFitData::Name() const
@@ -98,6 +121,18 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
     util::Die(-1);
   }
   
+  return status;
+}
+//________________________________________________________________________________________
+bool CompoundFitData::Read(util::ToyStream* stream)
+{
+
+  bool status = true;
+  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it)
+  {
+    status = status && (*it)->Read(stream);
+  }
+
   return status;
 }
 //________________________________________________________________________________________
@@ -188,15 +223,15 @@ bool CompoundFitData::Write (TObjArray* collection, const char * tag, Option_t *
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitData::Write (std::ofstream& stream, Option_t * write_opt)
+bool CompoundFitData::Write(util::ToyStream* stream)
 {
 
    bool status = true;
    for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it)
    {
-      status = status && (*it)->Write(stream, write_opt);
+      status = status && (*it)->Write(stream);
    }
-   
+
    return status;
 }
 //________________________________________________________________________________________
@@ -284,6 +319,17 @@ unsigned int CompoundFitData::GetNSubData(Option_t * /*opt*/) const
   return fSubData.size();
 }
 //________________________________________________________________________________________
+std::string CompoundFitData::GetPDFIntegralAsString(Option_t * opt)
+{
+  std::string to_print = "";
+
+  for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
+    to_print += (*it)->GetPDFIntegralAsString(opt) + "\n";
+  }
+
+  return to_print;
+}
+//________________________________________________________________________________________
 void CompoundFitData::SetName(std::string name)
 {
   fName = name;
@@ -292,5 +338,37 @@ void CompoundFitData::SetName(std::string name)
 void CompoundFitData::SetAssociatedModel(FitModelABC *model_abc)
 {
   fCFM = dynamic_cast<CompoundFitModel*>(model_abc);
+}
+//________________________________________________________________________________________
+void CompoundFitData::SetAssociatedModel(FitModelABC *model_abc)
+{
+  fCFM = dynamic_cast<CompoundFitModel*>(model_abc);
+}
+//________________________________________________________________________________________
+void CompoundFitData::SetFromModel(void)
+{
+  for (unsigned int isubdata = 0; isubdata < fSubData.size() ; isubdata++) {
+    fSubData[isubdata]->SetFromModel();
+  }
+}
+//________________________________________________________________________________________
+util::ToyStream* CompoundFitData::InitToyStream(const string file_name, const string read_or_write, string valor_array_format)
+{
+  valor_array_format = util::RemoveAllWhitespace(valor_array_format);
+  if(valor_array_format.empty()) {
+    valor_array_format = fDefVALORArrayFormat;
+  }
+
+  return new util::ToyStream(file_name, read_or_write, typeid(this), this->CompoundName(),
+                             valor_array_format, this->StreamSize());
+}
+//________________________________________________________________________________________
+bool CompoundFitData::DataExists(Option_t * opt) const
+{
+  bool exists = true;
+  for (unsigned int isubdata = 0; isubdata < fSubData.size() ; isubdata++) {
+    exists = exists && fSubData[isubdata]->DataExists(opt);
+  }
+  return exists;
 }
 //________________________________________________________________________________________

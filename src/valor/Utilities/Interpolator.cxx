@@ -28,7 +28,7 @@ valor::util::Interpolator::Interpolator(const TSpline * spl, valor::util::Interp
     int type_int = static_cast<int>(type);
     ROOT::Math::Interpolation::Type type_root = static_cast<ROOT::Math::Interpolation::Type>(type_int);
     fGSLSpline = new ROOT::Math::Interpolator(0,type_root);
-    
+
     int n_knots = spl->GetNp();
     std::vector<double> x(n_knots);
     std::vector<double> y(n_knots);

@@ -694,7 +694,7 @@ template<typename numtype> void VALORArrayT<numtype>::
 }
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::
-   ReadStream(std::ifstream& stream)
+   ReadStream(std::fstream& stream)
 {
    int n_dim = 0;
    int dimensions[6] = {0};
@@ -709,13 +709,19 @@ template<typename numtype> void VALORArrayT<numtype>::
 }
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::
-   WriteStream(std::ofstream& stream)
+   WriteStream(std::fstream& stream)
 {
    LOG("VALORArrayT", pDEBUG) << "Writing " << this->GetName() << " " <<
       fDimensions[0] << " " << fDimensions[1] << "( " << fSize << ")";
    stream.write((char*)&fNDim, sizeof(int));
    stream.write((char*)fDimensions, 6 * sizeof(int));
    stream.write((char*)fArray, fSize * sizeof(numtype));
+}
+//________________________________________________________________________________________
+template<typename numtype> long VALORArrayT<numtype>::
+  StreamSize()
+{
+  return 7 * sizeof(int) + fSize * sizeof(numtype);
 }
 //________________________________________________________________________________________
 template<typename numtype> void VALORArrayT<numtype>::

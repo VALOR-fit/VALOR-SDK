@@ -41,11 +41,14 @@ public:
 
   // Identify fit data with a name (to be propagated in output files, etc)
   virtual string Name(void) const;  
+  virtual string CompoundName(void) const;  // Concatenates the Name() of each subdata
+  virtual long StreamSize(Option_t* opt = 0) const;
 
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
-  // Return true if data were succesfully read out
+  // Return true if data were successfully read out
   virtual bool Read(string file, Option_t * opt = 0);
+  virtual bool Read(util::ToyStream* stream);
 
   // Generate mock data (toy-MC)
   // Toy-MC is generated from using the input model 
@@ -61,7 +64,7 @@ public:
 
   virtual bool Write (TObjArray * collection, const char * tag = "data", Option_t * write_opt = 0);
   virtual bool Write (const char * filename,  const char * tag = "data", Option_t * write_opt = 0, Option_t * file_opt = 0);
-  virtual bool Write (std::ofstream& stream, Option_t * write_opt = 0);
+  virtual bool Write (util::ToyStream* stream);
 
   // Number of bins in fit data, or number of events for unbinned fits
   virtual int NumOfBins (Option_t * opt = 0) const;
@@ -85,10 +88,22 @@ public:
   // Associate a FitModelABC with the data to define the binning and other attributes of the experimental setup
   virtual void SetAssociatedModel(FitModelABC *model_abc);
 
+  // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
+  virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
+
+  // Get the total PDF integral of each subdata as a string
+  virtual std::string GetPDFIntegralAsString(Option_t * opt = 0);
+
+  virtual void SetFromModel(void); // Set various parameters from the model
+
+  // Are the data arrays non-empty?
+  virtual bool DataExists(Option_t * opt = 0) const;
+
 protected:
   std::string fName;
   std::vector<FitDataABC *> fSubData;
   CompoundFitModel *fCFM;
+  std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
 };
 
 } // valor
