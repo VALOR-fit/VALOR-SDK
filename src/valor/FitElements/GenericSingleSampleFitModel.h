@@ -48,7 +48,7 @@ brief      A generic implementation of the fit model for a single sample,
 #include "valor/Utilities/RFL.h"
 #include "valor/Utilities/ToyStream.h"
 #include "valor/Utilities/UtlParam.h"
-#include "valor/Utilities/SingleSampleKineBinning.h
+#include "valor/Utilities/SingleSampleKineBinning.h"
 
 using std::string;
 
