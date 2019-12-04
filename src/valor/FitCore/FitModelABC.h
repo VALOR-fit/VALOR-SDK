@@ -43,6 +43,8 @@ public:
   // Read configuration data from file
   virtual bool Read(std::string file, Option_t * opt = 0) = 0;
   virtual bool Read(util::ToyStream* stream) = 0;
+
+  // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
   virtual long StreamSize(Option_t* opt = 0) const = 0;
 
   // Below are a set methods to generate model predictions for a given physics hypothesis and a set of nuisance parameters.

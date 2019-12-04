@@ -101,7 +101,7 @@ public:
 
   void ReadStream(std::fstream& stream);
   void WriteStream(std::fstream& stream);
-  long StreamSize();
+  long StreamSize();  // Returns the size (in bytes) that would be used to read/write the array to a binary toy file
 
   // Resize the array, clearing contents
   void Resize(const std::vector<int> dimensions);   // List of dimension sizes

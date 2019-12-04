@@ -86,7 +86,7 @@ public:
   bool          Write                  (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
   bool          Write                  (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
   virtual bool  Write                  (util::ToyStream* stream);
-  virtual long  StreamSize             (Option_t * opt = 0) const;
+  virtual long  StreamSize             (Option_t * opt = 0) const;  // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
   double        GetFitStatisticPenalty (Option_t * opt = 0) const;
 
   void          SetSystConf            (CorrelatedSystematics * syst, Option_t * opt = "");

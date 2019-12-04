@@ -43,6 +43,7 @@ public:
   // Identify fit data with a name (to be propagated in output files, etc)
   virtual string Name(void) const = 0;
 
+  // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
   virtual long StreamSize(Option_t* opt = 0) const = 0;
 
   // Read data from the input file (ROOT, XML, other)
