@@ -729,7 +729,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
       //util::Die(-1);return;
     }
     if(s != fSample) {
-#ifdef VALOR_DUNE_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitData",pDEBUG)
         << "Ignoring data event: " << iev
         << " (sample ID: " << s << " "<< util::AsString(s)
@@ -740,7 +740,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     }
     BeamConf_t b = util::BeamConfFromInt(beam);
     if(b != fBeam) {
-#ifdef VALOR_DUNE_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitData",pDEBUG)
         << "Ignoring data event: " << iev
         << " (beam ID: " << b << " "<< util::AsString(b)
