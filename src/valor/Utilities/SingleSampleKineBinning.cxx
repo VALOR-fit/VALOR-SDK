@@ -424,7 +424,7 @@ void SingleSampleKineBinning::Init(void)
   fRecoOptimizedBinning = nullptr;
   fRecoSimpleBinning    = nullptr;
   fXsecRecoBinning      = nullptr;
-
+  
   fReactionModes.clear();
   fReactionModeIndex.clear();
   fTrueSimpleBinningUnique.clear();

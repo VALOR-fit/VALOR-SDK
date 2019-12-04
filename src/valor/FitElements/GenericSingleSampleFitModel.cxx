@@ -1477,6 +1477,7 @@ void GenericSingleSampleFitModel::Clean(void)
   
   fReactionModes.clear();
   fReactionModeIndex.clear();
+  
   delete fML;
 
   if (fRFL)  { delete fRFL ; fRFL  = 0; }

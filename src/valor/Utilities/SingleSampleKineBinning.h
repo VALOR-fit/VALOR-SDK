@@ -121,7 +121,6 @@ private:
   // and a mapping from these to their index in here
   std::vector<long> fReactionModeIndex;
 
-
   conv::Detector_t                  fDetector;
   conv::BeamConf_t                  fBeamConf;
   conv::Sample_t                    fSample;
