@@ -435,11 +435,8 @@ void SingleSampleKineBinning::CleanUp(void)
   delete_binning(fRecoSimpleBinning);  
   delete_binning(fXsecRecoBinning);
   
-  for(size_t im = 0; im < fReactionModes.size(); im++) {
-    delete_binning(fTrueSimpleBinning [im]);
-    delete_binning(fXsecTrueBinning   [im]);
-  }
-  
+  for (auto & b : fTrueSimpleBinning      ) {delete_binning(b);}
+  for (auto & b : fXsecTrueBinning        ) {delete_binning(b);}
   for (auto & b : fTrueSimpleBinningUnique) {delete_binning(b);}
   for (auto & b : fXsecTrueBinningUnique  ) {delete_binning(b);}
   
