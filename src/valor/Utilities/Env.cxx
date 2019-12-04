@@ -8,6 +8,8 @@ ChangeLog:
 */
 //________________________________________________________________________________________
 
+#include <cassert>
+
 #include <TSystem.h>
 
 #include "valor/Utilities/Env.h"
