@@ -340,11 +340,6 @@ void CompoundFitData::SetAssociatedModel(FitModelABC *model_abc)
   fCFM = dynamic_cast<CompoundFitModel*>(model_abc);
 }
 //________________________________________________________________________________________
-void CompoundFitData::SetAssociatedModel(FitModelABC *model_abc)
-{
-  fCFM = dynamic_cast<CompoundFitModel*>(model_abc);
-}
-//________________________________________________________________________________________
 void CompoundFitData::SetFromModel(void)
 {
   for (unsigned int isubdata = 0; isubdata < fSubData.size() ; isubdata++) {
