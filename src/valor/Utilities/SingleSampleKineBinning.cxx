@@ -14,7 +14,8 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include <TSystem.h>
 
 #include "valor/Conventions/Constants.h"
-#include "valor/Conventions/ExperimentSetup.h"
+#include "valor/Conventions/ReacMode.h"
+#include "valor/Conventions/ReacModeCoarse.h"
 #include "valor/Utilities/SingleSampleKineBinning.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/UtlStr.h"
@@ -25,26 +26,38 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 
 using namespace valor;
 
-// Keep a static copy of the experimental setup
-static const ExperimentSetup & es = *ExperimentSetup::Instance();
-
+// Simple helper function to make the vector that allows rapid translation from a mode to its entry in this object's modelist
+std::vector<long> MakeModeIndex(const std::vector<conv::ReacMode_t> & modes)
+{
+  std::vector<long> mode_indices(conv::kNReacModes,-1);
+  for (size_t im = 0 ; im < modes.size(); im++) {
+    conv::ReacMode_t m = modes[im];
+    mode_indices[m] = im;
+  }
+  return mode_indices;
+}
 //________________________________________________________________________________________
-SingleSampleKineBinning::SingleSampleKineBinning(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s)
+SingleSampleKineBinning::SingleSampleKineBinning(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, const std::vector<conv::ReacMode_t> & modes)
 {
   this->Init();
 
   fDetector = d;
   fBeamConf = b;
   fSample   = s;
+  fReactionModes = modes;
+  fReactionModeIndex = MakeModeIndex(modes);
 }
 //________________________________________________________________________________________
-SingleSampleKineBinning::SingleSampleKineBinning(UniqueSampleID usid)
+SingleSampleKineBinning::SingleSampleKineBinning(UniqueSampleID usid, const std::vector<conv::ReacMode_t> & modes)
 {
   this->Init();
 
   fDetector = usid.detector;
   fBeamConf = usid.beamconf;
   fSample   = usid.sample;
+  
+  fReactionModes = modes;
+  fReactionModeIndex = MakeModeIndex(modes);
 }
 //________________________________________________________________________________________
 SingleSampleKineBinning::~SingleSampleKineBinning(void)
@@ -68,11 +81,6 @@ bool SingleSampleKineBinning::Read(string file)
   std::set<conv::KineVar_t> kinevars;
 
   this->CleanUp();
-  
-  // Get relevant modes
-  int ibeam   = es.BeamConfIndex(fBeamConf);
-  int isample = es.SampleIndex(fBeamConf,fSample);
-  fReactionModes = es.ReactionModes()[ibeam][isample];
 
   TString ts_file = file.c_str();
   gSystem->ExpandPathName(ts_file);
@@ -207,9 +215,6 @@ bool SingleSampleKineBinning::Read(string file)
   //
   // True/Simple [per mode]
   //
-
-  int is = es.SampleIndex(fBeamConf,fSample);
-  LOG("SampleBinning", pDEBUG) << "Sample idx = " << is;
 
   for(size_t im = 0; im < fReactionModes.size(); im++) {
     conv::ReacMode_t m = fReactionModes[im];
@@ -388,15 +393,13 @@ bool SingleSampleKineBinning::Read(string file)
 const VALORBinning * SingleSampleKineBinning::TrueSmpBinning(conv::ReacMode_t m) const
 {
   if(m == conv::kmUndefined) return 0;
-  int im = es.ReacModeIndex(fBeamConf,fSample,m);
-  return this->TrueSmpBinning(im);
+  return this->TrueSmpBinning(fReactionModeIndex[m]);
 }
 //________________________________________________________________________________________
 const VALORBinning * SingleSampleKineBinning::XsecTrueBinning(conv::ReacMode_t m) const
 {
   if(m == conv::kmUndefined) return 0;
-  int im = es.ReacModeIndex(fBeamConf,fSample,m);
-  return this->XsecTrueBinning(im);
+  return this->XsecTrueBinning(fReactionModeIndex[m]);
 }
 //________________________________________________________________________________________
 void SingleSampleKineBinning::Init(void)
@@ -408,7 +411,9 @@ void SingleSampleKineBinning::Init(void)
   fRecoOptimizedBinning = nullptr;
   fRecoSimpleBinning    = nullptr;
   fXsecRecoBinning      = nullptr;
-
+  
+  fReactionModes.clear();
+  fReactionModeIndex.clear();
   fTrueSimpleBinningUnique.clear();
   fXsecTrueBinningUnique  .clear();
 }
@@ -457,6 +462,11 @@ unsigned int SingleSampleKineBinning::GetRecoOptBin(unsigned int reco_smp_bin) c
 const std::vector<conv::KineVar_t> & SingleSampleKineBinning::KineVars() const
 {
   return fKineVars;
+}
+//________________________________________________________________________________________
+const std::vector<conv::ReacMode_t> & SingleSampleKineBinning::GetReactionModes() const
+{
+  return fReactionModes;
 }
 //________________________________________________________________________________________
 void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinning *smp_binning) const

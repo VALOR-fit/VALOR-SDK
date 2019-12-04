@@ -264,6 +264,8 @@ private:
   
   // The list of reaction modes we're using
   std::vector<conv::ReacMode_t> fReactionModes;
+  // and a mapping from these to their index in here
+  std::vector<long> fReactionModeIndex;
   
   // Spline library
   util::RFL * fRFL;

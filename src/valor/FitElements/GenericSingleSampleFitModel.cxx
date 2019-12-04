@@ -30,7 +30,6 @@
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 
 #include "valor/Conventions/Build.h"
-#include "valor/Conventions/ExperimentSetup.h"
 
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/ModeList.h"
@@ -77,8 +76,6 @@ using namespace valor::conv;
 #define APPLY_ALL_AUTOWGHT_BRANCHES
 
 //#define DEBUG_SINGLE_BIN
-
-static const ExperimentSetup & es = *ExperimentSetup::Instance();
 
 //________________________________________________________________________________________
 GenericSingleSampleFitModel::GenericSingleSampleFitModel() :
@@ -166,6 +163,11 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   string modelist_file = util::XML2String(xml,root_node,"modelist");
   ModeList ml(util::CompleteConfigPath(modelist_file));
   fReactionModes = ml.Modes();
+  fReactionModeIndex.resize(conv::kNReacModes,-1);
+  for (size_t im = 0 ; im < fReactionModes.size(); im++) {
+    conv::ReacMode_t m = fReactionModes[im];
+    fReactionModeIndex[m] = im;
+  }
   
   
   // Get binning file name, potentially from option string
@@ -186,7 +188,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   delete matches;
   
   if (fBinning) {delete fBinning;}
-  fBinning = new SingleSampleKineBinning(fDetector,fBeam,fSample);
+  fBinning = new SingleSampleKineBinning(fDetector,fBeam,fSample,fReactionModes);
   fBinning->Read(binning_file);
 
   this->Book();
@@ -1369,6 +1371,9 @@ void GenericSingleSampleFitModel::Clean(void)
 
   }//imode
   
+  fReactionModes.clear();
+  fReactionModeIndex.clear();
+  
   if (fRFL)  { delete fRFL ; fRFL  = 0; }
   if (fBinning) { delete fBinning ; fBinning = 0; }
   
@@ -1602,8 +1607,9 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         << " (value stored in DST: " << reac_mode << "). Ignoring event.";
       continue;
     }
-    int imode = es.ReacModeIndex(b, s, m);
-    if(imode < 0) {
+    
+    long imode = fReactionModeIndex[m];
+    if(imode==-1) {
       // For a given sample we should consider a complete list of
       // true reaction modes (otherwise there are true contributions to the
       // event sample which are not taken into account).
