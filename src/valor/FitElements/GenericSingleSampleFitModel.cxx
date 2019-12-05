@@ -1743,15 +1743,19 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     for (conv::KineVar_t kv : reco_ob->KineVars()) {
       double val = kinematics.at(kv);
       if (val < reco_ob->Minimum(kv) || val > reco_ob->Maximum(kv)) {
-#ifdef T2K
-        // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
-        // that they're all intrinsic nue so we don't care about them
-        SLOG("GenericSingleSampleFitModel",pDEBUG)
-#else
-        SLOG("GenericSingleSampleFitModel",pWARN)
-#endif
-          << fName<<" > MC event: " << iev << " has reco kinematic value outside range: "<<util::AsString(kv) << " = "<<val
-          << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
+        if(es.ExperimentName() == "T2K"){
+          // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
+          // that they're all intrinsic nue so we don't care about them
+          SLOG("GenericSingleSampleFitModel",pDEBUG)
+            << fName<<" > MC event: " << iev << " has reco kinematic value outside range: "<<util::AsString(kv) << " = "<<val
+            << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
+        }
+        else {
+          SLOG("GenericSingleSampleFitModel", pWARN)
+            << fName << " > MC event: " << iev << " has reco kinematic value outside range: " << util::AsString(kv)
+            << " = " << val
+            << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
+        }
         out_of_range = true;
       }
       reco_vars.push_back(val);
@@ -2496,16 +2500,16 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifndef __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__
         f = TMath::Max(0.,f);
 #else
-#ifdef T2K
-        if(f < 0) {
-          Parameter param = ParameterPool::Instance()->GetParam(p);
-          if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
+        if(es.ExperimentName() == "T2K"){
+          if(f < 0) {
+            Parameter param = ParameterPool::Instance()->GetParam(p);
+            if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
+          }
         }
-#endif
         if(f < 0) {
           std::cerr << "Applying a negative normalisation for parameter "
                     << param_name << std::endl;
-          }
+        }
 #endif
         bool tweaked = TMath::Abs(f-1) > kASmallNum;    // TODO: put in the untuned value instead of 1
 #ifdef DEBUG_SINGLE_BIN
@@ -2692,16 +2696,19 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifndef __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__
         noEt = TMath::Max(0.,noEt);
 #else
-#ifdef T2K
-        if(noEt < 0) {
-          Parameter param = ParameterPool::Instance()->GetParam(p);
-          if(param.SearchCategories("int")) { noEt = fRFL->GetForceNegWghtTo(); }
+        if(es.ExperimentName() == "T2K"){
+          if(noEt < 0) {
+            Parameter param = ParameterPool::Instance()->GetParam(p);
+            if(param.SearchCategories("int")) { noEt = fRFL->GetForceNegWghtTo(); }
+          }
         }
-#endif
-        if(noEt < 0) {
+        else {
+          if(noEt < 0) {
           std::cerr << "Applying a negative normalisation for parameter "
                     << param_name << std::endl;
+          }
         }
+
 #endif
         for(int i_non_empty = 0; i_non_empty < fNumOfNonEmptyBinsOb[imode]; i_non_empty++) {
           // Only loop over non-empty MC template bins
@@ -2851,17 +2858,19 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifndef __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__
           f = TMath::Max(0.,f);
 #else
-#ifdef T2K
-        if(f < 0) {
-          Parameter param = ParameterPool::Instance()->GetParam(p);
-          if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
-        }
-#endif
-          if(f < 0) {
-          std::cerr << "Applying a negative normalisation for parameter "
-                    << param_name << std::endl;
+          if(es.ExperimentName() == "T2K"){
+            if(f < 0) {
+              Parameter param = ParameterPool::Instance()->GetParam(p);
+              if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
+            }
           }
-#endif
+          else {
+            if(f < 0) {
+              std::cerr << "Applying a negative normalisation for parameter "
+                        << param_name << std::endl;
+            }
+          }
+
           bool tweaked = TMath::Abs(f-1) > kASmallNum;
           if(!tweaked) continue;
           
@@ -3015,17 +3024,19 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifndef __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__
           f = TMath::Max(0.,f);
 #else
-#ifdef T2K
-          if(f < 0) {
-            Parameter param = ParameterPool::Instance()->GetParam(p);
-            if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
+
+          if(es.ExperimentName() == "T2K"){
+            if(f < 0) {
+              Parameter param = ParameterPool::Instance()->GetParam(p);
+              if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
+            }
           }
-#endif
-          if(f < 0) {
-            std::cerr << "Applying a negative normalisation for parameter "
-                      << param_name << std::endl;
-        }
-#endif
+          else {
+            if(f < 0) {
+              std::cerr << "Applying a negative normalisation for parameter "
+                        << param_name << std::endl;
+            }
+          }
 
           bool tweaked = TMath::Abs(f-1) > kASmallNum;
           if(!tweaked) continue;
@@ -3033,17 +3044,20 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifndef __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__
           fnoEt = TMath::Max(0.,fnoEt);
 #else
-#ifdef T2K
-          if(fnoEt < 0) {
-            Parameter param = ParameterPool::Instance()->GetParam(p);
-            if(param.SearchCategories("int")) { fnoEt = fRFL->GetForceNegWghtTo(); }
+
+          if(es.ExperimentName() == "T2K"){
+            if(fnoEt < 0) {
+              Parameter param = ParameterPool::Instance()->GetParam(p);
+              if(param.SearchCategories("int")) { fnoEt = fRFL->GetForceNegWghtTo(); }
+            }
           }
-#endif
-          if(fnoEt < 0) {
-            std::cerr << "Applying a negative normalisation for parameter "
-                      << param_name << std::endl;
-        }
-#endif
+          else {
+            if(fnoEt < 0) {
+              std::cerr << "Applying a negative normalisation for parameter "
+                        << param_name << std::endl;
+            }
+          }
+
           for(int i_non_empty = 0; i_non_empty < fNumOfNonEmptyBinsSb[imode]; i_non_empty++) {
             // Only loop over non-empty MC template bins
             int itrue =  fNonEmptyBinsSb[imode][i_non_empty] % n_true_bins_sb;
