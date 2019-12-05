@@ -2870,7 +2870,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
                         << param_name << std::endl;
             }
           }
-
+#endif
           bool tweaked = TMath::Abs(f-1) > kASmallNum;
           if(!tweaked) continue;
           
@@ -3037,6 +3037,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
                         << param_name << std::endl;
             }
           }
+#endif
 
           bool tweaked = TMath::Abs(f-1) > kASmallNum;
           if(!tweaked) continue;
@@ -3057,6 +3058,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
                         << param_name << std::endl;
             }
           }
+#endif
 
           for(int i_non_empty = 0; i_non_empty < fNumOfNonEmptyBinsSb[imode]; i_non_empty++) {
             // Only loop over non-empty MC template bins
