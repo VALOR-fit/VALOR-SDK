@@ -352,8 +352,10 @@ bool SingleSampleKineBinning::Read(string file)
            return false;
         }
         fXsecTrueBinningUnique.push_back(mode_xsec_true_binning);
-        fXsecTrueBinning [im] = mode_xsec_true_binning;
-      }    
+
+        assert(fXsecTrueBinning.size()==im);
+        fXsecTrueBinning.push_back(mode_xsec_true_binning);
+      }
     }
   } // xsec binning specified independently
   else {
@@ -361,7 +363,8 @@ bool SingleSampleKineBinning::Read(string file)
        << "No xsec true binning specified. Using default true binning for xsec model.";
     fXsecTrueBinningUnique = fTrueSimpleBinningUnique;
     for (size_t im = 0 ; im <  fReactionModes.size(); im++) {
-      fXsecTrueBinning[im] = fTrueSimpleBinning [im];
+      assert(fXsecTrueBinning.size()==im);
+      fXsecTrueBinning.push_back(fTrueSimpleBinning [im]);
     }
   }
 
