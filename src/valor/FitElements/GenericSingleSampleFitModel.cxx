@@ -327,7 +327,6 @@ bool GenericSingleSampleFitModel::Read(util::ToyStream* stream)
    Option_t* read_opt = stream->GetVALORArrayFormat();
    string opt = (read_opt) ? read_opt : fDefVALORArrayFormat;
 
-   int isample = es.SampleIndex(fBeam,fSample);
    // Read in the MC templates
    if(opt.find("mct") != string::npos)
    {
@@ -918,7 +917,6 @@ bool GenericSingleSampleFitModel::Write(util::ToyStream* stream)
    Option_t* write_opt = stream->GetVALORArrayFormat();
    string opt = (write_opt) ? write_opt : fDefVALORArrayFormat;
 
-   int isample = es.SampleIndex(fBeam,fSample);
    // Write out the MC templates
    if(opt.find("mct") != string::npos)
    {
@@ -994,7 +992,6 @@ long GenericSingleSampleFitModel::StreamSize (Option_t* opt_in) const
   string opt = (opt_in) ? opt_in : fDefVALORArrayFormat;
   long size = 0;
 
-  int isample = es.SampleIndex(fBeam,fSample);
   if(opt.find("mct") != string::npos)
   {
     for(size_t imode = 0; imode < fReactionModes.size(); imode++)
