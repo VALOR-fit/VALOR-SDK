@@ -2502,7 +2502,6 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #else
         if(es.ExperimentName() == "T2K"){
           if(f < 0) {
-            Parameter param = ParameterPool::Instance()->GetParam(p);
             if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
           }
         }
@@ -2698,7 +2697,6 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #else
         if(es.ExperimentName() == "T2K"){
           if(noEt < 0) {
-            Parameter param = ParameterPool::Instance()->GetParam(p);
             if(param.SearchCategories("int")) { noEt = fRFL->GetForceNegWghtTo(); }
           }
         }
@@ -2860,7 +2858,6 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #else
           if(es.ExperimentName() == "T2K"){
             if(f < 0) {
-              Parameter param = ParameterPool::Instance()->GetParam(p);
               if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
             }
           }
@@ -3027,7 +3024,6 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 
           if(es.ExperimentName() == "T2K"){
             if(f < 0) {
-              Parameter param = ParameterPool::Instance()->GetParam(p);
               if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
             }
           }
@@ -3048,7 +3044,6 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 
           if(es.ExperimentName() == "T2K"){
             if(fnoEt < 0) {
-              Parameter param = ParameterPool::Instance()->GetParam(p);
               if(param.SearchCategories("int")) { fnoEt = fRFL->GetForceNegWghtTo(); }
             }
           }
