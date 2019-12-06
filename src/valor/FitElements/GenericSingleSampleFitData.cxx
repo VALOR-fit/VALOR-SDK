@@ -182,7 +182,7 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
       else if(reco_vars.size() == 2) {
         conv::KineSpace_t ks = util::KineSpaceFromKineVars(reco_vars);
         if(ks != conv::kspUndefined) {
-          TH2 *hob = util::binning::Make2DOptimisedHistogram(*fDataOb,binning,reco_vars);
+          TH2 *hob = util::binning::Make2DHistogram(*fDataOb,&reco_opt,reco_vars);
           if(hob) {
             TString hobname = TString::Format("%s_%s_%s",tag,"data_ob_rf",fName.c_str());
             hob->SetName(hobname.Data());
@@ -239,7 +239,7 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
         else if(reco_vars.size() == 2) {
           conv::KineSpace_t ks = util::KineSpaceFromKineVars(reco_vars);
           if(ks != conv::kspUndefined) {
-            TH2 *hsb = util::binning::Make2DSimpleHistogram(*fDataSb,binning,reco_vars);
+            TH2 *hsb = util::binning::Make2DHistogram(*fDataSb,&reco_smp,reco_vars);
             if(hsb) {
               TString hsbname = TString::Format("%s_%s_%s",tag,"data_sb_rf",fName.c_str());
               hsb->SetName(hsbname.Data());

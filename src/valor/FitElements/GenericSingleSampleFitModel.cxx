@@ -753,7 +753,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         else if(reco_vars.size() == 2) {
           conv::KineSpace_t ks = util::KineSpaceFromKineVars(reco_vars);
           if(ks != conv::kspUndefined) {
-            TH2 *hob = util::binning::Make2DOptimisedHistogram(*fPDFTotOb,binning,reco_vars);
+            TH2 *hob = util::binning::Make2DHistogram(*fPDFTotOb,&reco_opt,reco_vars);
             if(hob) {
               TString hobname = TString::Format("%s_%s_%s_%s",tag,"pdft_ob_rf",fName.c_str(),util::AsString(ks).c_str());
               hob->SetName(hobname.Data());
@@ -789,7 +789,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         else if(reco_vars.size() == 2) {
           conv::KineSpace_t ks = util::KineSpaceFromKineVars(reco_vars);
           if(ks != conv::kspUndefined) {
-            TH2 *hob = util::binning::Make2DSimpleHistogram(*fPDFTotSb,binning,reco_vars);
+            TH2 *hob = util::binning::Make2DHistogram(*fPDFTotSb,&reco_smp,reco_vars);
             if(hob) {
               TString hobname = TString::Format("%s_%s_%s_%s",tag,"pdft_sb_rf",fName.c_str(),util::AsString(ks).c_str());
               hob->SetName(hobname.Data());

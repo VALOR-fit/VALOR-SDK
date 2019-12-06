@@ -55,26 +55,11 @@ TH1D* Remap1D(const double* events, const KBCubHcmbEdge2Edge& b);
    Maps the events associated with the specified binning to a 2D
    ROOT-compatible histogram.
 
-   Note that the ROOT histogram produced by this function should be used only
-   for plotting purposes, as mapping from optimised to ROOT-compatible binning
-   is not guaranteed to conserve total event counts.
-
    \param events The spectrum corresponding to the optimised binning.
-   \param b The optimised binning.
-   \return A ROOT-compatible 2D histogram representing the optimised binning.
-*/
-TH2D* RemapOptimised2D(const double* events,
-      const KBCubHcmbMondrian& b);
-
-/**
-   Maps the events associated with the specified binning to a 2D
-   ROOT-compatible histogram.
-
-   \param events The spectrum corresponding to the optimised binning.
-   \param b The optimised binning.
+   \param b The binning.
    \return A ROOT-compatible 2D histogram representing the simple binning.
 */
-TH2D* RemapSimple2D(const double* events, const KBCubHcmbEdge2Edge& b);
+TH2D* Remap2D(const double* events, const VALORBinning* b);
 
 /**
    Returns a permutation of all of the bin indices within the specified
@@ -199,63 +184,11 @@ TH1D* Make1DHistogram(const VALORArray& v,
   return histo;
 }
 //________________________________________________________________________________________
-TH2D* Make2DOptimisedHistogram(const VALORArray& v,
-      const SingleSampleKineBinning& b, const std::vector<conv::KineVar_t>& ks)
+TH2D* Make2DHistogram(const VALORArray& v,
+      const VALORBinning* recoBinning, const std::vector<conv::KineVar_t>& ks)
 {
-  // Get the reco binning and associated kinematic variables for the VALORArray
-  const KBCubHcmbMondrian * recoBinning = dynamic_cast<const KBCubHcmbMondrian*>(b.RecoOptBinning());
   if (!recoBinning) {
-    LOG("UtlBinning", pERROR) << b.RecoOptBinning()->GetName()<<" is not a KBCubHcmbMondrian";
-     util::Die(-1);
-  }
-  const std::vector<conv::KineVar_t>& recoKv = recoBinning->KineVars();
-
-  // Check that the request kinematic variables match those for the VALORArray
-  // (This should use the contraction method in the future)
-  if(ks.size() != recoKv.size())
-  {
-     LOG("UtlBinning", pERROR) << "Expected " << recoKv.size() <<
-        " kinematic variables to plot, found " << ks.size();
-     util::Die(-1);
-  }
-  for(auto kv : ks)
-  {
-     if(std::find(recoKv.begin(), recoKv.end(), kv) == recoKv.end())
-     {  // Mismatch in variables
-        LOG("UtlBinning", pERROR) << "Kinematic variable " <<
-           util::AsString(kv) << " not found in template kinematic space " <<
-           util::AsString(recoBinning->KineSpace());
-        util::Die(-1);
-     }
-  }
-  // Integrate over the truth variables
-  unsigned int nbins = recoBinning->NBins();
-  double events[nbins];
-  for(unsigned int i = 0; i < nbins; ++i)
-  {
-     // Reco is always first dimension in VALORArray, so fix the bins in this
-     // dimension and integrate over the rest
-     events[i] = v.Integral(i, i);
-  }
-  
-  // Map the events to a ROOT compatible histogram
-  TH2D* histo = RemapOptimised2D(events, *recoBinning);
-  
-  if (std::fabs(v.Integral() - histo->Integral()) > conv::kASmallNum) {
-    LOG("UtlBinning",pFATAL) << "Histogram contents don't match VALORArray contents ("<<v.GetName()<<")";
-    util::Die(-1);
-  }
-
-  return histo;
-}
-//________________________________________________________________________________________
-TH2D* Make2DSimpleHistogram(const VALORArray& v,
-      const SingleSampleKineBinning& b, const std::vector<conv::KineVar_t>& ks)
-{
-  // Get the reco binning and associated kinematic variables for the VALORArray
-  const KBCubHcmbEdge2Edge * recoBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(b.RecoSmpBinning());
-  if (!recoBinning) {
-    LOG("UtlBinning", pERROR) << b.RecoSmpBinning()->GetName()<<" is not a KBCubHcmbEdge2Edge";
+    LOG("UtlBinning", pERROR) << "The input VALORBinning was invalid.";
     util::Die(-1);
   }
   const std::vector<conv::KineVar_t>& recoKv = recoBinning->KineVars();
@@ -289,7 +222,7 @@ TH2D* Make2DSimpleHistogram(const VALORArray& v,
   }
   
   // Map the events to a ROOT compatible histogram
-  TH2D* histo = RemapSimple2D(events, *recoBinning);
+  TH2D* histo = Remap2D(events, recoBinning);
   
   if (std::fabs(v.Integral() - histo->Integral()) > conv::kASmallNum) {
     LOG("UtlBinning",pFATAL) << "Histogram contents don't match VALORArray contents ("<<v.GetName()<<")";
@@ -434,22 +367,21 @@ TH1D* Remap1D(const double* events, const KBCubHcmbEdge2Edge& b)
   return histo;
 }
 
-TH2D* RemapOptimised2D(const double* events,
-      const KBCubHcmbMondrian& b)
+TH2D* Remap2D(const double* events, const VALORBinning* b)
 {
   // Find all bin edges in each dimension
   std::set<double> dim1Edges;
   std::set<double> dim2Edges;
-  for(unsigned int i = 0; i < b.NBins(); ++i)
+  for(unsigned int i = 0; i < b->NBins(); ++i)
   {
      // Minimum edge of first dimension for bin i
-     dim1Edges.insert(b.BinMinimum(i, 0));
+     dim1Edges.insert(b->BinMinimum(i, 0));
      // Maximum edge of first dimension for bin i
-     dim1Edges.insert(b.BinMaximum(i, 0));
+     dim1Edges.insert(b->BinMaximum(i, 0));
      // Minimum edge of second dimension for bin i
-     dim2Edges.insert(b.BinMinimum(i, 1));
+     dim2Edges.insert(b->BinMinimum(i, 1));
      // Maximum edge of second dimension for bin i
-     dim2Edges.insert(b.BinMaximum(i, 1));
+     dim2Edges.insert(b->BinMaximum(i, 1));
   }
   // No need to sort or remove duplicate edges as both properties are
   // guaranteed by set
@@ -473,54 +405,7 @@ TH2D* RemapOptimised2D(const double* events,
      for(int j = 1; j <= ybins; ++j)
      {
         coords[1] = histo->GetYaxis()->GetBinCenter(j);
-        int index = b.FindBin(coords);
-        histo->SetBinContent(i, j, events[index]);
-     }
-  }
-
-  return histo;
-}
-
-TH2D* RemapSimple2D(const double* events,
-      const KBCubHcmbEdge2Edge& b)
-{
-  // Find all bin edges in each dimension
-  std::set<double> dim1Edges;
-  std::set<double> dim2Edges;
-  for(unsigned int i = 0; i < b.NBins(); ++i)
-  {
-     // Minimum edge of first dimension for bin i
-     dim1Edges.insert(b.BinMinimum(i, 0));
-     // Maximum edge of first dimension for bin i
-     dim1Edges.insert(b.BinMaximum(i, 0));
-     // Minimum edge of second dimension for bin i
-     dim2Edges.insert(b.BinMinimum(i, 1));
-     // Maximum edge of second dimension for bin i
-     dim2Edges.insert(b.BinMaximum(i, 1));
-  }
-  // No need to sort or remove duplicate edges as both properties are
-  // guaranteed by set
-  // Create the Root histogram
-  int nDim1Bins = dim1Edges.size() - 1;
-  double dim1BinEdges[nDim1Bins + 1];
-  std::copy(dim1Edges.begin(), dim1Edges.end(), dim1BinEdges);
-  int nDim2Bins = dim2Edges.size() - 1;
-  double dim2BinEdges[nDim2Bins + 1];
-  std::copy(dim2Edges.begin(), dim2Edges.end(), dim2BinEdges);
-  TH2D* histo = new TH2D("histo", "histo", nDim1Bins, dim1BinEdges,
-        nDim2Bins, dim2BinEdges);
-
-  // Get the number of bins from our ROOT histogram
-  int xbins = histo->GetNbinsX();
-  int ybins = histo->GetNbinsY();
-  std::vector<double> coords = {0.0, 0.0};
-  for(int i = 1; i <= xbins; ++i)
-  {
-     coords[0] = histo->GetXaxis()->GetBinCenter(i);
-     for(int j = 1; j <= ybins; ++j)
-     {
-        coords[1] = histo->GetYaxis()->GetBinCenter(j);
-        int index = b.FindBin(coords);
+        int index = b->FindBin(coords);
         histo->SetBinContent(i, j, events[index]);
      }
   }
