@@ -233,24 +233,45 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
   if (util::NodeExists(xml,root_node,"splines/stored_as") && util::NodeExists(xml,root_node,"splines/array_pattern")) {
     spl_stored_as     = util::XML2String(xml,root_node,"splines/stored_as");
     spl_array_pattern = util::XML2String(xml,root_node,"splines/array_pattern");
+    LOG("RFL",pDEBUG) << "Splines stored as: [" << spl_stored_as << "]";
+    LOG("RFL",pDEBUG) << "Splines array pattern: [" << spl_array_pattern << "]";
   }
+  else {
+    LOG("RFL",pDEBUG) << "Reading individually stored splines.";
+  }
+
+
   if (util::NodeExists(xml,root_node,"splines/method")) {
     std::string spline_eval_type_str  = util::XML2String(xml,root_node,"splines/method");
     if(spline_eval_type_str != "") { fSplineWghtMethod = util::SplEvalTypeFromString(spline_eval_type_str); }
     else                           { fSplineWghtMethod = conv::kSplEvalCurrVal; }
   }
+  else {
+    fSplineWghtMethod = conv::kSplEvalCurrVal;
+    LOG("RFL",pWARN) << "Spline evaluation method not specified, defaulting to ["
+                     << util::AsString(fSplineWghtMethod) << "]";
+  }
+  LOG("RFL",pDEBUG) << "Spline evaluation method: [" << util::AsString(fSplineWghtMethod) << "]";
+
   if (util::NodeExists(xml,root_node,"splines/allow_negative")) {
     fAllowNegativeSplines = util::XML2Bool(xml,root_node,"splines/allow_negative");
+    LOG("RFL",pDEBUG) << "Allowing splines to go negative? " << fAllowNegativeSplines;
     if (util::NodeExists(xml,root_node,"splines/set_neg_wght_to")) {
       fForceNegWghtTo = util::XML2Dbl(xml,root_node,"splines/set_neg_wght_to");
+      LOG("RFL",pDEBUG) << "  ..but forcing negative weights to " << fForceNegWghtTo;
     }
   }
+
   if (util::NodeExists(xml,root_node,"splines/within_limits")) {
     use_spline_limits = util::XML2Bool(xml,root_node,"splines/within_limits");
+    LOG("RFL",pDEBUG) << "Forcing splines to stay within their limits? " << use_spline_limits;
   }
+
   if (util::NodeExists(xml,root_node,"splines/sort_knot_order")) {
     reorder_out_of_order_splines = util::XML2Bool(xml,root_node,"splines/sort_knot_order");
+    LOG("RFL",pDEBUG) << "Reorder out-of-order splines? " << reorder_out_of_order_splines;
   }
+
   if (util::NodeExists(xml,root_node,"splines/type")) {
     std::string type_str = util::XML2String(xml,root_node,"splines/type");
     type_str = util::ToLowerCase(util::RemoveAllWhitespace(type_str));
@@ -267,6 +288,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
      util::Die(-1); return false;
     }
   }
+  LOG("RFL",pDEBUG) << "Spline are of type: [" << util::AsString(fSplineType) << "]";
 
   if (!spl_file_pattern.size()) {
     LOG("RFL",pFATAL) << "Failed to open spline filename pattern from XML.";
