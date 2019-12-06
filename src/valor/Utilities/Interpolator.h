@@ -75,6 +75,10 @@ class Interpolator {
     std::string fTitle;
     bool fUseLimits;
 };
+
+  std::string        AsString                  (Interpolator::Type t, Option_t * opt=0);
+  std::string        InterpolatorTypeAsString  (Interpolator::Type t, Option_t * opt=0); // Alias for above
+
 #else
 class Interpolator : public TObject {};
 #endif //__VALOR_FMWK_GSL_ENABLED__
