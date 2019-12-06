@@ -154,17 +154,6 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   skip_spline_read = true;
 #endif
   
-  bool any_splines_needed = false;
-  // Check there are actually any splines needed for this sample/parameterisation
-  for (int im = 0 ; im < conv::kNReacModes ; im++) {
-    if (fSplineParamsAppliedTo[im].size()) {
-      any_splines_needed = true;
-      break;
-    }
-  }
-
-  if (!any_splines_needed) {skip_spline_read = true;}
-  
   // Set up the initial XML reader
   LOG("GenericSingleSampleFitModel", pNOTICE) 
     << "Reading configuration from XML file [" << file << "]";
@@ -305,6 +294,21 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   // Release memory
   xml->FreeDoc(xmldoc);
   delete xml;
+
+  bool any_splines_needed = false;
+  // Check there are actually any splines needed for this sample/parameterisation
+  for (int im = 0 ; im < conv::kNReacModes ; im++) {
+    if (fSplineParamsAppliedTo[im].size()) {
+      any_splines_needed = true;
+      break;
+    }
+  }
+
+  if (!any_splines_needed) {
+    skip_spline_read = true;
+    LOG("GenericSingleSampleFitModel", pINFO)
+      << "Could not find any splines, so skipping spline read";
+  }
   
   if (!skip_spline_read) {
     if (! this->FillSplines(file,opt)) { return false; }
@@ -2747,6 +2751,10 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
       double untuned = fSystematics->UntunedValue(p);
       const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
+      if(spline_eval_type == conv::kSplEvalUndefined) {
+        LOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
+        util::Die(-1);
+      }
       VALORArrayBin splbin;
       splbin.bin3 = ip;
 
@@ -3085,6 +3093,10 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
         double untuned = fSystematics->UntunedValue(p);
         const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
+        if(spline_eval_type == conv::kSplEvalUndefined) {
+          LOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
+          util::Die(-1);
+        }
         VALORArrayBin splbin;
         splbin.bin3 = ip;
 
