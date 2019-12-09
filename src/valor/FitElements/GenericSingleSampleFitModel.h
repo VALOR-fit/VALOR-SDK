@@ -300,6 +300,8 @@ private:
   bool fBaselineSplinesFilled;
   // This vector will only include initial flavour, not reaction type
   std::vector<VALORArrayP*> fBaselineSplines;
+  // and how many places we evaluate them in. Should become configurable later
+  int fNSplineEvalPoints;
   
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices

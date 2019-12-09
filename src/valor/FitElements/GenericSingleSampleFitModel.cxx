@@ -87,6 +87,7 @@ GenericSingleSampleFitModel::GenericSingleSampleFitModel() :
   fOwnerOfSystematics(false),
   fGetBaselineFromSplines (false),
   fBaselineSplinesFilled  (false),
+  fNSplineEvalPoints(40), // make this an option
   fApplyUniverseVariations(false),
   fFirstUniverseToSave(0),
   fLastUniverseToSave (0),
@@ -138,13 +139,21 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   fName = util::nm::MdlName(fDetector, fBeam, fSample, fKSp);
   
   TString ts_opt(opt);
-  bool force_use_dst    = ts_opt.Contains("forcedst");
-  bool skip_spline_read = ts_opt.Contains("nosplines");
-  bool skip_mc_read     = ts_opt.Contains("nomc");
+  bool force_use_dst      = ts_opt.Contains("forcedst");
+  bool skip_spline_read   = ts_opt.Contains("nosplines");
+  bool skip_mc_read       = ts_opt.Contains("nomc");
+  bool no_spline_baseline = ts_opt.Contains("fixedbaseline");
 #ifdef SPLINE_WEIGHTS_ARE_ONE
   skip_spline_read = true;
 #endif
 
+  if (fDetector == conv::kdSBND ||
+      fDetector == conv::kdSBNICARUS ||
+      fDetector == conv::kdSBNuBooNE) {
+    fGetBaselineFromSplines = true;
+  }
+  if (no_spline_baseline) {fGetBaselineFromSplines = false;}
+  
   // Set up the initial XML reader
   LOG("GenericSingleSampleFitModel", pNOTICE) 
     << "Reading configuration from XML file [" << file << "]";
@@ -1434,7 +1443,7 @@ void GenericSingleSampleFitModel::Clean(void)
 {
   LOG("GenericSingleSampleFitModel",pDEBUG) << "Cleaning-up...";
 
-  for(size_t imode = 0; imode < conv::kNReacModes; imode++) {
+  for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
 
     if(!fMCTNullSb[imode]) {
       fMCTNullSb[imode] = true;
@@ -1917,7 +1926,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     if (fill_baseline_splines_here) {
       //~ conv::NuFlavour_t init_flav = util::ReacModeToInitFlavor(m);
       int baseline_bin = TMath::FloorNint(n_baseline_knots[imode]*(baseline-min_baseline)/(max_baseline-min_baseline));
-      baseline_arrays[imode]->SetEntry(curr_wght,true_bin,baseline_bin);
+      baseline_arrays[imode]->AddToEntry(this_entry,true_bin,baseline_bin);
     }
   }//iev
   
@@ -3440,6 +3449,13 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
   double p_nuebar_numubar  = -1;
   double p_nuebar_nutaubar = -1;
   
+  std::vector<double *> all_probs = {
+    &p_numu_numu      , &p_numu_nue      , &p_numu_nutau      ,
+    &p_numubar_numubar, &p_numubar_nuebar, &p_numubar_nutaubar,
+    &p_nue_numu       , &p_nue_nue       , &p_nue_nutau       ,
+    &p_nuebar_numubar , &p_nuebar_nuebar , &p_nuebar_nutaubar
+  };
+  
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
   
@@ -3491,20 +3507,61 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       
       }
       else if (hypid == kHypOscSterileEff) {
-        double baseline = util::Baseline(fBeam,fDetector);
-        double lOverE = baseline / Etrue;
-        p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numu_nutau      = 0.;
-        p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numubar_nutaubar= 0.;
-        p_nue_nue         = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_nue_numu        = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_nue_nutau       = 0;
-        p_nuebar_nuebar   = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_nuebar_numubar  = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_nuebar_nutaubar = 0;
+        if (fGetBaselineFromSplines) {
+          void * tmp_spl = (void*)fBaselineSplines[imode]->GetEntry(itrue);
+          //~ const util::Interpolator * variable_baseline_spline = static_cast<util::Interpolator*>(tmp_spl);
+          //~ double low_baseline_limit  = variable_baseline_spline->Xmin();
+          //~ double high_baseline_limit = variable_baseline_spline->Xmax();
+          const TSpline * variable_baseline_spline = static_cast<TSpline*>(tmp_spl);
+          double low_baseline_limit  = variable_baseline_spline->GetXmin();
+          double high_baseline_limit = variable_baseline_spline->GetXmax();
+          double baseline_interval = (high_baseline_limit-low_baseline_limit)/(fNSplineEvalPoints-1);
+          double event_rate_sum = 0.;
+          for (double * prob : all_probs) { *prob = 0.;}
+          
+          for (int ibl = 0 ; ibl < fNSplineEvalPoints; ibl++) {
+            double baseline = low_baseline_limit+(ibl*baseline_interval);
+            double event_rate_at_baseline = std::max(0.,variable_baseline_spline->Eval(baseline));
+            event_rate_sum+=event_rate_at_baseline;
+            double lOverE = baseline / Etrue;
+            p_numu_numu        += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_numu_nue         += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_numu_nutau       += event_rate_at_baseline * 0.;
+            p_numubar_numubar  += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_numubar_nuebar   += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_numubar_nutaubar += event_rate_at_baseline * 0.;
+            p_nue_nue          += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_nue_numu         += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_nue_nutau        += event_rate_at_baseline * 0;
+            p_nuebar_nuebar    += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_nuebar_numubar   += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_nuebar_nutaubar  += event_rate_at_baseline * 0;
+          } // ibl
+          for (double * prob : all_probs) {
+            if (std::fabs(event_rate_sum)<conv::kAVerySmallNum) {
+              *prob = 0;
+            }
+            else {
+              *prob /= event_rate_sum;
+            }
+          }
+        } //variable_baseline
+        else {
+          double baseline = util::Baseline(fBeam,fDetector);
+          double lOverE = baseline / Etrue;
+          p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_numu_nutau      = 0.;
+          p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_numubar_nutaubar= 0.;
+          p_nue_nue         = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_nue_numu        = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_nue_nutau       = 0;
+          p_nuebar_nuebar   = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_nuebar_numubar  = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_nuebar_nutaubar = 0;
+        }
       }
         
 
@@ -4499,6 +4556,10 @@ util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_na
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::WriteBaselineSplinesToFile(TFile * f) const
 {
+  if (!fBaselineSplinesFilled) {
+    LOG("GenericSingleSampleFitModel",pFATAL) << fName <<" trying to write splines without them filled.";
+    util::Die(-1); return;
+  }
   for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
     ReacMode_t m = fReactionModes[im];
     int n_true_bins = fBinning->TrueSmpBinning(m)->NBins();
