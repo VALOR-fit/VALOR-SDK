@@ -124,15 +124,18 @@ public:
   // Calculate the OB manually from the content of the simple bins. Can be used to verify the spectra are the same for SB/OB
   void UpdateObservableBinningFromSimple (Option_t * opt = 0);
 
-    // Add information on which systematic universes to read in if they're coming from the DST.
-    // Must be called *before* Read() since these are event-by-event
-    void SetUniverseRangeToRead(size_t first, size_t last);
-    void SetUniverseParameterToRead(const std::string & param_name);
-    void ResetUniversesToRead();
-
-    void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
-    void ResetSystematicVariationIDs();
-
+  // Add information on which systematic universes to read in if they're coming from the DST.
+  // Must be called *before* Read() since these are event-by-event
+  void SetUniverseRangeToRead(size_t first, size_t last);
+  void SetUniverseParameterToRead(const std::string & param_name);
+  void ResetUniversesToRead();
+  
+  void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
+  void ResetSystematicVariationIDs();
+  
+  // If we've made baseline splines, we should allow the user to cache them
+  void WriteBaselineSplinesToFile(TFile * f) const;
+  
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
@@ -291,7 +294,13 @@ private:
   // Pointer to our systematics
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;
-
+  
+  // Splines to handle implementation of variable baseline if necessary
+  bool fGetBaselineFromSplines;
+  bool fBaselineSplinesFilled;
+  // This vector will only include initial flavour, not reaction type
+  std::vector<VALORArrayP*> fBaselineSplines;
+  
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices
   bool fApplyUniverseVariations;
