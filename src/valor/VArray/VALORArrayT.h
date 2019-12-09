@@ -170,6 +170,7 @@ typedef VALORArrayT<float     > VALORArrayF;
 typedef VALORArrayT<int       > VALORArrayI;
 typedef VALORArrayT<Long64_t  > VALORArrayL;
 typedef VALORArrayT<ULong64_t > VALORArrayUL;
+typedef VALORArrayT<intptr_t >  VALORArrayP;
 
 } //valor
 

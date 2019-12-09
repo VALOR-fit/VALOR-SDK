@@ -848,4 +848,5 @@ template class valor::VALORArrayT<float>;
 template class valor::VALORArrayT<int>;
 template class valor::VALORArrayT<Long64_t>;
 template class valor::VALORArrayT<ULong64_t>;
+template class valor::VALORArrayT<intptr_t>;
 //________________________________________________________________________________________
