@@ -85,6 +85,8 @@ GenericSingleSampleFitModel::GenericSingleSampleFitModel() :
   fRFL(NULL),
   fSystematics(NULL),
   fOwnerOfSystematics(false),
+  fGetBaselineFromSplines (false),
+  fBaselineSplinesFilled  (false),
   fApplyUniverseVariations(false),
   fFirstUniverseToSave(0),
   fLastUniverseToSave (0),
@@ -1012,6 +1014,8 @@ void GenericSingleSampleFitModel::Init(void)
   fSkipOscProbApplyCheck = false;
 
   fSystematics = 0;
+  
+  fGetBaselineFromSplines = false;
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::Book(void)
@@ -1386,6 +1390,20 @@ void GenericSingleSampleFitModel::Clean(void)
     delete pairpair.second;
   }
   
+  for (VALORArrayP * va : fBaselineSplines) {
+    if (!va) {continue;}
+    for (int i = 0 ; i < va->GetSize(); i++) {
+      void * o = (void*)va->GetArray()[i];
+      if (o) {
+        delete static_cast<TObject*>(o);
+      }
+    }
+    delete va;
+  }
+  fBaselineSplines.clear();
+  fBaselineSplinesFilled  = false;
+  fGetBaselineFromSplines = false;
+  
   this->ResetSystematicVariationIDs();
   this->ResetUniversesToRead();
   
@@ -1425,7 +1443,6 @@ void GenericSingleSampleFitModel::Zero(void)
   }//imode
 }
 //________________________________________________________________________________________
-//________________________________________________________________________________________
 void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 {
   
@@ -1439,8 +1456,53 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   LOG("GenericSingleSampleFitModel",pDEBUG) 
     << "Filling-in MC templates for beam configuration: " << util::AsString(fBeam);
 
-  if(!t) return;
+  if(!t) {
+    LOG("GenericSingleSampleFitModel",pFATAL)<<fName<<" Null DST";
+    util::Die(-1) ; return;
+  }
   
+  
+  Long_t nev = t->GetEntries();
+  LOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
+  
+  // Turn off all the branches by default
+  t->SetBranchStatus("*",0);
+  
+  bool any_bad_status = false;
+  
+  // If we're saving the baselines, we need that branch
+  // and to calculate limits for it
+  bool fill_baseline_splines_here = fGetBaselineFromSplines && !fBaselineSplinesFilled;
+  std::vector<int> n_baseline_knots; // per mode, defaults to Nbins_true
+  for (conv::ReacMode_t m : fReactionModes) {
+    n_baseline_knots.push_back(fBinning->TrueSmpBinning(m)->NBins());
+  }
+  double baseline = conv::kBadResult;
+  double min_baseline =  9E99;
+  double max_baseline = -9E99;
+  std::vector<VALORArrayD*> baseline_arrays;
+  if (fill_baseline_splines_here) {
+    t->SetBranchStatus("baseline",1);
+    bool bstat_baseline = t->SetBranchAddress("baseline",&baseline);
+    any_bad_status = any_bad_status || bstat_baseline;
+    // and do a quick loop to calculate the baseline limits
+    // Note - does not cut on mode etc (or detector/baseline - could be weird if using detector/beam inputs from one file)
+    for(Long_t iev = 0; iev < nev; iev++) {
+      t->GetEntry(iev);
+      min_baseline = std::min(min_baseline,baseline);
+      max_baseline = std::max(max_baseline,baseline);
+    }
+    LOG("GenericSingleSampleFitModel",pNOTICE) << fName<<" got baseline range of ("
+      <<min_baseline<<","<<max_baseline<<")";
+      
+    // Make the arrays we need
+    for (size_t im = 0 ; im<fReactionModes.size(); im++) {
+      conv::ReacMode_t m = fReactionModes[im];
+      int nbins_true = fBinning->TrueSmpBinning(m)->NBins();
+      baseline_arrays.push_back(new VALORArrayD(nbins_true,n_baseline_knots[im]));
+      fBaselineSplines.push_back(new VALORArrayP(nbins_true));
+    }
+  }
   // Get a list of all the kinematic variables we care about
   const std::vector<conv::KineVar_t> & kinevars = fBinning->KineVars();
 
@@ -1449,9 +1511,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   int    reac_mode     = -1;
   double wght          = 1 ; //conv::kBadResult;
   double wght_pot      = conv::kBadResult;
-  
-  // Turn off all the branches by default
-  t->SetBranchStatus("*",0);
   
   std::map<KineVar_t,double> kinematics;
   
@@ -1481,7 +1540,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   t->SetBranchAddress("wght"       , &wght);
   t->SetBranchAddress("wght_pot"   , &wght_pot);
   
-  bool any_bad_status = (bstat_sample || bstat_beam || bstat_reac_mode);
+  any_bad_status = any_bad_status || (bstat_sample || bstat_beam || bstat_reac_mode);
   
   for(const conv::KineVar_t & kv : kinevars) {
     const char * branchname = kinematic_branch_names[kv].c_str();
@@ -1489,7 +1548,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     bool bstat = t->SetBranchAddress(branchname,&kinematics[kv]);
     any_bad_status = any_bad_status || bstat;
   }
-
+    
   if (any_bad_status) {
     LOG("GenericSingleSampleFitModel",pWARN)<<"MiniDST branches not found - giving up";
     util::Die(-1);
@@ -1528,9 +1587,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       util::Die(-1) ; return;
     }
   }
-  
-  Long_t nev = t->GetEntries();
-  LOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
   
   double tree_weight = t->GetWeight();
   
@@ -1746,6 +1802,13 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     fMCTSysSb [imode]->SetEntry(curr_wght_sb, reco_bin_sb, true_bin);
     fMCTFinSb [imode]->SetEntry(curr_wght_sb, reco_bin_sb, true_bin);
     fMCStatSb [imode]->SetEntry(           1, reco_bin_sb, true_bin);
+    
+    // And add it to the relevant baseline bin if we're making splines here
+    if (fill_baseline_splines_here) {
+      //~ conv::NuFlavour_t init_flav = util::ReacModeToInitFlavor(m);
+      int baseline_bin = TMath::FloorNint(n_baseline_knots[imode]*(baseline-min_baseline)/(max_baseline-min_baseline));
+      baseline_arrays[imode]->SetEntry(curr_wght,true_bin,baseline_bin);
+    }
   }//iev
   
   // If we're storing the weights from the universes, here we should
@@ -1774,6 +1837,26 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       }//modes
     }//universe
   }//param
+  
+  
+  // If we need to make baseline splines, do that now
+  if (fill_baseline_splines_here) {
+    for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
+      ReacMode_t m = fReactionModes[im];
+      const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
+      const int n_true_bins = true_sb->NBins();
+      for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
+        double * y = &(baseline_arrays[im]->GetEntryRef(true_bin,0));
+        TSpline3 * spl = new TSpline3("",min_baseline,max_baseline,y,n_baseline_knots[im]);
+        fBaselineSplines[im]->SetEntry((intptr_t)spl,true_bin);
+      }
+    }
+    fBaselineSplinesFilled = true;
+  }
+  // And let's clean up those arrays from earlier if we made them
+  for (VALORArray * va : baseline_arrays) {
+    if (va) {delete va;}
+  }
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::ReadTune(
@@ -4207,5 +4290,22 @@ void GenericSingleSampleFitModel::ResetUniversesToRead()
 const std::string & GenericSingleSampleFitModel::GetLastConfigFileRead() const
 {
   return fConfigFileRead;
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::WriteBaselineSplinesToFile(TFile * f) const
+{
+  for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
+    ReacMode_t m = fReactionModes[im];
+    int n_true_bins = fBinning->TrueSmpBinning(m)->NBins();
+    for (int itrue = 0 ; itrue < n_true_bins ; itrue++) {
+      //~ util::Interpolator * spl_vf = fBaselineSplines[im].GetEntry(itrue);
+      //~ TSpline3 spl = spl_vf->AsTSpline3();
+      const void * addr = (void*)fBaselineSplines[im]->GetEntry(itrue);
+      const TSpline * spl = static_cast<const TSpline*>(addr);
+      
+      TString spline_name = TString::Format("baseline_%s_%s_%d",fName.c_str(),util::AsString(m).c_str(),itrue);
+      f->WriteObject(spl,spline_name.Data());
+    }
+  }
 }
 //________________________________________________________________________________________
