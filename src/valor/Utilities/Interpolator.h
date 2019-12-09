@@ -19,6 +19,7 @@
 #define valor_interpolator_h
 
 #include "TSpline.h"
+#include "TGraph.h"
 #include "valor/Conventions/Build.h"
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
@@ -61,6 +62,8 @@ class Interpolator {
     void SetName (std::string s) { fName  = s; }
     void SetTitle(std::string s) { fTitle = s; }
     void SetUseLimits(bool u);
+    
+    TGraph AsTGraph(int n_points = 40) const;
 
   private:
 
