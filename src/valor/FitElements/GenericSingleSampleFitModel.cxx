@@ -3346,6 +3346,17 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
           double low_baseline_limit  = variable_baseline_spline->GetXmin();
           double high_baseline_limit = variable_baseline_spline->GetXmax();
           double baseline_interval = (high_baseline_limit-low_baseline_limit)/(fNSplineEvalPoints-1);
+          
+          // do a quick check that our spline looks reasonable
+          double default_baseline = util::Baseline(fBeam,fDetector);
+          if (default_baseline < low_baseline_limit*0.8 ||
+              default_baseline > high_baseline_limit*1.2) {
+            LOG("GenericSingleSampleFitModel",pFATAL) <<fName
+              <<" bad baseline spline - has limits of "<<low_baseline_limit
+              <<" to "<<high_baseline_limit<<" km when expecting something around "<<default_baseline<<" km";
+              util::Die(-1); return;
+          }
+          
           double event_rate_sum = 0.;
           for (double * prob : all_probs) { *prob = 0.;}
           
