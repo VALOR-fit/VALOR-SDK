@@ -844,7 +844,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       for (const conv::KineVar_t kv : reco_vars) {
         conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
         if (ks == conv::kspUndefined) {continue;}
-        TH1 * hob = util::binning::Make1DHistogram(*fPDFCompOb[imode],binning,ks,false, m);
+        TH1 * hob = util::binning::Make1DHistogram(*fPDFCompOb[imode],binning,ks,false);
         if(hob) {
           TString hobname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfcs_ob_rf",
             fName.c_str(),util::AsString(kv).c_str(),util::AsString(m).c_str());
@@ -853,7 +853,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         }
 
         if (write_sb) {
-          TH1 * hsb = util::binning::Make1DHistogram(*fPDFCompSb[imode],binning,ks,true, m);
+          TH1 * hsb = util::binning::Make1DHistogram(*fPDFCompSb[imode],binning,ks,true);
           if(hsb) {
             TString hsbname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfcs_sb_rf",
               fName.c_str(),util::AsString(kv).c_str(),util::AsString(m).c_str());
