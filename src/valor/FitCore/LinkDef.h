@@ -8,6 +8,7 @@
 
 #pragma link C++ namespace valor;
 #pragma link C++ namespace valor::util;
+#pragma link C++ namespace valor::util::oscillation;
 
 #pragma link C++ class valor::CompoundFitElements;
 #pragma link C++ class valor::SingleSampleFitModelABC;
