@@ -56,6 +56,14 @@ namespace plotting
    void Plot(TH1D* histogram, const std::string& title,
          const std::string& xTitle, const std::string yTitle,
          const std::string& filename);
+
+   /***
+    * Makes a custom palette for 2D colour plots
+    *
+    * @param palette_name
+    * @return true = palette set successfully
+    */
+   bool SetupCustomPalette(std::string palette_name = "valor_inverted_dark_body_radiator");
 }
 }
 }
