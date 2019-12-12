@@ -9,7 +9,6 @@
 
 #pragma link C++ namespace valor;
 #pragma link C++ namespace valor::conv;
-#pragma link C++ namespace valor::conv::duneosc;
 #pragma link C++ namespace valor::util;
 #pragma link C++ namespace valor::util::nm;
 
