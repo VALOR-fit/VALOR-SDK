@@ -14,7 +14,7 @@ ChangeLog:
 
 #include <TROOT.h>
 
-#include "valor/Conventions/PhysicalParameterLimits.h"
+#include "valor/FitCore/PhysicalParameterLimits.h"
 #include "valor/Conventions/ParameterPool.h"
 #include "valor/Utilities/NameRegistry.h"
 
