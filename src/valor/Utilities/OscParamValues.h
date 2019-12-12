@@ -23,7 +23,6 @@
 
 // fmwk
 #include "valor/Conventions/PhysParamId.h"
-#include "valor/FitCore/FitParamList.h"
 
 namespace valor {
 namespace conv {

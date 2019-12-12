@@ -7,8 +7,8 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 //________________________________________________________________________________________
 
 //fmw
+#include "valor/Utilities/OscParamValues.h"
 #include "valor/Messenger/Messenger.h"
-#include "valor/Conventions/OscParamValues.h"
 #include "valor/Conventions/NuOscMixParam.h"
 #include "valor/Conventions/NuOscDmsqScheme.h"
 #include "valor/Conventions/Opt.h"
