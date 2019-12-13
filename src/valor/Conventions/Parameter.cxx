@@ -42,6 +42,7 @@ Parameter::Parameter(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePoint
   ReadCategories();
   fApply = util::ReadApplyMaskAll(xml, fParamNode);
   ReadLimits();
+  ReadFitInfo();
   LOG("FitInputs", pINFO) << "Successfully read parameter \'" << GetName() << "\'";
 }
 //________________________________________________________________________________________
@@ -63,6 +64,13 @@ void Parameter::Init(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePoint
   fType              = kSystUndefined;
   fHasLimits         = false;
   fHasKinematicRange = false;
+  fInit              = 1.;
+  fError             = 1.;
+  fRangeMode         = "sigma";
+  fStepSize          = 1.;
+  fIsFixed           = false;
+  fIsNuisance        = true;
+  fDoMarginalise     = true;
 
   fxml = xml;
   fParamNode = param_node;
@@ -210,6 +218,87 @@ void Parameter::ReadLimits()
   }
 }
 //________________________________________________________________________________________
+void Parameter::ReadFitInfo()
+{
+  // Initial value
+  if(util::IsNodeSpecified(fxml, fParamNode, "init")) {
+    fInit = util::XML2Dbl(fxml, fParamNode, "init");
+  }
+  else {
+    // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
+    // that indicates this value can be overwritten
+    fInit = fOverwriteFlag;
+  }
+
+  // Error value
+  if(util::IsNodeSpecified(fxml, fParamNode, "error")) {
+    fError = util::XML2Dbl(fxml, fParamNode, "error");
+  }
+  else {
+    // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
+    // that indicates this value can be overwritten
+    fError = fOverwriteFlag;
+  }
+
+  // Range mode
+  if(util::IsNodeSpecified(fxml, fParamNode, "range_mode")) {
+    fRangeMode = util::XML2String(fxml, fParamNode, "range_mode");
+  }
+  else {
+    fRangeMode = fDefRangeMode;
+    LOG("FitInputs", pINFO) << "No fit info 'range' node was found, setting to \'" << fRangeMode <<"\'";
+  }
+
+  // Range
+  std::pair<double,double> temp_pair;
+  if(util::IsNodeSpecified(fxml, fParamNode, "range")) {
+    fRange = util::XML2DblDblPair(fxml, fParamNode, "range");
+  }
+  else {
+    // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
+    // that indicates this value can be overwritten
+    fRange = std::make_pair(fOverwriteFlag, fOverwriteFlag);
+  }
+
+  // Step size
+  if(util::IsNodeSpecified(fxml, fParamNode, "step")) {
+    fStepSize = util::XML2Dbl(fxml, fParamNode, "step");
+  }
+  else {
+    // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
+    // that indicates this value can be overwritten
+    fStepSize = fOverwriteFlag;
+  }
+
+  // Is fixed?
+  if(util::IsNodeSpecified(fxml, fParamNode, "fixed")) {
+    fIsFixed = util::XML2Bool(fxml, fParamNode, "fixed");
+  }
+  else {
+    fIsFixed = fDefIsFixed;
+    LOG("FitInputs", pINFO) << "No fit info 'fixed' node was found, setting to \'" << fIsFixed <<"\'";
+  }
+
+  // Is nuisance?
+  if(util::IsNodeSpecified(fxml, fParamNode, "nuisance")) {
+    fIsNuisance = util::XML2Bool(fxml, fParamNode, "nuisance");
+  }
+  else {
+    fIsNuisance = fDefIsNuisance;
+    LOG("FitInputs", pINFO) << "No fit info 'nuisance' node was found, setting to \'" << fIsNuisance <<"\'";
+  }
+
+  // Marginalise?
+  if(util::IsNodeSpecified(fxml, fParamNode, "marginalise")) {
+    fDoMarginalise = util::XML2Bool(fxml, fParamNode, "marginalise");
+  }
+  else {
+    fDoMarginalise = fDefDoMarg;
+    LOG("FitInputs", pINFO) << "No fit info 'marginalise' node was found, setting to \'" << fDoMarginalise <<"\'";
+  }
+
+}
+//________________________________________________________________________________________
 void Parameter::Print(std::ostream & stream) const
 {
   const vector<string>    & cats     = GetCategories();
@@ -245,6 +334,15 @@ void Parameter::Print(std::ostream & stream) const
   stream << "        True nu final flavour = " << util::FlavMaskAsString         (fApply.flav_final) << "\n";
   stream << "        Nuclear target = "        << util::NuclearTargetMaskAsString(fApply.target)     << "\n";
   stream << "    Physical limits = ["          << limits.first << ", " << limits.second << "]"       << "\n";
+  stream << "    Fit info:\n";
+  stream << "        Initial value = " << fInit                                 << "\n";
+  stream << "        error = "         << fError                                << "\n";
+  stream << "        range mode = "    << fRangeMode                            << "\n";
+  stream << "        range = ["        << fRange.first << ", " << fRange.second << "]\n";
+  stream << "        step size = "     << fStepSize                             << "\n";
+  stream << "        fixed? "          << fIsFixed                              << "\n";
+  stream << "        nuisance? "       << fIsNuisance                           << "\n";
+  stream << "        marginalise? "    << fDoMarginalise                        << "\n";
   stream << std::endl;
 }
 //________________________________________________________________________________________
@@ -294,5 +392,37 @@ double Parameter::GetNearestPhysicalValue(double curr_val) const
   if (this->IsWithinLimits(curr_val)) {return curr_val;}
   if (curr_val < fLimits.first)       {return fLimits.first;}
   return fLimits.second;
+}
+//________________________________________________________________________________________
+void Parameter::SetDefaultInitValue(void)
+{
+  fInit = fDefInit;
+  LOG("FitInputs", pWARN) << "Setting initial value to default (" << fDefInit
+                          << ") for parameter \'" << fName << "\'";
+}
+//________________________________________________________________________________________
+
+void Parameter::SetDefaultError(void)
+{
+  fError = fDefError;
+  LOG("FitInputs", pWARN) << "Setting initial value to default (" << fDefError
+                          << ") for parameter \'" << fName << "\'";
+}
+//________________________________________________________________________________________
+
+void Parameter::SetDefaultThrowRange(void)
+{
+  fRange.first  = fDefInit - fDefSymmetricRange * fDefError;
+  fRange.second = fDefInit + fDefSymmetricRange * fDefError;
+  LOG("FitInputs", pWARN) << "Setting range to default [" << fRange.first << ", "
+                          << fRange.second << "] for parameter \'" << fName << "\'";
+}
+//________________________________________________________________________________________
+
+void Parameter::SetDefaultStepSize(void)
+{
+  fStepSize = fDefStepSizeFactor * (fRange.second - fRange.first);
+  LOG("FitInputs", pWARN) << "Setting step size to default (" << fStepSize
+                          << ") for parameter \'" << fName << "\'";
 }
 //________________________________________________________________________________________
