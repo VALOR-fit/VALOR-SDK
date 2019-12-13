@@ -49,6 +49,9 @@
 
 #pragma link C++ class valor::ExperimentSetup+;
 
+#pragma link C++ class valor::Parameter+;
+#pragma link C++ class valor::ParameterPool+;
+
 // Part of FitParamList
 #pragma link C++ class std::map <valor::conv::PhysParamId_t,int>;
 #pragma link C++ class std::pair<valor::conv::PhysParamId_t,int>;
