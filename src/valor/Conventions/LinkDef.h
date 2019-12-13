@@ -44,6 +44,8 @@
 #pragma link C++ struct valor::UniqueSampleID;
 #pragma link C++ class std::vector<valor::UniqueSampleID>+;
 
+#pragma link C++ class valor::conv::PlotStyle+;
+
 #pragma link C++ class valor::Opt+;
 #pragma link C++ class valor::Opt::Persistable+;
 
