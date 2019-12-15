@@ -437,3 +437,12 @@ double util::ConvertOscParamToUsedScheme(PhysParamId_t p, double val, std::strin
   return converted_val;
 }
 //________________________________________________________________________________________
+double util::ConvertOscParamErrorToUsedScheme(conv::PhysParamId_t p, double central_value, double error, std::string val_scheme_name, std::string target_scheme_name)
+{
+  double err_up   = central_value + error;
+  double err_down = central_value - error;
+  double converted_err_up   = util::ConvertOscParamToUsedScheme(p, err_up  , val_scheme_name, target_scheme_name);
+  double converted_err_down = util::ConvertOscParamToUsedScheme(p, err_down, val_scheme_name, target_scheme_name);
+  return 0.5 * (converted_err_up - converted_err_down);
+}
+//________________________________________________________________________________________

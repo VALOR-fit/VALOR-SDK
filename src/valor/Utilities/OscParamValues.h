@@ -96,6 +96,9 @@ namespace util {
   double ConvertOscParamToUsedScheme(conv::PhysParamId_t p, double val,
                                      std::string val_scheme_name = "", std::string target_scheme_name = "");
 
+  double ConvertOscParamErrorToUsedScheme(conv::PhysParamId_t p, double central_value, double error,
+                                     std::string val_scheme_name = "", std::string target_scheme_name = "");
+
   void InitializeOAPriors();
 
 } // util
