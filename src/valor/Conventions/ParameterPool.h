@@ -38,6 +38,7 @@ public:
   
   const std::vector<Parameter> & GetParams() const;
   const Parameter & GetParam (conv::PhysParamId_t) const;
+  Parameter & GetMutableParam (conv::PhysParamId_t p);
   bool IsParamInPool (conv::PhysParamId_t) const;
 
   // Get the Parameter corresponding to the input simple name
@@ -54,8 +55,6 @@ private:
   void PopulateNameRegistry(void);
 
   // TODO: Put in a check somewhere that requires all params in the FPL and PhysHypothesis to also be in the ParameterPool
-
-  Parameter & GetMutableParam (conv::PhysParamId_t p);
 
   // Count the number of non-special parameters in the pool
   unsigned int CountNonSpecialParams(void) const;
