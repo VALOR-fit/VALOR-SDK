@@ -70,6 +70,10 @@
 
 \copyright (c) 2010-2018, The VALOR Fitting Group, All Rights Reserved
 
+
+  // TODO: Merge the limits and the throw range into a single range right after readign after after updating from CorrelatedSystematics, then use the this range instead of PhysicalParameterLimits.
+  // TODO: e.g. rename GetLimits() --> GetPhysicalLimits(), then add a GetLimits() which uses both the physical limits and the throw range
+
 */
 //____________________________________________________________________________
 
@@ -96,24 +100,24 @@ namespace valor {
       Parameter();
       ~Parameter();
 
-      const conv::PhysParamId_t      &   GetID        (void) const { return fParam;         }
-      const std::string              &   GetName      (void) const { return fName;          }
-      const std::string              &   GetNameLong  (void) const { return fNameLong;      }
-      const std::string              &   GetRooTeXName(void) const { return fRooTeXName;    }
-      const std::string              &   GetTeXName   (void) const { return fTeXName;       }
-      const conv::SystType_t         &   GetType      (void) const { return fType;          }
-      const std::vector<std::string> &   GetCategories(void) const { return fCategories;    }
-      const bool                     &   HasLimits    (void) const { return fHasLimits;     }
-      const std::pair<double,double> &   GetLimits    (void) const { return fLimits;        }
-      const double                   &   GetInitValue (void) const { return fInit;          }
-      const double                   &   GetError     (void) const { return fError;         }
-      const std::string              &   GetRangeMode (void) const { return fRangeMode;     }
-      const std::pair<double,double> &   GetThrowRange(void) const { return fRange;         }
-      const double                   &   GetStepSize  (void) const { return fStepSize;      }
-      const bool                     &   IsFixed      (void) const { return fIsFixed;       }
-      const bool                     &   IsNuisance   (void) const { return fIsNuisance;    }
-      const bool                     &   DoMarginalise(void) const { return fDoMarginalise; }
-      const double                   &   OverwriteFlag(void) const { return fOverwriteFlag; }
+      const conv::PhysParamId_t      &   GetID          (void) const { return fParam;            }
+      const std::string              &   GetName        (void) const { return fName;             }
+      const std::string              &   GetNameLong    (void) const { return fNameLong;         }
+      const std::string              &   GetRooTeXName  (void) const { return fRooTeXName;       }
+      const std::string              &   GetTeXName     (void) const { return fTeXName;          }
+      const conv::SystType_t         &   GetType        (void) const { return fType;             }
+      const std::vector<std::string> &   GetCategories  (void) const { return fCategories;       }
+      const bool                     &   HasLimits      (void) const { return fHasLimits;        }
+      const std::pair<double,double> &   GetLimits      (void) const { return fLimits;           }
+      const double                   &   GetInitValue   (void) const { return fInit;             }
+      const double                   &   GetError       (void) const { return fError;            }
+      const std::string              &   GetRangeMode   (void) const { return fRangeMode;        }
+      const std::pair<double,double> &   GetThrowRange  (void) const { return fRange;            }
+      const double                   &   GetStepSize    (void) const { return fStepSize;         }
+      const bool                     &   IsFixed        (void) const { return fIsFixed;          }
+      const bool                     &   IsNuisance     (void) const { return fIsNuisance;       }
+      const bool                     &   DoMarginalise  (void) const { return fDoMarginalise;    }
+      const bool                     &   DoUpdateFitInfo(void) const { return fUpdateFitInfo;    }
 
       // Print out the parameter names, ranges, type, categories etc.
       virtual void Print(std::ostream & stream = std::cout) const;
@@ -133,17 +137,43 @@ namespace valor {
       bool IsWithinLimits(double val) const;
       double GetNearestPhysicalValue(double val) const;
 
-      void SetInitValue     (const double val) { fInit         = val; }
-      void SetError         (const double val) { fError        = val; }
-      void SetThrowRangeLow (const double val) { fRange.first  = val; }
-      void SetThrowRangeHigh(const double val) { fRange.second = val; }
-      void SetStepSize      (const double val) { fStepSize     = val; }
+      void SetNameLong      (const std::string              val) { fNameLong      = val; }
+      void SetRooTeXName    (const std::string              val) { fRooTeXName    = val; }
+      void SetTeXName       (const std::string              val) { fTeXName       = val; }
+      void SetType          (const conv::SystType_t         val) { fType          = val; }
+      void SetCategories    (const std::vector<std::string> val) { fCategories    = val; }
+      void SetHasLimits     (const bool                     val) { fHasLimits     = val; }
+      void SetLimits        (const std::pair<double,double> val) { fLimits        = val; }
+      void SetInitValue     (const double                   val) { fInit          = val; }
+      void SetError         (const double                   val) { fError         = val; }
+      void SetThrowRangeMode(const std::string              val) { fRangeMode     = val; }
+      void SetThrowRange    (const std::pair<double,double> val) { fRange         = val; }
+      void SetThrowRangeLow (const double                   val) { fRange.first   = val; }
+      void SetThrowRangeHigh(const double                   val) { fRange.second  = val; }
+      void SetStepSize      (const double                   val) { fStepSize      = val; }
+      void SetIsFixed       (const bool                     val) { fIsFixed       = val; }
+      void SetIsNuisance    (const bool                     val) { fIsNuisance    = val; }
+      void SetDoMarginalise (const bool                     val) { fDoMarginalise = val; }
       void SetDefaultInitValue (void);
       void SetDefaultError     (void);
       void SetDefaultThrowRange(void);
       void SetDefaultStepSize  (void);
-      // TODO: may need to add a SetID() to allow the ParameterPool to appropriately assign PhysParamId's
 
+      // Was the corresponding node specified in the parameter config file, or did we just set some default?
+      const bool & NameLongWasSpecified(void)       const { return fNameLongWasSpecified;       }
+      const bool & RooTeXNameWasSpecified(void)     const { return fRooTeXNameWasSpecified;     }
+      const bool & TeXNameWasSpecified(void)        const { return fTeXNameWasSpecified;        }
+      const bool & CategoriesWasSpecified(void)     const { return fCategoriesWasSpecified;     }
+      const bool & HasLimitsWasSpecified(void)      const { return fHasLimitsWasSpecified;      }
+      const bool & LimitsWasSpecified(void)         const { return fLimitsWasSpecified;         }
+      const bool & InitValueWasSpecified(void)      const { return fInitValueWasSpecified;      }
+      const bool & ErrorWasSpecified(void)          const { return fErrorWasSpecified;          }
+      const bool & ThrowRangeModeWasSpecified(void) const { return fThrowRangeModeWasSpecified; }
+      const bool & ThrowRangeWasSpecified(void)     const { return fThrowRangeWasSpecified;     }
+      const bool & StepSizeWasSpecified(void)       const { return fStepSizeWasSpecified;       }
+      const bool & IsFixedWasSpecified(void)        const { return fIsFixedWasSpecified;        }
+      const bool & IsNuisanceWasSpecified(void)     const { return fIsNuisanceWasSpecified;     }
+      const bool & DoMarginaliseWasSpecified(void)  const { return fDoMarginaliseWasSpecified;  }
 
     protected:
       // The ID number that will be used to store stuff in (eg) output TTrees/FPLs
@@ -185,11 +215,11 @@ namespace valor {
 
       // Parameter initial value
       double fInit;
-      // TODO: Update in CorrelatedSystematics if == fOverwriteFlag. If not in CorrelatedSystematics, set to default value
+      // TODO: Update in CorrelatedSystematics if DoUpdateFitInfo(). If not in CorrelatedSystematics, set to default value
 
       // Error on the parameter, used only for automatically setting the parameter range when the range mode is 'sigma'
       double fError;
-      // TODO: Update in CorrelatedSystematics if == fOverwriteFlag. If not in CorrelatedSystematics, set to default value
+      // TODO: Update in CorrelatedSystematics if DoUpdateFitInfo(). If not in CorrelatedSystematics, set to default value
 
       // What the min and max values correspond to, e.g. parameter values, standard deviations,
       // or if the range should be set from the prior
@@ -198,13 +228,13 @@ namespace valor {
       // The range of allowed values for this parameter used when randomising.
       // This does not have to be equal to the physical range, i.e. fLimits, but both ranges will be used.
       std::pair<double,double> fRange;
-      // TODO: Update in CorrelatedSystematics if == fOverwriteFlag. If not in CorrelatedSystematics, set to default value
+      // TODO: Update in CorrelatedSystematics if DoUpdateFitInfo(). If not in CorrelatedSystematics, set to default value
 
       // The change in this parameter's value used to scan parameter space when minimizing
       // NOTE: This is NOT used step between marginalisation grid points, that is set when
       // running the marginalisation apps
       double fStepSize;
-      // TODO: Update in CorrelatedSystematics if == fOverwriteFlag; update based on the range.  If not in CorrelatedSystematics, set to default value
+      // TODO: Update in CorrelatedSystematics if DoUpdateFitInfo(); update based on the range.  If not in CorrelatedSystematics, set to default value
 
       // Is this parameter fixed or not?
       bool fIsFixed;
@@ -215,20 +245,36 @@ namespace valor {
       // Should we marginalise this parameter?
       bool fDoMarginalise;
 
-      // If e.g. CorrelatedSystematics tries to read a value and finds that it equals this flag,
-      // then it knows it can overwrite this value
-      const double fOverwriteFlag = -999;
-      // TODO: Check each value read by CorrelatedSystematics against this, and overwrite that value if it was equal to this
+      // Should we update the init value (and range if the range mode is 'sigma') from CorrelatedSystematics?
+      bool fUpdateFitInfo;
 
       // Default values
-      const double      fDefInit           = 1.;
-      const double      fDefError          = 1.;
-      const std::string fDefRangeMode      = "sigma";
-      const double      fDefSymmetricRange = 3.;
-      const double      fDefStepSizeFactor = 0.01;
-      const bool        fDefIsFixed        = false;
-      const bool        fDefIsNuisance     = true;
-      const bool        fDefDoMarg         = true;
+      const double      fDefInit             = 1.;
+      const double      fDefError            = 1.;
+      const std::string fDefRangeMode        = "sigma";
+      const double      fDefSymmetricRange   = 3.;
+      const double      fDefStepSizeFactor   = 0.01;
+      const bool        fDefIsFixed          = false;
+      const bool        fDefIsNuisance       = true;
+      const bool        fDefDoMarg           = true;
+      const bool        fDefUpdateFitInfo    = true;
+//      const std::string fDefInputValueScheme = fDoNotConvertValueFlag;
+
+      // Was the corresponding node specified in the parameter config file, or did we just set some default?
+      bool fNameLongWasSpecified;
+      bool fRooTeXNameWasSpecified;
+      bool fTeXNameWasSpecified;
+      bool fCategoriesWasSpecified;
+      bool fHasLimitsWasSpecified;
+      bool fLimitsWasSpecified;
+      bool fInitValueWasSpecified;
+      bool fErrorWasSpecified;
+      bool fThrowRangeModeWasSpecified;
+      bool fThrowRangeWasSpecified;
+      bool fStepSizeWasSpecified;
+      bool fIsFixedWasSpecified;
+      bool fIsNuisanceWasSpecified;
+      bool fDoMarginaliseWasSpecified;
 
       void Init(conv::PhysParamId_t param_id, TXMLEngine* xml, XMLNodePointer_t param_node);
       void ReadNames       ();
@@ -238,6 +284,10 @@ namespace valor {
       void ReadLimits      ();
       void ReadFitInfo     ();
   };
+
+  namespace util {
+    const std::string ReadSimpleName(TXMLEngine* xml, const XMLNodePointer_t& param_node);
+  }
 } // valor
 
 

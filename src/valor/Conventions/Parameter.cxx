@@ -35,10 +35,10 @@ std::pair<double,double> max_limits = std::make_pair<double,double>(
 //________________________________________________________________________________________
 Parameter::Parameter(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePointer_t param_node)
 {
-  Init(param_id,xml, param_node);
+  Init(param_id, xml, param_node);
+  ReadType();
   ReadNames();
   ReadRanges();
-  ReadType();
   ReadCategories();
   fApply = util::ReadApplyMaskAll(xml, fParamNode);
   ReadLimits();
@@ -57,20 +57,35 @@ Parameter::~Parameter()
 //________________________________________________________________________________________
 void Parameter::Init(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePointer_t param_node)
 {
-  fParam             = param_id;
-  fName              = "undefined";
-  fRooTeXName        = "undefined";
-  fTeXName           = "undefined";
-  fType              = kSystUndefined;
-  fHasLimits         = false;
-  fHasKinematicRange = false;
-  fInit              = 1.;
-  fError             = 1.;
-  fRangeMode         = "sigma";
-  fStepSize          = 1.;
-  fIsFixed           = false;
-  fIsNuisance        = true;
-  fDoMarginalise     = true;
+  fParam                      = param_id;
+  fName                       = "undefined";
+  fRooTeXName                 = "undefined";
+  fTeXName                    = "undefined";
+  fType                       = kSystUndefined;
+  fHasLimits                  = false;
+  fHasKinematicRange          = false;
+  fInit                       = 1.;
+  fError                      = 1.;
+  fRangeMode                  = "sigma";
+  fStepSize                   = 1.;
+  fIsFixed                    = false;
+  fIsNuisance                 = true;
+  fDoMarginalise              = true;
+  fUpdateFitInfo              = true;
+  fNameLongWasSpecified       = false;
+  fRooTeXNameWasSpecified     = false;
+  fTeXNameWasSpecified        = false;
+  fCategoriesWasSpecified     = false;
+  fHasLimitsWasSpecified      = false;
+  fLimitsWasSpecified         = false;
+  fInitValueWasSpecified      = false;
+  fErrorWasSpecified          = false;
+  fThrowRangeModeWasSpecified = false;
+  fThrowRangeWasSpecified     = false;
+  fStepSizeWasSpecified       = false;
+  fIsFixedWasSpecified        = false;
+  fIsNuisanceWasSpecified     = false;
+  fDoMarginaliseWasSpecified  = false;
 
   fxml = xml;
   fParamNode = param_node;
@@ -78,95 +93,149 @@ void Parameter::Init(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePoint
 //________________________________________________________________________________________
 void Parameter::ReadNames()
 {
-  if(util::IsNodeSpecified(fxml, fParamNode, "name/simple")) {
-    fName = util::XML2String(fxml, fParamNode, "name/simple");
-  }
-  else {
-    LOG("FitInputs", pFATAL) << "No simple name specified for a parameter";
-    util::Die(1);
-  }
+  // Simple name
+  fName = util::ReadSimpleName(fxml, fParamNode);
 
+  // Longer, more descriptive name
   if(util::IsNodeSpecified(fxml, fParamNode, "name/long")) {
     fNameLong = util::XML2String(fxml, fParamNode, "name/long");
+    fNameLongWasSpecified = true;
   }
   else {
-    LOG("FitInputs", pNOTICE) << "No long name specified for parameter \'"
-                              << fName << "\', instead using the simple name";
-    fNameLong = fName;
+    if(fType != conv::kSystSpecial) {
+      LOG("FitInputs", pNOTICE) << "No long name specified for parameter \'"
+                                << fName << "\', instead using the simple name";
+      fNameLong = fName;
+    }
+    else {
+      // Special cases
+      if(util::IsOscParam(fParam)) {
+        fNameLong = util::RawParamAsString(fParam);
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "Unsupported special case";
+        util::Die(1);
+      }
+    }
   }
 
+  // RooTeX name
   if(util::IsNodeSpecified(fxml, fParamNode, "name/rootex")) {
     fRooTeXName = util::XML2String(fxml, fParamNode, "name/rootex");
+    fRooTeXNameWasSpecified = true;
   }
   else {
-    LOG("FitInputs", pNOTICE) << "No rootex name specified for parameter \'"
-                              << fName << "\', instead using the simple name";
-    // with underscores escaped
-    fRooTeXName = util::ReplaceAll(fName,"_","#_");
+    if(fType != conv::kSystSpecial) {
+      LOG("FitInputs", pNOTICE) << "No rootex name specified for parameter \'"
+                                << fName << "\', instead using the simple name";
+      // with underscores escaped
+      fRooTeXName = util::ReplaceAll(fName,"_","#_");
+    }
+    else {
+      // Special cases
+      if(util::IsOscParam(fParam)) {
+        fRooTeXName = util::RawParamAsStringRooTex(fParam);
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "Unsupported special case";
+        util::Die(1);
+      }
+    }
   }
 
+  // TeX name
   if(util::IsNodeSpecified(fxml, fParamNode, "name/tex")) {
     fTeXName = util::XML2String(fxml, fParamNode, "name/tex");
+    fTeXNameWasSpecified = true;
   }
   else {
-    LOG("FitInputs", pNOTICE) << "No Tex name specified for parameter \'"
-                              << fName << "\', instead using the RooTex name with \'#\'replaced with \'\\\\\'";
-    fTeXName = fRooTeXName;
-    fTeXName = util::ReplaceAll(fTeXName,"#","\\"); // Make hashes slahes from RooTeX
-    // Get rid of hashes preceding sin
-    fTeXName = util::ReplaceAll(fTeXName,"#sin","sin");
-    fTeXName = util::TrimSpaces(fTeXName);
+    if(fType != conv::kSystSpecial) {
+      LOG("FitInputs", pNOTICE) << "No Tex name specified for parameter \'"
+                                << fName << "\', instead using the RooTex name with \'#\'replaced with \'\\\\\'";
+      fTeXName = fRooTeXName;
+      fTeXName = util::ReplaceAll(fTeXName, "#", "\\"); // Make hashes slahes from RooTeX
+      // Get rid of hashes preceding sin
+      fTeXName = util::ReplaceAll(fTeXName, "#sin", "sin");
+      fTeXName = util::TrimSpaces(fTeXName);
+    }
+    else {
+      // Special cases
+      if(util::IsOscParam(fParam)) {
+        fTeXName = util::RawParamAsStringTex(fParam);
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "Unsupported special case";
+        util::Die(1);
+      }
+    }
   }
 }
 //________________________________________________________________________________________
 void Parameter::ReadRanges()
 {
-  if(util::NodeExists(fxml, fParamNode, "apply_to_range")) {
-    vector <XMLNodePointer_t> range_nodes = util::FindAllNodes(fxml,util::FindNode(fxml, fParamNode, "apply_to_range"));
-    if(range_nodes.size() == 0) {
-      LOG("FitInputs", pINFO) << "No parameter apply ranges specified for parameter \'" << fName << "\'";
-      fHasKinematicRange = false;
-      return;
-    }
-    for(XMLNodePointer_t range_node : range_nodes) {
-      KineVar_t kv = kvUndefined;
-      // Get the kinematic variable for this range
-      string node_name = fxml->GetNodeName(range_node);
-      for(int kvi = kvUndefined + 1; kvi != kNKineVarMax; kvi++) {
-        KineVar_t kv_try = static_cast<KineVar_t>(kvi);
-        if(util::ToLowerCase(node_name) == util::ToLowerCase(util::AsString(kv_try))) {
-          kv = kv_try;
-          break;
+  if(fType != conv::kSystSpecial) {
+    if(util::NodeExists(fxml, fParamNode, "apply_to_range")) {
+      vector <XMLNodePointer_t> range_nodes = util::FindAllNodes(fxml,util::FindNode(fxml, fParamNode, "apply_to_range"));
+      if(range_nodes.size() == 0) {
+        LOG("FitInputs", pINFO) << "No parameter apply ranges specified for parameter \'" << fName << "\'";
+        fHasKinematicRange = false;
+        return;
+      }
+      for(XMLNodePointer_t range_node : range_nodes) {
+        KineVar_t kv = kvUndefined;
+        // Get the kinematic variable for this range
+        string node_name = fxml->GetNodeName(range_node);
+        for(int kvi = kvUndefined + 1; kvi != kNKineVarMax; kvi++) {
+          KineVar_t kv_try = static_cast<KineVar_t>(kvi);
+          if(util::ToLowerCase(node_name) == util::ToLowerCase(util::AsString(kv_try))) {
+            kv = kv_try;
+            break;
+          }
+          if(kv_try == kNKineVarMax) {
+            LOG("FitInputs", pFATAL) << "Unrecognised kinematic variable \'" << node_name << "\'";
+            util::Die(1);
+          }
         }
-        if(kv_try == kNKineVarMax) {
-          LOG("FitInputs", pFATAL) << "Unrecognised kinematic variable \'" << node_name << "\'";
+        if(std::find(fKinematicVariables.begin(),fKinematicVariables.end(),kv)!=fKinematicVariables.end()) {
+          LOG("FitInputs", pFATAL) << "For parameter " << fName << " and kinematic variable " << node_name
+                                   << ", there is already a range defined for this kinematic variable, cannot add another";
+          util::Die(1);
+        }
+        if(kv == kvUndefined) {
+          // This should not happen
+          LOG("FitInputs", pFATAL) << "For parameter " << fName << " and kinematic variable " << node_name
+                                   << ", the kinematic variable could not be set";
+          util::Die(1);
+        }
+        // Get the range
+        string path = "apply_to_range/" + node_name;
+        fKinematicVariables.push_back(kv);
+        fKinematicRange.push_back(util::XML2DblDblPair(fxml, fParamNode, path));
+        fHasKinematicRange = true;
+        if(fKinematicRange.back().second < fKinematicRange.back().first) {
+          LOG("FitInputs", pFATAL) << "For parameter " << fName << " and kinematic variable " << node_name
+                                   << ", the value specified for the upper limit of the range is smaller than the value specified for the lower limit";
           util::Die(1);
         }
       }
-      if(std::find(fKinematicVariables.begin(),fKinematicVariables.end(),kv)!=fKinematicVariables.end()) {
-        LOG("FitInputs", pFATAL) << "For parameter " << fName << " and kinematic variable " << node_name
-                                 << ", there is already a range defined for this kinematic variable, cannot add another";
-        util::Die(1);
-      }
-      if(kv == kvUndefined) {
-        // This should not happen
-        LOG("FitInputs", pFATAL) << "For parameter " << fName << " and kinematic variable " << node_name
-                                 << ", the kinematic variable could not be set";
-        util::Die(1);
-      }
-      // Get the range
-      string path = "apply_to_range/" + node_name;
-      fKinematicVariables.push_back(kv);
-      fKinematicRange.push_back(util::XML2DblDblPair(fxml, fParamNode, path));
+    }
+    fHasKinematicRange = (bool)fKinematicVariables.size();
+  } // normal case
+  else {
+    if(util::IsOscParam(fParam)) {
       fHasKinematicRange = true;
-      if(fKinematicRange.back().second < fKinematicRange.back().first) {
-        LOG("FitInputs", pFATAL) << "For parameter " << fName << " and kinematic variable " << node_name
-                                 << ", the value specified for the upper limit of the range is smaller than the value specified for the lower limit";
-        util::Die(1);
+      fKinematicVariables.push_back(conv::kvEtrue);
+      fKinematicRange.push_back(std::make_pair(0, max_limits.second));
+      if(util::NodeExists(fxml, fParamNode, "apply_to_range")) {
+        LOG("FitInputs", pWARN) << "For parameter " << fName
+                                << ", an 'apply_to_range' node was found. This will be ignored and the parameter will be applied to [0, inf] in Etrue";
       }
     }
-  }
-  fHasKinematicRange = (bool)fKinematicVariables.size();
+    else {
+      LOG("FitInputs", pFATAL) << "Unsupported special case";
+      util::Die(1);
+    }
+  } // special case
 }
 //________________________________________________________________________________________
 void Parameter::ReadType()
@@ -176,14 +245,20 @@ void Parameter::ReadType()
     SystType_t type = util::SystTypeFromString(type_str);
     if(type == kSystUndefined) {
       // The user has tried to set a type for this param but it was not recognised, so die
-      LOG("FitInputs", pFATAL) << "For parameter " << fName << ", systematic type \'" << type_str << "\' not recognised";
+      LOG("FitInputs", pFATAL) << "An input parameter's systematic type \'" << type_str << "\' not recognised";
       util::Die(1);
+    }
+    if(util::IsOscParam(fParam) && type != conv::kSystSpecial) {
+      LOG("FitInputs", pFATAL) << "Parameter " << util::RawParamAsStringSimple(fParam)
+                               << " is an oscillation parameter, but the input systematic type \'"
+                               << type_str <<  "\' was not set to 'special'.";
+      util::Die(-1);
     }
     fType = type;
   }
   else {
     // The user hasn't tried to set any type for this param, so give up
-    LOG("FitInputs", pNOTICE) << "For parameter " << fName << ", systematic type not set.";
+    LOG("FitInputs", pFATAL) << "An input parameter's systematic type was not set.";
     util::Die(-1);
   }
 }
@@ -192,10 +267,18 @@ void Parameter::ReadCategories()
 {
   XMLNodePointer_t cats_node = util::FindNode(fxml, fParamNode, "categories");
   vector<XMLNodePointer_t> cat_nodes = util::FindNodes(fxml, cats_node, "category");
-  if(cat_nodes.size() == 0) {
-    LOG("FitInputs", pFATAL) << "No category nodes specified for parameter \'" << fName <<"\'";
-    util::Die(1);
+  if(fType != conv::kSystSpecial) {
+    if(cat_nodes.size() == 0) {
+      LOG("FitInputs", pFATAL) << "No category nodes specified for parameter \'" << fName <<"\'";
+      util::Die(1);
+    }
   }
+  else {
+    if(util::IsOscParam(fParam) && cat_nodes.size() == 0) {
+      fCategories.push_back("oscillation");
+    }
+  }
+
   for(XMLNodePointer_t cat_node : cat_nodes) {
     string cat = util::TrimSpaces(fxml->GetNodeContent(cat_node));
     if(cat == "") {
@@ -203,6 +286,7 @@ void Parameter::ReadCategories()
       util::Die(1);
     }
     fCategories.push_back(cat);
+    fCategoriesWasSpecified = true;
   }
 }
 //________________________________________________________________________________________
@@ -211,6 +295,8 @@ void Parameter::ReadLimits()
   if(util::IsNodeSpecified(fxml, fParamNode, "limits")) {
     fHasLimits = true;
     fLimits = util::XML2DblDblPair(fxml, fParamNode, "limits");
+    fHasLimitsWasSpecified = true;
+    fLimitsWasSpecified = true;
   }
   else {
     fHasLimits = false;
@@ -220,81 +306,147 @@ void Parameter::ReadLimits()
 //________________________________________________________________________________________
 void Parameter::ReadFitInfo()
 {
+  // Update the init value (and range if the range mode is 'sigma') from the covariance matrix file?
+  if(util::IsNodeSpecified(fxml, fParamNode, "update_from_cov_matrix")) {
+    fUpdateFitInfo = util::XML2Bool(fxml, fParamNode, "update_from_cov_matrix");
+    if(fType == conv::kSystSpecial) {
+      if(util::IsOscParam(fParam)) {
+        if(fUpdateFitInfo) {
+          LOG("FitInputs", pNOTICE)
+            << "For osc param \'" << fName
+            << "\', 'update_from_cov_matrix' was set to true, but this option does not apply to osc params, so will be forced to false";
+        }
+        fUpdateFitInfo = false;
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "Unsupported special case";
+        util::Die(1);
+      }
+    }
+  }
+  else {
+    if(fType != conv::kSystSpecial) {
+      fUpdateFitInfo = fDefUpdateFitInfo;
+    }
+    else {
+      if(util::IsOscParam(fParam)) {
+        fUpdateFitInfo = false;
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "Unsupported special case";
+        util::Die(1);
+      }
+    }
+  }
+
   // Initial value
   if(util::IsNodeSpecified(fxml, fParamNode, "init")) {
     fInit = util::XML2Dbl(fxml, fParamNode, "init");
+    fInitValueWasSpecified = true;
   }
   else {
     // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
     // that indicates this value can be overwritten
-    fInit = fOverwriteFlag;
+    fInit = fDefInit;
   }
 
   // Error value
   if(util::IsNodeSpecified(fxml, fParamNode, "error")) {
     fError = util::XML2Dbl(fxml, fParamNode, "error");
+    fErrorWasSpecified = true;
   }
   else {
     // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
     // that indicates this value can be overwritten
-    fError = fOverwriteFlag;
+    fError = fDefError;
   }
 
   // Range mode
   if(util::IsNodeSpecified(fxml, fParamNode, "range_mode")) {
     fRangeMode = util::XML2String(fxml, fParamNode, "range_mode");
+    fThrowRangeModeWasSpecified = true;
   }
   else {
     fRangeMode = fDefRangeMode;
-    LOG("FitInputs", pINFO) << "No fit info 'range' node was found, setting to \'" << fRangeMode <<"\'";
+    LOG("FitInputs", pINFO) << "No fit info 'range' node was found for \'" << fName << "\', setting to \'" << fRangeMode <<"\'";
   }
 
   // Range
-  std::pair<double,double> temp_pair;
   if(util::IsNodeSpecified(fxml, fParamNode, "range")) {
     fRange = util::XML2DblDblPair(fxml, fParamNode, "range");
+    fThrowRangeWasSpecified = true;
   }
   else {
     // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
     // that indicates this value can be overwritten
-    fRange = std::make_pair(fOverwriteFlag, fOverwriteFlag);
+    fRange = std::make_pair(-fDefSymmetricRange, fDefSymmetricRange);
   }
 
   // Step size
   if(util::IsNodeSpecified(fxml, fParamNode, "step")) {
     fStepSize = util::XML2Dbl(fxml, fParamNode, "step");
+    fStepSizeWasSpecified = true;
   }
   else {
     // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
     // that indicates this value can be overwritten
-    fStepSize = fOverwriteFlag;
+    // TODO: put in a better default for the step size
+    fStepSize = fDefStepSizeFactor;
   }
 
   // Is fixed?
   if(util::IsNodeSpecified(fxml, fParamNode, "fixed")) {
     fIsFixed = util::XML2Bool(fxml, fParamNode, "fixed");
+    fIsFixedWasSpecified = true;
   }
   else {
     fIsFixed = fDefIsFixed;
-    LOG("FitInputs", pINFO) << "No fit info 'fixed' node was found, setting to \'" << fIsFixed <<"\'";
+    LOG("FitInputs", pINFO) << "No fit info 'fixed' node was found for \'" << fName
+                            << "\', setting to \'" << fIsFixed <<"\'";
   }
 
   // Is nuisance?
   if(util::IsNodeSpecified(fxml, fParamNode, "nuisance")) {
     fIsNuisance = util::XML2Bool(fxml, fParamNode, "nuisance");
+    fIsNuisanceWasSpecified = true;
   }
   else {
-    fIsNuisance = fDefIsNuisance;
-    LOG("FitInputs", pINFO) << "No fit info 'nuisance' node was found, setting to \'" << fIsNuisance <<"\'";
+    if(fType != conv::kSystSpecial) {
+      fIsNuisance = fDefIsNuisance;
+    }
+    else {
+      if(util::IsOscParam(fParam)) {
+        fIsNuisance = false;
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "Unsupported special case";
+        util::Die(1);
+      }
+    }
+    LOG("FitInputs", pINFO) << "No fit info 'nuisance' node was found for \'" << fName
+                            << "\', setting to \'" << fIsNuisance <<"\'";
   }
 
   // Marginalise?
   if(util::IsNodeSpecified(fxml, fParamNode, "marginalise")) {
     fDoMarginalise = util::XML2Bool(fxml, fParamNode, "marginalise");
+    fDoMarginaliseWasSpecified = true;
   }
   else {
-    fDoMarginalise = fDefDoMarg;
-    LOG("FitInputs", pINFO) << "No fit info 'marginalise' node was found, setting to \'" << fDoMarginalise <<"\'";
+    if(fType != conv::kSystSpecial) {
+      fDoMarginalise = fDefDoMarg;
+    }
+    else {
+      if(util::IsOscParam(fParam)) {
+        fDoMarginalise = false;
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "Unsupported special case";
+        util::Die(1);
+      }
+    }
+    LOG("FitInputs", pINFO) << "No fit info 'marginalise' node was found for \'" << fName
+                            << "\', setting to \'" << fDoMarginalise <<"\'";
   }
 
 }
@@ -336,13 +488,14 @@ void Parameter::Print(std::ostream & stream) const
   stream << "    Physical limits = ["          << limits.first << ", " << limits.second << "]"       << "\n";
   stream << "    Fit info:\n";
   stream << "        Initial value = " << fInit                                 << "\n";
-  stream << "        error = "         << fError                                << "\n";
-  stream << "        range mode = "    << fRangeMode                            << "\n";
-  stream << "        range = ["        << fRange.first << ", " << fRange.second << "]\n";
-  stream << "        step size = "     << fStepSize                             << "\n";
-  stream << "        fixed? "          << fIsFixed                              << "\n";
-  stream << "        nuisance? "       << fIsNuisance                           << "\n";
-  stream << "        marginalise? "    << fDoMarginalise                        << "\n";
+  stream << "        Error = "         << fError                                << "\n";
+  stream << "        Range mode = "    << fRangeMode                            << "\n";
+  stream << "        Range = ["        << fRange.first << ", " << fRange.second << "]\n";
+  stream << "        Step size = "     << fStepSize                             << "\n";
+  stream << "        Fixed? "          << fIsFixed                              << "\n";
+  stream << "        Nuisance? "       << fIsNuisance                           << "\n";
+  stream << "        Marginalise? "    << fDoMarginalise                        << "\n";
+  stream << "        Will be updated by CorrelatedSystematics? " << fUpdateFitInfo << "\n";
   stream << std::endl;
 }
 //________________________________________________________________________________________
@@ -401,7 +554,6 @@ void Parameter::SetDefaultInitValue(void)
                           << ") for parameter \'" << fName << "\'";
 }
 //________________________________________________________________________________________
-
 void Parameter::SetDefaultError(void)
 {
   fError = fDefError;
@@ -409,7 +561,6 @@ void Parameter::SetDefaultError(void)
                           << ") for parameter \'" << fName << "\'";
 }
 //________________________________________________________________________________________
-
 void Parameter::SetDefaultThrowRange(void)
 {
   fRange.first  = fDefInit - fDefSymmetricRange * fDefError;
@@ -418,11 +569,23 @@ void Parameter::SetDefaultThrowRange(void)
                           << fRange.second << "] for parameter \'" << fName << "\'";
 }
 //________________________________________________________________________________________
-
 void Parameter::SetDefaultStepSize(void)
 {
   fStepSize = fDefStepSizeFactor * (fRange.second - fRange.first);
   LOG("FitInputs", pWARN) << "Setting step size to default (" << fStepSize
                           << ") for parameter \'" << fName << "\'";
+}
+//________________________________________________________________________________________
+const std::string util::ReadSimpleName(TXMLEngine* xml, const XMLNodePointer_t& param_node)
+{
+  std::string name = "";
+  if(util::IsNodeSpecified (xml, param_node, "name/simple")) {
+    name = util::XML2String(xml, param_node, "name/simple");
+  }
+  else {
+    LOG("FitInputs", pFATAL) << "No simple name specified for a parameter";
+    util::Die(1);
+  }
+  return name;
 }
 //________________________________________________________________________________________

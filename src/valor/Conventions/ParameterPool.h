@@ -53,8 +53,22 @@ private:
   // Tell the framework classes what our parameter names are
   void PopulateNameRegistry(void);
 
+  // TODO: Put in a check somewhere that requires all params in the FPL and PhysHypothesis to also be in the ParameterPool
+
+  Parameter & GetMutableParam (conv::PhysParamId_t p);
+
+  // Count the number of non-special parameters in the pool
+  unsigned int CountNonSpecialParams(void) const;
+
+  // Update a Parameter from another with matching PhysParamId_t values
+  void UpdateParam(Parameter& to_update, const Parameter& update_from);
+
+  // Check the mixing angle, Dmsq and phase schemes against those in Opt::Instance()
+  void CheckSchemes(TXMLEngine* xmleng, XMLNodePointer_t root_node);
+
   std::vector<Parameter> fParams;
-  
+  std::map<conv::PhysParamId_t, unsigned int> fParamIdx;
+
   ParameterPool();
   ParameterPool(const ParameterPool &) {};
  ~ParameterPool() {};
