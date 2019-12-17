@@ -21,29 +21,18 @@
 */
 //____________________________________________________________________________
 
-#ifndef _valor_dune_util_param_definition_h_
-#define _valor_dune_util_param_definition_h_
-
-#include <string>
-#include <utility>
+#ifndef _valor_dune_util_fit_param_list_definition_h_
+#define _valor_dune_util_fit_param_list_definition_h_
 
 //fmwk
-#include "valor/Utilities/UtlParam.h"
-#include "valor/Conventions/PhysParamId.h"
-#include "valor/Conventions/Detector.h"
-#include "valor/Conventions/BeamConf.h"
-#include "valor/Conventions/FitParamApply.h"
-#include "valor/Conventions/FitParamGroup.h"
-#include "valor/Conventions/ReacMode.h"
-#include "valor/Conventions/KineVar.h"
-#include "valor/FitCore/CorrelatedSystematics.h"
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/PhysHypothesis.h"
 
 namespace valor {
 namespace util {
-  // If you give a CorrelatedSystematics object, it'll ignore your list's standard systematics and use this set instead
-  FitParamList * GetFitParameterList (Option_t * param_list_name = "nuosc3f", Option_t * param_opt = "", const CorrelatedSystematics * syst = 0);
+  // Constructs and returns a FitParamList from the ParameterPool
+  FitParamList * GetFitParameterList (const PhysHypothesis& hypothesis , Option_t * param_opt = "");
+  FitParamList * GetFitParameterList (std::string hypothesis_name, Option_t * param_opt = "");
 } //util
 
 } // valor
