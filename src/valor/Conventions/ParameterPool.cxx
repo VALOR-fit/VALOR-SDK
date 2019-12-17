@@ -284,19 +284,19 @@ void ParameterPool::UpdateParam(Parameter& to_update, const Parameter& update_fr
     exit(-1);
   }
 
-  if(update_from.NameLongWasSpecified()      ) { to_update.SetNameLong      (update_from.GetNameLong()  ); }
-  if(update_from.RooTeXNameWasSpecified()    ) { to_update.SetRooTeXName    (update_from.GetRooTeXName()); }
-  if(update_from.TeXNameWasSpecified()       ) { to_update.SetTeXName       (update_from.GetTeXName()   ); }
-  if(update_from.CategoriesWasSpecified()    ) { to_update.SetCategories    (update_from.GetCategories()); }
-  if(update_from.HasLimitsWasSpecified()     ) { to_update.SetHasLimits     (update_from.HasLimits()    ); }
-  if(update_from.LimitsWasSpecified()        ) { to_update.SetLimits        (update_from.GetLimits()    ); }
-  if(update_from.InitValueWasSpecified()     ) { to_update.SetInitValue     (update_from.GetInitValue() ); }
-  if(update_from.ErrorWasSpecified()         ) { to_update.SetError         (update_from.GetError()     ); }
-  if(update_from.ThrowRangeModeWasSpecified()) { to_update.SetThrowRangeMode(update_from.GetRangeMode() ); }
-  if(update_from.ThrowRangeWasSpecified()    ) { to_update.SetThrowRange    (update_from.GetThrowRange()); }
-  if(update_from.StepSizeWasSpecified()      ) { to_update.SetStepSize      (update_from.GetStepSize()  ); }
-  if(update_from.IsFixedWasSpecified()       ) { to_update.SetIsFixed       (update_from.IsFixed()      ); }
-  if(update_from.IsNuisanceWasSpecified()    ) { to_update.SetIsNuisance    (update_from.IsNuisance()   ); }
-  if(update_from.DoMarginaliseWasSpecified() ) { to_update.SetDoMarginalise (update_from.DoMarginalise()); }
+  if(update_from.NameLongWasSpecified()      ) { to_update.SetNameLong      (update_from.GetNameLong()      ); }
+  if(update_from.RooTeXNameWasSpecified()    ) { to_update.SetRooTeXName    (update_from.GetRooTeXName()    ); }
+  if(update_from.TeXNameWasSpecified()       ) { to_update.SetTeXName       (update_from.GetTeXName()       ); }
+  if(update_from.CategoriesWasSpecified()    ) { to_update.SetCategories    (update_from.GetCategories()    ); }
+  if(update_from.HasLimitsWasSpecified()     ) { to_update.SetHasLimits     (update_from.HasLimits()        ); }
+  if(update_from.PhysicalLimitsWasSpecified()) { to_update.SetPhysicalLimits(update_from.GetPhysicalLimits()); }
+  if(update_from.InitValueWasSpecified()     ) { to_update.SetInitValue     (update_from.GetInitValue()     ); }
+  if(update_from.ErrorWasSpecified()         ) { to_update.SetError         (update_from.GetError()         ); }
+  if(update_from.ThrowRangeModeWasSpecified()) { to_update.SetThrowRangeMode(update_from.GetThrowRangeMode()); }
+  if(update_from.ThrowRangeWasSpecified()    ) { to_update.SetThrowRange    (update_from.GetThrowRange()    ); }
+  if(update_from.StepSizeWasSpecified()      ) { to_update.SetStepSize      (update_from.GetStepSize()      ); }
+  if(update_from.IsFixedWasSpecified()       ) { to_update.SetIsFixed       (update_from.IsFixed()          ); }
+  if(update_from.IsNuisanceWasSpecified()    ) { to_update.SetIsNuisance    (update_from.IsNuisance()       ); }
+  if(update_from.DoMarginaliseWasSpecified() ) { to_update.SetDoMarginalise (update_from.DoMarginalise()    ); }
 }
 //________________________________________________________________________________________
