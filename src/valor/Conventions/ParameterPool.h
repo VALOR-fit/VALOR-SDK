@@ -40,6 +40,8 @@ public:
   const Parameter & GetParam (conv::PhysParamId_t) const;
   Parameter & GetMutableParam (conv::PhysParamId_t p);
   bool IsParamInPool (conv::PhysParamId_t) const;
+  size_t GetNumOscParams(void) const;
+  size_t GetNumSystParams(void) const;
 
   // Get the Parameter corresponding to the input simple name
   const Parameter & ParamFromString (std::string str) const;
@@ -53,8 +55,6 @@ private:
 
   // Tell the framework classes what our parameter names are
   void PopulateNameRegistry(void);
-
-  // TODO: Put in a check somewhere that requires all params in the FPL and PhysHypothesis to also be in the ParameterPool
 
   // Count the number of non-special parameters in the pool
   unsigned int CountNonSpecialParams(void) const;

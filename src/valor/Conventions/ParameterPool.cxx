@@ -302,3 +302,17 @@ void ParameterPool::UpdateParam(Parameter& to_update, const Parameter& update_fr
   if(update_from.DoMarginaliseWasSpecified() ) { to_update.SetDoMarginalise (update_from.DoMarginalise()    ); }
 }
 //________________________________________________________________________________________
+size_t ParameterPool::GetNumOscParams(void) const
+{
+  size_t counter = 0;
+  for(const auto param : fParams) {
+    if(!util::IsSystematic(param.GetID())) { counter++; }
+  }
+  return counter;
+}
+//________________________________________________________________________________________
+size_t ParameterPool::GetNumSystParams(void) const
+{
+  return fParams.size() - this->GetNumOscParams();
+}
+//________________________________________________________________________________________
