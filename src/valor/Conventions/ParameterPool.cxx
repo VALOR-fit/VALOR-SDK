@@ -63,7 +63,7 @@ void ParameterPool::ReadXML(std::string xml_path)
       // Peek at the parameter name to see whether we should assign this parameter
       // to a nuisance parameter ID or to a specific oscillation parameter ID
       std::string simple_name = util::ReadSimpleName(xmleng, curr_node);
-      conv::PhysParamId_t p = util::PhysParamIdFromRawString(simple_name);
+      conv::PhysParamId_t p = util::PhysParamIdFromRawString(simple_name, true);
       if(p == conv::kPhypUndefined) {
         // The parameter's simple name did not match any predefined parameter,
         // so assign it a generic nuisance parameter ID
@@ -125,7 +125,9 @@ void ParameterPool::CheckSchemes(TXMLEngine* xmleng, XMLNodePointer_t root_node)
     else if(scheme_node_name == "Dmsq") {
       std::string scheme_name = util::XML2String(xmleng, root_node, scheme_node_name);
       conv::NuOscDmsqScheme_t scheme = util::DmsqSchemeFromString(scheme_name);
-      if(scheme != Opt::Instance()->gOscDmsqScheme) {
+      conv::NuOscDmsqScheme_t opt_scheme = Opt::Instance()->gOscDmsqScheme;
+      if(opt_scheme == conv::kNuDmsqAuto) { opt_scheme = util::GetAutoDmsqSchemeFromHierarchy(); }
+      if(scheme != opt_scheme) {
         LOG("ParameterPool",pFATAL) << "An input parameter list was specified with Dmsq scheme \'"
                                     << util::AsString(scheme)
                                     << "\', but this did not match the scheme set in Opt::Instance \'"
