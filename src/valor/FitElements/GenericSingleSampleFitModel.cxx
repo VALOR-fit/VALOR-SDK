@@ -1337,6 +1337,7 @@ void GenericSingleSampleFitModel::BuildParamLists()
   std::set<PhysParamId_t> lateral_post_osc_params_set;
   const std::vector<Parameter> & params = ParameterPool::Instance()->GetParams();
   for (const Parameter & param : params) {
+    if(!util::IsSystematic(param.GetID())) { continue; } // Osc params are handled in ApplyOscProb()
     for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
       bool is_applied = false;
       ReacMode_t m = fReactionModes[imode];
@@ -2487,7 +2488,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
     for(size_t ip = 0; ip < fNormParamsAppliedTo[imode].size(); ip++) {
       PhysParamId_t p = fNormParamsAppliedTo[imode][ip];
       if (p == kPhypUndefined          ) {continue;}
-      assert(!util::IsOscParam(p));
+      assert(util::IsSystematic(p));
       const Parameter & param = ParameterPool::Instance()->GetParam(p);
       const std::string & param_name = param.GetName();
 
@@ -2845,7 +2846,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       for(size_t ip = 0; ip < fNormParamsAppliedTo[imode].size(); ip++) {
         PhysParamId_t p = fNormParamsAppliedTo[imode][ip];
         if (p == kPhypUndefined          ) {continue;}
-        assert(!util::IsOscParam(p));
+        assert(util::IsSystematic(p));
         const Parameter & param = ParameterPool::Instance()->GetParam(p);
         const std::string & param_name = param.GetName();
 
@@ -2854,7 +2855,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           continue;
         }
 
-        assert(!util::IsOscParam(p));
+        assert(util::IsSystematic(p));
 
         bool has_kinematic_dependence = param.HasKinematicRange();
          
@@ -3952,6 +3953,7 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
   LOG("FitParams",pDEBUG) << "Reweighting hist " << hist_to_reweight->GetName()
                           << " with the curr or init vals of the following params: " << param_set_output_str;
   for (PhysParamId_t p : param_set) {
+    if(!util::IsSystematic(p)) { continue; }
     if(!ParameterPool::Instance()->IsParamInPool(p)) {
       LOG("FitParams",pWARN)
         << "Skipping parameter " << util::NameRegistry::Instance()->ParamAsString(p)

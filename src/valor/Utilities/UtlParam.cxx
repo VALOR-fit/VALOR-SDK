@@ -170,7 +170,7 @@ std::vector<PhysParamId_t> util::GetParameterSet(std::string set_name_in, conv::
            (set_name == "fdflux"  && param.SearchCategories("fd") && param.SearchCategories("flux") ) ||  // FD flux
            (set_name == "nddet"   && param.SearchCategories("nd") && param.SearchCategories("det")  ) ||  // ND Detector
            (set_name == "fddet"   && param.SearchCategories("fd") && param.SearchCategories("det")  ) ||  // FD Detector
-           (set_name == "allsyst" )                                                                       // All systematic params
+           (set_name == "allsyst" && util::IsSystematic(param.GetID()))                                  // All systematic params
           ) {
           vec_to_append.push_back(param.GetID());
         }

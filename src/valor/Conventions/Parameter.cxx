@@ -111,7 +111,7 @@ void Parameter::ReadNames()
     }
     else {
       // Special cases
-      if(util::IsOscParam(fParam)) {
+      if(!util::IsSystematic(fParam)) {
         fNameLong = util::RawParamAsString(fParam);
       }
       else {
@@ -135,7 +135,7 @@ void Parameter::ReadNames()
     }
     else {
       // Special cases
-      if(util::IsOscParam(fParam)) {
+      if(!util::IsSystematic(fParam)) {
         fRooTeXName = util::RawParamAsStringRooTex(fParam);
       }
       else {
@@ -162,7 +162,7 @@ void Parameter::ReadNames()
     }
     else {
       // Special cases
-      if(util::IsOscParam(fParam)) {
+      if(!util::IsSystematic(fParam)) {
         fTeXName = util::RawParamAsStringTex(fParam);
       }
       else {
@@ -224,7 +224,7 @@ void Parameter::ReadRanges()
     fHasKinematicRange = (bool)fKinematicVariables.size();
   } // normal case
   else {
-    if(util::IsOscParam(fParam)) {
+    if(!util::IsSystematic(fParam)) {
       fHasKinematicRange = true;
       fKinematicVariables.push_back(conv::kvEtrue);
       fKinematicRange.push_back(std::make_pair(0, max_limits.second));
@@ -250,7 +250,7 @@ void Parameter::ReadType()
       LOG("FitInputs", pFATAL) << "An input parameter's systematic type \'" << type_str << "\' not recognised";
       util::Die(1);
     }
-    if(util::IsOscParam(fParam) && type != conv::kSystSpecial) {
+    if(!util::IsSystematic(fParam) && type != conv::kSystSpecial) {
       LOG("FitInputs", pFATAL) << "Parameter " << util::RawParamAsStringSimple(fParam)
                                << " is an oscillation parameter, but the input systematic type \'"
                                << type_str <<  "\' was not set to 'special'.";
@@ -276,7 +276,7 @@ void Parameter::ReadCategories()
     }
   }
   else {
-    if(util::IsOscParam(fParam) && cat_nodes.size() == 0) {
+    if(!util::IsSystematic(fParam) && cat_nodes.size() == 0) {
       fCategories.push_back("oscillation");
     }
   }
@@ -312,7 +312,7 @@ void Parameter::ReadFitInfo()
   if(util::IsNodeSpecified(fxml, fParamNode, "update_from_cov_matrix")) {
     fUpdateFitInfo = util::XML2Bool(fxml, fParamNode, "update_from_cov_matrix");
     if(fType == conv::kSystSpecial) {
-      if(util::IsOscParam(fParam)) {
+      if(!util::IsSystematic(fParam)) {
         if(fUpdateFitInfo) {
           LOG("FitInputs", pNOTICE)
             << "For osc param \'" << fName
@@ -331,7 +331,7 @@ void Parameter::ReadFitInfo()
       fUpdateFitInfo = fDefUpdateFitInfo;
     }
     else {
-      if(util::IsOscParam(fParam)) {
+      if(!util::IsSystematic(fParam)) {
         fUpdateFitInfo = false;
       }
       else {
@@ -487,7 +487,7 @@ void Parameter::ReadFitInfo()
       fIsNuisance = fDefIsNuisance;
     }
     else {
-      if(util::IsOscParam(fParam)) {
+      if(!util::IsSystematic(fParam)) {
         fIsNuisance = false;
       }
       else {
@@ -509,7 +509,7 @@ void Parameter::ReadFitInfo()
       fDoMarginalise = fDefDoMarg;
     }
     else {
-      if(util::IsOscParam(fParam)) {
+      if(!util::IsSystematic(fParam)) {
         fDoMarginalise = false;
       }
       else {
