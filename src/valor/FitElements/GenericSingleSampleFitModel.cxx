@@ -1387,6 +1387,9 @@ void GenericSingleSampleFitModel::BuildParamLists()
           case kSystLateral:
             LOG("GenericSingleSampleFitModel",pFATAL) << "Cannot handle parameter "<<param.GetName()<<" ("<<fName<<")";
             util::Die(-1); return;
+          case kSystSpecial:
+            LOG("GenericSingleSampleFitModel",pFATAL) << "Cannot handle parameter "<<param.GetName()<<" ("<<fName<<")";
+            util::Die(-1); return;
           case kSystDisabled:
             break;
         } // switch type
