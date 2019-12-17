@@ -67,6 +67,7 @@ void Parameter::Init(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePoint
   fInit                       = 1.;
   fError                      = 1.;
   fRangeMode                  = "sigma";
+  fStepSizeMode               = "frac";
   fStepSize                   = 1.;
   fIsFixed                    = false;
   fIsNuisance                 = true;
@@ -77,11 +78,12 @@ void Parameter::Init(conv::PhysParamId_t param_id, TXMLEngine *xml, XMLNodePoint
   fTeXNameWasSpecified        = false;
   fCategoriesWasSpecified     = false;
   fHasLimitsWasSpecified      = false;
-  fLimitsWasSpecified         = false;
+  fPhysicalLimitsWasSpecified = false;
   fInitValueWasSpecified      = false;
   fErrorWasSpecified          = false;
   fThrowRangeModeWasSpecified = false;
   fThrowRangeWasSpecified     = false;
+  fStepSizeModeWasSpecified   = false;
   fStepSizeWasSpecified       = false;
   fIsFixedWasSpecified        = false;
   fIsNuisanceWasSpecified     = false;
@@ -294,13 +296,13 @@ void Parameter::ReadLimits()
 {
   if(util::IsNodeSpecified(fxml, fParamNode, "limits")) {
     fHasLimits = true;
-    fLimits = util::XML2DblDblPair(fxml, fParamNode, "limits");
+    fPhysicalLimits = util::XML2DblDblPair(fxml, fParamNode, "limits");
     fHasLimitsWasSpecified = true;
-    fLimitsWasSpecified = true;
+    fPhysicalLimitsWasSpecified = true;
   }
   else {
     fHasLimits = false;
-    fLimits = max_limits;
+    fPhysicalLimits = max_limits;
   }
 }
 //________________________________________________________________________________________
@@ -345,8 +347,6 @@ void Parameter::ReadFitInfo()
     fInitValueWasSpecified = true;
   }
   else {
-    // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
-    // that indicates this value can be overwritten
     fInit = fDefInit;
   }
 
@@ -356,8 +356,6 @@ void Parameter::ReadFitInfo()
     fErrorWasSpecified = true;
   }
   else {
-    // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
-    // that indicates this value can be overwritten
     fError = fDefError;
   }
 
@@ -375,11 +373,57 @@ void Parameter::ReadFitInfo()
   if(util::IsNodeSpecified(fxml, fParamNode, "range")) {
     fRange = util::XML2DblDblPair(fxml, fParamNode, "range");
     fThrowRangeWasSpecified = true;
+    fHasLimits = true;
   }
   else {
-    // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
-    // that indicates this value can be overwritten
-    fRange = std::make_pair(-fDefSymmetricRange, fDefSymmetricRange);
+    if(fType != conv::kSystSpecial) {
+      fRange = std::make_pair(-fDefSymmetricRange, fDefSymmetricRange);
+      fHasLimits = true;
+    }
+    else {
+      if(!util::IsSystematic(fParam)) {
+        fRange = max_limits;
+        fHasLimits = false;
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "Unsupported special case";
+        util::Die(1);
+      }
+    }
+  }
+
+  // Either the range_mode and the range must be specified together, or neither must be specified
+  if(!( ( fThrowRangeModeWasSpecified &&  fThrowRangeWasSpecified ) ||
+        (!fThrowRangeModeWasSpecified && !fThrowRangeWasSpecified ) )
+    ) {
+    LOG("FitInputs", pFATAL)
+      << "Either the 'range_mode' and the 'range' nodes must be specified together, or neither must be specified";
+    util::Die(1);
+  }
+
+  // If we're not going to update this range later and the range is specified in units of sigmas,
+  // convert it to an absolute range here
+  if(fHasLimits && !fUpdateFitInfo && fRangeMode == "sigma") {
+    if(fInitValueWasSpecified && fErrorWasSpecified) {
+      fRange.first  = fInit + fRange.first  * fError;
+      fRange.second = fInit + fRange.second * fError;
+      fRangeMode == "value";
+    }
+    else {
+      LOG("FitInputs", pFATAL) << "For parameter \'" << fName
+                               << "\', the throw range is specified in units of sigmas, "
+                               << "but both the initial value and the 1 sigma error must be specified";
+      util::Die(1);
+    }
+  }
+
+  // Step size mode
+  if(util::IsNodeSpecified(fxml, fParamNode, "step_mode")) {
+    fStepSizeMode = util::XML2String(fxml, fParamNode, "step_mode");
+    fStepSizeModeWasSpecified = true;
+  }
+  else {
+    fStepSizeMode = fDefStepSizeMode;
   }
 
   // Step size
@@ -388,10 +432,38 @@ void Parameter::ReadFitInfo()
     fStepSizeWasSpecified = true;
   }
   else {
-    // Set to a flag that can be recoginised by e.g. CorrelatedSystematics
-    // that indicates this value can be overwritten
-    // TODO: put in a better default for the step size
     fStepSize = fDefStepSizeFactor;
+  }
+
+  // Either the step_mode and the step size must be specified together, or neither must be specified
+  if(!( ( fStepSizeModeWasSpecified &&  fStepSizeWasSpecified ) ||
+        (!fStepSizeModeWasSpecified && !fStepSizeWasSpecified ) )
+    ) {
+    LOG("FitInputs", pFATAL)
+      << "Either the 'step_mode' and the 'step' nodes must be specified together, or neither must be specified";
+    util::Die(1);
+  }
+
+  // If the step size is specified as a fraction, make sure it's between 0 and 1
+  if(fStepSizeMode == "frac" && (fStepSize < 0 || fStepSize > 1)) {
+    LOG("FitInputs", pFATAL) << "The step size was specified to be a fraction of the range, but its value \'"
+                             << fStepSize <<"\' is outside of the range [0,1]";
+    util::Die(1);
+  }
+
+  // If we're not going to update the step size later and it's is specified as a fractional range,
+  // convert it to an absolute step size here
+  if(!fUpdateFitInfo && fStepSizeMode == "frac") {
+    if(fHasLimits) {
+      fStepSize = (this->GetLimits().second - this->GetLimits().first) * fStepSize;
+      fStepSizeMode == "value";
+    }
+    else {
+      LOG("FitInputs", pFATAL) << "For parameter \'" << fName
+                               << "\', the step size is specified as a fraction of the range of the limits, "
+                               << "but no limits were specified";
+      util::Die(1);
+    }
   }
 
   // Is fixed?
@@ -455,7 +527,8 @@ void Parameter::Print(std::ostream & stream) const
 {
   const vector<string>    & cats     = GetCategories();
   const vector<KineVar_t> & kinevars = GetKineVars();
-  std::pair<double,double> limits = GetLimits();
+  std::pair<double,double> physical_limits = GetPhysicalLimits();
+  std::pair<double,double> combined_limits = GetLimits();
   stream << "Parameter info:\n"
          << "    Current numerical ID: "<<fParam<<"\n"
          << "    Name (simple) = " << GetName()       << "\n"
@@ -485,16 +558,17 @@ void Parameter::Print(std::ostream & stream) const
   stream << "        True nu init flavour = "  << util::FlavMaskAsString         (fApply.flav_init)  << "\n";
   stream << "        True nu final flavour = " << util::FlavMaskAsString         (fApply.flav_final) << "\n";
   stream << "        Nuclear target = "        << util::NuclearTargetMaskAsString(fApply.target)     << "\n";
-  stream << "    Physical limits = ["          << limits.first << ", " << limits.second << "]"       << "\n";
+  stream << "    Physical limits = ["          << physical_limits.first << ", " << physical_limits.second << "]" << "\n";
+  stream << "    Combined limits (physical and throw range) = [" << combined_limits.first << ", " << combined_limits.second << "]" << "\n";
   stream << "    Fit info:\n";
-  stream << "        Initial value = " << fInit                                 << "\n";
-  stream << "        Error = "         << fError                                << "\n";
-  stream << "        Range mode = "    << fRangeMode                            << "\n";
-  stream << "        Range = ["        << fRange.first << ", " << fRange.second << "]\n";
-  stream << "        Step size = "     << fStepSize                             << "\n";
-  stream << "        Fixed? "          << fIsFixed                              << "\n";
-  stream << "        Nuisance? "       << fIsNuisance                           << "\n";
-  stream << "        Marginalise? "    << fDoMarginalise                        << "\n";
+  stream << "        Initial value = " << fInit                                    << "\n";
+  stream << "        Error = "         << fError                                   << "\n";
+  stream << "        Range mode = "    << fRangeMode                               << "\n";
+  stream << "        Range = ["        << fRange.first << ", " << fRange.second    << "]\n";
+  stream << "        Step size = "     << fStepSize                                << "\n";
+  stream << "        Fixed? "          << fIsFixed                                 << "\n";
+  stream << "        Nuisance? "       << fIsNuisance                              << "\n";
+  stream << "        Marginalise? "    << fDoMarginalise                           << "\n";
   stream << "        Will be updated by CorrelatedSystematics? " << fUpdateFitInfo << "\n";
   stream << std::endl;
 }
@@ -529,12 +603,34 @@ const std::pair<double,double> & Parameter::GetKineRange(conv::KineVar_t kv) con
   return max_limits;
 }
 //________________________________________________________________________________________
+std::pair<double,double> Parameter::GetLimits (void) const
+{
+  std::pair<double,double> limits;
+  double min1 = this->GetPhysicalLimits().first;
+  double min2 = this->GetThrowRange()    .first;
+  double max1 = this->GetPhysicalLimits().second;
+  double max2 = this->GetThrowRange()    .second;
+
+  // If the throw range is not 'value', convert it
+  if(this->GetThrowRangeMode() == "sigma") {
+    // Then min2 and max2 are in units of sigmas from the initial value
+    min2 = this->GetInitValue() + min2 * this->GetError();
+    max2 = this->GetInitValue() + max2 * this->GetError();
+  }
+
+  // Return the tighter set of limits
+  limits.first  = std::max(min1, min2);
+  limits.second = std::min(max1, max2);
+  return limits;
+}
+//________________________________________________________________________________________
 bool Parameter::IsWithinLimits(double val) const
 {
   if (!fHasLimits) {
     return true;
   }
-  if (val >= fLimits.first && val <= fLimits.second) {
+  const std::pair<double,double> limits = this->GetLimits();
+  if (val >= limits.first && val <= limits.second) {
     return true;
   }
   return false;
@@ -543,37 +639,9 @@ bool Parameter::IsWithinLimits(double val) const
 double Parameter::GetNearestPhysicalValue(double curr_val) const
 {
   if (this->IsWithinLimits(curr_val)) {return curr_val;}
-  if (curr_val < fLimits.first)       {return fLimits.first;}
-  return fLimits.second;
-}
-//________________________________________________________________________________________
-void Parameter::SetDefaultInitValue(void)
-{
-  fInit = fDefInit;
-  LOG("FitInputs", pWARN) << "Setting initial value to default (" << fDefInit
-                          << ") for parameter \'" << fName << "\'";
-}
-//________________________________________________________________________________________
-void Parameter::SetDefaultError(void)
-{
-  fError = fDefError;
-  LOG("FitInputs", pWARN) << "Setting initial value to default (" << fDefError
-                          << ") for parameter \'" << fName << "\'";
-}
-//________________________________________________________________________________________
-void Parameter::SetDefaultThrowRange(void)
-{
-  fRange.first  = fDefInit - fDefSymmetricRange * fDefError;
-  fRange.second = fDefInit + fDefSymmetricRange * fDefError;
-  LOG("FitInputs", pWARN) << "Setting range to default [" << fRange.first << ", "
-                          << fRange.second << "] for parameter \'" << fName << "\'";
-}
-//________________________________________________________________________________________
-void Parameter::SetDefaultStepSize(void)
-{
-  fStepSize = fDefStepSizeFactor * (fRange.second - fRange.first);
-  LOG("FitInputs", pWARN) << "Setting step size to default (" << fStepSize
-                          << ") for parameter \'" << fName << "\'";
+  const std::pair<double,double> limits = this->GetLimits();
+  if (curr_val < limits.first) {return limits.first;}
+  return limits.second;
 }
 //________________________________________________________________________________________
 const std::string util::ReadSimpleName(TXMLEngine* xml, const XMLNodePointer_t& param_node)
