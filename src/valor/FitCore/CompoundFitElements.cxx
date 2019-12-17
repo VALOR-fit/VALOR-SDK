@@ -268,6 +268,8 @@ bool CompoundFitElements::ReadParameterList (
   while(curr_node) {
     std::string curr_node_name = xmleng->GetNodeName(curr_node);
     if(!strcmp(curr_node_name.c_str(),"filename")) {
+      LOG("CompoundFitElements", pNOTICE)
+        << "Reading parameter list named \'" << xmleng->GetAttr(curr_node, "desc") << "\' into the parameter pool";
       string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
       ParameterPool::MutableInstance()->ReadXML(content);
     }
