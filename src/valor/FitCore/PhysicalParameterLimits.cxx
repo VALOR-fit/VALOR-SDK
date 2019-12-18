@@ -95,31 +95,6 @@ bool valor::PhysicalParameterLimits::IsWithinLimits(conv::PhysParamId_t p, doubl
   return false;
 }
 //____________________________________________________________________________
-bool valor::PhysicalParameterLimits::AllWithinLimits(const FitParamList & fparm) const
-{
-  for (int iparam = 0 ; iparam < fparm.Size(); iparam++) {
-    PhysParamId_t p = fparm.WhichParam(iparam);
-    double value = fparm.CurrValueByIndex(iparam);
-    if (not this->IsWithinLimits(p,value)) {
-      return false;
-    }
-  }
-  return true;
-}
-//____________________________________________________________________________
-bool valor::PhysicalParameterLimits::AllWithinLimits(const PhysParamList & pparm) const
-{
-  for (int iparam = 0 ; iparam < conv::knppmax; iparam++) {
-    PhysParamId_t p = PhysParamId_t(iparam);
-    if (not pparm.Contains(p)) continue;
-    double value = pparm.Value(p);
-    if (not this->IsWithinLimits(p,value)) {
-      return false;
-    }
-  }
-  return true;
-}
-//____________________________________________________________________________
 const map<int,double> & valor::PhysicalParameterLimits::Minima(void) const
 {
   return fParamMinima;
