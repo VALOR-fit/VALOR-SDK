@@ -33,6 +33,10 @@ namespace util {
   // Constructs and returns a FitParamList from the ParameterPool
   FitParamList * GetFitParameterList (const PhysHypothesis& hypothesis , Option_t * param_opt = "");
   FitParamList * GetFitParameterList (std::string hypothesis_name, Option_t * param_opt = "");
+
+  // Are the current values of all params in the fit param list (or phys param list) within their respective limits?
+  bool AllWithinLimits(const FitParamList & fparm);
+  bool AllWithinLimits(const PhysParamList & pparm);
 } //util
 
 } // valor

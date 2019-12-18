@@ -11,7 +11,7 @@
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/ToyStream.h"
-#include "valor/FitCore/PhysicalParameterLimits.h"
+#include "valor/FitCore/UtlFitParamList.h"
 #include "valor/FitCore/UtlOscillation.h"
 
 //#define VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
@@ -77,8 +77,6 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
 
    std::string filename = oss.str();
 
-   PhysicalParameterLimits* limits = PhysicalParameterLimits::Instance();
-
    // Create a file to store this batch of toys
    util::ToyStream* toy_stream = nullptr;
    if(_toys_are_marginalisation) {
@@ -132,7 +130,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
 #endif
 
          // Check parameter name, maybe rethrow
-         if(rethrowUnphysical && !limits->AllWithinLimits(fpl))
+         if(rethrowUnphysical && !util::AllWithinLimits(fpl))
          {
             n_rethrows++;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED

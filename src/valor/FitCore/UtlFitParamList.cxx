@@ -183,3 +183,40 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   return fparm;
 }
 //____________________________________________________________________________
+bool util::AllWithinLimits(const FitParamList & fparm)
+{
+  for (int iparam = 0 ; iparam < fparm.Size(); iparam++) {
+    PhysParamId_t p = fparm.WhichParam(iparam);
+    if(!ParameterPool::Instance()->IsParamInPool(p)) {
+      LOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
+                               << "\' was in the FPL but not the ParameterPool";
+      util::Die(-1);
+    }
+    const Parameter & param = ParameterPool::Instance()->GetParam(p);
+
+    double value = fparm.CurrValueByIndex(iparam);
+    if (not param.IsWithinLimits(value)) {
+      return false;
+    }
+  }
+  return true;
+}
+//____________________________________________________________________________
+bool util::AllWithinLimits(const PhysParamList & pparm)
+{
+  for (int iparam = 0 ; iparam < conv::knppmax; iparam++) {
+    PhysParamId_t p = PhysParamId_t(iparam);
+    if (not pparm.Contains(p)) continue;
+    if(!ParameterPool::Instance()->IsParamInPool(p)) {
+      LOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
+                               << "\' was in the PhysParamList but not the ParameterPool";
+      util::Die(-1);
+    }
+    double value = pparm.Value(p);
+    if (not param.IsWithinLimits(value)) {
+      return false;
+    }
+  }
+  return true;
+}
+//____________________________________________________________________________

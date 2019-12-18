@@ -44,8 +44,6 @@ public:
   double GetNearestPhysicalValue(conv::PhysParamId_t p, double v) const;
   
   bool IsWithinLimits(conv::PhysParamId_t p, double v) const;
-  bool AllWithinLimits(const FitParamList & fparm) const;
-  bool AllWithinLimits(const PhysParamList & fparm) const;
 
   const std::map<int,double> & Minima(void) const;
   const std::map<int,double> & Maxima(void) const;
