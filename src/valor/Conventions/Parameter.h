@@ -136,10 +136,6 @@
 
 \copyright (c) 2010-2018, The VALOR Fitting Group, All Rights Reserved
 
-
-  // TODO: Merge the limits and the throw range into a single range right after readign after after updating from CorrelatedSystematics, then use the this range instead of PhysicalParameterLimits.
-  // TODO: e.g. rename GetLimits() --> GetPhysicalLimits(), then add a GetLimits() which uses both the physical limits and the throw range
-
 */
 //____________________________________________________________________________
 
@@ -178,7 +174,7 @@ namespace valor {
       const double                   &   GetInitValue     (void) const { return fInit;             }
       const double                   &   GetError         (void) const { return fError;            }
       const std::string              &   GetThrowRangeMode(void) const { return fRangeMode;        }    // TODO: Make this an enum instead...
-      const std::pair<double,double> &   GetThrowRange    (void) const { return fRange;            }    // TODO: Rename to GetThrowLimits()?
+      const std::pair<double,double> &   GetThrowRange    (void) const { return fRange;            }
       const std::string              &   GetStepSizeMode  (void) const { return fStepSizeMode;     }    // TODO: Make this an enum instead...
       const double                   &   GetStepSize      (void) const { return fStepSize;         }
       const bool                     &   IsFixed          (void) const { return fIsFixed;          }
