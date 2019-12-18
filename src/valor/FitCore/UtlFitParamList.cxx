@@ -44,6 +44,7 @@ options after list construction
 
 // fmwk
 #include "valor/FitCore/UtlFitParamList.h"
+#include "valor/FitCore/PhysParamList.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/NameRegistry.h"
@@ -202,7 +203,7 @@ bool util::AllWithinLimits(const FitParamList & fparm)
   return true;
 }
 //____________________________________________________________________________
-bool util::AllWithinLimits(const PhysParamList & pparm)
+bool util::AllWithinLimits(const valor::PhysParamList & pparm)
 {
   for (int iparam = 0 ; iparam < conv::knppmax; iparam++) {
     PhysParamId_t p = PhysParamId_t(iparam);
@@ -212,6 +213,7 @@ bool util::AllWithinLimits(const PhysParamList & pparm)
                                << "\' was in the PhysParamList but not the ParameterPool";
       util::Die(-1);
     }
+    const Parameter & param = ParameterPool::Instance()->GetParam(p);
     double value = pparm.Value(p);
     if (not param.IsWithinLimits(value)) {
       return false;

@@ -27,6 +27,7 @@
 //fmwk
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/PhysHypothesis.h"
+#include "valor/FitCore/PhysParamList.h"
 
 namespace valor {
 namespace util {
