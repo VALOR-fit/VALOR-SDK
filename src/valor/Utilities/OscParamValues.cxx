@@ -312,51 +312,6 @@ double util::OscParamStepSize (conv::PhysParamId_t p, std::string target_scheme_
   return val * (max_converted - min_converted) / (max_unconverted - min_unconverted);
 }
 //________________________________________________________________________________________
-void util::InitializeOAPriors()
-{
-  NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
-  NuOscDmsqScheme_t  dmsqscheme = Opt::Instance()->GetEffectiveDmsqScheme();
-  
-  for (int ip = 0 ; ip < conv::kNuis000 ; ip++) {
-    PhysParamId_t p = (PhysParamId_t) ip;
-    Opt::Instance()->SetGlobalBestFit (p,util::OscParamInitValue(p));
-    Opt::Instance()->SetGlobalFitError(p,util::OscParamInitError(p));
-  }
-    
-  Opt::Instance()->SetGlobalBestFit (kPhypDm12sq,valor::conv::duneosc::kInitDm12sq);
-  Opt::Instance()->SetGlobalFitError(kPhypDm12sq,valor::conv::duneosc::kInitErrDm12sq);
-  Opt::Instance()->SetGlobalBestFit (kPhypCPV,valor::conv::duneosc::kInitDeltaCP);
-  Opt::Instance()->SetGlobalFitError(kPhypCPV,valor::conv::duneosc::kInitErrDeltaCP);
-  if(omp==kNuMixSinsq2Theta){
-    Opt::Instance()->SetGlobalBestFit (kPhypMixing23,valor::conv::duneosc::kInitSinsq2Theta23);
-    Opt::Instance()->SetGlobalFitError(kPhypMixing23,valor::conv::duneosc::kInitErrSinsq2Theta23);
-
-    Opt::Instance()->SetGlobalBestFit (kPhypMixing12,valor::conv::duneosc::kInitSinsq2Theta12);
-    Opt::Instance()->SetGlobalFitError(kPhypMixing12,valor::conv::duneosc::kInitErrSinsq2Theta12);
-
-    Opt::Instance()->SetGlobalBestFit (kPhypMixing13,valor::conv::duneosc::kInitSinsq2Theta13);
-    Opt::Instance()->SetGlobalFitError(kPhypMixing13,valor::conv::duneosc::kInitErrSinsq2Theta13);
-  }
-  else{
-    Opt::Instance()->SetGlobalBestFit (kPhypMixing23,valor::conv::duneosc::kInitSinsqTheta23);
-    Opt::Instance()->SetGlobalFitError(kPhypMixing23,valor::conv::duneosc::kInitErrSinsqTheta23);
-
-    Opt::Instance()->SetGlobalBestFit (kPhypMixing12,valor::conv::duneosc::kInitSinsqTheta12);
-    Opt::Instance()->SetGlobalFitError(kPhypMixing12,valor::conv::duneosc::kInitErrSinsqTheta12);
-
-    Opt::Instance()->SetGlobalBestFit (kPhypMixing13,valor::conv::duneosc::kInitSinsqTheta13);
-    Opt::Instance()->SetGlobalFitError(kPhypMixing13,valor::conv::duneosc::kInitErrSinsqTheta13);
-  }
-
-  if(dmsqscheme==kNuDmsqFogliLisi)
-    Opt::Instance()->SetGlobalBestFit (kPhypDm23sq,valor::conv::duneosc::kInitDmFL);
-  else
-    Opt::Instance()->SetGlobalBestFit (kPhypDm23sq,valor::conv::duneosc::kInitDm23sq);
-
-  Opt::Instance()->SetGlobalFitError(kPhypDm23sq,valor::conv::duneosc::kInitErrDm23sq);
-
-}
-//________________________________________________________________________________________
 double util::ConvertOscParamToUsedScheme(PhysParamId_t p, double val, std::string val_scheme_name, std::string target_scheme_name)
 {
   double converted_val;
