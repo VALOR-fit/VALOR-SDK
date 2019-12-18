@@ -36,8 +36,6 @@
 
 #pragma link C++ class valor::FitterABC_new+;
 
-#pragma link C++ class valor::PhysicalParameterLimits+;
-
 #pragma link C++ class std::vector<std::vector<float> >;
 
 #endif
