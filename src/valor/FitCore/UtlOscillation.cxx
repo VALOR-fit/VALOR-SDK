@@ -9,12 +9,15 @@
 #include "valor/Conventions/NuMassHierarchy.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/PhysParamId.h"
+#include "valor/Conventions/PhysHypothesisId.h"
+#include "valor/Conventions/ParameterPool.h"
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlNumStat.h"
 #include "valor/Utilities/Rnd.h"
+#include "valor/FitCore/PhysHypothesis.h"
 
 #include <TSystem.h>
 #include <TMath.h>
@@ -29,16 +32,20 @@ namespace oscillation
 {
 void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
 {
-   string osc_parameters[7] = { "mixing12", "mixing13", "mixing23", "dm23sq",
-      "dm12sq", "dm13sq", "cpv" };
+   const conv::PhysHypothesis_t hyp_id = fpl.PhysicsHypothesis();
+   if(hyp_id == conv::kHypUndefined) {
+      LOG("UtlOscillation", pFATAL) << "Could not get a physics hypothesis from the input FitParamList";
+      util::Die(-1);
+   }
+   const PhysHypothesis hyp(hyp_id);
+   const std::vector<conv::PhysParamId_t> osc_parameters = hyp.GetParams();
 
    string free_param1 = arg.GetString("fit-param1");
    string free_param2 = arg.Exists("fit-param2") ? arg.GetString("fit-param2") : "";
 
-   for(int i = 0; i < 7; ++i)
+   for(valor::conv::PhysParamId_t p : osc_parameters)
    {
-      valor::conv::PhysParamId_t p = util::NameRegistry::Instance()->PhysParamFromString(
-            osc_parameters[i].c_str());
+      std::string simple_name = util::NameRegistry::Instance()->ParamAsStringVerySimple(p);
       if(fpl.Exists(p))
       {
          if(!ParameterPool::Instance()->IsParamInPool(p)) {
@@ -47,8 +54,7 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
             util::Die(-1);
          }
          const Parameter & param = ParameterPool::Instance()->GetParam(p);
-         double fix_value = arg.GetDouble(TString::Format("fix-at-%s",
-                  osc_parameters[i].c_str()).Data());
+         double fix_value = arg.GetDouble(TString::Format("fix-at-%s", simple_name.c_str()).Data());
          double min_value = param.GetLimits().first;
          double max_value = param.GetLimits().second;
          if(fix_value >= min_value && fix_value < max_value)
@@ -59,11 +65,11 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
             LOG("UtlOscillation", pNOTICE) << "Setting fixed parameter "
                                            << util::NameRegistry::Instance()->ParamAsString(p) << " := " << fix_value;
          }
-         else if(free_param1 == osc_parameters[i] ||
-            free_param2 == osc_parameters[i])
+         else if(free_param1 == simple_name ||
+                 free_param2 == simple_name)
          {
             double free_value = 0.0;
-            if(free_param1 == osc_parameters[i])
+            if(free_param1 == simple_name)
             {
                free_value = arg.GetDouble("fit-param1-value");
             }
@@ -329,16 +335,19 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
 //____________________________________________________________________________
 void ThrowOscillationParameters(FitParamList& fpl)
 {
-   string osc_parameters[7] = { "mixing12", "mixing13", "mixing23", "dm12sq",
-                                "dm23sq", "dm13sq", "cpv" };
+   const conv::PhysHypothesis_t hyp_id = fpl.PhysicsHypothesis();
+   if(hyp_id == conv::kHypUndefined) {
+      LOG("UtlOscillation", pFATAL) << "Could not get a physics hypothesis from the input FitParamList";
+      util::Die(-1);
+   }
+   const PhysHypothesis hyp(hyp_id);
+   const std::vector<conv::PhysParamId_t> osc_parameters = hyp.GetParams();
 
    // First check if we're using any 1D or 2D hists as priors
    std::vector<conv::PhysParamId_t> pars_with_1D_priors;
    std::vector<conv::PhysParamId_t> pars_with_2D_prior_hists;
-   for(int i = 0; i < 7; ++i)
+   for(valor::conv::PhysParamId_t p : osc_parameters)
    {
-      conv::PhysParamId_t p = util::NameRegistry::Instance()->PhysParamFromString(
-        osc_parameters[i].c_str());
       if(fpl.Exists(p) && fpl.IsMarginalized(p))
       {
          if(fpl.GetPriorModeName(p) == "user") {
@@ -437,15 +446,15 @@ double GetRandomizedOscParam(conv::PhysParamId_t p, FitParamList& fpl)
   if(mode == "flat")
   {
      // Get the limits imposed by the prior
-     double min = fpl.GetMinValueFlat(p);
-     double max = fpl.GetMaxValueFlat(p);
+     double min_prior = fpl.GetMinValueFlat(p);
+     double max_prior = fpl.GetMaxValueFlat(p);
 
-     value = min - 1.0;
+     value = min_prior - 1.0;
      do
      {
-        value = Rnd::Instance()->RndToyMCosc().Uniform(min, max);
+        value = Rnd::Instance()->RndToyMCosc().Uniform(min_prior, max_prior);
      }
-     while(value < min || value > max);
+     while(value < min || value > max || value < min_prior || value > max_prior);
   }
   else if(mode == "gaus")
   {
@@ -526,11 +535,16 @@ std::map<conv::PhysParamId_t,double> GetRandomizedOscParams2DCorrelated(std::pai
   string target_scheme_name_p1 = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
 
   // Rethrow until we get a value inside the physical limits
-  if(!ParameterPool::Instance()->IsParamInPool(p)) {
-     LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
+  if(!ParameterPool::Instance()->IsParamInPool(p0)) {
+     LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p0)
                                    << "\' was in the FPL but not the ParameterPool";
      util::Die(-1);
   }
+   if(!ParameterPool::Instance()->IsParamInPool(p1)) {
+      LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p1)
+                                    << "\' was in the FPL but not the ParameterPool";
+      util::Die(-1);
+   }
   const Parameter & param0 = ParameterPool::Instance()->GetParam(p0);
   const Parameter & param1 = ParameterPool::Instance()->GetParam(p1);
   double min0 = param0.GetLimits().first;
