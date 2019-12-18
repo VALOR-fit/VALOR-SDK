@@ -41,10 +41,16 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
             osc_parameters[i].c_str());
       if(fpl.Exists(p))
       {
+         if(!ParameterPool::Instance()->IsParamInPool(p)) {
+            LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
+                                          << "\' was in the FPL but not the ParameterPool";
+            util::Die(-1);
+         }
+         const Parameter & param = ParameterPool::Instance()->GetParam(p);
          double fix_value = arg.GetDouble(TString::Format("fix-at-%s",
                   osc_parameters[i].c_str()).Data());
-         double min_value = util::OscParamMinValue(p);
-         double max_value = util::OscParamMaxValue(p);
+         double min_value = param.GetLimits().first;
+         double max_value = param.GetLimits().second;
          if(fix_value >= min_value && fix_value < max_value)
          {
             fpl.Update(p, fix_value);
@@ -417,6 +423,15 @@ double GetRandomizedOscParam(conv::PhysParamId_t p, FitParamList& fpl)
   string prior_scheme_name  = fpl.GetPriorSchemeName(p);
   string target_scheme_name = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
 
+  if(!ParameterPool::Instance()->IsParamInPool(p)) {
+     LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
+                                   << "\' was in the FPL but not the ParameterPool";
+     util::Die(-1);
+  }
+  const Parameter & param = ParameterPool::Instance()->GetParam(p);
+  double min = param.GetLimits().first;
+  double max = param.GetLimits().second;
+
   double value = -999;
 
   if(mode == "flat")
@@ -438,8 +453,6 @@ double GetRandomizedOscParam(conv::PhysParamId_t p, FitParamList& fpl)
      double sigma = fpl.GetSigmaGaus(p);
      // Get the absolute physical limits, these are hard-coded assuming some conventions,
      // so are converted to the conventions used for the throw in e.g. OscParamMinValue
-     double min = util::OscParamMinValue(p, prior_scheme_name);
-     double max = util::OscParamMaxValue(p, prior_scheme_name);
 
      value = min - 1.0;
      do
@@ -449,8 +462,6 @@ double GetRandomizedOscParam(conv::PhysParamId_t p, FitParamList& fpl)
      while(value < min || value > max);
   }
   else if(fpl.GetPriorHisto(p)) {
-     double min = util::OscParamMinValue(p, prior_scheme_name);
-     double max = util::OscParamMaxValue(p, prior_scheme_name);
      value = min - 1.0;
      do
      {
@@ -515,10 +526,17 @@ std::map<conv::PhysParamId_t,double> GetRandomizedOscParams2DCorrelated(std::pai
   string target_scheme_name_p1 = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
 
   // Rethrow until we get a value inside the physical limits
-  double min0 = util::OscParamMinValue(p0, prior_scheme_name_p0);
-  double max0 = util::OscParamMaxValue(p0, prior_scheme_name_p0);
-  double min1 = util::OscParamMinValue(p1, prior_scheme_name_p1);
-  double max1 = util::OscParamMaxValue(p1, prior_scheme_name_p1);
+  if(!ParameterPool::Instance()->IsParamInPool(p)) {
+     LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
+                                   << "\' was in the FPL but not the ParameterPool";
+     util::Die(-1);
+  }
+  const Parameter & param0 = ParameterPool::Instance()->GetParam(p0);
+  const Parameter & param1 = ParameterPool::Instance()->GetParam(p1);
+  double min0 = param0.GetLimits().first;
+  double max0 = param0.GetLimits().second;
+  double min1 = param1.GetLimits().first;
+  double max1 = param1.GetLimits().second;
 
   double value0 = min0 - 1.0;
   double value1 = min1 - 1.0;
