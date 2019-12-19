@@ -15,7 +15,6 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 
 #include "valor/Conventions/NuclearTarget.h"
 #include "valor/Conventions/ParameterPool.h"
-#include "valor/Conventions/ExperimentSetup.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/UtlNumStat.h"
@@ -41,9 +40,6 @@ const util::Interpolator * valor::util::RFL::kFlatSpline =
 
 // We'll never use this address to dereference - it can be passed as a flag indicating that no spline should exist.
 const util::Interpolator* valor::util::RFL::kNoSplineRequired = (util::Interpolator*)&conv::kBadResult;
-
-// Experiment setup
-static const ExperimentSetup & es = *ExperimentSetup::Instance();
 
 //________________________________________________________________________________________
 namespace valor {
@@ -89,6 +85,7 @@ fSplineBlockSize(0),
 fBeam          (fBinning->GetBeamConf()),
 fSample        (fBinning->GetSample()),
 fDetector      (fBinning->GetDetector()),
+fModes         (fBinning->GetReactionModes()),
 fNParams       (n_params),
 fParams        (NULL),
 fNBinsTrue     (1),
@@ -102,10 +99,6 @@ fForceNegWghtTo(0.0)
 {
   fParams = new PhysParamId_t[fNParams];
   memcpy(fParams, param_ids, fNParams*sizeof(PhysParamId_t));
-  
-  int beam_idx = es.BeamConfIndex(fBeam);
-  int sample_idx = es.SampleIndex(fBeam,fSample);
-  fModes = es.ReactionModes()[beam_idx][sample_idx];
   
   // Fill parameter to index
   for (int ip = 0 ; ip < conv::knppmax ; ip++ ) {
@@ -121,12 +114,15 @@ fForceNegWghtTo(0.0)
   const VALORBinning  * reco_ob = fBinning->XsecRecoBinning();
 
   fNBinsReco  = reco_ob->NBins();
-  // Calculate max bin numbers
+  // Calculate max bin numbers and save the vector mapping mode back to index
+  fReactionModeIndex.resize(conv::kNReacModes,-1);
   for (size_t im = 0 ; im < fModes.size() ; im++) {
     conv::ReacMode_t m = fModes[im];
     if (m == conv::kmUndefined) continue;
     const VALORBinning * true_sb = fBinning->XsecTrueBinning(m);
     fNBinsTrue = std::max(fNBinsTrue,true_sb->NBins());
+    
+    fReactionModeIndex[m] = im;
   }
 }
 //________________________________________________________________________________________
@@ -155,10 +151,8 @@ const util::Interpolator* valor::util::RFL::GetSpline (
   conv::ReacMode_t m, conv::PhysParamId_t p,
   const int & itrue, const int & ireco) const
 {
-  
-  const int im = es.ReacModeIndex(fBeam,fSample,m);
   const int ip = this->Param2Idx(p);
-  
+  long im = fReactionModeIndex[m];
   const int splidx = SplineIndex(im,ip,itrue,ireco);
   
   return fSplines[splidx];

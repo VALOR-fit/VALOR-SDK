@@ -77,8 +77,8 @@ namespace valor {
 class SingleSampleKineBinning {
 
 public:
-  SingleSampleKineBinning(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s);
-  SingleSampleKineBinning(UniqueSampleID usid);
+  SingleSampleKineBinning(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, const std::vector<conv::ReacMode_t> & modes);
+  SingleSampleKineBinning(UniqueSampleID usid, const std::vector<conv::ReacMode_t> & modes);
  ~SingleSampleKineBinning();
 
   bool Read(string file);
@@ -88,7 +88,7 @@ public:
   const VALORBinning * TrueSmpBinning(int im) const { return fTrueSimpleBinning [im];  }
   // Return Simple Binning for the reaction mode, m
   const VALORBinning * TrueSmpBinning(conv::ReacMode_t m) const;
-
+  
   // Cross sections binnings. For now truth is always the same as the simple binning, and reco is always optimised
   const VALORBinning * XsecRecoBinning(void              )  const { return fXsecRecoBinning  ;}
   const VALORBinning * XsecTrueBinning(conv::ReacMode_t m)  const;
@@ -106,15 +106,21 @@ public:
   const std::vector<conv::KineVar_t> & TrueKineVars() const;
   const std::vector<conv::KineVar_t> & RecoKineVars() const;
 
+  // Get a lit of the modes this binning is defined for
+  const std::vector<conv::ReacMode_t> & GetReactionModes() const;
+
 private:
 
   void Init    (void);
   void CleanUp (void);
 
   void CheckBinEdges(VALORBinning *opt_binning, VALORBinning *smp_binning) const;
-
+  
   // The list of reaction modes we're using
   std::vector<conv::ReacMode_t> fReactionModes;
+  // and a mapping from these to their index in here
+  std::vector<long> fReactionModeIndex;
+
 
   conv::Detector_t                  fDetector;
   conv::BeamConf_t                  fBeamConf;
@@ -122,13 +128,13 @@ private:
   VALORBinning *                    fRecoOptimizedBinning;     //
   VALORBinning *                    fRecoSimpleBinning;        //
   std::vector<VALORBinning *>       fTrueSimpleBinning;        // Per mode
-  std::vector<VALORBinning *>       fTrueSimpleBinningUnique;  //
-
-
+  std::vector<VALORBinning *>       fTrueSimpleBinningUnique;  // 
+  
+  
   VALORBinning *              fXsecRecoBinning;        // Binning for Xsec splines
   std::vector<VALORBinning *> fXsecTrueBinning;        // Per mode
-  std::vector<VALORBinning *> fXsecTrueBinningUnique;  //
-
+  std::vector<VALORBinning *> fXsecTrueBinningUnique;  // 
+  
   std::vector<conv::KineVar_t> fKineVars;
   std::vector<conv::KineVar_t> fRecoKineVars;
   std::vector<conv::KineVar_t> fTrueKineVars;

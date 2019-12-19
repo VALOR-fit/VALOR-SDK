@@ -185,8 +185,8 @@ private:
   std::vector<conv::PhysParamId_t> fLateralPostOscParams;
 
   // Keep a list of the parameters for every given mode
-  std::vector<conv::PhysParamId_t> fNormParamsAppliedTo  [conv::kNReacModes];
-  std::vector<conv::PhysParamId_t> fSplineParamsAppliedTo[conv::kNReacModes];
+  std::vector<std::vector<conv::PhysParamId_t>> fNormParamsAppliedTo  ;
+  std::vector<std::vector<conv::PhysParamId_t>> fSplineParamsAppliedTo;
   
   // Fill these arrays
   void BuildParamLists();
@@ -236,13 +236,12 @@ private:
   //   correlated flux and cross-sections). The effect of their variation is included in the fin templates.
   //
   // Below are MCT with binning heavily optimized to reduce the CPU intensity of the fit.
-  // A number of binning zones are defined, and in each zone a variable-size binning scheme is used.
-  bool         fMCTNullOb [conv::kNReacModes];
-  VALORArray * fMCTNomOb  [conv::kNReacModes]; 
-  VALORArray * fMCTTunOb  [conv::kNReacModes]; 
-  VALORArray * fMCTSysOb  [conv::kNReacModes]; 
-  VALORArray * fMCTFinOb  [conv::kNReacModes]; 
-  VALORArray * fMCStatOb  [conv::kNReacModes]; // MC statistics
+  std::vector<bool        >fMCTNullOb;
+  std::vector<VALORArray *>fMCTNomOb ; 
+  std::vector<VALORArray *>fMCTTunOb ; 
+  std::vector<VALORArray *>fMCTSysOb ; 
+  std::vector<VALORArray *>fMCTFinOb ; 
+  std::vector<VALORArray *>fMCStatOb ; // MC statistics
   
   // We'll keep our response function pointers in a VALORArray of longs.
   // If we move to C++ 11, should use intptr_t instead.
@@ -252,12 +251,12 @@ private:
   // Below are MCT versions the use a simple (~fine and ~regular) binning throughout the whole range.
   // These templates are not used in the fit, but mainly for the visualization of the fit results.
   // As such, they are not all filled-in in each iteration of the fit but, typically, at the end of the fit or upon request.
-  bool         fMCTNullSb [conv::kNReacModes];
-  VALORArray * fMCTNomSb  [conv::kNReacModes]; 
-  VALORArray * fMCTTunSb  [conv::kNReacModes]; 
-  VALORArray * fMCTSysSb  [conv::kNReacModes]; 
-  VALORArray * fMCTFinSb  [conv::kNReacModes]; 
-  VALORArray * fMCStatSb  [conv::kNReacModes]; // MC statistics
+  std::vector<bool        > fMCTNullSb;
+  std::vector<VALORArray *> fMCTNomSb ; 
+  std::vector<VALORArray *> fMCTTunSb ; 
+  std::vector<VALORArray *> fMCTSysSb ; 
+  std::vector<VALORArray *> fMCTFinSb ; 
+  std::vector<VALORArray *> fMCStatSb ; // MC statistics
 
   // MC PDFs
   // Each PDF is (currently always) a 2-D Nev = Nev(Enu_reco, y_reco) array that can be directly compared with data.
@@ -266,19 +265,21 @@ private:
   // The `Tot' versions are integrated over the true reac_modes and can be used for comparisons with data.
   //
   // Below are PDFs with binning heavily optimized to reduce the CPU intensity of the fit.
-  bool         fPDFTotNullOb;                     //
-  VALORArray * fPDFTotOb    ;                     // total
-  VALORArray * fPDFCompOb    [conv::kNReacModes]; // components
+  bool                      fPDFTotNullOb; //
+  VALORArray *              fPDFTotOb    ; // total
+  std::vector<VALORArray *> fPDFCompOb   ; // components
   // Below are PDFs versions the use a simple (~fine and ~regular) binning throughout the whole range.
-  bool         fPDFTotNullSb;                     // 
-  VALORArray * fPDFTotSb;                         // total
-  VALORArray * fPDFCompSb    [conv::kNReacModes]; // components
+  bool         fPDFTotNullSb;           // 
+  VALORArray * fPDFTotSb;               // total
+  std::vector<VALORArray *> fPDFCompSb; // components
   
   // Binning
   SingleSampleKineBinning * fBinning;
   
   // The list of reaction modes we're using
   std::vector<conv::ReacMode_t> fReactionModes;
+  // and a mapping from these to their index in here
+  std::vector<long> fReactionModeIndex;
   
   // Spline library
   util::RFL * fRFL;
