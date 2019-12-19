@@ -2505,7 +2505,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifndef __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__
         f = TMath::Max(0.,f);
 #else
-        if(es.ExperimentName() == "T2K"){
+        if(fRFL->DoesForceNegWghtToExist()){
           if(f < 0) {
             if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
           }
@@ -2700,7 +2700,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifndef __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__
         noEt = TMath::Max(0.,noEt);
 #else
-        if(es.ExperimentName() == "T2K"){
+        if(fRFL->DoesForceNegWghtToExist()){
           if(noEt < 0) {
             if(param.SearchCategories("int")) { noEt = fRFL->GetForceNegWghtTo(); }
           }
@@ -2865,7 +2865,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifndef __LET_ME_DO_STUPID_STUFF_WITH_MY_NORMALISATIONS__
           f = TMath::Max(0.,f);
 #else
-          if(es.ExperimentName() == "T2K"){
+          if(fRFL->DoesForceNegWghtToExist()){
             if(f < 0) {
               if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
             }
@@ -3031,7 +3031,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           f = TMath::Max(0.,f);
 #else
 
-          if(es.ExperimentName() == "T2K"){
+          if(fRFL->DoesForceNegWghtToExist()){
             if(f < 0) {
               if(param.SearchCategories("int")) { f = fRFL->GetForceNegWghtTo(); }
             }
@@ -3051,7 +3051,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           fnoEt = TMath::Max(0.,fnoEt);
 #else
 
-          if(es.ExperimentName() == "T2K"){
+          if(fRFL->DoesForceNegWghtToExist()){
             if(fnoEt < 0) {
               if(param.SearchCategories("int")) { fnoEt = fRFL->GetForceNegWghtTo(); }
             }
