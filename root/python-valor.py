@@ -28,7 +28,6 @@ util  = valor.util
 opt   = valor.Opt.Instance()
 rnd   = valor.Rnd.Instance()
 nr    = util.NameRegistry.Instance()
-es    = valor.ExperimentSetup.Instance()
 
 expt_name = es.ExperimentName();
 print "\n=============================="

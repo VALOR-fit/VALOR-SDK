@@ -47,8 +47,6 @@
 #pragma link C++ class valor::Opt+;
 #pragma link C++ class valor::Opt::Persistable+;
 
-#pragma link C++ class valor::ExperimentSetup+;
-
 #pragma link C++ class valor::Parameter+;
 #pragma link C++ class valor::ParameterPool+;
 
