@@ -240,6 +240,9 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   // In the later case, the templates are pre-binned so the binning
   // can not change. Make sure the templates have the expected binning.
   //
+  if(util::NodeExists(xml, root_node, "mc/suppress_out_of_binning_range_warning")) {
+    fSuppressOutOfBinningRangeWarning = true;
+  }
   fUseMCDST = util::XML2Bool(xml,root_node,"mc/using_dst_format") || force_use_dst;
   if (skip_mc_read) {
     LOG("GenericSingleSampleFitModel",pWARN) << "Skipping MC read.";
@@ -1087,6 +1090,7 @@ void GenericSingleSampleFitModel::Init(void)
   fPDFTotNullSb = true;
 
   fSkipOscProbApplyCheck = false;
+  fSuppressOutOfBinningRangeWarning = false;
 
   for(size_t imode = 0; imode < conv::kNReacModes; imode++) {
 
@@ -1748,7 +1752,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     for (conv::KineVar_t kv : reco_ob->KineVars()) {
       double val = kinematics.at(kv);
       if (val < reco_ob->Minimum(kv) || val > reco_ob->Maximum(kv)) {
-        if(es.ExperimentName() == "T2K"){
+        if(fSuppressOutOfBinningRangeWarning){
           // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
           // that they're all intrinsic nue so we don't care about them
           SLOG("GenericSingleSampleFitModel",pDEBUG)

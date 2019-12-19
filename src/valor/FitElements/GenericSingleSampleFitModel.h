@@ -211,6 +211,10 @@ private:
 
   // Whether or not we should apply the osc prob to ALL detectors (i.e. skipping the util::OscProbIsAppliedTo check)
   bool fSkipOscProbApplyCheck;
+
+  // Whether or not we should throw a warning message if any event read from an MC DST has kinematics
+  // outside of the binning range
+  bool fSuppressOutOfBinningRangeWarning;
   
   // MC templates (MCT) 
   // Each template is a 2D array, with (reco,true) bins linearised in whatever kinematic space we need.
