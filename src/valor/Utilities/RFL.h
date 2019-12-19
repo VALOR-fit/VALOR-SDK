@@ -86,8 +86,9 @@ public:
   const conv::SplEvalType_t & GetSplineEvalType(void) const { return fSplineWghtMethod; }
 
   // When spline weights come out negative, force them to this value instead
-  const double & GetForceNegWghtTo(void) const { return fForceNegWghtTo; }
-  
+  const bool   & DoesForceNegWghtToExist(void) const { return fForceNegWghtToExists; }
+  const double & GetForceNegWghtTo      (void) const { return fForceNegWghtTo; }
+
 private:
 
   const SingleSampleKineBinning * fBinning;

@@ -72,6 +72,7 @@ fSplineNamePattern("spl_[BEAM]_[SAMPLE]_[MODE]_[PARAM]_[ZONE]_[TRUE1]_[TRUE2]_[R
 fSplineWghtMethod(conv::kSplEvalUndefined),
 fAllowNegativeSplines(false),
 fSplineType(Interpolator::Type::kAKIMA),
+fForceNegWghtToExists(false),
 fForceNegWghtTo(0.0)
 {
   
@@ -96,6 +97,7 @@ fSplineNamePattern("spl_[BEAM]_[SAMPLE]_[MODE]_[PARAM]_[TRUE]_[RECO]"),
 fSplineWghtMethod(conv::kSplEvalUndefined),
 fAllowNegativeSplines(false),
 fSplineType(Interpolator::Type::kAKIMA),
+fForceNegWghtToExists(false),
 fForceNegWghtTo(0.0)
 {
   fParams = new PhysParamId_t[fNParams];
@@ -257,6 +259,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
     fAllowNegativeSplines = util::XML2Bool(xml,root_node,"splines/allow_negative");
     LOG("RFL",pDEBUG) << "Allowing splines to go negative? " << fAllowNegativeSplines;
     if (util::NodeExists(xml,root_node,"splines/set_neg_wght_to")) {
+      fForceNegWghtToExists = true;
       fForceNegWghtTo = util::XML2Dbl(xml,root_node,"splines/set_neg_wght_to");
       LOG("RFL",pDEBUG) << "  ..but forcing negative weights to " << fForceNegWghtTo;
     }
