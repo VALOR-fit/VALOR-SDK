@@ -140,6 +140,7 @@ private:
 
   // When spline weights come out negative, force them to this value instead
   double fForceNegWghtTo;
+  bool fForceNegWghtToExists;
   
   // Check spline is positive
   static bool CheckForNegativeValues(const valor::util::Interpolator * spl);
