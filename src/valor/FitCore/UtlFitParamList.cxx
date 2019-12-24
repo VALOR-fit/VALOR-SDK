@@ -184,6 +184,16 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   return fparm;
 }
 //____________________________________________________________________________
+FitParamList * util::GetFitParameterListFromHypothesis(const PhysHypothesis& hypothesis, Option_t * param_opt)
+{
+  return util::GetFitParameterList(hypothesis, param_opt);
+}
+//____________________________________________________________________________
+FitParamList * util::GetFitParameterListFromHypothesisName(std::string hypothesis_name, Option_t * param_opt)
+{
+  return util::GetFitParameterList(hypothesis_name, param_opt);
+}
+//____________________________________________________________________________
 bool util::AllWithinLimits(const FitParamList & fparm)
 {
   for (int iparam = 0 ; iparam < fparm.Size(); iparam++) {

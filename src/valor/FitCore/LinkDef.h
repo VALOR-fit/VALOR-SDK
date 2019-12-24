@@ -38,4 +38,6 @@
 
 #pragma link C++ class std::vector<std::vector<float> >;
 
+#pragma link C++ defined_in "valor/FitCore/UtlFitParamList.h";
+
 #endif
