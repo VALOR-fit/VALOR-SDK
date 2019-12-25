@@ -421,10 +421,18 @@ VALORArray* Contract(const VALORArray& v,
     } // old_true_bin
   } // is pure reco?
   
-  if (std::fabs(v.Integral() - targetV->Integral()) > conv::kASmallNum) {
+  if (std::fabs(v.Integral() / targetV->Integral() - 1.0 ) > conv::kASmallNum) {
     LOG("UtlBinning",pFATAL) << "Contracted contents don't match input array contents ("<<v.GetName()<<")";
-    LOG("UtlBinning",pFATAL) << "Old = "<<v.Integral()<< " ; New = "<<targetV->Integral()
+    LOG("UtlBinning",pFATAL) << std::fixed << std::setprecision(11)
+                             << "Old = "<<v.Integral()<< " ; New = "<<targetV->Integral()
                              <<" ; Contracted kinespace = "<< util::AsString(util::KineSpaceFromKineVars(target_kvs));
+    LOG("UtlBinning",pFATAL) << "\n\ncurrentRecoBinning:"; currentRecoBinning->Print(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\ncurrentTrueBinning:"; currentTrueBinning->Print(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\ntargetBinning:"; targetBinning->Print(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\nold VArray dims:"; v.PrintDimensions(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\nold VArray content:"; v.PrintEntries(std::cout << std::fixed << std::setprecision(11));
+    LOG("UtlBinning",pFATAL) << "\n\nnew VArray dims:"; targetV->PrintDimensions(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\nnew VArray content:"; targetV->PrintEntries(std::cout << std::fixed << std::setprecision(11));
     util::Die(-1);
   }
     
