@@ -86,8 +86,10 @@
               <range> -5, 5 </min>
 
               <!--
-                  This sets what the specified step size actually corresponds to. Use either 'value' or 'frac'.
+                  This sets what the specified step size actually corresponds to. Use either 'value', 'sigma' or 'frac'.
                   If 'value', then the specified step size is taken to be in the same units as the parameter.
+                  If 'sigma', then the specified step size is taken to be in units of standard deviations away
+                  from the initial value.
                   If 'frac', then the specified step size is taken to be a fraction of the combined range
                   and physical limits.
                   Def: frac
@@ -315,8 +317,9 @@ namespace valor {
       const double      fDefError            = 1.;
       const std::string fDefRangeMode        = "sigma";
       const double      fDefSymmetricRange   = 3.;
-      const std::string fDefStepSizeMode     = "frac";
+      const std::string fDefStepSizeMode     = "sigma";
       const double      fDefStepSizeFactor   = 0.01;
+      const double      fDefStepSizeNSigma   = 0.1;
       const bool        fDefIsFixed          = false;
       const bool        fDefIsNuisance       = true;
       const bool        fDefDoMarg           = true;

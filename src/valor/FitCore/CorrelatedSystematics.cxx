@@ -433,6 +433,15 @@ void CorrelatedSystematics::UpdateParametersInPool(void) const
                                            << "\' step size. Changed from a fraction step size of " << frac_step
                                            << " to an absolute step size of " << abs_step;
     }
+    else if(param.GetStepSizeMode() == "sigma") {
+      double sigma_step = param.GetStepSize();
+      double abs_step = sigma_step * this->OneSigmaError(p);
+      param.SetStepSize(abs_step);
+      param.SetStepSizeMode("value"); // The range has been converted from units of sigma to the same units as the parameter
+      LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
+                                         << "\' step size. Changed from a step size of " << sigma_step
+                                         << " sigma, to an absolute step size of " << abs_step;
+    }
   } // ip
 }
 //________________________________________________________________________________________

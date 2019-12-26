@@ -432,7 +432,7 @@ void Parameter::ReadFitInfo()
     fStepSizeWasSpecified = true;
   }
   else {
-    fStepSize = fDefStepSizeFactor;
+    fStepSize = fDefStepSizeNSigma;
   }
 
   // Either the step_mode and the step size must be specified together, or neither must be specified
@@ -451,8 +451,8 @@ void Parameter::ReadFitInfo()
     util::Die(1);
   }
 
-  // If we're not going to update the step size later and it's is specified as a fractional range,
-  // convert it to an absolute step size here
+  // If we're not going to update the step size later and it's is specified as a fractional range
+  // or a number of sigmas, convert it to an absolute step size here
   if(!fUpdateFitInfo && fStepSizeMode == "frac") {
     if(fHasLimits) {
       fStepSize = (this->GetLimits().second - this->GetLimits().first) * fStepSize;
@@ -462,6 +462,18 @@ void Parameter::ReadFitInfo()
       LOG("FitInputs", pFATAL) << "For parameter \'" << fName
                                << "\', the step size is specified as a fraction of the range of the limits, "
                                << "but no limits were specified";
+      util::Die(1);
+    }
+  }
+  if(!fUpdateFitInfo && fStepSizeMode == "sigma") {
+    if(fErrorWasSpecified) {
+      fStepSize *= fError;
+      fDefStepSizeMode == "value";
+    }
+    else {
+      LOG("FitInputs", pFATAL) << "For parameter \'" << fName
+                               << "\', the step size is specified in units of sigmas, "
+                               << "but the 1 sigma error was not specified";
       util::Die(1);
     }
   }
