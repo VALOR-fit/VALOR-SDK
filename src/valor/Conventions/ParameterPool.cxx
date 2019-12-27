@@ -296,6 +296,7 @@ void ParameterPool::UpdateParam(Parameter& to_update, const Parameter& update_fr
   if(update_from.ErrorWasSpecified()         ) { to_update.SetError         (update_from.GetError()         ); }
   if(update_from.ThrowRangeModeWasSpecified()) { to_update.SetThrowRangeMode(update_from.GetThrowRangeMode()); }
   if(update_from.ThrowRangeWasSpecified()    ) { to_update.SetThrowRange    (update_from.GetThrowRange()    ); }
+  if(update_from.StepSizeModeWasSpecified()  ) { to_update.SetStepSizeMode  (update_from.GetStepSizeMode()  ); }
   if(update_from.StepSizeWasSpecified()      ) { to_update.SetStepSize      (update_from.GetStepSize()      ); }
   if(update_from.IsFixedWasSpecified()       ) { to_update.SetIsFixed       (update_from.IsFixed()          ); }
   if(update_from.IsNuisanceWasSpecified()    ) { to_update.SetIsNuisance    (update_from.IsNuisance()       ); }
