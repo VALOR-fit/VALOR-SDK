@@ -424,6 +424,11 @@ void Parameter::ReadFitInfo()
   }
   else {
     fStepSizeMode = fDefStepSizeMode;
+    if(fStepSizeMode == "sigma" && !fErrorWasSpecified) {
+      // If we want the step size to be in units of N sigma but don't have sigma,
+      // fall back to stepping a fraction of the range
+      fStepSizeMode = "range";
+    }
   }
 
   // Step size
@@ -432,7 +437,8 @@ void Parameter::ReadFitInfo()
     fStepSizeWasSpecified = true;
   }
   else {
-    fStepSize = fDefStepSizeNSigma;
+    if(fStepSizeMode == "sigma") { fStepSize = fDefStepSizeNSigma; }
+    else                         { fStepSize = fDefStepSizeFactor; }
   }
 
   // Either the step_mode and the step size must be specified together, or neither must be specified
