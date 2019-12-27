@@ -94,6 +94,7 @@ typedef enum EReacModeCoarse
 } 
 ReacModeCoarse_t;
 
+static const int kNReacModesCoarse = (int)kmcCosmic + 1;
 
 
 // An array showing which ReacMode_ts go into which ReacModeCoarse_t (in order of priority

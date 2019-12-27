@@ -149,7 +149,7 @@ string util::AsStringTex(ReacModeCoarse_t m, bool root)
 conv::ReacModeCoarse_t util::CoarseModeFromString(string coarse)
 {
   string lc_coarse = util::ToLowerCase(coarse);
-  for (int i = 0 ; i < (int)conv::kmcNuTauBarCC ; i++ ) {
+  for (int i = 0 ; i < conv::kNReacModesCoarse ; i++ ) {
     conv::ReacModeCoarse_t c = (conv::ReacModeCoarse_t)i;
     string this_coarse = util::ToLowerCase(util::AsString(c));
     if(lc_coarse==this_coarse && this_coarse!="--") {
