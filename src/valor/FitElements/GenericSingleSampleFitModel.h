@@ -37,6 +37,7 @@ brief      A generic implementation of the fit model for a single sample,
 #include "valor/Conventions/Sample.h"
 #include "valor/Conventions/KineVar.h"
 #include "valor/Conventions/FitParamApply.h"
+#include "valor/Conventions/ModeList.h"
 #include "valor/FitCore/CorrelatedSystematics.h"
 #include "valor/FitCore/PhysHypothesis.h"
 #include "valor/FitCore/PhysParamList.h"
@@ -98,6 +99,7 @@ public:
   //
   
   // Get the modelist we're using
+  const valor::ModeList * GetModeList(Option_t * opt = "") const;
   const std::vector<conv::ReacMode_t> GetReactionModes(Option_t * opt = "") const;
   
   // Get POT
@@ -277,6 +279,7 @@ private:
   SingleSampleKineBinning * fBinning;
   
   // The list of reaction modes we're using
+  ModeList* fML;
   std::vector<conv::ReacMode_t> fReactionModes;
   // and a mapping from these to their index in here
   std::vector<long> fReactionModeIndex;

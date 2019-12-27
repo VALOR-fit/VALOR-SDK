@@ -32,7 +32,6 @@
 #include "valor/Conventions/Build.h"
 
 #include "valor/Conventions/Constants.h"
-#include "valor/Conventions/ModeList.h"
 #include "valor/Conventions/Names.h"
 #include "valor/Conventions/NuFlavour.h"
 #include "valor/Conventions/NuOscMixParam.h"
@@ -161,9 +160,8 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   XMLNodePointer_t root_node = xml->DocGetRootElement(xmldoc);
   
   // Get the modes
-  string modelist_file = util::XML2String(xml,root_node,"modelist");
-  ModeList ml(util::CompleteConfigPath(modelist_file));
-  fReactionModes = ml.Modes();
+  fML = new ModeList(xml, root_node);
+  fReactionModes = fML->Modes();
   fReactionModeIndex.resize(conv::kNReacModes,-1);
   for (size_t im = 0 ; im < fReactionModes.size(); im++) {
     conv::ReacMode_t m = fReactionModes[im];
@@ -1454,6 +1452,7 @@ void GenericSingleSampleFitModel::Clean(void)
   
   fReactionModes.clear();
   fReactionModeIndex.clear();
+  delete fML;
 
   if (fRFL)  { delete fRFL ; fRFL  = 0; }
   if (fBinning) { delete fBinning ; fBinning = 0; }
@@ -3629,6 +3628,11 @@ const std::vector<conv::ReacMode_t> GenericSingleSampleFitModel::GetReactionMode
   return fReactionModes;
 }
 //________________________________________________________________________________________
+const valor::ModeList * GenericSingleSampleFitModel::GetModeList(Option_t * /*opt*/) const
+{
+  return fML;
+}
+//_______________________________________________________________________________________
 const double &  GenericSingleSampleFitModel::GetPOT() const
 {
   return fPOT;
