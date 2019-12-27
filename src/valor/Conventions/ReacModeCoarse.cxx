@@ -80,6 +80,11 @@ string util::AsString(ReacModeCoarse_t m)
   return "";
 }
 //________________________________________________________________________________________
+string util::CoarseModeAsString(conv::ReacModeCoarse_t m)
+{
+  return util::AsString(m);
+}
+//________________________________________________________________________________________
 string util::AsStringTex(ReacModeCoarse_t m, bool root)
 {
   string name = "";

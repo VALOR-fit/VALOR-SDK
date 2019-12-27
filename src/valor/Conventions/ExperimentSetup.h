@@ -55,7 +55,12 @@ public:
   const std::vector<conv::ReacModeCoarse_t> & ReactionModesCoarse(conv::BeamConf_t, conv::Sample_t) const;
   const std::vector<std::vector<std::vector<std::vector<int> > > > & PlotStyle() const;
   const std::vector<int> & PlotStyle(conv::BeamConf_t, conv::Sample_t, conv::ReacModeCoarse_t) const;
-  
+
+  // python aliases
+  const std::vector<conv::Sample_t>         & SamplesFromBeam                        (conv::BeamConf_t b)                                              const { return this->Samples(b); }
+  const std::vector<conv::ReacModeCoarse_t> & ReactionModesCoarseFromBeamAndSample   (conv::BeamConf_t b, conv::Sample_t s)                            const { return this->ReactionModesCoarse(b,s); }
+  const std::vector<int>                    & PlotStyleFromBeamAndSampleAndCoarseMode(conv::BeamConf_t b, conv::Sample_t s, conv::ReacModeCoarse_t mc) const { return this->PlotStyle(b, s, mc); }
+
   // Get the array index a specific enum value represents for this experiment
   int BeamConfIndex(conv::BeamConf_t) const;
   int SampleIndex(conv::BeamConf_t b, conv::Sample_t s) const;

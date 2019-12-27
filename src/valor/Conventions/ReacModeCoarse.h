@@ -287,6 +287,9 @@ namespace util {
   string AsString    (conv::ReacModeCoarse_t m);
   string AsStringTex (conv::ReacModeCoarse_t m, bool root);
 
+  // python aliases
+  string CoarseModeAsString(conv::ReacModeCoarse_t m);
+
   conv::ReacModeCoarse_t CoarseModeFromString (std::string s);
 
   // Is the given reac mode contained within the given coarse reac mode?
