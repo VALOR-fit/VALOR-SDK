@@ -65,73 +65,75 @@ void ModeList::Init(std::string modelist_file, std::string coarse_modelist_file)
 
   //Read the coarse mdes
   // Read the modes
-  TXMLEngine * xml_coarse_mode = new TXMLEngine;
-  XMLDocPointer_t doc_coarse_mode = xml_coarse_mode->ParseFile(util::CompleteConfigPath(coarse_modelist_file).c_str());
-  XMLNodePointer_t root_node_coarse_mode = xml_coarse_mode->DocGetRootElement(doc_coarse_mode);
-  XMLNodePointer_t coarse_mode_node = xml_coarse_mode->GetChild(root_node_coarse_mode);
-  while(coarse_mode_node)
-  {
-    string coarse_mode_name = xml_coarse_mode->GetNodeName(coarse_mode_node);
-    if(coarse_mode_name != "coarse_mode") {
-      LOG("ModeList",pFATAL) << "Found a node, \'" << coarse_mode_name
-                             << "\', which does not correspond to a coarse mode";
-      util::Die(-1); return;
-    }
-
-    // Get the coarse mode from the specified name
-    string name = "";
-    conv::ReacModeCoarse_t mode;
-    if(util::IsNodeSpecified(xml_coarse_mode, coarse_mode_node, "name")) {
-      name = util::XML2String(xml_coarse_mode, coarse_mode_node, "name");
-      mode = util::CoarseModeFromString(name);
-      if (mode==conv::kmcUndefined) {
-        LOG("ModeList",pFATAL) << "Got undefined coarse mode from string "<<name;
+  if(coarse_modelist_file != "") {
+    TXMLEngine * xml_coarse_mode = new TXMLEngine;
+    XMLDocPointer_t doc_coarse_mode = xml_coarse_mode->ParseFile(util::CompleteConfigPath(coarse_modelist_file).c_str());
+    XMLNodePointer_t root_node_coarse_mode = xml_coarse_mode->DocGetRootElement(doc_coarse_mode);
+    XMLNodePointer_t coarse_mode_node = xml_coarse_mode->GetChild(root_node_coarse_mode);
+    while(coarse_mode_node)
+    {
+      string coarse_mode_name = xml_coarse_mode->GetNodeName(coarse_mode_node);
+      if(coarse_mode_name != "coarse_mode") {
+        LOG("ModeList",pFATAL) << "Found a node, \'" << coarse_mode_name
+                               << "\', which does not correspond to a coarse mode";
         util::Die(-1); return;
       }
-      fModesCoarse.push_back(mode);
-    }
-    else {
-      LOG("ModeList", pFATAL) << "No name node was found for a coarse mode";
-      util::Die(-1); return;
+
+      // Get the coarse mode from the specified name
+      string name = "";
+      conv::ReacModeCoarse_t mode;
+      if(util::IsNodeSpecified(xml_coarse_mode, coarse_mode_node, "name")) {
+        name = util::XML2String(xml_coarse_mode, coarse_mode_node, "name");
+        mode = util::CoarseModeFromString(name);
+        if (mode==conv::kmcUndefined) {
+          LOG("ModeList",pFATAL) << "Got undefined coarse mode from string "<<name;
+          util::Die(-1); return;
+        }
+        fModesCoarse.push_back(mode);
+      }
+      else {
+        LOG("ModeList", pFATAL) << "No name node was found for a coarse mode";
+        util::Die(-1); return;
+      }
+
+      // Coarse mode line colour
+      if(util::IsNodeSpecified(xml_coarse_mode, coarse_mode_node, "line_col")) {
+        int content = util::XML2Int(xml_coarse_mode, coarse_mode_node, "line_col");
+        fModesCoarseLineCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, content));
+      }
+      else {
+        fModesCoarseLineCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, fDefLineCol));
+        LOG("ModeList", pINFO) << "No line_col node was found for \'" << name << "\', setting to \'" << fDefLineCol <<"\'";
+      }
+
+      // Coarse mode fill colour
+      if(util::IsNodeSpecified(xml_coarse_mode, coarse_mode_node, "fill_col")) {
+        int content = util::XML2Int(xml_coarse_mode, coarse_mode_node, "fill_col");
+        fModesCoarseFillCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, content));
+      }
+      else {
+        int use_fill_col = fDefFillCol + fModesCoarse.size() - 1;
+        fModesCoarseFillCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, use_fill_col));
+        LOG("ModeList", pINFO) << "No fill_col node was found for \'" << name << "\', setting to \'" << use_fill_col <<"\'";
+      }
+
+      // Coarse mode fill style
+      if(util::IsNodeSpecified(xml_coarse_mode, coarse_mode_node, "fill_sty")) {
+        int content = util::XML2Int(xml_coarse_mode, coarse_mode_node, "fill_sty");
+        fModesCoarseFillSty.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, content));
+      }
+      else {
+        fModesCoarseFillSty.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, fDefFillSty));
+        LOG("ModeList", pINFO) << "No fill_sty node was found for \'" << name << "\', setting to \'" << fDefFillSty <<"\'";
+      }
+
+      coarse_mode_node = xml_coarse_mode->GetNext(coarse_mode_node);
     }
 
-    // Coarse mode line colour
-    if(util::IsNodeSpecified(xml_coarse_mode, coarse_mode_node, "line_col")) {
-      int content = util::XML2Int(xml_coarse_mode, coarse_mode_node, "line_col");
-      fModesCoarseLineCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, content));
-    }
-    else {
-      fModesCoarseLineCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, fDefLineCol));
-      LOG("ModeList", pINFO) << "No line_col node was found for \'" << name << "\', setting to \'" << fDefLineCol <<"\'";
-    }
-
-    // Coarse mode fill colour
-    if(util::IsNodeSpecified(xml_coarse_mode, coarse_mode_node, "fill_col")) {
-      int content = util::XML2Int(xml_coarse_mode, coarse_mode_node, "fill_col");
-      fModesCoarseFillCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, content));
-    }
-    else {
-      int use_fill_col = fDefFillCol + fModesCoarse.size() - 1;
-      fModesCoarseFillCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, use_fill_col));
-      LOG("ModeList", pINFO) << "No fill_col node was found for \'" << name << "\', setting to \'" << use_fill_col <<"\'";
-    }
-
-    // Coarse mode fill style
-    if(util::IsNodeSpecified(xml_coarse_mode, coarse_mode_node, "fill_sty")) {
-      int content = util::XML2Int(xml_coarse_mode, coarse_mode_node, "fill_sty");
-      fModesCoarseFillSty.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, content));
-    }
-    else {
-      fModesCoarseFillSty.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, fDefFillSty));
-      LOG("ModeList", pINFO) << "No fill_sty node was found for \'" << name << "\', setting to \'" << fDefFillSty <<"\'";
-    }
-    
-    coarse_mode_node = xml_coarse_mode->GetNext(coarse_mode_node);
+    // We're done with the coarse mode list XML file now
+    xml_coarse_mode->FreeDoc(doc_coarse_mode);
+    delete xml_coarse_mode;
   }
-
-  // We're done with the coarse mode list XML file now
-  xml_coarse_mode->FreeDoc(doc_coarse_mode);
-  delete xml_coarse_mode;
 
   return;
 }
