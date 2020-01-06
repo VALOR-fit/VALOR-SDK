@@ -8,6 +8,7 @@
 
 #pragma link C++ namespace valor;
 #pragma link C++ namespace valor::util;
+#pragma link C++ namespace valor::util::oscillation;
 
 #pragma link C++ class valor::CompoundFitElements;
 #pragma link C++ class valor::SingleSampleFitModelABC;
@@ -36,5 +37,7 @@
 #pragma link C++ class valor::FitterABC_new+;
 
 #pragma link C++ class std::vector<std::vector<float> >;
+
+#pragma link C++ defined_in "valor/FitCore/UtlFitParamList.h";
 
 #endif

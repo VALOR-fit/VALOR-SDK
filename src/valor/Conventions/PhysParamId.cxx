@@ -960,7 +960,7 @@ string util::RawParamAsStringRooTex(PhysParamId_t p)
 }
 //________________________________________________________________________________________
 valor::conv::PhysParamId_t
-  valor::util::PhysParamIdFromRawString(string sh) 
+  valor::util::PhysParamIdFromRawString(string sh, bool suppress_unmatched_string_warning)
 {
   string lsh = util::ToLowerCase(sh);
   for (int i = 0 ; i < knppmax ; i++) {
@@ -969,7 +969,9 @@ valor::conv::PhysParamId_t
     string s_simple = util::ToLowerCase(RawParamAsStringSimple(k));
     if (k != kPhypUndefined && (lsh == s || lsh == s_simple) ) return k;
   }
-  std::cerr<<"util::PhysParamIdFromRawString >> Unmatched string: "<<sh<<std::endl;
+  if(!suppress_unmatched_string_warning){
+    std::cerr<<"util::PhysParamIdFromRawString >> Unmatched string: "<<sh<<std::endl;
+  }
   return kPhypUndefined;
 }
 //________________________________________________________________________________________

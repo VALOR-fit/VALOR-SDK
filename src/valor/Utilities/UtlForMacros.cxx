@@ -11,7 +11,6 @@ ChangeLog:
 
 #include "valor/Utilities/UtlForMacros.h"
 
-#include "valor/Conventions/ExperimentSetup.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Conventions/PhysHypothesisId.h"
@@ -50,7 +49,7 @@ std::string valor::util::FormFilePath(const char * file, const char * dir)
 string valor::util::SysThrowIdToString(unsigned int tweak_systematics)
 {
   string tweak_sys_str;
-  string exptname = ExperimentSetup::Instance()->ExperimentName();
+  string exptname = "t2xk"; // CHANGE THIS
   if(!exptname.compare("t2xk")) {
     switch(tweak_systematics)
     {

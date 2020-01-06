@@ -32,7 +32,7 @@ namespace util {
 
 class Interpolator {
   public:
-  
+
     enum class Type {
       // same as ROOT::Math::Interpolation::Type
       kLINEAR,
@@ -45,7 +45,7 @@ class Interpolator {
       kTSpline3,
       kTSpline5
     };
-    
+
     Interpolator(const TSpline * spl = 0, valor::util::Interpolator::Type type = valor::util::Interpolator::Type::kCSPLINE);
     Interpolator(const TSpline & spl    , valor::util::Interpolator::Type type = valor::util::Interpolator::Type::kCSPLINE);
 
@@ -65,16 +65,20 @@ class Interpolator {
   private:
 
     void CheckSplineType(void) const;
-    
+
     ROOT::Math::Interpolator* fGSLSpline;
     TSpline* fROOTSpline;  // For when we don't want to use GSL splines
-    
+
     double fXmin;
     double fXmax;
     std::string fName;
     std::string fTitle;
     bool fUseLimits;
 };
+
+  std::string        AsString                  (Interpolator::Type t, Option_t * opt=0);
+  std::string        InterpolatorTypeAsString  (Interpolator::Type t, Option_t * opt=0); // Alias for above
+
 #else
 class Interpolator : public TObject {};
 #endif //__VALOR_FMWK_GSL_ENABLED__

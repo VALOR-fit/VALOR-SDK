@@ -52,7 +52,8 @@ namespace binning
       Produce a 2D ROOT-compatible, optimised histogram of specified kinematic
       variables from a VALORArray with a specified binning.
 
-      Note that the ROOT histogram produced by this function should be used only
+      Note that if the input VALORBinning is specified as following a Mondrian type binning scheme,
+      the ROOT histogram produced by this function should be used only
       for plotting purposes, as mapping from optimised to ROOT-compatible binning
       is not guaranteed to conserve total event counts.
 
@@ -62,22 +63,8 @@ namespace binning
       \return A 2D histogram of the specified kinematic variables.
 
    */
-   TH2D* Make2DOptimisedHistogram(const VALORArray& v,
-         const SingleSampleKineBinning& b,
-         const std::vector<conv::KineVar_t>& ks);
-
-   /**
-      Produce a 2D ROOT-compatible, simple histogram of specified kinematic
-      variables from a VALORArray with a specified binning.
-
-      \param v The VALORArray containing the spectrum to be plotted.
-      \param b The binning used by the VALORArray.
-      \param ks The kinematic variables for which the histogram is to be produced.
-      \return A 2D histogram of the specified kinematic variables.
-
-   */
-   TH2D* Make2DSimpleHistogram(const VALORArray& v,
-         const SingleSampleKineBinning& b,
+   TH2D* Make2DHistogram(const VALORArray& v,
+         const VALORBinning* b,
          const std::vector<conv::KineVar_t>& ks);
 
 }

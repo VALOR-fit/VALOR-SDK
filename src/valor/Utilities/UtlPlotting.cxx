@@ -2,6 +2,8 @@
 
 // Root
 #include <TCanvas.h>
+#include <TStyle.h>
+#include <TColor.h>
 
 namespace valor
 {
@@ -59,6 +61,28 @@ void Plot(TH1D* histogram, const std::string& title,
       const std::string& filename)
 {
    GenericPlot(histogram, title, xTitle, yTitle, filename, "");
+}
+
+bool SetupCustomPalette(std::string palette_name)
+{
+   if(palette_name == "valor_inverted_dark_body_radiator") {
+      // This is a modified version of ROOT's inverted dark body radiator palette, with:
+      //  low = white (instead of light yellow)
+      //  high = dark red (instead of black)
+      // This works well with all the different colourblind modes from
+      // https://www.color-blindness.com/coblis-color-blindness-simulator/
+      Double_t red  [8] = {1., 234./255., 237./255., 230./255., 212./255., 156./255., 99./255., 45./255.};
+      Double_t green[8] = {1., 238./255., 238./255., 168./255., 101./255.,  45./255.,  0./255.,  0./255.};
+      Double_t blue [8] = {1.,  95./255.,  11./255.,   8./255.,   9./255.,   3./255.,  1./255.,  1./255.};
+      Double_t stops[8] = {0.,     0.143,     0.286,     0.429,     0.572,     0.715,    0.858,       1.};
+      const Int_t NCont = 500;
+      int status = TColor::CreateGradientColorTable(8, stops, red, green, blue, NCont);
+      gStyle->SetNumberContours(NCont);
+      return status != -1;
+   }
+   else {
+      return false;
+   }
 }
 
 }

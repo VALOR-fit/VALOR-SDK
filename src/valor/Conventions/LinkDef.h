@@ -10,6 +10,7 @@
 #pragma link C++ namespace valor;
 #pragma link C++ namespace valor::conv;
 #pragma link C++ namespace valor::util;
+#pragma link C++ namespace valor::util::nm;
 
 #pragma link C++ enum  valor::conv::ConfLevel_t;
 
@@ -46,7 +47,8 @@
 #pragma link C++ class valor::Opt+;
 #pragma link C++ class valor::Opt::Persistable+;
 
-#pragma link C++ class valor::ExperimentSetup+;
+#pragma link C++ class valor::Parameter+;
+#pragma link C++ class valor::ParameterPool+;
 
 // Part of FitParamList
 #pragma link C++ class std::map <valor::conv::PhysParamId_t,int>;

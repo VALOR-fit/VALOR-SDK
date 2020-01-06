@@ -29,6 +29,7 @@ Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
 #include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/Build.h"
 #include "valor/Conventions/Constants.h"
+#include "valor/Conventions/ParameterPool.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/UtlNumStat.h"
@@ -377,8 +378,71 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   LOG("CorrelatedSystematics",pDEBUG) << "Inverse "<<this->GetName()<<" covariance matrix: ";
   util::PrintMatrix(*fCovMtrxInv,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
+
+  this->UpdateParametersInPool();
   
   return fIsConfigured;
+}
+//________________________________________________________________________________________
+void CorrelatedSystematics::UpdateParametersInPool(void) const
+{
+  for(unsigned int ip = 0; ip < fNSystParameters; ++ip) {
+    conv::PhysParamId_t p = fSystParameters[ip];
+    if(!ParameterPool::Instance()->IsParamInPool(p)) {
+      LOG("CorrelatedSystematics",pFATAL)
+        << "Parameter \'" << NameRegistry::Instance()->AsString(p)
+        << "\' is contained in a CorrelatedSystematics, but not the ParameterPool. This should never happen.";
+      util::Die(-1);
+    }
+
+    Parameter& param = ParameterPool::MutableInstance()->GetMutableParam(p);
+    if(!param.DoUpdateFitInfo()) { continue; }
+
+    // Update the initial value
+    LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName() << "\' initial value: "
+                                         << param.GetInitValue() << " --> " << this->InitialValue(p);
+    param.SetInitValue(this->InitialValue(p));
+
+    // Update the error
+    LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName() << "\' 1 sigma error: "
+                                         << param.GetError() << " --> " << this->OneSigmaError(p);
+    param.SetError(this->OneSigmaError(p));
+
+    // Update the range, if needed
+    if(param.GetThrowRangeMode() == "sigma") {
+      std::pair<double,double> n_sigma_range = param.GetThrowRange();
+      std::pair<double,double> abs_range;
+      abs_range.first  = param.GetInitValue() + n_sigma_range.first  * param.GetError();
+      abs_range.second = param.GetInitValue() + n_sigma_range.second * param.GetError();
+      param.SetThrowRange(abs_range);
+      param.SetThrowRangeMode("value");  // The range has been converted from units of sigma to the same units as the parameter
+      LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
+                                           << "\' range. Changed from the n sigma range [" << n_sigma_range.first
+                                           << ", " << n_sigma_range.second << "] to the parameter value range ["
+                                           << abs_range.first << ", " << abs_range.second << "]";
+    }
+
+    // Update the step size, if the range was updated
+    if(param.GetStepSizeMode() == "frac") {
+      double frac_step = param.GetStepSize();
+      std::pair<double,double> range = param.GetThrowRange();
+      double abs_step = (range.second - range.first) * frac_step;
+      param.SetStepSize(abs_step);
+      param.SetStepSizeMode("value"); // The range has been converted from units of sigma to the same units as the parameter
+      LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
+                                           << "\' step size. Changed from a fraction step size of " << frac_step
+                                           << " to an absolute step size of " << abs_step;
+    }
+    else if(param.GetStepSizeMode() == "sigma") {
+      double sigma_step = param.GetStepSize();
+      double abs_step = sigma_step * this->OneSigmaError(p);
+      param.SetStepSize(abs_step);
+      param.SetStepSizeMode("value"); // The range has been converted from units of sigma to the same units as the parameter
+      LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
+                                         << "\' step size. Changed from a step size of " << sigma_step
+                                         << " sigma, to an absolute step size of " << abs_step;
+    }
+  } // ip
 }
 //________________________________________________________________________________________
 double CorrelatedSystematics::CurrentValue(PhysParamId_t p) const

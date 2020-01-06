@@ -31,9 +31,9 @@ string util::AsString(KineSpace_t ks)
     case (kspErecoThetareco)   : return "Ereco,Thetareco";        break;
     case (kspq0recomodqreco)   : return "q0reco,|q|reco";         break;
     case (kspErecoEvis)        : return "Ereco,Evis";             break;  
-    case (kspNone)             : return "None";                   break;  
-  
-  default : 
+    case (kspNone)             : return "None";                   break;
+
+  default :
      LOG("KineSpace",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
@@ -55,9 +55,9 @@ string util::AsStringTeX(KineSpace_t ks, bool root)
     case (kspErecoThetareco)   : name = "<E_{reco},\theta_{reco}";                        break;
     case (kspq0recomodqreco)   : name = "<q_{0 reco},|\\overrightarrow{q}|_{reco}>";      break;
     case (kspErecoEvis)        : name = "<E_{reco},E_{vis}>";                             break;      
-    case (kspNone)             : name = "None";                                           break; 
-  
-  default : 
+    case (kspNone)             : name = "None";                                           break;
+
+  default :
      LOG("KineSpace",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
@@ -83,7 +83,7 @@ bool util::IsPureReco(KineSpace_t ks)
     case (kspq0recomodqreco)   : return true;
     case (kspErecoEvis)        : return true;
     case (kspNone)             : return false; //Not sure this is the case
-  
+
   default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
@@ -105,7 +105,7 @@ bool util::IsPureTrue(KineSpace_t ks)
     case (kspq0recomodqreco)   : return false;
     case (kspErecoEvis)        : return false;       
     case (kspNone)             : return true;  //Not sure this is the case
-	    
+
     default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
@@ -147,8 +147,8 @@ int util::NDim(KineSpace_t ks)
     case (kspEtrueQ2true)      : return 2;
     case (kspErecoThetareco)   : return 2;
     case (kspq0recomodqreco)   : return 2;
-    case (kspErecoEvis)        : return 2;     
-    case (kspNone)             : return 0;                    
+    case (kspErecoEvis)        : return 2;
+    case (kspNone)             : return 0;
     default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
@@ -168,9 +168,9 @@ int util::NDimReco(KineSpace_t ks)
     case (kspEtrueQ2true)      : return 0;
     case (kspErecoThetareco)   : return 2;
     case (kspq0recomodqreco)   : return 2;
-    case (kspErecoEvis)        : return 2;    
-    case (kspNone)             : return 0;                    
-  
+    case (kspErecoEvis)        : return 2;
+    case (kspNone)             : return 0;
+
     default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
@@ -191,8 +191,8 @@ int util::NDimTrue(KineSpace_t ks)
     case (kspErecoThetareco)   : return 0;
     case (kspq0recomodqreco)   : return 0;
     case (kspErecoEvis)        : return 0;            
-    case (kspNone)             : return 0;                    
-  
+    case (kspNone)             : return 0;
+
    default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
@@ -212,9 +212,9 @@ conv::KineSpace_t util::SubSpaceReco(conv::KineSpace_t ks)
     case (kspEtrueQ2true)      : return kspUndefined;
     case (kspErecoThetareco)   : return kspErecoThetareco;
     case (kspq0recomodqreco)   : return kspq0recomodqreco;
-    case (kspErecoEvis)        : return kspErecoEvis;           
+    case (kspErecoEvis)        : return kspErecoEvis;
     case (kspNone)             : return kspUndefined;
-  
+
   default:
      LOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
@@ -235,7 +235,7 @@ conv::KineSpace_t util::SubSpaceTrue(conv::KineSpace_t ks)
     case (kspErecoThetareco)   : return kspUndefined;
     case (kspq0recomodqreco)   : return kspUndefined;
     case (kspErecoEvis)        : return kspUndefined;                  
-    case (kspNone)             : return kspNone;                  
+    case (kspNone)             : return kspNone;
 
     default:
      LOG("KineVar",pERROR) 

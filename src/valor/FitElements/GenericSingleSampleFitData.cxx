@@ -28,6 +28,7 @@
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlNumStat.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Utilities/UtlStr.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/KineBinning/UtlBinning.h"
 
@@ -40,7 +41,8 @@ GenericSingleSampleFitData::GenericSingleSampleFitData() :
   fBinning(nullptr),
   fFiducialMass(-99999.),
   fPOT(-99999.),
-  fGSSFM(nullptr)
+  fGSSFM(nullptr),
+  fDefVALORArrayFormat("data_vf")
 {
   this->Init();
 }
@@ -55,16 +57,15 @@ string GenericSingleSampleFitData::Name(void) const
   return fName;
 }
 //________________________________________________________________________________________
-bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
+bool GenericSingleSampleFitData::Read(string file, Option_t * opt)
 {
 
- // Set various parameters from the associated GSSFM
+  // Set various parameters from the associated GSSFM
   if(!fGSSFM){
     LOG("GenericSingleSampleFitData",pNOTICE)
       << "The associated model has not been set prior to calling Read, why is this?";
   }
-  this->SetFromModel();
-  
+
   // This requires the binning, however we end up getting it
   this->Book();
 
@@ -121,16 +122,6 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
   LOG("GenericSingleSampleFitData",pNOTICE) << "Done reading data";
 
   return true;
- 
-/*  if (!fBinning) {
-    LOG("GenericSingleSampleFitData", pERROR) << "Must call Generate() with FitModel before attempting to read file.";
-    return false;
-  }
-
-  return true;
-  
-  TODO THIS IS OLD CODE - REMOVE ONCE EVERYTHING BUILDS CORRECTLY
-  */
 }
 //________________________________________________________________________________________
 bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Option_t * write_opt)
@@ -140,7 +131,7 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
   LOG("GenericSingleSampleFitData", pDEBUG) 
     << "tag = " << tag << ", write option = " << write_opt;
 
-  string opt = (write_opt) ? write_opt : "data_vf";
+  string opt = (write_opt) ? write_opt : fDefVALORArrayFormat;
 
   if(opt.find("all") != string::npos) {
     opt = "data_vf,data_rf +slices +SB";
@@ -151,6 +142,10 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
     LOG("GenericSingleSampleFitData", pERROR) << "Null input object array.";
     return false;
   }
+
+  const SingleSampleKineBinning & binning = *fBinning;
+  const VALORBinning & reco_smp = *(binning.RecoSmpBinning());
+  const VALORBinning & reco_opt = *(binning.RecoOptBinning());
   
   //
   // Write out data distributions (VALORArray or bare ROOT format)
@@ -171,9 +166,55 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
       array->Add(fDataOb);
     }
 
+    // Add data in ROOT histogram format
+    if(opt.find("data_rf") != string::npos) {
+      assert(fDataOb);
+      const std::vector<KineVar_t>  & reco_vars = reco_opt.KineVars();
+      if(reco_vars.size() == 1) {
+        conv::KineSpace_t ks(util::KineSpaceFromKineVar(reco_vars[0]));
+        TH1 * hob = util::binning::Make1DHistogram(*fDataOb,binning,ks,false);
+        if(hob) {
+          TString hobname = TString::Format("%s_%s_%s",tag,"data_ob_rf",fName.c_str());
+          hob->SetName(hobname.Data());
+          array->Add(hob);
+        }
+      }
+      else if(reco_vars.size() == 2) {
+        conv::KineSpace_t ks = util::KineSpaceFromKineVars(reco_vars);
+        if(ks != conv::kspUndefined) {
+          TH2 *hob = util::binning::Make2DHistogram(*fDataOb,&reco_opt,reco_vars);
+          if(hob) {
+            TString hobname = TString::Format("%s_%s_%s",tag,"data_ob_rf",fName.c_str());
+            hob->SetName(hobname.Data());
+            array->Add(hob);
+          }
+        }
+      }
+      else {
+        LOG("GenericSingleSampleFitData", pWARN)
+          << "Tried writing data to ROOT format, but number of kine vars != 1 or 2 (" << fDataOb->GetName() << ")";
+      }
+
+      // Write 1d slices for the total in reco only
+      if (opt.find("slices") != string::npos) {
+        for (const conv::KineVar_t kv : reco_vars) {
+          conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
+          if (ks == conv::kspUndefined) {continue;}
+          TH1 * hob = util::binning::Make1DHistogram(*fDataOb,binning,ks,false);
+          if(hob) {
+            TString hobname = TString::Format("%s_%s_%s_%s",tag,"data_ob_rf_slice",fName.c_str(),util::AsString(kv).c_str());
+            hob->SetName(hobname.Data());
+            array->Add(hob);
+          }
+        }
+      }
+
+    }
+
     // regular/fine binning for plotting
     if(opt.find("+SB") != string::npos) {
       assert(!fDataSbNull);
+
       // Add data in VALOR array format
       if(opt.find("data_vf") != string::npos) {
         assert(fDataSb);
@@ -181,23 +222,54 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
         LOG("GenericSingleSampleFitData", pDEBUG) << "Adding: " << fDataSb->GetName();
         array->Add(fDataSb);
       }//data_vf
-    }//+SB
-    
-    // Write histograms in ROOT format    
-    const SingleSampleKineBinning & binning = *fBinning;
-    const VALORBinning & reco_smp = *(binning.RecoSmpBinning());
 
-    const std::vector<KineVar_t>  & reco_vars = reco_smp.KineVars();
-    for (const conv::KineVar_t kv : reco_vars) {
-      conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
-      if (ks == conv::kspUndefined) {continue;}
-      TH1 * hsb = util::binning::Make1DHistogram(*fDataSb,binning,ks,true);
-      if(hsb) {
-        TString hsbname = TString::Format("%s_%s_%s_%s",tag,"data_sb_rf",fName.c_str(),util::AsString(kv).c_str());
-        hsb->SetName(hsbname.Data());
-        array->Add(hsb);
+      // Add data in ROOT histogram format
+      if(opt.find("data_rf") != string::npos) {
+        assert(fDataSb);
+        const std::vector<KineVar_t>  & reco_vars = reco_smp.KineVars();
+        if(reco_vars.size() == 1) {
+          conv::KineSpace_t ks(util::KineSpaceFromKineVar(reco_vars[0]));
+          TH1 * hsb = util::binning::Make1DHistogram(*fDataSb,binning,ks,false);
+          if(hsb) {
+            TString hsbname = TString::Format("%s_%s_%s",tag,"data_sb_rf",fName.c_str());
+            hsb->SetName(hsbname.Data());
+            array->Add(hsb);
+          }
+        }
+        else if(reco_vars.size() == 2) {
+          conv::KineSpace_t ks = util::KineSpaceFromKineVars(reco_vars);
+          if(ks != conv::kspUndefined) {
+            TH2 *hsb = util::binning::Make2DHistogram(*fDataSb,&reco_smp,reco_vars);
+            if(hsb) {
+              TString hsbname = TString::Format("%s_%s_%s",tag,"data_sb_rf",fName.c_str());
+              hsb->SetName(hsbname.Data());
+              array->Add(hsb);
+            }
+          }
+        }
+        else {
+          LOG("GenericSingleSampleFitData", pWARN)
+            << "Tried writing data to ROOT format, but number of kine vars != 1 or 2 (" << fDataSb->GetName() << ")";
+        }
+
+        // Write 1d slices for the total in reco only
+        if (opt.find("slices") != string::npos) {
+          for (const conv::KineVar_t kv : reco_vars) {
+            conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
+            if (ks == conv::kspUndefined) {continue;}
+
+            TH1 * hsb = util::binning::Make1DHistogram(*fDataSb,binning,ks,true);
+            if(hsb) {
+              TString hsbname = TString::Format("%s_%s_%s_%s",tag,"data_sb_rf_slice",fName.c_str(),util::AsString(kv).c_str());
+              hsb->SetName(hsbname.Data());
+              array->Add(hsb);
+            }
+          }
+        }
+
       }
-    }
+
+    }//+SB
   }//data_vf, data_rf
 
   LOG("GenericSingleSampleFitData", pINFO)  << "Done!";
@@ -222,21 +294,65 @@ bool GenericSingleSampleFitData::Write(
   return true;
 }
 //________________________________________________________________________________________
-bool GenericSingleSampleFitData::Write(std::ofstream& stream, Option_t * write_opt)
+bool GenericSingleSampleFitData::Write(util::ToyStream* stream)
 {
-   string opt = (write_opt) ? write_opt : "";
+   Option_t* write_opt = stream->GetVALORArrayFormat();
+   string opt = (write_opt) ? write_opt : fDefVALORArrayFormat;
    assert(fDataOb);
    fDataOb->SetName(TString::Format("%s_%s", "data_ob_vf", fName.c_str()));
-   fDataOb->WriteStream(stream);
+   stream->Write(fDataOb);
 
    if(opt.find("+SB") != string::npos)
    {
       assert(fDataSb);
       fDataSb->SetName(TString::Format("%s_%s", "data_sb_vf", fName.c_str()));
-      fDataSb->WriteStream(stream);
+      stream->Write(fDataSb);
    } //+SB
 
    return true;
+}
+//________________________________________________________________________________________
+bool GenericSingleSampleFitData::Read(util::ToyStream* stream)
+{
+  Option_t* read_opt = stream->GetVALORArrayFormat();
+  string opt = (read_opt) ? read_opt : fDefVALORArrayFormat;
+  assert(fDataOb);
+  fDataOb->SetName(TString::Format("%s_%s", "data_ob_vf", fName.c_str()));
+  stream->Read(fDataOb);
+  fDataObNull = false;
+
+  if(opt.find("+SB") != string::npos)
+  {
+    assert(fDataSb);
+    fDataSb->SetName(TString::Format("%s_%s", "data_sb_vf", fName.c_str()));
+    stream->Read(fDataSb);
+    fDataSbNull = false;
+  } //+SB
+
+  return true;
+}
+//________________________________________________________________________________________
+long GenericSingleSampleFitData::StreamSize(Option_t* opt_in) const
+{
+  if (!fBinning) {
+    LOG("GenericSingleSampleFitData", pERROR) << "Must call SetAssociatedModel() and SetFromModel() with FitModel "
+                                              << "before attempting to determine the toy size.";
+    return false;
+  }
+
+  string opt = (opt_in) ? opt_in : fDefVALORArrayFormat;
+  long size = 0;
+
+  assert(fDataOb);
+  size += fDataOb->StreamSize();
+
+  if(opt.find("+SB") != string::npos)
+  {
+    assert(fDataSb);
+    size += fDataSb->StreamSize();
+  } //+SB
+
+  return size;
 }
 //________________________________________________________________________________________
 bool GenericSingleSampleFitData::Generate(
@@ -280,7 +396,7 @@ bool GenericSingleSampleFitData::Generate(
 //________________________________________________________________________________________
 bool GenericSingleSampleFitData::Generate(FitModelABC * model_abc, bool fluctuate, Option_t * option)
 {
- 
+
   fIsFakeData = true;
 
   // Set various parameters from the associated GSSFM
@@ -288,8 +404,8 @@ bool GenericSingleSampleFitData::Generate(FitModelABC * model_abc, bool fluctuat
     LOG("GenericSingleSampleFitData",pNOTICE)
       << "The associated model has not been set prior to calling Generate, why is this?";
     this->SetAssociatedModel(model_abc);
+    this->SetFromModel();
   }
-  this->SetFromModel();
 
   // Book the information from the model for binning etc
   this->Book();
@@ -453,15 +569,16 @@ void GenericSingleSampleFitData::Init(void)
   fIsFakeData   = false;
   fGSSFM        = nullptr;
   fBinning      = 0;
-  fPOT          = 0; 
+  fPOT          = 0;
   fFiducialMass = 0;
 
+  fDefVALORArrayFormat = "data_vf";
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::SetAssociatedModel(FitModelABC *model_abc)
 {
   fGSSFM = dynamic_cast<GenericSingleSampleFitModel*>(model_abc);
-  std::cout << " Set the model with name: " << fGSSFM->Name() << std::endl;
+  LOG("GenericSingleSampleFitData",pNOTICE) << " Set the model with name: " << fGSSFM->Name();
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::SetFromModel(void)
@@ -470,6 +587,8 @@ void GenericSingleSampleFitData::SetFromModel(void)
   fBinning      = fGSSFM->GetBinning();
   fPOT          = fGSSFM->GetPOT();
   fFiducialMass = fGSSFM->GetFiducialMass();
+
+  LOG("GenericSingleSampleFitData",pNOTICE) << " POT set from model : " << fPOT;
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::Book(void)
@@ -493,8 +612,6 @@ void GenericSingleSampleFitData::Book(void)
   fDataOb     = new VALORArray(reco_ob->NBins());
   fDataSbNull = false;
   fDataSb     = new VALORArray(reco_sb->NBins());
-
-  std::cout << " POT set from model : " << fPOT << std::endl;
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::Clean(void)
@@ -528,7 +645,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
   if(!t) return;
 
   // Get a list of all the kinematic variables we care about
-  const std::vector<conv::KineVar_t> & kinevars = fBinning->KineVars();
+  const std::vector<conv::KineVar_t> & kinevars = fBinning->RecoKineVars();
 
   int    sample        = 0;
   int    beam          = 0;
@@ -543,20 +660,26 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     kinematic_branch_names[kv] = util::DSTBranchName(kv);
   }
 
-  int bstat_sample     = 0;
-  int bstat_beam       = 0;
-  int bstat_wght       = 0;
-  int bstat_wght_pot   = 0;
+  int bstat_sample     = TTree::kNoCheck;
+  int bstat_beam       = TTree::kNoCheck;
+  int bstat_wght       = TTree::kNoCheck;
+  int bstat_wght_pot   = TTree::kNoCheck;
   std::map<KineVar_t,int> bstat_kinematics;
 
-  bstat_sample    = t->SetBranchAddress("sample",   &sample);
-  bstat_sample    = t->SetBranchAddress("beam",     &beam);
-  bstat_wght      = t->SetBranchAddress("wght",     &wght);
-  bstat_wght_pot  = t->SetBranchAddress("wght_pot", &wght_pot);
+  bstat_sample = t->SetBranchAddress("sample",   &sample);
+  bstat_beam   = t->SetBranchAddress("beam",     &beam);
+  bstat_wght   = t->SetBranchAddress("wght",     &wght);
+
+  // Note: Could have called t->SetBranchAddress() directly, but this avoids a non-fatal error being
+  //       thrown if the wght_pot branch doesn't exist (which it won't when reading real data)
+  bool br_wght_pot_exists = (t->GetListOfBranches()->FindObject("wght_pot") != nullptr);
+  if(br_wght_pot_exists){
+    bstat_wght_pot = t->SetBranchAddress("wght_pot", &wght_pot);
+  }
 
   fIsFakeData = (bstat_wght_pot == TTree::kMatch);
 
-  bool any_bad_status = (bstat_sample || bstat_beam);
+  bool any_bad_status = (bstat_sample || bstat_beam || bstat_wght);
 
   for(const conv::KineVar_t & kv : kinevars) {
     bool bstat = t->SetBranchAddress(kinematic_branch_names[kv].c_str(),&kinematics[kv]);
@@ -568,7 +691,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
       << "MiniDST branches not found";
     util::Die(-1);
   }
-  
+
   if(bstat_wght) {
     LOG("GenericSingleSampleFitData",pINFO)
       << fName<<" - No wght branch found.";
@@ -606,7 +729,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
       //util::Die(-1);return;
     }
     if(s != fSample) {
-#ifdef VALOR_DUNE_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitData",pDEBUG)
         << "Ignoring data event: " << iev
         << " (sample ID: " << s << " "<< util::AsString(s)
@@ -617,7 +740,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     }
     BeamConf_t b = util::BeamConfFromInt(beam);
     if(b != fBeam) {
-#ifdef VALOR_DUNE_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitData",pDEBUG)
         << "Ignoring data event: " << iev
         << " (beam ID: " << b << " "<< util::AsString(b)
@@ -680,5 +803,46 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
 
   fDataObNull = false;
   fDataSbNull = false;
+}
+//________________________________________________________________________________________
+std::string GenericSingleSampleFitData::GetPDFIntegralAsString(Option_t * opt_in)
+{
+  double integral = -999;
+
+  std::string opt = (opt_in) ? opt_in : "";
+  if(opt.find("SB") != string::npos) {
+    integral = fDataSb->Integral();
+  }
+  else {
+    integral = fDataOb->Integral();
+  }
+
+  TString temp = TString::Format("%s total data PDF integral = %.5lf", this->Name().c_str(), integral);
+  std::string to_print = temp.Data();
+
+  return to_print;
+}
+//________________________________________________________________________________________
+util::ToyStream* GenericSingleSampleFitData::InitToyStream(const string file_name, const string read_or_write, string valor_array_format)
+{
+  valor_array_format = util::RemoveAllWhitespace(valor_array_format);
+  if(valor_array_format.empty()) {
+    valor_array_format = fDefVALORArrayFormat;
+  }
+
+  return new util::ToyStream(file_name, read_or_write, typeid(this), this->Name(),
+                             valor_array_format, this->StreamSize());
+}
+//________________________________________________________________________________________
+bool GenericSingleSampleFitData::DataExists(Option_t * opt_in) const
+{
+  bool exists = (fDataObNull == false);
+
+  std::string opt = (opt_in) ? opt_in : "";
+  if(opt.find("SB") != string::npos) {
+    exists = exists && (fDataSbNull == false);
+  }
+
+  return exists;
 }
 //________________________________________________________________________________________

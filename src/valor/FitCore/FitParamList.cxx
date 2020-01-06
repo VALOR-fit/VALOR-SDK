@@ -1635,6 +1635,7 @@ void FitParamList::Copy(const FitParamList & plst)
     this->fDoMarg[i]        = plst.fDoMarg[i];
     this->fPriorMode[i]     = plst.fPriorMode[i];
     this->fPriorModeName[i] = TObjString(plst.fPriorModeName[i]);
+    this->fPriorScheme[i]   = plst.fPriorScheme[i];
     this->fMeanGaus[i]      = plst.fMeanGaus[i];
     this->fSigmaGaus[i]     = plst.fSigmaGaus[i];
     this->fMinValueFlat[i]  = plst.fMinValueFlat[i];
@@ -1710,6 +1711,7 @@ void FitParamList::Init(int nparams)
     fDoMarg        = new bool      [fNParams];
     fPriorMode     = new int       [fNParams];
     fPriorModeName = new TObjString[fNParams];
+    fPriorScheme   = new int       [fNParams];
     fMeanGaus      = new double    [fNParams];
     fSigmaGaus     = new double    [fNParams];
     fMinValueFlat  = new double    [fNParams];
@@ -1743,6 +1745,7 @@ void FitParamList::Init(int nparams)
     fDoMarg        = 0;
     fPriorMode     = 0;
     fPriorModeName = 0;
+    fPriorScheme   = 0;
     fMeanGaus      = 0;
     fSigmaGaus     = 0;
     fMinValueFlat  = 0;
@@ -1776,6 +1779,7 @@ void FitParamList::Init(int nparams)
     fDoMarg       [i] = 0;
     fPriorMode    [i] = 0;
     fPriorModeName[i].SetString("Uninitialised");
+    fPriorScheme  [i] = -1;
     fMeanGaus     [i] = 0;
     fSigmaGaus    [i] = 0;
     fMinValueFlat [i] = 0;
@@ -1832,6 +1836,7 @@ void FitParamList::CleanUp(void)
   if (fDoMarg        ) { delete [] fDoMarg       ; fDoMarg        = 0 ; }
   if (fPriorMode     ) { delete [] fPriorMode    ; fPriorMode     = 0 ; }
   if (fPriorModeName ) { delete [] fPriorModeName; fPriorModeName = 0 ; }
+  if (fPriorScheme   ) { delete [] fPriorScheme  ; fPriorScheme   = 0 ; }
   if (fMeanGaus      ) { delete [] fMeanGaus     ; fMeanGaus      = 0 ; }
   if (fSigmaGaus     ) { delete [] fSigmaGaus    ; fSigmaGaus     = 0 ; }
   if (fMinValueFlat  ) { delete [] fMinValueFlat ; fMinValueFlat  = 0 ; }
@@ -1990,6 +1995,41 @@ void FitParamList::SetPriorMode(valor::conv::PhysParamId_t p,string priormodenam
     cerr << "  gaus --> gaus prior" << endl;
     cerr << "  user --> prior from user distribution" << endl;
     util::Die(-1);return;
+  }
+}
+//________________________________________________________________________________________
+void FitParamList::SetPriorScheme(valor::conv::PhysParamId_t p, string scheme_name)
+{
+  int scheme = -1;
+  if     (util::IsMixingAngle(p)) { scheme = (int) util::MixingTypeFromString(scheme_name); }
+  else if(p == conv::kPhypDm23sq) { scheme = (int) util::DmsqSchemeFromString(scheme_name); }
+  else if(util::IsPhase(p)      ) { scheme = (int) util::CPVChoiceFromString (scheme_name); }
+  else {
+    // No need to set a prior scheme, so keep at -1
+    fPriorScheme[this->Id(p)] = -1;
+    return;
+  }
+
+  if(scheme != -1) {
+    fPriorScheme[this->Id(p)] = scheme;
+  }
+  else {
+    LOG("Parameter", pERROR) << "The prior for parameter \'" << util::NameRegistry::Instance()->AsString(p)
+                             << "\' has the angle/dmsq/phase scheme set to an invalid value: " << scheme_name;
+    util::Die(-1);
+  }
+}
+//________________________________________________________________________________________
+string FitParamList::GetPriorSchemeName(valor::conv::PhysParamId_t p) const
+{
+  int scheme_int = fPriorScheme[this->Id(p)];
+  if     (util::IsMixingAngle  (p)) { return util::MixingTypeAsStringSimple((conv::NuOscMixParam_t)   scheme_int); }
+  else if(util::IsMassSplitting(p)) { return util::DmsqSchemeAsStringSimple((conv::NuOscDmsqScheme_t) scheme_int); }
+  else if(util::IsPhase        (p)) { return util::CPVChoiceAsStringSimple ((conv::NuOscDeltaCP_t)    scheme_int); }
+  else {
+    LOG("Parameter", pERROR) << "Could not get the prior scheme name for parameter \'"
+                                << util::NameRegistry::Instance()->AsString(p);
+    util::Die(-1);
   }
 }
 //________________________________________________________________________________________

@@ -19,8 +19,10 @@ ChangeLog:
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/UtlXML.h"
+#include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/VThreadPool.h"
 #include "valor/Utilities/NameRegistry.h"
+#include "valor/VArray/VALORArray.h"
 #include "valor/FitCore/CompoundFitModel.h"
 
 using namespace valor;
@@ -33,7 +35,8 @@ using std::endl;
 //________________________________________________________________________________________
 CompoundFitModel::CompoundFitModel() :
  fSystematics(0),
- fOwnerOfSystematics(false)
+ fOwnerOfSystematics(false),
+ fDefVALORArrayFormat("pdft_vf")
 {
   fName = "UninitialisedCompoundFitModel";
 }
@@ -44,6 +47,15 @@ CompoundFitModel::~CompoundFitModel()
   for (FitModelABC *& m : fSubModels) {
     delete m; m=0;
   }
+}
+//________________________________________________________________________________________
+std::string CompoundFitModel::CompoundName() const
+{
+  std::string name = "--";
+  for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+    name += (*it)->Name() + "--";
+  }
+  return name;
 }
 //________________________________________________________________________________________
 std::string CompoundFitModel::Name() const
@@ -103,15 +115,26 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Read(std::ifstream& stream, Option_t* read_opt)
+bool CompoundFitModel::Read(util::ToyStream* stream)
 {
    bool status = true;
    for(std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
    {
-      status = status && (*it)->Read(stream, read_opt);
+      status = status && (*it)->Read(stream);
    }
 
    return status;
+}
+//________________________________________________________________________________________
+long CompoundFitModel::StreamSize(Option_t* opt) const
+{
+  long size = 0;
+  for(std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
+  {
+    size += (*it)->StreamSize(opt);
+  }
+
+  return size;
 }
 //________________________________________________________________________________________
 bool CompoundFitModel::Generate (const PhysHypothesis & ph, Option_t * opt)
@@ -283,12 +306,12 @@ bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t 
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Write(std::ofstream& stream, Option_t* write_opt)
+bool CompoundFitModel::Write(util::ToyStream* stream)
 {
    bool status = true;
    for(std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
    {
-      status = status && (*it)->Write(stream, write_opt);
+      status = status && (*it)->Write(stream);
    }
 
    return status;
@@ -372,5 +395,27 @@ void CompoundFitModel::SetSystConf(CorrelatedSystematics * syst, Option_t * opt)
 void CompoundFitModel::SetName(std::string name)
 {
   fName = name;
+}
+//________________________________________________________________________________________
+std::string CompoundFitModel::GetPDFIntegralAsString(Option_t * opt)
+{
+  std::string to_print = "";
+
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+    to_print += (*it)->GetPDFIntegralAsString(opt) + "\n";
+  }
+
+  return to_print;
+}
+//________________________________________________________________________________________
+util::ToyStream* CompoundFitModel::InitToyStream(const string file_name, const string read_or_write, string valor_array_format)
+{
+  valor_array_format = util::RemoveAllWhitespace(valor_array_format);
+  if(valor_array_format.empty()) {
+    valor_array_format = fDefVALORArrayFormat;
+  }
+
+  return new util::ToyStream(file_name, read_or_write, typeid(this), this->CompoundName(),
+                             valor_array_format, this->StreamSize());
 }
 //________________________________________________________________________________________

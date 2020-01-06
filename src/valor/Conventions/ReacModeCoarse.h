@@ -90,10 +90,11 @@ typedef enum EReacModeCoarse
    kmcUnOscNuEBarCC,         // nuebar->nuebar  CC all
    kmcNuTauCC,               // numu(nue)->nutau CC all (separated from nutaubar)
    kmcNuTauBarCC,            // numubar(nuebar)->nutaubar CC all (separated from nutau)
-   kmcCosmic                 // cosmics  
+   kmcCosmic                 // cosmics
 } 
 ReacModeCoarse_t;
 
+static const int kNReacModesCoarse = (int)kmcCosmic + 1;
 
 
 // An array showing which ReacMode_ts go into which ReacModeCoarse_t (in order of priority

@@ -169,7 +169,7 @@ double valor::util::DeltaChisquare(
 } 
 //____________________________________________________________________________
 double valor::util::DeltaChisquareOneSided(
-  ConfLevel_t cl, int nfitparams) 
+  ConfLevel_t cl, int nfitparams)
 {
   // Get with TMath::ChisquareQuantile
   // eg in pydune
@@ -181,9 +181,9 @@ double valor::util::DeltaChisquareOneSided(
   //     print "Nsigma = %u ; ndim = %u ; deltachisq_onesided = %.2lf"%(nsigma,ndim,dchisq_onesided)
 
   switch(cl) {
-      case (kCLUndefined) : 
+      case (kCLUndefined) :
       {
-        return -99999;  
+        return -99999;
         break;
       }
       case (kCL68) :
@@ -250,10 +250,10 @@ double valor::util::DeltaChisquareOneSided(
         break;
       }
       default:
-        return -99999;     
+        return -99999;
     }
   return -99999;
-} 
+}
 //____________________________________________________________________________
 double valor::util::ConfLevelToFrac(conv::ConfLevel_t cl)
 {
@@ -1524,7 +1524,7 @@ double valor::util::ChisqMeanLikelihood(const std::vector<double> & chisqs)
   }
   
   std::sort(log_likelihoods.rbegin(),log_likelihoods.rend());
-  
+
   const double & log_a0 = log_likelihoods[0];
   double internal_sum = 0.;
   for (unsigned int ii = 1 ; ii < log_likelihoods.size() ; ii++) {

@@ -86,8 +86,9 @@ public:
   const conv::SplEvalType_t & GetSplineEvalType(void) const { return fSplineWghtMethod; }
 
   // When spline weights come out negative, force them to this value instead
-  const double & GetForceNegWghtTo(void) const { return fForceNegWghtTo; }
-  
+  const bool   & DoesForceNegWghtToExist(void) const { return fForceNegWghtToExists; }
+  const double & GetForceNegWghtTo      (void) const { return fForceNegWghtTo; }
+
 private:
 
   const SingleSampleKineBinning * fBinning;
@@ -111,7 +112,7 @@ private:
   conv::Detector_t fDetector;
   
   // Details of binning
-  std::vector<conv::ReacMode_t> fModes;   //[fNModes]
+  std::vector<conv::ReacMode_t> fModes;   //
   int                           fNParams; //
   conv::PhysParamId_t *         fParams;  //[fParams]
   
@@ -134,9 +135,12 @@ private:
   
   // Array storing parameters mapped to indice within this object
   int fParam2Idx[conv::knppmax];
+  // And the same thing for modes
+  std::vector<long> fReactionModeIndex;
 
   // When spline weights come out negative, force them to this value instead
   double fForceNegWghtTo;
+  bool fForceNegWghtToExists;
   
   // Check spline is positive
   static bool CheckForNegativeValues(const valor::util::Interpolator * spl);

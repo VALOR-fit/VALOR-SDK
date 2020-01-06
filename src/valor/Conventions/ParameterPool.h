@@ -38,7 +38,10 @@ public:
   
   const std::vector<Parameter> & GetParams() const;
   const Parameter & GetParam (conv::PhysParamId_t) const;
+  Parameter & GetMutableParam (conv::PhysParamId_t p);
   bool IsParamInPool (conv::PhysParamId_t) const;
+  size_t GetNumOscParams(void) const;
+  size_t GetNumSystParams(void) const;
 
   // Get the Parameter corresponding to the input simple name
   const Parameter & ParamFromString (std::string str) const;
@@ -53,8 +56,18 @@ private:
   // Tell the framework classes what our parameter names are
   void PopulateNameRegistry(void);
 
+  // Count the number of non-special parameters in the pool
+  unsigned int CountNonSpecialParams(void) const;
+
+  // Update a Parameter from another with matching PhysParamId_t values
+  void UpdateParam(Parameter& to_update, const Parameter& update_from);
+
+  // Check the mixing angle, Dmsq and phase schemes against those in Opt::Instance()
+  void CheckSchemes(TXMLEngine* xmleng, XMLNodePointer_t root_node);
+
   std::vector<Parameter> fParams;
-  
+  std::map<conv::PhysParamId_t, unsigned int> fParamIdx;
+
   ParameterPool();
   ParameterPool(const ParameterPool &) {};
  ~ParameterPool() {};

@@ -82,7 +82,7 @@ public:
     \return The number of bins.
    */
   virtual unsigned int NBins (conv::KineVar_t kv, const std::map<conv::KineVar_t, double> & other_kv_vals) const = 0;
-  
+
   // Global bin and max values
   double Minimum (unsigned int dimension ) const;
   double Minimum (conv::KineVar_t kv     ) const;
