@@ -32,7 +32,9 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToCCQELike    = ktApplyToCCQE     
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCCELScat = ktApplyToCCELScat | ktApplyToNuEELScat; // nu + e CC elastic scattering (inverse muon/tau decay) and nue+e
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC1pi    = ktApplyToCC1piC   | ktApplyToCC1pi0;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC2pi    = ktApplyToCC2piC   | ktApplyToCC2pi0 | ktApplyToCCpiCpi0;
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC       = ktApplyToCCQELike | ktApplyToAllCC1pi | ktApplyToAllCC2pi | ktApplyToCCcoh | ktApplyToCCoth | ktApplyToCCELScat;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC       = ktApplyToCCQELike | ktApplyToAllCC1pi | ktApplyToAllCC2pi |
+                                                              ktApplyToCCcoh    | ktApplyToCCDIS    | ktApplyToCCMpi    |
+                                                              ktApplyToCCmisc   | ktApplyToCCoth    | ktApplyToCCELScat;
 const ReacTypeApplyMask_t valor::conv::ktApplyToCCnQE       = ktApplyToAllCC & (~ktApplyToCCQELike);
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToNCElLike    = ktApplyToNCEL     | ktApplyToNCMEC; //this is not used, modes disabled
@@ -193,6 +195,9 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCpiCpi0    , "ccpicpi0") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCcoh       , "cccoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCELScat    , "ccelscat") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCDIS       , "ccdis") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCMpi       , "ccmpi") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCmisc      , "ccmisc") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCoth       , "ccoth") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCEL        , "ncel") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCMEC       , "ncmec") );
@@ -392,6 +397,9 @@ const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t)
     case kmtCCcoh    : return ktApplyToCCcoh;
     case kmtCCIMD    : return ktApplyToCCELScat;
     case kmtCCELScat : return ktApplyToCCELScat;
+    case kmtCCDIS    : return ktApplyToCCDIS;
+    case kmtCCMpi    : return ktApplyToCCMpi;
+    case kmtCCmisc   : return ktApplyToCCmisc;
     case kmtCCoth    : return ktApplyToCCoth;
     case kmtNCEL     : return ktApplyToNCEL;
     case kmtNCMEC    : return ktApplyToNCMEC;

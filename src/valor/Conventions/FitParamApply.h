@@ -37,7 +37,7 @@ namespace valor {
     static const int nbitsBeamApplyMask          = 2;
     static const int nbitsFlavApplyMask          = 4;
     static const int nbitsSelecApplyMask         = 35;
-    static const int nbitsReacTypeApplyMask      = 22;
+    static const int nbitsReacTypeApplyMask      = 25;
     static const int nbitsDetectorApplyMask      = 7;
     static const int nbitsNuclearTargetApplyMask = 7;
 
@@ -113,19 +113,22 @@ namespace valor {
     static const ReacTypeApplyMask_t ktApplyToCCpiCpi0     = (kApplyMaskOne <<  6 );
     static const ReacTypeApplyMask_t ktApplyToCCcoh        = (kApplyMaskOne <<  7 );
     static const ReacTypeApplyMask_t ktApplyToCCELScat     = (kApplyMaskOne <<  8 );
-    static const ReacTypeApplyMask_t ktApplyToCCoth        = (kApplyMaskOne <<  9 );
-    static const ReacTypeApplyMask_t ktApplyToNCEL         = (kApplyMaskOne << 10 );
-    static const ReacTypeApplyMask_t ktApplyToNCMEC        = (kApplyMaskOne << 11 );
-    static const ReacTypeApplyMask_t ktApplyToNC1piC       = (kApplyMaskOne << 12 );
-    static const ReacTypeApplyMask_t ktApplyToNC1pi0       = (kApplyMaskOne << 13 );
-    static const ReacTypeApplyMask_t ktApplyToNC2piC       = (kApplyMaskOne << 14 );
-    static const ReacTypeApplyMask_t ktApplyToNC2pi0       = (kApplyMaskOne << 15 );
-    static const ReacTypeApplyMask_t ktApplyToNCpiCpi0     = (kApplyMaskOne << 16 );
-    static const ReacTypeApplyMask_t ktApplyToNCcoh        = (kApplyMaskOne << 17 );
-    static const ReacTypeApplyMask_t ktApplyToNC1Gamma     = (kApplyMaskOne << 18 );
-    static const ReacTypeApplyMask_t ktApplyToNCELScat     = (kApplyMaskOne << 19 );
-    static const ReacTypeApplyMask_t ktApplyToNCoth        = (kApplyMaskOne << 20 );
-    static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 21 ); //only for nue: CC + NC + interference
+    static const ReacTypeApplyMask_t ktApplyToCCDIS        = (kApplyMaskOne <<  9 );
+    static const ReacTypeApplyMask_t ktApplyToCCMpi        = (kApplyMaskOne << 10 );
+    static const ReacTypeApplyMask_t ktApplyToCCmisc       = (kApplyMaskOne << 11 );
+    static const ReacTypeApplyMask_t ktApplyToCCoth        = (kApplyMaskOne << 12 );
+    static const ReacTypeApplyMask_t ktApplyToNCEL         = (kApplyMaskOne << 13 );
+    static const ReacTypeApplyMask_t ktApplyToNCMEC        = (kApplyMaskOne << 14 );
+    static const ReacTypeApplyMask_t ktApplyToNC1piC       = (kApplyMaskOne << 15 );
+    static const ReacTypeApplyMask_t ktApplyToNC1pi0       = (kApplyMaskOne << 16 );
+    static const ReacTypeApplyMask_t ktApplyToNC2piC       = (kApplyMaskOne << 17 );
+    static const ReacTypeApplyMask_t ktApplyToNC2pi0       = (kApplyMaskOne << 18 );
+    static const ReacTypeApplyMask_t ktApplyToNCpiCpi0     = (kApplyMaskOne << 19 );
+    static const ReacTypeApplyMask_t ktApplyToNCcoh        = (kApplyMaskOne << 20 );
+    static const ReacTypeApplyMask_t ktApplyToNC1Gamma     = (kApplyMaskOne << 21 );
+    static const ReacTypeApplyMask_t ktApplyToNCELScat     = (kApplyMaskOne << 22 );
+    static const ReacTypeApplyMask_t ktApplyToNCoth        = (kApplyMaskOne << 23 );
+    static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 24 ); //only for nue: CC + NC + interference
 
     static const DetectorApplyMask_t kdApplyToDUNEND          = (kApplyMaskOne << 0 ); // Dectectors
     static const DetectorApplyMask_t kdApplyToDUNEFD          = (kApplyMaskOne << 1 );

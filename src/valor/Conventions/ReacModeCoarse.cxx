@@ -28,6 +28,9 @@ string util::AsString(ReacModeCoarse_t m)
     case (kmcNuMuCC2pi      ) : return "numuCC2pi";       break;
     case (kmcNuMuCCIMD      ) : return "numuCCIMD";       break;
     case (kmcNuMuCCElScat   ) : return "numuCCElScat";    break;
+    case (kmcNuMuCCDIS      ) : return "numuCCDIS";       break;
+    case (kmcNuMuCCMpi      ) : return "numuCCMpi";       break;
+    case (kmcNuMuCCmisc     ) : return "numuCCmisc";      break;
     case (kmcNuMuCCoth      ) : return "numuCCoth";       break;
     case (kmcNuMuNC         ) : return "numuNC";          break;
     case (kmcNuMuBarCC      ) : return "numubarCC";       break;
@@ -40,6 +43,9 @@ string util::AsString(ReacModeCoarse_t m)
     case (kmcNuMuBarCC2pi   ) : return "numubarCC2pi";    break;
     case (kmcNuMuBarCCIMD   ) : return "numubarIMD";      break;
     case (kmcNuMuBarCCElScat) : return "numubarElScat";   break;
+    case (kmcNuMuBarCCDIS   ) : return "numubarCCDIS";    break;
+    case (kmcNuMuBarCCMpi   ) : return "numubarCCMpi";    break;
+    case (kmcNuMuBarCCmisc  ) : return "numubarCCmisc";   break;
     case (kmcNuMuBarCCoth   ) : return "numubarCCoth";    break;
     case (kmcNuMuBarNC      ) : return "numubarNC";       break;
     case (kmcNuENuEBarCC    ) : return "nuenuebarCC";     break;
@@ -49,6 +55,9 @@ string util::AsString(ReacModeCoarse_t m)
     case (kmcNuECCMEC       ) : return "nueCCMEC";        break;
     case (kmcNuECC1pi       ) : return "nueCC1pi";        break;
     case (kmcNuECC2pi       ) : return "nueCC2pi";        break;
+    case (kmcNuECCDIS       ) : return "nueCCDIS";        break;
+    case (kmcNuECCMpi       ) : return "nueCCMpi";        break;
+    case (kmcNuECCmisc      ) : return "nueCCmisc";       break;
     case (kmcNuECCoth       ) : return "nueCCoth";        break;
     case (kmcNuEElScat      ) : return "nueElScat";       break;
     case (kmcNuENC          ) : return "nueNC";           break;
@@ -58,6 +67,9 @@ string util::AsString(ReacModeCoarse_t m)
     case (kmcNuEBarCCMEC    ) : return "nuebarCCMEC";     break;
     case (kmcNuEBarCC1pi    ) : return "nuebarCC1pi";     break;
     case (kmcNuEBarCC2pi    ) : return "nuebarCC2pi";     break;
+    case (kmcNuEBarCCDIS    ) : return "nuebarCCDIS";     break;
+    case (kmcNuEBarCCMpi    ) : return "nuebarCCMpi";     break;
+    case (kmcNuEBarCCmisc   ) : return "nuebarCCmisc";    break;
     case (kmcNuEBarCCoth    ) : return "nuebarCCoth";     break;
     case (kmcNuEBarElScat   ) : return "nuebarElScat";    break;
     case (kmcNuEBarNC       ) : return "nuebarNC";        break;
@@ -96,6 +108,9 @@ string util::AsStringTex(ReacModeCoarse_t m, bool root)
     case (kmcNuMuCCMEC      ) : name = "#nu_{#mu} CC MEC";            break;
     case (kmcNuMuCC1pi      ) : name = "#nu_{#mu} CC 1#pi";           break;
     case (kmcNuMuCC2pi      ) : name = "#nu_{#mu} CC 2#pi";           break;
+    case (kmcNuMuCCDIS      ) : name = "#nu_{#mu} CC DIS";            break;
+    case (kmcNuMuCCMpi      ) : name = "#nu_{#mu} CC Mpi";            break;
+    case (kmcNuMuCCmisc     ) : name = "#nu_{#mu} CC misc";           break;
     case (kmcNuMuCCoth      ) : name = "#nu_{#mu} CC other";          break;
     case (kmcNuMuCCElScat   ) : name = "#nu_{#mu} CC elastic";        break;
     case (kmcNuMuNC         ) : name = "#nu_{#mu} NC";                break;
@@ -105,6 +120,9 @@ string util::AsStringTex(ReacModeCoarse_t m, bool root)
     case (kmcNuMuBarCCMEC   ) : name = "#bar{#nu}_{#mu} CC MEC";      break;
     case (kmcNuMuBarCC1pi   ) : name = "#bar{#nu}_{#mu} CC 1#pi";     break;
     case (kmcNuMuBarCC2pi   ) : name = "#bar{#nu}_{#mu} CC 2#pi";     break;
+    case (kmcNuMuBarCCDIS   ) : name = "#bar{#nu}_{#mu} CC DIS";      break;
+    case (kmcNuMuBarCCMpi   ) : name = "#bar{#nu}_{#mu} CC Mpi";      break;
+    case (kmcNuMuBarCCmisc  ) : name = "#bar{#nu}_{#mu} CC misc";     break;
     case (kmcNuMuBarCCoth   ) : name = "#bar{#nu}_{#mu} CC other";    break;
     case (kmcNuMuBarCCElScat) : name = "#bar{#nu}_{#mu} CC elastic";  break;
     case (kmcNuMuBarNC      ) : name = "#bar{#nu}_{#mu} NC";          break;
@@ -115,6 +133,9 @@ string util::AsStringTex(ReacModeCoarse_t m, bool root)
     case (kmcNuECCMEC       ) : name = "#nu_{e} CC MEC";              break;
     case (kmcNuECC1pi       ) : name = "#nu_{e} CC 1#pi";             break;
     case (kmcNuECC2pi       ) : name = "#nu_{e} CC 2#pi";             break;
+    case (kmcNuECCDIS       ) : name = "#nu_{e} CC DIS";              break;
+    case (kmcNuECCMpi       ) : name = "#nu_{e} CC Mpi";              break;
+    case (kmcNuECCmisc      ) : name = "#nu_{e} CC misc";             break;
     case (kmcNuECCoth       ) : name = "#nu_{e} CC other";            break;
     case (kmcNuEElScat      ) : name = "#nu_{e}-e elastic";           break;
     case (kmcNuENC          ) : name = "#nu_{e} NC";                  break;
@@ -124,6 +145,9 @@ string util::AsStringTex(ReacModeCoarse_t m, bool root)
     case (kmcNuEBarCCMEC    ) : name = "#bar{#nu}_{e} CC MEC";        break;
     case (kmcNuEBarCC1pi    ) : name = "#bar{#nu}_{e} CC 1#pi";       break;
     case (kmcNuEBarCC2pi    ) : name = "#bar{#nu}_{e} CC 2#pi";       break;
+    case (kmcNuEBarCCDIS    ) : name = "#bar{#nu}_{e} CC DIS";        break;
+    case (kmcNuEBarCCMpi    ) : name = "#bar{#nu}_{e} CC Mpi";        break;
+    case (kmcNuEBarCCmisc   ) : name = "#bar{#nu}_{e} CC misc";       break;
     case (kmcNuEBarCCoth    ) : name = "#bar{#nu}_{e} CC other";      break;
     case (kmcNuEBarElScat   ) : name = "#bar{nu}_{e}-e elastic";      break;
     case (kmcNuEBarNC       ) : name = "#bar{#nu}_{e} NC";            break;
