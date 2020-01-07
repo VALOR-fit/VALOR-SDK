@@ -2740,7 +2740,11 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           << "Applying parameter: " << param_name << " with value = " << f
           << " using splines.";
 #endif
-      double untuned = fSystematics->UntunedValue(p);
+      double untuned = 1.0;
+      if(fSystematics->Contains(p)) {
+        untuned = fSystematics->UntunedValue(p);
+      }
+
       const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
       if(spline_eval_type == conv::kSplEvalUndefined) {
         LOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
@@ -3081,7 +3085,11 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           << "Applying parameter: " << param_name << " with value = " << f
           << " using splines.";
 #endif
-        double untuned = fSystematics->UntunedValue(p);
+        double untuned = 1.0;
+        if(fSystematics->Contains(p)) {
+          untuned = fSystematics->UntunedValue(p);
+        }
+
         const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
         if(spline_eval_type == conv::kSplEvalUndefined) {
           LOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
