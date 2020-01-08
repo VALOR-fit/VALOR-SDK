@@ -3840,7 +3840,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
       LOG("Lateral", pDEBUG)
         << "scaled bin "    << ibin_s << " [" << bin_min_s << ", " << bin_max_s << "]; "
         << "un-scaled bin " << ibin_u << " [" << bin_min_u << ", " << bin_max_u << "]; "
-        << "factor = " << factor << "; old Nevents = " << pdfArr[glob_bin_s] << "; new Nevents = " << new_events;
+        << "factor = " << factor << "; old Nevents = " << pdfArr[glob_bin_s] << "; new Nevents = " << new_events_per_bin[ibin_u];
 #endif
 
     }
@@ -4210,7 +4210,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
         LOG("Lateral", pDEBUG) << "ireco = " << ireco << "; scaled bin = " << iedge_s-1 - n_up_edges_added
                              << "; un-scaled bin = " << iedge_u-1 - n_up_edges_added
                              << "; iedge_u = " << iedge_u-1 << "; iedge_s = " << iedge_s-1
-                             << "; un-scaled edge = " << (*unscaled_bin_edges([iedge_u-1]
+                             << "; un-scaled edge = " << (*unscaled_bin_edges)[iedge_u-1]
                              << "; scaled edge = "    << (*scaled_bin_edges)[iedge_s-1]
                              << "; next end bin index = " << *end_bins_it;
 #endif
@@ -4311,7 +4311,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
              << "scaled bin "    << ibin_s << " [" << bin_min_s << ", " << bin_max_s << "]; "
              << "un-scaled bin " << ibin_u << " [" << bin_min_u << ", " << bin_max_u << "]; "
              << "For unapplied kv ["<<util::AsString(unapplied_binning_kv)<<"], val s = "
-             <<unapplied_kv_val_s<<", val u = "<<unapplied_kv_val_u<<", skip? "<<skip;
+             <<unapplied_kv_val_s<<", val u = "<<unapplied_kv_val_u;
 #endif
 
         } // loop over unapplied kine vars
