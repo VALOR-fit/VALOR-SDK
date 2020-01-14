@@ -373,8 +373,9 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
               }
               else {
                 LOG("RFL", pDEBUG) << "Found spline named [" << spline_obj->GetName() << "] at itrue = "
-                                       << itrue << ", ireco = " << ireco << ", in array named ["
-                                       << spline_array->GetName() << "]";
+                                   << itrue << ", ireco = " << ireco << ", mode = " << util::AsString(m)
+                                   << ", param = " << NameRegistry::Instance()->AsString(p)
+                                   <<  ", in array named [" << spline_array->GetName() << "]";
               }
             }
             else{

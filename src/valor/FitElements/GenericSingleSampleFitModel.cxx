@@ -2381,6 +2381,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
   conv::BeamConf_t    debug_beam   = conv::kbJPARC_FHC;
   conv::ReacMode_t    debug_mode   = conv::kmNuMuCCQE;
   conv::PhysParamId_t debug_param  = util::NameRegistry::Instance()->PhysParamFromString("skdetfsi002");  // Or leave as conv::kPhypUndefined to look at all applied params
+  bool debug_print_sum_over_true0  = true;    // If true, and we're looking at a single reco bin, print out the final bin content for the reco bin summed over all true bins.
   if(fSample == debug_sample && fBeam == debug_beam) {
     LOG("GenericSingleSampleFitModel",pNOTICE)
       << "Will print weights info for true var 0 = " << debug_true0 << ", reco var 0 = " << debug_reco0
@@ -2427,8 +2428,8 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
     templtypeOb & templFinOb = *reinterpret_cast<templtypeOb *>(&(fMCTFinOb[imode]->GetEntryRef(0,0)));
 
 #ifdef DEBUG_SINGLE_BIN
-    unsigned int debug_ireco = 999;
-    unsigned int debug_itrue = 999;
+    int debug_ireco = 999;
+    int debug_itrue = 999;
     if(fSample == debug_sample && fBeam == debug_beam && m == debug_mode) {
       std::vector<double> debug_reco_vals;
       std::vector<double> debug_xsec_reco_vals;
@@ -2451,6 +2452,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       double debug_xsec_itrue = debug_xsec_true_binning->FindBin(debug_true_vals);
       if (debug_true0 != -999) {
         LOG("GenericSingleSampleFitModel", pNOTICE)
+          << std::fixed << std::setprecision(9)
           << "At the start of apply physics, bin content = "
           << templFinOb[debug_ireco][debug_itrue] << ", debug_itrue = " << debug_itrue
           << ", debug_ireco = " << debug_ireco << ", debug_xsec_itrue = " << debug_xsec_itrue
@@ -2458,6 +2460,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       }
       else {
         LOG("GenericSingleSampleFitModel", pNOTICE)
+          << std::fixed << std::setprecision(9)
           << "At the start of apply physics, bin content (with true bin 0) = "
           << templFinOb[debug_ireco][0]
           << ", debug_ireco = " << debug_ireco
@@ -2653,6 +2656,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
                 unsigned int use_debug_itrue = debug_itrue;
                 if(debug_true0 == -999) { use_debug_itrue = itrue; }
                 LOG("GenericSingleSampleFitModel",pNOTICE)
+                  << std::fixed << std::setprecision(9)
                   << "Skipping untweaked param [" << param_name
                   << "] with curr val = " << f << ", effective tweak = " << effective_tweak
                   << "(itrue = " << use_debug_itrue << ", ireco = " << ireco << ")";
@@ -2673,6 +2677,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
               unsigned int use_debug_itrue = debug_itrue;
               if(debug_true0 == -999) { use_debug_itrue = itrue; }
               LOG("GenericSingleSampleFitModel",pNOTICE)
+                << std::fixed << std::setprecision(9)
                 << "Applying norm param with kinematic dependence [" << param_name
                 << "] with curr val = " << f << ", effective tweak = " << effective_tweak
                 << "; new bin content = " << templFinOb[debug_ireco][use_debug_itrue];
@@ -2715,6 +2720,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #ifdef DEBUG_SINGLE_BIN
         if(fSample == debug_sample && fBeam == debug_beam && m == debug_mode && (debug_param == conv::kPhypUndefined || p == debug_param)) {
           LOG("GenericSingleSampleFitModel",pNOTICE)
+            << std::fixed << std::setprecision(9)
             << "Applying norm param with NO kinematic dependence [" << param_name
             << "] with curr val = " << noEt
             << "; new bin content = " << templFinOb[debug_ireco][debug_itrue];
@@ -2813,6 +2819,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
               LOG("GenericSingleSampleFitModel",pNOTICE) << "True kinevar 0 = " << true_sb->BinCentre(use_debug_itrue, 0);
             }
             LOG("GenericSingleSampleFitModel",pNOTICE)
+              << std::fixed << std::setprecision(9)
               << "Applying spline param [" << param_name
               << "] with curr val = " << f << ", untuned val = " << untuned
               << ", weight = " << response
@@ -2824,7 +2831,25 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       } // i non-empty bin
     } // iparams (splines)
 #endif //SPLINE_WEIGHTS_ARE_ONE
-    
+
+#ifdef DEBUG_SINGLE_BIN
+    if(fSample == debug_sample && fBeam == debug_beam && m == debug_mode && debug_reco0 != -999 && debug_reco1 != -999 && debug_print_sum_over_true0) {
+      double debug_sum_over_true_bins = 0;
+      for(int i_non_empty = 0; i_non_empty < fNumOfNonEmptyBinsOb[imode]; i_non_empty++) {
+        // Only loop over non-empty MC template bins
+        int itrue =  fNonEmptyBinsOb[imode][i_non_empty] % n_true_bins_sb;
+        int ireco = (fNonEmptyBinsOb[imode][i_non_empty] - itrue) / n_true_bins_sb;
+        if(ireco != debug_ireco) { continue; }
+        debug_sum_over_true_bins += templFinOb[ireco][itrue];
+      }
+      LOG("GenericSingleSampleFitModel",pNOTICE)
+              << std::fixed << std::setprecision(9)
+              << "After applying all params, new reco bin content summed over all true kv #0 bins = "
+              << debug_sum_over_true_bins;
+    }
+#endif
+
+
 // Same again but for simple binning
     if(update_mct_sb) {
       if (!imode) {
