@@ -254,6 +254,18 @@ void CompoundFitModel::ResetSystematics (Option_t * opt) {
   return;
 }
 //________________________________________________________________________________________
+void CompoundFitModel::ForceSystematicsToUntuned (Option_t * opt) {
+  if (fSystematics) {
+    fSystematics->Tweak(true,&(fSystematics->UntunedValues()));
+  }
+  else {
+    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+      (*it)->ForceSystematicsToUntuned(opt);
+    }
+  }
+  return;
+}
+//________________________________________________________________________________________
 void CompoundFitModel::PrintSystematics (std::ostream & stream, Option_t * opt) const
 {
   if (fSystematics) {
