@@ -563,6 +563,12 @@ void GenericSingleSampleFitModel::ResetSystematics(Option_t * /*opt*/)
   fSystematics -> Tweak(true, 0);
 }
 //________________________________________________________________________________________
+void GenericSingleSampleFitModel::ForceSystematicsToUntuned(Option_t * /*opt*/)
+{
+  const TVectorD* untuned_values = &(fSystematics -> UntunedValues());
+  fSystematics -> Tweak(true, untuned_values);
+}
+//________________________________________________________________________________________
 void GenericSingleSampleFitModel::PrintSystematics(ostream & stream, Option_t * /*opt*/) const
 {
   stream << endl;

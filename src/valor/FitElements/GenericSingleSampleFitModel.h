@@ -72,23 +72,24 @@ public:
   string        Name                   (void) const;
 
   // Options available to Read() include nosplines, nomc, forcedst, pot_override, binning=myfile.xml
-  bool          Read                   (string file, Option_t * opt = 0);
-  virtual bool  Read                   (util::ToyStream* stream);
-  bool          Generate               (const PhysHypothesis & ph, Option_t * opt = 0);
-  void          RandomizeSystematics   (Option_t * opt = 0);
-  void          RandomizeSystematics   (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
-  void          RandomizeSystematics   (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0);
-  void          TweakSystematic        (string syst_name, double twkdial=0., Option_t * opt = 0); 
-  void          TweakSystematic        (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
-  void          ResetSystematics       (Option_t * opt = 0);  
-  void          PrintSystematics       (ostream & stream = std::cout, Option_t * opt = 0) const;
-  PhysParamList Tweaks                 (Option_t * opt = 0) const;
-  bool          Generate               (const FitParamList & fp, Option_t * opt = 0);
-  bool          Write                  (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
-  bool          Write                  (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
-  virtual bool  Write                  (util::ToyStream* stream);
-  virtual long  StreamSize             (Option_t * opt = 0) const;  // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
-  double        GetFitStatisticPenalty (Option_t * opt = 0) const;
+  bool          Read                     (string file, Option_t * opt = 0);
+  virtual bool  Read                     (util::ToyStream* stream);
+  bool          Generate                 (const PhysHypothesis & ph, Option_t * opt = 0);
+  void          RandomizeSystematics     (Option_t * opt = 0);
+  void          RandomizeSystematics     (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
+  void          RandomizeSystematics     (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0);
+  void          TweakSystematic          (string syst_name, double twkdial=0., Option_t * opt = 0);
+  void          TweakSystematic          (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
+  void          ResetSystematics         (Option_t * opt = 0);
+  void          ForceSystematicsToUntuned(Option_t * opt = 0);
+  void          PrintSystematics         (ostream & stream = std::cout, Option_t * opt = 0) const;
+  PhysParamList Tweaks                   (Option_t * opt = 0) const;
+  bool          Generate                 (const FitParamList & fp, Option_t * opt = 0);
+  bool          Write                    (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
+  bool          Write                    (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
+  virtual bool  Write                    (util::ToyStream* stream);
+  virtual long  StreamSize               (Option_t * opt = 0) const;  // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
+  double        GetFitStatisticPenalty   (Option_t * opt = 0) const;
 
   void          SetSystConf            (CorrelatedSystematics * syst, Option_t * opt = "");
   CorrelatedSystematics *       GetSystematics(Option_t * opt = "");
