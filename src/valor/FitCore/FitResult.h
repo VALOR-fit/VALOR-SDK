@@ -24,6 +24,9 @@
 #include "TH1.h"
 #include "TH2.h"
 
+#include <vector>
+using std::vector;
+
 namespace valor
 {
 
@@ -49,7 +52,7 @@ public:
       \param chi2 The chi2 surface from the best-fit.
       \param likelihood The likelihood surface from the best-fit.
    */
-   FitResult(const TH1D& chi2, const TH1D& likelihood);
+   FitResult(const TH1D& chi2, const TH1D& likelihood, vector<double> * toy_likelihoods);
 
    /**
       Constructs a FitResult object.
@@ -151,6 +154,13 @@ public:
    */
    TH2D* GetLikelihoodSurface2D();
 
+   /**
+      Retrieve a vector containing the chisq value for each marginalisation toy.
+
+      \return The likelihood surface.
+   */
+   vector<double> * GetToyLikelihoods() { return _toy_likelihoods; }
+
 private:
    double _param1;
    double _param2;
@@ -161,6 +171,7 @@ private:
    TH2D* _likelihood_2D;
    TH1D* _chi2_1D;
    TH2D* _chi2_2D;
+   vector<double> * _toy_likelihoods;
 };
 
 } // valor
