@@ -17,7 +17,7 @@ FitResult::FitResult(const double param, double chi2,
 {
 }
 //______________________________________________________________________________
-  FitResult::FitResult(const TH1D& chi2, const TH1D& likelihood, vector<double> * toy_likelihoods):
+  FitResult::FitResult(const TH1D& chi2, const TH1D& likelihood, vector<vector<double> > * toy_likelihoods):
     _param2(0.0), _isFit2D(false), _likelihood_2D(nullptr), _chi2_2D(nullptr), _toy_likelihoods(toy_likelihoods)
 {
    std::ostringstream oss;

@@ -52,7 +52,7 @@ public:
       \param chi2 The chi2 surface from the best-fit.
       \param likelihood The likelihood surface from the best-fit.
    */
-   FitResult(const TH1D& chi2, const TH1D& likelihood, vector<double> * toy_likelihoods);
+   FitResult(const TH1D& chi2, const TH1D& likelihood, vector<vector<double> > * toy_likelihoods);
 
    /**
       Constructs a FitResult object.
@@ -159,7 +159,7 @@ public:
 
       \return The likelihood surface.
    */
-   vector<double> * GetToyLikelihoods() { return _toy_likelihoods; }
+   vector<vector<double> > * GetToyLikelihoods() { return _toy_likelihoods; }
 
 private:
    double _param1;
@@ -171,7 +171,7 @@ private:
    TH2D* _likelihood_2D;
    TH1D* _chi2_1D;
    TH2D* _chi2_2D;
-   vector<double> * _toy_likelihoods;
+   vector<vector<double> > * _toy_likelihoods;
 };
 
 } // valor
