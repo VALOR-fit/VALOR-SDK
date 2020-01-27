@@ -44,7 +44,8 @@ struct UniqueSampleID
 };
 
 // Comparison
-bool operator==(const UniqueSampleID& lhs, const UniqueSampleID& rhc);
+bool operator==(const UniqueSampleID & lhs, const UniqueSampleID& rhc);
+bool operator< (const UniqueSampleID & lhs, const UniqueSampleID& rhc);
 
 namespace util {
   std::string AsString      (const UniqueSampleID & obj);

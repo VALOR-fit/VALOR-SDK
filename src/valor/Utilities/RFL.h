@@ -111,7 +111,7 @@ private:
   conv::Detector_t fDetector;
   
   // Details of binning
-  std::vector<conv::ReacMode_t> fModes;   //[fNModes]
+  std::vector<conv::ReacMode_t> fModes;   //
   int                           fNParams; //
   conv::PhysParamId_t *         fParams;  //[fParams]
   
@@ -134,6 +134,8 @@ private:
   
   // Array storing parameters mapped to indice within this object
   int fParam2Idx[conv::knppmax];
+  // And the same thing for modes
+  std::vector<long> fReactionModeIndex;
 
   // When spline weights come out negative, force them to this value instead
   double fForceNegWghtTo;

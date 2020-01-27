@@ -79,8 +79,6 @@
 #include "valor/Conventions/Sample.h"
 #include "valor/Conventions/Detector.h"
 
-using namespace valor;
-
 namespace valor {
   class Parameter {
     public:

@@ -44,3 +44,14 @@ bool valor::operator==(const UniqueSampleID & lhs, const UniqueSampleID & rhs)
            (lhs.sample   == rhs.sample  ) );
 }
 //________________________________________________________________________________________
+bool valor::operator<(const UniqueSampleID & lhs, const UniqueSampleID & rhs)
+{
+  if      (lhs.detector < rhs.detector) { return true;}
+  else if (lhs.detector > rhs.detector) { return false;}
+  if      (lhs.beamconf < rhs.beamconf) { return true;}
+  else if (lhs.beamconf > rhs.beamconf) { return false;}
+  if      (lhs.sample   < rhs.sample) { return true;}
+  else if (lhs.sample   > rhs.sample) { return false;}
+  return false;
+}
+//________________________________________________________________________________________

@@ -77,8 +77,8 @@ namespace valor {
 class SingleSampleKineBinning {
 
 public:
-  SingleSampleKineBinning(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s);
-  SingleSampleKineBinning(UniqueSampleID usid);
+  SingleSampleKineBinning(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, const std::vector<conv::ReacMode_t> & modes);
+  SingleSampleKineBinning(UniqueSampleID usid, const std::vector<conv::ReacMode_t> & modes);
  ~SingleSampleKineBinning();
 
   bool Read(string file);
@@ -103,6 +103,9 @@ public:
   
   // Get a list of all the kinematic variables included in this binning
   const std::vector<conv::KineVar_t> & KineVars() const;
+  
+  // Get a lit of the modes this binning is defined for
+  const std::vector<conv::ReacMode_t> & GetReactionModes() const;
 
 private:
 
@@ -113,6 +116,9 @@ private:
   
   // The list of reaction modes we're using
   std::vector<conv::ReacMode_t> fReactionModes;
+  // and a mapping from these to their index in here
+  std::vector<long> fReactionModeIndex;
+  
 
   conv::Detector_t                  fDetector;
   conv::BeamConf_t                  fBeamConf;

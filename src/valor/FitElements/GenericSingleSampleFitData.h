@@ -40,9 +40,6 @@
 class TObjArray;
 class TH1D;
 
-using std::string;
-using namespace valor;
-
 namespace valor {
 
 class GenericSingleSampleFitData: public SingleSampleFitDataABC

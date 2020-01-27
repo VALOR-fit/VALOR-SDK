@@ -90,6 +90,7 @@ namespace util {
   TMatrixD CovarianceMatrixToCorrelationMatrix(const TMatrixD & cov_m);
   TVectorD CovarianceMatrixToErrorVector(const TMatrixD & cov_m);
   TMatrixD CovarianceMatrixToFractionalCovarianceMatrix(const TMatrixD & cov_m, const TVectorD & mean);
+  TVectorD ErrorVectorToFractionalErrorVector(const TVectorD & total_err, const TVectorD & mean);
   TMatrixD CorrelationAndErrorToCovarianceMatrix(const TMatrixD & corr, const TVectorD & one_sigma);
   TMatrixD MatrixPseudoInverted(const TMatrixD & m);
   TMatrixDSym MatrixToSymMatrix(const TMatrixD & m);

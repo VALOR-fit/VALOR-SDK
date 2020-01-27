@@ -43,6 +43,7 @@ brief      A generic implementation of the fit model for a single sample,
 #include "valor/FitCore/SingleSampleFitModelABC.h"
 #include "valor/Oscillation/NuOsc3Flavour.h"
 #include "valor/VArray/VALORArray.h"
+#include "valor/VArray/VALORArrayF.h"
 #include "valor/VArray/VALORArrayBin.h"
 #include "valor/Utilities/RFL.h"
 
@@ -113,10 +114,17 @@ public:
   // Calculate the OB manually from the content of the simple bins. Can be used to verify the spectra are the same for SB/OB
   void UpdateObservableBinningFromSimple (Option_t * opt = 0);
   
-  // Add information on which systematic universe to apply for which parameter
+  // Add information on which systematic universes to read in if they're coming from the DST.
   // Must be called *before* Read() since these are event-by-event
-  void ResetSystematicVariationIDs();
+  void SetUniverseRangeToRead(size_t first, size_t last);
+  void SetUniverseParameterToRead(const std::string & param_name);
+  void ResetUniversesToRead();
+  
   void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
+  void ResetSystematicVariationIDs();
+  
+  // If we've made baseline splines, we should allow the user to cache them
+  void WriteBaselineSplinesToFile(TFile * f) const;
 
 private:
 
@@ -170,8 +178,8 @@ private:
   std::vector<conv::PhysParamId_t> fLateralPostOscParams;
 
   // Keep a list of the parameters for every given mode
-  std::vector<conv::PhysParamId_t> fNormParamsAppliedTo  [conv::kNReacModes];
-  std::vector<conv::PhysParamId_t> fSplineParamsAppliedTo[conv::kNReacModes];
+  std::vector<std::vector<conv::PhysParamId_t>> fNormParamsAppliedTo  ;
+  std::vector<std::vector<conv::PhysParamId_t>> fSplineParamsAppliedTo;
   
   // Fill these arrays
   void BuildParamLists();
@@ -217,13 +225,12 @@ private:
   //   correlated flux and cross-sections). The effect of their variation is included in the fin templates.
   //
   // Below are MCT with binning heavily optimized to reduce the CPU intensity of the fit.
-  // A number of binning zones are defined, and in each zone a variable-size binning scheme is used.
-  bool         fMCTNullOb [conv::kNReacModes];
-  VALORArray * fMCTNomOb  [conv::kNReacModes]; 
-  VALORArray * fMCTTunOb  [conv::kNReacModes]; 
-  VALORArray * fMCTSysOb  [conv::kNReacModes]; 
-  VALORArray * fMCTFinOb  [conv::kNReacModes]; 
-  VALORArray * fMCStatOb  [conv::kNReacModes]; // MC statistics
+  std::vector<bool        >fMCTNullOb;
+  std::vector<VALORArray *>fMCTNomOb ; 
+  std::vector<VALORArray *>fMCTTunOb ; 
+  std::vector<VALORArray *>fMCTSysOb ; 
+  std::vector<VALORArray *>fMCTFinOb ; 
+  std::vector<VALORArray *>fMCStatOb ; // MC statistics
   
   // We'll keep our response function pointers in a VALORArray of longs.
   // If we move to C++ 11, should use intptr_t instead.
@@ -233,12 +240,12 @@ private:
   // Below are MCT versions the use a simple (~fine and ~regular) binning throughout the whole range.
   // These templates are not used in the fit, but mainly for the visualization of the fit results.
   // As such, they are not all filled-in in each iteration of the fit but, typically, at the end of the fit or upon request.
-  bool         fMCTNullSb [conv::kNReacModes];
-  VALORArray * fMCTNomSb  [conv::kNReacModes]; 
-  VALORArray * fMCTTunSb  [conv::kNReacModes]; 
-  VALORArray * fMCTSysSb  [conv::kNReacModes]; 
-  VALORArray * fMCTFinSb  [conv::kNReacModes]; 
-  VALORArray * fMCStatSb  [conv::kNReacModes]; // MC statistics
+  std::vector<bool        > fMCTNullSb;
+  std::vector<VALORArray *> fMCTNomSb ; 
+  std::vector<VALORArray *> fMCTTunSb ; 
+  std::vector<VALORArray *> fMCTSysSb ; 
+  std::vector<VALORArray *> fMCTFinSb ; 
+  std::vector<VALORArray *> fMCStatSb ; // MC statistics
 
   // MC PDFs
   // Each PDF is (currently always) a 2-D Nev = Nev(Enu_reco, y_reco) array that can be directly compared with data.
@@ -247,19 +254,21 @@ private:
   // The `Tot' versions are integrated over the true reac_modes and can be used for comparisons with data.
   //
   // Below are PDFs with binning heavily optimized to reduce the CPU intensity of the fit.
-  bool         fPDFTotNullOb;                     //
-  VALORArray * fPDFTotOb    ;                     // total
-  VALORArray * fPDFCompOb    [conv::kNReacModes]; // components
+  bool                      fPDFTotNullOb; //
+  VALORArray *              fPDFTotOb    ; // total
+  std::vector<VALORArray *> fPDFCompOb   ; // components
   // Below are PDFs versions the use a simple (~fine and ~regular) binning throughout the whole range.
-  bool         fPDFTotNullSb;                     // 
-  VALORArray * fPDFTotSb;                         // total
-  VALORArray * fPDFCompSb    [conv::kNReacModes]; // components
+  bool         fPDFTotNullSb;           // 
+  VALORArray * fPDFTotSb;               // total
+  std::vector<VALORArray *> fPDFCompSb; // components
   
   // Binning
   SingleSampleKineBinning * fBinning;
   
   // The list of reaction modes we're using
   std::vector<conv::ReacMode_t> fReactionModes;
+  // and a mapping from these to their index in here
+  std::vector<long> fReactionModeIndex;
   
   // Spline library
   util::RFL * fRFL;
@@ -268,9 +277,27 @@ private:
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;
   
+  // Splines to handle implementation of variable baseline if necessary
+  bool fGetBaselineFromSplines;
+  bool fBaselineSplinesFilled;
+  // This vector will only include initial flavour, not reaction type
+  std::vector<VALORArrayP*> fBaselineSplines;
+  // and how many places we evaluate them in. Should become configurable later
+  int fNSplineEvalPoints;
+  
+  
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices
-  std::map<std::string,size_t> fSystUniverseToApply; // param name in DST to universe ID in DST
+  bool fApplyUniverseVariations;
+  std::map<std::string,size_t> fSystUniverseToApply; // uses universe in DST, not universe in here.
+  // For caching which universes to store so they can be rapidly applied
+  std::vector<std::string> fUniverseParametersToSave;
+  size_t fFirstUniverseToSave;
+  size_t fLastUniverseToSave;
+  // and the actual variations
+  // param name, mode(nmodes)->universe variations(reco,true,universe)
+  std::map<std::string,std::vector<VALORArrayF> > fUniverseVariations;
+  
 
   // Vector of tuning hists and the apply masks and kine vars that they should be used for
   std::vector<TuningInfo> fEventByEventTuningHists;
