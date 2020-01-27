@@ -1147,6 +1147,18 @@ TVectorD valor::util::CovarianceMatrixToErrorVector(const TMatrixD & cov_m)
   return vec;
 }
 //____________________________________________________________________________
+TMatrixD valor::util::CovarianceMatrixToFractionalCovarianceMatrix(const TMatrixD & cov_m, const TVectorD & mean)
+{
+  int n = cov_m.GetNrows();
+  TMatrixD frac_cov(n,n);
+  for (int ii = 0 ; ii < n; ii++) {
+    for (int jj = 0 ; jj < n; jj++) {
+      frac_cov[ii][jj] = cov_m[ii][jj] / (mean[ii]*mean[jj]);
+    }
+  }
+  return frac_cov;
+}
+//____________________________________________________________________________
 TMatrixD valor::util::CorrelationAndErrorToCovarianceMatrix(const TMatrixD & corr, const TVectorD & one_sigma)
 {
   int n = corr.GetNrows();
