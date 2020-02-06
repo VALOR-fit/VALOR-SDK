@@ -402,19 +402,24 @@ void Parameter::ReadFitInfo()
   }
 
   // If we're not going to update this range later and the range is specified in units of sigmas,
-  // convert it to an absolute range here
-  if(fHasLimits && !fUpdateFitInfo && fRangeMode == "sigma") {
-    if(fInitValueWasSpecified && fErrorWasSpecified) {
-      fRange.first  = fInit + fRange.first  * fError;
-      fRange.second = fInit + fRange.second * fError;
-      fRangeMode == "value";
+  // convert it to an absolute range here. But don't do this for disabled params
+  if(fType != kSystDisabled) {
+    if(fHasLimits && !fUpdateFitInfo && fRangeMode == "sigma") {
+      if(fInitValueWasSpecified && fErrorWasSpecified) {
+        fRange.first  = fInit + fRange.first  * fError;
+        fRange.second = fInit + fRange.second * fError;
+        fRangeMode == "value";
+      }
+      else {
+        LOG("FitInputs", pFATAL) << "For parameter \'" << fName
+                                 << "\', the throw range is specified in units of sigmas, "
+                                 << "but both the initial value and the 1 sigma error must be specified";
+        util::Die(1);
+      }
     }
-    else {
-      LOG("FitInputs", pFATAL) << "For parameter \'" << fName
-                               << "\', the throw range is specified in units of sigmas, "
-                               << "but both the initial value and the 1 sigma error must be specified";
-      util::Die(1);
-    }
+  }
+  else {
+    fRange = std::make_pair(-fDefSymmetricRange, fDefSymmetricRange);
   }
 
   // Step size mode

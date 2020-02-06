@@ -63,9 +63,10 @@ public:
   virtual void TweakSystematic      (std::string syst_name, double twkdial=0., Option_t * opt = 0) = 0; 
   virtual void TweakSystematic      (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0) = 0; 
   // Additional related methods to reset the systematics and enquire their values.
-  virtual void ResetSystematics (Option_t * opt = 0) = 0;  
-  virtual void PrintSystematics (std::ostream & stream = std::cout, Option_t * opt = 0) const = 0;
-  virtual PhysParamList Tweaks(Option_t * opt = 0) const = 0;
+  virtual void ResetSystematics         (Option_t * opt = 0) = 0;
+  virtual void ForceSystematicsToUntuned(Option_t * opt = 0) = 0;
+  virtual void PrintSystematics         (std::ostream & stream = std::cout, Option_t * opt = 0) const = 0;
+  virtual PhysParamList Tweaks          (Option_t * opt = 0) const = 0;
 
   // This is a second interface for generating predictions for a given physics hypothesis and systematics.
   // This interface method was developed for fitters. 
