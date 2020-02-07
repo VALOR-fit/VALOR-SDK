@@ -14,28 +14,29 @@ The SDK is a **highly-abstracted** neutrino oscillation fit. Specific applicatio
 
 ## Copyright
 
-Copyright (c) 2010-2019, The VALOR Fitting Group. **All Rights Reserved.**
+Copyright (c) 2010-2020, The VALOR Fitting Group. **All Rights Reserved.**
 
 ## Authors
 
 * **Costas Andreopoulos**, *University of Liverpool & STFC/RAL*
 * **Maria Antonova**, *IFIC Valencia*
-* **Chistopher Barry**, *University of Liverpool*
+* **Dom Barker**, *University of Sheffield*
 * **Francis Bench**, *University of Liverpool*
-* **Andrew Chappell**, *University of Warwick*
 * **Thomas Dealtry**, *Lancaster University*
 * **Steve Dennis**, *University of Liverpool*
-* **Lorena Escudero**, *University of Cambridge*
-* **Jaggar Henzerling**, *University of Liverpool*
+* **Pablo Fernandez Menendez**, *Universidad Autónoma de Madrid*
 * **Rhiannon Jones**, *University of Liverpool*
-* **Nick Grant**, *University of Warwick*
-* **Marco Roda**, *University of Liverpool*
+* **Jaiden Parlone**, *University of Liverpool*
+* **Glória de Sá Pereira**, *University of Liverpool*
 * **Davide Sgalaberna**, *CERN*
-* **Julia Tena Vidal**, *University of Liverpool*
 
 Past authors:
 
-* **Raj Shah**, *University of Oxford * STFC/RAL*
+* **Chistopher Barry**, *University of Liverpool*
+* **Andrew Chappell**, *University of Warwick*
+* **Lorena Escudero**, *University of Cambridge; IFIC Valencia*
+* **Nick Grant**, *STFC/RAL; Lancaster University; University of Warwick*
+* **Raj Shah**, *University of Oxford & STFC/RAL*
 
 ## Contact
 
@@ -47,47 +48,10 @@ Professor **Costas Andreopoulos** < constantinos.andreopoulos \at cern.ch >
 *Harwell Oxford Campus, R1 2.89, Oxfordshire OX11 0QX, UK* | *Tel: +44-(0)1235-445091* <br>
 
 
-# Using the VALOR-SDK: An abbreviated User's Guide
+# Using the VALOR-SDK
 
-## Configuration, installation and post-installation testing
+https://www.overleaf.com/read/ygmrxrjtmwyv
 
-External dependency setup:
 
-- **colorgcc** (makes g++ output more readable)
-   - To install colorgcc (optional), type: *shell%* <span style="color: red"> make color</span>
-   - To uninstall, type : *shell%* <span style="color: red"> make colorclean</span>
-- **python virtualenv, with ipython and numpy** (ensure support for the VALOR python scripts)
-   - To install, type: *shell%* <span style="color: red"> make python</span>
-   - To uninstall, type *shell%* <span style="color: red"> make pythonclean</span>
-
-Configuring the VALOR-SDK:
-
-*shell%* ./configure
-
-Building the VALOR-SDK:
-
-*shell%* make
-
-## Setting up a neutrino fit
-
-### How to specify a list event samples to be included in the fit 
-
-### How to specify the binning scheme for the true and reconstructed kinematical distributions in the MC templates
-
-### How to specify the list of true reaction models that are kept track of separately for each fit sample
-
-### How to populate the VALOR MC templates using your analysis DSTs
-
-### How to plot nominal event rate distributions and write out corresponding event rate tables
-
-### How to specify the list of systematic parameters to be included in the fit.
-
-### How to specify the action of each systematic parameter.
-
-### How to specify prior constraints for systematic parameters.
-
-### How to run a neutrino fit
-
-### Format of the standard output VALOR fit file
 
 
