@@ -24,7 +24,7 @@ Copyright (c) 2010-2020, The VALOR Fitting Group. **All Rights Reserved.**
 * **Francis Bench**, *University of Liverpool*
 * **Thomas Dealtry**, *Lancaster University*
 * **Steve Dennis**, *University of Liverpool*
-* **Pablo Fernandez Menendez**, *Universidad Autónoma de Madrid*
+* **Pablo Fernandez Menendez**, *IFIC Valencia*
 * **Rhiannon Jones**, *University of Liverpool*
 * **Jaiden Parlone**, *University of Liverpool*
 * **Glória de Sá Pereira**, *University of Liverpool*
