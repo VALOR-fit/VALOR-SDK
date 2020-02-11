@@ -2856,7 +2856,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 // Same again but for simple binning
     if(update_mct_sb) {
       if (!imode) {
-        LOG("GenericSingleSampleFitModel",pNOTICE) << "Updating simple binning templates for "<<fName<<".";
+        LOG("GenericSingleSampleFitModel",pINFO) << "Updating simple binning templates for "<<fName<<".";
       }
       
       if(fMCTNullSb[imode]) {continue;}
