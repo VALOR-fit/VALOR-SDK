@@ -84,12 +84,22 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
       std::string write_opt_str = "pdft_vf";
       if(_store_mode_arrays ) { write_opt_str += "_pdfc_vf"; }
       if(_use_simple_binning) { write_opt_str += "+SB";      }
+
+      // First generate a dummy toy to be overwritten (so that the model/data arrays can be initialised)
+      FitParamList* fpl_void = util::GetFitParameterList("void", "");
+      this->_model->Generate(*fpl_void);
+
       toy_stream = this->_model->InitToyStream(filename, "write", write_opt_str);
    }
    else {
       // Build fake data toys
       std::string write_opt_str = "data_vf";
       if(_use_simple_binning) { write_opt_str += "+SB"; }
+
+      // First generate a dummy toy to be overwritten (so that the model/data arrays can be initialised)
+      FitParamList* fpl_void = util::GetFitParameterList("void", "");
+      this->_data->Generate(this->_model, *fpl_void, false);
+
       toy_stream = this->_data->InitToyStream(filename, "write", write_opt_str);
    }
 
