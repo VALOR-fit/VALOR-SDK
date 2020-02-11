@@ -126,7 +126,12 @@ void ParameterPool::CheckSchemes(TXMLEngine* xmleng, XMLNodePointer_t root_node)
       std::string scheme_name = util::XML2String(xmleng, root_node, scheme_node_name);
       conv::NuOscDmsqScheme_t scheme = util::DmsqSchemeFromString(scheme_name);
       conv::NuOscDmsqScheme_t opt_scheme = Opt::Instance()->gOscDmsqScheme;
-      if(opt_scheme == conv::kNuDmsqAuto) { opt_scheme = util::GetAutoDmsqSchemeFromHierarchy(); }
+      //if(opt_scheme == conv::kNuDmsqAuto) { opt_scheme = util::GetAutoDmsqSchemeFromHierarchy(); }
+      if(opt_scheme == conv::kNuDmsqAuto && scheme == conv::kNuDmsq12andAbs23) {
+        // The conversion between abs23 and abs31 is done when applying osc prob, so regardless of
+        // the mass hierarchy, Dmsq values should be specified with the abs23 scheme
+        opt_scheme = conv::kNuDmsq12andAbs23;
+      }
       if(scheme != opt_scheme) {
         LOG("ParameterPool",pFATAL) << "An input parameter list was specified with Dmsq scheme \'"
                                     << util::AsString(scheme)
