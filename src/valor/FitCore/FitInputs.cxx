@@ -106,7 +106,7 @@ double FitInputs::Statistic(Option_t * option, std::map<std::string,double> * li
 #endif
   LOG("FitInputs",pINFO)<<"Statistic = "<<total_statistic<<" (data/MC="<<data_statistic
     <<", syst penalty="<<syst_penalty<<", phys penalty="<<phys_penalty<<")";
-  
+
   assert(TMath::Finite(total_statistic));
   return total_statistic;
 }
