@@ -602,7 +602,16 @@ TTree * valor::util::XML2TTree(
     used_base_dir = Env::Instance()->TopLevelDataDir();
   }
 
-  TString full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
+  TString full_filename = "";
+  if(filename.rfind("/",0) == 0){
+    LOG("XML", pNOTICE) << "File path starts with '/' therefore assume full path has been given: " << filename;
+    full_filename = filename;
+  }
+  else{
+    LOG("XML", pNOTICE) << "File path doesn't start with '/' therefore assume full path has not been given: " << filename;
+    full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
+    LOG("XML", pNOTICE) << "Full filename therefore: " << full_filename;
+  }
 
   TFile * file = new TFile(full_filename.Data(),"read");
   TTree * tree = (TTree*)file->Get(objname.c_str());
