@@ -50,6 +50,8 @@ namespace util {
   std::string AsStringRooTex(conv::ConfLevel_t cl);
   std::string ConfLevelAsStringRooTex(conv::ConfLevel_t cl); //alias for above
 
+  conv::ConfLevel_t ConfLevelFromString(std::string confname);
+
 
 } // util
 
