@@ -79,7 +79,7 @@ public:
   virtual void AddSubModel(FitModelABC * model, Option_t * opt = 0);
   virtual const FitModelABC * GetSubModel(int model_idx, Option_t * opt = 0) const;
   virtual FitModelABC * GetSubModel(int model_idx, Option_t * opt = 0);
-  virtual std::vector<FitModelABC *> GetSubModels(Option_t * opt = 0) const;
+  virtual const std::vector<FitModelABC *> GetSubModels(Option_t * opt = 0) const;
   virtual std::vector<FitModelABC *> GetSubModels(Option_t * opt = 0);
   virtual unsigned int GetNSubModels(Option_t * opt = 0) const;
   
