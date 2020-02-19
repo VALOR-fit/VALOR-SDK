@@ -1620,7 +1620,7 @@ namespace util {
   string RawParamAsStringRooTex (conv::PhysParamId_t p);
   string RawParamAsStringSimple (conv::PhysParamId_t p);
 
-  conv::PhysParamId_t PhysParamIdFromRawString(string sh);
+  conv::PhysParamId_t PhysParamIdFromRawString(string sh, bool suppress_unmatched_string_warning = false);
 
   bool IsSystematic   (conv::PhysParamId_t p);
   bool IsMixingAngle  (conv::PhysParamId_t p);

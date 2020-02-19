@@ -133,6 +133,10 @@ protected:
   
   void CholeskyDecomposeMatrix (void);          ///< Cholesky decompose the covariance matrix
   void InvertMatrices (void); ///< Invert the cov and chol matrices
+
+  // Search for the systematic parameters in the ParameterPool and (if required) update their inital values,
+  // errors, range and step size from the covariance matrix and initial values vector
+  void UpdateParametersInPool(void) const;
   
   TVectorD *  fDefaultValues;     ///< Default values of the systematic parameters (all 1 unless subclass alters one. Used only when XML vectors not specified).
   TVectorD *  fUntunedValues;     ///< Untuned values of the systematic parameters, read from XML if possible.

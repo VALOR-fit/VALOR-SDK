@@ -103,7 +103,8 @@ public:
   
   // Get a list of all the kinematic variables included in this binning
   const std::vector<conv::KineVar_t> & KineVars() const;
-  
+  const std::vector<conv::KineVar_t> & TrueKineVars() const;
+  const std::vector<conv::KineVar_t> & RecoKineVars() const;
   // Get a lit of the modes this binning is defined for
   const std::vector<conv::ReacMode_t> & GetReactionModes() const;
 
@@ -118,7 +119,6 @@ private:
   std::vector<conv::ReacMode_t> fReactionModes;
   // and a mapping from these to their index in here
   std::vector<long> fReactionModeIndex;
-  
 
   conv::Detector_t                  fDetector;
   conv::BeamConf_t                  fBeamConf;
@@ -134,6 +134,8 @@ private:
   std::vector<VALORBinning *> fXsecTrueBinningUnique;  // 
   
   std::vector<conv::KineVar_t> fKineVars;
+  std::vector<conv::KineVar_t> fRecoKineVars;
+  std::vector<conv::KineVar_t> fTrueKineVars;
 };
 
 } // valor namespace

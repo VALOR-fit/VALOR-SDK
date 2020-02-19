@@ -279,9 +279,9 @@ if ($ENV{GENIE}) {
 else {
   print "Disabling GENIE utilities due to no GENIE\n";
 }
-  
 
-# 
+
+#
 # Read version info and automatically generate a header file with relevant flags that
 # can be used to make code conditional upon specific version numbers
 #
@@ -506,7 +506,7 @@ sub unique_entries {
 sub is_file_in_dir {
   $searchfile = shift;
   $dirname = shift;
-  
+
   unless (-d $dirname) {
     print "Not a directory: $dirname \n";
     return 0;
@@ -519,4 +519,4 @@ sub is_file_in_dir {
   }
   return 0;
 }
-  
+

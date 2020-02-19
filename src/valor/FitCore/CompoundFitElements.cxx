@@ -231,13 +231,13 @@ bool CompoundFitElements::ReadElement(TXMLEngine* xmleng, XMLNodePointer_t top_n
 
   if(!data_file.empty()) // The data tag has been filled
     fDataFileGiven = true;
-  
+
   if (success) {
     FitModelABC * fit_model = 
        this->AdoptFitModel(mc_file,   detector, beam, sample, observable, model_class, model_opt.Data());
     assert(fit_model);
 
-    FitDataABC *  fit_data  = 
+    FitDataABC *  fit_data  =
        this->AdoptFitData (data_file, detector, beam, sample, observable, data_class, fit_model, opt);
     assert(fit_data);
     
@@ -268,6 +268,8 @@ bool CompoundFitElements::ReadParameterList (
   while(curr_node) {
     std::string curr_node_name = xmleng->GetNodeName(curr_node);
     if(!strcmp(curr_node_name.c_str(),"filename")) {
+      LOG("CompoundFitElements", pNOTICE)
+        << "Reading parameter list named \'" << xmleng->GetAttr(curr_node, "desc") << "\' into the parameter pool";
       string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
       ParameterPool::MutableInstance()->ReadXML(content);
     }
@@ -299,13 +301,14 @@ FitDataABC * CompoundFitElements::AdoptFitData(
   string config_file, 
   conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t o, 
   string class_name,
-  FitModelABC *model_abc, 
+  FitModelABC *model_abc,
   Option_t * opt)
 {
   void * vbase = this->InstantiateUsingDictionaryRegistration(class_name);
   SingleSampleFitDataABC * s_dataset = (SingleSampleFitDataABC *) (vbase);
   s_dataset->Configure(d,b,s,o);
   s_dataset->SetAssociatedModel(model_abc);
+  s_dataset->SetFromModel();
   if(fDataFileGiven){
     LOG("CompoundFitElements", pNOTICE)
       << "Data file given so will Read it. Will be overwritten if Generate is called later";

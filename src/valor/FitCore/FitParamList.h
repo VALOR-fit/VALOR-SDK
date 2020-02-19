@@ -256,28 +256,31 @@ namespace valor {
     
     
     // MARGINALIZATION
-    void SetDoMarg(valor::conv::PhysParamId_t p,bool domarg);
-    void SetPriorMode(valor::conv::PhysParamId_t p,int priormode);
-    void SetPriorMode(valor::conv::PhysParamId_t p,string priormodename);
-    void SetMeanGaus(valor::conv::PhysParamId_t p,double mean);
-    void SetSigmaGaus(valor::conv::PhysParamId_t p,double sigma);
-    void SetMinValueFlat(valor::conv::PhysParamId_t p,double minvalmarg);
-    void SetMaxValueFlat(valor::conv::PhysParamId_t p,double maxvalmarg);
+    void SetDoMarg      (valor::conv::PhysParamId_t p, bool domarg);
+    void SetPriorMode   (valor::conv::PhysParamId_t p, int priormode);
+    void SetPriorMode   (valor::conv::PhysParamId_t p, string priormodename);
+    void SetPriorScheme (valor::conv::PhysParamId_t p, string scheme_name);
+    void SetMeanGaus    (valor::conv::PhysParamId_t p, double mean);
+    void SetSigmaGaus   (valor::conv::PhysParamId_t p, double sigma);
+    void SetMinValueFlat(valor::conv::PhysParamId_t p, double minvalmarg);
+    void SetMaxValueFlat(valor::conv::PhysParamId_t p, double maxvalmarg);
     
-    void SetPriorHisto(valor::conv::PhysParamId_t p,TH1D *hprior);
-    void SetPriorHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior);
-    void SetToyHisto(valor::conv::PhysParamId_t p,TH1D *hprior);
-    void SetToyHisto2D(valor::conv::PhysParamId_t p,TH2D *hprior);
+    void SetPriorHisto  (valor::conv::PhysParamId_t p, TH1D *hprior);
+    void SetPriorHisto2D(valor::conv::PhysParamId_t p, TH2D *hprior);
+    void SetToyHisto    (valor::conv::PhysParamId_t p, TH1D *hprior);
+    void SetToyHisto2D  (valor::conv::PhysParamId_t p, TH2D *hprior);
     
     void SetPriorDimension2D(valor::conv::PhysParamId_t p, bool isprior2d);
     
-    bool   IsMarginalized   (valor::conv::PhysParamId_t p) const { return fDoMarg        [this->Id(p)]; }
-    int    GetPriorMode     (valor::conv::PhysParamId_t p) const { return fPriorMode     [this->Id(p)]; }
-    string GetPriorModeName (valor::conv::PhysParamId_t p) const;
-    double GetMeanGaus      (valor::conv::PhysParamId_t p) const { return fMeanGaus      [this->Id(p)]; }
-    double GetSigmaGaus     (valor::conv::PhysParamId_t p) const { return fSigmaGaus     [this->Id(p)]; }
-    double GetMinValueFlat  (valor::conv::PhysParamId_t p) const { return fMinValueFlat  [this->Id(p)]; }
-    double GetMaxValueFlat  (valor::conv::PhysParamId_t p) const { return fMaxValueFlat  [this->Id(p)]; }
+    bool   IsMarginalized    (valor::conv::PhysParamId_t p) const { return fDoMarg        [this->Id(p)]; }
+    int    GetPriorMode      (valor::conv::PhysParamId_t p) const { return fPriorMode     [this->Id(p)]; }
+    string GetPriorModeName  (valor::conv::PhysParamId_t p) const;
+    int    GetPriorScheme    (valor::conv::PhysParamId_t p) const { return fPriorScheme   [this->Id(p)]; }
+    string GetPriorSchemeName(valor::conv::PhysParamId_t p) const;
+    double GetMeanGaus       (valor::conv::PhysParamId_t p) const { return fMeanGaus      [this->Id(p)]; }
+    double GetSigmaGaus      (valor::conv::PhysParamId_t p) const { return fSigmaGaus     [this->Id(p)]; }
+    double GetMinValueFlat   (valor::conv::PhysParamId_t p) const { return fMinValueFlat  [this->Id(p)]; }
+    double GetMaxValueFlat   (valor::conv::PhysParamId_t p) const { return fMaxValueFlat  [this->Id(p)]; }
     
     TH1D * GetPriorHisto    (valor::conv::PhysParamId_t p) const { return fPriorHisto    [this->Id(p)]; }
     TH2D * GetPriorHisto2D  (valor::conv::PhysParamId_t p) const { return fPriorHisto2D  [this->Id(p)]; }
@@ -389,6 +392,8 @@ namespace valor {
     bool       *fDoMarg;         //[fNParams]  flag to marginalize the fit parameter
     int        *fPriorMode;      //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo)
     TObjString *fPriorModeName;  //[fNParams]  0 -> flat, 1 -> gaus, 2 -> user (histo)
+
+    int        *fPriorScheme;    //[fNParams]  maps onto the relevant NuOscDeltaCP_t, NuOscDmsqScheme_t or NuOscMixParam_t enum for each param
     
     double *fMeanGaus;  //[fNParams]  // Mean of marginalization  (gaussian prior)
     double *fSigmaGaus; //[fNParams]  // Sigma of marginalization (gaussian prior)

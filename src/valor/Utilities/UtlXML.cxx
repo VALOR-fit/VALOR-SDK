@@ -13,6 +13,7 @@ ChangeLog:
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <limits>
 
 #include <TROOT.h>
 #include <TMath.h>
@@ -46,6 +47,10 @@ using std::ofstream;
 using std::ostringstream;
 
 using namespace valor;
+
+// Just so we don't have to keep making it later
+std::pair<double,double> max_limits = std::make_pair<double,double>(
+  -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 
 //____________________________________________________________________________________________________
 XMLNodePointer_t valor::util::FindNode(
@@ -212,10 +217,10 @@ double valor::util::XML2Dbl(
   string content = xml_eng->GetNodeContent(found_node);
   double value = conv::kBadResult;
   if(util::ToLowerCase(content) == "inf"){
-    value = conv::kALargeNum;
+    value = max_limits.second;
   }
   else if(util::ToLowerCase(content) == "-inf"){
-    value = -conv::kALargeNum;
+    value = max_limits.first;
   }
   else{
     value = atof(content.c_str());
@@ -248,10 +253,10 @@ vector<double> valor::util::XML2DblArray(
      string token = TrimSpaces(*str_tokens_iter);
      if (not token.size() ) continue;
      if(util::ToLowerCase(token) == "inf"){
-       array.push_back(conv::kALargeNum);
+       array.push_back(max_limits.second);
      }
      else if(util::ToLowerCase(token) == "-inf"){
-       array.push_back(-conv::kALargeNum);
+       array.push_back(max_limits.first);
      }
      else{
        array.push_back( atof(token.c_str()) );
@@ -310,10 +315,10 @@ pair<double,double> valor::util::XML2DblDblPair(
   double arr[2];
   for(int i = 0; i < 2; ++i) {
     if(util::ToLowerCase(util::TrimSpaces(str_tokens[i])) == "inf") {
-      arr[i] = conv::kALargeNum;
+      arr[i] = max_limits.second;
     }
     else if(util::ToLowerCase(util::TrimSpaces(str_tokens[i])) == "-inf") {
-      arr[i] = -conv::kALargeNum;
+      arr[i] = max_limits.first;
     }
     else {
       arr[i] = atof(str_tokens[i].c_str());

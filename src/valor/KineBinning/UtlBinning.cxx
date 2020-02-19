@@ -37,9 +37,9 @@ namespace binning
      variables.
 */
 VALORArray* Contract(const VALORArray& v,
-    const KBCubHcmbEdge2Edge & targetBinning,
-    const KBCubHcmbEdge2Edge & currentRecoBinning,
-    const KBCubHcmbEdge2Edge & currentTrueBinning);
+    const KBCubHcmbEdge2Edge * targetBinning,
+    const KBCubHcmbEdge2Edge * currentRecoBinning,
+    const KBCubHcmbEdge2Edge * currentTrueBinning);
 
 /**
   Maps the events associated with the specified binning to a 1D
@@ -55,26 +55,11 @@ TH1D* Remap1D(const double* events, const KBCubHcmbEdge2Edge& b);
    Maps the events associated with the specified binning to a 2D
    ROOT-compatible histogram.
 
-   Note that the ROOT histogram produced by this function should be used only
-   for plotting purposes, as mapping from optimised to ROOT-compatible binning
-   is not guaranteed to conserve total event counts.
-
    \param events The spectrum corresponding to the optimised binning.
-   \param b The optimised binning.
-   \return A ROOT-compatible 2D histogram representing the optimised binning.
-*/
-TH2D* RemapOptimised2D(const double* events,
-      const KBCubHcmbMondrian& b);
-
-/**
-   Maps the events associated with the specified binning to a 2D
-   ROOT-compatible histogram.
-
-   \param events The spectrum corresponding to the optimised binning.
-   \param b The optimised binning.
+   \param b The binning.
    \return A ROOT-compatible 2D histogram representing the simple binning.
 */
-TH2D* RemapSimple2D(const double* events, const KBCubHcmbEdge2Edge& b);
+TH2D* Remap2D(const double* events, const VALORBinning* b);
 
 /**
    Returns a permutation of all of the bin indices within the specified
@@ -113,7 +98,6 @@ TH1D* Make1DHistogram(const VALORArray& v,
       const SingleSampleKineBinning& b, conv::KineSpace_t ks,
       bool use_simple, conv::ReacMode_t m)
 {
-  const bool input_arr_is_1D = v.GetNDim()==1;
   if (util::NDim(ks)!=1) {
     LOG("UtlBinning",pWARN) << "Requested kinespace "<<util::AsString(ks)<<" is not 1D";
     return nullptr;
@@ -128,12 +112,25 @@ TH1D* Make1DHistogram(const VALORArray& v,
   // Get the binning and associated kinematic variables for the VALORArray
   const VALORBinning * tmpb = nullptr;
   const KBCubHcmbEdge2Edge * origBinning = nullptr;
-  
+
+  unsigned int oldNDim = 0;
   if (targetIsReco) {
     tmpb = use_simple ? b.RecoSmpBinning() : b.RecoOptBinning();
+
+    const KBCubHcmbEdge2Edge * tmpb_reco = dynamic_cast<const KBCubHcmbEdge2Edge*>(tmpb);
+    oldNDim += tmpb_reco->NDimensions();
+
+    const KBCubHcmbEdge2Edge * tmpb_true = dynamic_cast<const KBCubHcmbEdge2Edge*>(b.TrueSmpBinning(m));
+    if(tmpb_true) { oldNDim += tmpb_true->NDimensions(); }
   }
   else {
     tmpb = b.TrueSmpBinning(m);
+
+    const KBCubHcmbEdge2Edge * tmpb_true = dynamic_cast<const KBCubHcmbEdge2Edge*>(tmpb);
+    oldNDim += tmpb_true->NDimensions();
+
+    const KBCubHcmbEdge2Edge * tmpb_reco = dynamic_cast<const KBCubHcmbEdge2Edge*>(use_simple ? b.RecoSmpBinning() : b.RecoOptBinning());
+    if(tmpb_reco) { oldNDim += tmpb_reco->NDimensions(); }
   }
   origBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(tmpb);
   if (!origBinning) {
@@ -153,7 +150,6 @@ TH1D* Make1DHistogram(const VALORArray& v,
   
   // If necessary, contract the binning to 1D
   const VALORArray* targetV = nullptr;
-  const unsigned int oldNDim = origBinning->NDimensions();
   const KBCubHcmbEdge2Edge * newBinning = nullptr;
   if (oldNDim > 1) {
      newBinning = dynamic_cast<KBCubHcmbEdge2Edge*>(origBinning->Contract(ks));
@@ -162,19 +158,27 @@ TH1D* Make1DHistogram(const VALORArray& v,
     // truth
     const KBCubHcmbEdge2Edge * recoBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(b.RecoSmpBinning() );
     const KBCubHcmbEdge2Edge * trueBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(b.TrueSmpBinning(m));
-    targetV = Contract(v, *newBinning,*recoBinning,*trueBinning);
+    targetV = Contract(v, newBinning,recoBinning,trueBinning);
   }
   else {
     newBinning = origBinning;
     targetV = &v;
   }
 
-  // Integrate over the unnecessary variables
-  // get rid of the unnecessary truth or reco dimension
-  VALORArray new_arr(input_arr_is_1D?v:v.GetSlice(targetIsReco?1:0));
-  assert(new_arr.GetNDim()==1);
-  assert(new_arr.GetSize() == (int)newBinning->NBins());
-  double * events = new_arr.GetArray();
+  if(targetV->GetNDim() != 1) {
+    LOG("UtlBinning",pFATAL) << "After contracting [" << v.GetName() << "] to kine space [" << util::AsString(ks)
+                             << "], the target array had " << targetV->GetNDim() << " dimensions. Expected 1.";
+    util::Die(-1);
+  }
+
+  if(targetV->GetSize() != (int)newBinning->NBins()) {
+    LOG("UtlBinning",pFATAL) << "After contracting [" << v.GetName() << "] to kine space [" << util::AsString(ks)
+                             << "], the target array had " << targetV->GetSize() << " bins. Expected "
+                             << (int)newBinning->NBins();
+    util::Die(-1);
+  }
+
+  const double * events = targetV->GetArray();
 
   // Map the events to a ROOT compatible histogram
   TH1D* histo = Remap1D(events, *newBinning);
@@ -199,63 +203,11 @@ TH1D* Make1DHistogram(const VALORArray& v,
   return histo;
 }
 //________________________________________________________________________________________
-TH2D* Make2DOptimisedHistogram(const VALORArray& v,
-      const SingleSampleKineBinning& b, const std::vector<conv::KineVar_t>& ks)
+TH2D* Make2DHistogram(const VALORArray& v,
+      const VALORBinning* recoBinning, const std::vector<conv::KineVar_t>& ks)
 {
-  // Get the reco binning and associated kinematic variables for the VALORArray
-  const KBCubHcmbMondrian * recoBinning = dynamic_cast<const KBCubHcmbMondrian*>(b.RecoOptBinning());
   if (!recoBinning) {
-    LOG("UtlBinning", pERROR) << b.RecoOptBinning()->GetName()<<" is not a KBCubHcmbMondrian";
-     util::Die(-1);
-  }
-  const std::vector<conv::KineVar_t>& recoKv = recoBinning->KineVars();
-
-  // Check that the request kinematic variables match those for the VALORArray
-  // (This should use the contraction method in the future)
-  if(ks.size() != recoKv.size())
-  {
-     LOG("UtlBinning", pERROR) << "Expected " << recoKv.size() <<
-        " kinematic variables to plot, found " << ks.size();
-     util::Die(-1);
-  }
-  for(auto kv : ks)
-  {
-     if(std::find(recoKv.begin(), recoKv.end(), kv) == recoKv.end())
-     {  // Mismatch in variables
-        LOG("UtlBinning", pERROR) << "Kinematic variable " <<
-           util::AsString(kv) << " not found in template kinematic space " <<
-           util::AsString(recoBinning->KineSpace());
-        util::Die(-1);
-     }
-  }
-  // Integrate over the truth variables
-  unsigned int nbins = recoBinning->NBins();
-  double events[nbins];
-  for(unsigned int i = 0; i < nbins; ++i)
-  {
-     // Reco is always first dimension in VALORArray, so fix the bins in this
-     // dimension and integrate over the rest
-     events[i] = v.Integral(i, i);
-  }
-  
-  // Map the events to a ROOT compatible histogram
-  TH2D* histo = RemapOptimised2D(events, *recoBinning);
-  
-  if (std::fabs(v.Integral() - histo->Integral()) > conv::kASmallNum) {
-    LOG("UtlBinning",pFATAL) << "Histogram contents don't match VALORArray contents ("<<v.GetName()<<")";
-    util::Die(-1);
-  }
-
-  return histo;
-}
-//________________________________________________________________________________________
-TH2D* Make2DSimpleHistogram(const VALORArray& v,
-      const SingleSampleKineBinning& b, const std::vector<conv::KineVar_t>& ks)
-{
-  // Get the reco binning and associated kinematic variables for the VALORArray
-  const KBCubHcmbEdge2Edge * recoBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(b.RecoSmpBinning());
-  if (!recoBinning) {
-    LOG("UtlBinning", pERROR) << b.RecoSmpBinning()->GetName()<<" is not a KBCubHcmbEdge2Edge";
+    LOG("UtlBinning", pERROR) << "The input VALORBinning was invalid.";
     util::Die(-1);
   }
   const std::vector<conv::KineVar_t>& recoKv = recoBinning->KineVars();
@@ -289,7 +241,7 @@ TH2D* Make2DSimpleHistogram(const VALORArray& v,
   }
   
   // Map the events to a ROOT compatible histogram
-  TH2D* histo = RemapSimple2D(events, *recoBinning);
+  TH2D* histo = Remap2D(events, recoBinning);
   
   if (std::fabs(v.Integral() - histo->Integral()) > conv::kASmallNum) {
     LOG("UtlBinning",pFATAL) << "Histogram contents don't match VALORArray contents ("<<v.GetName()<<")";
@@ -300,28 +252,87 @@ TH2D* Make2DSimpleHistogram(const VALORArray& v,
 }
 
 VALORArray* Contract(const VALORArray& v,
-    const KBCubHcmbEdge2Edge & targetBinning,
-    const KBCubHcmbEdge2Edge & currentRecoBinning,
-    const KBCubHcmbEdge2Edge & currentTrueBinning)
+    const KBCubHcmbEdge2Edge * targetBinning,
+    const KBCubHcmbEdge2Edge * currentRecoBinning,
+    const KBCubHcmbEdge2Edge * currentTrueBinning)
 {
+
+  if(!targetBinning) {
+    LOG("UtlBinning", pFATAL) << "Input target binning was null";
+    util::Die(-1); return nullptr;
+  }
+
+  bool has_reco = ( currentRecoBinning != nullptr ) ;
+  bool has_true = ( currentTrueBinning != nullptr ) ;
+
+//  // ASSUMPTION: The VALORArray has either one or two dimensions, where all reco binning is condensed
+//  //             into one dimension and all true is condensed into the other.
+//  if(has_reco && has_true && v.GetNDim() != 2) {
+//    LOG("UtlBinning", pFATAL) << "Both reco and true binnings were input, but the input VALORArray ["
+//                              << v.GetName()<<"] has "<<v.GetNDim()<<" dimensions - expected two, i.e. (reco,true)";
+//    util::Die(-1); return nullptr;
+//  }
+
   if (v.GetNDim() > 2) {
     LOG("UtlBinning", pFATAL) << v.GetName()<<" has "<<v.GetNDim()<<" dimensions - expected either (reco) or (reco,true)";
     util::Die(-1); return nullptr;
   }
   else {
-    // Check reco * true size
-    if ((unsigned int)v.GetSize(0) != currentRecoBinning.NBins()) {
-      LOG("UtlBinning", pFATAL) << v.GetName()<<" has "<<v.GetSize(0)<<" reco dimensions - expecting "<<currentRecoBinning.NBins();
-      util::Die(-1); return nullptr;
+    // Check reco and/or true size
+    bool reco_matches = false;
+    bool true_matches = false;
+
+    if(v.GetNDim() <= 2) {
+      bool this_dim_is_assigned = false;
+      unsigned int v_size = (unsigned int)v.GetSize(0);
+      if(v_size == currentRecoBinning->NBins()) {
+        reco_matches = true;
+        this_dim_is_assigned = true;
+      }
+      if(!this_dim_is_assigned && v_size == currentTrueBinning->NBins()) {
+        // Check !this_dim_is_assigned because each binning must match a unique dimension
+        true_matches = true;
+        this_dim_is_assigned = true;
+      }
     }
-    if ((unsigned int)v.GetSize(1) != currentTrueBinning.NBins()) {
-      LOG("UtlBinning", pFATAL) << v.GetName()<<" has "<<v.GetSize(1)<<" true dimensions - expecting "<<currentTrueBinning.NBins();
-      util::Die(-1); return nullptr;
+
+    if(v.GetNDim() == 2) {
+      bool this_dim_is_assigned = false;
+      unsigned int v_size = (unsigned int)v.GetSize(1);
+      if(!reco_matches && v_size == currentRecoBinning->NBins()) {
+        // Now also check !reco_matches, again because each binning must match a unique dimension
+        reco_matches = true;
+        this_dim_is_assigned = true;
+      }
+      if(!true_matches && !this_dim_is_assigned && v_size == currentTrueBinning->NBins()) {
+        true_matches = true;
+        this_dim_is_assigned = true;
+      }
+    }
+
+    unsigned int n_matches = 0;
+    if(reco_matches) { n_matches++; }
+    if(true_matches) { n_matches++; }
+
+    if(n_matches != (unsigned int)v.GetNDim()) {
+      if(v.GetNDim() == 1) {
+        LOG("UtlBinning", pFATAL) << v.GetName() << " has " << v.GetSize(0) << " dimensions - expecting "
+                                  << currentRecoBinning->NBins() << " (from reco) or "
+                                  << currentTrueBinning->NBins() << " (from true)";
+      }
+      else {
+        LOG("UtlBinning", pFATAL) << v.GetName() << " has (" << v.GetSize(0) << ", "
+                                  << v.GetSize(1) << ") dimensions - expecting "
+                                  << currentRecoBinning->NBins() << " (from reco) and "
+                                  << currentTrueBinning->NBins() << " (from true)";
+      }
+      util::Die(-1);
+      return nullptr;
     }
   }
   
   // Are we targeting a reco or true variable?
-  const vector<conv::KineVar_t> & target_kvs = targetBinning.KineVars();
+  const vector<conv::KineVar_t> & target_kvs = targetBinning->KineVars();
   bool targetIsPureReco = true;
   bool targetIsPureTrue = true;
   // Record which dimension in the old binning corresponds to this entry in the new binning
@@ -330,19 +341,28 @@ VALORArray* Contract(const VALORArray& v,
     bool isTrue = util::IsTrue(kv);
     if (isTrue) {
       targetIsPureReco = false;
-      if (!currentRecoBinning.Contains(kv)) {
-        LOG("UtlBinning",pFATAL) << currentRecoBinning.GetName() << " does not contain " << util::AsString(kv);
+      if(!has_true) {
+        LOG("UtlBinning",pFATAL) << "Tried to contract to a new binning containing true kine vars, but the original true binning does not exist.";
         util::Die(-1); return nullptr;
       }
+      if (!currentTrueBinning->Contains(kv)) {
+        LOG("UtlBinning",pFATAL) << currentTrueBinning->GetName() << " does not contain " << util::AsString(kv);
+        util::Die(-1); return nullptr;
+      }
+      kinevar_indices.push_back(currentTrueBinning->Dimension(kv));
     }
     else {
       targetIsPureTrue = false;
-      if (!currentTrueBinning.Contains(kv)) {
-        LOG("UtlBinning",pFATAL) << currentTrueBinning.GetName() << " does not contain " << util::AsString(kv);
+      if(!has_reco) {
+        LOG("UtlBinning",pFATAL) << "Tried to contract to a new binning containing reco kine vars, but the original reco binning does not exist.";
         util::Die(-1); return nullptr;
       }
+      if (!currentRecoBinning->Contains(kv)) {
+        LOG("UtlBinning",pFATAL) << currentRecoBinning->GetName() << " does not contain " << util::AsString(kv);
+        util::Die(-1); return nullptr;
+      }
+      kinevar_indices.push_back(currentRecoBinning->Dimension(kv));
     }
-    kinevar_indices.push_back(currentRecoBinning.Dimension(kv));
   }
   
   if (!(targetIsPureTrue || targetIsPureReco)) {
@@ -350,52 +370,69 @@ VALORArray* Contract(const VALORArray& v,
     util::Die(-1); return nullptr;
   }
   
-  size_t n_old_true_bins   = currentTrueBinning.NBins();
-  size_t n_old_reco_bins   = currentRecoBinning.NBins();
+  size_t n_old_true_bins   = (has_true ? currentTrueBinning->NBins() : 1);
+  size_t n_old_reco_bins   = (has_reco ? currentRecoBinning->NBins() : 1);
 
-  VALORArray* targetV = nullptr;
+  VALORArray* targetV = new VALORArray(targetBinning->NBins());
   if (targetIsPureReco) {
-    targetV = new VALORArray(targetBinning.NBins(), currentTrueBinning.NBins());
-    
+    // Integrate both over all true bins (if they exist), and any reco kine vars that exist in the old binning
+    // but not the target binning
     for (size_t old_reco_bin = 0 ; old_reco_bin < n_old_reco_bins ; old_reco_bin++) {
-      // Identify bin multidimensional bin centre
-      std::vector<double> old_bin_centre = currentRecoBinning.BinCentre(old_reco_bin);
+      // Identify multidimensional bin centre
+      std::vector<double> old_bin_centre = currentRecoBinning->BinCentre(old_reco_bin);
+
       // Reorder to get new bin centre
       std::vector<double> new_bin_centre;
       for (unsigned int kvidx : kinevar_indices) {
         new_bin_centre.push_back(old_bin_centre[kvidx]);
       }
-      unsigned int new_reco_bin = targetBinning.FindBin(new_bin_centre);
-      // Loop over true bins and fill
-      for (size_t true_bin = 0 ; true_bin < n_old_true_bins ; true_bin++) {
-        double bin_content = v.GetEntry(old_reco_bin,true_bin);
-        targetV->AddToEntry(bin_content,new_reco_bin,true_bin);
-      }
-    }
+      unsigned int new_reco_bin = targetBinning->FindBin(new_bin_centre);
+
+      // Loop over true bins (if they exist, or a single dummy true bin if they don't) and fill
+      for (size_t old_true_bin = 0 ; old_true_bin < n_old_true_bins ; old_true_bin++) {
+        double bin_content = 0;
+        if(has_true) { bin_content = v.GetEntry(old_reco_bin, old_true_bin); }
+        else         { bin_content = v.GetEntry(old_reco_bin); }
+        targetV->AddToEntry(bin_content, new_reco_bin);
+      } // old_true_bin
+    } // old_reco_bin
   }
   else {
-    targetV = new VALORArray(currentRecoBinning.NBins(), targetBinning.NBins());
-    
+    // Integrate both over all reco bins (if they exist), and any true kine vars that exist in the old binning
+    // but not the target binning
     for (size_t old_true_bin = 0 ; old_true_bin < n_old_true_bins ; old_true_bin++) {
-      // Identify bin multidimensional bin centre
-      std::vector<double> old_bin_centre = currentTrueBinning.BinCentre(old_true_bin);
+      // Identify multidimensional bin centre
+      std::vector<double> old_bin_centre = currentTrueBinning->BinCentre(old_true_bin);
+
       // Reorder to get new bin centre
       std::vector<double> new_bin_centre;
       for (unsigned int kvidx : kinevar_indices) {
         new_bin_centre.push_back(old_bin_centre[kvidx]);
       }
-      unsigned int new_true_bin = targetBinning.FindBin(new_bin_centre);
-      // Loop over reco bins and fill
-      for (size_t reco_bin = 0 ; reco_bin < n_old_reco_bins ; reco_bin++) {
-        double bin_content = v.GetEntry(reco_bin,old_true_bin);
-        targetV->AddToEntry(bin_content,reco_bin,new_true_bin);
-      }
-    }
-  }
+      unsigned int new_true_bin = targetBinning->FindBin(new_bin_centre);
+
+      // Loop over reco bins (if they exist, or a single dummy true bin if they don't) and fill
+      for (size_t old_reco_bin = 0 ; old_reco_bin < n_old_reco_bins ; old_reco_bin++) {
+        double bin_content = 0;
+        if(has_reco) { bin_content = v.GetEntry(old_reco_bin, old_true_bin); }
+        else         { bin_content = v.GetEntry(old_true_bin); }
+        targetV->AddToEntry(bin_content, new_true_bin);
+      } // old_reco_bin
+    } // old_true_bin
+  } // is pure reco?
   
-  if (std::fabs(v.Integral() - targetV->Integral()) > conv::kASmallNum) {
+  if (std::fabs(v.Integral() / targetV->Integral() - 1.0 ) > conv::kASmallNum) {
     LOG("UtlBinning",pFATAL) << "Contracted contents don't match input array contents ("<<v.GetName()<<")";
-    LOG("UtlBinning",pFATAL) << "Old = "<<v.Integral()<< " ; New = "<<targetV->Integral();
+    LOG("UtlBinning",pFATAL) << std::fixed << std::setprecision(11)
+                             << "Old = "<<v.Integral()<< " ; New = "<<targetV->Integral()
+                             <<" ; Contracted kinespace = "<< util::AsString(util::KineSpaceFromKineVars(target_kvs));
+    LOG("UtlBinning",pFATAL) << "\n\ncurrentRecoBinning:"; currentRecoBinning->Print(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\ncurrentTrueBinning:"; currentTrueBinning->Print(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\ntargetBinning:"; targetBinning->Print(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\nold VArray dims:"; v.PrintDimensions(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\nold VArray content:"; v.PrintEntries(std::cout << std::fixed << std::setprecision(11));
+    LOG("UtlBinning",pFATAL) << "\n\nnew VArray dims:"; targetV->PrintDimensions(std::cout);
+    LOG("UtlBinning",pFATAL) << "\n\nnew VArray content:"; targetV->PrintEntries(std::cout << std::fixed << std::setprecision(11));
     util::Die(-1);
   }
     
@@ -434,22 +471,21 @@ TH1D* Remap1D(const double* events, const KBCubHcmbEdge2Edge& b)
   return histo;
 }
 
-TH2D* RemapOptimised2D(const double* events,
-      const KBCubHcmbMondrian& b)
+TH2D* Remap2D(const double* events, const VALORBinning* b)
 {
   // Find all bin edges in each dimension
   std::set<double> dim1Edges;
   std::set<double> dim2Edges;
-  for(unsigned int i = 0; i < b.NBins(); ++i)
+  for(unsigned int i = 0; i < b->NBins(); ++i)
   {
      // Minimum edge of first dimension for bin i
-     dim1Edges.insert(b.BinMinimum(i, 0));
+     dim1Edges.insert(b->BinMinimum(i, 0));
      // Maximum edge of first dimension for bin i
-     dim1Edges.insert(b.BinMaximum(i, 0));
+     dim1Edges.insert(b->BinMaximum(i, 0));
      // Minimum edge of second dimension for bin i
-     dim2Edges.insert(b.BinMinimum(i, 1));
+     dim2Edges.insert(b->BinMinimum(i, 1));
      // Maximum edge of second dimension for bin i
-     dim2Edges.insert(b.BinMaximum(i, 1));
+     dim2Edges.insert(b->BinMaximum(i, 1));
   }
   // No need to sort or remove duplicate edges as both properties are
   // guaranteed by set
@@ -473,54 +509,7 @@ TH2D* RemapOptimised2D(const double* events,
      for(int j = 1; j <= ybins; ++j)
      {
         coords[1] = histo->GetYaxis()->GetBinCenter(j);
-        int index = b.FindBin(coords);
-        histo->SetBinContent(i, j, events[index]);
-     }
-  }
-
-  return histo;
-}
-
-TH2D* RemapSimple2D(const double* events,
-      const KBCubHcmbEdge2Edge& b)
-{
-  // Find all bin edges in each dimension
-  std::set<double> dim1Edges;
-  std::set<double> dim2Edges;
-  for(unsigned int i = 0; i < b.NBins(); ++i)
-  {
-     // Minimum edge of first dimension for bin i
-     dim1Edges.insert(b.BinMinimum(i, 0));
-     // Maximum edge of first dimension for bin i
-     dim1Edges.insert(b.BinMaximum(i, 0));
-     // Minimum edge of second dimension for bin i
-     dim2Edges.insert(b.BinMinimum(i, 1));
-     // Maximum edge of second dimension for bin i
-     dim2Edges.insert(b.BinMaximum(i, 1));
-  }
-  // No need to sort or remove duplicate edges as both properties are
-  // guaranteed by set
-  // Create the Root histogram
-  int nDim1Bins = dim1Edges.size() - 1;
-  double dim1BinEdges[nDim1Bins + 1];
-  std::copy(dim1Edges.begin(), dim1Edges.end(), dim1BinEdges);
-  int nDim2Bins = dim2Edges.size() - 1;
-  double dim2BinEdges[nDim2Bins + 1];
-  std::copy(dim2Edges.begin(), dim2Edges.end(), dim2BinEdges);
-  TH2D* histo = new TH2D("histo", "histo", nDim1Bins, dim1BinEdges,
-        nDim2Bins, dim2BinEdges);
-
-  // Get the number of bins from our ROOT histogram
-  int xbins = histo->GetNbinsX();
-  int ybins = histo->GetNbinsY();
-  std::vector<double> coords = {0.0, 0.0};
-  for(int i = 1; i <= xbins; ++i)
-  {
-     coords[0] = histo->GetXaxis()->GetBinCenter(i);
-     for(int j = 1; j <= ybins; ++j)
-     {
-        coords[1] = histo->GetYaxis()->GetBinCenter(j);
-        int index = b.FindBin(coords);
+        int index = b->FindBin(coords);
         histo->SetBinContent(i, j, events[index]);
      }
   }

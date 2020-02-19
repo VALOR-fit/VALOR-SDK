@@ -37,6 +37,7 @@ brief      A generic implementation of the fit model for a single sample,
 #include "valor/Conventions/Sample.h"
 #include "valor/Conventions/KineVar.h"
 #include "valor/Conventions/FitParamApply.h"
+#include "valor/Conventions/ModeList.h"
 #include "valor/FitCore/CorrelatedSystematics.h"
 #include "valor/FitCore/PhysHypothesis.h"
 #include "valor/FitCore/PhysParamList.h"
@@ -46,6 +47,9 @@ brief      A generic implementation of the fit model for a single sample,
 #include "valor/VArray/VALORArrayF.h"
 #include "valor/VArray/VALORArrayBin.h"
 #include "valor/Utilities/RFL.h"
+#include "valor/Utilities/ToyStream.h"
+#include "valor/Utilities/UtlParam.h"
+#include "valor/Utilities/SingleSampleKineBinning.h"
 
 using std::string;
 
@@ -66,25 +70,27 @@ public:
   //
 
   string        Name                   (void) const;
-  
-  // Options available to Read() include nosplines, nomc, forcedst, pot_override, binning=myfile.xml 
-  bool          Read                   (string file, Option_t * opt = 0);
-  virtual bool  Read(std::ifstream& stream, Option_t* read_opt = 0);
-  bool          Generate               (const PhysHypothesis & ph, Option_t * opt = 0);
-  void          RandomizeSystematics   (Option_t * opt = 0);
-  void          RandomizeSystematics   (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
-  void          RandomizeSystematics   (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0);
-  void          TweakSystematic        (string syst_name, double twkdial=0., Option_t * opt = 0); 
-  void          TweakSystematic        (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
-  void          ResetSystematics       (Option_t * opt = 0);  
-  void          PrintSystematics       (ostream & stream = std::cout, Option_t * opt = 0) const;
-  PhysParamList Tweaks                 (Option_t * opt = 0) const;
-  bool          Generate               (const FitParamList & fp, Option_t * opt = 0);
-  bool          Write                  (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
-  bool          Write                  (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
-  virtual bool  Write(std::ofstream& stream, Option_t* write_opt = 0);
-  double        GetFitStatisticPenalty (Option_t * opt = 0) const;
-  
+
+  // Options available to Read() include nosplines, nomc, forcedst, pot_override, binning=myfile.xml
+  bool          Read                     (string file, Option_t * opt = 0);
+  virtual bool  Read                     (util::ToyStream* stream);
+  bool          Generate                 (const PhysHypothesis & ph, Option_t * opt = 0);
+  void          RandomizeSystematics     (Option_t * opt = 0);
+  void          RandomizeSystematics     (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
+  void          RandomizeSystematics     (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0);
+  void          TweakSystematic          (string syst_name, double twkdial=0., Option_t * opt = 0);
+  void          TweakSystematic          (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
+  void          ResetSystematics         (Option_t * opt = 0);
+  void          ForceSystematicsToUntuned(Option_t * opt = 0);
+  void          PrintSystematics         (ostream & stream = std::cout, Option_t * opt = 0) const;
+  PhysParamList Tweaks                   (Option_t * opt = 0) const;
+  bool          Generate                 (const FitParamList & fp, Option_t * opt = 0);
+  bool          Write                    (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
+  bool          Write                    (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
+  virtual bool  Write                    (util::ToyStream* stream);
+  virtual long  StreamSize               (Option_t * opt = 0) const;  // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
+  double        GetFitStatisticPenalty   (Option_t * opt = 0) const;
+
   void          SetSystConf            (CorrelatedSystematics * syst, Option_t * opt = "");
   CorrelatedSystematics *       GetSystematics(Option_t * opt = "");
   const CorrelatedSystematics * GetSystematics(Option_t * opt = "") const;
@@ -94,6 +100,7 @@ public:
   //
   
   // Get the modelist we're using
+  const valor::ModeList * GetModeList(Option_t * opt = "") const;
   const std::vector<conv::ReacMode_t> GetReactionModes(Option_t * opt = "") const;
   
   // Get POT
@@ -103,13 +110,16 @@ public:
   const double & GetFiducialMass(void) const;
   
   const std::string & GetLastConfigFileRead() const;
-  
+
   // Get the response function library and binning
   const util::RFL * GetRFL(void) const;
   const SingleSampleKineBinning * GetBinning(void) const;
   
   PhysParamList OneSigmaErrors (Option_t * opt = "");
 //  TMatrixD CovarianceMatrix(Option_t * opt = "");
+
+  // Get a string including the model name and the total PDF integral
+  virtual std::string GetPDFIntegralAsString(Option_t * opt = 0);
 
   // Calculate the OB manually from the content of the simple bins. Can be used to verify the spectra are the same for SB/OB
   void UpdateObservableBinningFromSimple (Option_t * opt = 0);
@@ -125,6 +135,9 @@ public:
   
   // If we've made baseline splines, we should allow the user to cache them
   void WriteBaselineSplinesToFile(TFile * f) const;
+  
+  // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
+  virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
 private:
 
@@ -195,7 +208,7 @@ private:
 
   // Fiducial mass (ktonnes)
   double fFiducialMass;
-  
+
   // Name of the config file read
   std::string fConfigFileRead;
 
@@ -204,6 +217,10 @@ private:
 
   // Whether or not we should apply the osc prob to ALL detectors (i.e. skipping the util::OscProbIsAppliedTo check)
   bool fSkipOscProbApplyCheck;
+
+  // Whether or not we should throw a warning message if any event read from an MC DST has kinematics
+  // outside of the binning range
+  bool fSuppressOutOfBinningRangeWarning;
   
   // MC templates (MCT) 
   // Each template is a 2D array, with (reco,true) bins linearised in whatever kinematic space we need.
@@ -266,13 +283,14 @@ private:
   SingleSampleKineBinning * fBinning;
   
   // The list of reaction modes we're using
+  ModeList* fML;
   std::vector<conv::ReacMode_t> fReactionModes;
   // and a mapping from these to their index in here
   std::vector<long> fReactionModeIndex;
   
   // Spline library
   util::RFL * fRFL;
-  
+
   // Pointer to our systematics
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;
@@ -285,7 +303,6 @@ private:
   // and how many places we evaluate them in. Should become configurable later
   int fNSplineEvalPoints;
   
-  
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices
   bool fApplyUniverseVariations;
@@ -297,7 +314,7 @@ private:
   // and the actual variations
   // param name, mode(nmodes)->universe variations(reco,true,universe)
   std::map<std::string,std::vector<VALORArrayF> > fUniverseVariations;
-  
+
 
   // Vector of tuning hists and the apply masks and kine vars that they should be used for
   std::vector<TuningInfo> fEventByEventTuningHists;
@@ -326,6 +343,8 @@ private:
   std::map<conv::KineVar_t, std::vector<unsigned int>       > fUnscaledBinToGlobalBinSb;
   std::map<conv::KineVar_t, std::vector<std::vector<bool> > > fSkipBinSb;
   std::map<conv::KineVar_t, unsigned int                    > fNOverflowBinsSb;
+
+  std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
 };
 
 } // valor

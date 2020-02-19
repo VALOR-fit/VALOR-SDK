@@ -184,7 +184,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
     }
     fBin1DArrs[0][ibin] = linearized_bin;
   }
-  
+
   std::ostringstream binning_print;
   binning_print << fName<< " total bins "<<this->NBins() << " in range: ";
   for (unsigned int i = 0 ; i < this->NDimensions() ; i++) {
@@ -276,7 +276,7 @@ VALORBinning* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
      }
      binning->fBin1DArrs[0][ibin] = linearized_bin;
    }
-   
+
    TString new_name = TString::Format("%s_contracted_to_%s",this->GetName(),util::AsString(ks).c_str());
    binning->SetName(new_name.Data());
 

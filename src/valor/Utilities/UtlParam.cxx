@@ -113,27 +113,20 @@ conv::FitParamGroup_t util::GetParameterGroup(conv::PhysParamId_t p)
 std::pair<double,double> util::GetKineRange(conv::PhysParamId_t p, conv::KineVar_t k)
 {
   // Init with the ranges used for osc params
-  std::pair<double,double> range = util::PhysicalLimits(k);
-  // If it's not an osc param, get the kine range from the parameter pool
-  if(!util::IsOscParam(p)) {
-    const Parameter & param = ParameterPool::Instance()->GetParam(p);
-    if(!param.HasKinematicRange()) {
-      LOG("FitParams",pERROR)<<"Parameter " << param.GetName() << " has no kinematic range";
-      util::Die(-1);
-    }
-    range = param.GetKineRange(k);
+  const Parameter & param = ParameterPool::Instance()->GetParam(p);
+  if(!param.HasKinematicRange()) {
+    LOG("FitParams",pERROR)<<"Parameter " << param.GetName() << " has no kinematic range";
+    util::Die(-1);
   }
+  std::pair<double,double> range = param.GetKineRange(k);
   return range;
 }
 //____________________________________________________________________________
 bool util::HasKinematicDependence(conv::PhysParamId_t p)
 {
-  if(util::IsOscParam(p)) { return true; }
-  else {
-    const Parameter & param = ParameterPool::Instance()->GetParam(p);
-    if(!param.HasKinematicRange()) { return false; }
-    return true;
-  }
+  const Parameter & param = ParameterPool::Instance()->GetParam(p);
+  if(!param.HasKinematicRange()) { return false; }
+  return true;
 }
 //____________________________________________________________________________
 std::vector<PhysParamId_t> util::GetParameterSet(std::string set_name_in, bool only_exact_match)
@@ -170,7 +163,7 @@ std::vector<PhysParamId_t> util::GetParameterSet(std::string set_name_in, conv::
            (set_name == "fdflux"  && param.SearchCategories("fd") && param.SearchCategories("flux") ) ||  // FD flux
            (set_name == "nddet"   && param.SearchCategories("nd") && param.SearchCategories("det")  ) ||  // ND Detector
            (set_name == "fddet"   && param.SearchCategories("fd") && param.SearchCategories("det")  ) ||  // FD Detector
-           (set_name == "allsyst" )                                                                       // All systematic params
+           (set_name == "allsyst" && util::IsSystematic(param.GetID()))                                  // All systematic params
           ) {
           vec_to_append.push_back(param.GetID());
         }
@@ -219,19 +212,26 @@ std::vector<PhysParamId_t> util::GetParameterSet(std::string set_name_in, conv::
 //____________________________________________________________________________
 std::vector<conv::PhysParamId_t> util::GetActiveParameters(const PhysHypothesis & ph)
 {
-  // Get the osc params
-  std::vector<conv::PhysParamId_t> vec = ph.GetParams();
-  if(vec.size() == 0) {
+  if(ph.GetParams().size() == 0) {
     LOG("FitParams",pWARN) << "No parameters in the PhysHypothesis";
   }
-  // Get the syst params
-  const std::vector<Parameter> & syst_params = ParameterPool::Instance()->GetParams();
-  if(syst_params.size() == 0) {
+  if(ParameterPool::Instance()->GetParams().size() == 0) {
     LOG("FitParams",pWARN)
       << "No parameters in the ParameterPool. If this is unintended then read in a config file to populate it";
   }
-  for (const Parameter & param : syst_params) {
-    if(param.GetID() != conv::kPhypUndefined) { vec.push_back(param.GetID()); }
+
+  std::vector<conv::PhysParamId_t> vec;
+  for(const Parameter& param : ParameterPool::Instance()->GetParams()) {
+    conv::PhysParamId_t p = param.GetID();
+    if(p == conv::kPhypUndefined) { continue; }
+    if(!util::IsSystematic(p)) {
+      if(ph.Contains(p)) {
+        vec.push_back(p);
+      }
+    }
+    else {
+      vec.push_back(p);
+    }
   }
   return vec;
 }

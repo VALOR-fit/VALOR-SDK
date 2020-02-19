@@ -28,7 +28,7 @@ valor::util::Interpolator::Interpolator(const TSpline * spl, valor::util::Interp
     int type_int = static_cast<int>(type);
     ROOT::Math::Interpolation::Type type_root = static_cast<ROOT::Math::Interpolation::Type>(type_int);
     fGSLSpline = new ROOT::Math::Interpolator(0,type_root);
-    
+
     int n_knots = spl->GetNp();
     std::vector<double> x(n_knots);
     std::vector<double> y(n_knots);
@@ -140,5 +140,20 @@ TGraph valor::util::Interpolator::AsTGraph(int npoints) const
   }
   return TGraph(npoints,xarr.data(),yarr.data());
 }
+//________________________________________________________________________________________
+std::string valor::util::AsString(Interpolator::Type t, Option_t * /*opt*/)
+{
+  if     (t == Interpolator::Type::kLINEAR)           { return "linear";         }
+  else if(t == Interpolator::Type::kPOLYNOMIAL)       { return "polynomial";     }
+  else if(t == Interpolator::Type::kCSPLINE)          { return "cubic";          }
+  else if(t == Interpolator::Type::kCSPLINE_PERIODIC) { return "cubic_periodic"; }
+  else if(t == Interpolator::Type::kAKIMA)            { return "akima";          }
+  else if(t == Interpolator::Type::kAKIMA_PERIODIC)   { return "akima_periodic"; }
+  else if(t == Interpolator::Type::kTSpline3)         { return "tspline3";       }
+  else if(t == Interpolator::Type::kTSpline5)         { return "tspline5";       }
+  else                                                { return "--";             }
+}
+//________________________________________________________________________________________
+std::string valor::util::InterpolatorTypeAsString(Interpolator::Type t, Option_t * opt) {return util::AsString(t,opt);}
 //________________________________________________________________________________________
 #endif // __VALOR_FMWK_GSL_ENABLED__
