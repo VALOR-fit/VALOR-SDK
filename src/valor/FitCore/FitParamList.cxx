@@ -1031,7 +1031,7 @@ FitParamList * FitParamList::NuOscSterile5FlavourFit(int nuisance)
 //________________________________________________________________________________________
 FitParamList * FitParamList::NuOscSterileEffectiveFit(int nuisance)
 {
-  FitParamList * fparm = new FitParamList(3+nuisance);
+  FitParamList * fparm = new FitParamList(4+nuisance);
   FitParamList::AppendEffectiveSterileOscillation(fparm, 0);
   return fparm;
 }
@@ -1432,6 +1432,7 @@ void FitParamList::AppendEffectiveSterileOscillation(FitParamList * fparm, int s
   fparm->AddParam( ip++, kPhypDm41sq    , 1.,  0.0, 100, 0.10,  false, false);
   fparm->AddParam( ip++, kPhypMixingMuE , 0.1, 0.0, 1.0, 0.01,  false, false);
   fparm->AddParam( ip++, kPhypMixingMuMu, 0.1, 0.0, 1.0, 0.01,  false, false);
+  fparm->AddParam( ip++, kPhypMixingEE,   0.1, 0.0, 1.0, 0.01,  false, false);
   return;
 }
 //________________________________________________________________________________________
