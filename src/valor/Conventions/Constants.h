@@ -474,7 +474,8 @@ static const double kElectronMassGeV =   0.511 / 1000.;
 static const double kMuonMassGeV     = 105.658 / 1000.;
 static const double kNeutronMassGeV  = 939.565 / 1000.;
 static const double kProtonMassGeV   = 938.272 / 1000.;
-  
+static const double kDeltaMassGeV    = 1232.0  / 1000.;
+
 } // conv
 } // valor
   
