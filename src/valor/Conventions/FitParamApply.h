@@ -186,6 +186,7 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllWithFSI;
 
     extern const ReacTypeApplyMask_t ktApplyToT2KLegCCoth;
+    extern const ReacTypeApplyMask_t ktApplyToCCDISMpi;
 
     // Detectors
     extern const DetectorApplyMask_t kdApplyToAllDUNE;
