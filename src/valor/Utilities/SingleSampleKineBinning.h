@@ -105,7 +105,6 @@ public:
   const std::vector<conv::KineVar_t> & KineVars() const;
   const std::vector<conv::KineVar_t> & TrueKineVars() const;
   const std::vector<conv::KineVar_t> & RecoKineVars() const;
-
   // Get a lit of the modes this binning is defined for
   const std::vector<conv::ReacMode_t> & GetReactionModes() const;
 

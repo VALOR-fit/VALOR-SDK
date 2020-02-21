@@ -123,7 +123,7 @@ public:
 
   // Calculate the OB manually from the content of the simple bins. Can be used to verify the spectra are the same for SB/OB
   void UpdateObservableBinningFromSimple (Option_t * opt = 0);
-
+  
   // Add information on which systematic universes to read in if they're coming from the DST.
   // Must be called *before* Read() since these are event-by-event
   void SetUniverseRangeToRead(size_t first, size_t last);

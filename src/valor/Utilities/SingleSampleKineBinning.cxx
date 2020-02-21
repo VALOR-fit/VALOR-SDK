@@ -55,7 +55,7 @@ SingleSampleKineBinning::SingleSampleKineBinning(UniqueSampleID usid, const std:
   fDetector = usid.detector;
   fBeamConf = usid.beamconf;
   fSample   = usid.sample;
-
+  
   fReactionModes = modes;
   fReactionModeIndex = MakeModeIndex(modes);
 }

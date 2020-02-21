@@ -1956,6 +1956,25 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       }//modes
     }//universe
   }//param
+  
+  // If we need to make baseline splines, do that now
+  if (fill_baseline_splines_here) {
+    for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
+      ReacMode_t m = fReactionModes[im];
+      const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
+      const int n_true_bins = true_sb->NBins();
+      for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
+        double * y = &(baseline_arrays[im]->GetEntryRef(true_bin,0));
+        TSpline3 * spl = new TSpline3("",min_baseline,max_baseline,y,n_baseline_knots[im]);
+        fBaselineSplines[im]->SetEntry((intptr_t)spl,true_bin);
+      }
+    }
+    fBaselineSplinesFilled = true;
+  }
+  // And let's clean up those arrays from earlier if we made them
+  for (VALORArray * va : baseline_arrays) {
+    if (va) {delete va;}
+  }
 
   LOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAfter filling MC templates from the input MC tree, the fMCTNomOb integrals for each mode are:";
@@ -4551,6 +4570,27 @@ void GenericSingleSampleFitModel::ResetUniversesToRead()
 const std::string & GenericSingleSampleFitModel::GetLastConfigFileRead() const
 {
   return fConfigFileRead;
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::WriteBaselineSplinesToFile(TFile * f) const
+{
+  if (!fBaselineSplinesFilled) {
+    LOG("GenericSingleSampleFitModel",pFATAL) << fName <<" trying to write splines without them filled.";
+    util::Die(-1); return;
+  }
+  for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
+    ReacMode_t m = fReactionModes[im];
+    int n_true_bins = fBinning->TrueSmpBinning(m)->NBins();
+    for (int itrue = 0 ; itrue < n_true_bins ; itrue++) {
+      //~ util::Interpolator * spl_vf = fBaselineSplines[im].GetEntry(itrue);
+      //~ TSpline3 spl = spl_vf->AsTSpline3();
+      const void * addr = (void*)fBaselineSplines[im]->GetEntry(itrue);
+      const TSpline * spl = static_cast<const TSpline*>(addr);
+      
+      TString spline_name = TString::Format("baseline_%s_%s_%d",fName.c_str(),util::AsString(m).c_str(),itrue);
+      f->WriteObject(spl,spline_name.Data());
+    }
+  }
 }
 //________________________________________________________________________________________
 util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_name, const string read_or_write, string valor_array_format)
