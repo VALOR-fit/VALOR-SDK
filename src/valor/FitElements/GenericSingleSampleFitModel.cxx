@@ -3364,7 +3364,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
   
   PhysHypothesis_t hypid = fPhysHypothesis.Hypothesis();
   // Variables for the sterile oscillations if we need them, since they don't come in an object
-  double sinsq2thmue = -1, sinsq2thmumu = -1, dm41sq = -1;
+  double sinsq2thmue = -1, sinsq2thmumu = -1, sinsq2thee = -1, dm41sq = -1;
   
   // Set 3 flavour osc parameters
   if (hypid == kHypOsc3F) {
@@ -3430,6 +3430,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     }
   }
   else if (hypid == kHypOscSterileEff) {
+    sinsq2thee   = fPhysHypothesis.CurrValue(kPhypMixingEE);
     sinsq2thmue  = fPhysHypothesis.CurrValue(kPhypMixingMuE);
     sinsq2thmumu = fPhysHypothesis.CurrValue(kPhypMixingMuMu);
     dm41sq       = fPhysHypothesis.CurrValue(kPhypDm41sq);
@@ -3541,11 +3542,11 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
             p_numubar_numubar  += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
             p_numubar_nuebar   += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
             p_numubar_nutaubar += event_rate_at_baseline * 0.;
-            p_nue_nue          += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-            p_nue_numu         += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_nue_nue          += event_rate_at_baseline * util::Calculate2FSterileOsc(  conv::kPdgNuE     , conv::kPdgNuE    , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
+            p_nue_numu         += event_rate_at_baseline * util::Calculate2FSterileOsc(  conv::kPdgNuE     , conv::kPdgNuMu   , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
             p_nue_nutau        += event_rate_at_baseline * 0;
-            p_nuebar_nuebar    += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-            p_nuebar_numubar   += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+            p_nuebar_nuebar    += event_rate_at_baseline * util::Calculate2FSterileOsc(  conv::kPdgNuEBar  , conv::kPdgNuEBar , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
+            p_nuebar_numubar   += event_rate_at_baseline * util::Calculate2FSterileOsc(  conv::kPdgNuEBar  , conv::kPdgNuMuBar, lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
             p_nuebar_nutaubar  += event_rate_at_baseline * 0;
           } // ibl
           for (double * prob : all_probs) {
@@ -3566,16 +3567,15 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
           p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
           p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
           p_numubar_nutaubar= 0.;
-          p_nue_nue         = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-          p_nue_numu        = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_nue_nue         = util::Calculate2FSterileOsc(  conv::kPdgNuE    , conv::kPdgNuE     , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
+          p_nue_numu        = util::Calculate2FSterileOsc(  conv::kPdgNuE    , conv::kPdgNuMu    , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
           p_nue_nutau       = 0;
-          p_nuebar_nuebar   = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-          p_nuebar_numubar  = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
+          p_nuebar_nuebar   = util::Calculate2FSterileOsc(  conv::kPdgNuEBar , conv::kPdgNuEBar  , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
+          p_nuebar_numubar  = util::Calculate2FSterileOsc(  conv::kPdgNuEBar , conv::kPdgNuMuBar , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
           p_nuebar_nutaubar = 0;
         }
       }
         
-
       double posc = 1.;
       if(util::IsCC(m))
       {
@@ -3594,7 +3594,6 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         else if( util::IsNuEBarToNuMuBar(m)  ) { posc = p_nuebar_numubar;        }
         else if( util::IsNuEBarToNuTauBar(m) ) { posc = p_nuebar_nutaubar;       }
       }
-      
       if(fMCTNullOb[imode]) {continue;}
       
       for(int ireco_ob = 0; ireco_ob < n_reco_bins_ob; ireco_ob++) {
@@ -3630,7 +3629,7 @@ void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
   //
 
   const VALORBinning  * reco_ob = fBinning->RecoOptBinning();
-  const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
+  const VALORBinning  * reco_sb = fBinning->RecoSmpBinning();
 
   const int n_reco_bins_ob  = reco_ob->NBins();
   const int n_reco_bins_sb  = reco_sb->NBins();
