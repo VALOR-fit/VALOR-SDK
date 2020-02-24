@@ -1957,25 +1957,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     }//universe
   }//param
   
-  // If we need to make baseline splines, do that now
-  if (fill_baseline_splines_here) {
-    for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
-      ReacMode_t m = fReactionModes[im];
-      const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
-      const int n_true_bins = true_sb->NBins();
-      for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
-        double * y = &(baseline_arrays[im]->GetEntryRef(true_bin,0));
-        TSpline3 * spl = new TSpline3("",min_baseline,max_baseline,y,n_baseline_knots[im]);
-        fBaselineSplines[im]->SetEntry((intptr_t)spl,true_bin);
-      }
-    }
-    fBaselineSplinesFilled = true;
-  }
-  // And let's clean up those arrays from earlier if we made them
-  for (VALORArray * va : baseline_arrays) {
-    if (va) {delete va;}
-  }
-
   LOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAfter filling MC templates from the input MC tree, the fMCTNomOb integrals for each mode are:";
   double fMCTNomOb_tot_integral = 0;
