@@ -4572,27 +4572,6 @@ const std::string & GenericSingleSampleFitModel::GetLastConfigFileRead() const
   return fConfigFileRead;
 }
 //________________________________________________________________________________________
-void GenericSingleSampleFitModel::WriteBaselineSplinesToFile(TFile * f) const
-{
-  if (!fBaselineSplinesFilled) {
-    LOG("GenericSingleSampleFitModel",pFATAL) << fName <<" trying to write splines without them filled.";
-    util::Die(-1); return;
-  }
-  for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
-    ReacMode_t m = fReactionModes[im];
-    int n_true_bins = fBinning->TrueSmpBinning(m)->NBins();
-    for (int itrue = 0 ; itrue < n_true_bins ; itrue++) {
-      //~ util::Interpolator * spl_vf = fBaselineSplines[im].GetEntry(itrue);
-      //~ TSpline3 spl = spl_vf->AsTSpline3();
-      const void * addr = (void*)fBaselineSplines[im]->GetEntry(itrue);
-      const TSpline * spl = static_cast<const TSpline*>(addr);
-      
-      TString spline_name = TString::Format("baseline_%s_%s_%d",fName.c_str(),util::AsString(m).c_str(),itrue);
-      f->WriteObject(spl,spline_name.Data());
-    }
-  }
-}
-//________________________________________________________________________________________
 util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_name, const string read_or_write, string valor_array_format)
 {
   valor_array_format = util::RemoveAllWhitespace(valor_array_format);
