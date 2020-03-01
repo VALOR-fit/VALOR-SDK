@@ -90,6 +90,17 @@ double valor::util::Calculate2FSterileOscMuE(int init_pdg, int final_pdg, double
   util::Die(-1);
   return conv::kBadResult;
 }
+
+ //________________________________________________________________ ____________
+double valor::util::Calculate2FSterileSinSqDM(const double& lOverE, const double& dmsq)
+{
+ 
+	double sindm = std::sin(kOscDimensFactor * lOverE * dmsq);
+	double sinsqdm = sindm * sindm;
+  
+  return sinsqdm;
+}
+
 //____________________________________________________________________________
 double valor::util::FlipOctantAroundMaxDisap(double sinsqth23, double sinsqth13)
 {

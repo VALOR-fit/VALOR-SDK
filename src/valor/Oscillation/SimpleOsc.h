@@ -24,7 +24,9 @@ namespace util {
   
   double Calculate2FSterileOsc(int init_pdg, int final_pdg, double lOverE, double sinsq2thee, double sinsq2thmumu, double dmsq);
   double Calculate2FSterileOscMuE(int init_pdg, int final_pdg, double lOverE, double sinsq2thmue, double sinsqthmumu, double dmsq);
-  
+
+double Calculate2FSterileSinSqDM(const double& lOverE, const double& dmsq);
+
   double FlipOctantAroundMaxDisap(double sinsqth23, double sinsqth13);
   
 } // util
