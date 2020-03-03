@@ -204,6 +204,16 @@ static const double kGlobFitErrSinsqTheta12 = 0.025;  // ~2.5% (PDG 2014)
 // static const double kGlobFitErrSinsqTheta13 = 0.086; // ~8.6% (PDG 2014)
  static const double kGlobFitErrSinsqTheta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
 
+/////////////////////////////////////
+//                                 //
+// Sterile parameters              //
+//                                 //
+/////////////////////////////////////
+
+static const double kGlobFitSinsq2ThetaEE   = 0.05310;   // Global best fit: https://arxiv.org/pdf/1906.00045.pdf 
+static const double kGlobFitSinsq2ThetaMuMu = 0.07157;   // Global best fit: https://arxiv.org/pdf/1906.00045.pdf 
+static const double kGlobFitSinsq2ThetaMuE  = 0.0009809; // Global best fit: https://arxiv.org/pdf/1906.00045.pdf 
+static const double kGlobFitDm41sq          = 1.32;      // Global best fit: https://arxiv.org/pdf/1906.00045.pdf 
 
 /////////////////////////////////////
 //                                 //
@@ -213,9 +223,6 @@ static const double kGlobFitErrSinsqTheta12 = 0.025;  // ~2.5% (PDG 2014)
 // NEW BETABAR
 static const double kGlobFitBetaBar = 1.;
 static const double kGlobFitErrBetaBar = 1.;
-//
-
-
 
 // projected future errors
 //atmos params unknown

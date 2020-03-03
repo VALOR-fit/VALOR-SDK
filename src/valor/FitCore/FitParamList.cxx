@@ -1474,7 +1474,9 @@ PhysHypothesis_t FitParamList::PhysicsHypothesis(void) const
     return kHypOscSterile5F;
   }
   if(this->Exists(kPhypDm41sq) ) {
-    if (this->Exists(kPhypMixingMuMu)) {
+    if (this->Exists(kPhypMixingMuMu) && 
+        this->Exists(kPhypMixingMuE)  && 
+        this->Exists(kPhypMixingEE)) {
       return kHypOscSterileEff;
     }
     return kHypOscSterile4F;
