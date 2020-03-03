@@ -53,6 +53,7 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAll = ktApplyToAllCC | ktApplyTo
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCoh    = ktApplyToAll & (~ktApplyToAllCoh);
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButELScat = ktApplyToAll & (~ktApplyToAllELScat);
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithFSI   = ktApplyToAll & (~ktApplyToAllCoh) & (~ktApplyToAllELScat);
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCosmic = ktApplyToAll & (~ktApplyToCosmic);
 
 
 
@@ -199,12 +200,13 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCC2pi0       , "cc2pi0") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCpiCpi0     , "ccpicpi0") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCcoh        , "cccoh") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCIMD        , "ccimd") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCELScat     , "ccelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCDIS        , "ccdis") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCMpi        , "ccmpi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCmisc       , "ccmisc") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCoth        ,"ccoth") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToT2KLegCCoth  ,"t2klegccoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCoth        , "ccoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToT2KLegCCoth  , "t2klegccoth") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCEL         , "ncel") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCMEC        , "ncmec") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNC1piC       , "nc1pic") );
@@ -217,6 +219,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCELScat     , "ncelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCoth        , "ncoth") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNuEELScat    , "nueelscat") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCosmic       , "cosmic") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCQELike     , "ccqelike") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCCELScat  , "allccelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC1pi     , "allcc1pi") );
@@ -235,6 +238,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCoh    , "allbutcoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButELScat , "allbutelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllWithFSI   , "allwithfsi") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCosmic , "allbutcosmic") );
   for(auto const& pair : fReacTypeMaskToName) {
     fReacTypeNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
@@ -420,6 +424,7 @@ const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t)
     case kmtNCoth    : return ktApplyToNCoth;
     case kmtELScat   : return ktApplyToNuEELScat;
     case kmtOther    : return 0;
+    case kmtCosmic   : return ktApplyToCosmic;
     default:
       LOG("ApplyMask",pWARN) << "No reac type apply mask set for " << util::AsString(t) << ". Applying to none.";
       return 0;
