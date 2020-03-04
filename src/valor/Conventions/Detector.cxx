@@ -65,9 +65,9 @@ string util::AsStringTeX(Detector_t d, bool root)
     case (kdDUNEND   ) : name = "DUNE ND";              break;
     case (kdDUNEFD1ph) : name = "DUNE FD Single Phase"; break;
     case (kdDUNEFD2ph) : name = "DUNE FD Dual Phase";   break;
-    case (kdSBND     ) : name = "SBN-ND";              break;
-    case (kdSBNuBooNE) : name = "SBN-{#mu}BooNE";      break;
-    case (kdSBNICARUS) : name = "SBN-ICARUS";          break;
+    case (kdSBND     ) : name = "SBN-ND";               break;
+    case (kdSBNuBooNE) : name = "SBN-#muBooNE";         break;
+    case (kdSBNICARUS) : name = "SBN-ICARUS";           break;
     case (kdSuperK   ) : name = "Super-K";              break;
     case (kdHyperK   ) : name = "Hyper-K";              break; 
     case (kdND280    ) : name = "ND280";                break; 
