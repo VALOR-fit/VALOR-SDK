@@ -87,6 +87,9 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   bool fix_mec_params         = (param_list_opt.find("fix-mec-syst"     ) != string::npos);
   bool fix_fsi_params         = (param_list_opt.find("fix-fsi-syst"     ) != string::npos);
   bool only_nd                = (param_list_opt.find("only-nd"          ) != string::npos);
+  bool fix_sterile_MuE        = (param_list_opt.find("fix-sterile-MuE"  ) != string::npos);
+  bool fix_sterile_MuMu       = (param_list_opt.find("fix-sterile-MuMu" ) != string::npos);
+  bool fix_sterile_params     = (param_list_opt.find("fix-sterile-params" ) != string::npos);
 
   const std::vector<Parameter> & pool_params = ParameterPool::Instance()->GetParams();
 
@@ -126,6 +129,16 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
     std::string name = "";
     if(!util::IsSystematic(p)) { name = param.GetNameLong(); }
     else                       { name = param.GetName();     }
+
+    if(  (fix_sterile_MuE && p== kPhypMixingMuE)||
+         (fix_sterile_MuMu && p== kPhypMixingMuMu) ||
+	 (fix_sterile_params && (  p== kPhypMixingMuE || p== kPhypMixingMuMu) ) ){
+
+       fix = true;
+
+    }
+
+
 
     // Fix parameters as necessary
     if(( fix_all                                                                                          ) ||
