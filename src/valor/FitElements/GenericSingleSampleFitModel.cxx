@@ -3503,8 +3503,8 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         p_nuebar_numubar  = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
         p_nuebar_nutaubar = 0;
       }
-        
-
+      std::cout << "dm41sq = " << dm41sq << std::endl;  
+			
       double posc = 1.;
       if(util::IsCC(m))
       {
@@ -3538,8 +3538,6 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       }//update_mct_sb
     }//itrue
   }//imode
-std::cout << "End of ApplyOSc, Press Enter to Continue";
-std::cin.ignore();
 }*/
 //________________________________________________________________________________________
 
@@ -3575,7 +3573,6 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
 
   // If not, just set the oscillated modes to zero and move on
   if (!apply_osc_prob) {
-		std::cout << "New new test" << std::endl;
     for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
       ReacMode_t m = fReactionModes[imode];
       if(m == kmUndefined) {continue;}
@@ -3663,7 +3660,6 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     
   
   double p_numu_numu       = -1;
-  double p_numu_numu2       = -1;
   double p_numu_nue        = -1;
   double p_numu_nutau      = -1;
   double p_numubar_numubar = -1;
@@ -3703,7 +3699,6 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     typedef double (templtypeSb)[n_reco_bins_sb][n_true_bins_sb];
     templtypeSb & templFinSb = *reinterpret_cast<templtypeSb *>(&(fMCTFinSb[imode]->GetEntryRef(0,0)));
    
-	 std::cout << n_true_bins_sb << std::endl;
 		for(int itrue = 0; itrue < n_true_bins_sb; itrue++) {
       //get the true energy to calculate osc prob 
 
@@ -3743,27 +3738,21 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       }
 	
       else if (hypid == kHypOscSterileEff) {
-  		std::cout << "dmsq = " << dm41sq << std::endl;
-			std::cout << "sindm2 = " << sindm2 << std::endl;
 
-      double baseline = util::Baseline(fBeam,fDetector);
-        double lOverE = baseline / Etrue;
-        p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, sindm2);
-        p_numu_numu2       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, sindm2);
+        p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu, sinsq2thmue, sinsq2thmumu, sindm2);
+        p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    ,sinsq2thmue, sinsq2thmumu, sindm2);
         p_numu_nutau      = 0.;
-        p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, sindm2);
-        p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, sindm2);
+        p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, sinsq2thmue, sinsq2thmumu, sindm2);
+        p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , sinsq2thmue, sinsq2thmumu, sindm2);
         p_numubar_nutaubar= 0.;
-        p_nue_nue         = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, sindm2);
-        p_nue_numu        = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, sindm2);
+        p_nue_nue         = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuE    , sinsq2thmue, sinsq2thmumu, sindm2);
+        p_nue_numu        = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuMu   , sinsq2thmue, sinsq2thmumu, sindm2);
         p_nue_nutau       = 0;
-        p_nuebar_nuebar   = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, sindm2);
-        p_nuebar_numubar  = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, sindm2);
+        p_nuebar_nuebar   = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuEBar , sinsq2thmue, sinsq2thmumu, sindm2);
+        p_nuebar_numubar  = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, sinsq2thmue, sinsq2thmumu, sindm2);
         p_nuebar_nutaubar = 0;
       }
-      //std::cout << "numu = " << p_numu_numu << std::endl;
-       //std::cout << "numu2 = " << p_numu_numu2 << std::endl;
+      std::cout << "sindm2 = " << sindm2 << std::endl;
 			 
 
       double posc = 1.;
@@ -3799,10 +3788,8 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       }//update_mct_sb
     }//itrue
   }//imode
-//std::cout << "End of DomWayOsc, Press Enter to Continue";
-//std::cin.ignore();
-
 }
+
 //_________________________________________________________________________________________
 void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
 {
