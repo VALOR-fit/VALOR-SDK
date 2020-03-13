@@ -20,7 +20,9 @@
   TFile * f = new TFile("./sterile_3p1_limits.root","read");
   
   // VALOR modern disappearance files
-  TFile *f_stat      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_mdc_stat_3_det_contours_as_graphs.root","read");
+
+  TFile *f_stat      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/mock_data_challenge/true_baseline/contours/stat-only_contours_as_graphs.root","read"); // true baseline
+  //TFile *f_stat      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_mdc_stat_3_det_contours_as_graphs.root","read");
   TFile *f_syst      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_mdc_syst_3_det_contours_as_graphs.root","read");
   TFile *f_stat_p    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/proposal_stat_3_det_contours_as_graphs.root","read");
   TFile *f_syst_p    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/proposal_syst_3_det_contours_as_graphs.root","read");
@@ -55,7 +57,8 @@
   TGraph * lim_numudis_3p1_sbnproposal_90pctCL     = (TGraph *) f->Get( "lim_numudis_3p1_sbnproposal_90pctCL"  );
   TGraph * lim_numudis_3p1_minosp_90pctCL          = (TGraph *) f->Get( "lim_numudis_3p1_minosp_90pctCL"       );
   TGraph * lim_numudis_3p1_minisciboone_90pctCL    = (TGraph *) f->Get( "lim_numudis_3p1_minisciboone_90pctCL" );
-  TGraph * valor_modern_sbn_3p1_contour_90_stat    = (TGraph *) f_stat->Get("contour_90pct_lin_0");
+  //TGraph * valor_modern_sbn_3p1_contour_90_stat    = (TGraph *) f_stat->Get("contour_90pct_lin_0");
+  TGraph * valor_modern_sbn_3p1_contour_90_stat    = (TGraph *) f_stat->Get("stat-only_90pct_lin_0"); // true baseline 
   TGraph * valor_modern_sbn_3p1_contour_90_syst    = (TGraph *) f_syst->Get("contour_90pct_lin_0");
   TGraph * valor_proposal_sbn_3p1_contour_90_stat  = (TGraph *) f_stat_p->Get("contour_90pct_lin_0");
   TGraph * valor_proposal_sbn_3p1_contour_90_syst  = (TGraph *) f_syst_p->Get("contour_90pct_lin_0");
