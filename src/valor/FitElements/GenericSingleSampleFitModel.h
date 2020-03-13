@@ -154,7 +154,8 @@ private:
   void ApplySystematics                  (Option_t * opt = 0);
   void ApplyPhysics                      (Option_t * opt = 0);
   void ApplyOscProb                      (Option_t * opt = 0);
-  void UpdatePDFs                        (Option_t * opt = 0);
+	void ApplyOscProbTheDomWay             (Option_t * opt = 0);
+	void UpdatePDFs                        (Option_t * opt = 0);
   void ApplyPostOscLateralSystematics    (VALORArray * pdf, bool simple_binning = false);
   void ApplyLateralSystematic            (VALORArray * pdf, conv::PhysParamId_t p, bool simple_binning = false);
   void ReadExtTuningHistsAll             (TXMLEngine* xmleng, XMLNodePointer_t top_node);
@@ -184,6 +185,10 @@ private:
   // and the applied kine var, so pre-compute them instead of calculating them for every event and mode.
   void PreComputeLateralSystVectors(bool use_simple_binning);
   
+	double OscillationWeight(conv::ReacMode_t m, double baseline, double Etrue);
+	 
+	double OscillationWeight(const conv::ReacMode_t& m,const double& lOverE) const;
+
   // Keep track of the parameters we need to loop over
   // Normalisation, spline and post-oscillation lateral parameters divided
   std::vector<conv::PhysParamId_t> fNormParams;
@@ -247,8 +252,8 @@ private:
   std::vector<VALORArray *>fMCTTunOb ; 
   std::vector<VALORArray *>fMCTSysOb ; 
   std::vector<VALORArray *>fMCTFinOb ; 
-  std::vector<VALORArray *>fMCStatOb ; // MC statistics
-  
+  std::vector<VALORArray *>fMCStatOb ; // MC statistics 
+
   // We'll keep our response function pointers in a VALORArray of longs.
   // If we move to C++ 11, should use intptr_t instead.
   // This has an extra dimension above those  in the arrays above - parameter
@@ -263,6 +268,11 @@ private:
   std::vector<VALORArray *> fMCTSysSb ; 
   std::vector<VALORArray *> fMCTFinSb ; 
   std::vector<VALORArray *> fMCStatSb ; // MC statistics
+
+	std::vector<VALORArray *> fSinDM2Weight;
+	std::vector<VALORArray *> fSinDM2WeightN;
+	std::vector<std::vector<std::vector<double> > > fSinDM2WeightVec;
+
 
   // MC PDFs
   // Each PDF is (currently always) a 2-D Nev = Nev(Enu_reco, y_reco) array that can be directly compared with data.
