@@ -21,9 +21,10 @@
   
   // VALOR modern disappearance files
 
-  TFile *f_stat      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/mock_data_challenge/true_baseline/contours/stat-only_contours_as_graphs.root","read"); // true baseline
+  TFile *f_stat      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/mock_data_challenge/true_baseline/contours/new-stat-only_contours_as_graphs.root","read"); // true baseline
+  TFile *f_syst      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/mock_data_challenge/true_baseline/contours/new-syst-etrue_contours_as_graphs.root","read"); // true baseline
   //TFile *f_stat      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_mdc_stat_3_det_contours_as_graphs.root","read");
-  TFile *f_syst      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_mdc_syst_3_det_contours_as_graphs.root","read");
+  TFile *f_syst_old  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_mdc_syst_3_det_contours_as_graphs.root","read");
   TFile *f_stat_p    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/proposal_stat_3_det_contours_as_graphs.root","read");
   TFile *f_syst_p    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/proposal_syst_3_det_contours_as_graphs.root","read");
   TFile *f_syst_a    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_injection_syst_contours_as_graphs.root");
@@ -58,8 +59,9 @@
   TGraph * lim_numudis_3p1_minosp_90pctCL          = (TGraph *) f->Get( "lim_numudis_3p1_minosp_90pctCL"       );
   TGraph * lim_numudis_3p1_minisciboone_90pctCL    = (TGraph *) f->Get( "lim_numudis_3p1_minisciboone_90pctCL" );
   //TGraph * valor_modern_sbn_3p1_contour_90_stat    = (TGraph *) f_stat->Get("contour_90pct_lin_0");
+  TGraph * valor_modern_sbn_3p1_contour_90_syst_old = (TGraph *) f_syst_old->Get("contour_90pct_lin_0");
   TGraph * valor_modern_sbn_3p1_contour_90_stat    = (TGraph *) f_stat->Get("stat-only_90pct_lin_0"); // true baseline 
-  TGraph * valor_modern_sbn_3p1_contour_90_syst    = (TGraph *) f_syst->Get("contour_90pct_lin_0");
+  TGraph * valor_modern_sbn_3p1_contour_90_syst    = (TGraph *) f_syst->Get("new-syst-etrue_90pct_lin_0");
   TGraph * valor_proposal_sbn_3p1_contour_90_stat  = (TGraph *) f_stat_p->Get("contour_90pct_lin_0");
   TGraph * valor_proposal_sbn_3p1_contour_90_syst  = (TGraph *) f_syst_p->Get("contour_90pct_lin_0");
   TGraph * cafana_proposal_sbn_3p1_contour_90_stat = (TGraph *) f_caf_prop->Get("numu_exclusion_all_stat_90pct"); 
@@ -85,6 +87,8 @@
   valor_modern_sbn_3p1_contour_90_stat    -> SetLineStyle(9);
   valor_modern_sbn_3p1_contour_90_syst    -> SetLineColor(kPink+5);  
   valor_modern_sbn_3p1_contour_90_syst    -> SetLineStyle(1); 
+  valor_modern_sbn_3p1_contour_90_syst_old-> SetLineColor(kPink+5);  
+  valor_modern_sbn_3p1_contour_90_syst_old-> SetLineStyle(5); 
   valor_proposal_sbn_3p1_contour_90_stat  -> SetLineColor(kPink+5);
   valor_proposal_sbn_3p1_contour_90_stat  -> SetLineStyle(8);
   valor_proposal_sbn_3p1_contour_90_syst  -> SetLineColor(kPink+5);  
@@ -111,6 +115,7 @@
   lim_numudis_3p1_sbnproposal_90pctCL     -> SetLineWidth(2);
   valor_modern_sbn_3p1_contour_90_stat    -> SetLineWidth(2);
   valor_modern_sbn_3p1_contour_90_syst    -> SetLineWidth(2);
+  valor_modern_sbn_3p1_contour_90_syst_old-> SetLineWidth(2);
   valor_proposal_sbn_3p1_contour_90_stat  -> SetLineWidth(2);
   valor_proposal_sbn_3p1_contour_90_syst  -> SetLineWidth(2);
   cafana_modern_sbn_3p1_contour_90_stat   -> SetLineWidth(2);
@@ -127,6 +132,7 @@
   lim_numudis_3p1_sbnproposal_90pctCL     -> SetMarkerStyle(0);
   valor_modern_sbn_3p1_contour_90_stat    -> SetMarkerStyle(0);
   valor_modern_sbn_3p1_contour_90_syst    -> SetMarkerStyle(0);
+  valor_modern_sbn_3p1_contour_90_syst_old-> SetMarkerStyle(0);
   valor_proposal_sbn_3p1_contour_90_stat  -> SetMarkerStyle(0);
   valor_proposal_sbn_3p1_contour_90_syst  -> SetMarkerStyle(0);
   cafana_modern_sbn_3p1_contour_90_stat   -> SetMarkerStyle(0);
@@ -139,6 +145,47 @@
   sbnfit_proposal_sbn_3p1_contour_90_syst -> SetMarkerStyle(0);
   lim_numudis_3p1_minosp_90pctCL          -> SetMarkerStyle(0);
   lim_numudis_3p1_minisciboone_90pctCL    -> SetMarkerStyle(0);
+
+  // 
+  // Modern only, VALOR iteration
+  //
+
+  TCanvas * cnumudismodernvalor = new TCanvas("cnumudismodernvalor","",20,20,700,900);
+  cnumudismodernvalor->Draw();
+
+  TH2F * hfnumudismodernvalor = (TH2F*) cnumudismodernvalor->DrawFrame(1E-3,1E-2,1,1E+2);
+  hfnumudismodernvalor->Draw();
+  hfnumudismodernvalor->GetYaxis()->SetTitleOffset(1.3);
+  hfnumudismodernvalor->GetYaxis()->SetTitleOffset(1.1);
+  hfnumudismodernvalor->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu}");
+  hfnumudismodernvalor->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hfnumudismodernvalor->GetXaxis()->SetTitleFont(132);
+  hfnumudismodernvalor->GetYaxis()->SetTitleFont(132);
+  hfnumudismodernvalor->GetXaxis()->SetLabelFont(132);
+  hfnumudismodernvalor->GetYaxis()->SetLabelFont(132);
+  cnumudismodernvalor->SetLogx();
+  cnumudismodernvalor->SetLogy();
+
+  valor_modern_sbn_3p1_contour_90_stat    -> Draw("l");
+  valor_modern_sbn_3p1_contour_90_syst    -> Draw("l");
+  valor_modern_sbn_3p1_contour_90_syst_old-> Draw("l");
+  cafana_modern_sbn_3p1_contour_90_stat   -> Draw("l");
+  cafana_modern_sbn_3p1_contour_90_syst   -> Draw("l");
+  sbnfit_modern_sbn_3p1_contour_90_stat   -> Draw("l");
+  sbnfit_modern_sbn_3p1_contour_90_syst   -> Draw("l");
+
+  TLegend * lgnumudismodernvalor = new TLegend(0.12,0.12,0.67,0.38);
+  lgnumudismodernvalor->SetFillStyle(0);
+  lgnumudismodernvalor->SetBorderSize(0);
+  lgnumudismodernvalor->SetTextFont(132);
+  lgnumudismodernvalor->AddEntry(cafana_modern_sbn_3p1_contour_90_syst,   "CAFAna modern 90\% CL ",                    "L");
+  lgnumudismodernvalor->AddEntry(cafana_modern_sbn_3p1_contour_90_stat,   "CAFAna modern 90\% CL (stat-only)",         "L");
+  lgnumudismodernvalor->AddEntry(sbnfit_modern_sbn_3p1_contour_90_syst,   "SBNFit modern 90\% CL ",                    "L");
+  lgnumudismodernvalor->AddEntry(sbnfit_modern_sbn_3p1_contour_90_stat,   "SBNFit modern 90\% CL (stat-only)",         "L");
+  lgnumudismodernvalor->AddEntry(valor_modern_sbn_3p1_contour_90_syst_old,"VALOR modern 90\% CL (E_{Reco}, spline BL)","L");
+  lgnumudismodernvalor->AddEntry(valor_modern_sbn_3p1_contour_90_syst,    "VALOR modern 90\% CL (E_{True}, true BL)",  "L");
+  lgnumudismodernvalor->AddEntry(valor_modern_sbn_3p1_contour_90_stat,    "VALOR modern 90\% CL (stat-only)",          "L");
+  lgnumudismodernvalor->Draw();
 
   // 
   // External data, modern only 
