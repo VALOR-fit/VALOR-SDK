@@ -13,6 +13,7 @@
 #include "valor/Utilities/ToyStream.h"
 #include "valor/FitCore/UtlFitParamList.h"
 #include "valor/FitCore/UtlOscillation.h"
+#include "valor/Utilities/Rnd.h"
 
 //#define VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
 
@@ -118,6 +119,13 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
    {
       for( ; ; )
       {
+         // randomize seeds for every toy 
+         Rnd::Instance()->SetSeeds(
+            Rnd::Instance()->RndToyMCstat().GetSeed() + 1,
+            Rnd::Instance()->RndToyMCsyst().GetSeed() + 1,
+            Rnd::Instance()->RndFitter().GetSeed()    + 1,
+            Rnd::Instance()->RndOther().GetSeed()     + 1);
+
          this->_model->ResetSystematics("all");
          // Randomise the systematics in the model
          if(randomizeSystematics)

@@ -43,7 +43,7 @@ public:
 
   // default seed is 0
   void SetSeeds(UInt_t toymcstat = 0, UInt_t toymcsyst = 0, UInt_t toymcosc = 0, UInt_t fitter = 0, UInt_t other = 0);
-  void SetSeeds(const CmdLnArgList & arg);
+  void SetSeeds(const CmdLnArgList & arg, unsigned int  seed_offset = 0);
 
   TRandom3 & RndToyMCstat  (void) { return fRndToyMCstat;  }
   TRandom3 & RndToyMCsyst  (void) { return fRndToyMCsyst;  }
@@ -71,6 +71,8 @@ private:
   UInt_t fSeedToyMCosc;
   UInt_t fSeedFitter;
   UInt_t fSeedOther;
+  
+  UInt_t fSeedOffset;
 
   static Rnd * fInstance;
 

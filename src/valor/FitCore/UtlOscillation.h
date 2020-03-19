@@ -96,6 +96,46 @@ namespace oscillation
     * @return a mapping of the parameter IDs to their randomised values
     */
    std::map<conv::PhysParamId_t,double> GetRandomizedOscParams2DCorrelated (std::pair<conv::PhysParamId_t,conv::PhysParamId_t> params, FitParamList& fpl);
+
+    /**
+    Struct to handle penalty term parameters
+    **/
+    struct PenaltyTerm{
+        double mean;
+        double sigma;
+        std::string opt;
+        std::string param_names;
+    };
+    /**
+         Set the penalty term parameters
+
+         \param arg The CmdLnArgList containing the XML filename from which the
+                    priors should be read.
+         \param penaltyparam Parameter name.
+     **/
+   PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg, string penaltyparam);
+
+    /**
+    Set a single prior from an XML file. So far the only supported  type of penalty is Gaussian.
+     TODO: add external penalty
+
+    \param xmleng The XML engine for the prior XML file.
+    \param top_node A pointer to a <prior> node.
+    \param Parameter name.
+     **/
+    PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, string penaltyparam);
+
+    /**
+    Increase a parameter value withing a group of points 
+    \param fpl FitParameterList pointer 
+    \param param name of the parameter 
+    \param intial value of the parameter 
+    \param bin 
+    \param step 
+    **/
+
+    void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_val, int bin, double step);
+
 }
 }
 }

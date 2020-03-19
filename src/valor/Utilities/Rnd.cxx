@@ -73,11 +73,11 @@ void Rnd::SetSeeds(
     fclose(devrandom);
   }
     
-  fSeedToyMCstat = ( toymcstat ? toymcstat : randseeds[0] );
-  fSeedToyMCsyst = ( toymcsyst ? toymcsyst : randseeds[1] );
-  fSeedToyMCosc  = ( toymcosc  ? toymcosc  : randseeds[2] );
-  fSeedFitter    = ( fitter    ? fitter    : randseeds[3] );
-  fSeedOther     = ( other     ? other     : randseeds[4] );
+  fSeedToyMCstat = ( toymcstat ? toymcstat : randseeds[0] ) + fSeedFitter;
+  fSeedToyMCsyst = ( toymcsyst ? toymcsyst : randseeds[1] ) + fSeedFitter;
+  fSeedToyMCosc  = ( toymcosc  ? toymcosc  : randseeds[2] ) + fSeedFitter;
+  fSeedFitter    = ( fitter    ? fitter    : randseeds[3] ) + fSeedFitter;
+  fSeedOther     = ( other     ? other     : randseeds[4] ) + fSeedFitter;
 #endif
 
   LOG("Rnd", pDEBUG)
@@ -142,13 +142,14 @@ void Rnd::Print(ostream & stream) const
   stream << endl;
 }
 //________________________________________________________________________________________________________________________________________________________
-void Rnd::SetSeeds(const CmdLnArgList & arg)
+void Rnd::SetSeeds(const CmdLnArgList & arg, unsigned int  seed_offset)
 {
   this->SetSeeds(arg.GetInt("seed-toys-stat"),
                  arg.GetInt("seed-toys-syst"),
                  arg.GetInt("seed-toys-osc" ),
                  arg.GetInt("seed-fitter"   ),
                  arg.GetInt("seed-other"    ));
+  fSeedOffset = seed_offset;
   return;
 }
 //________________________________________________________________________________________________________________________________________________________
