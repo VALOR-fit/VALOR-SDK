@@ -154,11 +154,12 @@ public:
              batch.
       \param Nbatches The number of batches to include
              (i.e. Nbatches * Ntoys = Ntoys total).
-      \param penaltyset Structure  that contains all info on penalty parameter
+      \param penaltyset Structure  that contains all info on penalty parameter        
       \param firstBatch The numeric ID for the first batch of marginalisation
              toys to be included. Note, batches should be indexec from 0.
    */
-   FitResult* Fit(FitDataABC* data, const int Ntoys, const int Nbatches,
+
+      FitResult* Fit(FitDataABC* data, const int Ntoys, const int Nbatches, util::oscillation::PenaltyTerm penaltyset,
          const int firstBatch = 0);
 
    /**
