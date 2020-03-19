@@ -40,8 +40,7 @@ $data_revis_q = "*" unless defined $data_revis_q;
 $archive_path = "." unless defined $archive_path;
 
 print "\n";
-print BOLD, YELLOW, "VALOR: Creating checksums for the data product(s) with [major qualifier: $data_major_q
-  / minor qualifier: $data_minor_q / revision qualifier: $data_revis_q] data to $local_path\n", RESET;
+print BOLD, YELLOW, "VALOR: Creating checksums for the data product(s) with [major qualifier: $data_major_q / minor qualifier: $data_minor_q / revision qualifier: $data_revis_q]\n", RESET;
 print BOLD, YELLOW, "VALOR: Data archive path: $archive_path \n", RESET;
 
 $inputs_path   = "$data_major_q/$data_minor_q/$data_revis_q";

@@ -81,8 +81,7 @@ $rm_obsolete     = 0   unless defined $rm_obsolete;
 $debug_output    = 0   unless defined $debug_output;
 
 print "\n\n";
-print BOLD, YELLOW, "VALOR: Will fetch the data product(s) with [major qualifier: $data_major_q
-  / minor qualifier: $data_minor_q / revision qualifier: $data_revis_q] data to $local_path\n", RESET;
+print BOLD, YELLOW, "VALOR: Will fetch the data product(s) with [major qualifier: $data_major_q / minor qualifier: $data_minor_q / revision qualifier: $data_revis_q] data to $local_path\n", RESET;
 if($rm_obsolete == 1) {
   print BOLD, RED, "VALOR: ** Note that obsolete data will be removed from the local system ** \n\n", RESET;
 }
