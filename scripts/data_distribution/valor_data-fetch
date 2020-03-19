@@ -5,19 +5,22 @@
 # See the README file for the VALOR data archive directory structure.
 #
 # Inputs:
-#     --archive-url   : Input VALOR data archive URL
+#     --data-resource : Remote data archive
+#                       In the original implementation, this was a standard URL (http(s)://hostname/some/path) passed to wget.
+#                       In a subsequent revision, as large disk spaces accessible via http became increasingly scarce, I added
+#                       the option to specify a resource as username://machine/some/path so that files can be obtained with scp.
 #    [--local-path]   : Local path for downloading the VALOR inputs to. [Default: .]
-#     --experiment    : Experiment name associated with a set of VALOR inputs. 
-#    [--component]    : Data component name associated with a set of VALOR inputs. Wildcards allowed. [Default: *]
-#    [--version]      : Version number associated with a set of VALOR inputs. Wildcards allowed. [Default: *]
+#     --data-major    : Major qualifier for a set of VALOR inputs.
+#    [--data-minor]   : Major qualifier for a set of VALOR inputs. Wildcards allowed. [Default: *]
+#    [--data-revis]   : Revision qualifier for a set of VALOR inputs. Wildcards allowed. [Default: *]
 #    [--rm-obsolete]  : Obsolete files are automatically renamed (appending "~date_time" in the filename) and they are
 #                       not overwritten. Add this option if you prefer to have them removed.
 #    [--debug]        : Add this option to get additional print-out for debugging / diagnosing problems.
 #
 # Note:
-# * The existence of a checksum file in the archive is required for each the `experiment/component/version' combination
-#   of any set of inputs that can be fetched.
-# * The --component and --version arguments can accept a wildcard.
+# * The existence of a checksum file in the data archive is required for each the `major/minor/revision' combination
+#   of qualifiers for any set of inputs that can be fetched.
+# * The --data-minor and --data-revis arguments can accept a wildcard.
 #   For example, one could fetch `dune/ndfit/2017a' and `dune/fdfit/2017a' in two steps, or fetch all inputs required
 #   for the 2017a DUNE joint analysis (`dune/*/2017a') in one step. Or, one could fetch all 2016a, 2016b and 2016c versions
 #   of the DUNE near detector analysis by specifying `dune/ndfit/2016*'
@@ -26,75 +29,85 @@
 #
 # * Implement a --purge option to clean up local copy, removing automatically renamed obsolete files as well as files
 #   that were removed from the archive
-# * Keep here a list of all VALOR data archive mirror sites internally looked up in a specific order, and make the
-#   --archive-url an optional argument, in case one wants to pick a specific site or bypass the built-in set of URLs
 #
 # Examples:
 # ---------
 #
-# 1) Fetch from https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/ all data for the 2017a DUNE Near Detector fit.
-#    Print additional debug info and do not overwrite (but just rename) obsolete versions of local files.
+# 1) Assume the existence of a data product with major qualifier `sbn_simulation_inputs' that includes
+#    several sub-products with minor qualifiers `sbnd_geometry', `sbnd_flux' etc.
+#    Assume that data are accessible via http from https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/
+#    To access the `2020a' revision of the SBND geometry, one should type:
 #
-#    % valor_data-fetch --experiment dune --component ndfit --version 2017a
-#                       --archive-url  https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/ --debug
-# 
-# 2) Fetch from https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/ all data for all 2016 (2016a, 2016b, 2016c)
-#    DUNE Near Detector fits. Do not overwrite (but just rename) obsolete versions of local files.
+#    % valor_data-fetch --data-major sbn_simulation_inpuys --data-minor sbnd_geometry --data-revis 2020a
+#                       --data-resource  https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/
 #
-#    % valor_data-fetch --experiment dune --component ndfit --version 2016*
-#                       --archive-url  https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/ 
-# 
-# 3) Fetch from https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/ all inputs (ndfit and fdfit) required for the
-#    2017a DUNE joint fit. Overwrite obsolete versions of local files.
+# 2) Assume that you want to obtain the same data product listed above, but the data are not accessible via http.
+#    Instead, they should be obtained from the /hepstore/neutrino/data directory at the Liverool HEP machines.
+#    The previous example becomes
 #
-#    % valor_data-fetch --experiment dune --version 2017a
-#                       --archive-url  https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/ --rm-obsolete
-# 
-# 
-# C. Andreopoulos <costas.andreopoulos@stfc.ac.uk>
+#    % valor_data-fetch --data-major sbn_simulation_inpuys --data-minor sbnd_geometry --data-revis 2020a
+#                       --data-resource  costas@gateway.ph.liv.ac.uk:/hepstore/neutrino/data/
+#
+#    Obviously, use your own username.
+#    For the above example to work, you will be asked to type in your SSH key passphrase.
+#
+# C. Andreopoulos <constantinos.andreopoulos@cern.ch>
 # University of Liverpool & STFC/RAL
 #-------------------------------------------------------------------------------------------------------------------------------
 #
 
 use Term::ANSIColor;
 use Term::ANSIColor qw(:constants);
-#use DateTime;
+use File::Path;
+use File::Basename;
 
 $iarg=0;
 foreach (@ARGV) {
-  if   ($_ eq '--archive-url'  ) { $archive_url  = $ARGV[$iarg+1]; }
-  elsif($_ eq '--local-path'   ) { $local_path   = $ARGV[$iarg+1]; }
-  elsif($_ eq '--experiment'   ) { $experiment   = $ARGV[$iarg+1]; }
-  elsif($_ eq '--component'    ) { $component    = $ARGV[$iarg+1]; }
-  elsif($_ eq '--version'      ) { $version      = $ARGV[$iarg+1]; }
-  elsif($_ eq '--rm-obsolete'  ) { $rm_obsolete  = 1; }
-  elsif($_ eq '--debug'        ) { $debug_output = 1; }
+  if   ($_ eq '--data-resource') { $data_resource  = $ARGV[$iarg+1]; }
+  elsif($_ eq '--local-path'   ) { $local_base_dir = $ARGV[$iarg+1]; }
+  elsif($_ eq '--data-major'   ) { $data_major_q   = $ARGV[$iarg+1]; }
+  elsif($_ eq '--data-minor'   ) { $data_minor_q   = $ARGV[$iarg+1]; }
+  elsif($_ eq '--data-revis'   ) { $data_revis_q   = $ARGV[$iarg+1]; }
+  elsif($_ eq '--rm-obsolete'  ) { $rm_obsolete    = 1; }
+  elsif($_ eq '--debug'        ) { $debug_output   = 1; }
   $iarg++;
 }
-die("VALOR: Please provide an input for --experiment") unless defined $experiment;
+die("VALOR: Please provide an input for --data-major") unless defined $data_major_q;
 
-$local_path   = "." unless defined $local_path;
-$component    = "*" unless defined $component;
-$version      = "*" unless defined $version;
-$rm_obsolete  = 0   unless defined $rm_obsolete;
-$debug_output = 0   unless defined $debug_output;
+$local_base_dir  = "." unless defined $local_base_dir;
+$data_minor_q    = "*" unless defined $data_minor_q;
+$data_revis_q    = "*" unless defined $data_revis_q;
+$rm_obsolete     = 0   unless defined $rm_obsolete;
+$debug_output    = 0   unless defined $debug_output;
 
 print "\n\n";
-print BOLD, YELLOW, "VALOR: Will fetch [Experiment:$experiment/Component:$component/Version:$version] data to $local_path\n", RESET;
+print BOLD, YELLOW, "VALOR: Will fetch the data product(s) with [major qualifier: $data_major_q
+  / minor qualifier: $data_minor_q / revision qualifier: $data_revis_q] data to $local_path\n", RESET;
 if($rm_obsolete == 1) {
   print BOLD, RED, "VALOR: ** Note that obsolete data will be removed from the local system ** \n\n", RESET;
 }
 
-# Remove a trailing `/' from $archive_url, if any, because when a "/data/Expt/Component/Version"
+$use_wget = 0;
+$use_scp  = 0;
+if($data_resource =~ m/http/i) {
+  $use_wget = 1;
+} else {
+  $use_scp = 1;
+  print BOLD, CYAN, "\nVALOR: Enter your ssh key passphrase so as to access the data resource at: $data_resource \n", RESET;
+  system("ssh-add");
+}
+
+# Remove a trailing `/' from $data_resource, if any, because when a "/data/Expt/Component/Version"
 # is appended, the resulting double `//' interferes with the correct calculation of the
 # appropriate argument for the wget --cut-dirs option.
 # The regex below also works for multiple trailing `/'s.
-$archive_url_no_trailing_slash = $1 if($archive_url =~ m/^(.*?)\/*$/);
-print "VALOR: Removed trailing slashes (if any) from the input URL: $archive_url -> $archive_url_no_trailing_slash \n" if $debug_output;
-print BOLD, YELLOW, "VALOR: Fetching data from $archive_url_no_trailing_slash\n", RESET;
+$data_resource_no_trailing_slash = $1 if($data_resource =~ m/^(.*?)\/*$/);
+# $archive_url_no_trailing_slash = $1 if($archive_url =~ m/^(.*?)\/*$/);
+print "VALOR: Removed trailing slashes (if any) from the input URL: $data_resource -> $data_resource_no_trailing_slash \n" if $debug_output;
+print BOLD, YELLOW, "VALOR: Fetching data from $data_resource_no_trailing_slash\n", RESET;
 
 # Calculate value for wget --cut-dirs argument
-# Assume the input archive URL is `https://valor.pp.rl.ac.uk/data_store/valor_inputs'
+# Say the input archive URL is `https://valor.pp.rl.ac.uk/data_store/valor_inputs'
 # Within that archive, data are stored (see README) in:
 # `https://valor.pp.rl.ac.uk/data_store/valor_inputs/data/experiment/component/version/...'
 # The wget -nH option will cut the `valor.pp.rl.ac.uk' part.
@@ -102,17 +115,17 @@ print BOLD, YELLOW, "VALOR: Fetching data from $archive_url_no_trailing_slash\n"
 # Therefore, we need to cut the `/data_store/valor_inputs/data' part.
 # This is accomplished using the wget --cut-dirs=value option.
 # Here we determine that value
-$archive_url_no_trailing_slash_no_http = $archive_url_no_trailing_slash;
-$archive_url_no_trailing_slash_no_http =~ s/https\:\/\///; # remove optional http,  if any
-$archive_url_no_trailing_slash_no_http =~ s/http\:\/\///;  # remove optional https, if any
-@url_tokens = split(/\//, $archive_url_no_trailing_slash_no_http);
-print "VALOR: Tokenizing URL $archive_url_no_trailing_slash_no_http --> \{ @url_tokens \} \n" if $debug_output;
+$data_resource_no_trailing_slash_no_http = $data_resource_no_trailing_slash;
+$data_resource_no_trailing_slash_no_http =~ s/https\:\/\///; # remove optional http,  if any
+$data_resource_no_trailing_slash_no_http =~ s/http\:\/\///;  # remove optional https, if any
+@url_tokens = split(/\//, $data_resource_no_trailing_slash_no_http);
+print "VALOR: Tokenizing URL $data_resource_no_trailing_slash_no_http --> \{ @url_tokens \} \n" if $debug_output;
 $num_of_tokens = @url_tokens;
 print "VALOR: Number of URL tokens: $num_of_tokens \n" if $debug_output;
 $num_of_cut_dirs = $num_of_tokens;
 #$num_of_cut_dirs -= 1; # remove hostname which is cut out by the -nH argument
 #$num_of_cut_dirs += 1; # add the `data' directory which sits between the archive URL and the `experiment/component/version/ part
-  
+
 # Get date/time for reporting and tagging old files, if needed.
 # ---------
 # requires `use DateTime;'
@@ -127,18 +140,18 @@ my @mon_text = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec); # $mon in lo
 $now_string = "$year-$mon_text[$mon]-$mday\_$hour:$min:$sec";
 
 # Build some needed filenames
-$inputs_path                = "$experiment/$component/$version/";
-$checksum_file              = "$experiment\_$component\_$version.md5";
-$checksum_file_w_local_path = "$local_path/$checksum_file";
-$checksum_file_url          = "$archive_url_no_trailing_slash/checksums/$checksum_file";
-$data_file_base_url         = "$archive_url_no_trailing_slash/data";
-$diff_file                  = "$experiment\_$component\_$version.diff";
-$diff_file_w_local_path     = "$local_path/$diff_file";
+$inputs_id                   = "$data_major_q\_$data_minor_q\_$data_revis_q";
+$checksum_file               = "$inputs_id.md5";
+$checksum_file_w_local_path  = "$local_base_dir/$checksum_file";
+$checksum_file_w_remote_path = "$data_resource_no_trailing_slash/checksums/$checksum_file";
+$diff_file                   = "$inputs_id.diff";
+$diff_file_w_local_path      = "$local_base_dir/$diff_file";
+$remote_data_base_dir        = "$data_resource_no_trailing_slash/data";
 
 #
 # Download checksum file
 #
-print BOLD, CYAN, "\nVALOR: Downloading checksum file: $checksum_file_url \n", RESET;
+print BOLD, CYAN, "\nVALOR: Downloading checksum file: $checksum_file_w_remote_path \n", RESET;
 # If a similarly named file exists locally, rename old version or remove
 if (-e $checksum_file_w_local_path)
 {
@@ -154,8 +167,16 @@ if (-e $checksum_file_w_local_path)
   die("VALOR: *** Failed to execute: $! *** \n") if ($? == -1);
 }
 # Now, do download...
-system("cd $local_path; wget --no-verbose $checksum_file_url");
-die("VALOR: *** Failed to retrieve $checksum_file_url *** \n") if(! -e $checksum_file_w_local_path);
+if($use_wget) {
+  system("cd $local_base_dir; wget --no-verbose $checksum_file_w_remote_path");
+}
+elsif($use_scp) {
+  system("cd $local_base_dir; scp $checksum_file_w_remote_path .");
+}
+else {
+  die("VALOR: *** Can't use `wget' nor `scp' \n");
+}
+die("VALOR: *** Failed to retrieve $checksum_file_w_remote_path *** \n") if(! -e $checksum_file_w_local_path);
 
 #
 # Checking checksums and generating diff file
@@ -176,7 +197,7 @@ if (-e $diff_file_w_local_path)
   die("VALOR: *** Failed to execute: $! *** \n") if ($? == -1);
 }
 # Now, do generate the diff file...
-system("cd $local_path; md5sum -c $checksum_file >> $diff_file 2>&1");
+system("cd $local_base_dir; md5sum -c $checksum_file >> $diff_file 2>&1");
 die("VALOR: *** Failed to generate the diff file $diff_file_w_local_path *** \n") if(! -e $diff_file_w_local_path);
 
 #
@@ -191,25 +212,29 @@ close DIFF_FILE;
 foreach(@diff_entries) {
   $current_diff = $_;
   print "VALOR: Current entry in diff file is shown between brackets: [$current_diff] \n" if $debug_output;
-  
+
   # Found a remote file that doesn't exist locally? Fetch it now!
   # -------------------------------------------------------------
-  if($current_diff =~ m/No such file or directory/) {
-    # In this case the filename (incl. path) appears within single quotes.  
-    $current_diff =~ m/\'(.*)\'/;
+  if($current_diff =~ m/(.*)\: FAILED open or read/) {
     $current_file = $1;
-    print BOLD, BRIGHT_RED, "VALOR: Remote file $current_file does not exist locally. \n", RESET;    
-    print BOLD, CYAN, "VALOR: Downloading new file $current_file... \n", RESET;    
-    system("cd $local_path; wget --no-verbose --force-directories -nH --cut-dirs=$num_of_cut_dirs $data_file_base_url/$current_file");
+    print BOLD, BRIGHT_RED, "VALOR: Remote file $current_file does not exist locally. \n", RESET;
+    print BOLD, CYAN, "VALOR: Downloading new file $current_file... \n", RESET;
+    if($use_wget) {
+      system("cd $local_base_dir; wget --no-verbose --force-directories -nH --cut-dirs=$num_of_cut_dirs $remote_data_base_dir/$current_file");
+    }
+    elsif($use_scp) {
+      $local_path = $local_base_dir . "/" . dirname($current_file);
+      print BOLD, CYAN, "VALOR: Creating directory [$local_path] \n", RESET;
+      mkpath ($local_path, {verbose => 1, mode=>0777});
+      system("cd $local_path; scp $remote_data_base_dir/$current_file .");
+    }
   }
 
   # Remote file was modified! Update local file.
   # -------------------------------------------------------------
-  if($current_diff =~ m/\: FAILED/) {
-    # In this case the filename (incl. path) appears before the `: FAILED' string
-    $current_diff =~ m/(.*)\: FAILED$/;
-    $current_file = $1;    
-    $current_file_w_local_path = "$local_path/$current_file";
+  elsif($current_diff =~ m/(.*)\: FAILED$/) {
+    $current_file = $1;
+    $current_file_w_local_path = "$local_base_dir/$current_file";
     print BOLD, BRIGHT_RED, "VALOR: File $current_file was modified! \n", RESET;
     if($rm_obsolete == 1) {
       print "VALOR: Removing obsolete version of $current_file! \n" if $debug_output;
@@ -219,25 +244,23 @@ foreach(@diff_entries) {
       my $renamed_current_file_w_local_path = "$current_file_w_local_path~$now_string";
       system("mv $current_file_w_local_path $renamed_current_file_w_local_path");
     }
-    print BOLD, CYAN, "VALOR: Downloading updated file $current_file... \n", RESET;        
-    system("cd $local_path; wget --no-verbose --force-directories -nH --cut-dirs=$num_of_cut_dirs $data_file_base_url/$current_file");
+    print BOLD, CYAN, "VALOR: Downloading updated file $current_file... \n", RESET;
+    if($use_wget) {
+      system("cd $local_base_dir; wget --no-verbose --force-directories -nH --cut-dirs=$num_of_cut_dirs $remote_data_base_dir/$current_file");
+    }
+    elsif($use_scp) {
+      $local_path = $local_base_dir . "/" . dirname($current_file);
+      system("cd $local_path; scp $remote_data_base_dir/$current_file .");
+    }
   }
 
   # Current file is up to date
   # -------------------------------------------------------------
-  if($current_diff =~ m/\: OK/) {
-    # In this case the filename (incl. path) appears before the `: OK' string
-    $current_diff =~ m/(.*)\: OK$/;
-    $current_file = $1;    
-    print BOLD, GREEN, "VALOR: File $current_file is up to date. \n", RESET;    
+  elsif($current_diff =~ m/(.*)\: OK/) {
+    $current_file = $1;
+    print BOLD, GREEN, "VALOR: File $current_file is up to date. \n", RESET;
   }
-  
-  # Diff summary line: Ignore  
-  # -------------------------------------------------------------
-  if($current_diff =~ m/md5sum: WARNING/) {
-    print "VALOR: Diff summary line - Ignoring... \n" if $debug_output;
-  }
-  
+
 } # loop over @diff_entries
 
 
