@@ -126,6 +126,9 @@ public:
   
   // Add information on which systematic universes to read in if they're coming from the DST.
   // Must be called *before* Read() since these are event-by-event
+  // If the list is unsorted, can pass a vector of IDs (for instance when writing response functions)
+  // Can also just loop from first to last
+  void SetUniversesToRead(const std::vector<unsigned int> &ids);
   void SetUniverseRangeToRead(size_t first, size_t last);
   void SetUniverseParameterToRead(const std::string & param_name);
   void ResetUniversesToRead();
@@ -321,6 +324,8 @@ private:
   std::vector<std::string> fUniverseParametersToSave;
   size_t fFirstUniverseToSave;
   size_t fLastUniverseToSave;
+  std::vector<unsigned int> fUniversesToRead;
+  bool fUniversesAsList;
   // and the actual variations
   // param name, mode(nmodes)->universe variations(reco,true,universe)
   std::map<std::string,std::vector<VALORArrayF> > fUniverseVariations;
