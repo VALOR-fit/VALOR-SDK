@@ -193,6 +193,7 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
   
   if (fHypothesis == kHypOscSterileEff) {
     fParams[kPhypMixingMuMu] = 0;
+    fParams[kPhypMixingEE  ] = 0;
     fParams[kPhypMixingMuE ] = 0;
     fParams[kPhypDm41sq    ] = 0;
   }
