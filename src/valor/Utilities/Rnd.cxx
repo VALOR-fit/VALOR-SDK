@@ -73,11 +73,11 @@ void Rnd::SetSeeds(
     fclose(devrandom);
   }
     
-  fSeedToyMCstat = ( toymcstat ? toymcstat : randseeds[0] ) + fSeedFitter;
-  fSeedToyMCsyst = ( toymcsyst ? toymcsyst : randseeds[1] ) + fSeedFitter;
-  fSeedToyMCosc  = ( toymcosc  ? toymcosc  : randseeds[2] ) + fSeedFitter;
-  fSeedFitter    = ( fitter    ? fitter    : randseeds[3] ) + fSeedFitter;
-  fSeedOther     = ( other     ? other     : randseeds[4] ) + fSeedFitter;
+  fSeedToyMCstat = ( toymcstat ? toymcstat : randseeds[0] ) + fSeedOffset;
+  fSeedToyMCsyst = ( toymcsyst ? toymcsyst : randseeds[1] ) + fSeedOffset;
+  fSeedToyMCosc  = ( toymcosc  ? toymcosc  : randseeds[2] ) + fSeedOffset;
+  fSeedFitter    = ( fitter    ? fitter    : randseeds[3] ) + fSeedOffset;
+  fSeedOther     = ( other     ? other     : randseeds[4] ) + fSeedOffset;
 #endif
 
   LOG("Rnd", pDEBUG)
