@@ -3383,14 +3383,16 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 
     }//update_mct_sb?
 
-
-
     // If we need to apply universes, do so now (only to OB)
     if (fApplyUniverseVariations) {
+      size_t universe_offset = 0;
       for (const auto & variation_name_and_id : fSystUniverseToApply) {
         const std::string & name = variation_name_and_id.first;
         const int & universe_id  = variation_name_and_id.second;
-        size_t universe_offset = universe_id - fFirstUniverseToSave;
+        if(!fUniversesAsList)
+          universe_offset = universe_id - fFirstUniverseToSave;
+        else
+          universe_offset++;
         for (int ireco = 0 ; ireco < n_reco_bins_ob ; ireco++) {
           for (int itrue = 0 ; itrue < n_true_bins_sb ; itrue++) {
             float & wght = fUniverseVariations[name][imode].GetEntryRef(ireco,itrue,universe_offset);
