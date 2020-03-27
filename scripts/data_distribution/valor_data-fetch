@@ -38,7 +38,7 @@
 #    Assume that data are accessible via http from https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/
 #    To access the `2020a' revision of the SBND geometry, one should type:
 #
-#    % valor_data-fetch --data-major sbn_simulation_inpuys --data-minor sbnd_geometry --data-revis 2020a
+#    % valor_data-fetch --data-major sbn_simulation_inputs --data-minor sbnd_geometry --data-revis 2020a
 #                       --data-resource  https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/
 #
 # 2) Assume that you want to obtain the same data product listed above, but the data are not accessible via http.
@@ -46,7 +46,7 @@
 #    The previous example becomes
 #
 #    % valor_data-fetch --data-major sbn_simulation_inpuys --data-minor sbnd_geometry --data-revis 2020a
-#                       --data-resource  costas@gateway.ph.liv.ac.uk:/hepstore/neutrino/data/
+#                       --data-resource  costas@gateway.ph.liv.ac.uk:/hepstore/neutrino1/data_archive/
 #
 #    Obviously, use your own username.
 #    For the above example to work, you will be asked to type in your SSH key passphrase.

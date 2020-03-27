@@ -1,0 +1,100 @@
+#!/usr/bin/perl
+#
+#-------------------------------------------------------------------------------------------------------------------------------
+# Fetch all VALOR data products associated with the input data product set.
+#
+# Inputs:
+#     --data-resource : Remote data archive (see valor_data-fetch for details)
+#     --data-set      : An input named set of data products (see DATA_PRODUCTS.txt)
+#    [--local-path]   : Local path for downloading the VALOR inputs to. [Default: .]
+#    [--rm-obsolete]  : Obsolete files are automatically renamed (appending "~date_time" in the filename) and they are
+#                       not overwritten. Add this option if you prefer to have them removed.
+#
+#-------------------------------------------------------------------------------------------------------------------------------
+
+use Term::ANSIColor;
+use Term::ANSIColor qw(:constants);
+
+$iarg=0;
+foreach (@ARGV) {
+  if   ($_ eq '--data-resource') { $data_resource  = $ARGV[$iarg+1]; }
+  elsif($_ eq '--data-set'     ) { $data_set       = $ARGV[$iarg+1]; }
+  elsif($_ eq '--local-path'   ) { $local_base_dir = $ARGV[$iarg+1]; }
+  elsif($_ eq '--rm-obsolete'  ) { $rm_obsolete    = 1; }
+  $iarg++;
+}
+die("VALOR: Please provide an input for --data-resource") unless defined $data_resource;
+die("VALOR: Please provide an input for --data-set"     ) unless defined $data_set;
+
+$local_base_dir  = "." unless defined $local_base_dir;
+$rm_obsolete     = 0   unless defined $rm_obsolete;
+
+$valor_sdk = $ENV{'VALOR_FMWK'};
+$data_scripts = "$valor_sdk/scripts/data_distribution/";
+
+#
+# Now, read the list of curated data products
+#
+
+$data_products_file = "$data_scripts/DATA_PRODUCTS.dat";
+
+print "\n\n";
+print BOLD "VALOR: Reading list of data products from: $data_products_file \n", RESET;
+print BOLD "VALOR: Looking for all the data products belonging to: ";
+print BOLD, GREEN, "$data_set \n", RESET;
+
+open DATA_PRODUCTS_FILE, $data_products_file or die();
+chomp(@data_products_file_entries = <DATA_PRODUCTS_FILE>);
+close DATA_PRODUCTS_FILE;
+
+# Keep matched dataset qualifiers here
+my @matched_data_product_major_q;
+my @matched_data_product_minor_q;
+my @matched_data_product_revis_q;
+
+# Loop over datasets and get matches
+foreach my $current_entry (@data_products_file_entries) {
+  if($current_entry =~ m/^#/) {next;}
+  # print "Current entry: $current_entry \n";
+  @current_entry_tokens = split('\|', $current_entry);
+  # print "Current entry tokens: @tokens \n";
+  $n_current_entry_tokens = scalar(@current_entry_tokens);
+  if($n_current_entry_tokens==0) {next;}
+  $major_q   = $current_entry_tokens[0]; $major_q =~ s/^\s+|\s+$//g;
+  $minor_q   = $current_entry_tokens[1]; $minor_q =~ s/^\s+|\s+$//g;
+  $revis_q   = $current_entry_tokens[2]; $revis_q =~ s/^\s+|\s+$//g;
+  $data_sets = $current_entry_tokens[5];
+  $matched  = 0;
+  @list_of_data_sets = split(',', $data_sets);
+  foreach my $current_data_set (@list_of_data_sets) {
+    $current_data_set =~ s/^\s+|\s+$//g;
+    # print "Current set: $current_set \n";
+    if($current_data_set eq $data_set) { $match = 1; }
+  }
+  print "|---------- ";
+  if($match) {
+    print GREEN "$major_q/$minor_q/$revis_q", RESET;
+    print " [matched]\n";
+    push(@matched_data_product_major_q, $major_q);
+    push(@matched_data_product_minor_q, $minor_q);
+    push(@matched_data_product_revis_q, $revis_q);
+  } else {
+    print RED "$major_q/$minor_q/$revis_q\n", RESET;
+  }
+}
+
+print "\n\n";
+
+# Fetch matched datasets
+$n_matched = scalar(@matched_data_product_major_q);
+for($i=0; $i<$n_matched; $i++) {
+  $dmaj = "--data-major $matched_data_product_major_q[$i]";
+  $dmin = "--data-minor $matched_data_product_minor_q[$i]";
+  $drev = "--data-revis $matched_data_product_revis_q[$i]";
+  $dres = "--data-resource $data_resource";
+  $locp = "--local-path $local_base_dir";
+  $args = " $dmaj $dmin $drev $dres $locp";
+  if($rm_obsolete) { $args = "$args --rm-obsolete"; }
+  $fetch = "$data_scripts/valor_data-fetch $args";
+  system("$fetch");
+}

@@ -1,0 +1,7 @@
+# List of data resources 
+# -----------|---------|---------------------------------------------------------------------
+# ID         | Access  | Resource URL / remote path
+# -----------|---------|---------------------------------------------------------------------
+ LIV1        | scp     | <username>@gateway.ph.liv.ac.uk:/hepstore/neutrino1/data_archive/
+ LIV_test_ca | http    | http://hep.ph.liv.ac.uk/~costasa/outbox/data_archive/
+
