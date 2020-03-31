@@ -9,6 +9,7 @@
 #    [--local-path]   : Local path for downloading the VALOR inputs to. [Default: .]
 #    [--rm-obsolete]  : Obsolete files are automatically renamed (appending "~date_time" in the filename) and they are
 #                       not overwritten. Add this option if you prefer to have them removed.
+#    [--debug]        : Add this option to get additional print-out for debugging / diagnosing problems.
 #
 #-------------------------------------------------------------------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ foreach (@ARGV) {
   elsif($_ eq '--data-set'     ) { $data_set       = $ARGV[$iarg+1]; }
   elsif($_ eq '--local-path'   ) { $local_base_dir = $ARGV[$iarg+1]; }
   elsif($_ eq '--rm-obsolete'  ) { $rm_obsolete    = 1; }
+  elsif($_ eq '--debug'        ) { $debug_output   = 1; }
   $iarg++;
 }
 die("VALOR: Please provide an input for --data-resource") unless defined $data_resource;
@@ -28,6 +30,7 @@ die("VALOR: Please provide an input for --data-set"     ) unless defined $data_s
 
 $local_base_dir  = "." unless defined $local_base_dir;
 $rm_obsolete     = 0   unless defined $rm_obsolete;
+$debug_output    = 0   unless defined $debug_output;
 
 $valor_sdk = $ENV{'VALOR_FMWK'};
 $data_scripts = "$valor_sdk/scripts/data_distribution/";
@@ -54,25 +57,33 @@ my @matched_data_product_revis_q;
 
 # Loop over datasets and get matches
 foreach my $current_entry (@data_products_file_entries) {
-  if($current_entry =~ m/^#/) {next;}
-  # print "Current entry: $current_entry \n";
+  if($current_entry =~ m/^#/) {next;} # skip comment lines
+  if($current_entry =~ m/^ *$/) {next;} # skip blank lines
+  print "VALOR: Current data product file entry: $current_entry \n" if $debug_output;
   @current_entry_tokens = split('\|', $current_entry);
-  # print "Current entry tokens: @tokens \n";
+  print "VALOR: Current data product file entry tokens: @current_entry_tokens \n" if $debug_output;
   $n_current_entry_tokens = scalar(@current_entry_tokens);
   if($n_current_entry_tokens==0) {next;}
   $major_q   = $current_entry_tokens[0]; $major_q =~ s/^\s+|\s+$//g;
   $minor_q   = $current_entry_tokens[1]; $minor_q =~ s/^\s+|\s+$//g;
   $revis_q   = $current_entry_tokens[2]; $revis_q =~ s/^\s+|\s+$//g;
   $data_sets = $current_entry_tokens[5];
+  print "VALOR: Datasets associated with current data product: $data_sets \n" if $debug_output;
   $matched  = 0;
   @list_of_data_sets = split(',', $data_sets);
   foreach my $current_data_set (@list_of_data_sets) {
     $current_data_set =~ s/^\s+|\s+$//g;
-    # print "Current set: $current_set \n";
-    if($current_data_set eq $data_set) { $match = 1; }
-  }
+    print "VALOR: Current data set: $current_data_set \n" if $debug_output;
+    print "VALOR: Testing whether it matches with: $data_set \n" if $debug_output;
+    if($current_data_set eq $data_set) { 
+       $matched = 1; 
+       print "VALOR: ** Match ** \n" if $debug_output;
+    } else {
+       print "VALOR: ** No match ** \n" if $debug_output;
+    }
+  }#loop over datasets associated with the current data product
   print "|---------- ";
-  if($match) {
+  if($matched) {
     print GREEN "$major_q/$minor_q/$revis_q", RESET;
     print " [matched]\n";
     push(@matched_data_product_major_q, $major_q);
@@ -94,7 +105,8 @@ for($i=0; $i<$n_matched; $i++) {
   $dres = "--data-resource $data_resource";
   $locp = "--local-path $local_base_dir";
   $args = " $dmaj $dmin $drev $dres $locp";
-  if($rm_obsolete) { $args = "$args --rm-obsolete"; }
+  if ( $rm_obsolete  ) { $args = "$args --rm-obsolete"; }
+  if ( $debug_output ) { $args = "$args --debug";       }
   $fetch = "$data_scripts/valor_data-fetch $args";
   system("$fetch");
 }

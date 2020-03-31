@@ -178,9 +178,32 @@ else {
 die("VALOR: *** Failed to retrieve $checksum_file_w_remote_path *** \n") if(! -e $checksum_file_w_local_path);
 
 #
-# Checking checksums and generating diff file
+# Generating diff file
 #
 print BOLD, YELLOW,"\nVALOR: Checking current files against checksum and generating diff file... \n", RESET;
+
+# If the original data product was an emty directory, the md5 checksum file will have a single line that looks like
+# d41d8cd98f00b204e9800998ecf8427e  -
+# and generating a diff file will hang
+open CHECKSUM_FILE, $checksum_file_w_local_path or die();
+chomp(@checksum_file_entries = <CHECKSUM_FILE>);
+close CHECKSUM_FILE;
+$ignore_checksum = 0;
+$num_of_checksum_file_entries = @checksum_file_entries;
+print "VALOR: Number of checksum file entries: $num_of_checksum_file_entries \n" if $debug_output;
+if($num_of_checksum_file_entries == 1)
+{
+  print "VALOR: Checksum file entry: `$checksum_file_entries[0]' \n" if $debug_output;
+  if($checksum_file_entries[0] =~ m/^\w+ *-*$/) {
+     print "VALOR: Checksum file will be ignored \n" if $debug_output;
+     $ignore_checksum = 1;
+  }
+}
+if($ignore_checksum) {
+  print BOLD, YELLOW, "\nVALOR: Remote data product is an empty directory - Nothing to do \n", RESET;
+  exit;
+} 
+# Now process a valid checksum file
 # If a similarly named file exists locally, rename old version
 if (-e $diff_file_w_local_path)
 {
@@ -196,13 +219,14 @@ if (-e $diff_file_w_local_path)
   die("VALOR: *** Failed to execute: $! *** \n") if ($? == -1);
 }
 # Now, do generate the diff file...
+print "VALOR: Running md5sum to generate $diff_file \n" if $debug_output;
 system("cd $local_base_dir; md5sum -c $checksum_file >> $diff_file 2>&1");
 die("VALOR: *** Failed to generate the diff file $diff_file_w_local_path *** \n") if(! -e $diff_file_w_local_path);
+print "VALOR: Done generating $diff_file \n" if $debug_output;
 
 #
 # Now, read the diff file and start updating the locally stored inputs
 #
-
 print BOLD, YELLOW, "\nVALOR: Reading in diff file: $diff_file \n", RESET;
 open DIFF_FILE, $diff_file_w_local_path or die();
 chomp(@diff_entries = <DIFF_FILE>);
@@ -261,6 +285,5 @@ foreach(@diff_entries) {
   }
 
 } # loop over @diff_entries
-
 
 print BOLD, YELLOW, "\n\nVALOR: Done fetching files \n\n", RESET;
