@@ -1,0 +1,33 @@
+# Data products
+# -----------------------|---------------|-----------------|-------|--------|-------------------------------------------------------------------------------------------
+# Major                  | Minor         | Revision        |Curator|Resource| Sets (comma separated list of all relevant sets)
+# -----------------------|---------------|-----------------|-------|--------|-------------------------------------------------------------------------------------------
+
+  sbn_simulation_inputs  | sbnd_geometry | 2020a           | RJ    | LIV1   |
+  sbn_simulation_inputs  | sbnd_flux     | 2020a           | RJ    | LIV1   |
+
+  sbn_numu_disappearance | dsts          | 2020a_v1        | RJ    | LIV1   | sbn_numu_disapp_2020a_01_11_a
+  sbn_numu_disappearance | prior_errors  | 2020a_v1        | RJ    | LIV1   | sbn_numu_disapp_2020a_01_11_a
+  sbn_numu_disappearance | templates     | 2020a_v1        | RJ    | LIV1   | sbn_numu_disapp_2020a_01_11_a
+  sbn_numu_disappearance | responses     | 2020a_v1        | RJ    | LIV1   | sbn_numu_disapp_2020a_01_11_a
+
+  sbn_numu_disappearance | dsts          | 2020b_v1        | RJ    | LIV1   | sbn_numu_disapp_2020b_01_21_a
+  sbn_numu_disappearance | prior_errors  | 2020b_v1        | RJ    | LIV1   | sbn_numu_disapp_2020b_01_21_a
+
+  sbn_numu_disappearance | dsts          | 2019a_v1        | RJ    | LIV1   | sbn_numu_disapp_2019a_01_11_a
+  sbn_numu_disappearance | prior_errors  | 2019a_v1        | RJ    | LIV1   | sbn_numu_disapp_2019a_01_11_a
+
+  sbn_numu_disappearance | dsts          | 2019b_v1        | RJ    | LIV1   | sbn_numu_disapp_2019b_01_11_a
+  sbn_numu_disappearance | prior_errors  | 2019b_v1        | RJ    | LIV1   | sbn_numu_disapp_2019b_01_11_a
+
+  sbn_numu_disappearance | mock_data     | Sep2019study_v1 | RJ    | LIV1   |
+
+  sbn_nue_appearance     | dsts          | 2020a           | TH    | LIV1   |
+  sbn_nue_appearance     | prior_errors  | 2020a           | TH    | LIV1   |
+  sbn_nue_appearance     | responses     | 2020a           | TH    | LIV1   |
+
+  sbn_nue_disappearance  | dsts          | 2020a           | GDSP  | LIV1   |
+  sbn_nue_disappearance  | prior_errors  | 2020a           | GDSP  | LIV1   |
+  sbn_nue_disappearance  | responses     | 2020a           | GDSP  | LIV1   |
+
+

@@ -16,7 +16,7 @@
 # 1) Generate checksum for dune/ndfit/2017a data files and store in checksums/dune_ndfit_2017a.md5 (see above):
 #    % valor_data-generate_checksums --data-major dune --data-minor ndfit --data-revis 2017a --archive-path /some/path/
 #
-# C. Andreopoulos <costas.andreopoulos@stfc.ac.uk>
+# Costas Andreopoulos <constantinos.andreopoulos@cern.ch>
 # University of Liverpool & STFC/RAL
 #-------------------------------------------------------------------------------------------------------------------------------
 #

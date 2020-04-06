@@ -1,6 +1,32 @@
-The VALOR data archive is organised as follows:
+Introduction
+----------------------------------------------
+
+This package (living in $VALOR_FMWK/scripts/data_distribution/) provides a set of scripts and 
+configuration files, for the efficient distribution of VALOR analysis data files.
+
+An arbitrary number of VALOR data resources can exist concurrently, each serving different data products.
+The current list of data archives can be found in [THIS_PACKAGE]/config/resources/
+Data from each resource are accessed either via wget (http) or scp.
+
+Each data archive can serve a number of data products. The full list of currated VALOR data products,
+their locations, and other related information can be found in [THIS_PACKAGE]/config/data_resources/
+
+Upon preparing (or updating) a data product, the data curator needs to run the `valor_data-generate_checksums'
+script to generate MD5 checksums for all files in the data products. Using the generated checksums, remote 
+users can fetch only new files and the files that have been updated since the last fetch.
+
+To fetch a single data product, a remote user needs to run the `valor_data-fetch' script.
+
+To fetch a labelled set of related data products, a remote user needs to run the `valor_data-fetch_set' script.
+
+See the header of each script for detailed usage instructions.
 
 
+Directory structure of each VALOR data archive
+----------------------------------------------
+
+                              |------ data product qualifiers -------|
+                              |                                      |
 <archive base>                 <major>       <minor>       <revision>
                                   |             |              |
                                   |             |              |
@@ -10,7 +36,7 @@ The VALOR data archive is organised as follows:
     |
     |--------- data/
                  |-------------- t2k/
-                 |                |---------- toys_marginalization
+                 |                |---------- toys
                  |                |             |
                  |                |             |----------- 2017a/
                  |                |                            |------- ... more directories and data files                    
