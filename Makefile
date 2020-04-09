@@ -38,6 +38,7 @@ copy-scripts-to-bin: | make-bin-lib-dir FORCE
 	cp ${VALOR_FMWK}/make/valor_fmwk-config ${VALOR_FMWK}/bin
 	cp ${VALOR_FMWK}/root/valor ${VALOR_FMWK}/bin
 	cp ${VALOR_FMWK}/root/pyvalor ${VALOR_FMWK}/bin
+	cp ${VALOR_FMWK}/scripts/data_distribution/valor_data-* ${VALOR_FMWK}/bin
 	[ ! -d "${VALOR_FMWK}/external/color/build/" ] || cp "${VALOR_FMWK}/external/color/build/"* "${VALOR_FMWK}/bin"
 
 
