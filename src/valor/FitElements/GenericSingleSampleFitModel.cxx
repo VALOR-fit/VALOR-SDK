@@ -144,6 +144,12 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   bool skip_spline_read   = ts_opt.Contains("nosplines");
   bool skip_mc_read       = ts_opt.Contains("nomc");
   bool no_spline_baseline = ts_opt.Contains("fixedbaseline");
+  LOG("GenericSingleSampleFitModel",pDEBUG) << " Read options are: " << ts_opt << "\n"
+    << " Given these, this is how the following booleans are set: \n"
+    << " Force  use DST:    " << force_use_dst << "\n"
+    << " Skip spline read:  " << skip_spline_read << "\n"
+    << " Skip MC read:      " << skip_mc_read << "\n"
+    << " No spline basline: " << no_spline_baseline << "\n";
 #ifdef SPLINE_WEIGHTS_ARE_ONE
   skip_spline_read = true;
 #endif
@@ -1304,14 +1310,19 @@ void GenericSingleSampleFitModel::Book(void)
 
     }
 
-    // If we need to save universe variations, make arrays for that
-    size_t n_universes = fLastUniverseToSave-fFirstUniverseToSave+1;
+    // If we need to save universe variation and weights, make arrays for that
+    size_t n_universes = 0;
+    if(!fUniversesAsList)
+      n_universes = fLastUniverseToSave - fFirstUniverseToSave + 1;
+    else
+      n_universes = fUniversesToRead.size();
 
     for (const std::string & param : fUniverseParametersToSave) {
       std::vector<VALORArrayF> & vec = fUniverseVariations[param];
       vec.resize(imode); // dumb but easier than making it reserve earlier
-      assert(fLastUniverseToSave>=fFirstUniverseToSave);
-      auto it = vec.begin();
+      if(!fUniversesAsList) 
+        assert(fLastUniverseToSave>=fFirstUniverseToSave);
+      auto it  = vec.begin();
       vec.insert(it+imode,VALORArrayF(n_reco_bins_ob,n_true_bins,n_universes));
       vec[imode].SetDimensionName(0,"reco");
       vec[imode].SetDimensionName(1,"true");
@@ -4921,7 +4932,12 @@ void GenericSingleSampleFitModel::SetSystematicVariationIDToApply(const std::str
     assert(id >= fFirstUniverseToSave && id <=fLastUniverseToSave);
   else{
     std::vector<unsigned int>::iterator it = std::find(fUniversesToRead.begin(), fUniversesToRead.end(), id);
-    assert(it != fUniversesToRead.end());
+    if(it !=  fUniversesToRead.end())
+      LOG("GenericSingleSampleFitModel",pINFO) << " Found the chosen universe id " << id << " in the list of universes to read ";
+    else{
+      LOG("GenericSingleSampleFitModel",pERROR) << " Couldn't find the chosen universe id " << id << " in the list of universes to read ";
+      util::Die(-1);
+    }
   }
   fSystUniverseToApply[param_name] = id;
   fApplyUniverseVariations = true;
