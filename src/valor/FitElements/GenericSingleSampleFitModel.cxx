@@ -3916,21 +3916,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     templtypeSb & templFinSb = *reinterpret_cast<templtypeSb *>(&(fMCTFinSb[imode]->GetEntryRef(0,0)));
 
     for(int itrue = 0; itrue < n_true_bins_sb; itrue++) {
-      //get the true energy to calculate osc prob 
-
-      double sindm2 = 1;
-      //std::cout << fSinDM2WeightVec.at(imode).at(itrue).size() << std::endl;
-      if(fSinDM2WeightVec.at(imode).at(itrue).size() > 0){
-        sindm2 = 0;
-        for(auto const& LOverE: fSinDM2WeightVec.at(imode).at(itrue)){
-          sindm2 += OscillationWeight(m,LOverE);
-
-        }
-        sindm2 /= fSinDM2WeightVec.at(imode).at(itrue).size();
-        //		std::cout << "sindm2"<< sindm2 << std::endl;
-      }
-
-
+      //get the true energy to calculate osc prob
       double Etrue = true_sb->BinCentre(itrue,conv::kvEtrue);
 
       if (hypid == kHypOsc3F) {
@@ -3953,6 +3939,17 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       }
 
       else if (hypid == kHypOscSterileEff) {
+        double sindm2 = 1;
+        //std::cout << fSinDM2WeightVec.at(imode).at(itrue).size() << std::endl;
+        if(fSinDM2WeightVec.at(imode).at(itrue).size() > 0){
+          sindm2 = 0;
+          for(auto const& LOverE: fSinDM2WeightVec.at(imode).at(itrue)){
+            sindm2 += OscillationWeight(m,LOverE);
+
+          }
+          sindm2 /= fSinDM2WeightVec.at(imode).at(itrue).size();
+          //		std::cout << "sindm2"<< sindm2 << std::endl;
+        }
         p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu, sinsq2thmue, sinsq2thmumu, sindm2);
         p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    ,sinsq2thmue, sinsq2thmumu, sindm2);
         p_numu_nutau      = 0.;
