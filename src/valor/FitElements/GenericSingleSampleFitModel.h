@@ -123,16 +123,22 @@ public:
 
   // Calculate the OB manually from the content of the simple bins. Can be used to verify the spectra are the same for SB/OB
   void UpdateObservableBinningFromSimple (Option_t * opt = 0);
-
-    // Add information on which systematic universes to read in if they're coming from the DST.
-    // Must be called *before* Read() since these are event-by-event
-    void SetUniverseRangeToRead(size_t first, size_t last);
-    void SetUniverseParameterToRead(const std::string & param_name);
-    void ResetUniversesToRead();
-
-    void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
-    void ResetSystematicVariationIDs();
-
+  
+  // Add information on which systematic universes to read in if they're coming from the DST.
+  // Must be called *before* Read() since these are event-by-event
+  // If the list is unsorted, can pass a vector of IDs (for instance when writing response functions)
+  // Can also just loop from first to last
+  void SetUniversesToRead(const std::vector<unsigned int> &ids);
+  void SetUniverseRangeToRead(size_t first, size_t last);
+  void SetUniverseParameterToRead(const std::string & param_name);
+  void ResetUniversesToRead();
+  
+  void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
+  void ResetSystematicVariationIDs();
+  
+  // If we've made baseline splines, we should allow the user to cache them
+  void WriteBaselineSplinesToFile(TFile * f) const;
+  
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
@@ -151,7 +157,8 @@ private:
   void ApplySystematics                  (Option_t * opt = 0);
   void ApplyPhysics                      (Option_t * opt = 0);
   void ApplyOscProb                      (Option_t * opt = 0);
-  void UpdatePDFs                        (Option_t * opt = 0);
+	void ApplyOscProbTheDomWay             (Option_t * opt = 0);
+	void UpdatePDFs                        (Option_t * opt = 0);
   void ApplyPostOscLateralSystematics    (VALORArray * pdf, bool simple_binning = false);
   void ApplyLateralSystematic            (VALORArray * pdf, conv::PhysParamId_t p, bool simple_binning = false);
   void ReadExtTuningHistsAll             (TXMLEngine* xmleng, XMLNodePointer_t top_node);
@@ -181,6 +188,10 @@ private:
   // and the applied kine var, so pre-compute them instead of calculating them for every event and mode.
   void PreComputeLateralSystVectors(bool use_simple_binning);
   
+	double OscillationWeight(conv::ReacMode_t m, double baseline, double Etrue);
+	 
+	double OscillationWeight(const conv::ReacMode_t& m,const double& lOverE) const;
+
   // Keep track of the parameters we need to loop over
   // Normalisation, spline and post-oscillation lateral parameters divided
   std::vector<conv::PhysParamId_t> fNormParams;
@@ -244,8 +255,8 @@ private:
   std::vector<VALORArray *>fMCTTunOb ; 
   std::vector<VALORArray *>fMCTSysOb ; 
   std::vector<VALORArray *>fMCTFinOb ; 
-  std::vector<VALORArray *>fMCStatOb ; // MC statistics
-  
+  std::vector<VALORArray *>fMCStatOb ; // MC statistics 
+
   // We'll keep our response function pointers in a VALORArray of longs.
   // If we move to C++ 11, should use intptr_t instead.
   // This has an extra dimension above those  in the arrays above - parameter
@@ -260,6 +271,11 @@ private:
   std::vector<VALORArray *> fMCTSysSb ; 
   std::vector<VALORArray *> fMCTFinSb ; 
   std::vector<VALORArray *> fMCStatSb ; // MC statistics
+
+	std::vector<VALORArray *> fSinDM2Weight;
+	std::vector<VALORArray *> fSinDM2WeightN;
+	std::vector<std::vector<std::vector<double> > > fSinDM2WeightVec;
+
 
   // MC PDFs
   // Each PDF is (currently always) a 2-D Nev = Nev(Enu_reco, y_reco) array that can be directly compared with data.
@@ -291,7 +307,15 @@ private:
   // Pointer to our systematics
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;
-
+  
+  // Splines to handle implementation of variable baseline if necessary
+  bool fGetBaselineFromSplines;
+  bool fBaselineSplinesFilled;
+  // This vector will only include initial flavour, not reaction type
+  std::vector<VALORArrayP*> fBaselineSplines;
+  // and how many places we evaluate them in. Should become configurable later
+  int fNSplineEvalPoints;
+  
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices
   bool fApplyUniverseVariations;
@@ -300,6 +324,8 @@ private:
   std::vector<std::string> fUniverseParametersToSave;
   size_t fFirstUniverseToSave;
   size_t fLastUniverseToSave;
+  std::vector<unsigned int> fUniversesToRead;
+  bool fUniversesAsList;
   // and the actual variations
   // param name, mode(nmodes)->universe variations(reco,true,universe)
   std::map<std::string,std::vector<VALORArrayF> > fUniverseVariations;
