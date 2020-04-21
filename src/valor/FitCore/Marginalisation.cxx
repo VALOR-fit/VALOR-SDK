@@ -11,6 +11,9 @@
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/ToyStream.h"
+#include "valor/FitCore/UtlOscillation.h"
+#include "valor/Conventions/PhysParamId.h"
+
 
 //#define VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
 
@@ -173,45 +176,54 @@ void Marginalisation::InitFit(const int param1Nbins, const int param1StartBin,
    }
 }
 
-FitResult* Marginalisation::Fit(FitDataABC* data, const int Ntoys, const int Nbatches,
-      const int firstBatch)
+FitResult* Marginalisation::Fit(FitDataABC* data, const int Ntoys, const int Nbatches, util::oscillation::PenaltyTerm penaltyset, const int firstBatch)
 {
-   if(this->_isFit2D)
-   {
-      const int Nx =  this->_chi2_2D->GetXaxis()->GetNbins();
-      const int Ny =  this->_chi2_2D->GetYaxis()->GetNbins();
-      // Get the likelihood and chi2 statistics for the entire grid
-      for(int i = _param1_start_bin; i < _param1_start_bin + Nx; ++i)
-      {
-         for(int j = _param2_start_bin; j < _param2_start_bin + Ny; ++j)
-         {
-            this->ComputeStatistics(i, j, data, Ntoys, Nbatches, firstBatch);
-            this->_likelihood_2D->SetBinContent(i + 1 - _param1_start_bin, j + 1 - _param2_start_bin, this->_likelihood);
-            this->_chi2_2D->SetBinContent(i + 1 - _param1_start_bin, j + 1 - _param2_start_bin, this->_chi2);
-         }
-      }
+    if(this->_isFit2D)
+    {
+        const int Nx =  this->_chi2_2D->GetXaxis()->GetNbins();
+        const int Ny =  this->_chi2_2D->GetYaxis()->GetNbins();
+        // Get the likelihood and chi2 statistics for the entire grid
+        for(int i = 0; i < Nx; ++i)
+        {
+            for(int j = 0; j < Ny; ++j)
+            {
+                this->ComputeStatistics(i, j, data, Ntoys, Nbatches, firstBatch);
+                this->_likelihood_2D->SetBinContent(i + 1  - _param1_start_bin, j + 1  - _param1_start_bin, this->_likelihood);
+                if (penaltyset.param_names != ""){
+                    this->CalcPenaltyTerm(this->_chi2_2D->GetXaxis()->GetBinCenter(i + 1-_param1_start_bin), penaltyset);
+                    this->_chi2_2D->SetBinContent(i + 1 - _param1_start_bin, j + 1 - _param1_start_bin, this->_chi2 + this->_penaltyterm);
+                }
+                else{
+                    this->_chi2_2D->SetBinContent(i + 1 - _param1_start_bin, j + 1 - _param2_start_bin, this->_chi2);
+                }
+            }
+        }
 
-      // Store the result of the fit
-      this->_fitResult = new FitResult(*this->_chi2_2D, *this->_likelihood_2D);
+        // Store the result of the fit
+        this->_fitResult = new FitResult(*this->_chi2_2D, *this->_likelihood_2D);
 
-      return this->_fitResult;
-   }
-   else
-   {
-      const int N =  this->_chi2_1D->GetXaxis()->GetNbins();
-      // Get the likelihood and chi2 statistics for the entire grid
-      for(int i = _param1_start_bin; i < _param1_start_bin + N; ++i)
-      {
-         this->ComputeStatistics(i, data, Ntoys, Nbatches, firstBatch);
-         this->_likelihood_1D->SetBinContent(i + 1 - _param1_start_bin, this->_likelihood);
-         this->_chi2_1D->SetBinContent(i + 1 - _param1_start_bin, this->_chi2);
-      }
+        return this->_fitResult;
+    }
+    else{
+        const int N =  this->_chi2_1D->GetXaxis()->GetNbins();
+        // Get the likelihood and chi2 statistics for the entire grid
+        for(int i = 0; i < N; ++i)
+        {
+            this->ComputeStatistics(i, data, Ntoys, Nbatches, firstBatch);
+            this->_likelihood_1D->SetBinContent(i + 1, this->_likelihood);
 
-      // Store the result of the fit
-      this->_fitResult = new FitResult(*this->_chi2_1D, *this->_likelihood_1D);
-
-      return this->_fitResult;
-   }
+            if (penaltyset.param_names != ""){
+                this->CalcPenaltyTerm(this->_chi2_1D->GetBinCenter(i + 1-_param1_start_bin), penaltyset);
+                this->_chi2_1D->SetBinContent(i + 1  - _param1_start_bin, this->_chi2 + this->_penaltyterm);
+            }
+            else{
+                this->_chi2_1D->SetBinContent(i + 1 - _param1_start_bin, this->_chi2);
+            }
+        }
+        // Store the result of the fit
+        this->_fitResult = new FitResult(*this->_chi2_1D, *this->_likelihood_1D);
+        return this->_fitResult;
+    }
 }
 
 FitResult* Marginalisation::Fit(const double initValue, FitDataABC* data,
@@ -387,6 +399,22 @@ void Marginalisation::CheckLocalMinimum(int& binX, int& binY,
    // Set the location of the minimum bin in the reference variables
    binX = binMinX;
    binY = binMinY;
+}
+
+void Marginalisation::CalcPenaltyTerm(const double par0,util::oscillation::PenaltyTerm penaltyset){
+    double fpenalty_mean0  = penaltyset.mean ;
+    double fpenalty_sigma0 = penaltyset.sigma;
+    std::string penalty_scheme = penaltyset.opt;
+    std::string parameter_scheme_name_p0 = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
+    conv::PhysParamId_t par0_id = util::NameRegistry::Instance()->PhysParamFromString(penaltyset.param_names);
+    //Convert parameter value to teh same scheme as penalty
+    double parval0 = util::ConvertOscParamToUsedScheme(par0_id, par0 , parameter_scheme_name_p0, penalty_scheme);
+    // if(this->fusepenalty0)
+    //that condition was made for case of several variables, that is not implmeted so far
+    double penalty0 = (parval0 - fpenalty_mean0)*(parval0 - fpenalty_mean0) /  ( fpenalty_sigma0 * fpenalty_sigma0);
+    //if(fusepenalty1) penalty1 = (parval1 - fpenalty_mean1)*(parval1 - fpenalty_mean1) /  ( fpenalty_sigma1 * fpenalty_sigma1);
+    this->_penaltyterm = penalty0; //+ penalty1;
+    //TODO:Add option for more than one penalty
 }
 } // valor
 

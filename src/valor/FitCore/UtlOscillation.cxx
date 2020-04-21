@@ -569,6 +569,161 @@ std::map<conv::PhysParamId_t,double> GetRandomizedOscParams2DCorrelated(std::pai
 
   return return_values;
 }
+
+
+//____________________________________________________________________________
+PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg,string penaltyparam)
+
+    {
+        // Read in the priors XML file
+        std::string prior_file_name = arg.GetString("prior-file");
+        std::string file_priors_full = util::CompleteConfigPath(prior_file_name);
+        // Check that the prior file exists, either in the config directory or the current directory
+        FileStat_t dummy;
+        if (gSystem->GetPathInfo(file_priors_full.c_str(), dummy))
+        {
+            file_priors_full = prior_file_name.c_str();
+            if (gSystem->GetPathInfo(file_priors_full.c_str(), dummy)) {
+                LOG("UtlOscillation", pERROR) << "Prior config file not found: " << prior_file_name;
+                exit(1);
+            }
+        }
+
+        // Parse the input XML priors file
+        TXMLEngine* xmleng = new TXMLEngine;
+        XMLDocPointer_t xmldoc = xmleng->ParseFile(file_priors_full.c_str());
+        if (xmldoc==0) {
+            LOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << file_priors_full << "]";
+            exit(1);
+        }
+        XMLNodePointer_t root_node = xmleng->DocGetRootElement(xmldoc);
+        const char * list_name_cstr = xmleng->GetAttr(root_node,"name");
+        LOG("UtlOscillation", pNOTICE) << "Reading penalty from element list named " << list_name_cstr;
+
+        XMLNodePointer_t curr_node = xmleng->GetChild(root_node);
+        int npenalty_set = 0;
+
+        PenaltyTerm penaltyset;
+
+        while(curr_node) {
+            string curr_node_name = xmleng->GetNodeName(curr_node);
+
+            if(!strcmp(curr_node_name.c_str(),"penalty")) {
+                penaltyset = util::oscillation::SetSinglePenalty(xmleng,curr_node,penaltyparam);
+                //if (penaltyset.param_names == "") {
+                //LOG("UtlOscillation", pERROR) << "Failed to read penalty list. Exiting.";
+                //exit(1);
+                //} TODO think about how to make this check work now
+                npenalty_set++;
+            }
+            curr_node = xmleng->GetNext(curr_node);
+        }
+        return penaltyset;
+
+    }
+
+
+    PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, string penaltyparam)
+    {
+        // First read the information that's common to each prior type
+        string param_names    = "";  // Comma-separated list of simple parameter names
+        string penalty_type   = "";  // 'flat', 'gaus', or 'user'
+        string opt            = "";
+        XMLNodePointer_t curr_node = xmleng->GetChild(top_node);
+        while(curr_node) {
+            string curr_node_name = xmleng->GetNodeName(curr_node);
+            if(xmleng->GetNodeContent(curr_node)) {
+                string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
+                if(curr_node_name == "params") { param_names = content;
+                    if(strcmp(penaltyparam.c_str(),param_names.c_str())!=0){
+                        LOG("Marginalisation", pERROR) << "Penalty parameter is not specified in xml file, sad it is ";
+                        exit(1);
+                    }
+                }
+                if(curr_node_name == "type"  ) { penalty_type = content; }
+                if(curr_node_name == "scheme") { opt        = content; }
+            }
+            //TODO: make it for histo penalty too
+            curr_node = xmleng->GetNext(curr_node);
+        }
+
+        // Now read the information that's specific to each prior type
+        string penalty_attribute1 = "";  // If type  = gaus, this is mean.
+        string penalty_attribute2 = "";  // If type  = gaus, this is sigma.
+        //string prior_attribute3 = "";    // If type = user, this is the prior hist name. Otherwise this stays as an empty string
+        curr_node = xmleng->GetChild(top_node);   // Put the current node back to the top of the list
+        while(curr_node) {
+            string curr_node_name = xmleng->GetNodeName(curr_node);
+            if(xmleng->GetNodeContent(curr_node)) {
+                string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
+                if(penalty_type == "gaus") {
+                    if(curr_node_name == "mean" ) { penalty_attribute1 = content;  }
+                    if(curr_node_name == "sigma") { penalty_attribute2 = content;  }
+                }
+                else {
+                    LOG("UtlOscillation", pERROR) << "Could not understand the prior type [" << penalty_type << "]";
+                    exit(1);
+                }
+            }
+            curr_node = xmleng->GetNext(curr_node);
+        }
+
+        // Check that we read the correct number of attributes for each prior type
+
+        if(penalty_type == "gaus" && (penalty_attribute1 == "" || penalty_attribute2 == "")) {
+            LOG("UtlOscillation", pERROR) << "Something went wrong when setting the Gaussian penalty named [" << param_names << "]";
+            exit(1);
+        }
+        // Get the parameter(s) that we'll apply this penalty to
+        const util::NameRegistry * nr = util::NameRegistry::Instance();
+        std::vector<std::string> tokens = util::Tokens(param_names, ",");
+        std::vector<conv::PhysParamId_t> params;
+        for(std::string param_name : tokens) {
+            param_name = util::RemoveAllWhitespace(param_name);
+            conv::PhysParamId_t p = nr->PhysParamFromString(param_name);
+            if(p == conv::kPhypUndefined) {
+                LOG("UtlOscillation", pERROR) << "Could not parse parameter [" << param_name << "]";
+                exit(1);
+            }
+            params.push_back(p);
+        }
+
+        // Get the mixing/dmsq/phase scheme(s) for this prior (1 scheme per parameter)
+        std::vector<std::string> scheme_tokens = util::Tokens(opt, ",");
+        std::vector<std::string> schemes;
+        for(std::string scheme_name : scheme_tokens) {
+            scheme_name = util::RemoveAllWhitespace(scheme_name);
+            schemes.push_back(scheme_name);
+        }
+
+        if(schemes.size() != params.size()) {
+            LOG("UtlOscillation", pERROR) << "The prior named [" << param_names
+                                          << "] has a mismatch in the number of schemes and parameters defined";
+            exit(1);
+        }
+
+        double mean  = atof(penalty_attribute1.c_str());
+        double sigma = atof(penalty_attribute2.c_str());
+        PenaltyTerm pval = {mean,sigma,opt,param_names};
+        LOG("UtlOscillation", pNOTICE) << "Setting Gaussian penalty for param " << param_names
+                                       << ": mean = " << mean << ", sigma = " << sigma;
+        return pval;
+    }
+//________________________________________________________________________________________
+
+
+void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_val, int bin, double step){
+    valor::conv::PhysParamId_t p = util::NameRegistry::Instance()->PhysParamFromString(
+            param.c_str());
+
+    double free_value = init_val + bin*step;
+    fpl.Update(p, free_value);
+    
+    LOG("UtlOscillation", pDEBUG) << "Increasing free paramter" << param << " value " << free_value
+                                     << " for the bin " << bin;
+
+    return;
+}
 //________________________________________________________________________________________
 }
 }
