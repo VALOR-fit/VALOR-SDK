@@ -3898,6 +3898,9 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     if(fBeam     == kbUndefined) continue;
     if(fSample   == ksUndefined) continue;
 
+		//Make sure the mode is not a cosmic as oscilalting a cosmic would be silly. 
+		if(m == kmCosmic) continue;
+
     //check if oscillation probabilities should be applied to this combination of phys hypothesis and detector
     if(!fSkipOscProbApplyCheck) {
       if(!util::OscProbIsAppliedTo(hypid, fDetector)) {continue; }
