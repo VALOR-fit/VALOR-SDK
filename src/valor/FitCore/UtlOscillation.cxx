@@ -584,7 +584,7 @@ PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg,string penaltyparam)
         {
             file_priors_full = prior_file_name.c_str();
             if (gSystem->GetPathInfo(file_priors_full.c_str(), dummy)) {
-                LOG("UtlOscillation", pERROR) << "Prior config file not found: " << prior_file_name;
+                LOG("UtlOscillation", pERROR) << "Prior config file with penalty info not found: " << prior_file_name;
                 exit(1);
             }
         }
@@ -610,10 +610,6 @@ PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg,string penaltyparam)
 
             if(!strcmp(curr_node_name.c_str(),"penalty")) {
                 penaltyset = util::oscillation::SetSinglePenalty(xmleng,curr_node,penaltyparam);
-                //if (penaltyset.param_names == "") {
-                //LOG("UtlOscillation", pERROR) << "Failed to read penalty list. Exiting.";
-                //exit(1);
-                //} TODO think about how to make this check work now
                 npenalty_set++;
             }
             curr_node = xmleng->GetNext(curr_node);
@@ -701,10 +697,11 @@ PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg,string penaltyparam)
                                           << "] has a mismatch in the number of schemes and parameters defined";
             exit(1);
         }
+      ///!! so far penalty term is supported for only one variable. So only the first entry of the scheme vector
 
         double mean  = atof(penalty_attribute1.c_str());
         double sigma = atof(penalty_attribute2.c_str());
-        PenaltyTerm pval = {mean,sigma,opt,param_names};
+        PenaltyTerm pval = {mean,sigma,schemes[0],param_names};
         LOG("UtlOscillation", pNOTICE) << "Setting Gaussian penalty for param " << param_names
                                        << ": mean = " << mean << ", sigma = " << sigma;
         return pval;

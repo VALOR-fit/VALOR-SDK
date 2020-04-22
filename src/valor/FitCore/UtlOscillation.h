@@ -98,38 +98,44 @@ namespace oscillation
    std::map<conv::PhysParamId_t,double> GetRandomizedOscParams2DCorrelated (std::pair<conv::PhysParamId_t,conv::PhysParamId_t> params, FitParamList& fpl);
     /**
     Struct to handle penalty term parameters
+
     **/
     struct PenaltyTerm{
         double mean;
         double sigma;
-        std::string opt;
-        std::string param_names;
+        std::string scheme;
+        std::string param_names; 
     };
-      /**
+
+
+    /**
        Set the penalty term parameters
        \param arg The CmdLnArgList containing the XML filename from which the
                   priors should be read.
-       \param penaltyparam Parameter name.
+       \param penaltyparam The name of the oscillation parameter of interest.
+       \return PenaltyTerm structre with assigned values if the penalty term parameters
    **/
    PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg, string penaltyparam);
 
     /**
-    Set a single prior from an XML file. So far the only supported  type of penalty is Gaussian.
+    Set penalty term parameters from an XML file. So far the only supported  type of penalty is Gaussian.
      TODO: add external penalty
 
-    \param xmleng The XML engine for the prior XML file.
-    \param top_node A pointer to a <prior> node.
-    \param Parameter name.
+    \param xmleng The XML engine for the prior+penlaty XML file.
+    \param top_node A pointer to a <penalty> node.
+    \param penaltyparam The name of the oscillation parameter of interest.
+    \return PenaltyTerm structre with assigned values if the penalty term parameters
      **/
     PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, string penaltyparam);
 
     /**
-    Increase a parameter value withing a group of points 
+    Increase the value of a single oscillation parameter of interest within a group of points submitted as a single job
+   
     \param fpl FitParameterList pointer 
-    \param param name of the parameter 
-    \param intial value of the parameter 
-    \param bin 
-    \param step 
+    \param param Name of the parameter 
+    \param intial Starting (minimal) value of the  oscillation parameter 
+    \param bin Number of the point for which we are calculation the value of the oscillation parameter 
+    \param step Step between two points for oscillation parameter
     **/
 
 
