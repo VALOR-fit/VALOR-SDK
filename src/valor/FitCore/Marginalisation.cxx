@@ -404,17 +404,17 @@ void Marginalisation::CheckLocalMinimum(int& binX, int& binY,
 void Marginalisation::CalcPenaltyTerm(const double par0,util::oscillation::PenaltyTerm penaltyset){
     double fpenalty_mean0  = penaltyset.mean ;
     double fpenalty_sigma0 = penaltyset.sigma;
-    std::string penalty_scheme = penaltyset.opt;
+    std::string penalty_scheme = penaltyset.scheme;
     std::string parameter_scheme_name_p0 = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
     conv::PhysParamId_t par0_id = util::NameRegistry::Instance()->PhysParamFromString(penaltyset.param_names);
+    
     //Convert parameter value to teh same scheme as penalty
     double parval0 = util::ConvertOscParamToUsedScheme(par0_id, par0 , parameter_scheme_name_p0, penalty_scheme);
-    // if(this->fusepenalty0)
-    //that condition was made for case of several variables, that is not implmeted so far
+
     double penalty0 = (parval0 - fpenalty_mean0)*(parval0 - fpenalty_mean0) /  ( fpenalty_sigma0 * fpenalty_sigma0);
-    //if(fusepenalty1) penalty1 = (parval1 - fpenalty_mean1)*(parval1 - fpenalty_mean1) /  ( fpenalty_sigma1 * fpenalty_sigma1);
-    this->_penaltyterm = penalty0; //+ penalty1;
-    //TODO:Add option for more than one penalty
+  
+    this->_penaltyterm = penalty0; 
+
 }
 } // valor
 
