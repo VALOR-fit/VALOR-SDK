@@ -2880,7 +2880,9 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
               << std::fixed << std::setprecision(9)
               << "Applying norm param with kinematic dependence [" << param_name
               << "] with curr val = " << f << ", effective tweak = " << effective_tweak
-              << "; new bin content = " << templFinOb[debug_ireco][use_debug_itrue];
+              << "; new bin content = " << templFinOb[debug_ireco][use_debug_itrue]
+              << "(applied to true bin spanning [" << true_sb->BinMinimum(use_debug_itrue, true_kinevars[0])
+              << ", " << true_sb->BinMaximum(use_debug_itrue, true_kinevars[0]) << "])";
           }
 #endif
           last_itrue = itrue;
