@@ -8,6 +8,9 @@ ChangeLog:
 */
 //________________________________________________________________________________________
 
+#include <algorithm>
+#include <iostream>
+
 //fmwk
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Conventions/Detector.h"
@@ -15,6 +18,8 @@ ChangeLog:
 
 using namespace valor;
 using namespace valor::conv;
+
+using std::string;
 
 //________________________________________________________________________________________
 string util::AsString(Detector_t d, Option_t * /*opt*/)
@@ -49,6 +54,36 @@ string util::AsString(Detector_t d, Option_t * /*opt*/)
     return name2;
   }
 */
+  return name;
+}
+//________________________________________________________________________________________
+string util::AsStringTeX(Detector_t d, bool root)
+{
+  string name = "";
+
+  switch(d) {
+    case (kdDUNEND   ) : name = "DUNE ND";              break;
+    case (kdDUNEFD1ph) : name = "DUNE FD Single Phase"; break;
+    case (kdDUNEFD2ph) : name = "DUNE FD Dual Phase";   break;
+    case (kdSBND     ) : name = "SBN-ND";               break;
+    case (kdSBNuBooNE) : name = "SBN-#muBooNE";         break;
+    case (kdSBNICARUS) : name = "SBN-ICARUS";           break;
+    case (kdSuperK   ) : name = "Super-K";              break;
+    case (kdHyperK   ) : name = "Hyper-K";              break; 
+    case (kdND280    ) : name = "ND280";                break; 
+    case (kdND280Up  ) : name = "ND280 Upgrade";        break; 
+    case (kdINGRID   ) : name = "INGRID";               break; 
+    case (kdNuPRISM  ) : name = "#nu Prism";            break; 
+    case (kdNuTIT    ) : name = "TITUS";                break;
+    case (kdNOvAND   ) : name = "NO{#nu}A ND";          break;
+    case (kdNOvAFD   ) : name = "NO{#nu}A FD";          break;
+    default            : name = "--";  
+  }
+  if(root) return name;
+
+  // normal TeX, not ROOT TeX - change '#' with '\'
+  replace( name.begin(), name.end(), '#', '\\');
+
   return name;
 }
 //________________________________________________________________________________________

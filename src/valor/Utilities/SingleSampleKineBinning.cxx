@@ -55,7 +55,7 @@ SingleSampleKineBinning::SingleSampleKineBinning(UniqueSampleID usid, const std:
   fDetector = usid.detector;
   fBeamConf = usid.beamconf;
   fSample   = usid.sample;
-
+  
   fReactionModes = modes;
   fReactionModeIndex = MakeModeIndex(modes);
 }
@@ -424,7 +424,7 @@ void SingleSampleKineBinning::Init(void)
   fRecoOptimizedBinning = nullptr;
   fRecoSimpleBinning    = nullptr;
   fXsecRecoBinning      = nullptr;
-
+  
   fReactionModes.clear();
   fReactionModeIndex.clear();
   fTrueSimpleBinningUnique.clear();

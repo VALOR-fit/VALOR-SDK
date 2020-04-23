@@ -128,6 +128,19 @@ valor::util::Interpolator::~Interpolator()
   if(fROOTSpline) { delete fROOTSpline; }
 }
 //________________________________________________________________________________________
+TGraph valor::util::Interpolator::AsTGraph(int npoints) const
+{
+  std::vector<double> xarr;
+  std::vector<double> yarr;
+  for (int i = 0 ; i < npoints ; i++) {
+    double x = i*(fXmax-fXmin)/npoints +fXmin;
+    double y = this->Eval(x);
+    xarr.push_back(x);
+    yarr.push_back(y);
+  }
+  return TGraph(npoints,xarr.data(),yarr.data());
+}
+//________________________________________________________________________________________
 std::string valor::util::AsString(Interpolator::Type t, Option_t * /*opt*/)
 {
   if     (t == Interpolator::Type::kLINEAR)           { return "linear";         }

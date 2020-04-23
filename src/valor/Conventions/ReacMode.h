@@ -27,7 +27,7 @@
 namespace valor {
 namespace conv {
 
-  static const int kNReacModes = 183; //excluding undefined and other
+static const int kNReacModes = 184; //excluding undefined and other
 
 typedef enum EReacMode 
 {
@@ -271,11 +271,12 @@ typedef enum EReacType
   kmtNCELScat,    // NC nu + e elastic scattering (not nue)
   kmtNCoth,       // NC other
   kmtELScat,      // nue + e elastic scattering (nue, NC + CC + interference) 
-  kmtOther        // misc
+  kmtOther,       // misc
+  kmtCosmic       // cosmic
 }
 ReacType_t;
 
-static const int kNReacType = 25;
+static const int kNReacType = 28;
 
 // Map the reaction modes to their type
 static const ReacType_t kReacModeToType[kNReacModes] =
@@ -482,6 +483,7 @@ static const ReacType_t kReacModeToType[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCMpi        */ kmtCCMpi    ,
    /*   kmNuEBarToNuTauBarCCmisc       */ kmtCCmisc   ,
    /*   kmNuEBarToNuTauBarCCoth        */ kmtCCoth    ,
+   /*   kmCosmic                       */ kmtCosmic   ,
 // /*   kmOther             */ kmtOther 
 };
 
@@ -690,6 +692,7 @@ static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCMpi        */ kNuTauBar    ,
    /*   kmNuEBarToNuTauBarCCmisc       */ kNuTauBar    ,
    /*   kmNuEBarToNuTauBarCCoth        */ kNuTauBar    ,
+   /*   kmCosmic                       */ kNuFlavourUndefined,
 // /*   kmOther             */ kNuFlavourUndefined
 };
 
@@ -897,6 +900,7 @@ static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCMpi        */ kNuEBar    ,
    /*   kmNuEBarToNuTauBarCCmisc       */ kNuEBar    ,
    /*   kmNuEBarToNuTauBarCCoth        */ kNuEBar    ,
+   /*   kmCosmic                       */ kNuFlavourUndefined,
 // /*   kmOther             */ kNuFlavourUndefined
 };
 

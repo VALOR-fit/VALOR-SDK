@@ -38,7 +38,7 @@
 #    Assume that data are accessible via http from https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/
 #    To access the `2020a' revision of the SBND geometry, one should type:
 #
-#    % valor_data-fetch --data-major sbn_simulation_inputs --data-minor sbnd_geometry --data-revis 2020a
+#    % valor_data-fetch --data-major sbn_simulation_inpuys --data-minor sbnd_geometry --data-revis 2020a
 #                       --data-resource  https://valor.pp.rl.ac.uk/some/hypothetical/data/storage/
 #
 # 2) Assume that you want to obtain the same data product listed above, but the data are not accessible via http.
@@ -219,7 +219,6 @@ if (-e $diff_file_w_local_path)
   die("VALOR: *** Failed to execute: $! *** \n") if ($? == -1);
 }
 # Now, do generate the diff file...
-print "VALOR: Running md5sum to generate $diff_file \n" if $debug_output;
 system("cd $local_base_dir; md5sum -c $checksum_file >> $diff_file 2>&1");
 die("VALOR: *** Failed to generate the diff file $diff_file_w_local_path *** \n") if(! -e $diff_file_w_local_path);
 print "VALOR: Done generating $diff_file \n" if $debug_output;

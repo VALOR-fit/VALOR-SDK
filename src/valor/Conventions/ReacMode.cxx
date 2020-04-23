@@ -237,8 +237,7 @@ string util::AsString(ReacMode_t m)
   case (kmNuEBarToNuTauBarCCMpi        ): return "nuebartonutaubarCCMpi";    break;
   case (kmNuEBarToNuTauBarCCmisc       ): return "nuebartonutaubarCCmisc";   break;
   case (kmNuEBarToNuTauBarCCoth        ): return "nuebartonutaubarCCoth";    break;
-
-  case (kmCosmic                       ): return "cosmic"; break;
+  case (kmCosmic                       ): return "cosmic";                   break;
 
     case (kmOther           ): return "other";  break;     
     default                  : return "--"; 
@@ -510,6 +509,7 @@ std::string util::AsString(conv::ReacType_t t)
     case (kmtNCoth    ) : return "NCother";
     case (kmtELScat   ) : return "nuEEl";
     case (kmtOther    ) : return "misc";
+    case (kmtCosmic   ) : return "cosmic";
     default             : return "--";
   }
   return "--";

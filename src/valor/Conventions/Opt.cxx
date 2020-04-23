@@ -252,7 +252,12 @@ void Opt::SetDefaultParameterValues()
   // numubar->nuebar normalization
   fGlobalBestFit  [kPhypBetaBar] = kGlobFitBetaBar;
   fGlobalFitError [kPhypBetaBar] = kGlobFitErrBetaBar;
-  //
+  
+  // STERILES
+  fGlobalBestFit  [kPhypDm41sq]     = kGlobFitDm41sq;
+  fGlobalBestFit  [kPhypMixingEE]   = kGlobFitSinsq2ThetaEE;
+  fGlobalBestFit  [kPhypMixingMuMu] = kGlobFitSinsq2ThetaMuMu;
+  fGlobalBestFit  [kPhypMixingMuE]  = kGlobFitSinsq2ThetaMuE;
 }
 //________________________________________________________________________________________
 bool Opt::Undefined(void)
