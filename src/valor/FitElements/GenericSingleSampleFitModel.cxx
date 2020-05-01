@@ -414,10 +414,12 @@ bool GenericSingleSampleFitModel::Read(util::ToyStream* stream)
 //________________________________________________________________________________________
 bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
 {
-  LOG("GenericSingleSampleFitModel",pINFO) << "Configuring the Response Function Library... \n\n";
+  LOG("GenericSingleSampleFitModel",pINFO) << "Configuring the Response Function Library... \n";
   // And now get the RFL
   fRFL = new util::RFL(fBinning, fSplineParams);
+  LOG("GenericSingleSampleFitModel",pDEBUG) << "Constructed the RFL \n";
   fRFL->Read(file, opt);
+  LOG("GenericSingleSampleFitModel",pDEBUG) << "Read the RFL \n";
 
   bool null_warning = false;
 
@@ -2967,6 +2969,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       if(fSystematics->Contains(p)) {
         untuned = fSystematics->UntunedValue(p);
       }
+      LOG("GenericSingleSampleFitModel",pINFO) << "Untuned value for parameter " << param_name << " = " << untuned;
 
       const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
       if(spline_eval_type == conv::kSplEvalUndefined) {
