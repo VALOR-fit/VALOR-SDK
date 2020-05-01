@@ -41,6 +41,23 @@
   TFile *f_sbn_mod25   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_modern_25var.root","read");
   TFile *f_sbn_mod_a   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_modern_allow.root","read");
 
+  std::string location = "/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/all_fitters_and_external/April2020/";
+  // 
+  // Global style settings
+  //
+  gStyle->SetTitleSize(0.04,"X");
+  gStyle->SetTitleSize(0.04,"Y");
+  gStyle->SetLabelSize(0.03,"X");
+  gStyle->SetLabelSize(0.03,"Y");
+
+  /*
+  gStyle->SetTopMargin(0.022);
+  gStyle->SetBottomMargin(0.099);
+  gStyle->SetLeftMargin(0.116);
+  gStyle->SetRightMargin(0.024);
+  */
+
+
   //
   // Dummy plot for stats in legend
   //
@@ -56,7 +73,7 @@
   //
 
   TGraph * lim_numudis_3p1_sbnproposal_90pctCL     = (TGraph *) f->Get( "lim_numudis_3p1_sbnproposal_90pctCL"  );
-  TGraph * lim_numudis_3p1_minosp_90pctCL          = (TGraph *) f->Get( "lim_numudis_3p1_minosp_90pctCL"       );
+  TGraph * lim_numudis_3p1_minosp_90pctCL          = (TGraph *) f->Get( "lim_numudis_3p1_minosp_90pctCL_sinsq2theta_corrected"       );
   TGraph * lim_numudis_3p1_minisciboone_90pctCL    = (TGraph *) f->Get( "lim_numudis_3p1_minisciboone_90pctCL" );
   //TGraph * valor_modern_sbn_3p1_contour_90_stat    = (TGraph *) f_stat->Get("contour_90pct_lin_0");
   TGraph * valor_modern_sbn_3p1_contour_90_syst_old = (TGraph *) f_syst_old->Get("contour_90pct_lin_0");
@@ -151,6 +168,10 @@
   //
 
   TCanvas * cnumudismodernvalor = new TCanvas("cnumudismodernvalor","",20,20,700,900);
+  cnumudismodernvalor->SetTopMargin(0.022);
+  cnumudismodernvalor->SetBottomMargin(0.099);
+  cnumudismodernvalor->SetLeftMargin(0.116);
+  cnumudismodernvalor->SetRightMargin(0.024);
   cnumudismodernvalor->Draw();
 
   TH2F * hfnumudismodernvalor = (TH2F*) cnumudismodernvalor->DrawFrame(1E-3,1E-2,1,1E+2);
@@ -174,7 +195,7 @@
   sbnfit_modern_sbn_3p1_contour_90_stat   -> Draw("l");
   sbnfit_modern_sbn_3p1_contour_90_syst   -> Draw("l");
 
-  TLegend * lgnumudismodernvalor = new TLegend(0.12,0.12,0.67,0.38);
+  TLegend * lgnumudismodernvalor = new TLegend(0.132,0.135,0.756,0.400);
   lgnumudismodernvalor->SetFillStyle(0);
   lgnumudismodernvalor->SetBorderSize(0);
   lgnumudismodernvalor->SetTextFont(132);
@@ -187,11 +208,18 @@
   lgnumudismodernvalor->AddEntry(valor_modern_sbn_3p1_contour_90_stat,    "VALOR modern 90\% CL (stat-only)",          "L");
   lgnumudismodernvalor->Draw();
 
+  cnumudismodernvalor->SaveAs((location+"all_fitters_modern.root").c_str());
+  cnumudismodernvalor->SaveAs((location+"all_fitters_modern.png").c_str());
+  cnumudismodernvalor->SaveAs((location+"all_fitters_modern.pdf").c_str());
   // 
   // External data, modern only 
   //
 
   TCanvas * cnumudismodern = new TCanvas("cnumudismodern","",20,20,700,900);
+  cnumudismodern->SetTopMargin(0.022);
+  cnumudismodern->SetBottomMargin(0.099);
+  cnumudismodern->SetLeftMargin(0.116);
+  cnumudismodern->SetRightMargin(0.024);
   cnumudismodern->Draw();
 
   TH2F * hfnumudismodern = (TH2F*) cnumudismodern->DrawFrame(1E-3,1E-2,1,1E+2);
@@ -215,7 +243,7 @@
   lim_numudis_3p1_minosp_90pctCL          -> Draw("l");
   lim_numudis_3p1_minisciboone_90pctCL    -> Draw("l");
 
-  TLegend * lgnumudismodern = new TLegend(0.36,0.12,0.67,0.35);
+  TLegend * lgnumudismodern = new TLegend(0.140,0.127,0.529,0.482);
   lgnumudismodern->SetFillStyle(0);
   lgnumudismodern->SetBorderSize(0);
   lgnumudismodern->SetTextFont(132);
@@ -229,11 +257,19 @@
   lgnumudismodern->AddEntry(valor_modern_sbn_3p1_contour_90_stat,    "VALOR modern 90\% CL (stat-only)",  "L");
   lgnumudismodern->Draw();
 
+  cnumudismodern->SaveAs((location+"all_fitters_external_modern.root").c_str());
+  cnumudismodern->SaveAs((location+"all_fitters_external_modern.png").c_str());
+  cnumudismodern->SaveAs((location+"all_fitters_external_modern.pdf").c_str());
+
   // 
   // Modern only 
   //
 
   TCanvas * cnumudismodernnoext = new TCanvas("cnumudismodernnoext","",20,20,700,900);
+  cnumudismodernnoext->SetTopMargin(0.022);
+  cnumudismodernnoext->SetBottomMargin(0.099);
+  cnumudismodernnoext->SetLeftMargin(0.116);
+  cnumudismodernnoext->SetRightMargin(0.024);
   cnumudismodernnoext->Draw();
 
   TH2F * hfnumudismodernnoext = (TH2F*) cnumudismodernnoext->DrawFrame(1E-3,1E-2,1,1E+2);
@@ -256,7 +292,7 @@
   sbnfit_modern_sbn_3p1_contour_90_syst   -> Draw("l");
   injected->Draw("P");
 
-  TLegend * lgnumudismodernnoext = new TLegend(0.12,0.14,0.71,0.36);
+  TLegend * lgnumudismodernnoext = new TLegend(0.132,0.135,0.756,0.400);
   lgnumudismodernnoext->SetFillStyle(0);
   lgnumudismodernnoext->SetBorderSize(0);
   lgnumudismodernnoext->SetTextFont(132);
@@ -269,11 +305,19 @@
   lgnumudismodernnoext->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudismodernnoext->Draw();
 
+  cnumudismodernnoext->SaveAs((location+"all_fitters_modern_inj.root").c_str());
+  cnumudismodernnoext->SaveAs((location+"all_fitters_modern_inj.png").c_str());
+  cnumudismodernnoext->SaveAs((location+"all_fitters_modern_inj.pdf").c_str());
+
   // 
   // Modern only with OG proposal 
   //
 
   TCanvas * cnumudismodernproponly = new TCanvas("cnumudismodernproponly","",20,20,700,900);
+  cnumudismodernproponly->SetTopMargin(0.022);
+  cnumudismodernproponly->SetBottomMargin(0.099);
+  cnumudismodernproponly->SetLeftMargin(0.116);
+  cnumudismodernproponly->SetRightMargin(0.024);
   cnumudismodernproponly->Draw();
 
   TH2F * hfnumudismodernproponly = (TH2F*) cnumudismodernproponly->DrawFrame(1E-3,1E-2,1,1E+2);
@@ -297,7 +341,7 @@
   sbnfit_modern_sbn_3p1_contour_90_syst   -> Draw("l");
   injected->Draw("P");
 
-  TLegend * lgnumudismodernproponly = new TLegend(0.12,0.14,0.71,0.36);
+  TLegend * lgnumudismodernproponly = new TLegend(0.133,0.134,0.843,0.399);
   lgnumudismodernproponly->SetFillStyle(0);
   lgnumudismodernproponly->SetBorderSize(0);
   lgnumudismodernproponly->SetTextFont(132);
@@ -311,11 +355,18 @@
   lgnumudismodernproponly->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudismodernproponly->Draw();
 
+  cnumudismodernproponly->SaveAs((location+"all_fitters_modern_inj_extprop.root").c_str());
+  cnumudismodernproponly->SaveAs((location+"all_fitters_modern_inj_extprop.png").c_str());
+  cnumudismodernproponly->SaveAs((location+"all_fitters_modern_inj_extprop.pdf").c_str());
   // 
   // External data, proposal only
   //
  
   TCanvas * cnumudisprop = new TCanvas("cnumudisprop","",20,20,700,900);
+  cnumudisprop->SetTopMargin(0.022);
+  cnumudisprop->SetBottomMargin(0.099);
+  cnumudisprop->SetLeftMargin(0.116);
+  cnumudisprop->SetRightMargin(0.024);
   cnumudisprop->Draw();
 
   TH2F * hfnumudisprop = (TH2F*) cnumudisprop->DrawFrame(1E-3,1E-2,1,1E+2);
@@ -340,7 +391,7 @@
   lim_numudis_3p1_minosp_90pctCL          -> Draw("l");
   lim_numudis_3p1_minisciboone_90pctCL    -> Draw("l");
 
-  TLegend * lgnumudisprop = new TLegend(0.36,0.12,0.67,0.35);
+  TLegend * lgnumudisprop = new TLegend(0.140,0.127,0.529,0.482);
   lgnumudisprop->SetFillStyle(0);
   lgnumudisprop->SetBorderSize(0);
   lgnumudisprop->SetTextFont(132);
@@ -355,11 +406,18 @@
   lgnumudisprop->AddEntry(valor_proposal_sbn_3p1_contour_90_stat,  "VALOR proposal 90\% CL (stat-only)",  "L");
   lgnumudisprop->Draw();
 
+  cnumudisprop->SaveAs((location+"all_fitters_proposal_ext.root").c_str());
+  cnumudisprop->SaveAs((location+"all_fitters_proposal_ext.png").c_str());
+  cnumudisprop->SaveAs((location+"all_fitters_proposal_ext.pdf").c_str());
   //
   // numu disappearance sbn only
   //
 
   TCanvas * cnumudissbnonly = new TCanvas("cnumudissbnonly","",20,20,700,900);
+  cnumudissbnonly->SetTopMargin(0.022);
+  cnumudissbnonly->SetBottomMargin(0.099);
+  cnumudissbnonly->SetLeftMargin(0.116);
+  cnumudissbnonly->SetRightMargin(0.024);
   cnumudissbnonly->Draw();
 
   TH2F * hfnumudissbnonly = (TH2F*) cnumudissbnonly->DrawFrame(1E-3,4E-2,1,1E+2);
@@ -389,7 +447,7 @@
   sbnfit_proposal_sbn_3p1_contour_90_syst -> Draw("l");
 
 
-  TLegend * lgnumudissbnonly = new TLegend(0.46,0.36,0.91,0.74);
+  TLegend * lgnumudissbnonly = new TLegend(0.499,0.377,0.993,0.787);
   lgnumudissbnonly->SetFillStyle(0);
   lgnumudissbnonly->SetBorderSize(0);
   lgnumudissbnonly->SetTextFont(132);
@@ -409,11 +467,18 @@
   lgnumudissbnonly->AddEntry(valor_modern_sbn_3p1_contour_90_syst,    "VALOR modern 90\% CL ",               "L");
   lgnumudissbnonly->Draw();
 
+  cnumudissbnonly->SaveAs((location+"all_fitters_proposal_modern_extprop.root").c_str());
+  cnumudissbnonly->SaveAs((location+"all_fitters_proposal_modern_extprop.png").c_str());
+  cnumudissbnonly->SaveAs((location+"all_fitters_proposal_modern_extprop.pdf").c_str());
   //
   // numu disappearance VALOR sbn only
   //
 
   TCanvas * cnumudissbnonlyvalor = new TCanvas("cnumudissbnonlyvalor","",20,20,700,900);
+  cnumudissbnonlyvalor->SetTopMargin(0.022);
+  cnumudissbnonlyvalor->SetBottomMargin(0.099);
+  cnumudissbnonlyvalor->SetLeftMargin(0.116);
+  cnumudissbnonlyvalor->SetRightMargin(0.024);
   cnumudissbnonlyvalor->Draw();
 
   TH2F * hfnumudissbnonlyvalor = (TH2F*) cnumudissbnonlyvalor->DrawFrame(1E-3,4E-2,1,1E+2);
@@ -434,7 +499,7 @@
   valor_proposal_sbn_3p1_contour_90_stat  -> Draw("l");
   valor_proposal_sbn_3p1_contour_90_syst  -> Draw("l");
 
-  TLegend * lgnumudissbnonlyvalor = new TLegend(0.46,0.36,0.91,0.74);
+  TLegend * lgnumudissbnonlyvalor = new TLegend(0.481,0.367,0.981,0.747);
   lgnumudissbnonlyvalor->SetFillStyle(0);
   lgnumudissbnonlyvalor->SetBorderSize(0);
   lgnumudissbnonlyvalor->SetTextFont(132);
@@ -446,11 +511,18 @@
   lgnumudissbnonlyvalor->AddEntry(valor_modern_sbn_3p1_contour_90_syst,    "VALOR modern 90\% CL ",               "L");
   lgnumudissbnonlyvalor->Draw();
 
+  cnumudissbnonlyvalor->SaveAs((location+"proposal_modern_extprop_valor.root").c_str());
+  cnumudissbnonlyvalor->SaveAs((location+"proposal_modern_extprop_valor.png").c_str());
+  cnumudissbnonlyvalor->SaveAs((location+"proposal_modern_extprop_valor.pdf").c_str());
   //
   // numu disappearance CAFAna sbn only
   //
 
   TCanvas * cnumudissbnonlycafana = new TCanvas("cnumudissbnonlycafana","",20,20,700,900);
+  cnumudissbnonlycafana->SetTopMargin(0.022);
+  cnumudissbnonlycafana->SetBottomMargin(0.099);
+  cnumudissbnonlycafana->SetLeftMargin(0.116);
+  cnumudissbnonlycafana->SetRightMargin(0.024);
   cnumudissbnonlycafana->Draw();
 
   TH2F * hfnumudissbnonlycafana = (TH2F*) cnumudissbnonlycafana->DrawFrame(1E-3,4E-2,1,1E+2);
@@ -471,7 +543,7 @@
   cafana_proposal_sbn_3p1_contour_90_stat -> Draw("l");
   cafana_proposal_sbn_3p1_contour_90_syst -> Draw("l");
 
-  TLegend * lgnumudissbnonlycafana = new TLegend(0.46,0.36,0.91,0.74);
+  TLegend * lgnumudissbnonlycafana = new TLegend(0.481,0.367,0.981,0.747);
   lgnumudissbnonlycafana->SetFillStyle(0);
   lgnumudissbnonlycafana->SetBorderSize(0);
   lgnumudissbnonlycafana->SetTextFont(132);
@@ -482,11 +554,18 @@
   lgnumudissbnonlycafana->AddEntry(lim_numudis_3p1_sbnproposal_90pctCL,     "SBN proposal 90\% CL",                "L");
   lgnumudissbnonlycafana->Draw();
 
+  cnumudissbnonlycafana->SaveAs((location+"proposal_modern_extprop_cafana.root").c_str());
+  cnumudissbnonlycafana->SaveAs((location+"proposal_modern_extprop_cafana.png").c_str());
+  cnumudissbnonlycafana->SaveAs((location+"proposal_modern_extprop_cafana.pdf").c_str());
   //
   // numu disappearance SBNFit sbn only
   //
   
   TCanvas * cnumudissbnonlysbnfit = new TCanvas("cnumudissbnonlysbnfit","",20,20,700,900);
+  cnumudissbnonlysbnfit->SetTopMargin(0.022);
+  cnumudissbnonlysbnfit->SetBottomMargin(0.099);
+  cnumudissbnonlysbnfit->SetLeftMargin(0.116);
+  cnumudissbnonlysbnfit->SetRightMargin(0.024);
   cnumudissbnonlysbnfit->Draw();
 
   TH2F * hfnumudissbnonlysbnfit = (TH2F*) cnumudissbnonlysbnfit->DrawFrame(1E-3,4E-2,1,1E+2);
@@ -507,7 +586,7 @@
   sbnfit_proposal_sbn_3p1_contour_90_stat -> Draw("l");
   sbnfit_proposal_sbn_3p1_contour_90_syst -> Draw("l");
 
-  TLegend * lgnumudissbnonlysbnfit = new TLegend(0.46,0.36,0.91,0.74);
+  TLegend * lgnumudissbnonlysbnfit = new TLegend(0.481,0.367,0.981,0.747);
   lgnumudissbnonlysbnfit->SetFillStyle(0);
   lgnumudissbnonlysbnfit->SetBorderSize(0);
   lgnumudissbnonlysbnfit->SetTextFont(132);
@@ -518,11 +597,18 @@
   lgnumudissbnonlysbnfit->AddEntry(lim_numudis_3p1_sbnproposal_90pctCL,     "SBN proposal 90\% CL",                "L");
   lgnumudissbnonlysbnfit->Draw();
   
+  cnumudissbnonlysbnfit->SaveAs((location+"proposal_modern_extprop_sbnfit.root").c_str());
+  cnumudissbnonlysbnfit->SaveAs((location+"proposal_modern_extprop_sbnfit.png").c_str());
+  cnumudissbnonlysbnfit->SaveAs((location+"proposal_modern_extprop_sbnfit.pdf").c_str());
   //
   // numu disappearance VALOR sbn only Stat+Syst only proposal
   //
 
   TCanvas * cnumudissbnonlysystonlyvalor = new TCanvas("cnumudissbnonlysystonlyvalor","",20,20,700,900);
+  cnumudissbnonlysystonlyvalor->SetTopMargin(0.022);
+  cnumudissbnonlysystonlyvalor->SetBottomMargin(0.099);
+  cnumudissbnonlysystonlyvalor->SetLeftMargin(0.116);
+  cnumudissbnonlysystonlyvalor->SetRightMargin(0.024);
   cnumudissbnonlysystonlyvalor->Draw();
 
   TH2F * hfnumudissbnonlysystonlyvalor = (TH2F*) cnumudissbnonlysystonlyvalor->DrawFrame(1E-3,4E-2,1,1E+2);
@@ -550,13 +636,22 @@
   lgnumudissbnonlysystonlyvalor->AddEntry(valor_proposal_sbn_3p1_contour_90_syst,  "VALOR proposal 90\% CL ", "L");
   lgnumudissbnonlysystonlyvalor->Draw();
 
+  cnumudissbnonlysystonlyvalor->SaveAs((location+"proposal_extprop_valor.root").c_str());
+  cnumudissbnonlysystonlyvalor->SaveAs((location+"proposal_extprop_valor.png").c_str());
+  cnumudissbnonlysystonlyvalor->SaveAs((location+"proposal_extprop_valor.pdf").c_str());
+
   valor_proposal_sbn_3p1_contour_90_syst  -> SetLineStyle(2);
+
 
   //
   // numu disappearance CAFAna sbn only
   //
 
   TCanvas * cnumudissbnonlysystonlycafana = new TCanvas("cnumudissbnonlysystonlycafana","",20,20,700,900);
+  cnumudissbnonlysystonlycafana->SetTopMargin(0.022);
+  cnumudissbnonlysystonlycafana->SetBottomMargin(0.099);
+  cnumudissbnonlysystonlycafana->SetLeftMargin(0.116);
+  cnumudissbnonlysystonlycafana->SetRightMargin(0.024);
   cnumudissbnonlysystonlycafana->Draw();
 
   TH2F * hfnumudissbnonlysystonlycafana = (TH2F*) cnumudissbnonlysystonlycafana->DrawFrame(1E-3,4E-2,1,1E+2);
@@ -583,6 +678,10 @@
   lgnumudissbnonlysystonlycafana->AddEntry(cafana_proposal_sbn_3p1_contour_90_syst, "CAFAna proposal 90\% CL ", "L");
   lgnumudissbnonlysystonlycafana->Draw();
 
+  cnumudissbnonlysystonlycafana->SaveAs((location+"proposal_extprop_cafana.root").c_str());
+  cnumudissbnonlysystonlycafana->SaveAs((location+"proposal_extprop_cafana.png").c_str());
+  cnumudissbnonlysystonlycafana->SaveAs((location+"proposal_extprop_cafana.pdf").c_str());
+
   cafana_proposal_sbn_3p1_contour_90_syst -> SetLineStyle(2);
   
   //
@@ -590,6 +689,10 @@
   //
   
   TCanvas * cnumudissbnonlysystonlysbnfit = new TCanvas("cnumudissbnonlysystonlysbnfit","",20,20,700,900);
+  cnumudissbnonlysystonlysbnfit->SetTopMargin(0.022);
+  cnumudissbnonlysystonlysbnfit->SetBottomMargin(0.099);
+  cnumudissbnonlysystonlysbnfit->SetLeftMargin(0.116);
+  cnumudissbnonlysystonlysbnfit->SetRightMargin(0.024);
   cnumudissbnonlysystonlysbnfit->Draw();
 
   TH2F * hfnumudissbnonlysystonlysbnfit = (TH2F*) cnumudissbnonlysystonlysbnfit->DrawFrame(1E-3,4E-2,1,1E+2);
@@ -606,11 +709,6 @@
 
   lim_numudis_3p1_sbnproposal_90pctCL     -> Draw("l");
   sbnfit_proposal_sbn_3p1_contour_90_syst -> Draw("l");
-  sbnfit_proposal_sbn_3p1_contour_90_syst20 -> Draw("l");
-  sbnfit_proposal_sbn_3p1_contour_90_syst20 -> SetLineColor(kAzure+7);
-  sbnfit_proposal_sbn_3p1_contour_90_syst20 -> SetLineWidth(2);
-  sbnfit_proposal_sbn_3p1_contour_90_syst20 -> SetLineStyle(9);
-  sbnfit_proposal_sbn_3p1_contour_90_syst20 -> SetMarkerStyle(0);
 
   sbnfit_proposal_sbn_3p1_contour_90_syst -> SetLineStyle(1);
 
@@ -619,10 +717,13 @@
   lgnumudissbnonlysystonlysbnfit->SetBorderSize(0);
   lgnumudissbnonlysystonlysbnfit->SetTextFont(132);
   lgnumudissbnonlysystonlysbnfit->AddEntry(lim_numudis_3p1_sbnproposal_90pctCL,     "SBN proposal 90\% CL",     "L");
-  lgnumudissbnonlysystonlysbnfit->AddEntry(sbnfit_proposal_sbn_3p1_contour_90_syst, "SBNFit proposal 90\% CL 25 syst", "L");
-  lgnumudissbnonlysystonlysbnfit->AddEntry(sbnfit_proposal_sbn_3p1_contour_90_syst20, "SBNFit proposal 90\% CL 20 syst", "L");
+  lgnumudissbnonlysystonlysbnfit->AddEntry(sbnfit_proposal_sbn_3p1_contour_90_syst, "SBNFit proposal 90\% CL", "L");
   lgnumudissbnonlysystonlysbnfit->Draw();
   
+  cnumudissbnonlysystonlysbnfit->SaveAs((location+"proposal_extprop_sbnfit.root").c_str());
+  cnumudissbnonlysystonlysbnfit->SaveAs((location+"proposal_extprop_sbnfit.png").c_str());
+  cnumudissbnonlysystonlysbnfit->SaveAs((location+"proposal_extprop_sbnfit.pdf").c_str());
+
   sbnfit_proposal_sbn_3p1_contour_90_syst -> SetLineStyle(2);
 
   // 
@@ -630,6 +731,10 @@
   //
 
   TCanvas * cnumudisextinj = new TCanvas("cnumudisextinj","",20,20,700,900);
+  cnumudisextinj->SetTopMargin(0.022);
+  cnumudisextinj->SetBottomMargin(0.099);
+  cnumudisextinj->SetLeftMargin(0.116);
+  cnumudisextinj->SetRightMargin(0.024);
   cnumudisextinj->Draw();
 
   TH2F * hfnumudisextinj = (TH2F*) cnumudisextinj->DrawFrame(1E-3,1E-2,1,1E+2);
@@ -649,7 +754,7 @@
   lim_numudis_3p1_minisciboone_90pctCL    -> Draw("l");
   injected                                -> Draw("P");
 
-  TLegend * lgnumudisextinj = new TLegend(0.33,0.14,0.85,0.30);
+  TLegend * lgnumudisextinj = new TLegend(0.132,0.119,0.600,0.464);
   lgnumudisextinj->SetFillStyle(0);
   lgnumudisextinj->SetBorderSize(0);
   lgnumudisextinj->SetTextFont(132);
@@ -659,6 +764,10 @@
   lgnumudisextinj->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
 
   lgnumudisextinj->Draw();
+  
+  cnumudisextinj->SaveAs((location+"external_only_inj.root").c_str());
+  cnumudisextinj->SaveAs((location+"external_only_inj.png").c_str());
+  cnumudisextinj->SaveAs((location+"external_only_inj.pdf").c_str());
 
   //
   // numu disappearance allowed regions
@@ -754,6 +863,10 @@
   // VALOR 3 Sigma
   //
   TCanvas * cnumudisallowedvalor3sig = new TCanvas("cnumudisallowedvalor3sig","",20,20,700,900);
+  cnumudisallowedvalor3sig->SetTopMargin(0.022);
+  cnumudisallowedvalor3sig->SetBottomMargin(0.099);
+  cnumudisallowedvalor3sig->SetLeftMargin(0.116);
+  cnumudisallowedvalor3sig->SetRightMargin(0.024);
   cnumudisallowedvalor3sig->Draw();
 
   TH2F * hfnumudisallowedvalor3sig = (TH2F*) cnumudisallowedvalor3sig->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -767,7 +880,7 @@
   cnumudisallowedvalor3sig->SetLogx();
   cnumudisallowedvalor3sig->SetLogy();
 
-  TLegend * lgnumudisallowedvalor3sig = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowedvalor3sig = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowedvalor3sig->SetFillStyle(0);
   lgnumudisallowedvalor3sig->SetBorderSize(0);
   lgnumudisallowedvalor3sig->SetTextFont(132);
@@ -782,11 +895,19 @@
   lgnumudisallowedvalor3sig->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowedvalor3sig->Draw();
   
+  cnumudisallowedvalor3sig->SaveAs((location+"allowed_valor_3sig.root").c_str());
+  cnumudisallowedvalor3sig->SaveAs((location+"allowed_valor_3sig.png").c_str());
+  cnumudisallowedvalor3sig->SaveAs((location+"allowed_valor_3sig.pdf").c_str());
+
   // 
   // VALOR 5 Sigma
   //
   
   TCanvas * cnumudisallowedvalor5sig = new TCanvas("cnumudisallowedvalor5sig","",20,20,700,900);
+  cnumudisallowedvalor5sig->SetTopMargin(0.022);
+  cnumudisallowedvalor5sig->SetBottomMargin(0.099);
+  cnumudisallowedvalor5sig->SetLeftMargin(0.116);
+  cnumudisallowedvalor5sig->SetRightMargin(0.024);
   cnumudisallowedvalor5sig->Draw();
 
   TH2F * hfnumudisallowedvalor5sig = (TH2F*) cnumudisallowedvalor5sig->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -800,7 +921,7 @@
   cnumudisallowedvalor5sig->SetLogx();
   cnumudisallowedvalor5sig->SetLogy();
 
-  TLegend * lgnumudisallowedvalor5sig = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowedvalor5sig = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowedvalor5sig->SetFillStyle(0);
   lgnumudisallowedvalor5sig->SetBorderSize(0);
   lgnumudisallowedvalor5sig->SetTextFont(132);
@@ -815,11 +936,19 @@
   lgnumudisallowedvalor5sig->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowedvalor5sig->Draw();
 
+  cnumudisallowedvalor5sig->SaveAs((location+"allowed_valor_5sig.root").c_str());
+  cnumudisallowedvalor5sig->SaveAs((location+"allowed_valor_5sig.png").c_str());
+  cnumudisallowedvalor5sig->SaveAs((location+"allowed_valor_5sig.pdf").c_str());
+
   // 
   // CAFAna 3 Sigma
   //
   
   TCanvas * cnumudisallowedcafana3sig = new TCanvas("cnumudisallowedcafana3sig","",20,20,700,900);
+  cnumudisallowedcafana3sig->SetTopMargin(0.022);
+  cnumudisallowedcafana3sig->SetBottomMargin(0.099);
+  cnumudisallowedcafana3sig->SetLeftMargin(0.116);
+  cnumudisallowedcafana3sig->SetRightMargin(0.024);
   cnumudisallowedcafana3sig->Draw();
 
   TH2F * hfnumudisallowedcafana3sig = (TH2F*) cnumudisallowedcafana3sig->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -833,7 +962,7 @@
   cnumudisallowedcafana3sig->SetLogx();
   cnumudisallowedcafana3sig->SetLogy();
 
-  TLegend * lgnumudisallowedcafana3sig = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowedcafana3sig = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowedcafana3sig->SetFillStyle(0);
   lgnumudisallowedcafana3sig->SetBorderSize(0);
   lgnumudisallowedcafana3sig->SetTextFont(132);
@@ -848,11 +977,18 @@
   lgnumudisallowedcafana3sig->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowedcafana3sig->Draw();
 
+  cnumudisallowedcafana3sig->SaveAs((location+"allowed_cafana_3sig.root").c_str());
+  cnumudisallowedcafana3sig->SaveAs((location+"allowed_cafana_3sig.png").c_str());
+  cnumudisallowedcafana3sig->SaveAs((location+"allowed_cafana_3sig.pdf").c_str());
   // 
   // CAFAna 5 Sigma
   //
   
   TCanvas * cnumudisallowedcafana5sig = new TCanvas("cnumudisallowedcafana5sig","",20,20,700,900);
+  cnumudisallowedcafana5sig->SetTopMargin(0.022);
+  cnumudisallowedcafana5sig->SetBottomMargin(0.099);
+  cnumudisallowedcafana5sig->SetLeftMargin(0.116);
+  cnumudisallowedcafana5sig->SetRightMargin(0.024);
   cnumudisallowedcafana5sig->Draw();
 
   TH2F * hfnumudisallowedcafana5sig = (TH2F*) cnumudisallowedcafana5sig->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -866,7 +1002,7 @@
   cnumudisallowedcafana5sig->SetLogx();
   cnumudisallowedcafana5sig->SetLogy();
 
-  TLegend * lgnumudisallowedcafana5sig = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowedcafana5sig = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowedcafana5sig->SetFillStyle(0);
   lgnumudisallowedcafana5sig->SetBorderSize(0);
   lgnumudisallowedcafana5sig->SetTextFont(132);
@@ -881,11 +1017,18 @@
   lgnumudisallowedcafana5sig->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowedcafana5sig->Draw();
   
+  cnumudisallowedcafana5sig->SaveAs((location+"allowed_cafana_5sig.root").c_str());
+  cnumudisallowedcafana5sig->SaveAs((location+"allowed_cafana_5sig.png").c_str());
+  cnumudisallowedcafana5sig->SaveAs((location+"allowed_cafana_5sig.pdf").c_str());
   // 
   // SBNFit 3 Sigma
   //
   
   TCanvas * cnumudisallowedsbnfit3sig = new TCanvas("cnumudisallowedsbnfit3sig","",20,20,700,900);
+  cnumudisallowedsbnfit3sig->SetTopMargin(0.022);
+  cnumudisallowedsbnfit3sig->SetBottomMargin(0.099);
+  cnumudisallowedsbnfit3sig->SetLeftMargin(0.116);
+  cnumudisallowedsbnfit3sig->SetRightMargin(0.024);
   cnumudisallowedsbnfit3sig->Draw();
 
   TH2F * hfnumudisallowedsbnfit3sig = (TH2F*) cnumudisallowedsbnfit3sig->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -899,7 +1042,7 @@
   cnumudisallowedsbnfit3sig->SetLogx();
   cnumudisallowedsbnfit3sig->SetLogy();
 
-  TLegend * lgnumudisallowedsbnfit3sig = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowedsbnfit3sig = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowedsbnfit3sig->SetFillStyle(0);
   lgnumudisallowedsbnfit3sig->SetBorderSize(0);
   lgnumudisallowedsbnfit3sig->SetTextFont(132);
@@ -914,11 +1057,18 @@
   lgnumudisallowedsbnfit3sig->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowedsbnfit3sig->Draw();
 
+  cnumudisallowedsbnfit3sig->SaveAs((location+"allowed_sbnfit_3sig.root").c_str());
+  cnumudisallowedsbnfit3sig->SaveAs((location+"allowed_sbnfit_3sig.png").c_str());
+  cnumudisallowedsbnfit3sig->SaveAs((location+"allowed_sbnfit_3sig.pdf").c_str());
   // 
   // SBNFit 5 Sigma
   //
   
   TCanvas * cnumudisallowedsbnfit5sig = new TCanvas("cnumudisallowedsbnfit5sig","",20,20,700,900);
+  cnumudisallowedsbnfit5sig->SetTopMargin(0.022);
+  cnumudisallowedsbnfit5sig->SetBottomMargin(0.099);
+  cnumudisallowedsbnfit5sig->SetLeftMargin(0.116);
+  cnumudisallowedsbnfit5sig->SetRightMargin(0.024);
   cnumudisallowedsbnfit5sig->Draw();
 
   TH2F * hfnumudisallowedsbnfit5sig = (TH2F*) cnumudisallowedsbnfit5sig->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -932,7 +1082,7 @@
   cnumudisallowedsbnfit5sig->SetLogx();
   cnumudisallowedsbnfit5sig->SetLogy();
 
-  TLegend * lgnumudisallowedsbnfit5sig = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowedsbnfit5sig = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowedsbnfit5sig->SetFillStyle(0);
   lgnumudisallowedsbnfit5sig->SetBorderSize(0);
   lgnumudisallowedsbnfit5sig->SetTextFont(132);
@@ -947,11 +1097,18 @@
   lgnumudisallowedsbnfit5sig->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowedsbnfit5sig->Draw();
   
+  cnumudisallowedsbnfit5sig->SaveAs((location+"allowed_sbnfit_5sig.root").c_str());
+  cnumudisallowedsbnfit5sig->SaveAs((location+"allowed_sbnfit_5sig.png").c_str());
+  cnumudisallowedsbnfit5sig->SaveAs((location+"allowed_sbnfit_5sig.pdf").c_str());
   //
   // SBNFit CAFAna VALOR 3 sig overlay
   //
 
   TCanvas * cnumudisallowed3sigoverlay = new TCanvas("cnumudisallowed3sigoverlay","",20,20,700,900);
+  cnumudisallowed3sigoverlay->SetTopMargin(0.022);
+  cnumudisallowed3sigoverlay->SetBottomMargin(0.099);
+  cnumudisallowed3sigoverlay->SetLeftMargin(0.116);
+  cnumudisallowed3sigoverlay->SetRightMargin(0.024);
   cnumudisallowed3sigoverlay->Draw();
 
   TH2F * hfnumudisallowed3sigoverlay = (TH2F*) cnumudisallowed3sigoverlay->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -965,7 +1122,7 @@
   cnumudisallowed3sigoverlay->SetLogx();
   cnumudisallowed3sigoverlay->SetLogy();
 
-  TLegend * lgnumudisallowed3sigoverlay = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowed3sigoverlay = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowed3sigoverlay->SetFillStyle(0);
   lgnumudisallowed3sigoverlay->SetBorderSize(0);
   lgnumudisallowed3sigoverlay->SetTextFont(132);
@@ -988,11 +1145,18 @@
   lgnumudisallowed3sigoverlay->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowed3sigoverlay->Draw();
 
+  cnumudisallowed3sigoverlay->SaveAs((location+"allowed_3sig_overlay.root").c_str());
+  cnumudisallowed3sigoverlay->SaveAs((location+"allowed_3sig_overlay.png").c_str());
+  cnumudisallowed3sigoverlay->SaveAs((location+"allowed_3sig_overlay.pdf").c_str());
   //
   // SBNFit CAFAna VALOR 3 sig stat+syst only overlay
   //
 
   TCanvas * cnumudisallowed3sigsystoverlay = new TCanvas("cnumudisallowed3sigsystoverlay","",20,20,700,900);
+  cnumudisallowed3sigsystoverlay->SetTopMargin(0.022);
+  cnumudisallowed3sigsystoverlay->SetBottomMargin(0.099);
+  cnumudisallowed3sigsystoverlay->SetLeftMargin(0.116);
+  cnumudisallowed3sigsystoverlay->SetRightMargin(0.024);
   cnumudisallowed3sigsystoverlay->Draw();
 
   TH2F * hfnumudisallowed3sigsystoverlay = (TH2F*) cnumudisallowed3sigsystoverlay->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -1006,7 +1170,7 @@
   cnumudisallowed3sigsystoverlay->SetLogx();
   cnumudisallowed3sigsystoverlay->SetLogy();
 
-  TLegend * lgnumudisallowed3sigsystoverlay = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowed3sigsystoverlay = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowed3sigsystoverlay->SetFillStyle(0);
   lgnumudisallowed3sigsystoverlay->SetBorderSize(0);
   lgnumudisallowed3sigsystoverlay->SetTextFont(132);
@@ -1023,11 +1187,18 @@
   lgnumudisallowed3sigsystoverlay->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowed3sigsystoverlay->Draw();
 
+  cnumudisallowed3sigsystoverlay->SaveAs((location+"allowed_3sigsyst_overlay.root").c_str());
+  cnumudisallowed3sigsystoverlay->SaveAs((location+"allowed_3sigsyst_overlay.png").c_str());
+  cnumudisallowed3sigsystoverlay->SaveAs((location+"allowed_3sigsyst_overlay.pdf").c_str());
   //
   // SBNFit CAFAna VALOR 5 sig overlay
   //
 
   TCanvas * cnumudisallowed5sigoverlay = new TCanvas("cnumudisallowed5sigoverlay","",20,20,700,900);
+  cnumudisallowed5sigoverlay->SetTopMargin(0.022);
+  cnumudisallowed5sigoverlay->SetBottomMargin(0.099);
+  cnumudisallowed5sigoverlay->SetLeftMargin(0.116);
+  cnumudisallowed5sigoverlay->SetRightMargin(0.024);
   cnumudisallowed5sigoverlay->Draw();
 
   TH2F * hfnumudisallowed5sigoverlay = (TH2F*) cnumudisallowed5sigoverlay->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -1041,7 +1212,7 @@
   cnumudisallowed5sigoverlay->SetLogx();
   cnumudisallowed5sigoverlay->SetLogy();
 
-  TLegend * lgnumudisallowed5sigoverlay = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowed5sigoverlay = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowed5sigoverlay->SetFillStyle(0);
   lgnumudisallowed5sigoverlay->SetBorderSize(0);
   lgnumudisallowed5sigoverlay->SetTextFont(132);
@@ -1064,11 +1235,18 @@
   lgnumudisallowed5sigoverlay->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowed5sigoverlay->Draw();
   
+  cnumudisallowed5sigoverlay->SaveAs((location+"allowed_5sig_overlay.root").c_str());
+  cnumudisallowed5sigoverlay->SaveAs((location+"allowed_5sig_overlay.png").c_str());
+  cnumudisallowed5sigoverlay->SaveAs((location+"allowed_5sig_overlay.pdf").c_str());
   //
   // SBNFit CAFAna VALOR 5 sig overlay stat+syst only
   //
 
   TCanvas * cnumudisallowed5sigsystoverlay = new TCanvas("cnumudisallowed5sigsystoverlay","",20,20,700,900);
+  cnumudisallowed5sigsystoverlay->SetTopMargin(0.022);
+  cnumudisallowed5sigsystoverlay->SetBottomMargin(0.099);
+  cnumudisallowed5sigsystoverlay->SetLeftMargin(0.116);
+  cnumudisallowed5sigsystoverlay->SetRightMargin(0.024);
   cnumudisallowed5sigsystoverlay->Draw();
 
   TH2F * hfnumudisallowed5sigsystoverlay = (TH2F*) cnumudisallowed5sigsystoverlay->DrawFrame(3E-2,7E-1,2E-1,3.);
@@ -1082,7 +1260,7 @@
   cnumudisallowed5sigsystoverlay->SetLogx();
   cnumudisallowed5sigsystoverlay->SetLogy();
 
-  TLegend * lgnumudisallowed5sigsystoverlay = new TLegend(0.12,0.62,0.67,0.9);
+  TLegend * lgnumudisallowed5sigsystoverlay = new TLegend(0.136,0.661,0.686,0.942);
   lgnumudisallowed5sigsystoverlay->SetFillStyle(0);
   lgnumudisallowed5sigsystoverlay->SetBorderSize(0);
   lgnumudisallowed5sigsystoverlay->SetTextFont(132);
@@ -1098,4 +1276,8 @@
   lgnumudisallowed5sigsystoverlay->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_allowed,   "VALOR 5#sigma CL ",             "L");
   lgnumudisallowed5sigsystoverlay->AddEntry(injected, "Injected point - sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m^{2}_{41} = 1.32", "P");
   lgnumudisallowed5sigsystoverlay->Draw();
+
+  cnumudisallowed5sigsystoverlay->SaveAs((location+"allowed_5sigsyst_overlay.root").c_str());
+  cnumudisallowed5sigsystoverlay->SaveAs((location+"allowed_5sigsyst_overlay.png").c_str());
+  cnumudisallowed5sigsystoverlay->SaveAs((location+"allowed_5sigsyst_overlay.pdf").c_str());
 }
