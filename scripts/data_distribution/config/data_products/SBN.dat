@@ -14,6 +14,7 @@
   sbn_numu_disappearance | mock_data     | 09a2019         | RJ    | LIV1   | 
   sbn_numu_disappearance | mock_data     | 03a2020         | RJ    | LIV1   |
   sbn_numu_disappearance | universes     | 2019b2          | RJ    | LIV1   | 
+  sbn_numu_disappearance | responses     | 01a1            | RJ    | LIV1   | sbn_numu_disapp_2019b2_02a1_1 
 
   sbn_nue_appearance     | dsts          | 2020a           | TH    | LIV1   |
   sbn_nue_appearance     | prior_errors  | 2020a           | TH    | LIV1   |
