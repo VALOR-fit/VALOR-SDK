@@ -113,7 +113,7 @@ private:
   void Init    (void);
   void CleanUp (void);
 
-  void CheckBinEdges(VALORBinning *opt_binning, VALORBinning *smp_binning) const;
+  void CheckBinEdges(VALORBinning *opt_binning, VALORBinning *smp_binning, std::string description) const;
   
   // The list of reaction modes we're using
   std::vector<conv::ReacMode_t> fReactionModes;
