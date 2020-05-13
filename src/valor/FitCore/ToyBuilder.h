@@ -116,6 +116,7 @@ public:
          bool rethrowUnphysical = true, std::string toy_throw_file_to_read = "",
          std::string param_name_map_file = "");
 
+   // TODO: 'fitParam1Bin', 'fitParam2Bin' and 'batch' are used ONLY to name the output file, which is a specific choice. So to increase generality, constructing the file name should be handled outside this class.
    /**
       Builds a batch of marginalisation or fake data toys.
 
@@ -158,6 +159,57 @@ public:
          bool rethrowUnphysical = true, std::string toy_throw_file_to_read = "",
          std::string param_name_map_file = "");
 
+  /**
+    Builds a single marginalisation or fake data toy using parameter values from the input FitParamList.
+    Used e.g. when building toys from input MCMC steps.
+    To be clear, this does NOT randomise the parameters in the input FitParamList, it simply uses the
+    values contained within to generate a single toy.
+
+    To facilitate incremental building of toys, a complete set
+    of toys can be split into batches, each of which should
+    have the same number of toys in it.
+
+    \param fitParamBin The bin associated with the current unmarginalised
+           oscillation parameter.
+    \param batch The numeric ID for the batch of toys to be generated. This
+           should start with batch 0.
+    \param fpl The FitParamList containing the parameter values used to
+           generate the toy.
+    \param allowUnphysical Whether or not to accept parameters that exceed
+           their physical boundaries. Default false.
+    \return True if the toy was physical, false otherwise.
+ */
+  bool BuildSingleToy(const int fitParamBin, const int batch, FitParamList& fpl,
+                      bool isLastToy, bool fluctuateStatistics = true,
+                      bool allowUnphysical = false);
+
+  /**
+     Builds a single marginalisation or fake data toy using parameter values from the input FitParamList.
+     Used e.g. when building toys from input MCMC steps.
+     To be clear, this does NOT randomise the parameters in the input FitParamList, it simply uses the
+     values contained within to generate a single toy.
+
+     To facilitate incremental building of toys, a complete set
+     of toys can be split into batches, each of which should
+     have the same number of toys in it.
+
+     \param fitParam1Bin The bin associated with the first unmarginalised
+            oscillation parameter.
+     \param fitParam2Bin The bin associated with the second unmarginalised
+            oscillation parameter.
+     \param batch The numeric ID for the batch of toys to be generated. This
+            should start with batch 0.
+     \param fpl The FitParamList containing the parameter values used to
+            generate the toy.
+     \param allowUnphysical Whether or not to accept parameters that exceed
+            their physical boundaries. Default false.
+     \return True if the toy was physical, false otherwise.
+  */
+  bool BuildSingleToy(const int fitParam1Bin, const int fitParam2Bin,
+                      const int batch, FitParamList& fpl,
+                      bool isLastToy, bool fluctuateStatistics = true,
+                      bool allowUnphysical = false);
+
 
 private:
 
@@ -199,6 +251,9 @@ private:
    // For reading throws from an input file
    double*      _read_params;
    TFile*       _toy_throw_file;
+
+   // For keeping the same ToyStream open across multiple calls of BuildSingleToy()
+   util::ToyStream* _toy_stream_persistent;
 };
 
 } // valor

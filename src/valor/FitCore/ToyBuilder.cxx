@@ -32,7 +32,8 @@ ToyBuilder::ToyBuilder(CompoundFitElements& elements, string filePrefix,
   _tree_pars(nullptr),
   _file_pars(nullptr),
   _read_params(new double[conv::knppmax]),
-  _toy_throw_file(nullptr)
+  _toy_throw_file(nullptr),
+  _toy_stream_persistent(nullptr)
 {
 }
 //______________________________________________________________________________
@@ -51,6 +52,8 @@ ToyBuilder::~ToyBuilder()
       this->_toy_throw_file->Close();
    }
    delete this->_toy_throw_file;
+
+   delete this->_toy_stream_persistent;
 }
 //______________________________________________________________________________
 void ToyBuilder::BuildToys(const int fitParamBin, const int batch,
@@ -184,6 +187,96 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
    delete toy_stream;
    LOG("ToyBuilder", pNOTICE) << "Finished building toys. Generated " << Ntoys
                               << ", re-threw " << n_rethrows;
+}
+//______________________________________________________________________________
+void ToyBuilder::BuildSingleToy(const int fitParamBin, const int batch, FitParamList& fpl,
+                                bool isLastToy, bool fluctuateStatistics, bool allowUnphysical)
+{
+  this->BuildSingleToy(fitParamBin, -1, batch, fpl, isLastToy, fluctuateStatistics, allowUnphysical);
+}
+//______________________________________________________________________________
+bool ToyBuilder::BuildSingleToy(const int fitParam1Bin, const int fitParam2Bin, const int batch, FitParamList& fpl,
+                                bool isLastToy, bool fluctuateStatistics, bool allowUnphysical)
+{
+  if(_toys_are_marginalisation && fluctuateStatistics){
+    LOG("ToyBuilder", pWARN) << "The option to fluctuate statistics was requested when building "
+                             << "marginalisation toys. This has been ignored, as it is not yet supported.";
+  }
+
+  // Create a file and ToyStream to store this toy, if it doesn't already exist.
+  if(!_toy_stream_persistent) {
+    std::ostringstream oss;
+    oss << this->_filePrefix << "_" << fitParam1Bin;
+    if(fitParam2Bin > -1)
+    {  // Filename for 2D fit
+      oss << "_v_" << fitParam2Bin;
+    }
+    oss << "_" << batch << "_" << Ntoys << ".bin";
+    std::string filename = oss.str();
+
+    if(_toys_are_marginalisation) {
+      // Build marginalisation toys
+      std::string write_opt_str = "pdft_vf";
+      if(_store_mode_arrays ) { write_opt_str += "_pdfc_vf"; }
+      if(_use_simple_binning) { write_opt_str += "+SB";      }
+
+      // First generate a dummy toy to be overwritten (so that the model/data arrays can be initialised)
+      FitParamList* fpl_void = util::GetFitParameterList("void", "");
+      this->_model->Generate(*fpl_void);
+
+      _toy_stream_persistent = this->_model->InitToyStream(filename, "write", write_opt_str);
+    }
+    else {
+      // Build fake data toys
+      std::string write_opt_str = "data_vf";
+      if(_use_simple_binning) { write_opt_str += "+SB"; }
+
+      // First generate a dummy toy to be overwritten (so that the model/data arrays can be initialised)
+      FitParamList* fpl_void = util::GetFitParameterList("void", "");
+      this->_data->Generate(this->_model, *fpl_void, false);
+
+      _toy_stream_persistent = this->_data->InitToyStream(filename, "write", write_opt_str);
+    }
+  }
+
+  // Check that the parameter values in the input FitParamList are valid
+  if(!allowUnphysical && !util::AllWithinLimits(fpl))
+  {
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+    LOG("ToyBuilder", pDEBUG) << "At least one parameter thrown " <<
+               "outside expected limits. Rethrowing.";
+#endif
+    return false;
+  }
+
+  // Generate a toy-MC experiment and write to the output binary file
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+  PhysParamList true_params = fpl.AsPhysParamList("current");
+  LOG("ToyBuilder", pDEBUG) << "Generating toy-MC data";
+  LOG("ToyBuilder", pDEBUG) << "Toy-MC generation uses true parameters: " << true_params;
+#endif
+  this->_model->Generate(fpl, _toy_stream_persistent->GetVALORArrayFormat());
+  if(_toys_are_marginalisation) {
+    this->_model->Write(_toy_stream_persistent);
+  }
+  else {
+    this->_data->Generate(this->_model, fluctuateStatistics, _toy_stream_persistent->GetVALORArrayFormat());
+    this->_data->Write(_toy_stream_persistent);
+  }
+  this->SaveParamThrows(fpl, isLastToy, _toy_stream_persistent->GetFilename());
+
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+  if(_toys_are_marginalisation) {
+    LOG("ToyBuilder", pNOTICE) << "Marg toy generated. Event rates:\n" << this->_model->GetPDFIntegralAsString();
+  }
+  else {
+    LOG("ToyBuilder", pNOTICE) << "Fake data toy generated. Event rates:\n" << this->_data->GetPDFIntegralAsString();
+  }
+#endif
+
+  if(isLastToy) {
+    delete _toy_stream_persistent;
+  }
 }
 //______________________________________________________________________________
 void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string binary_file_name)
