@@ -86,6 +86,8 @@ namespace util
        */
       Option_t* GetVALORArrayFormat(void) const;
 
+      std::string GetFilename(void) const { return fFileName; }
+
     private:
       void         Init                    (string file_name, string read_or_write, string validation_string, long toy_size);
       bool         FileIsEmpty             () const;
