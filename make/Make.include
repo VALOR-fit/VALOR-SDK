@@ -74,7 +74,23 @@ endif
 ifdef GENIE_FQ_DIR
   GENIE_INCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
 endif
-
+######################################################
+#ifdef GENIE
+# GLIBRARIES = $(shell genie-config --libs)
+ 
+ # Hack while GENIE_REWEIGHT independent package is not good at reporting its own libraries
+# ifdef GENIE_REWEIGHT
+#   GLIBRARIES += -L$(GENIE_REWEIGHT)/lib -lGRwFwk -lGRwClc -lGRwIO
+# endif
+ 
+# GINCLUDES  = $(GENIE_INCLUDES)
+# GINCLUDES  := $(GINCLUDES) $(INCLUDES)
+# GLIBRARIES := $(LIBRARIES) $(GLIBRARIES) $(LIBRARIES)
+# ifeq ("false",$(is_cln))
+#  VALOR_GLIBRARIES := $(shell valor_expt-config --glibs)
+# endif
+#endif
+############################################################
 
 #-------------------------------------------------------------------
 #                              ROOT
@@ -397,6 +413,27 @@ LIBRARIES := $(SYSLIBS) \
 	     $(GPROF_LIBRARIES) \
 	     $(GSL_LIBRARIES) \
 	     $(OPT_WITH_MISC_LIBS)
+
+# Add GENIE includes and libaries for apps that depend both on GENIE and VALOR
+# GENIE needs to be enabled to compile those apps
+#
+
+#ifeq(, $(shell which genie-config))
+ifdef GENIE
+ GLIBRARIES = $(shell genie-config --libs)
+ 
+ # Hack while GENIE_REWEIGHT independent package is not good at reporting its own libraries
+ ifdef GENIE_REWEIGHT
+   GLIBRARIES += -L$(GENIE_REWEIGHT)/lib -lGRwFwk -lGRwClc -lGRwIO
+ endif
+ 
+ GINCLUDES  = $(GENIE_INCLUDES)
+ GINCLUDES  := $(GINCLUDES) $(INCLUDES)
+ GLIBRARIES := $(LIBRARIES) $(GLIBRARIES) $(LIBRARIES)
+ ifeq ("false",$(is_cln))
+  VALOR_GLIBRARIES := $(shell valor_expt-config --glibs)
+ endif
+endif
 
 # Default compiler and preprocessor flags
 

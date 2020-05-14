@@ -12,18 +12,23 @@ MAKEFILE = Makefile
 #
 include $(VALOR_FMWK)/make/Make.include
 
-TGT = run_fit \
-#~       make_table_systematic_effects \
-#~       write_pdf \
-#~       tweak_pdf_N \
-#~       tweak_pdf_sigma_var \
-#~       fitnt_conv \
-#~       adaptive_mcmc \
-#~       run_tests \
-#~       run_build_margtoys \
-#~       run_fit_marg \
-#~       make_dummy_samples \
-#~       batch_tests
+TGT = adaptive_mcmc \
+      fitnt_conv \
+      make_response_functions \
+      make_table_systematic_effects \
+      run_build_toys \
+      run_fit \
+      run_fit_marg \
+      tweak_pdf_N \
+      tweak_pdf_sigma_var \
+      write_pdf \
+      run_tests \
+      batch_tests 
+
+#      run_tests \ # Need to check why these are borking
+#      batch_tests \
+
+#      make_dummy_samples \
 
 all: $(TGT)
 
@@ -86,6 +91,11 @@ run_build_margtoys: FORCE
 run_fit_marg: FORCE
 	$(CXX) $(CXXFLAGS) -c run_fit_marg.cxx $(INCLUDES)
 	$(LD) $(LDFLAGS) run_fit_marg.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-run_fit_marg
+
+run_build_toys: FORCE
+	$(CXX) $(CXXFLAGS) -c run_build_toys.cxx $(INCLUDES)
+	$(LD) $(LDFLAGS) run_build_toys.o $(LIBRARIES) -o $(VALOR_EXPT)/bin/valor-run_build_toys
+
 
 make_dummy_samples: FORCE
 	$(CXX) $(CXXFLAGS) -c make_dummy_samples.cxx $(INCLUDES)

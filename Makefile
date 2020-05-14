@@ -18,7 +18,8 @@ BUILD_TARGETS =    print-make-info     \
 		   make-bin-lib-dir    \
 		   copy-scripts-to-bin \
 		   build-libs \
-		   | copy-rootdict-to-lib
+		   | copy-rootdict-to-lib \
+		   build-apps
 
 # define targets
 
@@ -161,10 +162,17 @@ pythonclean:
 				"${VALOR_FMWK}/external/python/lib" \
 				"${VALOR_FMWK}/external/python/get-pip.py" 2>/dev/null || true
 
+build-apps: make-bin-lib-dir build-libs copy-scripts-to-bin FORCE
+	@echo " "
+	@echo "** Building apps..."
+	$(MAKE) -C ${VALOR_FMWK}/src/valor/Apps;
+
+
 purge: FORCE
 	@echo " "
 	@echo "** Purging..."
 	cd ${VALOR_FMWK}/src/valor;\
+	cd Apps                       make purge; cd ..; \
 	cd Conventions;               make purge; cd ..; \
 	cd Utilities;                 make purge; cd ..; \
 	cd Messenger;                 make purge; cd ..; \
@@ -187,6 +195,7 @@ clean-files: FORCE
 	@echo "** Cleaning..."
 	rm -f ${VALOR_FMWK}/bin/valor_fmwk-config; \
 	cd ${VALOR_FMWK}/src/valor;\
+	cd Apps                     make clean; cd ..; \
 	cd Conventions;             make clean; cd ..; \
 	cd Utilities;               make clean; cd ..; \
 	cd Messenger;               make clean; cd ..; \
