@@ -74,23 +74,6 @@ endif
 ifdef GENIE_FQ_DIR
   GENIE_INCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
 endif
-######################################################
-#ifdef GENIE
-# GLIBRARIES = $(shell genie-config --libs)
- 
- # Hack while GENIE_REWEIGHT independent package is not good at reporting its own libraries
-# ifdef GENIE_REWEIGHT
-#   GLIBRARIES += -L$(GENIE_REWEIGHT)/lib -lGRwFwk -lGRwClc -lGRwIO
-# endif
- 
-# GINCLUDES  = $(GENIE_INCLUDES)
-# GINCLUDES  := $(GINCLUDES) $(INCLUDES)
-# GLIBRARIES := $(LIBRARIES) $(GLIBRARIES) $(LIBRARIES)
-# ifeq ("false",$(is_cln))
-#  VALOR_GLIBRARIES := $(shell valor_expt-config --glibs)
-# endif
-#endif
-############################################################
 
 #-------------------------------------------------------------------
 #                              ROOT
