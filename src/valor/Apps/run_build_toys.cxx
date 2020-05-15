@@ -98,9 +98,9 @@ int main(int argc, char** argv)
 
    CmdLnArgList arg;
    arg.Read(argc,argv,
-      "$VALOR_EXPT/config/apps/run_build_toys.arg"
-      ":$VALOR_EXPT/config/apps/seeds.arg"
-      ":$VALOR_EXPT/config/apps/oscparams.arg");
+      "$VALOR_FMWK/config/apps/run_build_toys.arg"
+      ":$VALOR_FMWK/config/apps/seeds.arg"
+      ":$VALOR_FMWK/config/apps/oscparams.arg");
    LOG("valor_dune", pNOTICE) << arg;
    BuildToys(arg);
    LOG("valor_dune", pNOTICE) << "Finished";

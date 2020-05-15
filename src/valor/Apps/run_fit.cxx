@@ -102,7 +102,7 @@ int main(int argc, char ** argv)
   //  util::InitializeOAPriors();
 
   CmdLnArgList arg;
-  arg.Read(argc,argv,"$VALOR_EXPT/config/apps/run_fit.arg:$VALOR_EXPT/config/apps/seeds.arg:$VALOR_EXPT/config/apps/oscparams.arg");
+  arg.Read(argc,argv,"$VALOR_FMWK/config/apps/run_fit.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
   LOG("valor_dune", pNOTICE) << arg;
 
   TString param_values_ts(arg.GetString("param-values-option"));

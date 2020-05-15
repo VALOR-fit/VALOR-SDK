@@ -72,7 +72,7 @@ int main(int argc, char ** argv)
   valor::util::PrintBanner(Env::Instance()->Banner(),500);
 
   CmdLnArgList arg;
-  arg.Read(argc,argv,"$VALOR_EXPT/config/apps/write_pdf.arg:$VALOR_EXPT/config/apps/oscparams.arg:$VALOR_EXPT/config/apps/seeds.arg");
+  arg.Read(argc,argv,"$VALOR_FMWK/config/apps/write_pdf.arg:$VALOR_FMWK/config/apps/oscparams.arg:$VALOR_FMWK/config/apps/seeds.arg");
   LOG("write_pdf", pNOTICE) << arg;
 
   string hypname             = arg.GetString("physics-hypothesis");

@@ -88,7 +88,7 @@ int main(int argc, char ** argv)
   valor::util::PrintBanner(Env::Instance()->Banner(),500);
  
   CmdLnArgList arg;
-  arg.Read(argc,argv,"$VALOR_EXPT/config/apps/tweak_pdf_sigma_var.arg:$VALOR_EXPT/config/apps/seeds.arg:$VALOR_EXPT/config/apps/oscparams.arg");
+  arg.Read(argc,argv,"$VALOR_FMWK/config/apps/tweak_pdf_sigma_var.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
   LOG("valor_dune", pNOTICE) << arg;
   
   // Read the command line

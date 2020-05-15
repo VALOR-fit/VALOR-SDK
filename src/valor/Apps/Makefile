@@ -94,7 +94,7 @@ run_fit_marg: FORCE
 
 run_build_toys: FORCE
 	$(CXX) $(CXXFLAGS) -c run_build_toys.cxx $(INCLUDES)
-	$(LD) $(LDFLAGS) run_build_toys.o $(LIBRARIES) -o $(VALOR_EXPT)/bin/valor-run_build_toys
+	$(LD) $(LDFLAGS) run_build_toys.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-run_build_toys
 
 
 make_dummy_samples: FORCE
