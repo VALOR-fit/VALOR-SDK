@@ -142,9 +142,9 @@ distclean: FORCE
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-make_response_functions
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-make_table_systematic_effects
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-run_fit
-	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/write_pdf
-	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/tweak_pdf_N
-	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/tweak_pdf_sigma_var
+	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-write_pdf
+	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-weak_pdf_N
+	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-tweak_pdf_sigma_var
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-fitnt_conv
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-adaptive_mcmc
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-run_tests
