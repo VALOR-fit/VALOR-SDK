@@ -14,7 +14,6 @@ include $(VALOR_FMWK)/make/Make.include
 
 TGT = adaptive_mcmc \
       fitnt_conv \
-      make_response_functions \
       make_table_systematic_effects \
       run_build_toys \
       run_fit \
@@ -22,7 +21,8 @@ TGT = adaptive_mcmc \
       tweak_pdf_N \
       tweak_pdf_sigma_var \
       write_pdf \
-      run_tests \
+      make_response_functions 
+     # run_tests \
       batch_tests 
 
 #      run_tests \ # Need to check why these are borking

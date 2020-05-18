@@ -414,7 +414,7 @@ ifdef GENIE
  GINCLUDES  := $(GINCLUDES) $(INCLUDES)
  GLIBRARIES := $(LIBRARIES) $(GLIBRARIES) $(LIBRARIES)
  ifeq ("false",$(is_cln))
-  VALOR_GLIBRARIES := $(shell valor_expt-config --glibs)
+  VALOR_GLIBRARIES := $(shell valor_fmwk-config --glibs)
  endif
 endif
 
