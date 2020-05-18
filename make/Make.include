@@ -48,16 +48,16 @@ endif
 
 # VALOR application release info
 #
-VALOR_APP_VERSION  = $(shell awk '{print $0}' $(VALOR_EXPT)/VERSION)
+VALOR_APP_VERSION  = $(shell awk '{print $0}' $(VALOR_FMWK)/VERSION)
 
 # VALOR application include path
 #
-VALOR_APP_INCLUDES := -I$(VALOR_EXPT)/src/
+VALOR_APP_INCLUDES := -I$(VALOR_FMWK)/src/
 
 # VALOR application libraries
 #
 ifeq ("false",$(is_cln))
-  VALOR_APP_LIBRARIES = $(shell valor_expt-config --libs 2>/dev/null)
+  VALOR_APP_LIBRARIES = $(shell valor_fmwk-config --libs 2>/dev/null)
 endif
 
 #-------------------------------------------------------------------
