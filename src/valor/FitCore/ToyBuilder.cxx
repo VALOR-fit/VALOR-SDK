@@ -19,10 +19,9 @@
 namespace valor
 {
 
-ToyBuilder::ToyBuilder(CompoundFitElements& elements, string filePrefix,
+ToyBuilder::ToyBuilder(CompoundFitElements& elements,
                        bool use_simple_binning, bool store_mode_arrays,
                        bool toys_are_marginalisation, bool save_throws_to_tree):
-  _filePrefix(filePrefix),
   _model(elements.FitModel()),
   _data(elements.FitData()),
   _toys_are_marginalisation(toys_are_marginalisation),
@@ -56,30 +55,10 @@ ToyBuilder::~ToyBuilder()
    delete this->_toy_stream_persistent;
 }
 //______________________________________________________________________________
-void ToyBuilder::BuildToys(const int fitParamBin, const int batch,
-      const int Ntoys, FitParamList& fpl, bool randomizeSystematics,
-      bool fluctuateStatistics, const char* options, bool rethrowUnphysical,
-      std::string toy_throw_file_to_read, std::string param_name_map_file)
+void ToyBuilder::BuildToys(const std::string filename, const int Ntoys, FitParamList& fpl,
+      bool randomizeSystematics, bool fluctuateStatistics, const char* options,
+      bool rethrowUnphysical, std::string toy_throw_file_to_read, std::string param_name_map_file)
 {
-   this->BuildToys(fitParamBin, -1, batch, Ntoys, fpl, randomizeSystematics, fluctuateStatistics,
-         options, rethrowUnphysical, toy_throw_file_to_read, param_name_map_file);
-}
-//______________________________________________________________________________
-void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
-      const int batch, const int Ntoys, FitParamList& fpl, bool randomizeSystematics,
-      bool fluctuateStatistics, const char* options, bool rethrowUnphysical,
-      std::string toy_throw_file_to_read, std::string param_name_map_file)
-{
-   std::ostringstream oss;
-   oss << this->_filePrefix << "_" << fitParam1Bin;
-   if(fitParam2Bin > -1)
-   {  // Filename for 2D fit
-      oss << "_v_" << fitParam2Bin;
-   }
-   oss << "_" << batch << "_" << Ntoys << ".bin";
-
-   std::string filename = oss.str();
-
    // Create a file to store this batch of toys
    util::ToyStream* toy_stream = nullptr;
    if(_toys_are_marginalisation) {
@@ -189,13 +168,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
                               << ", re-threw " << n_rethrows;
 }
 //______________________________________________________________________________
-void ToyBuilder::BuildSingleToy(const int fitParamBin, const int batch, FitParamList& fpl,
-                                bool isLastToy, bool fluctuateStatistics, bool allowUnphysical)
-{
-  this->BuildSingleToy(fitParamBin, -1, batch, fpl, isLastToy, fluctuateStatistics, allowUnphysical);
-}
-//______________________________________________________________________________
-bool ToyBuilder::BuildSingleToy(const int fitParam1Bin, const int fitParam2Bin, const int batch, FitParamList& fpl,
+bool ToyBuilder::BuildSingleToy(const std::string filename, FitParamList& fpl,
                                 bool isLastToy, bool fluctuateStatistics, bool allowUnphysical)
 {
   if(_toys_are_marginalisation && fluctuateStatistics){
@@ -205,15 +178,6 @@ bool ToyBuilder::BuildSingleToy(const int fitParam1Bin, const int fitParam2Bin, 
 
   // Create a file and ToyStream to store this toy, if it doesn't already exist.
   if(!_toy_stream_persistent) {
-    std::ostringstream oss;
-    oss << this->_filePrefix << "_" << fitParam1Bin;
-    if(fitParam2Bin > -1)
-    {  // Filename for 2D fit
-      oss << "_v_" << fitParam2Bin;
-    }
-    oss << "_" << batch << "_" << Ntoys << ".bin";
-    std::string filename = oss.str();
-
     if(_toys_are_marginalisation) {
       // Build marginalisation toys
       std::string write_opt_str = "pdft_vf";

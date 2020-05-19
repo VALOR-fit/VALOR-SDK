@@ -48,8 +48,6 @@ public:
 
       \param elements The CompoundFitElements object used to generate the MC
              spectra.
-      \param filePrefix The prefix to be used for the marginalisation toy files
-             to be written.
       \param use_simple_binning If true, generates/writes toys for both the simple
              and optimised binning schemes. If false, only generates/writes toys
              using the optimised binning scheme.
@@ -66,7 +64,7 @@ public:
       \param save_throws_to_tree Save the oscillation and systematic parameter values
              used to generate each toy to a tree in an output file.
    */
-   ToyBuilder(CompoundFitElements& elements, string filePrefix,
+   ToyBuilder(CompoundFitElements& elements,
               bool use_simple_binning = false, bool store_mode_arrays = false,
               bool toys_are_marginalisation = true, bool save_throws_to_tree = false);
 
@@ -78,58 +76,13 @@ public:
    virtual ~ToyBuilder();
 
    /**
-      Builds a batch of marginalisation or fake data toys, depending on the supplied option.
-
-      To facilitate incremental building of toys, a complete set
-      of toys can be split into batches, each of which should
-      have the same number of toys in it.
-
-      \param fitParamBin The bin associated with the current unmarginalised
-             oscillation parameter.
-      \param batch The numeric ID for the batch of toys to be generated. This
-             should start with batch 0.
-      \param Ntoys The number of toys to be created in *this*
-             batch.
-      \param fpl The FitParamList defining the parameters to be used in
-             generating the toys. This method will only throw
-             those parameters that return true for FitParamList::IsMarginalized.
-      \param randomizeSystematics Whether or not to randomize the systematics.
-             Default true (kind of the point of marginalisation, but might be
-             useful for testing).
-      \param options The options associated with randomizing systematics.
-      \param rethrowUnphysical Whether or not to rethrow parameters that exceed
-             their physical boundaries (Cholesky decomposition can cause
-             parameters to move beyond bounds even if they are thrown with
-             limits). Default true.
-      \param toy_throw_file_to_read Read throws from a pre-existing file instead of
-             generating them. This is used e.g. to convert T2K legacy toy throws
-             into SDK marginalisation toys.
-             NOTE: As this reads thrown parameter values, statistical fluctuations
-             are not copied
-      \param param_name_map_file If using toy_throw_file_to_read, also specify this
-             argument, which is used to convert SDK parameter names into the parameter
-             names used by the toy_throw_file_to_read.
-   */
-   void BuildToys(const int fitParamBin, const int batch, const int Ntoys,
-         FitParamList& fpl, bool randomizeSystematics = true, bool fluctuateStatistics = true,
-         const char* options = "randomize-all;prefit-errors",
-         bool rethrowUnphysical = true, std::string toy_throw_file_to_read = "",
-         std::string param_name_map_file = "");
-
-   // TODO: 'fitParam1Bin', 'fitParam2Bin' and 'batch' are used ONLY to name the output file, which is a specific choice. So to increase generality, constructing the file name should be handled outside this class.
-   /**
       Builds a batch of marginalisation or fake data toys.
 
       To facilitate incremental building of toys, a complete set
       of toys can be split into batches, each of which should
       have the same number of toys in it.
 
-      \param fitParam1Bin The bin associated with the first unmarginalised
-             oscillation parameter.
-      \param fitParam2Bin The bin associated with the second unmarginalised
-             oscillation parameter.
-      \param batch The numeric ID for the batch of toys to be generated. This
-             should start with batch 0.
+      \param filename The name of the output binary file which toys will be written to
       \param Ntoys The number of toys to be created in *this*
              batch.
       \param fpl The FitParamList defining the parameters to be used in
@@ -152,36 +105,11 @@ public:
              argument, which is used to convert SDK parameter names into the parameter
              names used by the toy_throw_file_to_read.
    */
-   void BuildToys(const int fitParam1Bin, const int fitParam2Bin,
-         const int batch, const int Ntoys, FitParamList& fpl,
+   void BuildToys(const std::string filename = "toys.bin", const int Ntoys, FitParamList& fpl,
          bool randomizeSystematics = true, bool fluctuateStatistics = true,
          const char* options = "randomize-all;prefit-errors",
          bool rethrowUnphysical = true, std::string toy_throw_file_to_read = "",
          std::string param_name_map_file = "");
-
-  /**
-    Builds a single marginalisation or fake data toy using parameter values from the input FitParamList.
-    Used e.g. when building toys from input MCMC steps.
-    To be clear, this does NOT randomise the parameters in the input FitParamList, it simply uses the
-    values contained within to generate a single toy.
-
-    To facilitate incremental building of toys, a complete set
-    of toys can be split into batches, each of which should
-    have the same number of toys in it.
-
-    \param fitParamBin The bin associated with the current unmarginalised
-           oscillation parameter.
-    \param batch The numeric ID for the batch of toys to be generated. This
-           should start with batch 0.
-    \param fpl The FitParamList containing the parameter values used to
-           generate the toy.
-    \param allowUnphysical Whether or not to accept parameters that exceed
-           their physical boundaries. Default false.
-    \return True if the toy was physical, false otherwise.
- */
-  bool BuildSingleToy(const int fitParamBin, const int batch, FitParamList& fpl,
-                      bool isLastToy, bool fluctuateStatistics = true,
-                      bool allowUnphysical = false);
 
   /**
      Builds a single marginalisation or fake data toy using parameter values from the input FitParamList.
@@ -193,20 +121,14 @@ public:
      of toys can be split into batches, each of which should
      have the same number of toys in it.
 
-     \param fitParam1Bin The bin associated with the first unmarginalised
-            oscillation parameter.
-     \param fitParam2Bin The bin associated with the second unmarginalised
-            oscillation parameter.
-     \param batch The numeric ID for the batch of toys to be generated. This
-            should start with batch 0.
+     \param filename The name of the output binary file which toys will be written to
      \param fpl The FitParamList containing the parameter values used to
             generate the toy.
      \param allowUnphysical Whether or not to accept parameters that exceed
             their physical boundaries. Default false.
      \return True if the toy was physical, false otherwise.
   */
-  bool BuildSingleToy(const int fitParam1Bin, const int fitParam2Bin,
-                      const int batch, FitParamList& fpl,
+  bool BuildSingleToy(const std::string filename = "toys.bin", FitParamList& fpl,
                       bool isLastToy, bool fluctuateStatistics = true,
                       bool allowUnphysical = false);
 
@@ -238,7 +160,6 @@ private:
                                std::string param_name_map_file, const char* options, int toy_number);
 
 private:
-   string       _filePrefix;
    FitModelABC* _model;
    FitDataABC*  _data;
    bool         _use_simple_binning;
