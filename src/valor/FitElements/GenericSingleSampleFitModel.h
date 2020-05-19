@@ -152,6 +152,11 @@ private:
   void ApplyPhysics                      (Option_t * opt = 0);
   void ApplyOscProb                      (Option_t * opt = 0);
   void UpdatePDFs                        (Option_t * opt = 0);
+
+  void ApplyErecoCuts                    (Option_t * opt = 0);
+  std::vector<int> fBinsToCutOB;
+  std::vector<int> fBinsToCutSB;
+
   void ApplyPostOscLateralSystematics    (VALORArray * pdf, bool simple_binning = false);
   void ApplyLateralSystematic            (VALORArray * pdf, conv::PhysParamId_t p, bool simple_binning = false);
   void ReadExtTuningHistsAll             (TXMLEngine* xmleng, XMLNodePointer_t top_node);

@@ -494,6 +494,8 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
 
   this->ApplyOscProb(opt);      // `fin' MC templates --> `fin' MC templates
   this->UpdatePDFs(opt);        // `fin' MC templates --> p.d.f
+
+  this->ApplyErecoCuts(opt);
 #endif //__VALOR_FMWK_PENALTY_ONLY__
 
   // Print the final MC templates
@@ -3516,17 +3518,17 @@ void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
   // Now integrate the above-computed PDF components over the true reaction mode
   // and calculate the total PDF
   //
-    for(int ireco=0; ireco < n_reco_bins_ob; ireco++) {
-      double sum = 0.;
-      for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
-        ReacMode_t m = fReactionModes[imode];
-        if(m == kmUndefined) continue;
-        if(fMCTNullOb[imode]) continue;
-        pdfTypeOb & pdfCompObArr = *reinterpret_cast<pdfTypeOb *>(&(fPDFCompOb[imode]->GetEntryRef(0)));
-        sum += pdfCompObArr[ireco];
-      }//imode
-      pdfTotObArr[ireco] = sum;
-    }//ireco
+  for(int ireco=0; ireco < n_reco_bins_ob; ireco++) {
+    double sum = 0.;
+    for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+      ReacMode_t m = fReactionModes[imode];
+      if(m == kmUndefined) continue;
+      if(fMCTNullOb[imode]) continue;
+      pdfTypeOb & pdfCompObArr = *reinterpret_cast<pdfTypeOb *>(&(fPDFCompOb[imode]->GetEntryRef(0)));
+      sum += pdfCompObArr[ireco];
+    }//imode
+    pdfTotObArr[ireco] = sum;
+  }//ireco
 
   if(update_mct_sb) {
     for(int ireco=0; ireco < n_reco_bins_sb; ireco++) {
@@ -3556,6 +3558,104 @@ void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
       this->ApplyPostOscLateralSystematics(fPDFCompSb[imode], true);
     }
   }
+}
+//________________________________________________________________________________________
+void valor::GenericSingleSampleFitModel::ApplyErecoCuts(Option_t * option)
+{
+  bool update_mct_sb = false;
+  if(option) {
+    string opt = option;
+    if(opt.find("+SB") != string::npos) {
+      update_mct_sb = true;
+    }
+  }
+
+  //get the binning
+  const VALORBinning  * reco_ob = fBinning->RecoOptBinning();
+  const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
+
+  const int n_reco_bins_ob  = reco_ob->NBins();
+  const int n_reco_bins_sb  = reco_sb->NBins();
+
+  // Recast VALORArray blocks so they can be used addressed like normal arrays (fast).
+  // Hard to read, so should only be used in code for which speed is essential.
+  typedef double (pdfTypeOb)[n_reco_bins_ob];
+  typedef double (pdfTypeSb)[n_reco_bins_sb];
+  pdfTypeOb & pdfTotObArr  = *reinterpret_cast<pdfTypeOb *>(&(fPDFTotOb->GetEntryRef(0)));
+  pdfTypeSb & pdfTotSbArr  = *reinterpret_cast<pdfTypeSb *>(&(fPDFTotSb->GetEntryRef(0)));
+
+  //find the bin(s) that we need to 0
+  if(!fBinsToCutOB.size()) {
+    for(int ireco=0; ireco < n_reco_bins_ob; ireco++) {
+      const double max = reco_ob->BinMaximum(ireco, conv::kvEreco);
+      if(fSample == conv::ks1Rmu && max >= 0.295 /*0.3 - first bin with events is 0.25-0.30*/)
+	continue;
+      else if(fSample == conv::ks1Re && max <= 1.255 /*1.25*/ && max >= 0.145 /*0.15 - first bin with events is 0.10-0.15*/)
+	continue;
+      else if(fSample == conv::ksMultiRe && max <= 1.255 /*1.25*/ && max >= 0.445 /*0.45 - first bin with events is 0.40-0.45*/)
+	continue;
+      fBinsToCutOB.push_back(ireco);
+      LOG("GenericSingleSampleFitModel",pNOTICE)
+	<< "Will 0 the OB bin " << ireco << ": [" << reco_ob->BinMinimum(ireco, conv::kvEreco) << ", " << max
+	<< "] for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample);
+    }//ireco
+  }//!fBinsToCutOB.size()
+
+  if(update_mct_sb) {
+    //find the bin(s) that we need to 0
+    if(!fBinsToCutSB.size()) {
+      for(int ireco=0; ireco < n_reco_bins_sb; ireco++) {
+	const double max = reco_sb->BinMaximum(ireco, conv::kvEreco);
+	if(fSample == conv::ks1Rmu && max >= 0.295 /*0.3 - first bin with events is 0.25-0.30*/)
+	  continue;
+	else if(fSample == conv::ks1Re && max <= 1.255 /*1.25*/ && max >= 0.145 /*0.15 - first bin with events is 0.10-0.15*/)
+	  continue;
+	else if(fSample == conv::ksMultiRe && max <= 1.255 /*1.25*/ && max >= 0.445 /*0.45 - first bin with events is 0.40-0.45*/)
+	  continue;
+
+	fBinsToCutSB.push_back(ireco);
+	LOG("GenericSingleSampleFitModel",pNOTICE)
+	  << "Will 0 the SB bin " << ireco << ": [" << reco_sb->BinMinimum(ireco, conv::kvEreco) << ", " << max
+	  << "] for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample);
+      }//ireco
+    }//!fBinsToCutSB.size()
+  }//update_mct_sb?
+
+  for(size_t ibin = 0; ibin < fBinsToCutOB.size(); ibin++) {
+    const int ireco = fBinsToCutOB[ibin];
+    if(pdfTotObArr[ireco] > conv::kASmallNum)
+      LOG("GenericSingleSampleFitModel",pNOTICE)
+	<< "Changing fPDFTotOb for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<" from "
+	<< pdfTotObArr[ireco] << " to 0 in OB bin " << ireco << ":[" 
+	<< reco_ob->BinMinimum(ireco, conv::kvEreco) << ", " << reco_ob->BinMaximum(ireco, conv::kvEreco) << "]";
+    pdfTotObArr[ireco] = 0;
+    for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+      ReacMode_t m = fReactionModes[imode];
+      if(m == kmUndefined) continue;
+      if(fMCTNullOb[imode]) continue;
+      pdfTypeOb & pdfCompObArr = *reinterpret_cast<pdfTypeOb *>(&(fPDFCompOb[imode]->GetEntryRef(0)));
+      pdfCompObArr[ireco] = 0;
+    }//imode
+  }//ibin
+
+  if(update_mct_sb) {
+    for(size_t ibin = 0; ibin < fBinsToCutSB.size(); ibin++) {
+      const int ireco = fBinsToCutSB[ibin];
+      if(pdfTotSbArr[ireco] > conv::kASmallNum)
+	LOG("GenericSingleSampleFitModel",pNOTICE)
+	  << "Changing fPDFTotSb for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<" from "
+	  << pdfTotSbArr[ireco] << " to 0 in SB bin " << ireco << ":[" 
+	  << reco_sb->BinMinimum(ireco, conv::kvEreco) << ", " << reco_sb->BinMaximum(ireco, conv::kvEreco) << "]";
+      pdfTotSbArr[ireco] = 0;
+      for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+        ReacMode_t m = fReactionModes[imode];
+        if(m == kmUndefined) continue;
+        if(fMCTNullOb[imode]) continue;
+        pdfTypeSb & pdfCompSbArr = *reinterpret_cast<pdfTypeSb *>(&(fPDFCompSb[imode]->GetEntryRef(0)));
+        pdfCompSbArr[ireco] = 0;
+      }//imode
+    }//ibin
+  }//update_mct_sb?
 }
 //________________________________________________________________________________________
 valor::PhysParamList valor::GenericSingleSampleFitModel::OneSigmaErrors(Option_t * /*opt*/)
