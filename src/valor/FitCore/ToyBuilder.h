@@ -105,7 +105,7 @@ public:
              argument, which is used to convert SDK parameter names into the parameter
              names used by the toy_throw_file_to_read.
    */
-   void BuildToys(const std::string filename = "toys.bin", const int Ntoys, FitParamList& fpl,
+   void BuildToys(const std::string filename, const int Ntoys, FitParamList& fpl,
          bool randomizeSystematics = true, bool fluctuateStatistics = true,
          const char* options = "randomize-all;prefit-errors",
          bool rethrowUnphysical = true, std::string toy_throw_file_to_read = "",
@@ -128,7 +128,7 @@ public:
             their physical boundaries. Default false.
      \return True if the toy was physical, false otherwise.
   */
-  bool BuildSingleToy(const std::string filename = "toys.bin", FitParamList& fpl,
+  bool BuildSingleToy(const std::string filename, FitParamList& fpl,
                       bool isLastToy, bool fluctuateStatistics = true,
                       bool allowUnphysical = false);
 

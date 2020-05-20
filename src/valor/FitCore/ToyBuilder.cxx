@@ -10,6 +10,7 @@
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlStr.h"
+#include "valor/Utilities/UtlSystem.h"
 #include "valor/Utilities/ToyStream.h"
 #include "valor/FitCore/UtlFitParamList.h"
 #include "valor/FitCore/UtlOscillation.h"
@@ -60,6 +61,10 @@ void ToyBuilder::BuildToys(const std::string filename, const int Ntoys, FitParam
       bool rethrowUnphysical, std::string toy_throw_file_to_read, std::string param_name_map_file)
 {
    // Create a file to store this batch of toys
+   if(filename.empty()) {
+      LOG("ToyBuilder", pFATAL) << "Tried to generate toys, but the name of the output file was not specified!";
+      util::Die(-1);
+   }
    util::ToyStream* toy_stream = nullptr;
    if(_toys_are_marginalisation) {
       // Build marginalisation toys
@@ -178,6 +183,12 @@ bool ToyBuilder::BuildSingleToy(const std::string filename, FitParamList& fpl,
 
   // Create a file and ToyStream to store this toy, if it doesn't already exist.
   if(!_toy_stream_persistent) {
+
+    if(filename.empty()) {
+      LOG("ToyBuilder", pFATAL) << "Tried to generate toys, but the name of the output file was not specified!";
+      util::Die(-1);
+    }
+
     if(_toys_are_marginalisation) {
       // Build marginalisation toys
       std::string write_opt_str = "pdft_vf";
