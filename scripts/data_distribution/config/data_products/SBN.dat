@@ -9,11 +9,15 @@
   sbn_numu_disappearance | dsts          | 2019a1          | RJ    | LIV1   | sbn_numu_disapp_2019a1_01a1_1
   sbn_numu_disappearance | dsts          | 2019b1          | RJ    | LIV1   | sbn_numu_disapp_2019b1_01a1_1
   sbn_numu_disappearance | dsts          | 2019b2          | RJ    | LIV1   | sbn_numu_disapp_2019b2_01a1_1, sbn_numu_disapp_2019b2_02a1_1
+  sbn_numu_disappearance | dsts          | 2019b3          | RJ    | LIV1   | sbn_numu_disapp_2019b3_02a1_1
   sbn_numu_disappearance | prior_errors  | 01a1            | RJ    | LIV1   | sbn_numu_disapp_2019a1_01a1_1, sbn_numu_disapp_2019b1_01a1_1, sbn_numu_disapp_2019b2_01a1_1
-  sbn_numu_disappearance | prior_errors  | 02a1            | RJ    | LIV1   | sbn_numu_disapp_2019b2_02a1_1
-  sbn_numu_disappearance | mock_data     | 09a2019         | RJ    | LIV1   |
+  sbn_numu_disappearance | prior_errors  | 02a1            | RJ    | LIV1   | sbn_numu_disapp_2019b2_02a1_1, sbn_numu_disapp_2019b3_02a1_1
+  sbn_numu_disappearance | prior_errors  | 02b1            | RJ    | LIV1   | sbn_numu_disapp_2019b3_02b1_1
+  sbn_numu_disappearance | mock_data     | 09a2019         | RJ    | LIV1   | 
   sbn_numu_disappearance | mock_data     | 03a2020         | RJ    | LIV1   |
-  sbn_numu_disappearance | universes     | 2019b2          | RJ    | LIV1   |
+  sbn_numu_disappearance | universes     | 2019b2          | RJ    | LIV1   | 
+  sbn_numu_disappearance | universes     | 2019b3          | RJ    | LIV1   | 
+  sbn_numu_disappearance | responses     | 02b1            | RJ    | LIV1   | sbn_numu_disapp_2019b3_02b1_1 
 
   sbn_nue_appearance     | dsts          | 2020a           | TH    | LIV1   |
   sbn_nue_appearance     | prior_errors  | 2020a           | TH    | LIV1   |
