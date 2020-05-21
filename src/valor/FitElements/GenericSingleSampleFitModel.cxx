@@ -2585,13 +2585,13 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
   }
 
 #ifdef DEBUG_SINGLE_BIN
-  double              debug_true0  = 1.101;   // For T2K this is Etrue      // Set to -999 to look at all bins for this kine var
-  double              debug_reco0  = 1.101;   // For T2K this is Ereco
-  double              debug_reco1  = 90.0;    // For T2K this is theta reco
-  conv::Sample_t      debug_sample = conv::ks1Rmu;
-  conv::BeamConf_t    debug_beam   = conv::kbJPARC_FHC;
+  double              debug_true0  = 5;   // For T2K this is Etrue      // Set to -999 to look at all bins for this kine var
+  double              debug_reco0  = 5;   // For T2K this is Ereco
+  double              debug_reco1  = 5;   // For T2K this is theta reco
+  conv::Sample_t      debug_sample = conv::ksNuMuLikeCChigh;
+  conv::BeamConf_t    debug_beam   = conv::kbBNB_FHC;
   conv::ReacMode_t    debug_mode   = conv::kmNuMuCCQE;  // Or leave as conv::kmUndefined to look at all applied modes
-  conv::PhysParamId_t debug_param  = util::NameRegistry::Instance()->PhysParamFromString("skdetfsi002");  // Or leave as conv::kPhypUndefined to look at all applied params
+  conv::PhysParamId_t debug_param  = conv::kPhypUndefined;  // Or leave as conv::kPhypUndefined to look at all applied params
   bool debug_print_sum_over_true0  = true;    // If true, and we're looking at a single reco bin, print out the final bin content for the reco bin summed over all true bins.
   if(fSample == debug_sample && fBeam == debug_beam) {
     LOG("GenericSingleSampleFitModel",pNOTICE)
@@ -2646,10 +2646,14 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       std::vector<double> debug_xsec_reco_vals;
       std::vector<double> debug_true_vals;
       debug_reco_vals.push_back(debug_reco0);
-      if(util::NDimReco(reco_ks) > 1) { debug_reco_vals.push_back(debug_reco1); }
+      if(util::NDimReco(reco_ks) > 1) { 
+        debug_reco_vals.push_back(debug_reco1); 
+      }
       debug_true_vals.push_back(debug_true0);
       debug_xsec_reco_vals.push_back(debug_reco0);
-      debug_xsec_reco_vals.push_back(debug_reco1);
+      if(util::NDimReco(reco_ks) > 1) { 
+        debug_xsec_reco_vals.push_back(debug_reco1);
+      }
       debug_ireco = reco_ob->FindBin(debug_reco_vals);
       if (debug_true0 != -999) {
         debug_itrue = true_sb->FindBin(debug_true_vals);
