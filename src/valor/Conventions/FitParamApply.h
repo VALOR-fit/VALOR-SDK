@@ -131,7 +131,7 @@ namespace valor {
     static const ReacTypeApplyMask_t ktApplyToNCoth        = (kApplyMaskOne << 24 );
     static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 25 ); //only for nue: CC + NC + interference
     static const ReacTypeApplyMask_t ktApplyToOther        = (kApplyMaskOne << 26 ); //only for nue: CC + NC + interference
-    static const ReacTypeApplyMask_t ktApplyToCosmic       = (kApplyMaskOne << 27 ); //only for nue: CC + NC + interference
+    static const ReacTypeApplyMask_t ktApplyToCosmic       = (kApplyMaskOne << 37 ); //only for nue: CC + NC + interference
 
     static const DetectorApplyMask_t kdApplyToDUNEND          = (kApplyMaskOne << 0 ); // Dectectors
     static const DetectorApplyMask_t kdApplyToDUNEFD          = (kApplyMaskOne << 1 );
@@ -170,6 +170,8 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllCCELScat; // nu + e CC elastic scattering (inverse muon/tau decay) and nue+e
     extern const ReacTypeApplyMask_t ktApplyToAllCC1pi;
     extern const ReacTypeApplyMask_t ktApplyToAllCC2pi;
+    extern const ReacTypeApplyMask_t ktApplyToAllCCn0pi;
+    extern const ReacTypeApplyMask_t ktApplyToAllCCNonRes;
     extern const ReacTypeApplyMask_t ktApplyToAllCC;
     extern const ReacTypeApplyMask_t ktApplyToCCnQE;
 
@@ -177,11 +179,15 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllNCELScat; //nu+e NC elastic scattering
     extern const ReacTypeApplyMask_t ktApplyToAllNC1pi;
     extern const ReacTypeApplyMask_t ktApplyToAllNC2pi;
+    extern const ReacTypeApplyMask_t ktApplyToAllNCn0pi;
+    extern const ReacTypeApplyMask_t ktApplyToAllNCNonRes;
     extern const ReacTypeApplyMask_t ktApplyToAllNC;
 
     extern const ReacTypeApplyMask_t ktApplyToAllCoh;
     extern const ReacTypeApplyMask_t ktApplyToAllELScat;
     extern const ReacTypeApplyMask_t ktApplyToAll1pi;
+    extern const ReacTypeApplyMask_t ktApplyToAlln0pi;
+    extern const ReacTypeApplyMask_t ktApplyToAllNonRes;
     extern const ReacTypeApplyMask_t ktApplyToAllCosmic;
 
     extern const ReacTypeApplyMask_t ktApplyToAll;
