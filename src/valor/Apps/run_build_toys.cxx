@@ -132,11 +132,11 @@ void BuildToys(CmdLnArgList& arg)
 
    string fp_name2;
    double fp_val2;
-   int fp_bin2;
-   int npt_job_par2;
-   int npt_par2;
-   double min_par2;
-   double step_par2;
+   int fp_bin2      = 0;
+   int npt_job_par2 = 0;
+   int npt_par2     = 0;
+   double min_par2  = 0;
+   double step_par2 = 0;
 
    string toy_throw_file_to_read = arg.GetString("read-throws-from");
    string param_name_map_file    = arg.GetString("read-throws-param-map");
@@ -149,8 +149,10 @@ void BuildToys(CmdLnArgList& arg)
 
    LOG("valor_dune", pNOTICE) << "Fit parameter " << fp_name1 << "(" <<
       fp_bin1 << ") = " << fp_val1;
-
-   if(arg.Exists("fit-param2") and arg.GetString("fit-param2") != "-" )
+      
+      
+   const bool is_2d = arg.Exists("fit-param2") and arg.GetString("fit-param2") != "-";
+   if (is_2d)
    {
       fp_name2 = arg.GetString("fit-param2");
       fp_val2 = arg.GetDouble("fit-param2-value");
@@ -165,7 +167,6 @@ void BuildToys(CmdLnArgList& arg)
 
    CompoundFitElements * elements = new CompoundFitElements();
    elements->Read(util::CompleteConfigPath(arg.GetString("config")));
-   FitModelABC* model = elements->FitModel();
 
    FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
    // Set the priors
@@ -183,7 +184,7 @@ void BuildToys(CmdLnArgList& arg)
    TStopwatch clock;
    clock.Start();
    ToyBuilder toys(*elements, arg.GetString("tag"), use_simple_binning, store_mode_arrays, gen_marg_toys, save_throws);
-   if(!arg.Exists("fit-param2") or arg.GetString("fit-param2") == "-")
+   if(!is_2d)
    {  // Build toys for 1D fit
       for (int fp_bin01 = fp_bin1; (fp_bin01 < fp_bin1 + npt_job_par1) && (fp_bin01 < npt_par1); fp_bin01++)// loop over param first subrange
       {
