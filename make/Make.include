@@ -43,24 +43,6 @@ endif
 
 
 #-------------------------------------------------------------------
-#                  VALOR APPLICATION-SPECIFIC CODE
-#-------------------------------------------------------------------
-
-# VALOR application release info
-#
-VALOR_APP_VERSION  = $(shell awk '{print $0}' $(VALOR_EXPT)/VERSION)
-
-# VALOR application include path
-#
-VALOR_APP_INCLUDES := -I$(VALOR_EXPT)/src/
-
-# VALOR application libraries
-#
-ifeq ("false",$(is_cln))
-  VALOR_APP_LIBRARIES = $(shell valor_expt-config --libs 2>/dev/null)
-endif
-
-#-------------------------------------------------------------------
 #                      GENIE MC
 #-------------------------------------------------------------------
 ifeq ("YES","$(OPT_ENABLE_GENIE)")
