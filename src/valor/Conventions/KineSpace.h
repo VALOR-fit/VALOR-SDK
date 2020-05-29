@@ -5,7 +5,7 @@
 
 \brief     Kinematic variable space enumeration (set of KineVar_t)
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
           
 \created   April 08, 2016

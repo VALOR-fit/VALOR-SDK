@@ -10,7 +10,7 @@ brief      A generic implementation of the fit model for a single sample,
            //
            Derives from FitModelABC
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
            Steve Dennis <s.r.dennis@liverpool.ac.uk>

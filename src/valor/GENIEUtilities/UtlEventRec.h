@@ -8,7 +8,7 @@
 \author    Steve Dennis <s.r.dennis \at University of Liverpool>
            University of Liverpool
            
-           Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+           Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   April 22, 2016

@@ -5,7 +5,7 @@
 
 \brief     Singleton to keep information about the VALOR environment (paths etc)
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   June 03, 2014

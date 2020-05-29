@@ -22,7 +22,7 @@
              [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
 
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
            Steve Dennis <s.r.dennis \at liverpool.ac.uk>

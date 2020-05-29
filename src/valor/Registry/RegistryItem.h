@@ -7,7 +7,7 @@
            Provides an arbitrary basic type (bool, int, double, string) value
            for RegistryI-type containers.
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Lab
 
 \created   May 06, 2004

@@ -6,7 +6,7 @@
 \brief    A more convenient interface to the log4cpp Message Service
           Adappted from GENIE with permission from the authors.
 
-\author   Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author   Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
           STFC, Rutherford Appleton Laboratory
 
 \created  June 16, 2004

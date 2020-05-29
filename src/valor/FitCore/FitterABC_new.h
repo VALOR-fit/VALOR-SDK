@@ -5,7 +5,7 @@
 
 \brief     Pure abstract base class (pABC) for VALOR fitters.
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   July 05, 2011

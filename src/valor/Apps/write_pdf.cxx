@@ -24,7 +24,7 @@
            --write-data,
            --no-write-data       : Read and write data from configuration file if desired
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
            Steve Dennis <s.r.dennis \at liverpool.ac.uk>

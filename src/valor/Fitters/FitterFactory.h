@@ -5,7 +5,7 @@
 
 \brief     Instantiate and store fitters 
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Lab
 
 \created   April 21, 2016

@@ -2,7 +2,7 @@
 // playing....
 //
 //
-// Costas Andreopoulos <costas.andreopoulos@stfc.ac.uk>
+// Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 //
 
 #include <complex>

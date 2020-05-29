@@ -8,7 +8,7 @@
            These codes are used only in plots.
            One or more ReacMode_t types are mapped into a ReacModeCoarse_t.
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
           
 \created   April 15, 2014

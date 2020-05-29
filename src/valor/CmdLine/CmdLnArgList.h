@@ -36,7 +36,7 @@
                  integer_list, double_list, string_list, or 
                  root objects (th1f, th2f, ttree, tfile, tgraph,...)
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   April 08, 2016

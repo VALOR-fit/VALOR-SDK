@@ -5,7 +5,7 @@
 
 \brief     Abstract base class (pABC) for a single DUNE fit sample model
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   March 30, 2014

@@ -15,7 +15,7 @@
            for example, if one wants to repeat the same set of N systematic tweaks 
            for all oscillation parameters bins etc.
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved

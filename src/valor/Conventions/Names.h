@@ -5,7 +5,7 @@
 
 \brief     VALOR/DUNE package naming conventions
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   April 05, 2016
