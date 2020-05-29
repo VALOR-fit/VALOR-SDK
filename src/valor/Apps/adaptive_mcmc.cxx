@@ -52,7 +52,7 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/UtlFit.h"
 #include "valor/FitCore/UtlFitParamList.h"
@@ -261,12 +261,12 @@ int main(int argc, char ** argv)
   }
 
   // Setup fitinputs
-  FitInputs fitinputs(data,model,best_fit_params);
+  Likelihood likelihood(data,model,best_fit_params);
 
   best_fit_params->Print();
 
   // Get starting statistic
-  double current_chisq = fitinputs.Statistic();
+  double current_chisq = likelihood.Statistic();
   //~ std::cout<<current_chisq<<"\t"<<best_fit_params->GetBestFitStatistic()<<std::endl;
   if (start_at_bestfit) {
     assert(std::fabs(current_chisq - best_fit_params->GetBestFitStatistic()) < 1E-5);
@@ -310,7 +310,7 @@ int main(int argc, char ** argv)
     }
 
     int n_attempts;
-    bool success = util::AttemptMCMCStep(fitinputs,current_chisq,n_attempts,proposal_step,&chol_matrix);
+    bool success = util::AttemptMCMCStep(likelihood,current_chisq,n_attempts,proposal_step,&chol_matrix);
 
     // Recalculate mean attempts
     n_steps_in_mean++;

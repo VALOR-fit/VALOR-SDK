@@ -22,10 +22,10 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 #include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/Constants.h"
-#include "valor/Conventions/Opt.h" 
+#include "valor/Conventions/Opt.h"
 #include "valor/FitCore/FitDataABC.h"
 #include "valor/FitCore/FitModelABC.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 
 using std::cout;
 using std::cerr;
@@ -34,49 +34,49 @@ using std::endl;
 using namespace valor;
 using namespace valor::conv;
 
-ClassImp(FitInputs)
+ClassImp(Likelihood)
 
 //________________________________________________________________________________________
-FitInputs::FitInputs(
+Likelihood::Likelihood(
    FitDataABC * o, FitModelABC * e, FitParamList * fpar, string opt, double errdef, bool goodnessoffit) :
-fObs(o), 
-fExp(e), 
+fObs(o),
+fExp(e),
 fFitParams(fpar),
 fOpt(opt),
 fErrDef(errdef),
 fGoodnessOfFit(goodnessoffit),
 fIncludePenaltySyst(true),
 fIncludePenaltyHyp (true)
-{ 
+{
 
 }
 //________________________________________________________________________________________
-FitInputs::~FitInputs()  
-{ 
+Likelihood::~Likelihood()
+{
 
 }
 //________________________________________________________________________________________
-void FitInputs::UpdateParamList(FitParamList * fpar)
+void Likelihood::UpdateParamList(FitParamList * fpar)
 {
   fFitParams = fpar;
 }
 //________________________________________________________________________________________
-FitDataABC & FitInputs::Observation(void) 
-{ 
-  return *fObs;       
+FitDataABC & Likelihood::Observation(void)
+{
+  return *fObs;
 }
 //________________________________________________________________________________________
-FitModelABC & FitInputs::Expectation(void) 
-{ 
-  return *fExp;       
+FitModelABC & Likelihood::Expectation(void)
+{
+  return *fExp;
 }
 //________________________________________________________________________________________
-FitParamList & FitInputs::FitParams(void) 
-{ 
-  return *fFitParams; 
+FitParamList & Likelihood::FitParams(void)
+{
+  return *fFitParams;
 }
 //________________________________________________________________________________________
-double FitInputs::Statistic(Option_t * option, std::map<std::string,double> * likelihood_components) const
+double Likelihood::Statistic(Option_t * option, std::map<std::string,double> * likelihood_components) const
 {
   double total_statistic = 0;
   double data_statistic  = 0;
@@ -95,7 +95,7 @@ double FitInputs::Statistic(Option_t * option, std::map<std::string,double> * li
     if (fIncludePenaltySyst) {syst_penalty = fExp->GetFitStatisticPenalty(option);}
     if (fIncludePenaltyHyp ) {phys_penalty = fFitParams->HypothesisFitStatisticPenalty(option);}
   }
-  
+
   if (likelihood_components) {
     (*likelihood_components)["penalty_syst"] = syst_penalty;
     (*likelihood_components)["penalty_hyp" ] = phys_penalty;
@@ -104,103 +104,112 @@ double FitInputs::Statistic(Option_t * option, std::map<std::string,double> * li
 #ifndef __VALOR_FMWK_PENALTY_ONLY__
   total_statistic += data_statistic;
 #endif
-  LOG("FitInputs",pINFO)<<"Statistic = "<<total_statistic<<" (data/MC="<<data_statistic
+  LOG("Likelihood",pINFO)
+    <<"Statistic = "<<total_statistic<<" (data/MC="<<data_statistic
     <<", syst penalty="<<syst_penalty<<", phys penalty="<<phys_penalty<<")";
 
   assert(TMath::Finite(total_statistic));
   return total_statistic;
 }
 //____________________________________________________________________________
-void FitInputs::IncludePenaltySyst(bool use_penalty)
+void Likelihood::IncludePenaltySyst(bool use_penalty)
 {
   fIncludePenaltySyst = use_penalty;
 }
 //____________________________________________________________________________
-void FitInputs::IncludePenaltyHyp(bool use_penalty)
+void Likelihood::IncludePenaltyHyp(bool use_penalty)
 {
   fIncludePenaltyHyp = use_penalty;
 }
-//____________________________________________________________________________ 
-// MINUIT fit functions 
-//____________________________________________________________________________ 
-double FitInputs::operator() (const std::vector<double>& x) const 
+//____________________________________________________________________________
+// MINUIT fit functions
+//____________________________________________________________________________
+double Likelihood::operator() (const std::vector<double>& x) const
 {
  fFitParams->Sync(x);
 
  return this->Statistic("poisson");
 }
-//____________________________________________________________________________ 
+//____________________________________________________________________________
 void valor::FitFunc (
-  Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t /*iflag*/) 
-{ 
+  Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t /*iflag*/)
+{
 // To be used with a TVirtualFitter
 
-  FitInputs * inputs = (FitInputs *) gMinuit->GetObjectFit();
+  Likelihood * lkhd = (Likelihood *) gMinuit->GetObjectFit();
 
   // get fit params
-  FitParamList & fpar = inputs->FitParams(); 
+  FitParamList & fpar = lkhd->FitParams();
 
   // synchronize FitParamList with the paramerer array used by MINUIT
   fpar.Sync(par,true);
 
-  f = inputs->Statistic();
-  
+  f = lkhd->Statistic();
+
   fpar.SetCurrStatistic(f);
 }
 //____________________________________________________________________________
-FitFunctor::FitFunctor(FitInputs * inputs) 
-{ 
-  fFitInputs = inputs; 
+FitFunctor::FitFunctor(Likelihood * lkhd)
+{
+  fLikelihood = lkhd;
 }
-FitFunctor::~FitFunctor() 
+//____________________________________________________________________________
+FitFunctor::~FitFunctor()
 {
 
 }
+//____________________________________________________________________________
 double FitFunctor::operator() (const double * x) const
 {
   return this->DoEval(x);
 }
-double FitFunctor::DoEval(const double * x) const 
+//____________________________________________________________________________
+double FitFunctor::DoEval(const double * x) const
 {
-  fFitInputs->FitParams().Sync(x);
-  
-  return fFitInputs->Statistic();
-}
-ROOT::Math::IBaseFunctionMultiDim * FitFunctor::Clone(void) const 
-{
-  return new FitFunctor(fFitInputs);
-}
-unsigned int FitFunctor::NDim(void) const 
-{ 
-  return fFitInputs->FitParams().GetNumberParameters();
+  fLikelihood->FitParams().Sync(x);
+
+  return fLikelihood->Statistic();
 }
 //____________________________________________________________________________
-FitMethodFunc::~FitMethodFunc() 
+ROOT::Math::IBaseFunctionMultiDim * FitFunctor::Clone(void) const
+{
+  return new FitFunctor(fLikelihood);
+}
+//____________________________________________________________________________
+unsigned int FitFunctor::NDim(void) const
+{
+  return fLikelihood->FitParams().GetNumberParameters();
+}
+//____________________________________________________________________________
+FitMethodFunc::~FitMethodFunc()
 {
 
 }
+//____________________________________________________________________________
 double FitMethodFunc::operator() (const double * x) const
 {
   return this->DoEval(x);
 }
-double FitMethodFunc::DoEval(const double * x) const 
+//____________________________________________________________________________
+double FitMethodFunc::DoEval(const double * x) const
 {
-  fFitInputs->FitParams().Sync(x);
-  return fFitInputs->Statistic("poisson");
+  fLikelihood->FitParams().Sync(x);
+  return fLikelihood->Statistic("poisson");
 }
-ROOT::Math::BasicFitMethodFunction<ROOT::Math::IBaseFunctionMultiDim>::Type_t FitMethodFunc::Type(void) const
+//____________________________________________________________________________
+ROOT::Math::BasicFitMethodFunction<ROOT::Math::IBaseFunctionMultiDim>::Type_t
+ FitMethodFunc::Type(void) const
 {
   return ROOT::Math::FitMethodFunction::kLeastSquare;
 }
-
-
-double  FitMethodFunc::DataElement(const double *par, unsigned int /*ipoint*/, double * /* g */) const 
+//____________________________________________________________________________
+double FitMethodFunc::DataElement(
+    const double *par, unsigned int /*ipoint*/, double * /* g */) const
 {
-  fFitInputs->FitParams().Sync(par);
+  fLikelihood->FitParams().Sync(par);
   double chisqbin = 0;
   assert(!"FitMethodFunc::DataElement not implemented yet");
   //Todo: Implement
   return chisqbin;
 }
 //____________________________________________________________________________
-

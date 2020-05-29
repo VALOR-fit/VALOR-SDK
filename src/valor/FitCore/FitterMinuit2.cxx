@@ -1,32 +1,32 @@
-//____________________________________________________________________________ 
+//____________________________________________________________________________
 /*
 
  \copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
-*/ 
+*/
 //____________________________________________________________________________
 
-#define __show_fit_init_info__ 
+#define __show_fit_init_info__
 //#define __show_fit_cov_matrix_debug__
-#define __show_fit_result__ 
-#define __show_fit_steps__ 
+#define __show_fit_result__
+#define __show_fit_steps__
 //~ #define __show_fit_steps_debug__
 #define __show_fit_cpu_time__
 #define __give_fitter_covariance_matrix__
 
-#include <cassert> 
-#include <cstdlib> 
-#include <vector> 
+#include <cassert>
+#include <cstdlib>
+#include <vector>
 
 #include <TFile.h>
-#include <TFitter.h> 
-#include <TMath.h> 
+#include <TFitter.h>
+#include <TMath.h>
 #include <TMatrixDSym.h>
-#include <TObjArray.h> 
-#include <TPRegexp.h> 
-#include <TRandom3.h> 
+#include <TObjArray.h>
+#include <TPRegexp.h>
+#include <TRandom3.h>
 #include <TStopwatch.h>
-#include <TString.h> 
+#include <TString.h>
 #include <TSystem.h>
 #include <TTimeStamp.h>
 
@@ -44,39 +44,39 @@
 #include "valor/Conventions/Opt.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Messenger/Messenger.h"
-#include "valor/FitCore/CompoundFitModel.h" 
-#include "valor/FitCore/FitterMinuit2.h" 
-#include "valor/FitCore/FitInputs.h" 
-#include "valor/FitCore/FitParamList.h" 
-#include "valor/FitCore/FitDataABC.h" 
+#include "valor/FitCore/CompoundFitModel.h"
+#include "valor/FitCore/FitterMinuit2.h"
+#include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/FitParamList.h"
+#include "valor/FitCore/FitDataABC.h"
 
-using namespace valor; 
+using namespace valor;
 using namespace valor::conv;
 
 using std::cout;
 using std::endl;
 using std::vector;
-   
-//____________________________________________________________________________ 
+
+//____________________________________________________________________________
 FitterMinuit2::FitterMinuit2() :
 FitterABC()
 {
   this->Init();
 }
-//____________________________________________________________________________ 
-FitterMinuit2::FitterMinuit2(FitInputs * fit_inputs, Option_t * option) :
+//____________________________________________________________________________
+FitterMinuit2::FitterMinuit2(Likelihood * lkhd, Option_t * option) :
 FitterABC()
 {
-  this->Init(fit_inputs, option);
+  this->Init(lkhd, option);
 }
-//____________________________________________________________________________ 
-FitterMinuit2::~FitterMinuit2() 
+//____________________________________________________________________________
+FitterMinuit2::~FitterMinuit2()
 {
 }
-//____________________________________________________________________________ 
-void FitterMinuit2::Init(void) 
+//____________________________________________________________________________
+void FitterMinuit2::Init(void)
 {
-  fFitInputs           = 0;
+  fLikelihood          = 0;
   fOption              = "";
   fNFitBins            = 0;
   fCalcHesseErrors     = false;
@@ -85,28 +85,28 @@ void FitterMinuit2::Init(void)
   fStr                 = 1;
   fMaxNumCalls         = 100000;
   fMigradMinStatusCode = -999;
-  fMigradErrStatusCode = -999;      
-  fHesseErrStatusCode  = -999; 
-  fMinosErrStatusCode  = -999; 
+  fMigradErrStatusCode = -999;
+  fHesseErrStatusCode  = -999;
+  fMinosErrStatusCode  = -999;
   fFitTime             = 0;
   fFitTries            = 0;
-  
+
   fUseFumili = false;
 }
-//____________________________________________________________________________ 
-void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option) 
+//____________________________________________________________________________
+void FitterMinuit2::Init(Likelihood * lkhd, Option_t * option)
 {
   LOG("Minuit2", pINFO) << "Fitter initialization...";
 
   this->Init();
 
-  fFitInputs = fit_inputs;
-  if(!fFitInputs) {
+  fLikelihood = lkhd;
+  if(!fLikelihood) {
      LOG("Minuit2", pFATAL) << "** Null fit inputs!";
      exit(1);
   }
 
-  FitParamList & fit_params = fFitInputs->FitParams();
+  FitParamList & fit_params = fLikelihood->FitParams();
   int param_list_size = fit_params.Size();
 
   LOG("Minuit2", pINFO) << "Fit parameter list size = " << param_list_size;
@@ -116,15 +116,15 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
   // calc HESSE or MINOS errors after fit
   fCalcHesseErrors  = fOption.Contains("hesse");
   fCalcMinosErrors  = fOption.Contains("minos");
-  
+
   // Use FUMILI instead of migrad?
   fUseFumili = fOption.Contains("fumili");
 
 #ifdef __show_fit_init_info__
-  cout << "FitterMinuit2/Init >> Fit parameter list size = " 
+  cout << "FitterMinuit2/Init >> Fit parameter list size = "
        << param_list_size << endl;
 #endif
-  
+
   // set params
   fit_params.SetTo(fUserParams);
   LOG("Minuit2", pINFO) << fUserParams;
@@ -141,9 +141,9 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
         tolerance = strtod(tolerance_string->GetString().Data(),NULL);
       }
     }
-      
+
     delete matches;
-    
+
     if (tolerance > conv::kAVerySmallNum) {
       LOG("Minuit2", pINFO) << "Set tolerance to "<<tolerance;
       this->SetTol(tolerance);
@@ -152,7 +152,7 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
       LOG("Minuit2",pWARN) << "Failed to parse valid single tolerance from option string "<<fOption;
     }
   }
-  
+
   // Parse a max number of calls out of the fitter option
   if(fOption.Contains("maxcalls",TString::kIgnoreCase)) {
     TPRegexp call_re("(?<=maxcalls\\=)-?[\\d.]+(?:e-?\\d+)?");
@@ -165,9 +165,9 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
         maxcalls = strtod(maxcalls_string->GetString().Data(),NULL);
       }
     }
-      
+
     delete matches;
-    
+
     if (maxcalls > conv::kAVerySmallNum) {
       int ncalls = TMath::Nint(maxcalls);
       LOG("Minuit2", pINFO) << "Set max number of calls to "<<ncalls;
@@ -178,19 +178,19 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
     }
   }
 
-  // calculate degrees of freedom  
-  fNFitBins       = fit_inputs->Observation().NumOfBins();
-  int n_free_params   = fit_params.GetNumberFreeParameters();
-  
+  // calculate degrees of freedom
+  fNFitBins          = lkhd->Observation().NumOfBins();
+  int n_free_params  = fit_params.GetNumberFreeParameters();
+
   assert(fNFitBins > 0);
   assert(n_free_params >= 0);
 
-  LOG("Minuit2", pINFO) 
+  LOG("Minuit2", pINFO)
        << "NDoF = " << this->NDOF()
        << " (Number of bins = " << this->NBinsInFit()
        //~ << ", Number of total parameters = " << fit_params->Size() <<
        << ", Number of free parameters = " << n_free_params << ")";
-  
+
 }
 //____________________________________________________________________________
 bool FitterMinuit2::Configure(const Registry & conf)
@@ -199,23 +199,23 @@ bool FitterMinuit2::Configure(const Registry & conf)
 
   //
   //
-  // use this and deprecate the various Set(...) methods and some or all 
+  // use this and deprecate the various Set(...) methods and some or all
   // of the info passed via Option_t in the ctor
   //
   //
 
   return true;
 }
-//____________________________________________________________________________ 
+//____________________________________________________________________________
 void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
 {
   LOG("Minuit2",pDEBUG)<<"Constructing prior covariance matrix";
-  
-  const FitParamList & fp = fFitInputs->FitParams();
+
+  const FitParamList & fp = fLikelihood->FitParams();
   int num_of_params      = fp.GetNumberParameters();
   int num_of_free_params = fp.GetNumberFreeParameters();
   fCovMtrx.ResizeTo(num_of_free_params,num_of_free_params);
-  const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fFitInputs->Expectation());
+  const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fLikelihood->Expectation());
   if (cm) {
     const TMatrixD & full_cov = cm->GetSystematics()->CovMatrix();
     int ifree = 0;
@@ -236,7 +236,7 @@ void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
   //~ LOG("Minuit2",pDEBUG)<<fCovMtrx;
 }
 //____________________________________________________________________________
-bool FitterMinuit2::DoTheFit(void) 
+bool FitterMinuit2::DoTheFit(void)
 {
 #ifdef __show_fit_cpu_time__
   TStopwatch w;
@@ -251,17 +251,17 @@ bool FitterMinuit2::DoTheFit(void)
 
 #ifdef __show_fit_cpu_time__
   w.Stop();
-  cout << "FitterMinuit2/DoTheFit >> Fit performed in " 
+  cout << "FitterMinuit2/DoTheFit >> Fit performed in "
        << w.CpuTime() << " sec." << endl;
   fFitTime = w.CpuTime();
 #endif
 
   return ok;
 }
-//____________________________________________________________________________ 
-bool FitterMinuit2::RunOnce(void) 
+//____________________________________________________________________________
+bool FitterMinuit2::RunOnce(void)
 {
-  FitParamList & fp = fFitInputs->FitParams();
+  FitParamList & fp = fLikelihood->FitParams();
   // a few arrays to store parameters
   unsigned int nfreeparams = (unsigned int)fp.GetNumberFreeParameters();
   unsigned int nparams     = (unsigned int)fp.GetNumberParameters();
@@ -303,17 +303,17 @@ bool FitterMinuit2::RunOnce(void)
 
   if (!fUseFumili) {
 #ifdef __give_fitter_covariance_matrix__
-    mnapp = new ROOT::Minuit2::MnMigrad(*fFitInputs, fUserParams, input_cov);
+    mnapp = new ROOT::Minuit2::MnMigrad(*fLikelihood, fUserParams, input_cov);
 #else
-    mnapp = new ROOT::Minuit2::MnMigrad(*fFitInputs, fUserParams);
+    mnapp = new ROOT::Minuit2::MnMigrad(*fLikelihood, fUserParams);
 #endif
   }
   else {
     assert(!"Fumili still has issues");
 #ifdef __give_fitter_covariance_matrix__
-    //~ mnapp = new ROOT::Minuit2::MnFumiliMinimize(*fFitInputs, fUserParams, input_cov);
+    //~ mnapp = new ROOT::Minuit2::MnFumiliMinimize(*fLikelihood, fUserParams, input_cov);
 #else
-    //~ mnapp = new ROOT::Minuit2::MnFumiliMinimize(*fFitInputs, fUserParams);
+    //~ mnapp = new ROOT::Minuit2::MnFumiliMinimize(*fLikelihood, fUserParams);
 #endif
   }
 
@@ -335,14 +335,14 @@ bool FitterMinuit2::RunOnce(void)
 
   fMigradMinStatusCode = bestfit.UserState().CovarianceStatus();
   fMigradErrStatusCode = bestfit.UserState().CovarianceStatus();
-  
+
   if (fMigradMinStatusCode <2) {
     LOG("FitterMinuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
   }
-  
+
   // Done! Copy current --> best-fit values
-  fFitInputs->FitParams().CopyCurrToBestFitValues();
-  
+  fLikelihood->FitParams().CopyCurrToBestFitValues();
+
   //get the best fit vector, for use in this function
   std::vector<ROOT::Minuit2::MinuitParameter> bestfit_params = bestfit.UserParameters().Parameters();
   for(unsigned int ip = 0; ip < bestfit_params.size(); ip++) {
@@ -366,21 +366,21 @@ bool FitterMinuit2::RunOnce(void)
   }
 
   // migrad error
-  err_migrad_err =  bestfit.UserParameters().Errors(); 
+  err_migrad_err =  bestfit.UserParameters().Errors();
   for(unsigned int ip = 0; ip < nparams; ip++) {
 #ifdef __show_fit_steps_debug__
     cout << "FitterMinuit2/RunOnce >> Migrad error for par#" << ip << " = " << bestfit_free[ip] << " +/- " << err_migrad_err[ip] << endl;
 #endif
   }
-  fFitInputs->FitParams().SetMigradErrors(err_migrad_err);
-  
+  fLikelihood->FitParams().SetMigradErrors(err_migrad_err);
+
   if (fCalcHesseErrors) {
     //Get Hesse errors
     LOG("FitterMinuit2",pINFO) << "Getting Hesse errors...";
     // argument is strategy
     ROOT::Minuit2::MnHesse hesse(2);
     // perform hesse error calculation
-    ROOT::Minuit2::MnUserParameterState hesse_state = hesse(*fFitInputs, bestfit.UserState(),fMaxNumCalls);
+    ROOT::Minuit2::MnUserParameterState hesse_state = hesse(*fLikelihood, bestfit.UserState(),fMaxNumCalls);
     //Check if fit succeeded
     fHesseErrStatusCode = hesse_state.CovarianceStatus();
 
@@ -389,8 +389,8 @@ bool FitterMinuit2::RunOnce(void)
       ROOT::Minuit2::MnUserCovariance cov_hesse(hesse_state.Covariance());
       this->CopyCovarianceToFPL(cov_hesse);
     }
-    err_hesse_err =  bestfit.UserParameters().Errors(); 
-    fFitInputs->FitParams().SetHesseErrors(err_hesse_err);
+    err_hesse_err =  bestfit.UserParameters().Errors();
+    fLikelihood->FitParams().SetHesseErrors(err_hesse_err);
     for(unsigned int ip = 0; ip < nparams; ip++) {
 #ifdef __show_fit_steps_debug__
       cout << "FitterMinuit2/RunOnce >> Hesse error for par#" << ip << " = " << bestfit_free[ip] << " +/- " << err_hesse_err[ip] << endl;
@@ -401,7 +401,7 @@ bool FitterMinuit2::RunOnce(void)
   if (fCalcMinosErrors) {
     LOG("FitterMinuit2",pINFO) << "Getting Minos errors...";
     //Get Minos Errors
-    ROOT::Minuit2::MnMinos minos(*fFitInputs,bestfit);
+    ROOT::Minuit2::MnMinos minos(*fLikelihood,bestfit);
     fMinosErrStatusCode = 0;  // Need to work out proper error code.
     for(unsigned int ip = 0; ip < nparams; ip++) {
       if(bestfit_params[ip].IsFixed()) { continue; }
@@ -413,13 +413,13 @@ bool FitterMinuit2::RunOnce(void)
       cout << "FitterMinuit2/RunOnce >> par#" << ip << " = " << bestfit_params[ip].Value() << " +" << up << " -" << lo << " (minos)" << endl;
 #endif
     }
-    fFitInputs->FitParams().SetMinosErrors(err_minosplus, err_minosminus);
+    fLikelihood->FitParams().SetMinosErrors(err_minosplus, err_minosminus);
   } // minos
 
 
-  fFitInputs->FitParams().SetFitTime ( fFitTime );
-  fFitInputs->FitParams().SetFitTries(fFitTries);
-  fFitInputs->FitParams().SetBestFitStatistic(fFitInputs->FitParams().GetBestFitStatistic());
+  fLikelihood->FitParams().SetFitTime ( fFitTime );
+  fLikelihood->FitParams().SetFitTries(fFitTries);
+  fLikelihood->FitParams().SetBestFitStatistic(fLikelihood->FitParams().GetBestFitStatistic());
 
 
   // Print fit result
@@ -428,7 +428,7 @@ bool FitterMinuit2::RunOnce(void)
   cout << endl << "FitterMinuit2/RunOnce >> Printing fit results..." << endl;
 #endif
   cout << "FitterMinuit2/RunOnce >> fcn =  " << bestfit.Fval() << endl;
-  cout << "FitterMinuit2/RunOnce >> chi2 = " << fFitInputs->Statistic() << endl;
+  cout << "FitterMinuit2/RunOnce >> chi2 = " << fLikelihood->Statistic() << endl;
   //~ cout << bestfit << endl;
   cout << "FitterMinuit2/RunOnce >> migrad status code = " << fMigradMinStatusCode << endl;
   if (fCalcHesseErrors) {
@@ -447,7 +447,7 @@ bool FitterMinuit2::RunOnce(void)
 
   return true;
 }
-//____________________________________________________________________________ 
+//____________________________________________________________________________
 int FitterMinuit2::FitStatusCode(Option_t * option) const
 {
   if(!option) return 9999;
@@ -458,24 +458,24 @@ int FitterMinuit2::FitStatusCode(Option_t * option) const
   if ( opt.Contains("migrad_err") ) return fMigradErrStatusCode;
   if ( opt.Contains("hesse_err")  ) return fHesseErrStatusCode;
   if ( opt.Contains("minos_err")  ) return fMinosErrStatusCode;
-  
+
   return -999;
 }
-//____________________________________________________________________________ 
+//____________________________________________________________________________
 int FitterMinuit2::NDOF() const
 {
-  return fNFitBins - fFitInputs->FitParams().GetNumberFreeParameters();
+  return fNFitBins - fLikelihood->FitParams().GetNumberFreeParameters();
 }
-//____________________________________________________________________________ 
+//____________________________________________________________________________
 int FitterMinuit2::NFitParams() const
 {
-  return fFitInputs->FitParams().GetNumberFreeParameters();
+  return fLikelihood->FitParams().GetNumberFreeParameters();
 }
-//____________________________________________________________________________ 
+//____________________________________________________________________________
 void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & mncov)
 {
-  FitParamList & fp = fFitInputs->FitParams();
-  int num_of_params      = fp.GetNumberParameters();
+  FitParamList & fp = fLikelihood->FitParams();
+  int num_of_params = fp.GetNumberParameters();
   // Copy errors from HESSE for free parameters
   TMatrixDSym cov(num_of_params);
   int ifree = 0;
@@ -495,7 +495,7 @@ void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & 
     }
   }
   // Copy prior errors along diagonal for unfixed
-  const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fFitInputs->Expectation());
+  const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fLikelihood->Expectation());
   if (cm) {
     for (int i = 0; i < num_of_params; i++) {
       if (!fp.IsFixedByIndex(i)) {continue;}
@@ -506,4 +506,4 @@ void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & 
   fp.SetCovMatrix(cov);
   return;
 }
-//____________________________________________________________________________ 
+//____________________________________________________________________________
