@@ -3,6 +3,7 @@
 #include <limits>
 #include <sstream>
 #include <string>
+#include <cmath>
 #include "TMath.h"
 
 #include "valor/Conventions/Constants.h"
@@ -32,6 +33,9 @@ ToyBuilder::ToyBuilder(CompoundFitElements& elements,
   _tree_pars(nullptr),
   _file_pars(nullptr),
   _read_params(new double[conv::knppmax]),
+  _use_read_params(new bool[conv::knppmax]),
+  _read_from_tree(false),
+  _step_size(-999),
   _toy_throw_file(nullptr),
   _toy_stream_persistent(nullptr)
 {
@@ -57,8 +61,7 @@ ToyBuilder::~ToyBuilder()
 }
 //______________________________________________________________________________
 void ToyBuilder::BuildToys(const std::string filename, const int Ntoys, FitParamList& fpl,
-      bool randomizeSystematics, bool fluctuateStatistics, const char* options,
-      bool rethrowUnphysical, std::string toy_throw_file_to_read, std::string param_name_map_file)
+      bool randomizeSystematics, bool fluctuateStatistics, const char* options, bool rethrowUnphysical)
 {
    // Create a file to store this batch of toys
    if(filename.empty()) {
@@ -90,17 +93,14 @@ void ToyBuilder::BuildToys(const std::string filename, const int Ntoys, FitParam
       toy_stream = this->_data->InitToyStream(filename, "write", write_opt_str);
    }
 
-   // Will we read throws from a pre-existing file instead of generating them? (This is used e.g. to convert
-   // T2K legacy toy throws into SDK marginalisation toys)
-   bool read_systematics (toy_throw_file_to_read != "" && toy_throw_file_to_read != "NONE" &&
-                          param_name_map_file    != "" && param_name_map_file    != "NONE");
-
    if(_toys_are_marginalisation && fluctuateStatistics){
       LOG("ToyBuilder", pWARN) << "The option to fluctuate statistics was requested when building "
                                << "marginalisation toys. This has been ignored, as it is not yet supported.";
    }
 
    unsigned int n_rethrows = 0;
+   int throw_tree_ientry = 0;   // When reading in parameter values from an input tree, we may be only reading the nth entry, or randomly sampling entries, so we keep track of the current entry number.
+   bool last_throw_was_physical = true;
    for(int t = 0; t < Ntoys; ++t)
    {
       for( ; ; )
@@ -111,15 +111,15 @@ void ToyBuilder::BuildToys(const std::string filename, const int Ntoys, FitParam
          {
             this->_model->RandomizeSystematics(options);
             util::oscillation::ThrowOscillationParameters(fpl);
-         }
-         else if(read_systematics) {
-            this->ReadParamsFromThrowFile(fpl, toy_throw_file_to_read, param_name_map_file, options, t);
-            break;
-         }
-
-         if(!read_systematics) {
             PhysParamList tweaks = this->_model->Tweaks();
             fpl.FromPhysParamList(tweaks, "current silent");
+         }
+         if(_read_from_tree) {
+            // Will we read throws from a pre-existing file instead of generating them? (This is used e.g. to convert
+            // T2K legacy toy throws into SDK marginalisation toys, or to read MCMC steps).
+            // This can be used in conjunction with the above randomisation, as this can overwrite some of the thrown
+            // params, or all, depending on the contents of the parameter name map passed to SetReadFromThrowTree().
+            this->ReadParamsFromThrowFile(fpl, options, throw_tree_ientry, Ntoys, last_throw_was_physical);
          }
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
@@ -130,6 +130,7 @@ void ToyBuilder::BuildToys(const std::string filename, const int Ntoys, FitParam
          if(rethrowUnphysical && !util::AllWithinLimits(fpl))
          {
             n_rethrows++;
+            last_throw_was_physical = false;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
             LOG("ToyBuilder", pDEBUG) << "At least one parameter thrown " <<
                "outside expected limits. Rethrowing.";
@@ -137,6 +138,7 @@ void ToyBuilder::BuildToys(const std::string filename, const int Ntoys, FitParam
          }
          else
          {
+            last_throw_was_physical = true;
             break;
          }
       }
@@ -309,82 +311,179 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
    }
 }
 //______________________________________________________________________________
-void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_throw_file_to_read,
-                                              std::string param_name_map_file, const char* options, int toy_number)
+int ToyBuilder::GetThrowTreeEntryNum(const int& current_throw_tree_ientry, const int& ntoys, const int& nentries,
+                                     const bool& last_throw_was_physical, const char* toy_throw_tree_opt)
+{
+  int next_throw_tree_ientry = -999;
+
+  TString options(toy_throw_tree_opt);
+  if(options.Contains("const_step")) {
+    if(!last_throw_was_physical) {
+      // If the last attempt at generating a toy resulted in something unphysical, just try to read the next entry from
+      // the tree. This should be okay, as if we're extracting every nth entry from the tree and one fails, we shouldn't
+      // need to skip n entries to get a toy that's uncorrelated with the last successfully built toy.
+      next_throw_tree_ientry = current_throw_tree_ientry + 1;
+    }
+    else {
+      // We're trying to extract every nth toy, but if the previous toy had to be rethrown any number of times, the
+      // number of rethrows could be > n, so for the next toy, we can't just assume that the entry at n*stepsize will
+      // not have already been used. Additionally, if we rethrow R toys on average to successfully generate a toy,
+      // then just stepping by a constant amount of entries will mean that the input tree must have
+      // (stepsize + R) * ntoys entries, which may be out of bounds if R is non-zero. So this should help to avoid that
+      // while accounting for rethrows and still keeping a good step size. I'd still expect to get an out of bounds
+      // error if the step size is small and R and ntoys are both large.
+      double ratio = ((double)current_throw_tree_ientry) / ((double)_step_size);
+      if(fmod(ratio , 1.0 ) < conv::kASmallNum) {   // i.e. if the current entry lies exactly on a step
+        next_throw_tree_ientry = current_throw_tree_ientry + _step_size;
+      }
+      else {
+        next_throw_tree_ientry = TMath::Ceil(ratio) * _step_size;
+      }
+    }
+  }
+  else if(options.Contains("random_sample")) {
+    // TODO: Implement: See Git issue #22
+    LOG("ToyBuilder", pFATAL) << "Option \'random_sample\' not yet implemented.";
+    util::Die(-1);
+  }
+  else {
+    LOG("ToyBuilder", pFATAL) << "Option \'" << toy_throw_tree_opt << "\' not yet implemented.";
+    util::Die(-1);
+  }
+
+  if(next_throw_tree_ientry < 0) {
+    LOG("ToyBuilder", pFATAL) << "The next entry number to be read from the input tree was set to "
+                              << next_throw_tree_ientry << ", so something's gone wrong!";
+    util::Die(-1);
+  }
+  if(next_throw_tree_ientry >= nentries) {
+    LOG("ToyBuilder", pFATAL) << "When extracting toy throws from the input tree, the current entry number is "
+                              << next_throw_tree_ientry << ", but the tree only contains " << nentries
+                              << " entries. This can happen if many of the entries lead to unphysical toys being "
+                              << "generated, so that more entries are skipped than there are entries in the tree - "
+                              << "the number of requested toys";
+    util::Die(-1);
+  }
+
+  return next_throw_tree_ientry;
+}
+//______________________________________________________________________________
+void ToyBuilder::SetReadFromThrowTree(const FitParamList& fpl, std::string toy_throw_file_to_read, std::string tree_name,
+                                      std::string param_name_map_file, int step_size, const char* options)
+{
+  TString ts(options);
+
+  _read_from_tree = (toy_throw_file_to_read != "" && toy_throw_file_to_read != "NONE" &&
+                     param_name_map_file    != "" && param_name_map_file    != "NONE" &&
+                     tree_name              != "" && tree_name              != "NONE");
+
+  if(_read_from_tree) {
+    LOG("valor_dune", pNOTICE) << "Will read parameter values from an input tree instead of (or in conjunction with) "
+                               << "randomly throwing parameter values.";
+  }
+  else {
+    LOG("valor_dune", pNOTICE) << "Stopping reading parameter values from the input tree.";
+    return;
+  }
+
+  // If we already have a toy throw tree open, close it so we can open a new one
+  if(_tree_pars) {
+    _toy_throw_file->Close();
+    _tree_pars = nullptr;
+  }
+
+  // Open the tree containing thrown parameter values
+  if(toy_throw_file_to_read == "" || param_name_map_file == "") {
+    LOG("valor_dune", pERROR) << "No input toy throw file or parameter name map file was specified.";
+    util::Die(-1);
+  }
+
+  _toy_throw_file = new TFile(toy_throw_file_to_read.c_str(), "READ");
+  if(!_toy_throw_file->IsOpen()) {
+    LOG("valor_dune", pERROR) << "Could not open file [" << toy_throw_file_to_read << "]";
+    util::Die(-1);
+  }
+  _toy_throw_file->cd();
+  _tree_pars = (TTree *) _toy_throw_file->Get(tree_name.c_str());
+  if(!_tree_pars) {
+    LOG("valor_dune", pERROR) << "Could not get tree named [" << tree_name
+                              << "] from toy throw file named [" << toy_throw_file_to_read << "]";
+    util::Die(-1);
+  }
+
+  // Set up an array to hold all of the parameter values that we'll read
+  for(int ip = 0; ip < conv::knppmax; ip++){
+    _read_params   [ip] = -999;
+    _use_read_params[ip] = false;
+  }
+
+  // Set up the branches to read
+  for (int ip = 0 ; ip < conv::knppmax ; ip++) {
+    conv::PhysParamId_t p = (conv::PhysParamId_t)ip;
+    if (p == conv::kPhypUndefined) { continue; }
+    if (!fpl.Exists(p)) { continue; }
+    std::string sdk_param_name = util::NameRegistry::Instance()->ParamAsStringVerySimple(p);
+    std::string read_param_name = "";
+
+    // Put in special cases here, where we may need to skip params
+    if (ts.Contains("compare-t2k-legacy") &&
+        (p == util::NameRegistry::Instance()->PhysParamFromString("SCCA") ||
+         p == util::NameRegistry::Instance()->PhysParamFromString("SCCV"))) {
+      _read_params[ip] = 1.0;
+      continue;
+    }
+
+    // Open the parameter map file
+    std::ifstream map(param_name_map_file);
+    if (map.fail()) {
+      LOG("ToyBuilder",pFATAL) << "Failed to open file "<<param_name_map_file;
+      util::Die(-1) ; return;
+    }
+
+    bool found = false;
+    std::string arg_file_line = "";
+    while (std::getline(map, arg_file_line))
+    {
+      // Find the read parameter name that corresponds to this parameter
+      if(util::RemoveAllWhitespace(arg_file_line) == "") { continue; }
+      vector<std::string> tokens = util::Tokens(arg_file_line, ",");
+      std::string search_sdk_name    = util::GetStringBetweenDelimiters(util::RemoveAllWhitespace(tokens[0]), "'", "'");
+      std::string search_read_name = util::GetStringBetweenDelimiters(util::RemoveAllWhitespace(tokens[1]), "'", "'");
+      if (search_sdk_name == sdk_param_name) {
+        read_param_name = search_read_name;
+        _use_read_params[ip] = true;
+        found = true;
+        break;
+      }
+    }
+    if(!found) { continue; }
+
+    int branch_status = _tree_pars->SetBranchAddress(read_param_name.c_str(), &(_read_params[ip]));
+    if(branch_status != 0) {
+      LOG("valor_dune", pERROR) << "Could not assign parameter [" << read_param_name
+                                << "] (ip = " << ip << ") to a branch in the input thrown tree.";
+      util::Die(-1);
+    }
+  }
+
+  _step_size = step_size;
+}
+//______________________________________________________________________________
+void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, const char* options, int& throw_tree_ientry,
+                                         const int& Ntoys, const bool& last_throw_was_physical)
 {
    TString ts(options);
-
-   // Open the tree containing thrown parameter values, if we don't have it already
-   if(!_tree_pars) {
-     if(toy_throw_file_to_read == "" || param_name_map_file == "") {
-        LOG("valor_dune", pERROR) << "No input toy throw file or parameter name map file was specified.";
-        util::Die(-1);
-     }
-
-     _toy_throw_file = new TFile(toy_throw_file_to_read.c_str(), "READ");
-     if(!_toy_throw_file->IsOpen()) {
-        LOG("valor_dune", pERROR) << "Could not open file [" << toy_throw_file_to_read << "]";
-        util::Die(-1);
-     }
-     _toy_throw_file->cd();
-     _tree_pars = (TTree *) _toy_throw_file->Get("marg_parameter_values");
-
-     // Set up an array to hold all of the parameter values that we'll read
-     for(int ip = 0; ip < conv::knppmax; ip++){
-        _read_params[ip] = -999;
-     }
-
-     // Set up the branches to read
-     for (int ip = 0 ; ip < conv::knppmax ; ip++) {
-        conv::PhysParamId_t p = (conv::PhysParamId_t)ip;
-        if (p == conv::kPhypUndefined) { continue; }
-        if (!fpl.Exists(p)) { continue; }
-        std::string sdk_param_name = util::NameRegistry::Instance()->ParamAsStringVerySimple(p);
-        std::string read_param_name = "";
-
-        // Put in special cases here, where we may need to skip params
-        if (ts.Contains("compare-t2k-legacy") &&
-            (p == util::NameRegistry::Instance()->PhysParamFromString("SCCA") ||
-             p == util::NameRegistry::Instance()->PhysParamFromString("SCCV"))) {
-           _read_params[ip] = 1.0;
-           continue;
-        }
-
-        // Open the parameter map file
-        std::ifstream map(param_name_map_file);
-        if (map.fail()) {
-           LOG("ToyBuilder",pFATAL) << "Failed to open file "<<param_name_map_file;
-           util::Die(-1) ; return;
-        }
-        std::string arg_file_line = "";
-        while (std::getline(map, arg_file_line))
-        {
-           // Find the read parameter name that corresponds to this parameter
-           vector<std::string> tokens = util::Tokens(arg_file_line, ",");
-           std::string search_sdk_name    = util::GetStringBetweenDelimiters(util::RemoveAllWhitespace(tokens[0]), "'", "'");
-           std::string search_read_name = util::GetStringBetweenDelimiters(util::RemoveAllWhitespace(tokens[1]), "'", "'");
-           if (search_sdk_name == sdk_param_name) {
-              read_param_name = search_read_name;
-              break;
-           }
-        }
-        int branch_status = _tree_pars->SetBranchAddress(read_param_name.c_str(), &(_read_params[ip]));
-        if(branch_status != 0) {
-           LOG("valor_dune", pERROR) << "Could not assign parameter [" << read_param_name
-                                     << "] (ip = " << ip << ") to a branch in the input thrown tree.";
-           util::Die(-1);
-        }
-     }
-  }   // setup the input tree
 
   FitParamList * free_par_list = fpl.ParameterOfInterestSubset();
 
   // Read the toy from the tree and fill the FPL
-  _tree_pars->GetEntry(toy_number);
+  throw_tree_ientry = this->GetThrowTreeEntryNum(throw_tree_ientry, Ntoys, _tree_pars->GetEntries(), last_throw_was_physical, options);
+  _tree_pars->GetEntry(throw_tree_ientry);
   for (int ip = 0 ; ip < conv::knppmax ; ip++) {
      conv::PhysParamId_t p = (conv::PhysParamId_t)ip;
      if (p == conv::kPhypUndefined) { continue; }
-     if (!fpl.Exists(p)) { continue; }
+     if (!fpl.Exists(p))            { continue; }
+     if (!_use_read_params[ip])     { continue; }
 
      // Keep the parameter(s) of interest at their initial values
      if(free_par_list->Exists(p)) {

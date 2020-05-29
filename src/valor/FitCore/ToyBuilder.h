@@ -96,20 +96,10 @@ public:
              their physical boundaries (Cholesky decomposition can cause
              parameters to move beyond bounds even if they are thrown with
              limits). Default true.
-      \param toy_throw_file_to_read Read throws from a pre-existing file instead of
-             generating them. This is used e.g. to convert T2K legacy toy throws
-             into SDK marginalisation toys.
-             NOTE: As this reads thrown parameter values, statistical fluctuations
-             are not copied
-      \param param_name_map_file If using toy_throw_file_to_read, also specify this
-             argument, which is used to convert SDK parameter names into the parameter
-             names used by the toy_throw_file_to_read.
    */
    void BuildToys(const std::string filename, const int Ntoys, FitParamList& fpl,
          bool randomizeSystematics = true, bool fluctuateStatistics = true,
-         const char* options = "randomize-all;prefit-errors",
-         bool rethrowUnphysical = true, std::string toy_throw_file_to_read = "",
-         std::string param_name_map_file = "");
+         const char* options = "randomize-all;prefit-errors", bool rethrowUnphysical = true);
 
   /**
      Builds a single marginalisation or fake data toy using parameter values from the input FitParamList.
@@ -133,6 +123,26 @@ public:
                       bool allowUnphysical = false);
 
 
+  /**
+     This tells ToyBuilder that we'll be reading some (or all) parameters from an input tree, rather than randomising.
+     This stores persistent info to be used by ReadParamsFromThrowFile(). See that function for a full description.
+
+     NOTE: To stop reading from the input tree, call this function again with any of the arguments left empty.
+
+     \param toy_throw_file_to_read Read parameter throws from this pre-existing file instead of generating them. This is
+            used with ReadParamsFromThrowFile() to e.g. use MCMC steps instead of throwing from a covariance matrix, or
+            to convert T2K legacy toys into SDK-compatible toys.
+     \param toy_throw_tree_name The name of the tree in the input file which we'll read parameter throws from.
+     \param param_name_map_file This is used to convert SDK param names into the parameter names used in the input tree.
+     \param step_size We don't have to read every entry from the input tree. If this is not desired, set this step size
+            to something > 1.
+     \param toy_throw_tree_opt Options used to specify how we're extracting entries from the tree. Currently, only
+            'const_step' is supported, but 'random_sample' should be added too (see Git issue #22).
+  */
+  void SetReadFromThrowTree(const FitParamList& fpl, std::string toy_throw_file_to_read, std::string toy_throw_tree_name,
+                            std::string param_name_map_file, int step_size = 1,
+                            const char* toy_throw_tree_opt = "const_step");
+
 private:
 
    /**
@@ -145,19 +155,47 @@ private:
    void SaveParamThrows(FitParamList& fpl, bool write_tree, std::string binary_file_name);
 
   /**
-     Read a single set of parameter throws from a T2K legacy toy throw file into the input FitParamList.
+     Read a single set of parameter throws from an input tree into the input FitParamList.
+     This allows us to e.g. use MCMC steps instead of throwing from a covariance matrix, or to convert T2K legacy toys
+     into SDK-compatible toys.
+
+     WARNING: Care needs to be taken here, as this will allow us to randomise all of our nuisance params, then overwrite
+             any number of them using values from the input tree, potentially ignoring correlations if we overwrite
+             only SOME of the params that would otherwise be drawn from a covariance matrix. So this use responsibly.
+
+     TODO: Need to add a check to make sure that we don't only overwrite SOME of the params in any covariance matrix.
+           See Git issue #23.
 
      \param fpl Store the read parameter throws in this FitParamList
-     \param toy_throw_file_to_read Read throws from a pre-existing file instead of
-            generating them. This is used e.g. to convert T2K legacy toy throws
-            into SDK marginalisation toys.
-            NOTE: As this reads thrown parameter values, statistical fluctuations
-            are not copied
-     \param param_name_map_file This file is used to convert SDK parameter names
-            into the parameter names used by the toy_throw_file_to_read.
+     \param options Options used to specify how we're extracting entries from the tree. Currently, only
+            'const_step' is supported, but 'random_sample' should be added too (see Git issue #22).
+     \param toy_number The entry number corresponding to the toy that we just tried to generate,
+            whether it was physical or not.
+     \param Ntoys The number of toys we're aiming to generate in this batch.
+     \param last_throw_was_physical  True if the toy we just tried to generate was physcial (or if we're at the
+            first toy).
   */
-  void ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_throw_file_to_read,
-                               std::string param_name_map_file, const char* options, int toy_number);
+  void ReadParamsFromThrowFile(FitParamList& fpl, const char* options, int& toy_number, const int& Ntoys,
+                               const bool& last_throw_was_physical);
+
+  /**
+    When reading parameter values from an input tree to generate toys, we could be reading every nth entry, or we
+    could be randomly extracting entries. In either case, we may need to effectively skip some entries if they lead to
+    unphysical toys. This function handles getting the next entry number from the tree while accounting for the above.
+    The parameters it extracts values for is determined by the parameter name map file passed to SetReadFromThrowTree()
+
+    \param current_throw_tree_ientry The entry number corresponding to the toy that we just tried to generate,
+           whether it was physical or not.
+    \param ntoys The number of toys we're aiming to generate in this batch.
+    \param nentries The total number of entries in the tree that we're reading from.
+    \param last_throw_was_physical  True if the toy we just tried to generate was physcial (or if we're at the
+           first toy).
+    \param toy_throw_tree_opt Options used to specify how we're extracting entries from the tree. Currently, only
+           'const_step' is supported, but 'random_sample' should be added too.
+    \return The number of the next entry to extract which will be used to try to build a toy.
+  */
+  int GetThrowTreeEntryNum(const int& current_throw_tree_ientry, const int& ntoys, const int& nentries,
+                           const bool& last_throw_was_physical, const char* toy_throw_tree_opt);
 
 private:
    FitModelABC* _model;
@@ -171,7 +209,10 @@ private:
 
    // For reading throws from an input file
    double*      _read_params;
+   bool*        _use_read_params;
    TFile*       _toy_throw_file;
+   bool         _read_from_tree;
+   int          _step_size;
 
    // For keeping the same ToyStream open across multiple calls of BuildSingleToy()
    util::ToyStream* _toy_stream_persistent;
