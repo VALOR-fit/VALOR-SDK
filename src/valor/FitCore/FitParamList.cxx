@@ -2032,7 +2032,7 @@ string FitParamList::GetPriorSchemeName(valor::conv::PhysParamId_t p) const
   else {
     LOG("Parameter", pERROR) << "Could not get the prior scheme name for parameter \'"
                                 << util::NameRegistry::Instance()->AsString(p);
-    util::Die(-1);
+    util::Die(-1); return "Unknown prior";
   }
 }
 //________________________________________________________________________________________
