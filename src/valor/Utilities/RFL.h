@@ -139,8 +139,8 @@ private:
   std::vector<long> fReactionModeIndex;
 
   // When spline weights come out negative, force them to this value instead
+  bool   fForceNegWghtToExists;
   double fForceNegWghtTo;
-  bool fForceNegWghtToExists;
   
   // Check spline is positive
   static bool CheckForNegativeValues(const valor::util::Interpolator * spl);
