@@ -58,7 +58,7 @@ std::string util::ConfLevelAsStringRooTex(ConfLevel_t cl) {return AsStringRooTex
 //________________________________________________________________________________________
 ConfLevel_t util::ConfLevelFromString(string confname) {
   std::transform(confname.begin(), confname.end(), confname.begin(), ::tolower);
-  for (int i = 0 ; i < kNConfLevels ; i++ ) {
+  for (size_t i = 0 ; i < kNConfLevels ; i++ ) {
     ConfLevel_t cl = (ConfLevel_t)i;
     string confname2 = util::ConfLevelAsString(cl);
     std::transform(confname2.begin(), confname2.end(), confname2.begin(), ::tolower);
