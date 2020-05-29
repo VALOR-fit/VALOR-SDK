@@ -78,26 +78,6 @@ int main(int argc, char ** argv)
   return 0;
 }
 //___________________________________________________________________
-bool IsMarginalised(const FitParamList * fparm, conv::PhysParamId_t p)
-{
-  Parameter param = ParameterPool::Instance()->GetParam(p);
-  const util::NameRegistry * nr = util::NameRegistry::Instance();
-  // Marginalise ND fluxes if FD fluxes present
-  bool fd_flux_exists = false;
-  for (const Parameter & param_search : ParameterPool::Instance()->GetParams()) {
-    if(param_search.SearchCategories("fd") && param.SearchCategories("flux")) {
-      fd_flux_exists = true;
-      break;
-    }
-  }
-  if (fd_flux_exists) {
-    if (param.SearchCategories("nd") && param.SearchCategories("flux")) {return true;}
-  }
-  // Marginalise physics params
-  if (!util::IsSystematic(p)) {return true;}
-  return param.SearchCategories("det"); // Maybe update this to use fparm->IsMarginalized, which is not yet filled.
-}
-//___________________________________________________________________
 int NDFitExtractsBareRoot(void)
 {
 // Extract selected VALOR/DUNE ND fit info and copy in bare ROOT format
@@ -174,7 +154,7 @@ int NDFitExtractsBareRoot(void)
   const util::NameRegistry * nr = util::NameRegistry::Instance();
   for (int ip = 0 ; ip < n_params_input ; ip++) {
     conv::PhysParamId_t p = nr->PhysParamFromString(best_fit_params->NameByIndex(ip));
-    if (!IsMarginalised(best_fit_params,p)) {
+    if (!best_fit_params->IsMarginalized(p)) {
       unmarginalised_parameters.push_back(p);
       n_final_params++;
     }
