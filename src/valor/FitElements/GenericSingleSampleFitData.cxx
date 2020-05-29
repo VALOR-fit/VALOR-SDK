@@ -57,7 +57,7 @@ string GenericSingleSampleFitData::Name(void) const
   return fName;
 }
 //________________________________________________________________________________________
-bool GenericSingleSampleFitData::Read(string file, Option_t * opt)
+bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
 {
 
   // Set various parameters from the associated GSSFM
