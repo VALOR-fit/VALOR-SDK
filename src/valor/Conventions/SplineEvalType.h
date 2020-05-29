@@ -10,7 +10,7 @@
           
 \created   July 17, 2019
 
-\copyright (c) 2010-2019, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

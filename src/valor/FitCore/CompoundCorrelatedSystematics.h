@@ -8,7 +8,7 @@
 \author    Steve Dennis <s.r.dennis \at liverpool.ac.uk>
            University of Liverpool
 
-\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

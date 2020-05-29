@@ -136,7 +136,7 @@
 
 \created   June 26, 2018
 
-\copyright (c) 2010-2018, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

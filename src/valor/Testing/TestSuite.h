@@ -9,7 +9,7 @@
           
 \created   Mar 02, 2017
 
-\copyright (c) 2010-2017, The VALOR group
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 #ifndef __CINT__

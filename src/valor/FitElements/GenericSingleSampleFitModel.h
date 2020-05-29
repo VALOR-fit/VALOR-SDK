@@ -16,7 +16,7 @@ brief      A generic implementation of the fit model for a single sample,
            Steve Dennis <s.r.dennis@liverpool.ac.uk>
            University of Liverpool
 
-\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

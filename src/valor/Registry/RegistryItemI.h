@@ -11,7 +11,7 @@
 
 \created   May 04, 2004
 
-\copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
+\copyright Copyright (c) 2003-2020, The GENIE Collaboration
 
 */
 //____________________________________________________________________________
