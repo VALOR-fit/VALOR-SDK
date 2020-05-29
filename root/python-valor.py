@@ -6,12 +6,9 @@ import math
 import itertools
 
 # If GENIE available, load that first
-try:
-  genv = os.environ["GENIE"]
+genie_enabled = "OPT_ENABLE_GENIE=YES" in open(os.environ["VALOR_FMWK"]+"/make/Make.config").read()
+if genie_enabled:
   ROOT.gROOT.ProcessLine(".x ${GENIE}/src/scripts/gcint/loadlibs.C");
-  has_genie = True
-except KeyError:
-  has_genie = False
 
 ROOT.gROOT.ProcessLine(".x ${VALOR_FMWK}/root/valor_interpreter.C");
 
@@ -29,23 +26,21 @@ opt   = valor.Opt.Instance()
 rnd   = valor.Rnd.Instance()
 nr    = util.NameRegistry.Instance()
 
-expt_name = es.ExperimentName();
-print "\n=============================="
-print   "Loading VALOR Python",
-if has_genie: print " with GENIE",
-print "\n==============================\n"
+print("\n==============================")
+print("Loading VALOR Python"+(" with GENIE" if genie_enabled else ""))
+print("==============================\n")
 
 try:
   import numpy as np
 except:
-  print "Warning: Numpy not loaded"
+  print("Warning: Numpy not loaded")
 
 opt.gDoNotDie = True # We're interactive, so don't die unless you have to.
 
 # Make float formatting strings
-for n in xrange(1,9):
-  globals()["to"+`n`+"dp"] = "{0:."+`n`+"f}"
-  globals()["to"+`n`+"sf"] = "{0:."+`n-1`+"e}"
+for n in range(1,10):
+  globals()["to%ddp"%n] = "{0:.%df}"%n
+  globals()["to%dsf"%n] = "{0:.%de}"%(n-1)
   
   
 # Touch every VALOR object so they appear in tab completion
@@ -74,8 +69,8 @@ def fileburst(f):
 rootargs = [x for x in sys.argv if x.endswith(".root")]
 i=0
 for f in rootargs:
-  varname = "_file"+`i`
-  print "Attaching file ",f," as ",varname
+  varname = "_file%d"%i
+  print("Attaching file ",f," as ",varname)
   globals()[varname] = ROOT.TFile(f)
   i+=1
   if i > 999: break
