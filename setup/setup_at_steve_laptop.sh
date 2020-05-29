@@ -22,7 +22,7 @@ fi
 
 if [ -z $ROOTSYS ] ; then 
   # Setup GENIE
-  . /mnt/l/steve/genie/trunk/setup.sh
+  . /mnt/l/steve/genie/Reweight/setup.sh
 fi
 
 export LD_LIBRARY_PATH="${VALOR_FMWK}/lib:${LOG4CPP_LIB}:${LD_LIBRARY_PATH}"
