@@ -1,6 +1,6 @@
+//____________________________________________________________________________
 /*!
-
-\app       valor_dune-batch_tests
+\app       valor-batch_tests
 
 \brief     Unit testing for the overnight build.
 
@@ -12,23 +12,18 @@
 
 \created   February 20, 2017
 
-\copyright (c) 2010-2017, The VALOR Fitting Group, All Rights Reserved
-
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 */
+//____________________________________________________________________________
 
+// System
 #include <string>
 #include <vector>
-
-// valor
+// VALOR/SDK
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/UtlFile.h"
 #include "valor/Utilities/UtlInit.h"
-
-// dune
-
 #include "valor/Testing/StandardTests.h"
-
-// genie
 #include "valor/GENIEUtilities/GENIEIncludes.h"
 
 using namespace valor;
@@ -42,7 +37,7 @@ using namespace valor;
 std::vector<std::string> BatchArgs()
 {
    std::vector<std::string> args;
-   args.push_back("valor_dune-batch_tests");
+   args.push_back("valor-batch_tests");
    args.push_back("--mc-events-file");
    args.push_back(util::file::GetDataFilename("test/gntp.test.ghep.root"));
    args.push_back("--reco-binning-file");
@@ -83,7 +78,7 @@ void Configure(CmdLnArgList& arg)
    // Usually this is handled by util::init::Init, but in this case the call
    // to BatchArgs, which must precede Init, depends on the environment being
    // set.
-   
+
    std::vector<string> args = BatchArgs();
    const int argc = args.size();
    char* argv[argc];

@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\app       valor_dune-tweak_pdf_sigma_var
+\app       valor-tweak_pdf_sigma_var
 
 \brief     Vary the MC spectra by setting systematics to +/- 1 and 3 sigma
 
@@ -18,31 +18,32 @@
 
              --load-prior-from-file : Option for file to give constrained prior matrix [ use default prior ]
              --prior-fit-number     : Option to specify the entry in the tree for above file [ 0 ]
-             
-             [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
-             
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+             [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
+
+
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
+
            Steve Dennis <s.r.dennis \at liverpool.ac.uk>
            University of Liverpool
+
            Francis Bench <f.bench \at liverpool.ac.uk>
            University of Liverpool
 
 \created   June 2019
 
-\copyright (c) 2010-2019, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________
 
-// root
+// ROOT
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TString.h"
 #include "TSystem.h"
-
-// fmwk
+// VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/Names.h"
 #include "valor/CmdLine/CmdLnArgList.h"
@@ -73,9 +74,7 @@ using namespace std;
 using namespace valor;
 using namespace valor::conv;
 
-
 bool t2k = false;
-
 
 void SpecialCaseTweak(PhysParamId_t p, FitParamList * fp, double& tweak_p1, double& tweak_m1, double& tweak_p3, double& tweak_m3);
 void GeneratePDFNominal(FitModelABC * model, CompoundFitModel * cm, FitParamList * fp, KineVar_t kv, TFile * outfile);
@@ -86,11 +85,11 @@ int main(int argc, char ** argv)
 {
 
   valor::util::PrintBanner(Env::Instance()->Banner(),500);
- 
+
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/tweak_pdf_sigma_var.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
-  LOG("valor_dune", pNOTICE) << arg;
-  
+  LOG("valor", pNOTICE) << arg;
+
   // Read the command line
   int n_threads           = arg.GetInt("nthreads");
   string hypname          = arg.GetString("physics-hypothesis");
@@ -108,24 +107,24 @@ int main(int argc, char ** argv)
 
   string read_prior_from_file = arg.GetString("load-prior-from-file");
   int prior_fit_number = arg.GetInt("prior-fit-number");
-  
+
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
   Messenger::Instance()->Configure(mesg_thresholds);
-  
+
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
     util::VThreadPool::Instance()->SetNThreads(n_threads);
   }
-  
+
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
-  
+
   // And OA parameters
   Opt::Instance()->gMassHierarchyAssumed = ( (arg.GetBool("inverted"))     ? conv::kNmhInverted      : conv::kNmhNormal);
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor_dune", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -137,7 +136,7 @@ int main(int argc, char ** argv)
   double dm12sq   = arg.GetDouble("input-dm12sq");
   double dm23sq   = arg.GetDouble("input-dm23sq");
   double deltacp  = arg.GetDouble("input-deltaCP");
-  
+
   // Config
   std::string config_path = util::CompleteConfigPath(arg.GetString("config"));
 
@@ -145,7 +144,7 @@ int main(int argc, char ** argv)
   cout << "\n[Job inputs]" << endl;
   cout << "- Reading analysis configuration from: " << config_path << endl;
   cout << "- Physics hypothesis : " << hypname << endl;
-  
+
   CompoundFitElements * elements = new CompoundFitElements();
   elements->Read(config_path.c_str());
   FitModelABC * model = elements->FitModel();
@@ -160,7 +159,7 @@ int main(int argc, char ** argv)
   TFile * outfile = NULL;
   output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak) + "_" + util::AsString(kv) + ".root";
   outfile = new TFile(output_rootfile.c_str(),"RECREATE");
-  LOG("valor_dune",pNOTICE)<<"Writing to file: "<<output_rootfile;
+  LOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
 
   const CorrelatedSystematics * syst = cm->GetSystematics();
   FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
@@ -187,7 +186,7 @@ int main(int argc, char ** argv)
     // Apply any special cases here (e.g. to force the tweaks to a certain value)
     SpecialCaseTweak(p, fp, tweak_p1, tweak_m1, tweak_p3, tweak_m3);
 
-    LOG("valor_dune", pNOTICE)
+    LOG("valor", pNOTICE)
       << "Tweak systematic parameter: "  << util::NameRegistry::Instance()->ParamAsString(p)
       << "\n  Nominal value = "          << bestfit
       << "\n  sigma error = "            << sigma_err
@@ -205,7 +204,7 @@ int main(int argc, char ** argv)
   outfile->Close();
   delete outfile;
 
-  LOG("valor_dune",pNOTICE)<<"Finished writing to file: "<<output_rootfile;
+  LOG("valor",pNOTICE)<<"Finished writing to file: "<<output_rootfile;
   std::cout << "Done!" << std::endl;
 }
 //________________________________________________________________________________________

@@ -1,9 +1,9 @@
-//____________________________________________________________________________                                                       
-/*!                                                                                                                                  
-                                                                                                                                      
-\app       valor_dune-write_pdf  
+//____________________________________________________________________________
+/*!
 
-\brief     Write out generic single sample PDFs and MC templates and make fd predictions from nd fits 
+\app       valor-write_pdf
+
+\brief     Write out generic single sample PDFs and MC templates and make fd predictions from nd fits
 
 \options
            --physics-hypothesis  : physics hypothesis (see UtlParam.cxx)
@@ -13,33 +13,40 @@
            --config              : Analysis configuration file [required]
            --write-opt           : Options defining what to write-out [def:pdft_vf]
            --output-name         : Output file name [def:test]
-           --mesg-thresholds     : Message thresholds [def: "verbosity.xml"] 
+           --mesg-thresholds     : Message thresholds [def: "verbosity.xml"]
            --input               : Input values of the oscillation parameters
-           --fix                 : Oscillation parameters to be fixed 
+           --fix                 : Oscillation parameters to be fixed
            --pot-override        : Fix all samples to given POT (use 1E21 when making template files)
            --force-dst           : Ignore the XML requesting you use prebuilt templates and read the DST anyway (useful for making the prebuilt templates)
            --generate-fd-pred    : Generate the far detector prediction? If so, this requires the next parameter too [options: generate-fd-pred || no-fd-pred (def)]
            --fit-output-file     : File containing the fit output - this is where the FitParamList comes from to Generate the FD prediction
            --fit-output-entry    : Desired entry in the tree [def: 0]
-           --write-data, 
+           --write-data,
            --no-write-data       : Read and write data from configuration file if desired
 
-\author    VALOR DUNE people, aka Costas, Steve, Lorena
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
+           University of Liverpool & STFC Rutherford Appleton Laboratory
+
+           Steve Dennis <s.r.dennis \at liverpool.ac.uk>
+           University of Liverpool
+
+           Lorena Escudero
+
 \created   March 27, 2014
 
-\copyright (c) 2010-2017, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
-//____________________________________________________________________________ 
+//____________________________________________________________________________
 
-// root
+// ROOT
 #include "TFile.h"
 #include "TSystem.h"
 #include "TObjArray.h"
 #include "TString.h"
 #include "TVirtualFitter.h"
 #include "TPRegexp.h"
-// fmwk
+// VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/FitCore/PhysParamList.h"
@@ -85,20 +92,20 @@ int main(int argc, char ** argv)
   int    output_entry        = arg.GetInt("fit-output-entry");
   bool write_data            = arg.GetBool("write-data");
   bool save_baseline_splines = arg.GetBool("save-baselines");
-  
+
   // If pot_override is set to a positive number, every sample will be initialised with the same POT - this number
   double pot_override     = arg.GetDouble("pot-override");
   if (pot_override > 0 ) {
     Opt::Instance()->MutableGlobalRegistry().Set("pot_override",pot_override);
   }
-  
+
   TString readopt;
   // Check if we want to force the fit to read trees rather than templates, ignoring the config file
   bool force_dst = arg.GetBool("force-dst");
   if (force_dst) {
     readopt += " forcedst";
   }
-  
+
   // If we want to not use baseline splines, shouldn't be the default but useful for testing
   bool variable_baseline = arg.GetBool("no-fix-baseline");
   if(!variable_baseline){
@@ -106,7 +113,7 @@ int main(int argc, char ** argv)
     if(save_baseline_splines)
       LOG("write_pdf",pWARN) << "Asked to save the baseline splines but chosen the fixed baseline so can't";
   }
- 
+
   Messenger::Instance()->Configure(util::CompleteConfigPath(mesg_thresholds));
 
   bool generate_fd = arg.GetBool("generate-fd-pred");
@@ -117,7 +124,7 @@ int main(int argc, char ** argv)
     }
   }
 
-  // Set the random seeds                                                                                                          
+  // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
 
   LOG("write_pdf", pNOTICE) << *Rnd::Instance();
@@ -125,24 +132,24 @@ int main(int argc, char ** argv)
   // Create file to store outputs
   TString outfilename = TString::Format("%s.root", output_name.c_str());
 
-  // Get ND model & configure                
+  // Get ND model & configure
   CompoundFitElements * elements = new CompoundFitElements();
   elements->Read(util::CompleteConfigPath(config_file),readopt.Data());
   FitModelABC * model = elements->FitModel();
   const util::NameRegistry * nr = util::NameRegistry::Instance();
 
-  // Get the specified fit parameter list (specifies which parameters are floated/fixed,                                              
-  // parameter limits, initial values etc).            
-  CorrelatedSystematics * syst = model->GetSystematics();                                                                              
+  // Get the specified fit parameter list (specifies which parameters are floated/fixed,
+  // parameter limits, initial values etc).
+  CorrelatedSystematics * syst = model->GetSystematics();
   FitParamList *fp = 0;
-  
+
   // If we have not been asked to generate the FD prediction from fit result
   if(!generate_fd) fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
   // If we have, get the FPL from the fit result output file
   else {
     // Get FitParamList from the fit result file
     TFile f(fit_output.c_str(), "read");
-    TTree * fitnt = (TTree*)f.Get("valor_dune_nd_ntp");
+    TTree * fitnt = (TTree*)f.Get("valor_fit_ntp");
     fitnt->SetBranchAddress("best_fit_params", &fp);
     fitnt->GetEntry(output_entry);
     LOG("write_pdf",pNOTICE) << "FitParamList read from fit result";
@@ -160,12 +167,12 @@ int main(int argc, char ** argv)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor_dune", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
 
-  // Update values of oscillation parameters 
+  // Update values of oscillation parameters
   RgKeyList input_args = arg.FindKeys("input-");
   TPRegexp input_match("input-(\\w*)");
   for (RgKey argname : input_args) { // RgKey is just a typename for std::string right now
@@ -197,24 +204,24 @@ int main(int argc, char ** argv)
 
   // If we want to read and write the mock data, do so
   if(!write_data){
-    LOG("valor_dune", pNOTICE) << "Not writing any toy-MC data";
+    LOG("valor", pNOTICE) << "Not writing any toy-MC data";
   }
 
   else{
     if(!elements->DataGiven()){
-      LOG("valor_dune",pFATAL) << "Told to Read data but no data file was given ";
+      LOG("valor",pFATAL) << "Told to Read data but no data file was given ";
       util::Die(-1);
     }
-    LOG("valor_dune", pNOTICE) << "Reading data from file, and writing toy-MC PDFs";
-    // Write data PDFs if we want to 
+    LOG("valor", pNOTICE) << "Reading data from file, and writing toy-MC PDFs";
+    // Write data PDFs if we want to
     FitDataABC * data = elements->FitData();
-    
+
     // Write-out the mock data
     data->Write(outfilename,"toymc","all", "recreate");
   }
 
-  // Generate predictions                                                                                                         
-  Option_t * generate_opt = "+SB"; // also generate non-default (for fitting) predictions in extra binning schemes                
+  // Generate predictions
+  Option_t * generate_opt = "+SB"; // also generate non-default (for fitting) predictions in extra binning schemes
   model->Generate(*fp,generate_opt);
 
   CompoundFitModel * cmodel = dynamic_cast<CompoundFitModel*>(model);
@@ -223,7 +230,7 @@ int main(int argc, char ** argv)
     GenericSingleSampleFitModel * gmodel = dynamic_cast<GenericSingleSampleFitModel*>(cmodel->GetSubModel(i));
     gmodel->UpdateObservableBinningFromSimple();
     if(save_baseline_splines && variable_baseline){
-      LOG("valor_dune", pNOTICE) << "Chosen to save the baseline splines";
+      LOG("valor", pNOTICE) << "Chosen to save the baseline splines";
       std::string baseline_filename = model_name+"_basline_spline_variable.root";
       TFile *baseline_splines = new TFile(baseline_filename.c_str(), "RECREATE");
       gmodel->WriteBaselineSplinesToFile(baseline_splines);
@@ -236,17 +243,17 @@ int main(int argc, char ** argv)
       model->Write(outfilename,"fd_pred",write_opt.c_str(),"update");
     else
       model->Write(outfilename,"fd_pred",write_opt.c_str(),"recreate");
-  else 
+  else
     if(write_data)
       model->Write(outfilename,"valor",write_opt.c_str(),"update");
     else
       model->Write(outfilename,"valor",write_opt.c_str(),"recreate");
 
-  // Write stuff out                              
+  // Write stuff out
   //model->Write(outfilename,"valor",write_opt.c_str());
-  
+
   std::cout<<"Done. Have a good day!"<<std::endl << "GO VALOR!!!" << std::endl;
-  
+
   fp->Print(cout);
 
 }

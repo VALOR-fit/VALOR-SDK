@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\app       valor_dune-make_table_systematic_effects
+\app       valor-make_table_systematic_effects
 
 \brief     Vary the MC spectra by throwing sets of systematics and output a table containing the mean an RMS event
            rate in all samples.
@@ -20,30 +20,31 @@
 
              --load-prior-from-file : Option for file to give constrained prior matrix [ use default prior ]
              --prior-fit-number     : Option to specify the entry in the tree for above file [ 0 ]
-             
-             [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
-             
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+             [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
+
+
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
+
            Steve Dennis <s.r.dennis \at liverpool.ac.uk>
            University of Liverpool
+
            Francis Bench <f.bench \at liverpool.ac.uk>
            University of Liverpool
 
 \created   July 2019
 
-\copyright (c) 2010-2019, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________
 
-// stl
+// System
 #include <sstream>
 #include <fstream>
 #include <iomanip>
-
-// root
+// ROOT
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TLatex.h"
@@ -53,8 +54,7 @@
 #include "TString.h"
 #include "TSystem.h"
 #include "TPRegexp.h"
-
-// fmwk
+// VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/FitCore/CorrelatedSystematics.h"
@@ -91,13 +91,12 @@ const double enu_reco_max = 10;
 
 int main(int argc, char ** argv)
 {
-
   valor::util::PrintBanner(Env::Instance()->Banner(),500);
- 
+
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/make_table_systematic_effects.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
-  LOG("valor_dune", pNOTICE) << arg;
-  
+  LOG("valor", pNOTICE) << arg;
+
   // Read the command line
   int ntoys               = arg.GetInt("ntoys");
   int n_threads           = arg.GetInt("nthreads");
@@ -106,17 +105,17 @@ int main(int argc, char ** argv)
   string output_rootfile  = arg.GetString("output");
   string params_to_tweak  = arg.GetString("params");
   bool rethrow_unphysical = arg.GetBool("rethrow-unphysical");
-  
+
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
   Messenger::Instance()->Configure(mesg_thresholds);
 
-  LOG("valor_dune",pINFO) << "Will rethrow unphysical toys";
-  
+  LOG("valor",pINFO) << "Will rethrow unphysical toys";
+
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
     util::VThreadPool::Instance()->SetNThreads(n_threads);
   }
-  
+
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
 
@@ -127,7 +126,7 @@ int main(int argc, char ** argv)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor_dune", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -178,7 +177,7 @@ int main(int argc, char ** argv)
       TObjArray * matches = input_match.MatchS(argname.c_str());
 
       if (matches->GetEntries() != 2) {
-        LOG("valor_dune",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
+        LOG("valor",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
         util::Die(-1);
       }
       TObjString * tos_param_name = dynamic_cast<TObjString*>(matches->At(1));
@@ -187,7 +186,7 @@ int main(int argc, char ** argv)
 
       conv::PhysParamId_t param = nr->PhysParamFromString(param_name);
       if (param == conv::kPhypUndefined) {
-        LOG("valor_dune",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
+        LOG("valor",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
         util::Die(-1);
       }
 
@@ -200,7 +199,7 @@ int main(int argc, char ** argv)
         fp->SetInitValue(param, param_val);
       }
     }
-    
+
     for(PhysParamId_t p : osc_params) {
       // TODO: Can this be removed now that we have osc params in the config files?
       std::cerr << "Osc param randomisation is not yet supported. Exiting" << std::endl;
@@ -214,7 +213,7 @@ int main(int argc, char ** argv)
          p == conv::kPhypDelta13     || p == conv::kPhypDelta15     || p == conv::kPhypDelta34     ||
          p == conv::kPhypDelta35     || p == conv::kPhypNSIepsMuTau || p == conv::kPhypMixingEE    ||
          p == conv::kPhypMixingMuMu  || p == conv::kPhypMixingMuE) {
-        LOG("valor_dune", pWARN) << "Randomising sterile params may not work as intended";
+        LOG("valor", pWARN) << "Randomising sterile params may not work as intended";
       }
     }
 
@@ -227,7 +226,7 @@ int main(int argc, char ** argv)
     }
 
     if(itoy % 100 == 0) { cout << "** Toy-MC: #" << itoy << endl; }
-    
+
     // Generate predictions
     model->Generate(*fp,"+SB");
 
@@ -237,8 +236,8 @@ int main(int argc, char ** argv)
 
     // Write stuff out
     model->Write(array,"curr","pdft_rf +SB");
-    
-    // Pick results wanted 
+
+    // Pick results wanted
     for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
       GenericSingleSampleFitModel * this_model = dynamic_cast<GenericSingleSampleFitModel*>(cm->GetSubModel(imodel));
       const SingleSampleKineBinning & binning = *this_model->GetBinning();
@@ -254,7 +253,7 @@ int main(int argc, char ** argv)
       events[imodel][itoy] = curr_pdf->Integral();
     } //imodel
     array->Clear("C");
-    delete array;  
+    delete array;
   }//itoy
 
   // Setup a streamer which we'll use to write the Tex table to the output file
@@ -286,7 +285,7 @@ int main(int argc, char ** argv)
   streamer << "\\end{table}" << endl;
 
   output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak);
-  LOG("valor_dune",pNOTICE)<<"Writing to file: "<<output_rootfile;
+  LOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
 
   streamer.seekg(0, ifstream::end);
   long size = streamer.tellg();
@@ -294,6 +293,6 @@ int main(int argc, char ** argv)
   ofstream outfile (output_rootfile);
   outfile.write (streamer.str().c_str(), size);
   outfile.close();
-  
+
   std::cout <<"Done!"<<std::endl;
 }

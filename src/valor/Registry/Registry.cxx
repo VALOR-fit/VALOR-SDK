@@ -1,8 +1,8 @@
 //____________________________________________________________________________
 /*
- Copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
+ Copyright (c) 2003-2020, The GENIE Collaboration
 
- Author: Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+ Author: Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
          University of Liverpool & STFC Rutherford Appleton Lab 
 */
 //____________________________________________________________________________

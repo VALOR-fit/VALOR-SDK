@@ -5,7 +5,7 @@
 
 \brief     Minuit-based VALOR fitter.
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
            Thomas Dealtry <Thomas.Dealtry \at physics.ox.ac.uk>
            Universty of Oxford
@@ -16,7 +16,7 @@
 
 \created   October 20, 2010
 
-\copyright (c) 2010-2016, The VALOR group
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

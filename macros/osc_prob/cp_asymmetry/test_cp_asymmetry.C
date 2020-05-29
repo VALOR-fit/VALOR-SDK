@@ -2,7 +2,7 @@
 //
 //
 //
-// Costas Andreopoulos <costas.andreopoulos@stfc.ac.uk>
+// Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 
 void test_cp_asymmetry
 (

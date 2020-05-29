@@ -1,7 +1,7 @@
 #
-# VALOR framework project Makefile.
+# VALOR SDK Makefile.
 # 
-# Author: Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+# Author: Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 #
 
 SHELL = /bin/sh

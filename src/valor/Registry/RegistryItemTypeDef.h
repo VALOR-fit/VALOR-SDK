@@ -5,12 +5,12 @@
 
 \brief     Definition of Registry item types
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Lab
 
 \created   October 20, 2006
 
-\copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
+\copyright Copyright (c) 2003-2020, The GENIE Collaboration
 
 */
 //____________________________________________________________________________

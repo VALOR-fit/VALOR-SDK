@@ -19,7 +19,7 @@
 \reference
           http://www.gnu.org/software/gsl/manual/html_node/Multidimensional-Minimization.html
 
-\author   Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author   Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
           STFC, Rutherford Appleton Laboratory
 
 \created  March 06, 2013

@@ -1,7 +1,7 @@
 //________________________________________________________________________________________________________________________
 /*
 
-Copyright (c) 2010-2019, The VALOR Fitting Group, All Rights Reserved.
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 additional options
         - no-int-systematics: skipping neutrino interaction systematics in the list construction  TODO: not yet implemented

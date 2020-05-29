@@ -1,5 +1,5 @@
 #
-# Costas Andreopoulos (Rutherford Lab.) <costas.andreopoulos \at stfc.ac.uk>
+# Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 #
 
 include $(VALOR_FMWK)/make/Make.config
