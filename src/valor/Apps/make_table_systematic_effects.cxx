@@ -241,8 +241,6 @@ int main(int argc, char ** argv)
     // Pick results wanted 
     for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
       GenericSingleSampleFitModel * this_model = dynamic_cast<GenericSingleSampleFitModel*>(cm->GetSubModel(imodel));
-      BeamConf_t b = this_model->GetBeam();
-      Sample_t   s = this_model->GetSample();
       const SingleSampleKineBinning & binning = *this_model->GetBinning();
       const VALORBinning & reco_smp = *(binning.RecoSmpBinning());
       const std::vector<KineVar_t>  & reco_vars = reco_smp.KineVars();
@@ -269,8 +267,6 @@ int main(int argc, char ** argv)
 
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
     GenericSingleSampleFitModel * this_model = dynamic_cast<GenericSingleSampleFitModel*>(cm->GetSubModel(imodel));
-    BeamConf_t b = this_model->GetBeam();
-    Sample_t   s = this_model->GetSample();
     std::string submodel_name = this_model->Name();
 
     // Copy the events from the big array to one that's just for this submodel
