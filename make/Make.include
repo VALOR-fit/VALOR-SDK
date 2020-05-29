@@ -65,6 +65,7 @@ ROOT_FLAGS  = $(shell root-config --cflags)
 ROOT_INCLUDES  = -I$(shell root-config --incdir)
 ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore -lXMLIO -lXMLParser
 ROOT_CINT_FLAGS = -c -p
+ROOT_CINT_FLAGS = 
 
 ifeq ("YES","$(OPT_ENABLE_GENIE)")
   ROOT_LIBRARIES += -lEGPythia6 -lGeom -lGenVector
