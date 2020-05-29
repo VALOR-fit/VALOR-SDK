@@ -72,8 +72,8 @@ class FitMethodFunc : public ROOT::Math::FitMethodFunction
 class Likelihood: public ROOT::Minuit2::FCNBase, public TObject
 {
 public :
-  Likelihood(FitDataABC * o, FitModelABC * e, FitParamList * p,
-    string opt = "poisson", double errdef = 1, bool goodnessoffit = false);
+  Likelihood(FitDataABC * o, FitModelABC * e, FitParamList * p);
+    // string opt = "poisson", double errdef = 1, bool goodnessoffit = false);
  ~Likelihood();
 
   FitDataABC &    Observation (void);
@@ -84,20 +84,20 @@ public :
 
   double Statistic(Option_t * stat_opt = "likelihood-ratio", std::map<std::string,double> * likelihood_components = 0) const;
 
-  // set the chisq definition 5 bins vs 73 bins
-  void SetChisqDefinition (bool goodnessoffit) { fGoodnessOfFit = goodnessoffit; }
-  bool GetChisqDefinition (void) { return fGoodnessOfFit; }
+  // // set the chisq definition 5 bins vs 73 bins
+  // void SetChisqDefinition (bool goodnessoffit) { fGoodnessOfFit = goodnessoffit; }
+  // bool GetChisqDefinition (void) { return fGoodnessOfFit; }
 
   // Turn the penalty term off or on (defaults to on)
   void IncludePenaltyHyp(bool use_penalty);
   void IncludePenaltySyst(bool use_penalty);
 
-  // Set the chisquare type (e.g. poisson) to be used in the fit
-  void SetChisquareFitOption(Option_t * opt) { fOpt = opt; }
+  // // Set the chisquare type (e.g. poisson) to be used in the fit
+  // void SetChisquareFitOption(Option_t * opt) { fOpt = opt; }
 
   // Minuit2: Minimum chi2 fit (delta chi2 = 1 for 1 sigma error)
   double Up          (void) const    { return fErrDef;   }
-  double ErrorDef    (void) const    { return Up();   }
+  double ErrorDef    (void) const    { return Up();      }
   void   SetErrorDef (double errdef) { fErrDef = errdef; }
 
   // Minuit2: Returns chi^2
@@ -116,10 +116,10 @@ private:
   FitDataABC *            fObs;
   mutable FitModelABC *   fExp;
   mutable FitParamList *  fFitParams;
-  string                  fOpt;
-  int                     fMode;
+  // string                  fOpt;
+  // int                     fMode;
   double                  fErrDef;
-  bool                    fGoodnessOfFit;
+  // bool                    fGoodnessOfFit;
   int                     fNPoints;
   int                     fNDim;
 

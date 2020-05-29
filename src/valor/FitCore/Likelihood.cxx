@@ -38,13 +38,14 @@ ClassImp(Likelihood)
 
 //________________________________________________________________________________________
 Likelihood::Likelihood(
-   FitDataABC * o, FitModelABC * e, FitParamList * fpar, string opt, double errdef, bool goodnessoffit) :
+   FitDataABC * o, FitModelABC * e, FitParamList * fpar) :
+//   string opt, double errdef, bool goodnessoffit) :
 fObs(o),
 fExp(e),
 fFitParams(fpar),
-fOpt(opt),
-fErrDef(errdef),
-fGoodnessOfFit(goodnessoffit),
+// fOpt(opt),
+fErrDef(0),
+// fGoodnessOfFit(goodnessoffit),
 fIncludePenaltySyst(true),
 fIncludePenaltyHyp (true)
 {
@@ -76,14 +77,17 @@ FitParamList & Likelihood::FitParams(void)
   return *fFitParams;
 }
 //________________________________________________________________________________________
-double Likelihood::Statistic(Option_t * option, std::map<std::string,double> * likelihood_components) const
+double Likelihood::Statistic(
+  Option_t * option, std::map<std::string,double> * likelihood_components) const
 {
+  bool goodnessOfFit = false;
+
   double total_statistic = 0;
   double data_statistic  = 0;
   double syst_penalty    = 0;
   double phys_penalty    = 0;
-  if (option || fGoodnessOfFit) {
-    const char * s = fGoodnessOfFit ? "%s gof" : "%s";
+  if (option || goodnessOfFit) {
+    const char * s = goodnessOfFit ? "%s gof" : "%s";
     TString newopt =  TString::Format(s,option);
     data_statistic =  fObs->GetFitStatistic(fExp,*fFitParams, newopt.Data(), likelihood_components);
   }
@@ -105,8 +109,10 @@ double Likelihood::Statistic(Option_t * option, std::map<std::string,double> * l
   total_statistic += data_statistic;
 #endif
   LOG("Likelihood",pINFO)
-    <<"Statistic = "<<total_statistic<<" (data/MC="<<data_statistic
-    <<", syst penalty="<<syst_penalty<<", phys penalty="<<phys_penalty<<")";
+    << "Statistic = " << total_statistic
+    << " (data/MC = " << data_statistic
+    << ", syst penalty = " <<syst_penalty
+    << ", phys penalty = " <<phys_penalty << ")";
 
   assert(TMath::Finite(total_statistic));
   return total_statistic;
