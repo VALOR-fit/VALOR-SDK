@@ -35,7 +35,7 @@ all: $(TGT)
 # Generate GENIE response functions
 #
 make_response_functions: FORCE
-ifdef GENIE
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
 	$(CXX) $(CXXFLAGS) -c make_response_functions.cxx $(GINCLUDES)
 	$(LD) $(LDFLAGS) make_response_functions.o $(GLIBRARIES) $(VALOR_GLIBRARIES) -o $(VALOR_FMWK)/bin/valor-make_response_functions
 else
