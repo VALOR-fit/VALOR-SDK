@@ -3601,7 +3601,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         if(fSinDM2WeightVec.at(imode).at(itrue).size() > 0) {
           sindm2 = 0;
           for(auto const& LOverE: fSinDM2WeightVec.at(imode).at(itrue)) {
-            sindm2 += util::Calculate2FSterileSinSqDM(lOverE,dm41sq);
+            sindm2 += util::Calculate2FSterileSinSqDM(LOverE,dm41sq);
           }
           sindm2 /= fSinDM2WeightVec.at(imode).at(itrue).size();
         }
