@@ -581,6 +581,11 @@ bool util::IsNuMuToNuTau(conv::ReacMode_t m)
     return false; 
 }
 //________________________________________________________________________________________
+bool util::IsNeutrinoAny(conv::ReacMode_t m)
+{
+  return (m>=0 && m<kmCosmic);
+}
+//________________________________________________________________________________________
 bool util::IsNuEToNuMu(conv::ReacMode_t m)
 {
   if (kReacModeToInitFlavour[m]==kNuE && kReacModeToFinalFlavour[m]==kNuMu)

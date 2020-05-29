@@ -235,7 +235,7 @@ typedef enum EReacMode
    kmNuEBarToNuTauBarCCMpi,          // nuebar to nutaubar    CC multi pi (>1 pion of any charge(s))
    kmNuEBarToNuTauBarCCmisc,         // nuebar to nutaubar    CC miscellaneous modes that require separate treatment to CC other
    kmNuEBarToNuTauBarCCoth,          // nuebar to nutaubar    CC other
-   kmCosmic,
+   kmCosmic,              // first non-neutrino induced - all above here will pass IsNeutrinoAny
    kmOther                // other, eg contributions from interactions outside the fiducial etc
 } 
  ReacMode_t; 
@@ -938,6 +938,7 @@ namespace util {
   bool               IsNuEBarToNuMuBar  (conv::ReacMode_t m);
   bool               IsNuEBarToNuTauBar (conv::ReacMode_t m);
   bool               IsCosmic           (conv::ReacMode_t m);
+  bool               IsNeutrinoAny      (conv::ReacMode_t m);
 
   conv::ReacMode_t   NuEModeToOscNuEMode(conv::ReacMode_t m);
 
