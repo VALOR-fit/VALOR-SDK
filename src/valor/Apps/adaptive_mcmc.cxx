@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\app       valor_dune-adaptive_mcmc
+\app       valor-adaptive_mcmc
 
 \brief     Generate and fit ensembles of toy-MC experiments.
 
@@ -31,11 +31,11 @@
 */
 //____________________________________________________________________________
 
+// System
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
-
-// root
+// ROOT
 #include "TFile.h"
 #include "TMath.h"
 #include "TSystem.h"
@@ -44,7 +44,7 @@
 #include "TVectorD.h"
 #include "TPrincipal.h"
 #include "TStopwatch.h"
-// fmwk
+// VALOR/SDK
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
@@ -72,17 +72,17 @@ using namespace valor;
 using namespace valor::conv;
 
 int main(int argc, char ** argv)
-{  
+{
 
   valor::util::PrintBanner(Env::Instance()->Banner(),500);
- 
+
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/adaptive_mcmc.arg:$VALOR_FMWK/config/apps/seeds.arg");
-  LOG("valor_dune", pNOTICE) << arg;
-  
+  LOG("valor", pNOTICE) << arg;
+
   std::string thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
   Messenger::Instance()->Configure(thresholds);
-  
+
   string input_filename        = arg.GetString("input");
   string output_filename       = arg.GetString("output");
   string config                = arg.GetString("config");
@@ -97,62 +97,62 @@ int main(int argc, char ** argv)
   bool use_prefit_correlations = arg.GetBool("use-prefit-correlations");
   bool use_no_correlations     = arg.GetBool("use-no-correlations");
   bool use_prefit_errors       = arg.GetBool("use-prefit-errors");
-  
+
   // If pot_override is set to a positive number, every sample will be initialised with the same POT - this number
   double pot_override     = arg.GetDouble("pot-override");
   if (pot_override > 0 ) {
     Opt::Instance()->MutableGlobalRegistry().Set("pot_override",pot_override);
   }
-  
+
   const double target_n_attempts = 3;
   const int recalculate_step_every = 50;
   const int print_step_every = 500;
-  
+
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
-  LOG("valor_dune", pNOTICE) << *Rnd::Instance();
-  
+  LOG("valor", pNOTICE) << *Rnd::Instance();
+
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
     util::VThreadPool::Instance()->SetNThreads(n_threads);
   }
-  
+
   // Set up the model
   config = util::CompleteConfigPath(config);
-  LOG("valor_dune", pNOTICE) << "Getting and configuring the fit elements";
+  LOG("valor", pNOTICE) << "Getting and configuring the fit elements";
   CompoundFitElements * elements = new CompoundFitElements();
   elements->Read(config);
-  LOG("valor_dune", pNOTICE) << "FitElements read complete.";
+  LOG("valor", pNOTICE) << "FitElements read complete.";
   FitDataABC  * data     = elements->FitData();
   FitModelABC * modelabc = elements->FitModel();
   CompoundFitModel * model = dynamic_cast<CompoundFitModel*>(modelabc); assert(model);
-  
+
   // Get the input FPL
   TFile * input_file = new TFile(input_filename.c_str()); assert(input_file->IsOpen());
-  TTree * in_tr = dynamic_cast<TTree*>(input_file->Get("valor_dune_nd_ntp")); assert(in_tr);
+  TTree * in_tr = dynamic_cast<TTree*>(input_file->Get("valor_fit_ntp")); assert(in_tr);
   FitParamList *  best_fit_params      = 0; // best-fit params
   in_tr->SetBranchAddress("best_fit_params",    &best_fit_params);
   assert(in_tr->GetEntries() > fitnumber);
   in_tr->GetEntry(fitnumber); assert(best_fit_params);
   best_fit_params->CopyBestFitToCurrValues();
-  LOG("valor_dune", pNOTICE) << "Read input FPL.";
-  LOG("valor_dune", pNOTICE) << *best_fit_params;
-  
+  LOG("valor", pNOTICE) << "Read input FPL.";
+  LOG("valor", pNOTICE) << *best_fit_params;
+
   // Param list size
   const int npar      = best_fit_params->GetNumberParameters();
   const int npar_free = best_fit_params->GetNumberFreeParameters();
-  
+
   conv::PhysParamId_t * free_parameters = new PhysParamId_t[npar_free];
   int free_counter = 0;
   for (int ip = 0 ; ip < npar ; ip++) {
     if (best_fit_params->IsFixedByIndex(ip)) {continue;}
     free_parameters[free_counter] = best_fit_params->WhichParam(ip);
   }
-  
+
   // Make the BF data
-  LOG("valor_dune", pNOTICE) << "Generating data";
+  LOG("valor", pNOTICE) << "Generating data";
   data->Generate(model,*best_fit_params,false);
-  
+
   // Setup the output tree
   TFile * output_file = new TFile(output_filename.c_str(),"RECREATE");
   output_file->cd();
@@ -160,7 +160,7 @@ int main(int argc, char ** argv)
   int o_npar = npar;
   double o_chisq = -999;
   double * o_params = new double[npar];
-  
+
   out_tr->Branch("npar"  ,&o_npar  ,"npar/I");
   out_tr->Branch("params",o_params,"o_params[npar]/D");
   out_tr->Branch("chisq" ,&o_chisq ,"chisq/D");
@@ -171,14 +171,14 @@ int main(int argc, char ** argv)
       out_tr->Branch(pname.c_str(),&(o_params[ip]),pnameD.c_str());
     }
   }
-  LOG("valor_dune", pNOTICE) << "Output tree built";
-  
+  LOG("valor", pNOTICE) << "Output tree built";
+
   // Build a Cholesky matrix we can use for throws
   CorrelatedSystematics * syst = model->GetSystematics();
   const TMatrixD & prefit_cov = syst->CovMatrix();
   assert(best_fit_params);
   TMatrixD fitted_cov(*best_fit_params->GetCovMatrix());
-  
+
   for (int ip = 0 ; ip < fitted_cov.GetNrows() ; ip++) {
     for (int jp = 0 ; jp < fitted_cov.GetNcols() ; jp++) {
       double val = fitted_cov(ip,jp);
@@ -187,10 +187,10 @@ int main(int argc, char ** argv)
       }
     }
   }
-  
+
   TMatrixD prop_corr(util::CovarianceMatrixToCorrelationMatrix(fitted_cov));
   TVectorD prop_err (util::CovarianceMatrixToErrorVector(fitted_cov));
-  
+
   if (use_prefit_errors) {
     TVectorD tmp_err = util::CovarianceMatrixToErrorVector(prefit_cov);
     for (int ip = 0 ; ip < npar; ip++) {
@@ -224,12 +224,12 @@ int main(int argc, char ** argv)
       }
     }
   }
-  
+
   TMatrixD init_proposal_cov(util::CorrelationAndErrorToCovarianceMatrix(prop_corr,prop_err));
-  LOG("valor_dune", pNOTICE) << "Proposal covariance built.";
-  
+  LOG("valor", pNOTICE) << "Proposal covariance built.";
+
   const TMatrixD chol_matrix(util::CholeskyDecomposition(init_proposal_cov));
-  
+
   // Throw a random start point, unless told not to
   if (!start_at_bestfit) {
     TRandom3 & rnd = Rnd::Instance()->RndOther();
@@ -259,44 +259,44 @@ int main(int argc, char ** argv)
       }
     }
   }
-  
+
   // Setup fitinputs
   FitInputs fitinputs(data,model,best_fit_params);
-  
+
   best_fit_params->Print();
-  
+
   // Get starting statistic
   double current_chisq = fitinputs.Statistic();
   //~ std::cout<<current_chisq<<"\t"<<best_fit_params->GetBestFitStatistic()<<std::endl;
   if (start_at_bestfit) {
     assert(std::fabs(current_chisq - best_fit_params->GetBestFitStatistic()) < 1E-5);
   }
-  
+
   // Write start point
   o_chisq = current_chisq;
   TVectorD bf_vec = best_fit_params->AsTVector();
   std::copy(bf_vec.GetMatrixArray(),bf_vec.GetMatrixArray()+npar, o_params);
   out_tr->Fill();
-  
+
   double mean_n_attempts = 0;
   int n_steps_in_mean = 0;
-  
+
   // PCA class to easily calculate the covariance
   TPrincipal pca(npar);
-  
+
   // Record time
   TStopwatch clock;
-  
+
   for (int istep = 1 ; istep < nsteps ; istep++) {
     // Every N steps, print out a status
     if (istep%print_step_every == 0 && istep) {
       LOG("adaptive_mcmc",pNOTICE)<<istep<<"\t"<<clock.RealTime()<<"\t";
       //~ std::cout<<proposal_step<<std::endl;
       out_tr->AutoSave();
-      
+
       clock.Start();
     }
-    
+
     // Every N steps, recalculate the step size so we're trying ~target_n_attempts throws per evaluation
     if (!disable_adaptive && istep%recalculate_step_every == 0) {
       if (mean_n_attempts > target_n_attempts * 1.5) {
@@ -308,15 +308,15 @@ int main(int argc, char ** argv)
       mean_n_attempts = 0.;
       n_steps_in_mean = 0;
     }
-    
+
     int n_attempts;
     bool success = util::AttemptMCMCStep(fitinputs,current_chisq,n_attempts,proposal_step,&chol_matrix);
-    
+
     // Recalculate mean attempts
     n_steps_in_mean++;
     mean_n_attempts *= 1. - 1./(n_steps_in_mean);
     mean_n_attempts += ((double)n_attempts)/(n_steps_in_mean);
-    
+
     if (!success) {
       if (!disable_adaptive) {
         proposal_step *= 0.1; // If we failed, do smaller steps
@@ -328,26 +328,26 @@ int main(int argc, char ** argv)
     TVectorD par_vec = best_fit_params->AsTVector();
     std::copy(par_vec.GetMatrixArray(),par_vec.GetMatrixArray()+npar, o_params);
     out_tr->Fill();
-    
+
     if (istep > burn_in) {
       pca.AddRow(o_params);
     }
-    
+
   } //istep
-  
-  
+
+
   // Write the ttree
   output_file->cd();
   out_tr->Write();
-  
+
   // Get the covariance back
   TMatrixD cov_out(util::LowerTriangularMatrixToSymMatrix(*(pca.GetCovarianceMatrix())));
   cov_out.Write("cov");
-  
+
   prefit_cov.Write("cov_in");
-  
+
   const TVectorD mean_values(*(pca.GetMeanValues()));
-  
+
   // Write out the ratio of mean to best_fit
   ostringstream summary;
   summary<<"Mean from chain / best fit: "<<std::endl;;
@@ -359,10 +359,9 @@ int main(int argc, char ** argv)
   LOG("adaptive_mcmc",pNOTICE)<<summary.str();
 
   LOG("mcmc_step",pNOTICE)<<"Final step size was: "<<proposal_step;
-  
+
   output_file->Close();
   delete[] o_params;
-  
+
   return 0;
 }
-

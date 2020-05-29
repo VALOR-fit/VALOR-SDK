@@ -1,5 +1,5 @@
 #
-# Makefile for VALOR/DUNE apps
+# Makefile for VALOR/SDK apps
 #
 # Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
 #

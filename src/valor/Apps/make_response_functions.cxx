@@ -1,11 +1,11 @@
 //____________________________________________________________________________
 /*!
 
-  \app       valor_dune-make_response_functions
+  \app       valor-make_response_functions
 
-  \brief     
+  \brief
 
-  \syntax    valor_dune-make_response_functions         
+  \syntax    valor-make_response_functions
                --input  input_analysis_file.root
                --output output_response_function_file.root
                --format format_of_the_input_file <hpgartpc, lartpc, fgt>
@@ -25,9 +25,9 @@
 
 // WARNING - this probably still assumes that binning is 2D even though it's moved to the ND interface
 
+// System
 #include <string>
-
-//
+// ROOT
 #include <TFile.h>
 #include <TTree.h>
 #include <TLeaf.h>
@@ -35,8 +35,7 @@
 #include <TString.h>
 #include <TSystem.h>
 #include <TMath.h>
-
-// valor
+// VALOR/SDK
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/UtlSystem.h"
@@ -62,7 +61,6 @@
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/FitCore/UtlFitParamList.h"
 
-
 using std::string;
 using genie::EventRecord;
 using namespace valor;
@@ -75,19 +73,17 @@ int main(int argc, char ** argv)
   TString gmesg_path = "$GENIE/config/Messenger_laconic.xml";
   gSystem->ExpandPathName(gmesg_path);
   genie::utils::app_init::MesgThresholds(gmesg_path.Data());
-  
 
-  
   // Read command line arguments
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/make_response_functions.arg");
-  VLOG("valor_dune", pNOTICE) << arg;
+  VLOG("valor", pNOTICE) << arg;
 
   string arg_beam        = arg.GetString("beam");
   string arg_sample      = arg.GetString("sample");
   string arg_detector    = arg.GetString("detector");
   string arg_systematic  = arg.GetString("systematic");
-  string arg_format      = arg.GetString("format");  
+  string arg_format      = arg.GetString("format");
   string arg_inp_file    = arg.GetString("input");
   string arg_out_file    = arg.GetString("output");
   string arg_config_file = arg.GetString("config");
@@ -102,7 +98,7 @@ int main(int argc, char ** argv)
   Sample_t   sample    = util::SampleFromString   (arg_sample    );
   Detector_t detector  = util::DetectorFromString (arg_detector  );
   GSyst_t    syst      = GSyst::FromString        (arg_systematic);
-  
+
   // Read the config to get the relevant binning and the parameters
   CompoundFitElements * elements = new CompoundFitElements();
   std::string config_path = util::CompleteConfigPath(arg.GetString("config"));
@@ -145,24 +141,24 @@ int main(int argc, char ** argv)
   bool got_appropriate_model = false;
   for (unsigned int ism = 0 ; ism < compound_model->GetNSubModels() ; ism++) {
     fit_model = dynamic_cast<GenericSingleSampleFitModel*>(compound_model->GetSubModel(ism));
-    if  (fit_model->GetDetector() == detector && 
-         fit_model->GetSample()   == sample   && 
+    if  (fit_model->GetDetector() == detector &&
+         fit_model->GetSample()   == sample   &&
          fit_model->GetBeam()     == beam )
       { got_appropriate_model = true; break; }
   }
   if (!got_appropriate_model) {
     VLOG("make_response_func", pFATAL) << "Failed to identify appropriate fit model to get binning.";
   }
-  
+
   const util::RFL & rfl                   = *(fit_model->GetRFL());
   const SingleSampleKineBinning & binning = *(fit_model->GetBinning());
-  
+
   // Make it an option here to use the Xsec binning instead
   const VALORBinning * reco_ob = (binning.RecoOptBinning());
   const VALORBinning * reco_sb = (binning.RecoSmpBinning());
   const int n_reco_bins_ob  = reco_ob->NBins();
   const int n_reco_bins_sb  = reco_sb->NBins();
-  
+
 
   // Number of tweaks for the specified systematic parameter
   const int   inom          = 5;
@@ -185,11 +181,11 @@ int main(int argc, char ** argv)
       const VALORBinning * true_sb = binning.TrueSmpBinning(m);
       const int n_true_bins_sb  = true_sb->NBins();
       if (include_sb) {
-        mc_templ_sb [itwk][imode] = 
+        mc_templ_sb [itwk][imode] =
           new VALORArray(n_reco_bins_sb, n_true_bins_sb);
         mc_templ_sb [itwk][imode] -> SetAll(0.);
       }
-      mc_templ_ob [itwk][imode] = 
+      mc_templ_ob [itwk][imode] =
         new VALORArray(n_reco_bins_ob, n_true_bins_sb);
       mc_templ_ob [itwk][imode] -> SetAll(0.);
       imode++;
@@ -199,7 +195,7 @@ int main(int argc, char ** argv)
   // Open input file and get the HPGArTPC, LArTPC or FGT event tree
   TFile fin(arg_inp_file.c_str(),"READ");
   if (!fin.IsOpen()) {
-    VLOG("make_response_func", pFATAL) 
+    VLOG("make_response_func", pFATAL)
       << "Failed to open file "<<arg_inp_file.c_str();
     exit(1);
   }
@@ -207,20 +203,20 @@ int main(int argc, char ** argv)
   if(arg_format == "hpgartpc") {
     //~ tree_name = "GasTPCTree";
     tree_name = "NdtfDst";
-  } 
+  }
   else
     if(arg_format == "lartpc" || arg_format == "fgt") {
       tree_name = "dune_dst";
     }
     else {
-      VLOG("make_response_func", pFATAL) 
+      VLOG("make_response_func", pFATAL)
         << "Unknown input file format. Please specify one of hpgartpc, lartpc or fgt";
       exit(1);
     }
   TTree * analysis_tree = dynamic_cast <TTree *> (fin.Get(tree_name.c_str()));
   if(!analysis_tree) {
-    VLOG("make_response_func", pFATAL) 
-      << "No event tree " << tree_name 
+    VLOG("make_response_func", pFATAL)
+      << "No event tree " << tree_name
       << " in " << arg_format << "-format input file: "
       << arg.GetString("input");
     exit(1);
@@ -249,7 +245,7 @@ int main(int argc, char ** argv)
       << "No recognised tree format.";
     util::Die(-1); return(-1);
   }
-  
+
   // GENIE event reweighting interface
   GReWeight rw;
   rw.AdoptWghtCalc( "hadro_intranuke", new GReWeightINuke );
@@ -261,18 +257,18 @@ int main(int argc, char ** argv)
   //syst_list.Init(syst);
   syst_list.Init(kINukeTwkDial_MFP_pi,      0., twk_dial_min, twk_dial_max);
   syst_list.Init(kINukeTwkDial_MFP_N,       0., twk_dial_min, twk_dial_max);
-  syst_list.Init(kINukeTwkDial_FrCEx_pi,    0., twk_dial_min, twk_dial_max); 
+  syst_list.Init(kINukeTwkDial_FrCEx_pi,    0., twk_dial_min, twk_dial_max);
   syst_list.Init(kINukeTwkDial_FrInel_pi,   0., twk_dial_min, twk_dial_max);
   syst_list.Init(kINukeTwkDial_FrAbs_pi,    0., twk_dial_min, twk_dial_max);
   syst_list.Init(kINukeTwkDial_FrPiProd_pi, 0., twk_dial_min, twk_dial_max);
-  syst_list.Init(kINukeTwkDial_FrCEx_N,     0., twk_dial_min, twk_dial_max); 
+  syst_list.Init(kINukeTwkDial_FrCEx_N,     0., twk_dial_min, twk_dial_max);
   syst_list.Init(kINukeTwkDial_FrInel_N,    0., twk_dial_min, twk_dial_max);
   syst_list.Init(kINukeTwkDial_FrAbs_N,     0., twk_dial_min, twk_dial_max);
   syst_list.Init(kINukeTwkDial_FrPiProd_N,  0., twk_dial_min, twk_dial_max);
-  
+
   // Systematic tweaks
   for(int itwk = 0; itwk < n_twks; itwk++) {
-    
+
     double twk_dial = twk_dial_min + itwk * twk_dial_step;
     VLOG("make_response_func", pNOTICE) << "Doing tweak: " << twk_dial << " ("<<itwk+1 << " of "<<n_twks<<")";
     syst_list.Set(syst, twk_dial);
@@ -286,18 +282,18 @@ int main(int argc, char ** argv)
         VLOG("make_response_func", pNOTICE) << "** Reading event: " << iev;
       }
       analysis_tree->GetEntry(iev);
-      
+
       // Consider only input sample
       curr_sample = util::SampleFromInt(curr_sample_int);
       if(curr_sample != sample) {
         curr_mcrec->Clear();
         continue;
       }
-      
+
       // Retrieve GHEP event record and print it out.
       NtpMCRecHeader rec_header = curr_mcrec->hdr;
       EventRecord &  event = *(curr_mcrec->event);
-      VLOG("make_response_func", pINFO) 
+      VLOG("make_response_func", pINFO)
         << "GENIE MC truth info: " << event;
 
       // hpgartpc output in MeV, convert to GeV as in lartpc and fgt outputs
@@ -308,7 +304,7 @@ int main(int argc, char ** argv)
         curr_enu_reco = curr_enu_reco_float;
         curr_y_reco = curr_y_reco_float;
       }
-      
+
       if(curr_enu_reco <= 0) {
         VLOG("make_minidst", pNOTICE) << "- Rejecting event [Ev (reco) <= 0]";
         curr_mcrec->Clear();
@@ -319,7 +315,7 @@ int main(int argc, char ** argv)
         curr_mcrec->Clear();
         continue;
       }
-      
+
       // Get reaction mode
       ReacMode_t curr_mode = valor::util::DetermineReactionMode(&event, false);
       if(curr_mode == kmUndefined) {
@@ -341,29 +337,29 @@ int main(int argc, char ** argv)
       double wght = rw.CalcWeight(event);
       //if(wght <    0) wght = 1; // needed?
       //if(wght > 9999) wght = 1; // needed?
-      
+
       // Protect against vars at upper limit (eg y_reco = 1, set by hand for NC events) as
       // the binary search below will give an index out of limits
       const double epsilon = 1E-10;
       if(curr_enu_reco >= max_ereco) { curr_enu_reco = curr_enu_reco - epsilon; }
       if(curr_y_reco   >= max_yreco) { curr_y_reco   = curr_y_reco   - epsilon; }
-      
+
       // MUST BE REPLACED WITH APPROPRIATE KINESPACE STUFF
       std::vector<double> truevec;
       truevec.push_back(curr_enu_true);
       truevec.push_back(curr_q2_true );
-      
+
       std::vector<double> recovec;
       recovec.push_back(curr_enu_reco);
       recovec.push_back(curr_y_reco);
-      
+
       const VALORBinning * true_sb = binning.TrueSmpBinning(curr_mode);
       const int itrue_sb = true_sb->FindBin(truevec);
       const int ireco_ob = reco_ob->FindBin(recovec);
       const int ireco_sb = reco_sb->FindBin(recovec);
 
       if (include_sb) {
-        mc_templ_sb [itwk] [imode]      -> AddToEntry(wght, ireco_sb, itrue_sb); 
+        mc_templ_sb [itwk] [imode]      -> AddToEntry(wght, ireco_sb, itrue_sb);
       }
       mc_templ_ob [itwk] [imode] -> AddToEntry(wght, ireco_ob, itrue_sb);
       curr_mcrec->Clear();
@@ -379,28 +375,28 @@ int main(int argc, char ** argv)
   ts_outfile = ts_outfile.ReplaceAll("[BEAM]"   , util::                          AsString(beam     ).c_str());
   ts_outfile = ts_outfile.ReplaceAll("[SAMPLE]" , util::                          AsString(sample   ).c_str());
   ts_outfile = ts_outfile.ReplaceAll("[PARAM]"  , util::NameRegistry::Instance()->AsString(fit_param).c_str());
-  VLOG("make_response_func", pNOTICE) 
+  VLOG("make_response_func", pNOTICE)
     << "Saving VALOR response functions to: "<<ts_outfile;
   TFile fout(ts_outfile.Data(),"recreate");
-  
+
   int n_splines_written = 0;
 
   unsigned int imode = 0;
   for(ReacMode_t m : read_modes) {
     const VALORBinning * true_sb = binning.TrueSmpBinning(m);
     const int n_true_bins_sb = true_sb->NBins();
-    
+
     if (include_sb) {
       for(int ireco = 0; ireco < n_reco_bins_sb; ireco++) {
         for(int itrue = 0; itrue < n_true_bins_sb; itrue++) {
           double y[n_twks] = { 0 };
-          double x[n_twks] = { 0 };    
+          double x[n_twks] = { 0 };
           for(int itwk = 0; itwk < n_twks; itwk++) {
-            double twk_dial = twk_dial_min + itwk * twk_dial_step;  
+            double twk_dial = twk_dial_min + itwk * twk_dial_step;
             double nevents  = mc_templ_sb [itwk][imode] -> GetEntry(ireco,itrue);
             double nevents0 = mc_templ_sb [inom][imode] -> GetEntry(ireco,itrue);
             y[itwk] = (nevents0 > 0) ? nevents/nevents0 : 1;
-            x[itwk] = 1+(twk_dial * GSystUncertainty::Instance()->OneSigmaErr(syst));                   
+            x[itwk] = 1+(twk_dial * GSystUncertainty::Instance()->OneSigmaErr(syst));
           }//itwk
           TString name  = rfl.BuildSplineName(m,fit_param,itrue,ireco);
           TString title = name; // Make this contain real kinematic ranges
@@ -418,13 +414,13 @@ int main(int argc, char ** argv)
     for(int ireco = 0; ireco < n_reco_bins_ob; ireco++) {
       for(int itrue = 0; itrue < n_true_bins_sb; itrue++) {
         double y[n_twks] = { 0 };
-        double x[n_twks] = { 0 };    
+        double x[n_twks] = { 0 };
         for(int itwk = 0; itwk < n_twks; itwk++) {
-          double twk_dial = twk_dial_min + itwk * twk_dial_step;  
+          double twk_dial = twk_dial_min + itwk * twk_dial_step;
           double nevents  = mc_templ_ob [itwk][imode] -> GetEntry(ireco, itrue);
           double nevents0 = mc_templ_ob [inom][imode] -> GetEntry(ireco, itrue);
           y[itwk] = (nevents0 > 0) ? nevents/nevents0 : 1;
-          x[itwk] = 1+(twk_dial * GSystUncertainty::Instance()->OneSigmaErr(syst));                   
+          x[itwk] = 1+(twk_dial * GSystUncertainty::Instance()->OneSigmaErr(syst));
         }//itwk
         TString name  = rfl.BuildSplineName(m,fit_param,itrue,ireco);
         TString title = name; // Make this contain real kinematic ranges

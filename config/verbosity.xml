@@ -2,12 +2,13 @@
 
 <messenger_config>
 
-  <!-- 
+  <!--
     Defines the priority levels for VALOR message streams.
-    The priority (in descending importance order) can be 
+    The priority (in descending importance order) can be
     FATAL, ALERT, CRIT, ERROR, WARN, NOTICE, INFO, DEBUG.
    -->
 
+  <priority msgstream="valor">                INFO     </priority>
   <priority msgstream="Messenger">            DEBUG    </priority>
   <priority msgstream="XML">                  NOTICE   </priority>
   <priority msgstream="Parser">               NOTICE   </priority>
@@ -16,5 +17,6 @@
   <priority msgstream="Reg">                  NOTICE   </priority>
   <priority msgstream="ApplyMask">            NOTICE   </priority>
   <priority msgstream="Parameter">            NOTICE   </priority>
+  <priority msgstream="ToyBuilder">           NOTICE   </priority>
 
 </messenger_config>

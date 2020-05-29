@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\app       valor_dune-tweak_pdf
+\app       valor-tweak_pdf
 
 \brief     Vary the MC spectra by throwing sets of systematics
 
@@ -19,12 +19,13 @@
 
              --load-prior-from-file : Option for file to give constrained prior matrix [ use default prior ]
              --prior-fit-number     : Option to specify the entry in the tree for above file [ 0 ]
-             
+
              [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
-             
+
 
 \author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
            University of Liverpool & STFC Rutherford Appleton Laboratory
+
            Steve Dennis <s.r.dennis \at liverpool.ac.uk>
            University of Liverpool
 
@@ -35,7 +36,7 @@
 */
 //____________________________________________________________________________
 
-// root
+// ROOT
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TLatex.h"
@@ -44,7 +45,7 @@
 #include "TObjArray.h"
 #include "TString.h"
 #include "TSystem.h"
-// fmwk
+// VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/FitCore/CorrelatedSystematics.h"
@@ -75,19 +76,18 @@ using namespace valor::conv;
 
 const double enu_reco_max = 10;
 
-const char * fit_result_tree_name = "valor_dune_nd_ntp";
+const char * fit_result_tree_name = "valor_fit_ntp";
 
 const KineVar_t kv = conv::kvEreco;
 
 int main(int argc, char ** argv)
 {
-
   valor::util::PrintBanner(Env::Instance()->Banner(),500);
- 
+
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/tweak_pdf_N.arg:$VALOR_FMWK/config/apps/seeds.arg");
-  LOG("valor_dune", pNOTICE) << arg;
-  
+  LOG("valor", pNOTICE) << arg;
+
   // Read the command line
   int ntoys               = arg.GetInt("ntoys");
   int n_threads           = arg.GetInt("nthreads");
@@ -95,38 +95,38 @@ int main(int argc, char ** argv)
   string fplopt           = arg.GetString("fit-param-opt");
   string output_rootfile  = arg.GetString("output");
   string params_to_tweak  = arg.GetString("params");
-  
+
   string read_prior_from_file = arg.GetString("load-prior-from-file");
   int prior_fit_number = arg.GetInt("prior-fit-number");
-  
+
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
   Messenger::Instance()->Configure(mesg_thresholds);
-  
+
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
     util::VThreadPool::Instance()->SetNThreads(n_threads);
   }
-  
+
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
-  
+
   // And OA parameters
   Opt::Instance()->gMassHierarchyAssumed = ( (arg.GetBool("inverted"))     ? conv::kNmhInverted      : conv::kNmhNormal);
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor_dune", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
-  
+
   double mixing12 = arg.GetDouble("input-mixing12");
   double mixing13 = arg.GetDouble("input-mixing13");
   double mixing23 = arg.GetDouble("input-mixing23");
   double dm12sq   = arg.GetDouble("input-dm12sq");
   double dm23sq   = arg.GetDouble("input-dm23sq");
   double deltacp  = arg.GetDouble("input-deltaCP");
-  
+
   // Config
   std::string config_path = util::CompleteConfigPath(arg.GetString("config"));
 
@@ -134,24 +134,24 @@ int main(int argc, char ** argv)
   cout << "\n[Job inputs]" << endl;
   cout << "- Reading analysis configuration from: " << config_path << endl;
   cout << "- Model physics hypothesis : " << hypname << endl;
-  
+
   CompoundFitElements * elements = new CompoundFitElements();
   elements->Read(config_path.c_str());
   FitModelABC * model = elements->FitModel();
   CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(model);
   assert(cm);
-  
+
   // Arrays to store the spectra for the default, +1 sigma and -1 sigma variations
-  
+
   vector<TH1D *> nom_pdf_werr;
   vector<TH1D *> nom_pdf     ;
   vector<TH1D *> err_p1      ;
   vector<TH1D *> err_m1      ;
-  
+
   vector<double> max(cm->GetNSubModels());
   vector<vector<TH1D *> > twk_pdf(cm->GetNSubModels());
   CorrelatedSystematics * syst = cm->GetSystematics();
-    
+
   // If necessary, update the systematics prior from a previous fit
   TFile * postfit_matrix_file = NULL;
   if (read_prior_from_file!="-" && read_prior_from_file!="none") {
@@ -174,33 +174,33 @@ int main(int argc, char ** argv)
 
     // (toy-MC #-1 is special: default)
     FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-    
+
     if (fp->Exists(conv::kPhypMixing12)) { fp->Update(conv::kPhypMixing12,mixing12); }
     if (fp->Exists(conv::kPhypMixing13)) { fp->Update(conv::kPhypMixing13,mixing13); }
     if (fp->Exists(conv::kPhypMixing23)) { fp->Update(conv::kPhypMixing23,mixing23); }
     if (fp->Exists(conv::kPhypDm12sq  )) { fp->Update(conv::kPhypDm12sq  ,dm12sq  ); }
     if (fp->Exists(conv::kPhypDm23sq  )) { fp->Update(conv::kPhypDm23sq  ,dm23sq  ); }
     if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
-    
-    
+
+
     model->ResetSystematics("all");
     // Randomise the systematics in the model, and copy them to the FPL
     std::vector<PhysParamId_t> param_set = util::GetParameterSet(params_to_tweak);
     std::map<PhysParamId_t,bool> param_map;
-    
+
     assert(param_set.size());
-    
+
     for (unsigned int ip = 0 ; ip < param_set.size() ; ip++) {
       PhysParamId_t p = param_set[ip];
       if(!util::IsSystematic(p)) { continue; }
       param_map[p] = true;
     }
-    
+
     if (itoy > -1) {
       model->RandomizeSystematics(param_map);
     }
     fp->FromPhysParamList(model->Tweaks(),"current");
-    
+
     // Generate predictions
     model->Generate(*fp,"+SB");
 
@@ -210,8 +210,8 @@ int main(int argc, char ** argv)
 
     // Write stuff out
     model->Write(array,"curr","pdfts_rf +SB");
-    
-    // Pick results wanted 
+
+    // Pick results wanted
     for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
       SingleSampleFitModelABC * this_model = dynamic_cast<SingleSampleFitModelABC*>(cm->GetSubModel(imodel));
       BeamConf_t b = this_model->GetBeam();
@@ -231,7 +231,7 @@ int main(int argc, char ** argv)
       }
     } //imodel
     array->Clear("C");
-    delete array;  
+    delete array;
   }//itoy
 
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
@@ -254,17 +254,17 @@ int main(int argc, char ** argv)
           max [imodel] = TMath::Max(max[imodel], nom_val + one_sigma);
        }
     }//ebin
-  }//imodel   
-  
-  
+  }//imodel
+
+
   // Draw and (if necessary), write to file
   TFile * outfile = NULL;
   if (output_rootfile!="-" && output_rootfile!="none") {
     output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak);
     outfile = new TFile(output_rootfile.c_str(),"RECREATE");
-    LOG("valor_dune",pNOTICE)<<"Writing to file: "<<output_rootfile;
+    LOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
   }
-  
+
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
     SingleSampleFitModelABC * this_model = dynamic_cast<SingleSampleFitModelABC*>(cm->GetSubModel(imodel));
     BeamConf_t b = this_model->GetBeam();
@@ -273,8 +273,8 @@ int main(int argc, char ** argv)
     //~ c[ibeam]->cd(ic);
     //~ TH1F * hframe = c[ibeam]->GetPad(ic)->DrawFrame(0.,0.,enu_reco_max, 1.24*max[imodel]);
     //~ hframe -> GetXaxis() -> SetTitle("Reco. E_{#nu} (GeV)");
-    //~ hframe -> GetYaxis() -> SetTitle("");      
-  //~ //hframe -> GetYaxis() -> SetTitle("Events per bin");      
+    //~ hframe -> GetYaxis() -> SetTitle("");
+  //~ //hframe -> GetYaxis() -> SetTitle("Events per bin");
     //~ hframe -> Draw();
     //~ nom_pdf_werr [imodel] -> SetFillColor(kRed);
     //~ nom_pdf_werr [imodel] -> SetLineColor(kRed);
@@ -294,7 +294,7 @@ int main(int argc, char ** argv)
     //~ leg->AddEntry(nom_pdf     [imodel], "nominal",        "L");
     //~ leg->AddEntry(nom_pdf_werr[imodel], "a-priori error", "F");
     //~ leg->Draw();
-    
+
     if (outfile && outfile->IsOpen()) {
       TString name = TString::Format("env_sb_%s_%s",
          util::AsString(b).c_str(), util::AsString(s).c_str() );
@@ -304,11 +304,11 @@ int main(int argc, char ** argv)
     }
   }//imodel
   //~ c[ibeam]->Update();
-  
+
   if (outfile) {
     outfile->Close();
     delete outfile;
   }
-  
+
   std::cout <<"Done!"<<std::endl;
 }

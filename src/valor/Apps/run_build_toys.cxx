@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\app       valor_dune-run_build_toys
+\app       valor-run_build_toys
 
 \brief     Generate marginalisation and fake data toys.
 
@@ -12,16 +12,16 @@
                                      [def: "3f_osc"]
              --fit-param-opt       : Options used when setting up the FitParamList
                                      [def: "NONE"]
-             --param-values-option : Decide how to set the values of physics 
-                                     params used for toy-MC generation 
+             --param-values-option : Decide how to set the values of physics
+                                     params used for toy-MC generation
                                     [def:"randomize-all;prefit-errors"]
              --config              : Analysis configuration file [required]
              --mesg-thresholds     : Message thresholds [def: "verbosity.xml"]
-            [--with-stat-fluct |   : Include statistical fluctuation in toy 
+            [--with-stat-fluct |   : Include statistical fluctuation in toy
                                      MC generation? [def: yes]
-             --without-stat-fluct] 
+             --without-stat-fluct]
             [--store-spectra   |   : Store toy-MC/best-fit spectra? [def: no]
-             --discard-spectra   ] 
+             --discard-spectra   ]
              --n-sigma-limit       : The limit to apply to systematic parameter
                                      throws
              --use-simple-binning  : Update simple binning templates too [def: no-simple-binning]
@@ -47,7 +47,10 @@
 */
 //____________________________________________________________________________
 
-// root
+// System
+#include "cmath"
+#include "fstream"      // std::ofstream
+// ROOT
 #include "TFile.h"
 #include "TSystem.h"
 #include "TObjArray.h"
@@ -55,11 +58,7 @@
 #include "TVirtualFitter.h"
 #include "TMath.h"
 #include "TStopwatch.h"
-
-#include "cmath"
-#include "fstream"      // std::ofstream
-
-// fmwk
+// VALOR/SDK
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/Conventions/KineSpace.h"
 #include "valor/Conventions/Opt.h"
@@ -101,10 +100,10 @@ int main(int argc, char** argv)
       "$VALOR_FMWK/config/apps/run_build_toys.arg"
       ":$VALOR_FMWK/config/apps/seeds.arg"
       ":$VALOR_FMWK/config/apps/oscparams.arg");
-   LOG("valor_dune", pNOTICE) << arg;
+   LOG("valor", pNOTICE) << arg;
    BuildToys(arg);
-   LOG("valor_dune", pNOTICE) << "Finished";
-  
+   LOG("valor", pNOTICE) << "Finished";
+
    return 0;
 }
 
@@ -128,7 +127,7 @@ void BuildToys(CmdLnArgList& arg)
    const int npt_job_par1  = arg.GetInt("npt-job-par1");
    const int npt_par1      = arg.GetInt("npt-par1");
    double min_par1      = arg.GetDouble("min-par1");
-   double step_par1     = arg.GetDouble("step-par1"); 
+   double step_par1     = arg.GetDouble("step-par1");
 
    string fp_name2;
    double fp_val2;
@@ -147,10 +146,10 @@ void BuildToys(CmdLnArgList& arg)
                            !(toy_throw_file_to_read != "" && toy_throw_file_to_read != "NONE" &&
                              param_name_map_file    != "" && param_name_map_file    != "NONE");
 
-   LOG("valor_dune", pNOTICE) << "Fit parameter " << fp_name1 << "(" <<
+   LOG("valor", pNOTICE) << "Fit parameter " << fp_name1 << "(" <<
       fp_bin1 << ") = " << fp_val1;
-      
-      
+
+
    const bool is_2d = arg.Exists("fit-param2") and arg.GetString("fit-param2") != "-";
    if (is_2d)
    {
@@ -161,7 +160,7 @@ void BuildToys(CmdLnArgList& arg)
       npt_par2      = arg.GetInt("npt-par2");
       min_par2      = arg.GetDouble("min-par2");
       step_par2     = arg.GetDouble("step-par2");
-      LOG("valor_dune", pNOTICE) << "Fit parameter " << fp_name2 << "(" <<
+      LOG("valor", pNOTICE) << "Fit parameter " << fp_name2 << "(" <<
          fp_bin2 << ") = " << fp_val2;
    }
 
@@ -188,9 +187,9 @@ void BuildToys(CmdLnArgList& arg)
    {  // Build toys for 1D fit
       for (int fp_bin01 = fp_bin1; (fp_bin01 < fp_bin1 + npt_job_par1) && (fp_bin01 < npt_par1); fp_bin01++)// loop over param first subrange
       {
-         LOG("valor_dune", pDEBUG) << "Now submitting bin " << fp_bin01 <<" in subrange: par1  [ " << fp_bin01 <<
+         LOG("valor", pDEBUG) << "Now submitting bin " << fp_bin01 <<" in subrange: par1  [ " << fp_bin01 <<
                                       "; "<<fp_bin01 +npt_par1 << "]";
-        Rnd::Instance()->SetSeeds(arg);// set seeds at every point in the group 
+        Rnd::Instance()->SetSeeds(arg);// set seeds at every point in the group
         util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name1, min_par1, fp_bin01, step_par1);
         toys.BuildToys(fp_bin01, batch, Ntoys, *fpl, randomise_systematics, stat_fluct, param_val_opts.c_str(),
                      rethrow_unphysical, toy_throw_file_to_read, param_name_map_file);
@@ -202,29 +201,29 @@ void BuildToys(CmdLnArgList& arg)
       {
 
         util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name1, min_par1, fp_bin01, step_par1);
-           
-        for (int fp_bin02 = fp_bin2; (fp_bin02 < fp_bin2 + npt_job_par2) && (fp_bin02 < npt_par2); fp_bin02++) 
+
+        for (int fp_bin02 = fp_bin2; (fp_bin02 < fp_bin2 + npt_job_par2) && (fp_bin02 < npt_par2); fp_bin02++)
         {
-               
-          LOG("valor_dune", pDEBUG) << "Now submitting " << fp_bin01 <<" in subrange: par1 bin [ " << fp_bin01 <<
+
+          LOG("valor", pDEBUG) << "Now submitting " << fp_bin01 <<" in subrange: par1 bin [ " << fp_bin01 <<
                                          "; "<<fp_bin01 +npt_par1 << "]";
-          LOG("valor_dune", pDEBUG) << "Now submitting " << fp_bin02 <<" in subrange: par2 bin [ " << fp_bin02 <<
-                                         "; "<<fp_bin02 +npt_par2 << "]"; 
+          LOG("valor", pDEBUG) << "Now submitting " << fp_bin02 <<" in subrange: par2 bin [ " << fp_bin02 <<
+                                         "; "<<fp_bin02 +npt_par2 << "]";
 
           util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name2, min_par2, fp_bin02, step_par2);
-               //unsigned int seed_offset = fp_bin02*Ntoys + fp_bin01*Ntoys*npt_par2 + batch*Ntoys*npt_par2*npt_par1; 
+               //unsigned int seed_offset = fp_bin02*Ntoys + fp_bin01*Ntoys*npt_par2 + batch*Ntoys*npt_par2*npt_par1;
                //Rnd::Instance()->SetSeeds(arg, seed_offset); // seed has to be randomized  for every point
-          Rnd::Instance()->SetSeeds(arg);// set seeds at every point in the group 
+          Rnd::Instance()->SetSeeds(arg);// set seeds at every point in the group
           toys.BuildToys(fp_bin01, fp_bin02, batch, Ntoys, *fpl, randomise_systematics, stat_fluct,
                               param_val_opts.c_str(),
                               rethrow_unphysical, toy_throw_file_to_read, param_name_map_file);
 
         }
-      }               
+      }
     }
    clock.Stop();
 
-   LOG("valor_dune", pNOTICE) << "Generate batch " << batch << ": " << Ntoys <<
+   LOG("valor", pNOTICE) << "Generate batch " << batch << ": " << Ntoys <<
       " spectra. Real time: " << clock.RealTime() << "   CPU time: " <<
       clock.CpuTime();
    // The toy-MC was generated using the `current' values of the input parameter list.
@@ -243,9 +242,8 @@ void Init(CmdLnArgList& arg)
 
    conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
    if(dmsq_scheme == kNuDmsqUndefined) {
-      LOG("valor_dune", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+      LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
       util::Die(-1);
    }
    Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
 }
-

@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\app       valor_dune-run_nd_fit
+\app       valor-run_fit
 
 \brief     Generate and fit ensembles of toy-MC experiments.
 
@@ -12,18 +12,18 @@
                                      [def: "3f_osc"]
              --fit-param-opt       : Options used when setting up the FitParamList
                                      [def: "NONE"]
-             --param-values-option : Decide how to set the values of physics 
-                                     params used for toy-MC generation 
+             --param-values-option : Decide how to set the values of physics
+                                     params used for toy-MC generation
                                     [def:"randomize-all;prefit-errors"]
              --fit-opt             : Fitter option [def: "minuit"]
              --config              : Analysis configuration file [required]
              --mesg-thresholds     : Message thresholds [def: "verbosity.xml"]
-            [--with-stat-fluct |   : Include statistical fluctuation in toy 
+            [--with-stat-fluct |   : Include statistical fluctuation in toy
                                      MC generation? [def: yes]
-             --without-stat-fluct] 
+             --without-stat-fluct]
             [--store-spectra   |   : Store toy-MC/best-fit spectra? [def: no]
              --discard-spectra   ]
-            
+
              --start_at_random_points : Should we start at a random point? If so, how many [-1, start at default]
 
              --input-mixing12,etc  : Option to give input values to osc params (in .arg)
@@ -32,14 +32,14 @@
 
              --load-prior-from-file : Option for file to give constrained prior matrix [ use default prior ]
              --prior-fit-number     : Option to specify the entry in the tree for above file [ 0 ]
-             
+
              --tweak-parameter-set : Option to tweak a set of parameters [ default: none ]
              --force-tweak-size    : Tweak the parameters to a given +n-sigma. If given 0, randomize [ randomize ]
-             [ --read-data, 
+             [ --read-data,
              --generate-data ]     : Generate data or Read data given to the configuration file [default: --generate-data]
-             
+
              [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
-             * 
+             *
 
 \author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
            University of Liverpool & STFC Rutherford Appleton Laboratory
@@ -51,7 +51,7 @@
 */
 //____________________________________________________________________________
 
-// root
+// ROOT
 #include "TFile.h"
 #include "TSystem.h"
 #include "TObjArray.h"
@@ -59,7 +59,7 @@
 #include "TVirtualFitter.h"
 #include "TPRegexp.h"
 #include <time.h>
-// fmwk
+// VALOR/SDK
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/ParameterPool.h"
@@ -92,10 +92,10 @@ using namespace std;
 using namespace valor;
 using namespace valor::conv;
 
-const char * fit_result_tree_name = "valor_dune_nd_ntp";
+const char * fit_result_tree_name = "valor_fit_ntp";
 
 int main(int argc, char ** argv)
-{  
+{
 
   valor::util::PrintBanner(Env::Instance()->Banner(),500);
 
@@ -103,7 +103,7 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/run_fit.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
-  LOG("valor_dune", pNOTICE) << arg;
+  LOG("valor", pNOTICE) << arg;
 
   TString param_values_ts(arg.GetString("param-values-option"));
   TString fit_options_ts (arg.GetString("fitter"));
@@ -144,19 +144,19 @@ int main(int argc, char ** argv)
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
 
-  LOG("valor_dune", pNOTICE) << *Rnd::Instance();
+  LOG("valor", pNOTICE) << *Rnd::Instance();
 
   // Check if we have a PParm to read from file containing true values
   PhysParamList * true_values_from_file = 0;
   if (true_values_file.size() && util::ToLowerCase(true_values_file)!="none") {
     TFile tvf(true_values_file.c_str());
     if (!tvf.IsOpen()) {
-      LOG("valor_dune", pERROR)<<"Could not read true values file ["<<true_values_file<<"]";
+      LOG("valor", pERROR)<<"Could not read true values file ["<<true_values_file<<"]";
       util::Die(-1);
     }
     true_values_from_file = dynamic_cast<PhysParamList*>(tvf.Get(true_values_obj.c_str()));
     if (!true_values_from_file) {
-      LOG("valor_dune", pERROR)<<"Could not read true values object "<<true_values_obj<<" from file "<<true_values_file;
+      LOG("valor", pERROR)<<"Could not read true values object "<<true_values_obj<<" from file "<<true_values_file;
       util::Die(-1);
     }
   }
@@ -164,10 +164,10 @@ int main(int argc, char ** argv)
   // Create file and tree to store outputs
   TString outfilename = TString::Format("%s_%d.root", arg.GetString("tag").c_str(), arg.GetInt("run"));
   StdFitNtp ntp;
-  ntp.Create(outfilename.Data(), fit_result_tree_name, "VALOR DUNE / ND-Fit n-tuple");
+  ntp.Create(outfilename.Data(), fit_result_tree_name, "VALOR fit n-tuple");
 
   // Get ND model & configure
-  LOG("valor_dune", pNOTICE) << "Getting and configuring the fit elements";
+  LOG("valor", pNOTICE) << "Getting and configuring the fit elements";
   CompoundFitElements * elements = new CompoundFitElements();
   std::string config_path = util::CompleteConfigPath(arg.GetString("config"));
   elements->Read(config_path);
@@ -193,17 +193,17 @@ int main(int argc, char ** argv)
 
   // Use ND model to generate toy-MC experiments & fit
   for(int itoymc = 0; itoymc < ntoymc; itoymc++) {
-    LOG("valor_dune", pNOTICE) << "\n\n *** Toy-MC experiment #" << itoymc;
+    LOG("valor", pNOTICE) << "\n\n *** Toy-MC experiment #" << itoymc;
 
     // Reset output tree variables
     ntp.Reset();
 
-    // Get the specified fit parameter list (specifies which parameters are floated/fixed, 
+    // Get the specified fit parameter list (specifies which parameters are floated/fixed,
     // parameter limits, initial values etc).
     FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
     if(fp == 0){ // Make sure that worked
-      LOG("valor_dune",pFATAL) << "FitParamList not filled";
+      LOG("valor",pFATAL) << "FitParamList not filled";
       util::Die(-1);
     }
 
@@ -252,15 +252,15 @@ int main(int argc, char ** argv)
     fp->FromPhysParamList(tweaks,"current");
 
     if(fp == 0){ // Make sure that worked
-      LOG("valor_dune",pFATAL) << "FitParamList not filled after tweaks applied";
+      LOG("valor",pFATAL) << "FitParamList not filled after tweaks applied";
       util::Die(-1);
     }
 
     // Check parameter name, maybe rethrow
     if (!util::AllWithinLimits(*fp)) {
-      LOG("valor_dune", pNOTICE) << "At least one parameter thrown outside expected limits.";
+      LOG("valor", pNOTICE) << "At least one parameter thrown outside expected limits.";
       if (rethrow_unphysical) {
-        LOG("valor_dune", pNOTICE) << "Regenerating...";
+        LOG("valor", pNOTICE) << "Regenerating...";
         itoymc--;
         continue;
       }
@@ -278,7 +278,7 @@ int main(int argc, char ** argv)
 
     conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
     if(dmsq_scheme == kNuDmsqUndefined) {
-      LOG("valor_dune", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+      LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
       util::Die(-1);
     }
     Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -292,7 +292,7 @@ int main(int argc, char ** argv)
       TObjArray * matches = input_match.MatchS(argname.c_str());
 
       if (matches->GetEntries() != 2) {
-        LOG("valor_dune",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
+        LOG("valor",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
         util::Die(-1);
       }
       TObjString * tos_param_name = dynamic_cast<TObjString*>(matches->At(1));
@@ -301,7 +301,7 @@ int main(int argc, char ** argv)
 
       conv::PhysParamId_t param = nr->PhysParamFromString(param_name);
       if (param == conv::kPhypUndefined) {
-        LOG("valor_dune",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
+        LOG("valor",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
         util::Die(-1);
       }
 
@@ -325,7 +325,7 @@ int main(int argc, char ** argv)
       TObjArray * matches = fix_match.MatchS(argname.c_str());
 
       if (matches->GetEntries() != 2) {
-        LOG("valor_dune",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
+        LOG("valor",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
         util::Die(-1);
       }
       TObjString * tos_param_name = dynamic_cast<TObjString*>(matches->At(1));
@@ -336,7 +336,7 @@ int main(int argc, char ** argv)
 
       conv::PhysParamId_t param = nr->PhysParamFromString(param_name);
       if (param == conv::kPhypUndefined) {
-        LOG("valor_dune",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
+        LOG("valor",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
         util::Die(-1);
       }
 
@@ -351,30 +351,30 @@ int main(int argc, char ** argv)
         }
       } //Exists(param)
       else {
-        LOG("valor_dune",pINFO)<<"Not setting parameter not included in FPL: "<<param_name;
+        LOG("valor",pINFO)<<"Not setting parameter not included in FPL: "<<param_name;
       }
     } //argname
 
     PhysParamList true_params = fp->AsPhysParamList("current");
 
-    // Generate a toy-MC experiment 
+    // Generate a toy-MC experiment
     FitDataABC * data = elements->FitData();
     if(!read_data){ // If we do not get told to read the data, Generate the mock data from the MC
       if(!elements->DataGiven())
-        LOG("valor_dune", pNOTICE) << "No data given to Read, Generating the toy-MC instead";
+        LOG("valor", pNOTICE) << "No data given to Read, Generating the toy-MC instead";
       else
-        LOG("valor_dune", pNOTICE) << "Data given but will be overwritten by Generate";
+        LOG("valor", pNOTICE) << "Data given but will be overwritten by Generate";
 
-      LOG("valor_dune", pNOTICE) << "Generating toy-MC data";
-      LOG("valor_dune", pNOTICE) << "Toy-MC generation uses true parameters: " << true_params;
+      LOG("valor", pNOTICE) << "Generating toy-MC data";
+      LOG("valor", pNOTICE) << "Toy-MC generation uses true parameters: " << true_params;
       data->Generate(model,*fp,with_stat_fluct);
     }
     else{
       if(!elements->DataGiven()){
-        LOG("valor_dune",pFATAL) << "Told to Read data but no data file was given ";
+        LOG("valor",pFATAL) << "Told to Read data but no data file was given ";
         util::Die(-1);
       }
-      LOG("valor_dune", pNOTICE) << "Reading data from file, not Generating the toy-MC";
+      LOG("valor", pNOTICE) << "Reading data from file, not Generating the toy-MC";
     }
 
     // The toy-MC was generated using the `current' values of the input parameter list.
@@ -389,7 +389,7 @@ int main(int argc, char ** argv)
           fp->SetCurrentValueByIndex(ip,fp->InitValueByIndex(ip));
         }
       }
-      LOG("valor_dune", pNOTICE) << "Copying current values to initial values to give the fitter some help.";
+      LOG("valor", pNOTICE) << "Copying current values to initial values to give the fitter some help.";
       fp->CopyCurrToInitValues();
     }
 
@@ -401,7 +401,7 @@ int main(int argc, char ** argv)
       TObjArray * matches = fix_at_match.MatchS(argname.c_str());
 
       if (matches->GetEntries() != 2) {
-        LOG("valor_dune",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
+        LOG("valor",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
         util::Die(-1);
       }
       TObjString * tos_param_name = dynamic_cast<TObjString*>(matches->At(1));
@@ -410,7 +410,7 @@ int main(int argc, char ** argv)
 
       conv::PhysParamId_t param = nr->PhysParamFromString(param_name);
       if (param == conv::kPhypUndefined) {
-        LOG("valor_dune",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
+        LOG("valor",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
         util::Die(-1);
       }
 
@@ -430,7 +430,7 @@ int main(int argc, char ** argv)
           double max = parameter.GetLimits().second;
           if((fix_param_at < min) ||
               (fix_param_at > max)) {
-            LOG("valor_dune",pFATAL) << "Attempting to fix parameter "
+            LOG("valor",pFATAL) << "Attempting to fix parameter "
               <<nr->ParamAsString(param)<<" outside limits at "<<fix_param_at
               <<" - limits are "<<min<< " to "<<max;
             util::Die(-1);
@@ -446,15 +446,15 @@ int main(int argc, char ** argv)
     fp->ResetCurrToInitValues();
 
     // Get fitter
-    LOG("valor_dune", pNOTICE) << "Preparing the fitter";
+    LOG("valor", pNOTICE) << "Preparing the fitter";
     FitInputs * fit_inputs = new FitInputs(data,model,fp);
     FitterABC * fitter = util::GetFitter(fit_inputs, fittername.c_str());
 
     // Do the fit
-    LOG("valor_dune", pNOTICE) << "Running the fitter";
-    LOG("valor_dune", pNOTICE) << "Fit starts with the following fit parameter list: " << *fp;
-    LOG("valor_dune", pNOTICE) << "Fit starts with statistic: " << fit_inputs->Statistic();
-    
+    LOG("valor", pNOTICE) << "Running the fitter";
+    LOG("valor", pNOTICE) << "Fit starts with the following fit parameter list: " << *fp;
+    LOG("valor", pNOTICE) << "Fit starts with statistic: " << fit_inputs->Statistic();
+
     time_t startrawtime;
     struct tm * starttimeinfo;
     time (&startrawtime);
@@ -464,13 +464,13 @@ int main(int argc, char ** argv)
     std::cout << "-----------------------------------------------------------" << std::endl;
 
     fitter->DoTheFit();
-    LOG("valor_dune", pNOTICE) << "Fit ends with statistic: " << fit_inputs->Statistic();
+    LOG("valor", pNOTICE) << "Fit ends with statistic: " << fit_inputs->Statistic();
 
     //  migradmin = fitter->FitStatusCode("migrad_min");
     //  migraderr = fitter->FitStatusCode("migrad_err");
 
     // Copy best-fit params
-    ntp.BestFitParamArr()->Copy(*fp);  
+    ntp.BestFitParamArr()->Copy(*fp);
 
     if(arg.GetBool("store-spectra")) {
       // Copy best-fit to current values and re-generate the best-fit prediction
@@ -515,4 +515,3 @@ int main(int argc, char ** argv)
 
   return 0;
 }
-

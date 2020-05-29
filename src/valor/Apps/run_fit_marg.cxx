@@ -1,7 +1,7 @@
 //____________________________________________________________________________
 /*!
 
-\app       valor_dune-run_fit_marg
+\app       valor-run_fit_marg
 
 \brief     Fit a set of marginalisation toys.
 
@@ -12,16 +12,16 @@
                                      [def: "nuosc3f"]
              --fit-param-opt       : Options used when setting up the FitParamList
                                      [def: "NONE"]
-             --param-values-option : Decide how to set the values of physics 
-                                     params used for toy-MC generation 
+             --param-values-option : Decide how to set the values of physics
+                                     params used for toy-MC generation
                                     [def:"randomize-all;prefit-errors"]
              --config              : Analysis configuration file [required]
              --mesg-thresholds     : Message thresholds [def: "verbosity.xml"]
-            [--with-stat-fluct |   : Include statistical fluctuation in toy 
+            [--with-stat-fluct |   : Include statistical fluctuation in toy
                                      MC generation? [def: yes]
-             --without-stat-fluct] 
+             --without-stat-fluct]
             [--store-spectra   |   : Store toy-MC/best-fit spectra? [def: no]
-             --discard-spectra   ] 
+             --discard-spectra   ]
              --n-sigma-limit       : The limit to apply to systematic parameter
                                      throws
              --use-simple-binning  : Update simple binning templates too [def: no-simple-binning]
@@ -36,7 +36,10 @@
 */
 //____________________________________________________________________________
 
-// root
+// System
+#include "cmath"
+#include "fstream"  // std::ofstream
+// ROOT
 #include "TFile.h"
 #include "TSystem.h"
 #include "TObjArray.h"
@@ -44,13 +47,8 @@
 #include "TVirtualFitter.h"
 #include "TMath.h"
 #include "TStopwatch.h"
-
-#include "cmath"
-#include "fstream"      // std::ofstream
-
-// fmwk
+//VALOR/SDK
 #include "valor/CmdLine/CmdLnArgList.h"
-
 #include "valor/Conventions/KineSpace.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/FitCore/PhysParamList.h"
@@ -90,10 +88,10 @@ int main(int argc, char** argv)
       "$VALOR_FMWK/config/apps/run_fit_marg.arg"
       ":$VALOR_FMWK/config/apps/seeds.arg"
       ":$VALOR_FMWK/config/apps/oscparams.arg");
-   LOG("valor_dune", pNOTICE) << arg;
+   LOG("valor", pNOTICE) << arg;
    Fit(arg);
-   LOG("valor_dune", pNOTICE) << "Finished";
-  
+   LOG("valor", pNOTICE) << "Finished";
+
    return 0;
 }
 
@@ -130,7 +128,7 @@ void Fit(CmdLnArgList& arg)
    int fp2_nbins = 0;
    int fp2_start_bin = 0;
 
-   LOG("valor_dune", pNOTICE) << "Fit parameter " << fp1_name << "(" <<
+   LOG("valor", pNOTICE) << "Fit parameter " << fp1_name << "(" <<
       fp1_bin << ") = " << fp1_val << " [" << fp1_nbins << ": " << fp1_minval <<
       ", " << fp1_maxval << "]";
 
@@ -144,14 +142,14 @@ void Fit(CmdLnArgList& arg)
       fp2_maxval    = arg.GetDouble("fit-param2-max-value");
       fp2_nbins     = arg.GetInt("fit-param2-nbins");
       fp2_start_bin = arg.GetInt("fit-param2-start-bin");
-      LOG("valor_dune", pNOTICE) << "Fit parameter " << fp2_name << "(" <<
+      LOG("valor", pNOTICE) << "Fit parameter " << fp2_name << "(" <<
          fp2_bin << ") = " << fp2_val << " [" << fp2_nbins << ": " <<
          fp2_minval << ", " << fp2_maxval << "]";
    }
 
    bool read_data_from_binary = (arg.GetString("data-file") != "-" && !arg.GetString("data-file").empty());
    if(read_data_from_binary && arg.GetInt("gen-fakedata")) {
-      LOG("valor_dune", pFATAL) << "Can't both read a fake data file and generate fake data "
+      LOG("valor", pFATAL) << "Can't both read a fake data file and generate fake data "
                                 << "(don't use --data-file and --gen-fakedata together)";
       util::Die(-1);
    }
@@ -162,7 +160,7 @@ void Fit(CmdLnArgList& arg)
 
         if (penaltyparam == fp1_name || penaltyparam == fp2_name ){fusepenalty = true;}
         else{
-            LOG("valor_dune", pFATAL) << "Penalty term specified for a parameter that is different from fitting one(s)" <<
+            LOG("valor", pFATAL) << "Penalty term specified for a parameter that is different from fitting one(s)" <<
                                       " penalty set for " << penaltyparam;
             util::Die(-1);
         }
@@ -184,7 +182,7 @@ void Fit(CmdLnArgList& arg)
       // Generate a fake data set to fit to
 
       if(Ntoys_fake_data > 1) {
-         LOG("valor_dune", pFATAL) << "Currently only fits with 1 fakedata toy supported when generating on the fly. "
+         LOG("valor", pFATAL) << "Currently only fits with 1 fakedata toy supported when generating on the fly. "
                                       "It should be relatively easy to add support for > 1 toy if you need it!";
          util::Die(-1);
       }
@@ -198,7 +196,7 @@ void Fit(CmdLnArgList& arg)
 
       // Initialize non delta M squared oscillation parameters to zero
       // util::oscillation::SetUnoscillated(*fpl);
-      LOG("valor_dune", pNOTICE) << *fpl;
+      LOG("valor", pNOTICE) << *fpl;
 
       // Call Generate - forces a call to Book as well as providing the fake data
       data->Generate(model, *fpl, with_stat_fluct);
@@ -210,7 +208,7 @@ void Fit(CmdLnArgList& arg)
 
       // Fit to data read from an input binary toy file
       std::string data_file_name = arg.GetString("data-file");
-      LOG("valor_dune", pNOTICE) << "Will read fake/real data from file [" << data_file_name << "]";
+      LOG("valor", pNOTICE) << "Will read fake/real data from file [" << data_file_name << "]";
       toy_stream = data->InitToyStream(data_file_name, "read", read_opt_data);
    }
    else {
@@ -218,11 +216,11 @@ void Fit(CmdLnArgList& arg)
       // This has already been read in CompoundFitElements::AdoptFitData() (when reading the config file),
       // so there's no need to do anything here.
       if(!data->DataExists(read_opt_data)) {
-         LOG("valor_dune", pFATAL) << "Tried to fit to fake/real data specified in the analysis configuration file, "
+         LOG("valor", pFATAL) << "Tried to fit to fake/real data specified in the analysis configuration file, "
                                    << "but the data arrays for one or more samples were empty";
          util::Die(-1);
       }
-      LOG("valor_dune", pNOTICE) << "Will fit to fake/real data specified in the analysis configuration file";
+      LOG("valor", pNOTICE) << "Will fit to fake/real data specified in the analysis configuration file";
    }
 
    // Get the requested batch number and number of marginalisation toys for the
@@ -262,7 +260,7 @@ void Fit(CmdLnArgList& arg)
         data->Read(toy_stream);
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-        LOG("valor_dune", pNOTICE) << "Fake data toy #" << ifake << " event rates:\n" << data->GetPDFIntegralAsString();
+        LOG("valor", pNOTICE) << "Fake data toy #" << ifake << " event rates:\n" << data->GetPDFIntegralAsString();
 #endif
       }
 
@@ -289,14 +287,14 @@ void Fit(CmdLnArgList& arg)
       if(ifake % 100 == 0) {
          if(!fit_is_2D)
          {
-            LOG("valor_dune", pNOTICE) << "For fakedata toy #" << ifake <<
+            LOG("valor", pNOTICE) << "For fakedata toy #" << ifake <<
                ", Best fit: " << fp1_name << " = " <<
                result->GetParam1BestFit() << " Chi^2 = " << result->GetChi2BestFit() <<
                " " << " L = " << result->GetLikelihoodBestFit();
          }
          else
          {
-            LOG("valor_dune", pNOTICE) << "For fakedata toy #" << ifake <<
+            LOG("valor", pNOTICE) << "For fakedata toy #" << ifake <<
                ", Best fit param 1: " << fp1_name << " = " << result->GetParam1BestFit() <<
                ", Best fit param 2: " << fp2_name << " = " << result->GetParam2BestFit() <<
                result->GetChi2BestFit() << " " << " L = "  << result->GetLikelihoodBestFit();
@@ -315,7 +313,7 @@ void Fit(CmdLnArgList& arg)
    TFile* fitFile = new TFile(filename.c_str(), "RECREATE");
 
    // Store surfaces
-   LOG("valor_dune", pNOTICE) << "Only storing the chi2 and likelihood surfaces of the last fakedata toy (to avoid bloat)";
+   LOG("valor", pNOTICE) << "Only storing the chi2 and likelihood surfaces of the last fakedata toy (to avoid bloat)";
    if(!fit_is_2D)
    {
       TH1D* chi2Surface = result->GetChi2Surface1D();
@@ -340,11 +338,11 @@ void Fit(CmdLnArgList& arg)
 /*   marginalisation.ComputeStatistics(fp1_bin, data, Ntoys, Nbatches, firstBatch);
    double likelihood = marginalisation.GetLikelihood();
    double chi2 = marginalisation.GetChi2();
-   LOG("valor_dune", pNOTICE) << "chi2(marg): " << chi2 << " L(marg): " <<
+   LOG("valor", pNOTICE) << "chi2(marg): " << chi2 << " L(marg): " <<
       likelihood;*/
    clock.Stop();
 
-   LOG("valor_dune", pNOTICE) << "Read: " << Ntoys * Ntoys_fake_data <<
+   LOG("valor", pNOTICE) << "Read: " << Ntoys * Ntoys_fake_data <<
       " spectra. Real time: " << clock.RealTime() << "   CPU time: " <<
       clock.CpuTime();
 }
@@ -359,11 +357,10 @@ void Init(CmdLnArgList& arg)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor_dune", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
 
    Rnd::Instance()->SetSeeds(arg);
 }
-

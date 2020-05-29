@@ -1,6 +1,7 @@
+//____________________________________________________________________________
 /*!
 
-\app       valor_dune-run_tests
+\app       valor-run_tests
 
 \brief     Tests for GENIE true kinematics.
 
@@ -15,17 +16,12 @@
 \copyright (c) 2010-2017, The VALOR Fitting Group, All Rights Reserved
 
 */
+//____________________________________________________________________________
 
-// valor
+// VALOR/SDK
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/Utilities/UtlFile.h"
 #include "valor/Utilities/UtlInit.h"
-
-// dune
-
-#include "valor/Testing/StandardTests.h"
-
-// genie
 #include "valor/GENIEUtilities/GENIEIncludes.h"
 
 using namespace valor;
