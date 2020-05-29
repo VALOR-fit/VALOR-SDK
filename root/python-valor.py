@@ -53,6 +53,8 @@ for root, dirs, files in itertools.chain(walk):
       classname = f[:-4]
       try:
         getattr(valor,classname)
+        getattr(util ,classname)
+        getattr(conv ,classname)
       except:
         pass
   
