@@ -35,6 +35,7 @@ ChangeLog:
 #include "valor/FitCore/CompoundFitModel.h"
 #include "valor/FitCore/FitterMinuit.h"
 #include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/LikelihoodMinuit.h"
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitDataABC.h"
 #include "valor/Utilities/UtlSystem.h"
@@ -325,7 +326,8 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 #ifdef __show_fit_steps__
   LOG("Minuit", pINFO) << "Passing fit inputs (data & pdf)...";
 #endif
-  gMinuit->SetObjectFit(fLikelihood);
+  LikelihoodMinuit lkhd_minuit(fLikelihood);
+  gMinuit->SetObjectFit(&lkhd_minuit);
 
   fitter->ExecuteCommand("SHO EPS", arg, 1);///
 

@@ -47,6 +47,7 @@
 #include "valor/FitCore/CompoundFitModel.h"
 #include "valor/FitCore/FitterMinuit2.h"
 #include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/LikelihoodMinuit2.h"
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitDataABC.h"
 
@@ -149,7 +150,8 @@ void FitterMinuit2::Init(Likelihood * lkhd, Option_t * option)
       this->SetTol(tolerance);
     }
     else {
-      LOG("Minuit2",pWARN) << "Failed to parse valid single tolerance from option string "<<fOption;
+      LOG("Minuit2",pWARN)
+       << "Failed to parse valid single tolerance from option string "<<fOption;
     }
   }
 
@@ -300,12 +302,12 @@ bool FitterMinuit2::RunOnce(void)
 #endif
 
   ROOT::Minuit2::MnApplication * mnapp = NULL;
-
+  LikelihoodMinuit2 likelihood_minuit2(fLikelihood);
   if (!fUseFumili) {
 #ifdef __give_fitter_covariance_matrix__
-    mnapp = new ROOT::Minuit2::MnMigrad(*fLikelihood, fUserParams, input_cov);
+    mnapp = new ROOT::Minuit2::MnMigrad(likelihood_minuit2, fUserParams, input_cov);
 #else
-    mnapp = new ROOT::Minuit2::MnMigrad(*fLikelihood, fUserParams);
+    mnapp = new ROOT::Minuit2::MnMigrad(likelihood_minuit2, fUserParams);
 #endif
   }
   else {
@@ -380,7 +382,7 @@ bool FitterMinuit2::RunOnce(void)
     // argument is strategy
     ROOT::Minuit2::MnHesse hesse(2);
     // perform hesse error calculation
-    ROOT::Minuit2::MnUserParameterState hesse_state = hesse(*fLikelihood, bestfit.UserState(),fMaxNumCalls);
+    ROOT::Minuit2::MnUserParameterState hesse_state = hesse(likelihood_minuit2, bestfit.UserState(),fMaxNumCalls);
     //Check if fit succeeded
     fHesseErrStatusCode = hesse_state.CovarianceStatus();
 
@@ -401,7 +403,7 @@ bool FitterMinuit2::RunOnce(void)
   if (fCalcMinosErrors) {
     LOG("FitterMinuit2",pINFO) << "Getting Minos errors...";
     //Get Minos Errors
-    ROOT::Minuit2::MnMinos minos(*fLikelihood,bestfit);
+    ROOT::Minuit2::MnMinos minos(likelihood_minuit2,bestfit);
     fMinosErrStatusCode = 0;  // Need to work out proper error code.
     for(unsigned int ip = 0; ip < nparams; ip++) {
       if(bestfit_params[ip].IsFixed()) { continue; }

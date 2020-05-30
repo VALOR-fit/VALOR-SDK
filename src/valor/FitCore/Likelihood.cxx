@@ -1,10 +1,10 @@
-//________________________________________________________________________________________
+//____________________________________________________________________________
 /*
 
 Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
-//________________________________________________________________________________________
+//____________________________________________________________________________
 
 //#define __show_bin_contributions_to_chisq__
 //#define __show_contributions_to_penalty_term__
@@ -21,8 +21,8 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 #include "HFitInterface.h"
 
 #include "valor/Messenger/Messenger.h"
-#include "valor/Conventions/Constants.h"
-#include "valor/Conventions/Opt.h"
+// #include "valor/Conventions/Constants.h"
+// #include "valor/Conventions/Opt.h"
 #include "valor/FitCore/FitDataABC.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/Likelihood.h"
@@ -36,47 +36,43 @@ using namespace valor::conv;
 
 ClassImp(Likelihood)
 
-//________________________________________________________________________________________
+//____________________________________________________________________________
 Likelihood::Likelihood(
    FitDataABC * o, FitModelABC * e, FitParamList * fpar) :
-//   string opt, double errdef, bool goodnessoffit) :
 fObs(o),
 fExp(e),
 fFitParams(fpar),
-// fOpt(opt),
-fErrDef(0),
-// fGoodnessOfFit(goodnessoffit),
 fIncludePenaltySyst(true),
 fIncludePenaltyHyp (true)
 {
 
 }
-//________________________________________________________________________________________
+//____________________________________________________________________________
 Likelihood::~Likelihood()
 {
 
 }
-//________________________________________________________________________________________
+//____________________________________________________________________________
 void Likelihood::UpdateParamList(FitParamList * fpar)
 {
   fFitParams = fpar;
 }
-//________________________________________________________________________________________
+//____________________________________________________________________________
 FitDataABC & Likelihood::Observation(void)
 {
   return *fObs;
 }
-//________________________________________________________________________________________
+//____________________________________________________________________________
 FitModelABC & Likelihood::Expectation(void)
 {
   return *fExp;
 }
-//________________________________________________________________________________________
+//____________________________________________________________________________
 FitParamList & Likelihood::FitParams(void)
 {
   return *fFitParams;
 }
-//________________________________________________________________________________________
+//____________________________________________________________________________
 double Likelihood::Statistic(
   Option_t * option, std::map<std::string,double> * likelihood_components) const
 {
@@ -126,96 +122,5 @@ void Likelihood::IncludePenaltySyst(bool use_penalty)
 void Likelihood::IncludePenaltyHyp(bool use_penalty)
 {
   fIncludePenaltyHyp = use_penalty;
-}
-//____________________________________________________________________________
-// MINUIT fit functions
-//____________________________________________________________________________
-double Likelihood::operator() (const std::vector<double>& x) const
-{
- fFitParams->Sync(x);
-
- return this->Statistic("poisson");
-}
-//____________________________________________________________________________
-void valor::FitFunc (
-  Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t /*iflag*/)
-{
-// To be used with a TVirtualFitter
-
-  Likelihood * lkhd = (Likelihood *) gMinuit->GetObjectFit();
-
-  // get fit params
-  FitParamList & fpar = lkhd->FitParams();
-
-  // synchronize FitParamList with the paramerer array used by MINUIT
-  fpar.Sync(par,true);
-
-  f = lkhd->Statistic();
-
-  fpar.SetCurrStatistic(f);
-}
-//____________________________________________________________________________
-FitFunctor::FitFunctor(Likelihood * lkhd)
-{
-  fLikelihood = lkhd;
-}
-//____________________________________________________________________________
-FitFunctor::~FitFunctor()
-{
-
-}
-//____________________________________________________________________________
-double FitFunctor::operator() (const double * x) const
-{
-  return this->DoEval(x);
-}
-//____________________________________________________________________________
-double FitFunctor::DoEval(const double * x) const
-{
-  fLikelihood->FitParams().Sync(x);
-
-  return fLikelihood->Statistic();
-}
-//____________________________________________________________________________
-ROOT::Math::IBaseFunctionMultiDim * FitFunctor::Clone(void) const
-{
-  return new FitFunctor(fLikelihood);
-}
-//____________________________________________________________________________
-unsigned int FitFunctor::NDim(void) const
-{
-  return fLikelihood->FitParams().GetNumberParameters();
-}
-//____________________________________________________________________________
-FitMethodFunc::~FitMethodFunc()
-{
-
-}
-//____________________________________________________________________________
-double FitMethodFunc::operator() (const double * x) const
-{
-  return this->DoEval(x);
-}
-//____________________________________________________________________________
-double FitMethodFunc::DoEval(const double * x) const
-{
-  fLikelihood->FitParams().Sync(x);
-  return fLikelihood->Statistic("poisson");
-}
-//____________________________________________________________________________
-ROOT::Math::BasicFitMethodFunction<ROOT::Math::IBaseFunctionMultiDim>::Type_t
- FitMethodFunc::Type(void) const
-{
-  return ROOT::Math::FitMethodFunction::kLeastSquare;
-}
-//____________________________________________________________________________
-double FitMethodFunc::DataElement(
-    const double *par, unsigned int /*ipoint*/, double * /* g */) const
-{
-  fLikelihood->FitParams().Sync(par);
-  double chisqbin = 0;
-  assert(!"FitMethodFunc::DataElement not implemented yet");
-  //Todo: Implement
-  return chisqbin;
 }
 //____________________________________________________________________________
