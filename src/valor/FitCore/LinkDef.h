@@ -31,6 +31,7 @@
 #pragma link C++ class valor::Likelihood+;
 #pragma link C++ class valor::LikelihoodMinuit+;
 #pragma link C++ class valor::LikelihoodMinuit2+;
+#pragma link C++ class valor::LikelihoodGSL+;
 
 #pragma link C++ class valor::FitterABC+;
 #pragma link C++ class valor::FitterMinuit+;
