@@ -184,6 +184,7 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllNC;
 
     extern const ReacTypeApplyMask_t ktApplyToAllCoh;
+    extern const ReacTypeApplyMask_t ktApplyToAllMEC;
     extern const ReacTypeApplyMask_t ktApplyToAllELScat;
     extern const ReacTypeApplyMask_t ktApplyToAll1pi;
     extern const ReacTypeApplyMask_t ktApplyToAlln0pi;
