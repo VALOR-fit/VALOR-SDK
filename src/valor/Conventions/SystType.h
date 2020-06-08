@@ -5,7 +5,7 @@
 
 \brief     Systematic type enumeration
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
            Francis Bench <f.bench \at liverpool.ac.uk>
@@ -13,7 +13,7 @@
           
 \created   June 27, 2018
 
-\copyright (c) 2010-2018, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

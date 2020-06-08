@@ -1,7 +1,7 @@
 #
 # Make.template 
 #
-# Author: Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+# Author: Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 #
 
 #
@@ -33,9 +33,9 @@ $(DICTIONARY).cc: LinkDef.h $(DICTGEN_OBJECTS)
 	$(RM) $(DICTIONARY).*
 	@echo "[package: $(PACKAGE)] Generating ROOT dictionary ..."
 ifeq ($(ROOT_MAJOR),5)
-	rootcint -f $(DICTIONARY).cc $(ROOT_CINT_FLAGS) $(ROOT_INCLUDES) $(VALOR_INCLUDES) $(DICTGEN_HEADERS) LinkDef.h
+	rootcint  -f $(DICTIONARY).cc $(ROOT_CINT_FLAGS)  $(ROOT_INCLUDES) $(VALOR_INCLUDES) $(DICTGEN_HEADERS) LinkDef.h
 else
-	rootcling -f $(DICTIONARY).cc $(ROOT_CINT_FLAGS) $(ROOT_INCLUDES) $(VALOR_INCLUDES) $(DICTGEN_HEADERS) LinkDef.h
+	rootcling -f $(DICTIONARY).cc $(ROOT_CLING_FLAGS) $(ROOT_INCLUDES) $(VALOR_INCLUDES) $(DICTGEN_HEADERS) LinkDef.h
 endif
 
 #

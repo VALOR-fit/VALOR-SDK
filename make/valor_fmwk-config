@@ -16,12 +16,16 @@ srcdir=$VALOR_FMWK/src
 # VALOR/FMWK libraries:
 libs="-L$libdir -lValorMesg -lValorArray -lValorNtuple -lValorRegistry -lValorConv -lValorUtil -lValorOsc -lValorCmdLine -lValorFitCore -lValorKBin -lValorFitElements -lValorTesting"
 
+#VALOR/DUNE genie-dependent libraries
+glibs="-lValorGenieUtil"
+
+
 #
 # Usage
 #
 
 usage="\
-Usage: valor_fmwk-config [--libs] [--libdir] [--srcdir] [--topdir]" 
+Usage: valor_fmwk-config [--libs] [--libdir] [glibs] [--srcdir] [--topdir]" 
 
 if test $# -eq 0; then
    echo "${usage}" 1>&2
@@ -48,6 +52,9 @@ while test $# -gt 0; do
       ;;
     --libs)
       out="$out $libs"
+      ;;
+    --glibs)
+      out="$out $glibs"
       ;;
   esac
   shift

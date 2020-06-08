@@ -5,12 +5,12 @@
 
 \brief     Abstract base class (pABC) for a single DUNE fit sample dataset
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   March 30, 2014
 
-\copyright (c) 2010-2016, The VALOR group
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

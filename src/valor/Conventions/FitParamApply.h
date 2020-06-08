@@ -10,7 +10,7 @@
 
 \created   March 20, 2016
 
-\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________
@@ -198,6 +198,7 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllButCosmic;
 
     extern const ReacTypeApplyMask_t ktApplyToT2KLegCCoth;
+    extern const ReacTypeApplyMask_t ktApplyToCCDISMpi;
 
     // Detectors
     extern const DetectorApplyMask_t kdApplyToAllDUNE;

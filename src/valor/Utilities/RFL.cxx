@@ -1,7 +1,7 @@
 //________________________________________________________________________________________
 /*
 
-Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //________________________________________________________________________________________
@@ -365,6 +365,13 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
             // Read each file till we get one that contains our spline
             if(spl_stored_as == "TObjArray") {
               // Splines are not stored individually in the TFiles, but in TObjArrays
+              if (!spline_array) {
+                TString array_name = spl_array_pattern.c_str();
+                array_name = array_name.ReplaceAll("[PARAM]", util::NameRegistry::Instance()->AsString(p).c_str());
+                array_name = array_name.ReplaceAll("[MODE]" , util::AsString(m).c_str());
+                LOG("RFL",pFATAL) << "Could not find spline array [" << array_name << "]";
+                util::Die(-1);
+              }
               int in_idx = itrue * n_bins_reco + ireco;
               spline_obj = static_cast<TSpline3*>(spline_array->At(in_idx));
               if (!spline_obj) {

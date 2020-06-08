@@ -10,7 +10,7 @@
 // approximate the unknown function f(x_i)=y_i using an ANN.
 // In the comments below, g(x_i) denotes the approximate function.
 //
-// Costas Andreopoulos < costas.andreopoulos@stfc.ac.uk >
+// Costas Andreopoulos < constantinos.andreopoulos \at cern.ch >
 // -----------------------------------------------------------------------------
 //
 

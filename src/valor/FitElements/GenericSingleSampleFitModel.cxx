@@ -1,7 +1,7 @@
 //________________________________________________________________________________________
 /*
 
-   Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
+   Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //________________________________________________________________________________________
@@ -1669,7 +1669,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   int    reac_mode     = -1;
   double wght          = 1 ; //conv::kBadResult;
   double wght_pot      = conv::kBadResult;
-  double baseline			 = 0.;
+  double baseline      = 0.;
 
   // Turn off all the branches by default
   t->SetBranchStatus("*",0);
@@ -2897,7 +2897,9 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
               << std::fixed << std::setprecision(9)
               << "Applying norm param with kinematic dependence [" << param_name
               << "] with curr val = " << f << ", effective tweak = " << effective_tweak
-              << "; new bin content = " << templFinOb[debug_ireco][use_debug_itrue];
+              << "; new bin content = " << templFinOb[debug_ireco][use_debug_itrue]
+              << "(applied to true bin spanning [" << true_sb->BinMinimum(use_debug_itrue, true_kinevars[0])
+              << ", " << true_sb->BinMaximum(use_debug_itrue, true_kinevars[0]) << "])";
           }
 #endif
           last_itrue = itrue;
@@ -3478,310 +3480,10 @@ double GenericSingleSampleFitModel::OscillationWeight(const conv::ReacMode_t& m,
   return posc;
 
 }
-
-
 //________________________________________________________________________________________
-/*
-   void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
-   {
-
-// This method applies oscillation probabilities
-// from fin to fin templates                       
-// a la SuperKMC
-
-LOG("GenericSingleSampleFitModel",pINFO)
-<< "Applying oscillation probabilities (option: "
-<< ((option) ? option : "")
-<< ")";
-
-bool update_mct_sb = false;
-if(option) {
-string opt = option;
-if(opt.find("+SB") != string::npos) {
-update_mct_sb = true;
-}
-}
-
-//first, check that there are actually osc params in the fit params list 
-bool apply_osc_prob = false;
-for(int ip = 0; ip < conv::kNuis000; ip++) {
-PhysParamId_t p = (PhysParamId_t) ip;
-if(fPhysHypothesis.Contains(p)) {
-apply_osc_prob = true;
-}
-}
-
-// If not, just set the oscillated modes to zero and move on
-if (!apply_osc_prob) {
-for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
-ReacMode_t m = fReactionModes[imode];
-if(m == kmUndefined) {continue;}
-conv::NuFlavour_t init_flav   = util::ReacModeToInitFlavor(m);
-conv::NuFlavour_t final_flav  = util::ReacModeToFinalFlavor(m);
-if (init_flav != final_flav) {
-fMCTFinOb[imode]->SetAll(0.);
-if (update_mct_sb) {fMCTFinSb[imode]->SetAll(0.);}
-}
-}
-return;
-}
-
-PhysHypothesis_t hypid = fPhysHypothesis.Hypothesis();
-// Variables for the sterile oscillations if we need them, since they don't come in an object
-double sinsq2thmue = -1, sinsq2thmumu = -1, sinsq2thee = -1, dm41sq = -1;
-
-// Set 3 flavour osc parameters
-if (hypid == kHypOsc3F) {
-
-// Otherwise actually do the oscillation calculation
-//first find the baseline to be applied
-double baseline = util::Baseline(fBeam,fDetector);
-fNuOsc3Flavour.SetBaseline(baseline);
-
-// set oscillation parameters to the oscillation probability calculation code
-double mixing12 = fPhysHypothesis.CurrValue(kPhypMixing12);
-double mixing13 = fPhysHypothesis.CurrValue(kPhypMixing13);
-double mixing23 = fPhysHypothesis.CurrValue(kPhypMixing23);
-double dmsq     = fPhysHypothesis.CurrValue(kPhypDm12sq);
-double Dmsq     = fPhysHypothesis.CurrValue(kPhypDm23sq);
-double delta_cp = fPhysHypothesis.CurrValue(kPhypCPV    );
-
-NuOscMixParam_t omp = Opt::Instance()->gOscMixingParamChoice;
-NuOscDmsqScheme_t  dmsqscheme = Opt::Instance()->GetEffectiveDmsqScheme();
-
-// mixing params are: sin^2(2*theta)                                                                                        
-// independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |Dm^2_{23}|                                            
-if(dmsqscheme == kNuDmsq12andAbs23 && omp == kNuMixSinsq2Theta)
-{
-  fNuOsc3Flavour.SetOscParameters(mixing12,mixing13,mixing23,dmsq,Dmsq,delta_cp);
-}
-// mixing params are: sin^2(theta)                                                                                     
-// independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |Dm^2_{23}|                                          
-else if(dmsqscheme == kNuDmsq12andAbs23 && omp == kNuMixSinsqTheta)
-{
-  fNuOsc3Flavour.SetOscParametersSinSqTAll(mixing12,mixing13,mixing23,dmsq,Dmsq,delta_cp);
-}
-// mixing params are: sin^2(2*theta)                                                                                      
-// independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |m^2_{3} - (m^2_{1} + m^2_{1})/2|                   
-else if(dmsqscheme == kNuDmsqFogliLisi && omp == kNuMixSinsq2Theta)
-{
-  fNuOsc3Flavour.SetOscParametersSSq2TDmAtmSol(mixing12,mixing13,mixing23,dmsq,Dmsq,delta_cp);
-}
-// mixing params are: sin^2(theta)                                                                                        
-// independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |m^2_{3} - (m^2_{1} + m^2_{1})/2|                    
-else if(dmsqscheme == kNuDmsqFogliLisi && omp == kNuMixSinsqTheta)
-{
-  fNuOsc3Flavour.SetOscParametersDmsqAtmSol(mixing12,mixing13,mixing23,dmsq,Dmsq,delta_cp);
-}
-// mixing paras are: sin^2(2*theta)                                                                                     
-// independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |Dm^2_{31}|                                       
-else if(dmsqscheme == kNuDmsq12andAbs31 && omp == kNuMixSinsq2Theta)
-{
-  fNuOsc3Flavour.SetOscParametersSSq2TDmsq13(mixing12,mixing13,mixing23,dmsq,Dmsq,delta_cp);
-}
-// mixing paras are: sin^2(theta)                                                                                        
-// independent squared mass splittings are: dm^2 = Dm^2_{12}, Dm^2 = |Dm^2_{31}|                                           
-else if(dmsqscheme == kNuDmsq12andAbs31 && omp == kNuMixSinsqTheta)
-{
-  fNuOsc3Flavour.SetOscParametersDmsq13(mixing12,mixing13,mixing23,dmsq,Dmsq,delta_cp);
-}
-//unknown                                                                                                                    
-else {
-  LOG("GenericSingleSampleFitModel",pFATAL) << "**  GenericSingleSampleFitModel >> Can't handle choice of "
-    << "\n oscillation mixing params: " << util::AsString(omp)
-    << "\n and independent squared mass-splittings: " << util::AsString(dmsqscheme);
-  util::Die(-1);return;
-}
-}
-else if (hypid == kHypOscSterileEff) {
-  sinsq2thee   = fPhysHypothesis.CurrValue(kPhypMixingEE);
-  sinsq2thmue  = fPhysHypothesis.CurrValue(kPhypMixingMuE);
-  sinsq2thmumu = fPhysHypothesis.CurrValue(kPhypMixingMuMu);
-  dm41sq       = fPhysHypothesis.CurrValue(kPhypDm41sq);
-}
-
-
-double p_numu_numu       = -1;
-double p_numu_nue        = -1;
-double p_numu_nutau      = -1;
-double p_numubar_numubar = -1;
-double p_numubar_nuebar  = -1;
-double p_numubar_nutaubar= -1;
-double p_nue_nue         = -1;
-double p_nue_numu        = -1;
-double p_nue_nutau       = -1;
-double p_nuebar_nuebar   = -1;
-double p_nuebar_numubar  = -1;
-double p_nuebar_nutaubar = -1;
-
-std::vector<double *> all_probs = {
-  &p_numu_numu      , &p_numu_nue      , &p_numu_nutau      ,
-  &p_numubar_numubar, &p_numubar_nuebar, &p_numubar_nutaubar,
-  &p_nue_numu       , &p_nue_nue       , &p_nue_nutau       ,
-  &p_nuebar_numubar , &p_nuebar_nuebar , &p_nuebar_nutaubar
-};
-
-const VALORBinning * reco_ob = fBinning->RecoOptBinning();
-const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
-
-const int n_reco_bins_ob = reco_ob->NBins();
-const int n_reco_bins_sb = reco_sb->NBins();
-
-for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
-  ReacMode_t m = fReactionModes[imode];
-  if(m         == kmUndefined) continue;
-  if(fDetector == kdUndefined) continue;
-  if(fBeam     == kbUndefined) continue;
-  if(fSample   == ksUndefined) continue;
-
-  //check if oscillation probabilities should be applied to this combination of phys hypothesis and detector
-  if(!fSkipOscProbApplyCheck) {
-    if(!util::OscProbIsAppliedTo(hypid, fDetector)) {continue; }
-  }
-
-  const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
-  const int n_true_bins_sb = true_sb->NBins();
-
-  // Recast our VALORarrays as simple C-arrays to speed up the many rapid accesses this function needs
-  typedef double (templtypeOb)[n_reco_bins_ob][n_true_bins_sb];
-  templtypeOb & templFinOb = *reinterpret_cast<templtypeOb *>(&(fMCTFinOb[imode]->GetEntryRef(0,0)));
-  typedef double (templtypeSb)[n_reco_bins_sb][n_true_bins_sb];
-  templtypeSb & templFinSb = *reinterpret_cast<templtypeSb *>(&(fMCTFinSb[imode]->GetEntryRef(0,0)));
-
-  for(int itrue = 0; itrue < n_true_bins_sb; itrue++) {
-    //get the true energy to calculate osc prob 
-
-    double Etrue = true_sb->BinCentre(itrue,conv::kvEtrue);
-
-    if (hypid == kHypOsc3F) {
-      double p_osc    [3][3];
-      double p_osc_bar[3][3];
-      fNuOsc3Flavour.CalcMatterOscProbAll(false, Etrue, p_osc    );
-      fNuOsc3Flavour.CalcMatterOscProbAll(true , Etrue, p_osc_bar);
-      p_numu_numu       = p_osc    [1][1];
-      p_numu_nue        = p_osc    [1][0];
-      p_numu_nutau      = p_osc    [1][2];
-      p_numubar_numubar = p_osc_bar[1][1];
-      p_numubar_nuebar  = p_osc_bar[1][0];
-      p_numubar_nutaubar= p_osc_bar[1][2];
-      p_nue_nue         = p_osc    [0][0];
-      p_nue_numu        = p_osc    [0][1];
-      p_nue_nutau       = p_osc    [0][2];
-      p_nuebar_nuebar   = p_osc_bar[0][0];
-      p_nuebar_numubar  = p_osc_bar[0][1];
-      p_nuebar_nutaubar = p_osc_bar[0][2];
-
-    }
-    else if (hypid == kHypOscSterileEff) {
-      if (fGetBaselineFromSplines) {
-        void * tmp_spl = (void*)fBaselineSplines[imode]->GetEntry(itrue);
-        //~ const util::Interpolator * variable_baseline_spline = static_cast<util::Interpolator*>(tmp_spl);
-        //~ double low_baseline_limit  = variable_baseline_spline->Xmin();
-        //~ double high_baseline_limit = variable_baseline_spline->Xmax();
-        const TSpline * variable_baseline_spline = static_cast<TSpline*>(tmp_spl);
-        double low_baseline_limit  = variable_baseline_spline->GetXmin();
-        double high_baseline_limit = variable_baseline_spline->GetXmax();
-        double baseline_interval = (high_baseline_limit-low_baseline_limit)/(fNSplineEvalPoints-1);
-
-        // do a quick check that our spline looks reasonable
-        double default_baseline = util::Baseline(fBeam,fDetector);
-        if (default_baseline < low_baseline_limit*0.8 ||
-            default_baseline > high_baseline_limit*1.2) {
-          LOG("GenericSingleSampleFitModel",pFATAL) <<fName
-            <<" bad baseline spline - has limits of "<<low_baseline_limit
-            <<" to "<<high_baseline_limit<<" km when expecting something around "<<default_baseline<<" km";
-          util::Die(-1); return;
-        }
-
-        double event_rate_sum = 0.;
-        for (double * prob : all_probs) { *prob = 0.;}
-
-        for (int ibl = 0 ; ibl < fNSplineEvalPoints; ibl++) {
-          double baseline = low_baseline_limit+(ibl*baseline_interval);
-          double event_rate_at_baseline = std::max(0.,variable_baseline_spline->Eval(baseline));
-          event_rate_sum+=event_rate_at_baseline;
-          double lOverE = baseline / Etrue;
-          p_numu_numu        += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-          p_numu_nue         += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-          p_numu_nutau       += event_rate_at_baseline * 0.;
-          p_numubar_numubar  += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-          p_numubar_nuebar   += event_rate_at_baseline * util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-          p_numubar_nutaubar += event_rate_at_baseline * 0.;
-          p_nue_nue          += event_rate_at_baseline * util::Calculate2FSterileOsc(  conv::kPdgNuE     , conv::kPdgNuE    , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
-          p_nue_numu         += event_rate_at_baseline * util::Calculate2FSterileOsc(  conv::kPdgNuE     , conv::kPdgNuMu   , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
-          p_nue_nutau        += event_rate_at_baseline * 0;
-          p_nuebar_nuebar    += event_rate_at_baseline * util::Calculate2FSterileOsc(  conv::kPdgNuEBar  , conv::kPdgNuEBar , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
-          p_nuebar_numubar   += event_rate_at_baseline * util::Calculate2FSterileOsc(  conv::kPdgNuEBar  , conv::kPdgNuMuBar, lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
-          p_nuebar_nutaubar  += event_rate_at_baseline * 0;
-        } // ibl
-        for (double * prob : all_probs) {
-          if (std::fabs(event_rate_sum)<conv::kAVerySmallNum) {
-            *prob = 0;
-          }
-          else {
-            *prob /= event_rate_sum;
-          }
-        }
-      } //variable_baseline
-      else {
-        double baseline = util::Baseline(fBeam,fDetector);
-        double lOverE = baseline / Etrue;
-        p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numu_nutau      = 0.;
-        p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , lOverE, sinsq2thmue, sinsq2thmumu, dm41sq);
-        p_numubar_nutaubar= 0.;
-        p_nue_nue         = util::Calculate2FSterileOsc(  conv::kPdgNuE    , conv::kPdgNuE     , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
-        p_nue_numu        = util::Calculate2FSterileOsc(  conv::kPdgNuE    , conv::kPdgNuMu    , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
-        p_nue_nutau       = 0;
-        p_nuebar_nuebar   = util::Calculate2FSterileOsc(  conv::kPdgNuEBar , conv::kPdgNuEBar  , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
-        p_nuebar_numubar  = util::Calculate2FSterileOsc(  conv::kPdgNuEBar , conv::kPdgNuMuBar , lOverE, sinsq2thee, sinsq2thmumu, dm41sq);
-        p_nuebar_nutaubar = 0;
-      }
-    }
-    std::cout << "dm41sq = " << dm41sq << std::endl;  
-
-    double posc = 1.;
-    if(util::IsCC(m))
-    {
-      if     ( util::IsNuMu(m)       ) { posc = p_numu_numu;       }
-      else if( util::IsNuMuBar(m)    ) { posc = p_numubar_numubar; }
-      else if( util::IsNuE(m)        ) { posc = p_nue_nue;         }
-      else if( util::IsNuEBar(m)     ) { posc = p_nuebar_nuebar;   }
-
-      else if( util::IsNuMuToNuE(m)  ) { posc = p_numu_nue;        }
-      else if( util::IsNuMuToNuTau(m)) { posc = p_numu_nutau;      }
-      else if( util::IsNuEToNuMu(m)  ) { posc = p_nue_numu;        }
-      else if( util::IsNuEToNuTau(m) ) { posc = p_nue_nutau;       }
-
-      else if( util::IsNuMuBarToNuEBar(m)  ) { posc = p_numubar_nuebar;        }
-      else if( util::IsNuMuBarToNuTauBar(m)) { posc = p_numubar_nutaubar;      }
-      else if( util::IsNuEBarToNuMuBar(m)  ) { posc = p_nuebar_numubar;        }
-      else if( util::IsNuEBarToNuTauBar(m) ) { posc = p_nuebar_nutaubar;       }
-    }
-
-    if(fMCTNullOb[imode]) {continue;}
-
-    for(int ireco_ob = 0; ireco_ob < n_reco_bins_ob; ireco_ob++) {
-      templFinOb[ireco_ob][itrue] *= posc;
-    }//ireco
-
-    if(update_mct_sb) {
-      if(fMCTNullSb[imode]) {continue;}
-      for(int ireco_sb = 0; ireco_sb < n_reco_bins_sb; ireco_sb++) {
-        templFinSb[ireco_sb][itrue] *= posc;
-      }//ireco_sb
-    }//update_mct_sb
-  }//itrue
-}//imode
-}*/
-//________________________________________________________________________________________
-
 void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
-{ // using the "DomWay"
-  //	std::cout << "Using the Dom way!" << std::endl;
-
+{ 
+  
   // This method applies oscillation probabilities
   // from fin to fin templates                       
   // a la SuperKMC
@@ -3919,13 +3621,13 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
 
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
-    if(m         == kmUndefined) continue;
+    
+    //Make sure the mode is a neutrino as oscillating a cosmic would be silly. 
+    if (!util::IsNeutrinoAny(m)) {continue;}
+    
     if(fDetector == kdUndefined) continue;
     if(fBeam     == kbUndefined) continue;
     if(fSample   == ksUndefined) continue;
-
-		//Make sure the mode is not a cosmic as oscilalting a cosmic would be silly. 
-		if(m == kmCosmic) continue;
 
     //check if oscillation probabilities should be applied to this combination of phys hypothesis and detector
     if(!fSkipOscProbApplyCheck) {
@@ -3942,21 +3644,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     templtypeSb & templFinSb = *reinterpret_cast<templtypeSb *>(&(fMCTFinSb[imode]->GetEntryRef(0,0)));
 
     for(int itrue = 0; itrue < n_true_bins_sb; itrue++) {
-      //get the true energy to calculate osc prob 
-
-      double sindm2 = 1;
-      //std::cout << fSinDM2WeightVec.at(imode).at(itrue).size() << std::endl;
-      if(fSinDM2WeightVec.at(imode).at(itrue).size() > 0){
-        sindm2 = 0;
-        for(auto const& LOverE: fSinDM2WeightVec.at(imode).at(itrue)){
-          sindm2 += OscillationWeight(m,LOverE);
-
-        }
-        sindm2 /= fSinDM2WeightVec.at(imode).at(itrue).size();
-        //		std::cout << "sindm2"<< sindm2 << std::endl;
-      }
-
-
+      //get the true energy to calculate osc prob
       double Etrue = true_sb->BinCentre(itrue,conv::kvEtrue);
 
       if (hypid == kHypOsc3F) {
@@ -3979,8 +3667,17 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       }
 
       else if (hypid == kHypOscSterileEff) {
-        p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu, sinsq2thmue, sinsq2thmumu, sindm2);
-        p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    ,sinsq2thmue, sinsq2thmumu, sindm2);
+        // Using Dom Barker's method for exact oscillation probabilities
+        double sindm2 = 1;
+        if(fSinDM2WeightVec.at(imode).at(itrue).size() > 0) {
+          sindm2 = 0;
+          for(auto const& LOverE: fSinDM2WeightVec.at(imode).at(itrue)) {
+            sindm2 += util::Calculate2FSterileSinSqDM(LOverE,dm41sq);
+          }
+          sindm2 /= fSinDM2WeightVec.at(imode).at(itrue).size();
+        }
+        p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , sinsq2thmue, sinsq2thmumu, sindm2);
+        p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , sinsq2thmue, sinsq2thmumu, sindm2);
         p_numu_nutau      = 0.;
         p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, sinsq2thmue, sinsq2thmumu, sindm2);
         p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , sinsq2thmue, sinsq2thmumu, sindm2);
@@ -3992,9 +3689,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         p_nuebar_numubar  = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, sinsq2thee, sinsq2thmumu, sindm2);
         p_nuebar_nutaubar  = 0;
       }
-      //std::cout << "sindm2 = " << sindm2 << std::endl;
-
-
+      
       double posc = 1.;
       if(util::IsCC(m))
       {

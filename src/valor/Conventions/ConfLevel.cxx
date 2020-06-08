@@ -1,12 +1,14 @@
 //________________________________________________________________________________________
 /*
 
-Copyright (c) 2010-2016, The VALOR group. All rights reserved.
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 ChangeLog:
 
 */
 //________________________________________________________________________________________
+
+#include <algorithm>
 
 #include "valor/Conventions/ConfLevel.h"
 
@@ -53,4 +55,17 @@ string util::AsStringRooTex(ConfLevel_t cl)
 std::string util::ConfLevelAsString(ConfLevel_t cl) {return AsString(cl);};
 //________________________________________________________________________________________
 std::string util::ConfLevelAsStringRooTex(ConfLevel_t cl) {return AsStringRooTex(cl);};
+//________________________________________________________________________________________
+ConfLevel_t util::ConfLevelFromString(string confname) {
+  std::transform(confname.begin(), confname.end(), confname.begin(), ::tolower);
+  for (size_t i = 0 ; i < kNConfLevels ; i++ ) {
+    ConfLevel_t cl = (ConfLevel_t)i;
+    string confname2 = util::ConfLevelAsString(cl);
+    std::transform(confname2.begin(), confname2.end(), confname2.begin(), ::tolower);
+    if(confname==confname2 && confname2!="undefinedcl") {
+      return cl;
+    }
+  }
+  return kCLUndefined;
+}
 //________________________________________________________________________________________

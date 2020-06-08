@@ -11,7 +11,7 @@
 
 \created  October 21, 2012
 
-\copyright (c) 2010-2013, VaLOR group.
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 */
 //____________________________________________________________________________
 

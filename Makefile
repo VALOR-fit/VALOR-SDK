@@ -1,7 +1,7 @@
 #
-# VALOR framework project Makefile.
+# VALOR SDK Makefile.
 # 
-# Author: Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+# Author: Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 #
 
 SHELL = /bin/sh
@@ -18,7 +18,8 @@ BUILD_TARGETS =    print-make-info     \
 		   make-bin-lib-dir    \
 		   copy-scripts-to-bin \
 		   build-libs \
-		   | copy-rootdict-to-lib
+		   | copy-rootdict-to-lib \
+		   build-apps
 
 # define targets
 
@@ -161,23 +162,29 @@ pythonclean:
 				"${VALOR_FMWK}/external/python/lib" \
 				"${VALOR_FMWK}/external/python/get-pip.py" 2>/dev/null || true
 
+build-apps: make-bin-lib-dir build-libs copy-scripts-to-bin FORCE
+	@echo " "
+	@echo "** Building apps..."
+	$(MAKE) -C ${VALOR_FMWK}/src/valor/Apps;
+
+
 purge: FORCE
 	@echo " "
 	@echo "** Purging..."
-	cd ${VALOR_FMWK}/src/valor;\
-	cd Conventions;               make purge; cd ..; \
-	cd Utilities;                 make purge; cd ..; \
-	cd Messenger;                 make purge; cd ..; \
-	cd VArray;                    make purge; cd ..; \
-	cd GENIEUtilities;            make purge; cd ..; \
-	cd Oscillation;               make purge; cd ..; \
-	cd Ntuple;                    make purge; cd ..; \
-	cd Registry;                  make purge; cd ..; \
-	cd CmdLine;                   make purge; cd ..; \
-	cd FitCore;                   make purge; cd ..; \
-	cd KineBinning;               make purge; cd ..; \
-	cd FitElements;               make purge; cd ..; \
-	cd Testing;                   make purge; cd ..; \
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Apps;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Conventions;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Utilities;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Messenger;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/VArray;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/GENIEUtilities;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Oscillation;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Ntuple;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Registry;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/CmdLine;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/FitCore;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/KineBinning;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/FitElements;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Testing;
 	cd ${VALOR_FMWK}
 
 clean: clean-files clean-dir clean-etc
@@ -185,21 +192,21 @@ clean: clean-files clean-dir clean-etc
 clean-files: FORCE
 	@echo " "
 	@echo "** Cleaning..."
-	rm -f ${VALOR_FMWK}/bin/valor_fmwk-config; \
-	cd ${VALOR_FMWK}/src/valor;\
-	cd Conventions;             make clean; cd ..; \
-	cd Utilities;               make clean; cd ..; \
-	cd Messenger;               make clean; cd ..; \
-	cd VArray;                  make clean; cd ..; \
-	cd GENIEUtilities;          make clean; cd ..; \
-	cd Oscillation;             make clean; cd ..; \
-	cd Ntuple;                  make clean; cd ..; \
-	cd Registry;                make clean; cd ..; \
-	cd CmdLine;                 make clean; cd ..; \
-	cd FitCore;                 make clean; cd ..; \
-	cd KineBinning;             make clean; cd ..; \
-	cd FitElements;             make clean; cd ..; \
-	cd Testing;                 make clean; cd ..; \
+	rm -f ${VALOR_FMWK}/bin/valor_fmwk-config;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Apps;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Conventions;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Utilities;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Messenger;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/VArray;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/GENIEUtilities;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Oscillation;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Ntuple;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Registry;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/CmdLine;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/FitCore;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/KineBinning;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/FitElements;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Testing;
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm -f ./bin/*;\
         [ ! -d ./lib ] || rm -f ./lib/*_rdict.pcm;\

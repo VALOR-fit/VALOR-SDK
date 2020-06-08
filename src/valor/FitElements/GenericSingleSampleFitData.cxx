@@ -1,7 +1,7 @@
 //________________________________________________________________________________________
 /*
 
-   Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
+   Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //________________________________________________________________________________________
@@ -57,7 +57,7 @@ string GenericSingleSampleFitData::Name(void) const
   return fName;
 }
 //________________________________________________________________________________________
-bool GenericSingleSampleFitData::Read(string file, Option_t * opt)
+bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
 {
 
   // Set various parameters from the associated GSSFM

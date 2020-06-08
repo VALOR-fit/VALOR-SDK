@@ -5,12 +5,12 @@
 
 \brief      Command line argument parser taken from $GENIE/src/Utils
 
-\author     Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author     Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
             University of Liverpool & STFC Rutherford Appleton Lab
 
 \created    July 23, 2010
 
-\copyright  Copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
+\copyright  Copyright (c) 2003-2020, The GENIE Collaboration
 
 */
 //____________________________________________________________________________

@@ -1,7 +1,7 @@
 //________________________________________________________________________________________
 /*
 
-Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //________________________________________________________________________________________
@@ -374,19 +374,34 @@ bool SingleSampleKineBinning::Read(string file)
   }
 
   // Check that optimised bin edges each lie on a simple bin edge.
-  CheckBinEdges(fRecoOptimizedBinning, fRecoSimpleBinning);
-  CheckBinEdges(fXsecRecoBinning     , fRecoSimpleBinning);
+  CheckBinEdges(fRecoOptimizedBinning, fRecoSimpleBinning, "reco opt fit binning vs. reco simple binning");
+
+  // Also check that all xsec bin edges lie on a fit bin edge (otherwise the application of spline weights will go wrong)
+  CheckBinEdges(fXsecRecoBinning     , fRecoSimpleBinning, "reco xsec binning vs. reco simple binning");
+  for (size_t im = 0 ; im <  fReactionModes.size(); im++) {
+    std::string desc = "true xsec binning vs. true simple binning for mode " + util::AsString(fReactionModes[im]);
+    CheckBinEdges(fXsecTrueBinning[im], fTrueSimpleBinning[im], desc);
+  }
 
   // Check that there're more bins in the simple binning scheme than the optimised
   if (fRecoOptimizedBinning->NBins() > fRecoSimpleBinning->NBins()) {
-    LOG("SampleBinning",pFATAL) << "Fewer simple reco bins ("<<fRecoSimpleBinning->NBins()
-                                <<") than optimised bins ("<<fRecoOptimizedBinning->NBins()<<"). You did something wrong.";
+    LOG("SampleBinning",pFATAL) << "Fewer simple reco fit bins ("<<fRecoSimpleBinning->NBins()
+                                <<") than optimised fit bins ("<<fRecoOptimizedBinning->NBins()<<"). You did something wrong.";
     util::Die(-1); return false;
   }
-  if (fRecoOptimizedBinning->NBins() > fRecoSimpleBinning->NBins()) {
-    LOG("SampleBinning",pFATAL) << "Fewer simple reco bins ("<<fRecoSimpleBinning->NBins()
-                                <<") than xsec bins ("<<fXsecRecoBinning->NBins()<<"). You did something wrong.";
+  if (fXsecRecoBinning->NBins() > fRecoSimpleBinning->NBins()) {
+    LOG("SampleBinning",pFATAL) << "Fewer simple reco fit bins ("<<fRecoSimpleBinning->NBins()
+                                <<") than reco xsec bins ("<<fXsecRecoBinning->NBins()<<"). You did something wrong.";
     util::Die(-1); return false;
+  }
+  for (size_t im = 0 ; im <  fReactionModes.size(); im++) {
+    if (fXsecTrueBinning[im]->NBins() > fTrueSimpleBinning[im]->NBins()) {
+      LOG("SampleBinning",pFATAL) << "Fewer true fit bins ("<<fTrueSimpleBinning[im]->NBins()
+                                  <<") than true xsec bins ("<<fXsecTrueBinning[im]->NBins()
+                                  <<") for mode " << util::AsString(fReactionModes[im])
+                                  << ". You did something wrong.";
+      util::Die(-1); return false;
+    }
   }
   
   // Copy our set of kinevars into the stored vector and then sort it
@@ -491,7 +506,7 @@ const std::vector<conv::ReacMode_t> & SingleSampleKineBinning::GetReactionModes(
   return fReactionModes;
 }
 //________________________________________________________________________________________
-void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinning *smp_binning) const
+void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinning *smp_binning, std::string description) const
 {
   for(auto kv_opt : opt_binning->KineVars()) {
     if(!smp_binning->Contains(kv_opt)) { continue; }
@@ -502,7 +517,8 @@ void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinn
       for(unsigned int ibin_smp = 0; ibin_smp < smp_binning->NBins(); ++ibin_smp) {
         double bin_min_smp = smp_binning->BinMinimum(ibin_smp, kv_opt);
         double bin_max_smp = smp_binning->BinMaximum(ibin_smp, kv_opt);
-        if((bin_min_smp - bin_min_opt < conv::kASmallNum) || (bin_max_smp - bin_min_opt < conv::kASmallNum)) {
+        if((TMath::Abs(bin_min_smp - bin_min_opt) < conv::kASmallNum) ||
+           (TMath::Abs(bin_max_smp - bin_min_opt) < conv::kASmallNum)) {
           min_matches = true;
           break;
         }
@@ -510,7 +526,8 @@ void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinn
       if(!min_matches) {
         LOG("SampleBinning",pFATAL) << "The optimised lower bin edge " << bin_min_opt
                                     << " for kinevar = " << util::AsString(kv_opt)
-                                    << " does not lie on a simple bin edge for binning = " << opt_binning->GetName();
+                                    << " does not lie on a simple bin edge for binning comparison: \'"
+                                    << description << "\'";
         util::Die(-1);
       }
 
@@ -520,7 +537,8 @@ void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinn
       for(unsigned int ibin_smp = 0; ibin_smp < smp_binning->NBins(); ++ibin_smp) {
         double bin_min_smp = smp_binning->BinMinimum(ibin_smp, kv_opt);
         double bin_max_smp = smp_binning->BinMaximum(ibin_smp, kv_opt);
-        if((bin_min_smp - bin_max_opt < conv::kASmallNum) || (bin_max_smp - bin_max_opt < conv::kASmallNum)) {
+        if((TMath::Abs(bin_min_smp - bin_max_opt) < conv::kASmallNum) ||
+           (TMath::Abs(bin_max_smp - bin_max_opt) < conv::kASmallNum)) {
           max_matches = true;
           break;
         }
@@ -528,7 +546,8 @@ void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinn
       if(!max_matches) {
         LOG("SampleBinning",pFATAL) << "The optimised upper bin edge " << bin_min_opt
                                     << " for kinevar = " << util::AsString(kv_opt)
-                                    << " does not lie on a simple bin edge for binning = " << opt_binning->GetName();
+                                    << " does not lie on a simple bin edge for binning comparison \'"
+                                    << description << "\'";
         util::Die(-1);
       }
     }

@@ -5,7 +5,7 @@
 
 \brief    Constants
 
-\author   Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author   Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
           STFC, Rutherford Appleton Laboratory
           
 \created  Oct 20, 2010
@@ -481,7 +481,8 @@ static const double kElectronMassGeV =   0.511 / 1000.;
 static const double kMuonMassGeV     = 105.658 / 1000.;
 static const double kNeutronMassGeV  = 939.565 / 1000.;
 static const double kProtonMassGeV   = 938.272 / 1000.;
-  
+static const double kDeltaMassGeV    = 1232.0  / 1000.;
+
 } // conv
 } // valor
   

@@ -1,7 +1,7 @@
 //________________________________________________________________________________________
 /*
 
-Copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved.
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 ChangeLog:
 
@@ -579,6 +579,11 @@ bool util::IsNuMuToNuTau(conv::ReacMode_t m)
     return true;
   else
     return false; 
+}
+//________________________________________________________________________________________
+bool util::IsNeutrinoAny(conv::ReacMode_t m)
+{
+  return (m>=0 && m<kmCosmic);
 }
 //________________________________________________________________________________________
 bool util::IsNuEToNuMu(conv::ReacMode_t m)

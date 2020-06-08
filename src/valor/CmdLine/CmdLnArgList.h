@@ -36,12 +36,12 @@
                  integer_list, double_list, string_list, or 
                  root objects (th1f, th2f, ttree, tfile, tgraph,...)
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   April 08, 2016
 
-\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

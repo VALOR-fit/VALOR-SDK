@@ -6,12 +6,12 @@
 \brief    A more convenient interface to the log4cpp Message Service
           Adappted from GENIE with permission from the authors.
 
-\author   Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author   Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
           STFC, Rutherford Appleton Laboratory
 
 \created  June 16, 2004
 
-\cpright  Copyright (c) 2003-2016, GENIE Neutrino MC Generator Collaboration
+\cpright  Copyright (c) 2003-2020, The GENIE Collaboration
           For the full text of the license visit http://copyright.genie-mc.org
           or see $GENIE/LICENSE
 */

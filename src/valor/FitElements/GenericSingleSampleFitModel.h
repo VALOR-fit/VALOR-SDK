@@ -10,13 +10,13 @@ brief      A generic implementation of the fit model for a single sample,
            //
            Derives from FitModelABC
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
            Steve Dennis <s.r.dennis@liverpool.ac.uk>
            University of Liverpool
 
-\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________
@@ -157,8 +157,7 @@ private:
   void ApplySystematics                  (Option_t * opt = 0);
   void ApplyPhysics                      (Option_t * opt = 0);
   void ApplyOscProb                      (Option_t * opt = 0);
-	void ApplyOscProbTheDomWay             (Option_t * opt = 0);
-	void UpdatePDFs                        (Option_t * opt = 0);
+  void UpdatePDFs                        (Option_t * opt = 0);
   void ApplyPostOscLateralSystematics    (VALORArray * pdf, bool simple_binning = false);
   void ApplyLateralSystematic            (VALORArray * pdf, conv::PhysParamId_t p, bool simple_binning = false);
   void ReadExtTuningHistsAll             (TXMLEngine* xmleng, XMLNodePointer_t top_node);
@@ -188,9 +187,8 @@ private:
   // and the applied kine var, so pre-compute them instead of calculating them for every event and mode.
   void PreComputeLateralSystVectors(bool use_simple_binning);
   
-	double OscillationWeight(conv::ReacMode_t m, double baseline, double Etrue);
-	 
-	double OscillationWeight(const conv::ReacMode_t& m,const double& lOverE) const;
+  double OscillationWeight(conv::ReacMode_t m, double baseline, double Etrue);
+  double OscillationWeight(const conv::ReacMode_t& m,const double& lOverE) const;  
 
   // Keep track of the parameters we need to loop over
   // Normalisation, spline and post-oscillation lateral parameters divided
@@ -272,9 +270,9 @@ private:
   std::vector<VALORArray *> fMCTFinSb ; 
   std::vector<VALORArray *> fMCStatSb ; // MC statistics
 
-	std::vector<VALORArray *> fSinDM2Weight;
-	std::vector<VALORArray *> fSinDM2WeightN;
-	std::vector<std::vector<std::vector<double> > > fSinDM2WeightVec;
+  std::vector<VALORArray *> fSinDM2Weight;
+  std::vector<VALORArray *> fSinDM2WeightN;
+  std::vector<std::vector<std::vector<double> > > fSinDM2WeightVec;
 
 
   // MC PDFs

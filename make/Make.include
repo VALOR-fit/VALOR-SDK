@@ -1,5 +1,5 @@
 #
-# Costas Andreopoulos (Rutherford Lab.) <costas.andreopoulos \at stfc.ac.uk>
+# Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 #
 
 include $(VALOR_FMWK)/make/Make.config
@@ -43,24 +43,6 @@ endif
 
 
 #-------------------------------------------------------------------
-#                  VALOR APPLICATION-SPECIFIC CODE
-#-------------------------------------------------------------------
-
-# VALOR application release info
-#
-VALOR_APP_VERSION  = $(shell awk '{print $0}' $(VALOR_EXPT)/VERSION)
-
-# VALOR application include path
-#
-VALOR_APP_INCLUDES := -I$(VALOR_EXPT)/src/
-
-# VALOR application libraries
-#
-ifeq ("false",$(is_cln))
-  VALOR_APP_LIBRARIES = $(shell valor_expt-config --libs 2>/dev/null)
-endif
-
-#-------------------------------------------------------------------
 #                      GENIE MC
 #-------------------------------------------------------------------
 ifeq ("YES","$(OPT_ENABLE_GENIE)")
@@ -75,7 +57,6 @@ ifdef GENIE_FQ_DIR
   GENIE_INCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
 endif
 
-
 #-------------------------------------------------------------------
 #                              ROOT
 #-------------------------------------------------------------------
@@ -84,8 +65,9 @@ ROOT_FLAGS  = $(shell root-config --cflags)
 ROOT_INCLUDES  = -I$(shell root-config --incdir)
 ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore -lXMLIO -lXMLParser
 ROOT_CINT_FLAGS = -c -p
+ROOT_CINT_FLAGS = 
 
-ifdef GENIE
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
   ROOT_LIBRARIES += -lEGPythia6 -lGeom -lGenVector
 endif
 
@@ -397,6 +379,27 @@ LIBRARIES := $(SYSLIBS) \
 	     $(GPROF_LIBRARIES) \
 	     $(GSL_LIBRARIES) \
 	     $(OPT_WITH_MISC_LIBS)
+
+# Add GENIE includes and libaries for apps that depend both on GENIE and VALOR
+# GENIE needs to be enabled to compile those apps
+#
+
+#ifeq(, $(shell which genie-config))
+ifdef GENIE
+ GLIBRARIES = $(shell genie-config --libs)
+ 
+ # Hack while GENIE_REWEIGHT independent package is not good at reporting its own libraries
+ ifdef GENIE_REWEIGHT
+   GLIBRARIES += -L$(GENIE_REWEIGHT)/lib -lGRwFwk -lGRwClc -lGRwIO
+ endif
+ 
+ GINCLUDES  = $(GENIE_INCLUDES)
+ GINCLUDES  := $(GINCLUDES) $(INCLUDES)
+ GLIBRARIES := $(LIBRARIES) $(GLIBRARIES) $(LIBRARIES)
+ ifeq ("false",$(is_cln))
+  VALOR_GLIBRARIES := $(shell valor_fmwk-config --glibs)
+ endif
+endif
 
 # Default compiler and preprocessor flags
 

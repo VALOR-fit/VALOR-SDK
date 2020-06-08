@@ -14,7 +14,7 @@
 
 \created  October 21, 2012 - major rewrite June 2016
 
-\copyright (c) 2010-2016, VaLOR group.
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 */
 //____________________________________________________________________________
 

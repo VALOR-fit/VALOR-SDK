@@ -1,7 +1,7 @@
 #
-# Makefile for VALOR/DUNE apps
+# Makefile for VALOR/SDK apps
 #
-# Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+# Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 #
 
 SHELL = /bin/sh
@@ -12,25 +12,30 @@ MAKEFILE = Makefile
 #
 include $(VALOR_FMWK)/make/Make.include
 
-TGT = run_fit \
-#~       make_table_systematic_effects \
-#~       write_pdf \
-#~       tweak_pdf_N \
-#~       tweak_pdf_sigma_var \
-#~       fitnt_conv \
-#~       adaptive_mcmc \
-#~       run_tests \
-#~       run_build_margtoys \
-#~       run_fit_marg \
-#~       make_dummy_samples \
-#~       batch_tests
+TGT = adaptive_mcmc \
+      fitnt_conv \
+      make_table_systematic_effects \
+      run_build_toys \
+      run_fit \
+      run_fit_marg \
+      tweak_pdf_N \
+      tweak_pdf_sigma_var \
+      write_pdf \
+      make_response_functions 
+     # run_tests \
+      batch_tests 
+
+#      run_tests \ # Need to check why these are borking
+#      batch_tests \
+
+#      make_dummy_samples \
 
 all: $(TGT)
 
 # Generate GENIE response functions
 #
 make_response_functions: FORCE
-ifdef GENIE
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
 	$(CXX) $(CXXFLAGS) -c make_response_functions.cxx $(GINCLUDES)
 	$(LD) $(LDFLAGS) make_response_functions.o $(GLIBRARIES) $(VALOR_GLIBRARIES) -o $(VALOR_FMWK)/bin/valor-make_response_functions
 else
@@ -87,6 +92,11 @@ run_fit_marg: FORCE
 	$(CXX) $(CXXFLAGS) -c run_fit_marg.cxx $(INCLUDES)
 	$(LD) $(LDFLAGS) run_fit_marg.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-run_fit_marg
 
+run_build_toys: FORCE
+	$(CXX) $(CXXFLAGS) -c run_build_toys.cxx $(INCLUDES)
+	$(LD) $(LDFLAGS) run_build_toys.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-run_build_toys
+
+
 make_dummy_samples: FORCE
 	$(CXX) $(CXXFLAGS) -c make_dummy_samples.cxx $(INCLUDES)
 	$(LD) $(LDFLAGS) make_dummy_samples.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-make_dummy_samples
@@ -132,9 +142,9 @@ distclean: FORCE
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-make_response_functions
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-make_table_systematic_effects
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-run_fit
-	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/write_pdf
-	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/tweak_pdf_N
-	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/tweak_pdf_sigma_var
+	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-write_pdf
+	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-weak_pdf_N
+	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-tweak_pdf_sigma_var
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-fitnt_conv
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-adaptive_mcmc
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-run_tests

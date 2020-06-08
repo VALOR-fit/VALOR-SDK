@@ -25,9 +25,9 @@ ToyBuilder::ToyBuilder(CompoundFitElements& elements, string filePrefix,
   _filePrefix(filePrefix),
   _model(elements.FitModel()),
   _data(elements.FitData()),
-  _toys_are_marginalisation(toys_are_marginalisation),
   _use_simple_binning(use_simple_binning),
   _store_mode_arrays(store_mode_arrays),
+  _toys_are_marginalisation(toys_are_marginalisation),
   _save_throws_to_tree(save_throws_to_tree),
   _tree_pars(nullptr),
   _file_pars(nullptr),
@@ -249,13 +249,13 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
    // Open the tree containing thrown parameter values, if we don't have it already
    if(!_tree_pars) {
      if(toy_throw_file_to_read == "" || param_name_map_file == "") {
-        LOG("valor_dune", pERROR) << "No input toy throw file or parameter name map file was specified.";
+        LOG("ToyBuilder", pERROR) << "No input toy throw file or parameter name map file was specified.";
         util::Die(-1);
      }
 
      _toy_throw_file = new TFile(toy_throw_file_to_read.c_str(), "READ");
      if(!_toy_throw_file->IsOpen()) {
-        LOG("valor_dune", pERROR) << "Could not open file [" << toy_throw_file_to_read << "]";
+        LOG("ToyBuilder", pERROR) << "Could not open file [" << toy_throw_file_to_read << "]";
         util::Die(-1);
      }
      _toy_throw_file->cd();
@@ -302,7 +302,7 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
         }
         int branch_status = _tree_pars->SetBranchAddress(read_param_name.c_str(), &(_read_params[ip]));
         if(branch_status != 0) {
-           LOG("valor_dune", pERROR) << "Could not assign parameter [" << read_param_name
+           LOG("ToyBuilder", pERROR) << "Could not assign parameter [" << read_param_name
                                      << "] (ip = " << ip << ") to a branch in the input thrown tree.";
            util::Die(-1);
         }
@@ -325,7 +325,7 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
      }
 
      if (_read_params[ip] + 999 < conv::kASmallNum) {
-        LOG("valor_dune", pERROR) << "The thrown value for param ["
+        LOG("ToyBuilder", pERROR) << "The thrown value for param ["
                                   << util::NameRegistry::Instance()->ParamAsStringVerySimple(p)
                                   << "] could not be found.";
         util::Die(-1);
@@ -342,7 +342,7 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
   }
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-  LOG("valor_dune", pDEBUG) << "Reading toy from input throw file with FPL = " << fpl;
+  LOG("ToyBuilder", pDEBUG) << "Reading toy from input throw file with FPL = " << fpl;
 #endif
 }
 

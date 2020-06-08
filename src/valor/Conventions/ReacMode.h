@@ -6,12 +6,12 @@
 \brief     Enumeration of true reaction modes considered separately within 
            each DUNE analysis sample
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
           
 \created   April 15, 2014
 
-\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________
@@ -235,7 +235,7 @@ typedef enum EReacMode
    kmNuEBarToNuTauBarCCMpi,          // nuebar to nutaubar    CC multi pi (>1 pion of any charge(s))
    kmNuEBarToNuTauBarCCmisc,         // nuebar to nutaubar    CC miscellaneous modes that require separate treatment to CC other
    kmNuEBarToNuTauBarCCoth,          // nuebar to nutaubar    CC other
-   kmCosmic,
+   kmCosmic,              // first non-neutrino induced - all above here will pass IsNeutrinoAny
    kmOther                // other, eg contributions from interactions outside the fiducial etc
 } 
  ReacMode_t; 
@@ -938,6 +938,7 @@ namespace util {
   bool               IsNuEBarToNuMuBar  (conv::ReacMode_t m);
   bool               IsNuEBarToNuTauBar (conv::ReacMode_t m);
   bool               IsCosmic           (conv::ReacMode_t m);
+  bool               IsNeutrinoAny      (conv::ReacMode_t m);
 
   conv::ReacMode_t   NuEModeToOscNuEMode(conv::ReacMode_t m);
 

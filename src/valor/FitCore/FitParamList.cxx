@@ -1,7 +1,7 @@
 //________________________________________________________________________________________
 /*
  
- Copyright (c) 2010-2016, The VALOR group. All rights reserved.
+ Copyright (c) 2010-2020, The VALOR group. All rights reserved
  
  ChangeLog:
  
@@ -2032,7 +2032,7 @@ string FitParamList::GetPriorSchemeName(valor::conv::PhysParamId_t p) const
   else {
     LOG("Parameter", pERROR) << "Could not get the prior scheme name for parameter \'"
                                 << util::NameRegistry::Instance()->AsString(p);
-    util::Die(-1);
+    util::Die(-1); return "Unknown prior";
   }
 }
 //________________________________________________________________________________________

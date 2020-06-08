@@ -5,12 +5,12 @@
 
 \brief     Fitter utilities
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   Oct 20, 2010
 
-\copyright (c) 2010-2016, The VALOR group.
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

@@ -10,7 +10,7 @@
            //
            Derives from FitDataABC
 
-\author    Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+\author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
            Steve Dennis <s.r.dennis@liverpool.ac.uk>
@@ -18,7 +18,7 @@
 
 \created   March 27, 2014
 
-\copyright (c) 2010-2016, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________

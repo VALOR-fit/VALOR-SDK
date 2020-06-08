@@ -16,7 +16,7 @@
 
 \created   January 22, 2019
 
-\copyright (c) 2010-2019, The VALOR Fitting Group, All Rights Reserved
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________
@@ -31,6 +31,8 @@
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitResult.h"
+#include "valor/FitCore/UtlOscillation.h"
+
 
 #include "TH1.h"
 #include "TH2.h"
@@ -153,10 +155,11 @@ public:
              batch.
       \param Nbatches The number of batches to include
              (i.e. Nbatches * Ntoys = Ntoys total).
+      \param penaltyset Structure  that contains all info on penalty parameter        
       \param firstBatch The numeric ID for the first batch of marginalisation
              toys to be included. Note, batches should be indexec from 0.
    */
-   FitResult* Fit(FitDataABC* data, const int Ntoys, const int Nbatches,
+      FitResult* Fit(FitDataABC* data, const int Ntoys, const int Nbatches, util::oscillation::PenaltyTerm penaltyset,
          const int firstBatch = 0);
 
    /**
@@ -262,6 +265,12 @@ private:
          const int gridSizeX, const int gridSizeY, FitDataABC* data,
          const int Ntoys, const int Nbatches, const int firstBatch = 0);
 
+   /**Calcutes penalty term
+     \param par0  Value of the oscillation parameter
+     \param penaltyset  Parameters of the penalty term
+    */
+   void CalcPenaltyTerm(const double par0, util::oscillation::PenaltyTerm penaltyset);
+
 private:
    string _filePrefix; 
    FitModelABC* _model;
@@ -277,6 +286,7 @@ private:
    int _param1_start_bin;
    int _param2_start_bin;
    string _va_format;
+   double _penaltyterm;
 
   // NOTE: The following desciption was added back when we still used floats. This may or may not be needed any more
   // (since we're using doubles), but we're keeping it for now in case we need much greater precision in the future.

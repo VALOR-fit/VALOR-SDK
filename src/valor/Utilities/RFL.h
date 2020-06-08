@@ -9,12 +9,12 @@
 \author    Steve Dennis <s.r.dennis \at University of Liverpool>
            University of Liverpool
            
-           Costas Andreopoulos <costas.andreopoulos \at stfc.ac.uk>
+           Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
 
 \created   April 7, 2016
 
-\copyright (c) 2010-2016, The VALOR group.
+\copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
 //____________________________________________________________________________
@@ -139,8 +139,8 @@ private:
   std::vector<long> fReactionModeIndex;
 
   // When spline weights come out negative, force them to this value instead
+  bool   fForceNegWghtToExists;
   double fForceNegWghtTo;
-  bool fForceNegWghtToExists;
   
   // Check spline is positive
   static bool CheckForNegativeValues(const valor::util::Interpolator * spl);
