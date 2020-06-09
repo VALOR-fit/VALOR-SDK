@@ -131,7 +131,7 @@ namespace valor {
     static const ReacTypeApplyMask_t ktApplyToNCoth        = (kApplyMaskOne << 24 );
     static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 25 ); //only for nue: CC + NC + interference
     static const ReacTypeApplyMask_t ktApplyToOther        = (kApplyMaskOne << 26 ); //only for nue: CC + NC + interference
-    static const ReacTypeApplyMask_t ktApplyToCosmic       = (kApplyMaskOne << 37 ); //only for nue: CC + NC + interference
+    static const ReacTypeApplyMask_t ktApplyToCosmic       = (kApplyMaskOne << 27 ); //only for nue: CC + NC + interference
 
     static const DetectorApplyMask_t kdApplyToDUNEND          = (kApplyMaskOne << 0 ); // Dectectors
     static const DetectorApplyMask_t kdApplyToDUNEFD          = (kApplyMaskOne << 1 );
