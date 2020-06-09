@@ -187,9 +187,6 @@ private:
   // and the applied kine var, so pre-compute them instead of calculating them for every event and mode.
   void PreComputeLateralSystVectors(bool use_simple_binning);
   
-  double OscillationWeight(conv::ReacMode_t m, double baseline, double Etrue);
-  double OscillationWeight(const conv::ReacMode_t& m,const double& lOverE) const;  
-
   // Keep track of the parameters we need to loop over
   // Normalisation, spline and post-oscillation lateral parameters divided
   std::vector<conv::PhysParamId_t> fNormParams;

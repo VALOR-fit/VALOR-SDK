@@ -3438,49 +3438,6 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
   }
 }
 //________________________________________________________________________________________
-double GenericSingleSampleFitModel::OscillationWeight(conv::ReacMode_t m, double baseline, double Etrue){
-
-  //First Check that our particle needs to be ossilated at all.
-  if(m == kmUndefined) {return 1;}
-
-  //  if(!util::OscProbIsAppliedTo(hypid, fDetector)) {return 1;}
-  //Make sure the mode is not a cosmic as oscilalting a cosmic wo     uld be silly. 
-  if(m == kmCosmic) return 1;
-
-  double lOverE = baseline / Etrue;
-
-  double dm41sq       = fPhysHypothesis.CurrValue(kPhypDm41sq);
-
-  double posc = 1.;
-  if(util::IsCC(m)){
-    posc *= util::Calculate2FSterileSinSqDM(lOverE,dm41sq);
-  }
-
-  return posc;
-
-}
-
-//________________________________________________________________________________________
-double GenericSingleSampleFitModel::OscillationWeight(const conv::ReacMode_t& m, const double& lOverE) const{
-
-  //First Check that our particle needs to be ossilated at all.
-  if(m == kmUndefined) {return 1;}
-
-  //  if(!util::OscProbIsAppliedTo(hypid, fDetector)) {return 1;}
-  //Make sure the mode is not a cosmic as oscilalting a cosmic wo     uld be silly. 
-  if(m == kmCosmic) return 1;
-
-  double dm41sq       = fPhysHypothesis.CurrValue(kPhypDm41sq);
-
-  double posc = 1.;
-  if(util::IsCC(m)){
-    posc *= util::Calculate2FSterileSinSqDM(lOverE,dm41sq);
-  }
-
-  return posc;
-
-}
-//________________________________________________________________________________________
 void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
 { 
   
