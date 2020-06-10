@@ -2975,8 +2975,10 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       if(fSystematics->Contains(p)) {
         untuned = fSystematics->UntunedValue(p);
       }
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitModel",pINFO) << "Untuned value for parameter " << param_name << " = " << untuned;
-
+#endif
+       
       const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
       if(spline_eval_type == conv::kSplEvalUndefined) {
         LOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
@@ -3426,8 +3428,10 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             float & wght = fUniverseVariations[name][imode].GetEntryRef(ireco,itrue,universe_offset);
             double & val = templFinOb[ireco][itrue];
             val *= wght;
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
             LOG("GenericSingleSampleFitModel",pDEBUG) << " Parameter name and ID: " << universe_id << ", " << name
                                                       << ", universe offset: " << universe_offset << " weight: " << wght << " new value: " << val;
+#endif
           } // true
         } //reco
       } // parameters to apply
