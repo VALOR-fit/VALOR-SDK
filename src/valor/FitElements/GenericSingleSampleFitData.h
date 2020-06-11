@@ -112,6 +112,10 @@ private:
   double fFiducialMass;
   double fPOT;
 
+  //Do we use 1D binning for chisq?
+  bool fUse1DChisq;
+  void SetUse1DChisq(bool use1d) { fUse1DChisq = use1d; }
+
   // Define associated GSSFM
   GenericSingleSampleFitModel *fGSSFM;
 

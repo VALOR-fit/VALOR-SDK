@@ -42,7 +42,8 @@ GenericSingleSampleFitData::GenericSingleSampleFitData() :
   fFiducialMass(-99999.),
   fPOT(-99999.),
   fGSSFM(nullptr),
-  fDefVALORArrayFormat("data_vf")
+  fDefVALORArrayFormat("data_vf"),
+  fUse1DChisq(false)
 {
   this->Init();
 }
@@ -509,8 +510,9 @@ double GenericSingleSampleFitData::GetFitStatistic(
   model_abc->Write(array, "curr", "pdft_vf");
 
   // Calculate statistic
-  double S = 0;
-  
+  double S_1d = 0;
+  double S_2d = 0;
+
   // Counters for total number of events to we can do rate-only
   double tot_nmc   = 0.;
   double tot_ndata = 0.;
@@ -519,29 +521,66 @@ double GenericSingleSampleFitData::GetFitStatistic(
   VALORArray * pdf = (VALORArray*) array->FindObject(name.Data());
   assert(pdf);
   assert(pdf->GetSize() == fDataOb->GetSize());
+
+  //HACK: convert to 1D
+  if(fSample != conv::ks1Rmu) {
+    const int n_ereco_bins = 26;
+    vector<double> ndata(n_ereco_bins, 0);
+    vector<double> nmc(n_ereco_bins, 0);
+    for(int ibin = 0; ibin < pdf->GetSize(); ibin++) {
+      nmc  [ibin % n_ereco_bins] += pdf    ->GetArray()[ibin];
+      ndata[ibin % n_ereco_bins] += fDataOb->GetArray()[ibin];
+      //cout << "Putting " << pdf    ->GetArray()[ibin] << " MC events from bin " << ibin << " into bin " << ibin % n_ereco_bins << std::endl;
+    }//ibin
+    for(int ie = 0; ie < n_ereco_bins; ie++) {
+      double dS = util::ChisqPoisson(ndata[ie], nmc[ie]);
+      //cout << "Comparing data " << ndata[ie] << " and MC " << nmc[ie] << " in bin " << ie << " chisq " << dS << std::endl;
+      S_1d += dS;
+      tot_nmc   += nmc[ie];
+      tot_ndata += ndata[ie];
+    }//ie
+    S_1d = TMath::Max(0., S_1d);
+    LOG("GenericSingleSampleFitData",pINFO)
+      << fName<<" - Current 1D fit statistic (rate+shape) = " << S_1d;
+    LOG("GenericSingleSampleFitData",pINFO)
+      << fName<<" - Total events from N data = " << tot_ndata << ", N MC = " << tot_nmc;
+  }//e-like
+
+  tot_ndata = 0;
+  tot_nmc   = 0;
+
   for(int ibin = 0; ibin < pdf->GetSize(); ibin++) {
     double nmc   = pdf    ->GetArray()[ibin];
     double ndata = fDataOb->GetArray()[ibin];
     tot_nmc   += nmc;
     tot_ndata += ndata;
     double dS = util::ChisqPoisson(ndata, nmc);
-    S += dS;
+    S_2d += dS;
+    //cout << "Comparing data " << ndata << " and MC " << nmc << " in bin " << ibin << " chisq " << dS << std::endl;
   }//ier
-  S = TMath::Max(0.,S);
+  S_2d = TMath::Max(0.,S_2d);
   
   double S_rate_only = TMath::Max(0.,util::ChisqPoisson(tot_ndata, tot_nmc));
 
   LOG("GenericSingleSampleFitData",pINFO)
-    << fName<<" - Current fit statistic (rate+shape) = " << S;
+    << fName<<" - Current fit statistic 2D (rate+shape) = " << S_2d;
   LOG("GenericSingleSampleFitData",pINFO)
     << fName<<" - Current fit statistic (rate only) = " << S_rate_only
     << ", from N data = " << tot_ndata << ", N MC = " << tot_nmc;
-  
+
+  if(fSample == conv::ks1Rmu)
+    S_1d = S_2d;
+
   // Write our contribution to the likelihood
+  double S = (fUse1DChisq ? S_1d : S_2d); //take the 1D for Osc3++ comparison, or 2D (default)
   if (likelihood_components) {
     TString likelihood_name = TString::Format("sample_%s",fName.c_str());
+    TString likelihood_name_1d = TString::Format("sample_1d_%s",fName.c_str());
+    TString likelihood_name_2d = TString::Format("sample_2d_%s",fName.c_str());
     TString likelihood_name_rate_only = TString::Format("sample_rate_only_%s",fName.c_str());
     (*likelihood_components)[likelihood_name.Data()] = S;
+    (*likelihood_components)[likelihood_name_1d.Data()] = S_1d;
+    (*likelihood_components)[likelihood_name_2d.Data()] = S_2d;
     (*likelihood_components)[likelihood_name_rate_only.Data()] = S_rate_only;
   }
     
