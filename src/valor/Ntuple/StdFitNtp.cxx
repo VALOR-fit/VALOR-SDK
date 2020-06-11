@@ -41,6 +41,7 @@ void StdFitNtp::Create(const char* file_name, const char* ntp_name, const char* 
   fBestFitParamArr = new FitParamList;
   fBestFitModelArr = new TObjArray;
   fDataArr         = new TObjArray;
+  fBestFitStatistic = 0;
 
   fBestFitModelArr -> SetOwner(false);
   fDataArr         -> SetOwner(false);
@@ -53,6 +54,7 @@ void StdFitNtp::Create(const char* file_name, const char* ntp_name, const char* 
   fVTree->Branch("best_fit_params", "valor::FitParamList",  &fBestFitParamArr, 1280000,0);
   fVTree->Branch("best_fit_model",  "TObjArray",            &fBestFitModelArr, 1280000,0);
   fVTree->Branch("data",            "TObjArray",            &fDataArr,         1280000,0);
+  fVTree->Branch("best_fit_statistic", &fBestFitStatistic);
 
 //fVTree->Branch("migradmin",                               &migradmin);
 //fVTree->Branch("migraderr",                               &migraderr);
@@ -64,6 +66,7 @@ void StdFitNtp::Reset(void)
   fBestFitParamArr -> Clear();
   fBestFitModelArr -> Clear();
   fDataArr         -> Clear();
+  fBestFitStatistic = 0;
 }
 //________________________________________________________________________________________
 void StdFitNtp::Fill(void)
@@ -76,7 +79,10 @@ void StdFitNtp::Save(void)
   if(fOutFile) {
     fOutFile -> cd();
     fVTree   -> Write();
+    LOG("Ntp", pDEBUG) << "Written output tree to the file";
   }
+  else
+    LOG("Ntp", pWARN) << "No output file open. Not written to file";
 }
 //________________________________________________________________________________________
 void StdFitNtp::Init(void)
@@ -89,6 +95,7 @@ void StdFitNtp::Init(void)
   fBestFitParamArr = 0;
   fBestFitModelArr = 0;
   fDataArr         = 0;
+  fBestFitStatistic = 0;
 }
 //________________________________________________________________________________________
 void StdFitNtp::Clean(void)

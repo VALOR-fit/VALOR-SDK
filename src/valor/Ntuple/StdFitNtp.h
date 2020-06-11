@@ -43,7 +43,10 @@ public:
   PhysParamList * TrueParamArr          (void) const { return fTrueParamArr;    }  
   FitParamList *  BestFitParamArr       (void) const { return fBestFitParamArr; }
   TObjArray *     BestFitModelArr       (void) const { return fBestFitModelArr; }  
-  TObjArray *     DataArr               (void) const { return fDataArr;         }  
+  TObjArray *     DataArr               (void) const { return fDataArr;         }
+  double          BestFitStatistic      (void) const { return fBestFitStatistic; }
+
+  void SetBestFitStatistic(double stat) { fBestFitStatistic = stat; }
 
 protected:
 
@@ -56,6 +59,7 @@ protected:
   FitParamList *  fBestFitParamArr;    ///< array holding best-fit parameters
   TObjArray *     fBestFitModelArr;    ///< array holding best-fit predictions for all datasets
   TObjArray *     fDataArr;            ///< array holding all datasets 
+  double          fBestFitStatistic;   ///< Best fit statistic
 };
 
 } // valor
