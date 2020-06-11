@@ -1,6 +1,10 @@
 # Digitised by CA from arXiv:1710.06488v5, Fig.4
 # MINOS/MINOS+ numu disappearance limit, 90% C.L.
 #
+# NOTE: 
+# First column is sin^2(\theta_{\mu \mu}, not sin^2(2\theta_{\mu \mu}, as in all other plots in this archive.
+# Will need to convert sin^2(\theta_{\mu \mu} to sin^2(2\theta_{\mu \mu} before overlaying on other contours.
+#
 # sin^2(\theta_{\mu \mu} - Dm^2_{41} (eV^2)
   0.0252453  875.409096
   0.0252342  655.515423

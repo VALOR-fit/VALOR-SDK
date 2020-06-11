@@ -1,13 +1,20 @@
+// -----------------------------------------------------------------------------
+// This macro reads-in sterile neutrino limits from the ROOT file produced by
+// convert_contours_to_root_format_and_plot.C.
+// It plots 3 sets limit compilations:
+// - limits in Dm^2_41, sin^2(2\theta_\mu\mu) from nu_mu disappearance data
+// - limits in Dm^2_41, sin^2(2\theta_ee)     from nu_e appearance data
+// - limits in Dm^2_41, sin^2(2\theta_\mu e)  from nu_e disappearance data
 //
-// This macro reads in the ROOT file produced by convert_to_root_file_and_plot.C
-// and plots the appearance and disappearance limits.
+// Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
 //
-// C.A.
-//
+// Copyright (c) 2010-2020, The VALOR group. All rights reserved
+// -----------------------------------------------------------------------------
 
+void read_contours_from_root_file_and_plot(
+   const char * data_file="./sterile_3p1_limits.root")
 {
-
-  TFile * f = new TFile("./sterile_3p1_limits.root","read");
+  TFile * f = new TFile(data_file,"read");
 
   //
   // nue apearance
@@ -145,5 +152,4 @@
   lgnuedis->AddEntry(lim_nueapp_3p1_solar_excluded_95pctCL,    "Solar excluded 95\% CL",       "L");
   lgnuedis->AddEntry(lim_nueapp_3p1_nueC_excluded_95pctCL,     "#nu_{e}+C excluded 95\% CL",   "L");
   lgnuedis->Draw();
-
 }
