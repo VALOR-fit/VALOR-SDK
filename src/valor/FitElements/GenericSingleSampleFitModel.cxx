@@ -495,7 +495,14 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
   this->ApplyOscProb(opt);      // `fin' MC templates --> `fin' MC templates
   this->UpdatePDFs(opt);        // `fin' MC templates --> p.d.f
 
+  //HACK: Remove events that have migrated into originally-empty Ereco bins (below in all samples, above in e-like)
   this->ApplyErecoCuts(opt);
+  /* DO THIS IN THE FIT STATISTIC CALCULATION
+  //HACK: Collapse the 2D e-like into 1D, to match Osc3++ (can't do with binning because splines are 2D)
+  // actually... this is done in GSSFD instead, during the chisq calculation. Allows one set of toys to be made & fit with either 1D or 2D chisq calculation
+  if(util::IsElike(fSample))
+    this->CollapseTo1D(opt);
+  */
 #endif //__VALOR_FMWK_PENALTY_ONLY__
 
   // Print the final MC templates
@@ -3624,7 +3631,7 @@ void valor::GenericSingleSampleFitModel::ApplyErecoCuts(Option_t * option)
   for(size_t ibin = 0; ibin < fBinsToCutOB.size(); ibin++) {
     const int ireco = fBinsToCutOB[ibin];
     if(pdfTotObArr[ireco] > conv::kASmallNum)
-      LOG("GenericSingleSampleFitModel",pNOTICE)
+      LOG("GenericSingleSampleFitModel",pINFO)
 	<< "Changing fPDFTotOb for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<" from "
 	<< pdfTotObArr[ireco] << " to 0 in OB bin " << ireco << ":[" 
 	<< reco_ob->BinMinimum(ireco, conv::kvEreco) << ", " << reco_ob->BinMaximum(ireco, conv::kvEreco) << "]";
@@ -3642,7 +3649,7 @@ void valor::GenericSingleSampleFitModel::ApplyErecoCuts(Option_t * option)
     for(size_t ibin = 0; ibin < fBinsToCutSB.size(); ibin++) {
       const int ireco = fBinsToCutSB[ibin];
       if(pdfTotSbArr[ireco] > conv::kASmallNum)
-	LOG("GenericSingleSampleFitModel",pNOTICE)
+	LOG("GenericSingleSampleFitModel",pINFO)
 	  << "Changing fPDFTotSb for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<" from "
 	  << pdfTotSbArr[ireco] << " to 0 in SB bin " << ireco << ":[" 
 	  << reco_sb->BinMinimum(ireco, conv::kvEreco) << ", " << reco_sb->BinMaximum(ireco, conv::kvEreco) << "]";
