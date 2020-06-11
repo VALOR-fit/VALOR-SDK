@@ -103,6 +103,9 @@ public:
   // Are the data arrays non-empty?
   virtual bool DataExists(Option_t * opt = 0) const = 0;
 
+  //Do we use 1D binning for chisq?
+  virtual void SetUse1DChisq(bool) = 0;
+
 protected:
    FitDataABC();
 
