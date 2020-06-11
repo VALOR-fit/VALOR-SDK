@@ -77,6 +77,8 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   bool cons_solar_params      = (param_list_opt.find("cons-solar-params") != string::npos);
   bool cons_theta13           = (param_list_opt.find("cons-theta13"     ) != string::npos);
   bool fix_all                = (param_list_opt.find("fix-all"          ) != string::npos);
+  bool fix_all_syst           = (param_list_opt.find("fix-all-syst"     ) != string::npos);
+  bool fix_banff_params       = (param_list_opt.find("fix-banff-syst"   ) != string::npos);
   bool fix_detector_params    = (param_list_opt.find("fix-det-syst"     ) != string::npos);
   bool fix_nd_detector_params = (param_list_opt.find("fix-nd-det-syst"  ) != string::npos);
   bool fix_fd_detector_params = (param_list_opt.find("fix-fd-det-syst"  ) != string::npos);
@@ -130,6 +132,8 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
     // Fix parameters as necessary
     if(( fix_all                                                                                          ) ||
        ( fix_osc_params         && !util::IsSystematic(p)                                                 ) ||
+       ( fix_all_syst           &&  util::IsSystematic(p)                                                 ) ||
+       ( fix_banff_params       && param.SearchCategories("BANFF")                                        ) ||
        ( fix_detector_params    && param.SearchCategories("det")                                          ) ||
        ( fix_nd_detector_params && param.SearchCategories("det") && param.SearchCategories("ND")          ) ||
        ( fix_fd_detector_params && param.SearchCategories("det") && param.SearchCategories("FD")          ) ||
