@@ -51,6 +51,7 @@ public:
    void   Append   (const PhysParamList & pl);
    using TNamed::Print; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
    void   Print    (ostream & stream) const;
+   void   Print    (Option_t * option = "") const;
    
    bool Contains (conv::PhysParamId_t p) const;
    void Remove   (conv::PhysParamId_t p);

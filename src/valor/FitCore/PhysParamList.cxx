@@ -115,6 +115,11 @@ void PhysParamList::Print(ostream & stream) const
   }
 }
 //________________________________________________________________________________________
+void PhysParamList::Print(Option_t *) const
+{
+  this->Print(cout);
+}
+//________________________________________________________________________________________
 double PhysParamList::operator () (conv::PhysParamId_t p) const
 {
   return this->Value(p);
