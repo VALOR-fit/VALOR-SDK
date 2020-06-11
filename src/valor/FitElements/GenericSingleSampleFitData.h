@@ -81,6 +81,9 @@ public:
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
+  //Do we use 1D binning for chisq?
+  void SetUse1DChisq(bool use1d) { fUse1DChisq = use1d; }
+
 private:
 
   void Init  (void);
@@ -112,15 +115,14 @@ private:
   double fFiducialMass;
   double fPOT;
 
-  //Do we use 1D binning for chisq?
-  bool fUse1DChisq;
-  void SetUse1DChisq(bool use1d) { fUse1DChisq = use1d; }
-
   // Define associated GSSFM
   GenericSingleSampleFitModel *fGSSFM;
 
   std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
   
+  //Do we use 1D binning for chisq?
+  bool fUse1DChisq;
+
 };
 
 } // valor

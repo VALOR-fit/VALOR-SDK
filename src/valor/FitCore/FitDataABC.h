@@ -104,12 +104,13 @@ public:
   virtual bool DataExists(Option_t * opt = 0) const = 0;
 
   //Do we use 1D binning for chisq?
-  virtual void SetUse1DChisq(bool) = 0;
+  virtual void SetUse1DChisq(bool use1d) = 0;
 
 protected:
-   FitDataABC();
+  FitDataABC();
 
   std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
+
 };
 
 } // valor

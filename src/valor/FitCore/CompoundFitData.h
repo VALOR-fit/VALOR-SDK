@@ -101,6 +101,11 @@ public:
   // Are the data arrays non-empty?
   virtual bool DataExists(Option_t * opt = 0) const;
 
+  void SetUse1DChisq(bool use1d) {
+    for (std::vector<FitDataABC*>::iterator it = fSubData.begin(); it != fSubData.end(); ++it)
+      (*it)->SetUse1DChisq(use1d);
+  };
+
 protected:
   std::string fName;
   std::vector<FitDataABC *> fSubData;
