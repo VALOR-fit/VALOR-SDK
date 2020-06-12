@@ -8,11 +8,12 @@ import os
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-base_dir = os.environ["VALOR_EXPT"]
+base_dir = os.environ["VALOR_FMWK"]
 try:
   ROOT.valor
 except:
-  ROOT.gROOT.ProcessLine(".x %s/root/valor_expt.C"%base_dir);
+  ROOT.gROOT.ProcessLine(".x %s/root/valor_interpreter.C"%base_dir);
+
 
 ROOT.gROOT.SetBatch(1)
 

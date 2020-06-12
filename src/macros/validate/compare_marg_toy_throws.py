@@ -15,7 +15,9 @@ ROOT.gStyle.SetOptTitle(0)
 try:
     ROOT.valor
 except:
-    ROOT.gROOT.ProcessLine(".x $VALOR_EXPT/root/valor_expt.C")
+    ROOT.gROOT.ProcessLine(".x $VALOR_FMWK/root/valor_interpreter.C");
+
+
 
 valor = ROOT.valor
 util =  valor.util
