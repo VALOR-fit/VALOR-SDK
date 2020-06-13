@@ -347,11 +347,14 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   }
   
   //return on not converged
-  if(fMigradMinStatusCode == 4 && !use_simplex)
-    return false;
-  else if(fMigradMinStatusCode == 4 && use_simplex) {
-    //copy current to best fit, to stop horrible crashes
-    fp.CopyCurrToBestFitValues();
+  if(fMigradMinStatusCode == 4) {
+    fitter->ExecuteCommand("SHOW FCNVALUE",&fcntemp,0);
+    Double_t aminn = 0;
+    fitter->PrintResults(3,aminn);
+    if(use_simplex) {
+      //copy current to best fit, to stop horrible crashes
+      fp.CopyCurrToBestFitValues();
+    }
     return false;
   }
   
