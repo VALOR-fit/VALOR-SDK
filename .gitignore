@@ -7,4 +7,4 @@ src/valor/Conventions/Version.h
 
 bin/
 lib/
-
+*.root
