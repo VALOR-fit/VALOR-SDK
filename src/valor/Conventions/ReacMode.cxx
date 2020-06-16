@@ -238,6 +238,7 @@ string util::AsString(ReacMode_t m)
   case (kmNuEBarToNuTauBarCCmisc       ): return "nuebartonutaubarCCmisc";   break;
   case (kmNuEBarToNuTauBarCCoth        ): return "nuebartonutaubarCCoth";    break;
   case (kmCosmic                       ): return "cosmic";                   break;
+  case (kmDirt                         ): return "dirt";                     break;
 
     case (kmOther           ): return "other";  break;     
     default                  : return "--"; 
@@ -466,6 +467,7 @@ string util::AsStringTeX(ReacMode_t m, bool root)
     case (kmNuEBarToNuTauBarCCoth       ): name = "#bar{#nu}_{e} #rightarrow #bar{#nu}_{#tau} CCoth";                  break; 
 
     case (kmCosmic ): name = "Cosmic"; break;
+    case (kmDirt ):   name = "Dirt";   break;
  
     case (kmOther           ): name = "Other";                            break;     
     default                  : name = "--"; 
@@ -510,6 +512,7 @@ std::string util::AsString(conv::ReacType_t t)
     case (kmtELScat   ) : return "nuEEl";
     case (kmtOther    ) : return "misc";
     case (kmtCosmic   ) : return "cosmic";
+    case (kmtDirt     ) : return "dirt";
     default             : return "--";
   }
   return "--";
@@ -637,6 +640,15 @@ bool util::IsNuEBarToNuTauBar(conv::ReacMode_t m)
 bool util::IsCosmic(conv::ReacMode_t m)
 {
   if (m == kmCosmic)
+    return true;
+  else
+    return false; 
+}
+
+//________________________________________________________________________________________
+bool util::IsDirt(conv::ReacMode_t m)
+{
+  if (m == kmDirt)
     return true;
   else
     return false; 

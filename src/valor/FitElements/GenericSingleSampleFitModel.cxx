@@ -144,6 +144,12 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   bool skip_spline_read   = ts_opt.Contains("nosplines");
   bool skip_mc_read       = ts_opt.Contains("nomc");
   bool no_spline_baseline = ts_opt.Contains("fixedbaseline");
+  LOG("GenericSingleSampleFitModel",pDEBUG) << " Read options are: " << ts_opt << "\n"
+    << " Given these, this is how the following booleans are set: \n"
+    << " Force  use DST:    " << force_use_dst << "\n"
+    << " Skip spline read:  " << skip_spline_read << "\n"
+    << " Skip MC read:      " << skip_mc_read << "\n"
+    << " No spline basline: " << no_spline_baseline << "\n";
 #ifdef SPLINE_WEIGHTS_ARE_ONE
   skip_spline_read = true;
 #endif
@@ -408,10 +414,12 @@ bool GenericSingleSampleFitModel::Read(util::ToyStream* stream)
 //________________________________________________________________________________________
 bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
 {
-  LOG("GenericSingleSampleFitModel",pINFO) << "Configuring the Response Function Library... \n\n";
+  LOG("GenericSingleSampleFitModel",pINFO) << "Configuring the Response Function Library... \n";
   // And now get the RFL
   fRFL = new util::RFL(fBinning, fSplineParams);
+  LOG("GenericSingleSampleFitModel",pDEBUG) << "Constructed the RFL \n";
   fRFL->Read(file, opt);
+  LOG("GenericSingleSampleFitModel",pDEBUG) << "Read the RFL \n";
 
   bool null_warning = false;
 
@@ -1304,14 +1312,19 @@ void GenericSingleSampleFitModel::Book(void)
 
     }
 
-    // If we need to save universe variations, make arrays for that
-    size_t n_universes = fLastUniverseToSave-fFirstUniverseToSave+1;
+    // If we need to save universe variation and weights, make arrays for that
+    size_t n_universes = 0;
+    if(!fUniversesAsList)
+      n_universes = fLastUniverseToSave - fFirstUniverseToSave + 1;
+    else
+      n_universes = fUniversesToRead.size();
 
     for (const std::string & param : fUniverseParametersToSave) {
       std::vector<VALORArrayF> & vec = fUniverseVariations[param];
       vec.resize(imode); // dumb but easier than making it reserve earlier
-      assert(fLastUniverseToSave>=fFirstUniverseToSave);
-      auto it = vec.begin();
+      if(!fUniversesAsList) 
+        assert(fLastUniverseToSave>=fFirstUniverseToSave);
+      auto it  = vec.begin();
       vec.insert(it+imode,VALORArrayF(n_reco_bins_ob,n_true_bins,n_universes));
       vec[imode].SetDimensionName(0,"reco");
       vec[imode].SetDimensionName(1,"true");
@@ -1949,12 +1962,12 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
     std::map<const int,double> universe_weights;
 
-    VLOG("GenericSingleSampleFitModel",pDEBUG) << "Getting weights from " << fUniverseParametersToSave.size() << " systematic universes";
+    VLOG("GenericSingleSampleFitModel",pDEBUG) << "Getting weights from " << fUniverseParametersToSave.size() << " systematic parameters";
 
     // If necessary, get the weight from the systematic variations
     for (const std::string & name : fUniverseParametersToSave) {
-      size_t universe_offset = 0;
       if(!fUniversesAsList){
+        size_t universe_offset = 0;
         VLOG("GenericSingleSampleFitModel",pDEBUG) << "By range";
         for (size_t universe_id = fFirstUniverseToSave ; universe_id <= fLastUniverseToSave ; universe_id++) {
           universe_offset = universe_id - fFirstUniverseToSave;
@@ -1969,8 +1982,8 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       } // Universes by range
       else{
         VLOG("GenericSingleSampleFitModel",pDEBUG) << "From list";
-        for (const unsigned int &universe_id : fUniversesToRead) {
-          universe_offset++;
+        for (size_t universe_offset = 0; universe_offset < fUniversesToRead.size(); universe_offset++) {
+          size_t universe_id = fUniversesToRead.at(universe_offset);
           const std::vector<float> & universes = branch_universes.at(name);
           // Right now we'll sum up the weighted bin totals
           float universe_entry = this_entry*universes.at(universe_id);
@@ -2049,7 +2062,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     if(m == kmUndefined) continue;
     fMCTNomOb_tot_integral += fMCTNomOb[imode]->Integral();
     LOG("GenericSingleSampleFitModel",pDEBUG)
-      << "fMCTFinOb[" << util::AsString(m) << "] integral = " << fMCTNomOb[imode]->Integral();
+      << "fMCTNomOb[" << util::AsString(m) << "] integral = " << fMCTNomOb[imode]->Integral();
   }
   LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTNomOb integral summed over all modes = " << fMCTNomOb_tot_integral;
 
@@ -2633,10 +2646,14 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       std::vector<double> debug_xsec_reco_vals;
       std::vector<double> debug_true_vals;
       debug_reco_vals.push_back(debug_reco0);
-      if(util::NDimReco(reco_ks) > 1) { debug_reco_vals.push_back(debug_reco1); }
+      if(util::NDimReco(reco_ks) > 1) { 
+        debug_reco_vals.push_back(debug_reco1); 
+      }
       debug_true_vals.push_back(debug_true0);
       debug_xsec_reco_vals.push_back(debug_reco0);
-      debug_xsec_reco_vals.push_back(debug_reco1);
+      if(util::NDimReco(reco_ks) > 1) { 
+        debug_xsec_reco_vals.push_back(debug_reco1);
+      }
       debug_ireco = reco_ob->FindBin(debug_reco_vals);
       if (debug_true0 != -999) {
         debug_itrue = true_sb->FindBin(debug_true_vals);
@@ -2958,7 +2975,10 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       if(fSystematics->Contains(p)) {
         untuned = fSystematics->UntunedValue(p);
       }
-
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+      LOG("GenericSingleSampleFitModel",pINFO) << "Untuned value for parameter " << param_name << " = " << untuned;
+#endif
+       
       const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
       if(spline_eval_type == conv::kSplEvalUndefined) {
         LOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
@@ -3393,13 +3413,25 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         const int & universe_id  = variation_name_and_id.second;
         if(!fUniversesAsList)
           universe_offset = universe_id - fFirstUniverseToSave;
-        else
-          universe_offset++;
+        else{
+          // Find the current universe in the list of universes to access the correct entry in the variations array
+          std::vector<unsigned int>::iterator it = std::find(fUniversesToRead.begin(), fUniversesToRead.end(), universe_id);
+          if(it != fUniversesToRead.end())
+            universe_offset = std::distance(fUniversesToRead.begin(), it);
+          else{
+            LOG("GenericSingleSampleFitModel",pFATAL) << " Can't find universe ID: " << universe_id << " in list of universes to read.";
+            util::Die(-1);
+          }
+        }
         for (int ireco = 0 ; ireco < n_reco_bins_ob ; ireco++) {
           for (int itrue = 0 ; itrue < n_true_bins_sb ; itrue++) {
             float & wght = fUniverseVariations[name][imode].GetEntryRef(ireco,itrue,universe_offset);
             double & val = templFinOb[ireco][itrue];
             val *= wght;
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+            LOG("GenericSingleSampleFitModel",pDEBUG) << " Parameter name and ID: " << universe_id << ", " << name
+                                                      << ", universe offset: " << universe_offset << " weight: " << wght << " new value: " << val;
+#endif
           } // true
         } //reco
       } // parameters to apply
@@ -4571,7 +4603,12 @@ void GenericSingleSampleFitModel::SetSystematicVariationIDToApply(const std::str
     assert(id >= fFirstUniverseToSave && id <=fLastUniverseToSave);
   else{
     std::vector<unsigned int>::iterator it = std::find(fUniversesToRead.begin(), fUniversesToRead.end(), id);
-    assert(it != fUniversesToRead.end());
+    if(it !=  fUniversesToRead.end())
+      LOG("GenericSingleSampleFitModel",pINFO) << " Found the chosen universe id " << id << " in the list of universes to read ";
+    else{
+      LOG("GenericSingleSampleFitModel",pERROR) << " Couldn't find the chosen universe id " << id << " in the list of universes to read ";
+      util::Die(-1);
+    }
   }
   fSystUniverseToApply[param_name] = id;
   fApplyUniverseVariations = true;
@@ -4591,6 +4628,7 @@ void GenericSingleSampleFitModel::SetUniversesToRead(const std::vector<unsigned 
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::SetUniverseParameterToRead(const std::string & param_name)
 {
+  LOG("GenericSingleSampleFitModel",pDEBUG) << " Saving parameter: " << param_name;
   fUniverseParametersToSave.push_back(param_name);
 }
 //________________________________________________________________________________________

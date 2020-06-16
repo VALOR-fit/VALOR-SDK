@@ -235,8 +235,9 @@ typedef enum EReacMode
    kmNuEBarToNuTauBarCCMpi,          // nuebar to nutaubar    CC multi pi (>1 pion of any charge(s))
    kmNuEBarToNuTauBarCCmisc,         // nuebar to nutaubar    CC miscellaneous modes that require separate treatment to CC other
    kmNuEBarToNuTauBarCCoth,          // nuebar to nutaubar    CC other
-   kmCosmic,              // first non-neutrino induced - all above here will pass IsNeutrinoAny
-   kmOther                // other, eg contributions from interactions outside the fiducial etc
+   kmCosmic,                         //  first non-neutrino induced - all above here will pass IsNeutrinoAny
+   kmDirt,                           // non-neutrino induced, dirt 
+   kmOther                           // other, eg contributions from interactions outside the fiducial etc
 } 
  ReacMode_t; 
 
@@ -271,8 +272,9 @@ typedef enum EReacType
   kmtNCELScat,    // NC nu + e elastic scattering (not nue)
   kmtNCoth,       // NC other
   kmtELScat,      // nue + e elastic scattering (nue, NC + CC + interference) 
-  kmtOther,       // misc
-  kmtCosmic       // cosmic
+  kmtCosmic,      // cosmic
+  kmtDirt,        // dirt
+  kmtOther        // misc
 }
 ReacType_t;
 
@@ -484,6 +486,7 @@ static const ReacType_t kReacModeToType[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCmisc       */ kmtCCmisc   ,
    /*   kmNuEBarToNuTauBarCCoth        */ kmtCCoth    ,
    /*   kmCosmic                       */ kmtCosmic   ,
+   /*   kmDirt                         */ kmtDirt     ,
 // /*   kmOther             */ kmtOther 
 };
 
@@ -693,6 +696,7 @@ static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCmisc       */ kNuTauBar    ,
    /*   kmNuEBarToNuTauBarCCoth        */ kNuTauBar    ,
    /*   kmCosmic                       */ kNuFlavourUndefined,
+   /*   kmDirt                         */ kNuFlavourUndefined,
 // /*   kmOther             */ kNuFlavourUndefined
 };
 
@@ -901,6 +905,7 @@ static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCmisc       */ kNuEBar    ,
    /*   kmNuEBarToNuTauBarCCoth        */ kNuEBar    ,
    /*   kmCosmic                       */ kNuFlavourUndefined,
+   /*   kmDirt                         */ kNuFlavourUndefined,
 // /*   kmOther             */ kNuFlavourUndefined
 };
 
@@ -938,6 +943,7 @@ namespace util {
   bool               IsNuEBarToNuMuBar  (conv::ReacMode_t m);
   bool               IsNuEBarToNuTauBar (conv::ReacMode_t m);
   bool               IsCosmic           (conv::ReacMode_t m);
+  bool               IsDirt             (conv::ReacMode_t m);
   bool               IsNeutrinoAny      (conv::ReacMode_t m);
 
   conv::ReacMode_t   NuEModeToOscNuEMode(conv::ReacMode_t m);
