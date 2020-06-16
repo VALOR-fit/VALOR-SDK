@@ -125,8 +125,9 @@ def main(config_file, param_values,
         if reac_type not in reac_types: reac_types.append(reac_type)
         if util.IsNeutrinoAny(m):
           channel = (init_flav,final_flav)
-          if channel not in channels: channels.append(channel)
-    channels.append("Non-neutrino")
+        else:
+            channel = "Non-neutrino"
+        if channel not in channels: channels.append(channel)
     
     if len(channels) > min_channels_to_landscape:
       tex_output.write("\\begin{landscape}\n")
