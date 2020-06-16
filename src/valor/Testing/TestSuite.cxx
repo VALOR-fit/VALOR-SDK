@@ -1,14 +1,21 @@
-#include "valor/Testing/TestSuite.h"
+//____________________________________________________________________________
+/*
 
-// valor
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
+
+*/
+//____________________________________________________________________________
+
+// VALOR/SDK
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Testing/TestSuite.h"
 
 namespace valor
 {
 namespace testing
 {
-
+//____________________________________________________________________________
 TestSuite::~TestSuite()
 {
    for(auto kv : _tests)
@@ -17,7 +24,7 @@ TestSuite::~TestSuite()
    }
    _tests.clear();
 }
-
+//____________________________________________________________________________
 bool TestSuite::Run()
 {
    bool passed = true;
@@ -52,7 +59,7 @@ bool TestSuite::Run()
 
    return passed;
 }
-
+//____________________________________________________________________________
 void TestSuite::Add(std::string name, Test* test)
 {
    auto value = _tests.insert(std::make_pair(name, test));
@@ -62,7 +69,7 @@ void TestSuite::Add(std::string name, Test* test)
       util::Die(-1);
    }
 }
+//____________________________________________________________________________
 
 }
 }
-

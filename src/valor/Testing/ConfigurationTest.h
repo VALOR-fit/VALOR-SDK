@@ -1,3 +1,4 @@
+//____________________________________________________________________________
 /*!
 
 \class     valor::testing::ConfigurationTest
@@ -6,20 +7,21 @@
 
 \author    Andy Chappell <A.Chappell \at warwick.ac.uk
            University of Warwick
-          
+
 \created   Mar 14, 2017
 
 \copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
+//____________________________________________________________________________
+
 #ifndef __CINT__
 
 #ifndef valor_testing_configuration_test
 #define valor_testing_configuration_test
 
+// VALOR/SDK
 #include "valor/Testing/Test.h"
-
-// valor
 #include "valor/Utilities/Configuration.h"
 
 namespace valor
@@ -119,4 +121,3 @@ private:
 #endif
 
 #endif
-

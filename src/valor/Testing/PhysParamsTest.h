@@ -1,3 +1,4 @@
+//____________________________________________________________________________
 /*!
 
 \class     valor::testing::PhysParamsTest
@@ -6,20 +7,21 @@
 
 \author    Andy Chappell <A.Chappell \at warwick.ac.uk
            University of Warwick
-          
+
 \created   Mar 01, 2017
 
 \copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
+//____________________________________________________________________________
+
 #ifndef __CINT__
 
 #ifndef valor_testing_phys_params_test
 #define valor_testing_phys_params_test
 
+// VALOR/SDK
 #include "valor/Testing/Test.h"
-
-// valor
 #include "valor/FitCore/PhysParams.h"
 
 namespace valor
@@ -202,4 +204,3 @@ private:
 #endif
 
 #endif
-

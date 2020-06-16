@@ -1,3 +1,4 @@
+//____________________________________________________________________________
 /*!
 
 \class     valor::testing::Test
@@ -6,23 +7,25 @@
 
 \author    Andy Chappell <A.Chappell \t warwick.ac.uk
            University of Warwick
-          
+
 \created   Mar 01, 2017
 
 \copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
+//____________________________________________________________________________
+
 #ifndef __CINT__
 
 #ifndef valor_testing_test
 #define valor_testing_test
 
+// System
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
-
-// valor
+// VALOR/SDK
 #include "valor/CmdLine/CmdLnArgList.h"
 
 namespace valor
@@ -144,7 +147,7 @@ public:
    virtual int NFailures() const;
 
    /**
-      This method returns the failed tests. 
+      This method returns the failed tests.
 
       \return The failed tests.
    */
@@ -226,4 +229,3 @@ private:
 #endif
 
 #endif
-

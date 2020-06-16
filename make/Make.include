@@ -43,7 +43,7 @@ endif
 
 
 #-------------------------------------------------------------------
-#                      GENIE MC
+#                            GENIE MC
 #-------------------------------------------------------------------
 ifeq ("YES","$(OPT_ENABLE_GENIE)")
   GENIE_INCLUDES  = -I$(shell genie-config --topsrcdir)
@@ -366,6 +366,7 @@ endif
 # includes and libraries needed to compile programs. 
 
 INCLUDES  := $(VALOR_INCLUDES) \
+             $(GENIE_INCLUDES) \
              $(LOG_INCLUDES) \
              $(ROOT_INCLUDES) \
              $(GSL_INCLUDES) \
