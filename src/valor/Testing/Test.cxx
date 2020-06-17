@@ -1,15 +1,23 @@
+//____________________________________________________________________________
+/*
+
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
+
+*/
+//____________________________________________________________________________
+
 #include "valor/Testing/Test.h"
 
 #include <cmath>
 
-// valor
+// VALOR/SDK
 #include "valor/Messenger/Messenger.h"
 
 namespace valor
 {
 namespace testing
 {
-
+//____________________________________________________________________________
 Test::~Test()
 {
    TestCase* context = nullptr;
@@ -31,7 +39,7 @@ Test::~Test()
    // need to be careful deleting it when we're done
    delete context;
 }
-
+//____________________________________________________________________________
 bool Test::Run()
 {
    for(auto& kv : _tests)
@@ -48,28 +56,28 @@ bool Test::Run()
 
    return (NFailures() == 0);
 }
-
+//____________________________________________________________________________
 void Test::Add(TestKey* key, TestFunctionPtr method)
 {
    _tests.insert(std::make_pair(key, method));
 }
-
+//____________________________________________________________________________
 int Test::NTests() const
 {
    return _tests.size();
 }
-
+//____________________________________________________________________________
 int Test::NFailures() const
 {
    return _failures.size();
 }
-
+//____________________________________________________________________________
 TestKey::TestKey(const TestKey& original)
 {
    _name = original._name;
    _context = original._context;
 }
-
+//____________________________________________________________________________
 TestKey& TestKey::operator=(const TestKey& original)
 {
    _name = original._name;
@@ -77,7 +85,7 @@ TestKey& TestKey::operator=(const TestKey& original)
 
    return (*this);
 }
-
+//____________________________________________________________________________
 bool Test::Equal(const double obs, const double exp, const double tol)
 {
    bool equal = (std::abs(obs - exp) < tol);
@@ -88,7 +96,7 @@ bool Test::Equal(const double obs, const double exp, const double tol)
    }
    return equal;
 }
-
+//____________________________________________________________________________
 bool Test::Equal(const int obs, const int exp)
 {
    bool equal = obs == exp;
@@ -99,7 +107,7 @@ bool Test::Equal(const int obs, const int exp)
    }
    return equal;
 }
-
+//____________________________________________________________________________
 bool Test::Equal(const std::string& obs, const std::string& exp)
 {
    bool equal = obs == exp;
@@ -120,7 +128,7 @@ bool Test::True(const bool obs)
    }
    return equal;
 }
-
+//____________________________________________________________________________
 bool Test::False(const bool obs)
 {
    bool equal = obs == false;
@@ -130,7 +138,7 @@ bool Test::False(const bool obs)
    }
    return equal;
 }
+//____________________________________________________________________________
 
 }
 }
-

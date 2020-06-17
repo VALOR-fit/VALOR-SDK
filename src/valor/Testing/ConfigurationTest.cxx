@@ -1,13 +1,20 @@
-#include "valor/Testing/ConfigurationTest.h"
+//____________________________________________________________________________
+/*
 
-// valor
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
+
+*/
+//____________________________________________________________________________
+
+// VALOR/SDK
+#include "valor/Testing/ConfigurationTest.h"
 #include "valor/Utilities/UtlFile.h"
 
 namespace valor
 {
 namespace testing
 {
-
+//____________________________________________________________________________
 bool ConfigurationTestCase::TestInstance()
 {
    bool passed = true;
@@ -20,7 +27,7 @@ bool ConfigurationTestCase::TestInstance()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationTestCase::TestBool()
 {
    bool passed = true;
@@ -36,7 +43,7 @@ bool ConfigurationTestCase::TestBool()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationTestCase::TestInt()
 {
    bool passed = true;
@@ -50,7 +57,7 @@ bool ConfigurationTestCase::TestInt()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationTestCase::TestDouble()
 {
    bool passed = true;
@@ -64,7 +71,7 @@ bool ConfigurationTestCase::TestDouble()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationTestCase::TestString()
 {
    bool passed = true;
@@ -78,7 +85,7 @@ bool ConfigurationTestCase::TestString()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationTestCase::TestHistograms()
 {
    bool passed = true;
@@ -103,16 +110,17 @@ bool ConfigurationTestCase::TestHistograms()
 
    return passed;
 }
-
+//____________________________________________________________________________
 void ConfigurationTest::Setup()
 {
    _config = Configuration::Instance();
 }
-
+//____________________________________________________________________________
 void ConfigurationTest::Teardown()
 {
-}
 
+}
+//____________________________________________________________________________
 void ConfigurationTest::AddTests()
 {
    ConfigurationTestCase* testCase = new ConfigurationTestCase(this);
@@ -129,6 +137,7 @@ void ConfigurationTest::AddTests()
    Add(new TestKey("TestHistograms", testCase),
          [testCase](void) { return testCase->TestHistograms(); });
 }
+//____________________________________________________________________________
 
 }
 }
