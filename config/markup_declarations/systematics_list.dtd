@@ -1,0 +1,4 @@
+
+<!ELEMENT systematic_list (parameter+) >
+<!ATTLIST systematic_list name CDATA #IMPLIED>
+  <!ELEMENT parameter (#PCDATA) >
