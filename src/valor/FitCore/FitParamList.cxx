@@ -39,7 +39,8 @@ using namespace valor;
 using namespace valor::conv;
 
 #define USE_NEAREST_23_OCTANT_PENALTY
-//~ #define DOUBLE_ANGLE_REACTOR_PENALTY
+//#define DOUBLE_ANGLE_REACTOR_PENALTY
+//#define VERBOSE_PENALTY
 
 ClassImp(FitParamList)
 
@@ -1904,12 +1905,21 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
 #endif //USE_NEAREST_23_OCTANT_PENALTY
 
 #ifdef DOUBLE_ANGLE_REACTOR_PENALTY
-    if(p==conv::kPhypMixing13 && omp==conv::kNuMixSinsqTheta){ // Use the reactor constrain with sinsq2theta13 (not sinsqtheta13)
+    if((p==conv::kPhypMixing13) &&
+       Opt::Instance()->gOscMixingParamChoice==conv::kNuMixSinsqTheta){ // Use the reactor constrain with sinsq2theta13 (not sinsqtheta13)
       double current_sinsq2th = 1 - (1-2*current)*(1-2*current);
       current = current_sinsq2th;
       center = conv::kGlobFitSinsq2Theta13;
       error = conv::kGlobFitErrSinsq2Theta13 * center;
     }
+    if((p==conv::kPhypMixing12) &&
+       Opt::Instance()->gOscMixingParamChoice==conv::kNuMixSinsqTheta){ // Use the reactor constrain with sinsq2theta12 (not sinsqtheta12)
+      double current_sinsq2th = 1 - (1-2*current)*(1-2*current);
+      current = current_sinsq2th;
+      center = conv::kGlobFitSinsq2Theta12;
+      error = conv::kGlobFitErrSinsq2Theta12 * center;
+    }
+    LOG("Parameter", pDEBUG) << "Using Double Angle Reactor Penalty";
 #endif //DOUBLE_ANGLE_REACTOR_PENALTY
     
     if (center == -999) {
@@ -1919,9 +1929,17 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
     }
     
     tweak = (current-center)/error;
-    
+#ifdef VERBOSE_PENALTY
+    LOG("Parameter", pDEBUG) << util::NameRegistry::Instance()->AsString(p) << " has:";
+    LOG("Parameter", pDEBUG) << "\tCurrent value: " << current;
+    LOG("Parameter", pDEBUG) << "\tCentral value: " << center;
+    LOG("Parameter", pDEBUG) << "\tError:         " << error;
+    LOG("Parameter", pDEBUG) << "\tTweak:         " << tweak;
+    LOG("Parameter", pDEBUG) << "\tChisq (tw*tw): " << tweak*tweak;
+#endif //VERBOSE_PENALTY
+
     chisq += tweak*tweak;
-  }
+  }//ip
   
   return chisq;
 }
