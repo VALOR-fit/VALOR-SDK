@@ -1,17 +1,26 @@
-#include "valor/Testing/MondrianKBTest.h"
+//____________________________________________________________________________
+/*
 
-// valor
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
+
+*/
+//____________________________________________________________________________
+
+// VALOR/SDK
+#include "valor/Testing/MondrianKBTest.h"
 #include "valor/Utilities/UtlFile.h"
 
 namespace valor
 {
 namespace testing
 {
-
+  //____________________________________________________________________________
 bool MondrianKBTestCase::TestContract()
 {
-   KBCubHcmbMondrian& binning = *(dynamic_cast<MondrianKBTest*>(_test)->_binning);
-   KBCubHcmbMondrian* newBinning = dynamic_cast<KBCubHcmbMondrian*>(binning.Contract(conv::kspEreco));
+   KBCubHcmbMondrian& binning =
+     *(dynamic_cast<MondrianKBTest*>(_test)->_binning);
+   KBCubHcmbMondrian* newBinning =
+     dynamic_cast<KBCubHcmbMondrian*>(binning.Contract(conv::kspEreco));
 
    bool passed = true;
 
@@ -41,7 +50,7 @@ bool MondrianKBTestCase::TestContract()
 
    return passed;
 }
-
+//____________________________________________________________________________
 void MondrianKBTest::Setup()
 {
    // Retrieve the location of the Mondrian XML file
@@ -51,12 +60,12 @@ void MondrianKBTest::Setup()
    _binning = new KBCubHcmbMondrian;
    _binning->Read(fullFilename);
 }
-
+//____________________________________________________________________________
 void MondrianKBTest::Teardown()
 {
    delete _binning;
 }
-
+//____________________________________________________________________________
 void MondrianKBTest::AddTests()
 {
    MondrianKBTestCase* testCase = new MondrianKBTestCase(this);
@@ -64,6 +73,7 @@ void MondrianKBTest::AddTests()
    Add(new TestKey("TestContract", testCase),
          [testCase](void) { return testCase->TestContract(); });
 }
+//____________________________________________________________________________
 
 }
 }

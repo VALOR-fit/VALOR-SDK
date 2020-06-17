@@ -1,13 +1,21 @@
-#include "valor/Testing/ConfigurationHandlerTest.h"
+//____________________________________________________________________________
+/*
 
-// valor
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
+
+*/
+//____________________________________________________________________________
+
+
+// VALOR/SDK
+#include "valor/Testing/ConfigurationHandlerTest.h"
 #include "valor/Utilities/Configuration.h"
 
 namespace valor
 {
 namespace testing
 {
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadAnalysis()
 {
    bool passed = true;
@@ -23,7 +31,7 @@ bool ConfigurationHandlerTestCase::TestReadAnalysis()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadSampleList()
 {
    bool passed = true;
@@ -43,17 +51,17 @@ bool ConfigurationHandlerTestCase::TestReadSampleList()
    passed = Test::Equal(config.GetString("sample_list.sample_1.selection"),
          "numucc0pi1trk") && passed;
    passed = Test::Equal(config.GetString("sample_list.sample_1.data"),
-         "observations.root") && passed;  
+         "observations.root") && passed;
    passed = Test::Equal(config.GetString("sample_list.sample_1.mc"),
-         "test/newxml/mc/mc.xml") && passed; 
+         "test/newxml/mc/mc.xml") && passed;
    passed = Test::Equal(config.GetString("sample_list.sample_1.data_class"),
-         "valor::GenericSingleSampleFitData") && passed;  
+         "valor::GenericSingleSampleFitData") && passed;
    passed = Test::Equal(config.GetString("sample_list.sample_1.model_class"),
          "valor::GenericSingleSampleFitModel") && passed;
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadMC()
 {
    bool passed = true;
@@ -93,7 +101,7 @@ bool ConfigurationHandlerTestCase::TestReadMC()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadBinning()
 {
    bool passed = true;
@@ -111,7 +119,7 @@ bool ConfigurationHandlerTestCase::TestReadBinning()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadOptimisedBinning()
 {
    bool passed = true;
@@ -134,7 +142,7 @@ bool ConfigurationHandlerTestCase::TestReadOptimisedBinning()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadSimpleBinning()
 {
    bool passed = true;
@@ -189,7 +197,7 @@ bool ConfigurationHandlerTestCase::TestReadSimpleBinning()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadParameterList()
 {
    bool passed = true;
@@ -278,7 +286,7 @@ bool ConfigurationHandlerTestCase::TestReadParameterList()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadParameters()
 {
    bool passed = true;
@@ -295,17 +303,17 @@ bool ConfigurationHandlerTestCase::TestReadParameters()
    passed = Test::Equal(config.GetDouble("param_list.defaults.minimum"), 0.0)
          && passed;
    passed = Test::Equal(config.GetDouble("param_list.defaults.maximum"), 2.0)
-         && passed;  
+         && passed;
    passed = Test::Equal(config.GetDouble("param_list.defaults.step_size"), 0.0001)
-         && passed;  
+         && passed;
    passed = Test::Equal(config.GetDouble("param_list.defaults.scaling"), 1.0)
          && passed;
    passed = Test::False(config.GetBool("param_list.defaults.fixed"))
-         && passed;  
+         && passed;
    passed = Test::True(config.GetBool("param_list.defaults.nuisance"))
-         && passed;  
+         && passed;
    passed = Test::False(config.GetBool("param_list.defaults.marginalise"))
-         && passed; 
+         && passed;
 
    // Parameters
    passed = Test::Equal(config.GetString("param_list.param_1.name"),
@@ -317,15 +325,15 @@ bool ConfigurationHandlerTestCase::TestReadParameters()
    passed = Test::Equal(config.GetDouble("param_list.param_1.minimum"), 0.077)
          && passed;
    passed = Test::Equal(config.GetDouble("param_list.param_1.maximum"), 0.109)
-         && passed;  
+         && passed;
    passed = Test::Equal(config.GetDouble("param_list.param_1.step_size"), 0.0001)
-         && passed;  
+         && passed;
    passed = Test::Equal(config.GetDouble("param_list.param_1.scaling"), 1.0)
          && passed;
    passed = Test::False(config.GetBool("param_list.param_1.fixed"))
-         && passed;  
+         && passed;
    passed = Test::False(config.GetBool("param_list.param_1.nuisance"))
-         && passed;  
+         && passed;
    passed = Test::True(config.GetBool("param_list.param_1.marginalise"))
          && passed;
    passed = Test::Equal(config.GetDouble(
@@ -335,7 +343,7 @@ bool ConfigurationHandlerTestCase::TestReadParameters()
    passed = Test::Equal(config.GetString("param_list.param_2.name"),
          "kNuisFHCNuMuFlux00") && passed;
    passed = Test::Equal(config.GetDouble("param_list.param_2.maximum"), 2.0)
-         && passed;  
+         && passed;
    passed = Test::True(config.GetBool("param_list.param_2.marginalise"))
          && passed;
    passed = Test::Equal(config.GetString("param_list.param_3.name"),
@@ -349,7 +357,7 @@ bool ConfigurationHandlerTestCase::TestReadParameters()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool ConfigurationHandlerTestCase::TestReadSplines()
 {
    bool passed = true;
@@ -363,20 +371,20 @@ bool ConfigurationHandlerTestCase::TestReadSplines()
 
    return passed;
 }
-
+//____________________________________________________________________________
 void ConfigurationHandlerTest::Setup()
 {
    util::Configuration::Instance();
    _handler = new ConfigurationHandler();
    _handler->ReadAnalysis(_arg->GetString("test-config-analysis-file"));
 }
-
+//____________________________________________________________________________
 void ConfigurationHandlerTest::Teardown()
 {
   delete _handler;
   util::Configuration::Instance()->Clear(true);;
 }
-
+//____________________________________________________________________________
 void ConfigurationHandlerTest::AddTests()
 {
    ConfigurationHandlerTestCase* testCase = new ConfigurationHandlerTestCase(this);
@@ -399,7 +407,7 @@ void ConfigurationHandlerTest::AddTests()
    Add(new TestKey("TestReadSimpleBinning", testCase),
          [testCase](void) { return testCase->TestReadSimpleBinning(); });
 }
+//____________________________________________________________________________
 
 }
 }
-

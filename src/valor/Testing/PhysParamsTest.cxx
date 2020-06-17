@@ -1,13 +1,20 @@
-#include "valor/Testing/PhysParamsTest.h"
+//____________________________________________________________________________
+/*
 
-// valor
+Copyright (c) 2010-2020, The VALOR group. All rights reserved
+
+*/
+//____________________________________________________________________________
+
+// VALOR/SDK
+#include "valor/Testing/PhysParamsTest.h"
 #include "valor/Utilities/UtlFile.h"
 
 namespace valor
 {
 namespace testing
 {
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestBestfit()
 {
    bool passed = true;
@@ -19,7 +26,7 @@ bool PhysParamsTestCase::TestBestfit()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestInitial()
 {
    bool passed = true;
@@ -31,7 +38,7 @@ bool PhysParamsTestCase::TestInitial()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestMinimum()
 {
    bool passed = true;
@@ -43,7 +50,7 @@ bool PhysParamsTestCase::TestMinimum()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestMaximum()
 {
    bool passed = true;
@@ -55,7 +62,7 @@ bool PhysParamsTestCase::TestMaximum()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestStepSize()
 {
    bool passed = true;
@@ -67,7 +74,7 @@ bool PhysParamsTestCase::TestStepSize()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestScaling()
 {
    bool passed = true;
@@ -79,7 +86,7 @@ bool PhysParamsTestCase::TestScaling()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestIsMarginalised()
 {
    bool passed = true;
@@ -91,7 +98,7 @@ bool PhysParamsTestCase::TestIsMarginalised()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestGaussianPrior()
 {
    bool passed = true;
@@ -110,7 +117,7 @@ bool PhysParamsTestCase::TestGaussianPrior()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestFlatPrior()
 {
    bool passed = true;
@@ -129,7 +136,7 @@ bool PhysParamsTestCase::TestFlatPrior()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestUserPrior()
 {
    bool passed = true;
@@ -143,7 +150,7 @@ bool PhysParamsTestCase::TestUserPrior()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestIsFixed()
 {
    bool passed = true;
@@ -155,7 +162,7 @@ bool PhysParamsTestCase::TestIsFixed()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestIsNuisance()
 {
    bool passed = true;
@@ -167,7 +174,7 @@ bool PhysParamsTestCase::TestIsNuisance()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestMigradErrors()
 {
    bool passed = true;
@@ -182,7 +189,7 @@ bool PhysParamsTestCase::TestMigradErrors()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestHesseErrors()
 {
    bool passed = true;
@@ -197,7 +204,7 @@ bool PhysParamsTestCase::TestHesseErrors()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestMinosErrors()
 {
    bool passed = true;
@@ -214,7 +221,7 @@ bool PhysParamsTestCase::TestMinosErrors()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestNParams()
 {
    bool passed = true;
@@ -226,7 +233,7 @@ bool PhysParamsTestCase::TestNParams()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestValidParams()
 {
    bool passed = true;
@@ -243,7 +250,7 @@ bool PhysParamsTestCase::TestValidParams()
 
    return passed;
 }
-
+//____________________________________________________________________________
 bool PhysParamsTestCase::TestInvalidParams()
 {
    bool passed = true;
@@ -255,7 +262,7 @@ bool PhysParamsTestCase::TestInvalidParams()
 
    return passed;
 }
-
+//____________________________________________________________________________
 void PhysParamsTest::Setup()
 {
    // Retrieve the location of the XML configuration file
@@ -268,7 +275,7 @@ void PhysParamsTest::Setup()
    _params->Read(specFilename);
 //   _params->Select(selFilename);
 }
-
+//____________________________________________________________________________
 void PhysParamsTest::Teardown()
 {
    if(_params)
@@ -276,7 +283,7 @@ void PhysParamsTest::Teardown()
       _params->Clear();
    }
 }
-
+//____________________________________________________________________________
 void PhysParamsTest::AddTests()
 {
    PhysParamsTestCase* testCase = new PhysParamsTestCase(this);
@@ -319,6 +326,7 @@ void PhysParamsTest::AddTests()
    Add(new TestKey("TestMinosErrors", testCase),
          [testCase](void) { return testCase->TestMinosErrors(); });
 }
+//____________________________________________________________________________
 
 }
 }

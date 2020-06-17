@@ -1,3 +1,4 @@
+//____________________________________________________________________________
 /*!
 
 \class     valor::testing::TestSuite
@@ -6,21 +7,23 @@
 
 \author    Andy Chappell <A.Chappell \t warwick.ac.uk
            University of Warwick
-          
+
 \created   Mar 02, 2017
 
 \copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 */
+//____________________________________________________________________________
+
 #ifndef __CINT__
 
 #ifndef valor_testing_test_suite
 #define valor_testing_test_suite
 
+// System
 #include <string>
 #include <map>
-
-// valor
+// VALOR/SDK
 #include "valor/Testing/Test.h"
 
 namespace valor
@@ -72,4 +75,3 @@ private:
 #endif
 
 #endif
-
