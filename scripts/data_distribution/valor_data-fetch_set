@@ -5,9 +5,10 @@
 #
 # Inputs:
 #     --data-resource    : Remote data archive (see valor_data-fetch for details)
-#     --data-set         : Input label for the set of related data products to be fetched (see files in config/data_products/)
+#     --data-set         : Input label for the set of related data products to be fetched together. 
+#                          See $VALOR_FMWK/config/data_distribution/products/ for details.
 #    [--data-lists-path] : Directory with files containing the lists of all curated data products. 
-#                          [Default: $VALOR_FMWK/scripts/data_distribution/config/data_products/]
+#                          [Default: $VALOR_FMWK/config/data_distribution/products/]
 #    [--local-path]      : Local path for downloading the VALOR inputs to. 
 #                          [Default: .]
 #    [--rm-obsolete]     : Obsolete files are automatically renamed (appending "~date_time" in the filename) and they are
@@ -34,7 +35,7 @@ die("VALOR: Please provide an input for --data-resource") unless defined $data_r
 die("VALOR: Please provide an input for --data-set"     ) unless defined $data_set;
 
 $valor_sdk = $ENV{'VALOR_FMWK'};
-$default_data_lists_path = "$valor_sdk/scripts/data_distribution/config/data_products/";
+$default_data_lists_path = "$valor_sdk/config/data_distribution/products/";
 $data_lists_path = $default_data_lists_path unless defined $data_lists_path;
 
 $local_base_dir  = "." unless defined $local_base_dir;
