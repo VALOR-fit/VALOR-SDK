@@ -193,7 +193,7 @@ static const double kGlobFitErrSinsq2Theta23 = 0.109;  // ~10.9% (T2K Run1-4 NH)
 //static const double kGlobFitSinsqTheta12    = 0.311; //pdg2012
 //static const double kGlobFitSinsqTheta12    = 0.304; 
 //static const double kGlobFitSinsqTheta12    = 0.30397704; // HK 2020 ASIMOV VALUE
- static const double kGlobFitSinsqTheta13 = 0.307; //(PDG 2020)
+ static const double kGlobFitSinsqTheta12 = 0.307; //(PDG 2020)
 //static const double kGlobFitSinsqTheta12    = kT2KReacMostProbSinsqTheta12; //kT2KReacBestFitSinsqTheta12; 
 
 //static const double kGlobFitErrSinsqTheta23 = 0.06;  // ~26% (1 sigma range)
