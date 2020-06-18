@@ -210,7 +210,7 @@ static const double kGlobFitErrSinsqTheta23 = 0.109;  // ~10.9% (T2K Run1-4 NH)
 //static const double kGlobFitErrSinsqTheta13 = 0.105; // ~10.5% (PDG 2013)
 // static const double kGlobFitErrSinsqTheta13 = 0.086; // ~8.6% (PDG 2014)
 //static const double kGlobFitErrSinsqTheta13 = 0.324; // ~32.4% (T2K Run1-4 NH)
- static const double kGlobFitErrSinsqTheta13 = 0.003114285714; // 0.31% (PDG 2020) 0.0007/0.218
+  static const double kGlobFitErrSinsqTheta13 = 0.03211009174; // 3.2% (PDG 2020) 0.0007/0.0218
 
 
 /////////////////////////////////////
