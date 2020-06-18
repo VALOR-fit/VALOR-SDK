@@ -5,11 +5,11 @@ This package (living in $VALOR_FMWK/scripts/data_distribution/) provides a set o
 configuration files, for the efficient distribution of VALOR analysis data files.
 
 An arbitrary number of VALOR data resources can exist concurrently, each serving different data products.
-The current list of data archives can be found in [THIS_PACKAGE]/config/resources/
+The current list of data archives can be found in $VALOR_FMWK/config/data_distribution/resources/.
 Data from each resource are accessed either via wget (http) or scp.
 
 Each data archive can serve a number of data products. The full list of currated VALOR data products,
-their locations, and other related information can be found in [THIS_PACKAGE]/config/data_resources/
+their locations, and other related information can be found in $VALOR_FMWK/config/data_distribution/products/.
 
 Upon preparing (or updating) a data product, the data curator needs to run the `valor_data-generate_checksums'
 script to generate MD5 checksums for all files in the data products. Using the generated checksums, remote 
