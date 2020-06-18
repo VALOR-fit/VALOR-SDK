@@ -209,6 +209,7 @@ namespace valor {
     
     // Calculate the fit statistic penalty
     double HypothesisFitStatisticPenalty(Option_t * opt = 0) const;
+    void SetMix13UserError(double central, double error);
     
     // Print
     //using TNamed::Print; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
@@ -411,8 +412,10 @@ namespace valor {
     
     ////////////////////////////////////
     
-    
-    
+    bool fUseUserOscPenPriors;
+    double fUserMix13Central;
+    double fUserMix13Error;
+
     ClassDef(FitParamList,3)
   };
   

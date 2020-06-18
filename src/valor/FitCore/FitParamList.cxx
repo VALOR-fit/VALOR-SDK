@@ -40,7 +40,7 @@ using namespace valor::conv;
 
 #define USE_NEAREST_23_OCTANT_PENALTY
 //#define DOUBLE_ANGLE_REACTOR_PENALTY
-//#define VERBOSE_PENALTY
+#define VERBOSE_PENALTY
 
 ClassImp(FitParamList)
 
@@ -1809,6 +1809,8 @@ void FitParamList::Init(int nparams)
   fMigradErrorsSet = false;
   fHesseErrorsSet  = false;
   fMinosErrorsSet  = false;
+
+  fUseUserOscPenPriors = false;
 }
 //________________________________________________________________________________________
 void FitParamList::CleanUp(void)
@@ -1891,7 +1893,7 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
     PhysParamId_t p = (PhysParamId_t) ip;
     if (not (this->Exists(p) && this->IsNuisance(p))) continue;
     current = this->CurrValue(p);
-    
+
     center = Opt::Instance()->GetGlobalBestFit(p);
     error  = Opt::Instance()->GetGlobalFitError(p)*center;
     
@@ -1927,7 +1929,12 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
       << fName[ip].GetString() << std::endl;
       continue;
     }
-    
+
+    if(p == conv::kPhypMixing13 && fUseUserOscPenPriors) {
+      center = fUserMix13Central;
+      error  = fUserMix13Error;
+    }
+
     tweak = (current-center)/error;
 #ifdef VERBOSE_PENALTY
     LOG("Parameter", pDEBUG) << util::NameRegistry::Instance()->AsString(p) << " has:";
@@ -1942,6 +1949,12 @@ double FitParamList::HypothesisFitStatisticPenalty(Option_t * /*opt*/) const
   }//ip
   
   return chisq;
+}
+//________________________________________________________________________________________
+void FitParamList::SetMix13UserError(double central, double error) {
+  fUseUserOscPenPriors = true;
+  fUserMix13Central = central;
+  fUserMix13Error   = error;
 }
 //________________________________________________________________________________________
 bool FitParamList::IsComplete()
