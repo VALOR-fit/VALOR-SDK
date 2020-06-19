@@ -23,6 +23,8 @@
 #include <string>
 #include <map>
 
+#include "TObject.h"
+
 #include "valor/Conventions/ReacMode.h"
 #include "valor/Conventions/BeamConf.h"
 #include "valor/Conventions/Detector.h"
@@ -34,7 +36,7 @@ namespace valor {
   
 namespace util {
 
-  class NameRegistry {
+  class NameRegistry : public TObject {
     public:
       // Accessors for the global version.
       static const NameRegistry * Instance();
@@ -117,6 +119,8 @@ namespace util {
         }
       };
       friend struct Cleaner;
+      
+      ClassDef(NameRegistry, 1)
   };
 
 } // util
