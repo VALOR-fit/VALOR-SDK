@@ -20,6 +20,7 @@ ChangeLog:
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlPrint.h"
+#include "valor/Utilities/UtlStr.h"
 
 using namespace std;
 using namespace valor;
@@ -161,3 +162,23 @@ void valor::util::NotifySlack (std::string message, std::string channel, std::st
 #else
 void valor::util::NotifySlack (std::string , std::string , std::string ) {}
 #endif // __VALOR_SLACK_TOKEN__
+//___________________________________________________________________________
+template <class T> void valor::util::PrintVectorComparison(const std::vector<T> & v1, const std::vector<T> & v2, std::ostream & out)
+{
+  size_t large_size = std::max(v1.size(),v2.size());
+  for (size_t i = 0; i < large_size ; i++) {
+    bool v1_good = i < v1.size();
+    bool v2_good = i < v2.size();
+    bool same = false;
+    if (v1_good && v2_good) {
+      same = v1[i]==v2[i];
+    }
+    out<<(same?"  ":"* ")<<i<<"\t"
+       <<(v1_good?util::StreamIntoString(v1[i]).c_str():"EMPTY")<<"\t"
+       <<(v2_good?util::StreamIntoString(v2[i]).c_str():"EMPTY")<<std::endl;
+  }
+  return;
+}
+template void valor::util::PrintVectorComparison (const std::vector<double> & v1, const std::vector<double> & v2, std::ostream & out);
+template void valor::util::PrintVectorComparison (const std::vector<string> & v1, const std::vector<string> & v2, std::ostream & out);
+//___________________________________________________________________________
