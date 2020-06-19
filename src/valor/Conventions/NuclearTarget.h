@@ -58,6 +58,9 @@ namespace util {
 
   std::string  AsString     (conv::NuclearTarget_t nt);
   std::string  AsStringTeX  (conv::NuclearTarget_t nt, bool root);
+  // aliases
+  std::string  NuclearTargetAsString     (conv::NuclearTarget_t nt);
+  std::string  NuclearTargetAsStringTeX  (conv::NuclearTarget_t nt, bool root);
   
   conv::NuclearTarget_t NuclearTargetFromString(std::string nt);
 

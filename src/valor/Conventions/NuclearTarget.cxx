@@ -65,6 +65,9 @@ string util::AsStringTeX(NuclearTarget_t nt, bool root)
   return name;
 }
 //________________________________________________________________________________________
+string util::NuclearTargetAsString(NuclearTarget_t nt) { return AsString(nt); }
+string util::NuclearTargetAsStringTeX(NuclearTarget_t nt, bool root) { return AsStringTeX(nt,root); }
+//________________________________________________________________________________________
 NuclearTarget_t util::NuclearTargetFromString(string inp_name)
 {
   for(int it = 0; it < kNNuclearTarget; it++) {
