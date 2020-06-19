@@ -25,7 +25,6 @@ util::NameRegistry * util::NameRegistry::fInstance = 0;
 util::NameRegistry::NameRegistry()
 {
   this->Init();
-  fInstance = 0;
 }
 //____________________________________________________________________________
 const util::NameRegistry * util::NameRegistry::Instance() {return MutableInstance();}

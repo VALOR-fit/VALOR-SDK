@@ -36,9 +36,14 @@ namespace util {
 
   class NameRegistry {
     public:
-      // Accessors for the singleton version.
+      // Accessors for the global version.
       static const NameRegistry * Instance();
       static NameRegistry * MutableInstance();
+      
+      // And methods for any others
+      NameRegistry();
+      NameRegistry(const NameRegistry &) = default;
+      ~NameRegistry() {}
       
       // Input DST types.
       std::string ModeAsString          (conv::ReacMode_t      m ) const;
@@ -95,9 +100,6 @@ namespace util {
       
         
       // Singleton
-      NameRegistry();
-      NameRegistry(const NameRegistry &) {}
-      ~NameRegistry() {}
       void Init();
       
       static NameRegistry * fInstance;
