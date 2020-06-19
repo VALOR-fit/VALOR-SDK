@@ -3,10 +3,12 @@
 
 \class     valor::util::NameRegistry
 
-\brief     Contains maps of VALOR framework enums that allow names to be experiment specific.
+\brief     Contains maps of what names correspond to which numerical
+*          values at run-time - can be used to check later if files are
+*          compatible.
 
-\author    Steve Dennis <stephen.dennis \t warwick.ac.uk
-           University of Warwick & STFC Rutherford Appleton Laboratory
+\author    Steve Dennis <sdennis \at hep.phy.cam.ac.uk>
+           University of Cambridge
           
 \created   Nov 16, 2015
 
@@ -21,44 +23,76 @@
 #include <string>
 #include <map>
 
+#include "valor/Conventions/ReacMode.h"
+#include "valor/Conventions/BeamConf.h"
+#include "valor/Conventions/Detector.h"
+#include "valor/Conventions/Sample.h"
+#include "valor/Conventions/NuclearTarget.h"
 #include "valor/Conventions/PhysParamId.h"
 
 namespace valor {
   
 namespace util {
 
-  // Give access to experiment-specific names within the framework.
-  // Must populate in experiment code to do this.
-  // See T2XK::PopulateNameRegistry for example (called in root2k.C)
   class NameRegistry {
     public:
+      // Accessors for the singleton version.
       static const NameRegistry * Instance();
       static NameRegistry * MutableInstance();
       
-      std::string ParamAsString          (valor::conv::PhysParamId_t p) const;
-      std::string ParamAsStringSimple    (valor::conv::PhysParamId_t p) const;
-      std::string ParamAsStringVerySimple(valor::conv::PhysParamId_t p) const;
-      std::string ParamAsStringTex       (valor::conv::PhysParamId_t p) const;
-      std::string ParamAsStringRooTex    (valor::conv::PhysParamId_t p) const;
+      // Input DST types.
+      std::string ModeAsString          (conv::ReacMode_t      m ) const;
+      std::string SampleAsString        (conv::Sample_t        s ) const;
+      std::string DetectorAsString      (conv::Detector_t      d ) const;
+      std::string BeamConfAsString      (conv::BeamConf_t      b ) const;
+      std::string NuclearTargetAsString (conv::NuclearTarget_t nt) const;
+      // Overloaded aliases for above
+      std::string AsString (conv::ReacMode_t      m ) const;
+      std::string AsString (conv::Sample_t        s ) const;
+      std::string AsString (conv::Detector_t      d ) const;
+      std::string AsString (conv::BeamConf_t      b ) const;
+      std::string AsString (conv::NuclearTarget_t nt) const;
+      // And reversing the process (case sensitive)
+      conv::ReacMode_t      ModeFromString          (const std::string &);
+      conv::Sample_t        SampleFromString        (const std::string &);
+      conv::Detector_t      DetectorFromString      (const std::string &);
+      conv::BeamConf_t      BeamConfFromString      (const std::string &);
+      conv::NuclearTarget_t NuclearTargetFromString (const std::string &);
+      
+      
+      // Parameter types - used for output FPL trees.
+      std::string ParamAsString          (conv::PhysParamId_t p) const;
+      std::string ParamAsStringSimple    (conv::PhysParamId_t p) const;
+      std::string ParamAsStringVerySimple(conv::PhysParamId_t p) const;
+      std::string ParamAsStringTex       (conv::PhysParamId_t p) const;
+      std::string ParamAsStringRooTex    (conv::PhysParamId_t p) const;
 
       // Overloaded aliases for above
-      std::string AsString          (valor::conv::PhysParamId_t p) const;
-      std::string AsStringSimple    (valor::conv::PhysParamId_t p) const;
-      std::string AsStringVerySimple(valor::conv::PhysParamId_t p) const;
-      std::string AsStringTex       (valor::conv::PhysParamId_t p) const;
-      std::string AsStringRooTex    (valor::conv::PhysParamId_t p) const;
+      std::string AsString          (conv::PhysParamId_t p) const;
+      std::string AsStringSimple    (conv::PhysParamId_t p) const;
+      std::string AsStringVerySimple(conv::PhysParamId_t p) const;
+      std::string AsStringTex       (conv::PhysParamId_t p) const;
+      std::string AsStringRooTex    (conv::PhysParamId_t p) const;
 
-      // Go the other way
-      valor::conv::PhysParamId_t PhysParamFromString(std::string) const;
+      // Reversing the process (IGNORES CASE)
+      conv::PhysParamId_t PhysParamFromString(const std::string &) const;
       
       // Maps for storing param names
-      std::map<valor::conv::PhysParamId_t, std::string> fParamNames;
-      std::map<valor::conv::PhysParamId_t, std::string> fParamNamesSimple;
-      std::map<valor::conv::PhysParamId_t, std::string> fParamNamesVerySimple;
-      std::map<valor::conv::PhysParamId_t, std::string> fParamNamesTex;
-      std::map<valor::conv::PhysParamId_t, std::string> fParamNamesRooTex;
+      std::map<conv::PhysParamId_t, std::string> fParamNames;
+      std::map<conv::PhysParamId_t, std::string> fParamNamesSimple;
+      std::map<conv::PhysParamId_t, std::string> fParamNamesVerySimple;
+      std::map<conv::PhysParamId_t, std::string> fParamNamesTex;
+      std::map<conv::PhysParamId_t, std::string> fParamNamesRooTex;
 
     private:
+    
+      // Input members
+      std::vector<std::string> fModeNames;
+      std::vector<std::string> fSampleNames;
+      std::vector<std::string> fDetectorNames;
+      std::vector<std::string> fBeamConfNames;
+      std::vector<std::string> fNuclearTargetNames;
+      
         
       // Singleton
       NameRegistry();
