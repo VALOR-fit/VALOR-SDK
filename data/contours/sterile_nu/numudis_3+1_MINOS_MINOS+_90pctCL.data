@@ -2,10 +2,11 @@
 # MINOS/MINOS+ numu disappearance limit, 90% C.L.
 #
 # NOTE: 
-# First column is sin^2(\theta_{\mu \mu}, not sin^2(2\theta_{\mu \mu}, as in all other plots in this archive.
-# Will need to convert sin^2(\theta_{\mu \mu} to sin^2(2\theta_{\mu \mu} before overlaying on other contours.
+# - To superimpose on other numu disappearance limits, we take \theta_{24} = \theta_{\mu \mu}
+# - The first column is sin^2(\theta), not sin^2(2\theta) as in most other data files in this archive.
+#   A conversion from sin^2(\theta) to sin^2(2\theta) will take place before converting to a ROOT format.
 #
-# sin^2(\theta_{\mu \mu} - Dm^2_{41} (eV^2)
+# sin^2(\theta_{24}) - Dm^2_{41} (eV^2)
   0.0252453  875.409096
   0.0252342  655.515423
   0.0252265  535.356667

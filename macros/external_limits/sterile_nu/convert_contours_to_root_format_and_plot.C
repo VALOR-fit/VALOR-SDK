@@ -130,6 +130,7 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
     lim_nueapp_3p1_lsndr3_99pctCL     ->Draw("l");
     TLegend * lgnueapp = new TLegend(0.13,0.1,0.35,0.4);
     lgnueapp->SetFillColor(0);
+    lgnueapp->SetFillStyle(0);
     lgnueapp->SetBorderSize(0);
     lgnueapp->AddEntry(lim_nueapp_3p1_sbnproposal_90pctCL,
        "SBN proposal 90\% CL", "L");
@@ -163,19 +164,19 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
   // SBN proposal, 90% CL
   TGraph * lim_numudis_3p1_sbnproposal_90pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_SBNproposal_90pctCL.data");
-  lim_numudis_3p1_sbnproposal_90pctCL->SetLineWidth(5);
+  lim_numudis_3p1_sbnproposal_90pctCL->SetLineWidth(3);
   lim_numudis_3p1_sbnproposal_90pctCL->SetLineColor(kBlack);
   lim_numudis_3p1_sbnproposal_90pctCL->SetLineStyle(kSolid);
   // SBN proposal, 3 sigma CL
   TGraph * lim_numudis_3p1_sbnproposal_3sigCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_SBNproposal_3sigCL.data");
-  lim_numudis_3p1_sbnproposal_3sigCL->SetLineWidth(5);
+  lim_numudis_3p1_sbnproposal_3sigCL->SetLineWidth(3);
   lim_numudis_3p1_sbnproposal_3sigCL->SetLineColor(kBlack);
   lim_numudis_3p1_sbnproposal_3sigCL->SetLineStyle(kDashed);
   // SBN proposal, 5 sigma CL
   TGraph * lim_numudis_3p1_sbnproposal_5sigCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_SBNproposal_5sigCL.data");
-  lim_numudis_3p1_sbnproposal_5sigCL->SetLineWidth(5);
+  lim_numudis_3p1_sbnproposal_5sigCL->SetLineWidth(3);
   lim_numudis_3p1_sbnproposal_5sigCL->SetLineColor(kBlack);
   lim_numudis_3p1_sbnproposal_5sigCL->SetLineStyle(kDashDotted);
   // MINOS/MINOS+ 90% CL
@@ -183,22 +184,34 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_MINOS_MINOS+_90pctCL.data");
   TGraph * lim_numudis_3p1_minosp_90pctCL =
     convert_from_sinsqtheta_to_sinsq2theta(temp1);
-  lim_numudis_3p1_minosp_90pctCL->SetLineWidth(3);
+  lim_numudis_3p1_minosp_90pctCL->SetLineWidth(2);
   lim_numudis_3p1_minosp_90pctCL->SetLineStyle(kSolid);
   lim_numudis_3p1_minosp_90pctCL->SetLineColor(kGreen+3);
   // MiniBooNE+SciBooNE 90% CL
   TGraph * lim_numudis_3p1_minisciboone_90pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_MiniBooNE_SciBooNE_90pctCL.data");
-  lim_numudis_3p1_minisciboone_90pctCL->SetLineWidth(3);
+  lim_numudis_3p1_minisciboone_90pctCL->SetLineWidth(2);
   lim_numudis_3p1_minisciboone_90pctCL->SetLineStyle(kSolid);
   lim_numudis_3p1_minisciboone_90pctCL->SetLineColor(kViolet-6);
+  // IceCuBE 90% CL
+  TGraph * lim_numudis_3p1_icecube_90pctCL =
+    new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_8yrIceCube_90pctCL.data");
+  lim_numudis_3p1_icecube_90pctCL->SetLineWidth(2);
+  lim_numudis_3p1_icecube_90pctCL->SetLineStyle(kDashed);
+  lim_numudis_3p1_icecube_90pctCL->SetLineColor(kMagenta);
+  // IceCuBE 99% CL
+  TGraph * lim_numudis_3p1_icecube_99pctCL =
+    new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_8yrIceCube_99pctCL.data");
+  lim_numudis_3p1_icecube_99pctCL->SetLineWidth(2);
+  lim_numudis_3p1_icecube_99pctCL->SetLineStyle(kSolid);
+  lim_numudis_3p1_icecube_99pctCL->SetLineColor(kMagenta);
 
   // Plot
 
   if(plot) {
     TCanvas * cnumudis = new TCanvas("cnumudis","",20,20,900,600);
     cnumudis->Draw();
-    TH2F * hfnumudis = (TH2F*) cnumudis->DrawFrame(3E-4,2E-4,1,8E+2);
+    TH2F * hfnumudis = (TH2F*) cnumudis->DrawFrame(3E-4,1E-3,1,2E+2);
     hfnumudis->Draw();
     hfnumudis->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu #mu}");
     hfnumudis->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2}/c^{4})");
@@ -209,8 +222,11 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
     lim_numudis_3p1_sbnproposal_5sigCL  ->Draw("l");
     lim_numudis_3p1_minosp_90pctCL      ->Draw("l");
     lim_numudis_3p1_minisciboone_90pctCL->Draw("l");
-    TLegend * lgnumudis = new TLegend(0.13,0.5,0.38,0.9);
+    lim_numudis_3p1_icecube_90pctCL     ->Draw("l");
+    lim_numudis_3p1_icecube_99pctCL     ->Draw("l");
+    TLegend * lgnumudis = new TLegend(0.13,0.10,0.35,0.45);
     lgnumudis->SetFillColor(0);
+    lgnumudis->SetFillStyle(0);
     lgnumudis->SetBorderSize(0);
     lgnumudis->AddEntry(lim_numudis_3p1_sbnproposal_90pctCL,
       "SBN proposal 90\% CL", "L");
@@ -222,6 +238,10 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
       "MINOS/MINOS+ 90\% CL", "L");
     lgnumudis->AddEntry(lim_numudis_3p1_minisciboone_90pctCL,
       "MiniBooNE/SciBooNE 90\% CL", "L");
+    lgnumudis->AddEntry(lim_numudis_3p1_icecube_90pctCL,
+      "IceCube 90\% CL", "L");
+    lgnumudis->AddEntry(lim_numudis_3p1_icecube_99pctCL,
+      "IceCube 99\% CL", "L");
     lgnumudis->Draw();
   }
   // ---------------------------------------------------------------------------
@@ -302,6 +322,7 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
     lim_nueapp_3p1_nueC_excluded_95pctCL    ->Draw("l");
     TLegend * lgnuedis = new TLegend(0.13,0.1,0.35,0.34);
     lgnuedis->SetFillColor(0);
+    lgnuedis->SetFillStyle(0);
     lgnuedis->SetBorderSize(0);
     lgnuedis->AddEntry(lim_nuedis_3p1_t2knd280excluded_95pctCL,
        "T2K/ND280 excluded 95\% CL", "L");
@@ -342,6 +363,8 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
   lim_numudis_3p1_sbnproposal_5sigCL        -> Write( "lim_numudis_3p1_sbnproposal_5sigCL"      );
   lim_numudis_3p1_minosp_90pctCL            -> Write( "lim_numudis_3p1_minosp_90pctCL"          );
   lim_numudis_3p1_minisciboone_90pctCL      -> Write( "lim_numudis_3p1_minisciboone_90pctCL"    );
+  lim_numudis_3p1_icecube_90pctCL           -> Write( "lim_numudis_3p1_icecube_90pctCL"         );
+  lim_numudis_3p1_icecube_99pctCL           -> Write( "lim_numudis_3p1_icecube_99pctCL"         );
   lim_nuedis_3p1_t2knd280excluded_95pctCL   -> Write( "lim_nuedis_3p1_t2knd280excluded_95pctCL" );
   lim_nuedis_3p1_t2knd280allowed_90pctCL    -> Write( "lim_nuedis_3p1_t2knd280allowed_90pctCL"  );
   lim_nuedis_3p1_t2knd280allowed_68pctCL    -> Write( "lim_nuedis_3p1_t2knd280allowed_68pctCL"  );
