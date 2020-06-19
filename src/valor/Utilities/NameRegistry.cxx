@@ -12,6 +12,7 @@ ChangeLog:
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlStr.h"
+#include "valor/Utilities/UtlPrint.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -236,5 +237,42 @@ NuclearTarget_t util::NameRegistry::NuclearTargetFromString(const std::string & 
   }
   LOG("NameRegistry",pERROR)<<"Unable to match nuclear target name: "<<name;
   return kntUndefined;
+}
+//________________________________________________________________________________________
+bool util::NameRegistry::HardcodedEnumsMatch(const NameRegistry & other) const
+{
+  bool success = true;
+  if(this->fModeNames != other.fModeNames) {
+    success = false;
+    LOG("NameRegistry",pERROR) << "Modes do not match.";
+    util::PrintVectorComparison(this->fModeNames,other.fModeNames,std::cerr);
+  }
+  if(this->fSampleNames != other.fSampleNames) {
+    success = false;
+    LOG("NameRegistry",pERROR) << "Samples do not match.";
+    util::PrintVectorComparison(this->fSampleNames,other.fSampleNames,std::cerr);
+  }
+  if(this->fDetectorNames != other.fDetectorNames) {
+    success = false;
+    LOG("NameRegistry",pERROR) << "Detectors do not match.";
+    util::PrintVectorComparison(this->fDetectorNames,other.fDetectorNames,std::cerr);
+  }
+  if(this->fBeamConfNames != other.fBeamConfNames) {
+    success = false;
+    LOG("NameRegistry",pERROR) << "Beam configurations do not match.";
+    util::PrintVectorComparison(this->fBeamConfNames,other.fBeamConfNames,std::cerr);
+  }
+  if(this->fNuclearTargetNames != other.fNuclearTargetNames) {
+    success = false;
+    LOG("NameRegistry",pERROR) << "Nuclear targets do not match.";
+    util::PrintVectorComparison(this->fNuclearTargetNames,other.fNuclearTargetNames,std::cerr);
+  }
+  
+  return success;
+}
+//________________________________________________________________________________________
+bool util::NameRegistry::ParametersMatch(const NameRegistry & /*other*/) const
+{
+  assert(!"To be implemented when I've sorted out the parameter container format - SD"); return false;
 }
 //________________________________________________________________________________________

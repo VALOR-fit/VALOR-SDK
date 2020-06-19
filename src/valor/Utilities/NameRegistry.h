@@ -82,6 +82,10 @@ namespace util {
       // Reversing the process (IGNORES CASE)
       conv::PhysParamId_t PhysParamFromString(const std::string &) const;
       
+      // Check for differences between two
+      bool HardcodedEnumsMatch(const NameRegistry &) const;
+      bool ParametersMatch    (const NameRegistry &) const; // only checks main name
+      
       // Maps for storing param names
       std::map<conv::PhysParamId_t, std::string> fParamNames;
       std::map<conv::PhysParamId_t, std::string> fParamNamesSimple;
