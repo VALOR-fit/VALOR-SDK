@@ -18,6 +18,7 @@
 #ifndef _valor_str_utils_h_
 #define _valor_str_utils_h_
 
+#include <sstream>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -37,6 +38,13 @@ namespace util {
   string         PadToLength               (string data, unsigned int length, char pad_with = ' ');
   string         PadToLengthFromLeft       (string data, unsigned int length, char pad_with = ' ');
   string         GetStringBetweenDelimiters(const string &s, const string &start_delim, const string &stop_delim);
+  
+  template <class T> std::string StreamIntoString(T t)
+  {
+    std::ostringstream oss;
+    oss << t;
+    return oss.str();
+  }
   
 } // util
 } // valor
