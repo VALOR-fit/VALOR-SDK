@@ -9,6 +9,8 @@
 
 module load gsl
 module load root/5.34.36
+module load python/2.7
+module load scipy-stack
 
 if [ -z "$VALOR_FMWK" ]; then
   source="$( readlink -e "${BASH_SOURCE[0]}" )"
