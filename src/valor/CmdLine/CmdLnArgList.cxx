@@ -126,10 +126,11 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       bool no_deflt     = (deflt == "-");
       bool is_found = parser.OptionExists(argument);
       
-      bool valid_type = is_int ||
-                        is_dbl ||
-                        is_str ||
-                        is_bln ||
+      bool valid_type = is_int   ||
+                        is_dbl   ||
+                        is_str   ||
+                        is_bln   ||
+                        is_dblvec||
                         is_blnlst;
                      
       if (!valid_type) {

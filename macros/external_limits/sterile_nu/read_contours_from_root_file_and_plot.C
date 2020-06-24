@@ -58,6 +58,7 @@ void read_contours_from_root_file_and_plot(
 
   TLegend * lgnueapp = new TLegend(0.13,0.1,0.35,0.4);
   lgnueapp->SetFillColor(0);
+  lgnueapp->SetFillStyle(0);
   lgnueapp->SetBorderSize(0);
   lgnueapp->AddEntry(lim_nueapp_3p1_sbnproposal_90pctCL, "SBN proposal 90\% CL",    "L");
   lgnueapp->AddEntry(lim_nueapp_3p1_sbnproposal_3sigCL,  "SBN proposal 3#sigma CL", "L");
@@ -78,7 +79,7 @@ void read_contours_from_root_file_and_plot(
   TCanvas * cnumudis = new TCanvas("cnumudis","",20,20,900,600);
   cnumudis->Draw();
 
-  TH2F * hfnumudis = (TH2F*) cnumudis->DrawFrame(3E-4,2E-4,1,8E+2);
+  TH2F * hfnumudis = (TH2F*) cnumudis->DrawFrame(3E-4,1E-3,1,2E+2);
   hfnumudis->Draw();
   hfnumudis->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu #mu}");
   hfnumudis->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2}/c^{4})");
@@ -90,21 +91,28 @@ void read_contours_from_root_file_and_plot(
   TGraph * lim_numudis_3p1_sbnproposal_5sigCL   = (TGraph *) f->Get( "lim_numudis_3p1_sbnproposal_5sigCL"   );
   TGraph * lim_numudis_3p1_minosp_90pctCL       = (TGraph *) f->Get( "lim_numudis_3p1_minosp_90pctCL"       );
   TGraph * lim_numudis_3p1_minisciboone_90pctCL = (TGraph *) f->Get( "lim_numudis_3p1_minisciboone_90pctCL" );
+  TGraph * lim_numudis_3p1_icecube_90pctCL      = (TGraph *) f->Get( "lim_numudis_3p1_icecube_90pctCL"      );
+  TGraph * lim_numudis_3p1_icecube_99pctCL      = (TGraph *) f->Get( "lim_numudis_3p1_icecube_99pctCL"      );
 
   lim_numudis_3p1_sbnproposal_90pctCL  -> Draw("l");
   lim_numudis_3p1_sbnproposal_3sigCL   -> Draw("l");
   lim_numudis_3p1_sbnproposal_5sigCL   -> Draw("l");
   lim_numudis_3p1_minosp_90pctCL       -> Draw("l");
   lim_numudis_3p1_minisciboone_90pctCL -> Draw("l");
+  lim_numudis_3p1_icecube_90pctCL      -> Draw("l");
+  lim_numudis_3p1_icecube_99pctCL      -> Draw("l");
 
-  TLegend * lgnumudis = new TLegend(0.13,0.5,0.38,0.9);
+  TLegend * lgnumudis = new TLegend(0.13,0.10,0.35,0.45);
   lgnumudis->SetFillColor(0);
+  lgnumudis->SetFillStyle(0);
   lgnumudis->SetBorderSize(0);
   lgnumudis->AddEntry(lim_numudis_3p1_sbnproposal_90pctCL,  "SBN proposal 90\% CL",       "L");
   lgnumudis->AddEntry(lim_numudis_3p1_sbnproposal_3sigCL,   "SBN proposal 3#sigma CL",    "L");
   lgnumudis->AddEntry(lim_numudis_3p1_sbnproposal_5sigCL,   "SBN proposal 5#sigma CL",    "L");
   lgnumudis->AddEntry(lim_numudis_3p1_minosp_90pctCL,       "MINOS/MINOS+ 90\% CL",       "L");
-  lgnumudis->AddEntry(lim_numudis_3p1_minisciboone_90pctCL, "MiniBooNE/SciBooNE 90\% CL",  "L");
+  lgnumudis->AddEntry(lim_numudis_3p1_minisciboone_90pctCL, "MiniBooNE/SciBooNE 90\% CL", "L");
+  lgnumudis->AddEntry(lim_numudis_3p1_icecube_90pctCL,      "IceCube 90\% CL",            "L");
+  lgnumudis->AddEntry(lim_numudis_3p1_icecube_99pctCL,      "IceCube 99\% CL",            "L");
   lgnumudis->Draw();
 
   //
@@ -143,6 +151,7 @@ void read_contours_from_root_file_and_plot(
 
   TLegend * lgnuedis = new TLegend(0.13,0.1,0.35,0.34);
   lgnuedis->SetFillColor(0);
+  lgnuedis->SetFillStyle(0);
   lgnuedis->SetBorderSize(0);
   lgnuedis->AddEntry(lim_nuedis_3p1_t2knd280excluded_95pctCL,  "T2K/ND280 excluded 95\% CL",    "L");
   lgnuedis->AddEntry(lim_nuedis_3p1_t2knd280allowed_90pctCL,   "T2K/ND280 allowed 90\% CL",   "LF");
