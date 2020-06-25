@@ -196,9 +196,12 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
   // IceCuBE 90% CL
   TGraph * lim_numudis_3p1_icecube_90pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_8yrIceCube_90pctCL.data");
-  lim_numudis_3p1_icecube_90pctCL->SetLineWidth(2);
+  //lim_numudis_3p1_icecube_90pctCL->SetLineWidth(2);
   lim_numudis_3p1_icecube_90pctCL->SetLineStyle(kDashed);
+  lim_numudis_3p1_icecube_90pctCL->SetLineWidth(1102);
+  lim_numudis_3p1_icecube_90pctCL->SetFillStyle(3005);
   lim_numudis_3p1_icecube_90pctCL->SetLineColor(kMagenta);
+  lim_numudis_3p1_icecube_90pctCL->SetFillColor(kMagenta);
   // IceCuBE 99% CL
   TGraph * lim_numudis_3p1_icecube_99pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/numudis_3+1_8yrIceCube_99pctCL.data");
@@ -255,10 +258,10 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_T2KND280_excluded_95pctCL.data");
   lim_nuedis_3p1_t2knd280excluded_95pctCL->SetLineWidth(3);
   lim_nuedis_3p1_t2knd280excluded_95pctCL->SetLineStyle(kSolid);
-  lim_nuedis_3p1_t2knd280excluded_95pctCL->SetLineColor(kGreen+3);
+  lim_nuedis_3p1_t2knd280excluded_95pctCL->SetLineColor(kOrange-3);
   TGraph * lim_nuedis_3p1_t2knd280allowed_90pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_T2KND280_allowed_90pctCL.data");
-  lim_nuedis_3p1_t2knd280allowed_90pctCL->SetLineWidth(1102);
+  lim_nuedis_3p1_t2knd280allowed_90pctCL->SetLineWidth(1202);
   lim_nuedis_3p1_t2knd280allowed_90pctCL->SetFillStyle(3005);
   lim_nuedis_3p1_t2knd280allowed_90pctCL->SetLineColor(kOrange-2);
   lim_nuedis_3p1_t2knd280allowed_90pctCL->SetFillColor(kOrange-2);
@@ -269,36 +272,65 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
   lim_nuedis_3p1_t2knd280allowed_68pctCL->SetLineColor(kOrange-1);
   lim_nuedis_3p1_t2knd280allowed_68pctCL->SetFillColor(kOrange-1);
   // Reactor
-  TGraph * lim_nueapp_3p1_reactor_allowed_1_95pctCL =
+  TGraph * lim_nuedis_3p1_reactor_allowed_1_95pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_Reactor_allowed_1_95pctCL.data");
-  lim_nueapp_3p1_reactor_allowed_1_95pctCL->SetLineWidth(3);
-  lim_nueapp_3p1_reactor_allowed_1_95pctCL->SetLineColor(kRed);
-  TGraph * lim_nueapp_3p1_reactor_allowed_2_95pctCL =
+  lim_nuedis_3p1_reactor_allowed_1_95pctCL->SetLineWidth(1);
+  lim_nuedis_3p1_reactor_allowed_1_95pctCL->SetLineColor(kRed);
+  // lim_nuedis_3p1_reactor_allowed_1_95pctCL->SetLineWidth(1102);
+  // lim_nuedis_3p1_reactor_allowed_1_95pctCL->SetFillStyle(3005);
+  // lim_nuedis_3p1_reactor_allowed_1_95pctCL->SetLineColor(kRed);
+  // lim_nuedis_3p1_reactor_allowed_1_95pctCL->SetFillColor(kRed-10);
+  TGraph * lim_nuedis_3p1_reactor_allowed_2_95pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_Reactor_allowed_2_95pctCL.data");
-  lim_nueapp_3p1_reactor_allowed_2_95pctCL->SetLineWidth(3);
-  lim_nueapp_3p1_reactor_allowed_2_95pctCL->SetLineColor(kRed);
-  TGraph * lim_nueapp_3p1_reactor_allowed_3_95pctCL =
+  lim_nuedis_3p1_reactor_allowed_2_95pctCL->SetLineWidth(1);
+  lim_nuedis_3p1_reactor_allowed_2_95pctCL->SetLineColor(kRed);
+  // lim_nuedis_3p1_reactor_allowed_2_95pctCL->SetLineWidth(1102);
+  // lim_nuedis_3p1_reactor_allowed_2_95pctCL->SetFillStyle(3005);
+  // lim_nuedis_3p1_reactor_allowed_2_95pctCL->SetLineColor(kRed);
+  // lim_nuedis_3p1_reactor_allowed_2_95pctCL->SetFillColor(kRed-10);
+  TGraph * lim_nuedis_3p1_reactor_allowed_3_95pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_Reactor_allowed_3_95pctCL.data");
-  lim_nueapp_3p1_reactor_allowed_3_95pctCL->SetLineWidth(3);
-  lim_nueapp_3p1_reactor_allowed_3_95pctCL->SetLineColor(kRed);
-  TMultiGraph * lim_nueapp_3p1_reactor_allowed_95pctCL = new TMultiGraph();
-  lim_nueapp_3p1_reactor_allowed_95pctCL->Add(lim_nueapp_3p1_reactor_allowed_1_95pctCL);// region 1 (high Dmsq)
-  lim_nueapp_3p1_reactor_allowed_95pctCL->Add(lim_nueapp_3p1_reactor_allowed_2_95pctCL);// region 2 (intermediate Dmsq)
-  lim_nueapp_3p1_reactor_allowed_95pctCL->Add(lim_nueapp_3p1_reactor_allowed_3_95pctCL);// region 3 (low Dmsq)
+  lim_nuedis_3p1_reactor_allowed_3_95pctCL->SetLineWidth(1);
+  lim_nuedis_3p1_reactor_allowed_3_95pctCL->SetLineColor(kRed);
+  // lim_nuedis_3p1_reactor_allowed_3_95pctCL->SetLineWidth(1102);
+  // lim_nuedis_3p1_reactor_allowed_3_95pctCL->SetFillStyle(3005);
+  // lim_nuedis_3p1_reactor_allowed_3_95pctCL->SetLineColor(kRed);
+  // lim_nuedis_3p1_reactor_allowed_3_95pctCL->SetFillColor(kRed-10);
+  TMultiGraph * lim_nuedis_3p1_reactor_allowed_95pctCL = new TMultiGraph();
+  lim_nuedis_3p1_reactor_allowed_95pctCL->Add(lim_nuedis_3p1_reactor_allowed_1_95pctCL);// region 1 (high Dmsq)
+  lim_nuedis_3p1_reactor_allowed_95pctCL->Add(lim_nuedis_3p1_reactor_allowed_2_95pctCL);// region 2 (intermediate Dmsq)
+  lim_nuedis_3p1_reactor_allowed_95pctCL->Add(lim_nuedis_3p1_reactor_allowed_3_95pctCL);// region 3 (low Dmsq)
   // Gallium
-  TGraph * lim_nueapp_3p1_gallium_allowed_95pctCL =
+  TGraph * lim_nuedis_3p1_gallium_allowed_95pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_Gallium_allowed_95pctCL.data");
-  lim_nueapp_3p1_gallium_allowed_95pctCL->SetLineWidth(3);
-  lim_nueapp_3p1_gallium_allowed_95pctCL->SetLineColor(kBlue);
-  TGraph * lim_nueapp_3p1_solar_excluded_95pctCL =
+  lim_nuedis_3p1_gallium_allowed_95pctCL->SetLineWidth(1);
+  lim_nuedis_3p1_gallium_allowed_95pctCL->SetLineColor(kBlue);
+  // lim_nuedis_3p1_gallium_allowed_95pctCL->SetLineWidth(802);
+  // lim_nuedis_3p1_gallium_allowed_95pctCL->SetFillStyle(3354);
+  // lim_nuedis_3p1_gallium_allowed_95pctCL->SetLineColor(kBlue);
+  // lim_nuedis_3p1_gallium_allowed_95pctCL->SetFillColor(kBlue-9);
+  TGraph * lim_nuedis_3p1_solar_excluded_95pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_Solar_excluded_95pctCL.data");
-  lim_nueapp_3p1_solar_excluded_95pctCL->SetLineWidth(4);
-  lim_nueapp_3p1_solar_excluded_95pctCL->SetLineColor(kGray+10);
-  TGraph * lim_nueapp_3p1_nueC_excluded_95pctCL =
+  lim_nuedis_3p1_solar_excluded_95pctCL->SetLineWidth(2);
+  lim_nuedis_3p1_solar_excluded_95pctCL->SetLineColor(kGray+10);
+  lim_nuedis_3p1_solar_excluded_95pctCL->SetLineStyle(kSolid);
+  TGraph * lim_nuedis_3p1_nueC_excluded_95pctCL =
     new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_nueC_excluded_95pctCL.data");
-  lim_nueapp_3p1_nueC_excluded_95pctCL->SetLineWidth(3);
-  lim_nueapp_3p1_nueC_excluded_95pctCL->SetLineColor(kMagenta-4);
-  lim_nueapp_3p1_nueC_excluded_95pctCL->SetLineStyle(kDashed);
+  lim_nuedis_3p1_nueC_excluded_95pctCL->SetLineWidth(2);
+  lim_nuedis_3p1_nueC_excluded_95pctCL->SetLineColor(kMagenta-4);
+  lim_nuedis_3p1_nueC_excluded_95pctCL->SetLineStyle(kSolid);
+  // STEREO
+  TGraph * lim_nuedis_3p1_stereo_excluded_95pctCL =
+    new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_STEREO_excluded_95pctCL.data");
+  lim_nuedis_3p1_stereo_excluded_95pctCL->SetLineWidth(3);
+  lim_nuedis_3p1_stereo_excluded_95pctCL->SetLineColor(kAzure-3);
+  lim_nuedis_3p1_stereo_excluded_95pctCL->SetLineStyle(kDashed);
+  // PROSPECT
+  TGraph * lim_nuedis_3p1_prospect_excluded_95pctCL =
+    new TGraph("$VALOR_FMWK/data/contours/sterile_nu/nuedis_3+1_PROSPECT_excluded_95pctCL.data");
+  lim_nuedis_3p1_prospect_excluded_95pctCL->SetLineWidth(2);
+  lim_nuedis_3p1_prospect_excluded_95pctCL->SetLineColor(kAzure-3);
+  lim_nuedis_3p1_prospect_excluded_95pctCL->SetLineStyle(kSolid);
 
   // Plot
 
@@ -314,12 +346,14 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
     lim_nuedis_3p1_t2knd280excluded_95pctCL ->Draw("l");
     lim_nuedis_3p1_t2knd280allowed_90pctCL  ->Draw("l");
     lim_nuedis_3p1_t2knd280allowed_68pctCL  ->Draw("l");
-    lim_nueapp_3p1_reactor_allowed_1_95pctCL->Draw("l");
-    lim_nueapp_3p1_reactor_allowed_2_95pctCL->Draw("l");
-    lim_nueapp_3p1_reactor_allowed_3_95pctCL->Draw("l");
-    lim_nueapp_3p1_gallium_allowed_95pctCL  ->Draw("l");
-    lim_nueapp_3p1_solar_excluded_95pctCL   ->Draw("l");
-    lim_nueapp_3p1_nueC_excluded_95pctCL    ->Draw("l");
+    lim_nuedis_3p1_reactor_allowed_1_95pctCL->Draw("l");
+    lim_nuedis_3p1_reactor_allowed_2_95pctCL->Draw("l");
+    lim_nuedis_3p1_reactor_allowed_3_95pctCL->Draw("l");
+    lim_nuedis_3p1_gallium_allowed_95pctCL  ->Draw("l");
+    lim_nuedis_3p1_solar_excluded_95pctCL   ->Draw("l");
+    lim_nuedis_3p1_nueC_excluded_95pctCL    ->Draw("l");
+    lim_nuedis_3p1_stereo_excluded_95pctCL  ->Draw("l");
+    lim_nuedis_3p1_prospect_excluded_95pctCL->Draw("l");
     TLegend * lgnuedis = new TLegend(0.13,0.1,0.35,0.34);
     lgnuedis->SetFillColor(0);
     lgnuedis->SetFillStyle(0);
@@ -330,14 +364,18 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
        "T2K/ND280 allowed 90\% CL", "LF");
     lgnuedis->AddEntry(lim_nuedis_3p1_t2knd280allowed_68pctCL,
        "T2K/ND280 allowed 68\% CL", "LF");
-    lgnuedis->AddEntry(lim_nueapp_3p1_reactor_allowed_95pctCL,
+    lgnuedis->AddEntry(lim_nuedis_3p1_reactor_allowed_1_95pctCL,
        "Reactor allowed 95\% CL", "L");
-    lgnuedis->AddEntry(lim_nueapp_3p1_gallium_allowed_95pctCL,
+    lgnuedis->AddEntry(lim_nuedis_3p1_gallium_allowed_95pctCL,
        "Gallium allowed 95\% CL", "L");
-    lgnuedis->AddEntry(lim_nueapp_3p1_solar_excluded_95pctCL,
+    lgnuedis->AddEntry(lim_nuedis_3p1_solar_excluded_95pctCL,
        "Solar excluded 95\% CL", "L");
-    lgnuedis->AddEntry(lim_nueapp_3p1_nueC_excluded_95pctCL,
+    lgnuedis->AddEntry(lim_nuedis_3p1_nueC_excluded_95pctCL,
        "#nu_{e}+C excluded 95\% CL", "L");
+    lgnuedis->AddEntry(lim_nuedis_3p1_stereo_excluded_95pctCL,
+          "STEREO 95\% CL", "L");
+    lgnuedis->AddEntry(lim_nuedis_3p1_prospect_excluded_95pctCL,
+          "PROSPECT 95\% CL", "L");
     lgnuedis->Draw();
   }
 
@@ -368,12 +406,14 @@ void convert_contours_to_root_format_and_plot(bool plot=true)
   lim_nuedis_3p1_t2knd280excluded_95pctCL   -> Write( "lim_nuedis_3p1_t2knd280excluded_95pctCL" );
   lim_nuedis_3p1_t2knd280allowed_90pctCL    -> Write( "lim_nuedis_3p1_t2knd280allowed_90pctCL"  );
   lim_nuedis_3p1_t2knd280allowed_68pctCL    -> Write( "lim_nuedis_3p1_t2knd280allowed_68pctCL"  );
-  lim_nueapp_3p1_reactor_allowed_1_95pctCL  -> Write( "lim_nueapp_3p1_reactor_allowed_1_95pctCL");
-  lim_nueapp_3p1_reactor_allowed_2_95pctCL  -> Write( "lim_nueapp_3p1_reactor_allowed_2_95pctCL");
-  lim_nueapp_3p1_reactor_allowed_3_95pctCL  -> Write( "lim_nueapp_3p1_reactor_allowed_3_95pctCL");
-  lim_nueapp_3p1_gallium_allowed_95pctCL    -> Write( "lim_nueapp_3p1_gallium_allowed_95pctCL"  );
-  lim_nueapp_3p1_solar_excluded_95pctCL     -> Write( "lim_nueapp_3p1_solar_excluded_95pctCL"   );
-  lim_nueapp_3p1_nueC_excluded_95pctCL      -> Write( "lim_nueapp_3p1_nueC_excluded_95pctCL"    );
+  lim_nuedis_3p1_reactor_allowed_1_95pctCL  -> Write( "lim_nuedis_3p1_reactor_allowed_1_95pctCL");
+  lim_nuedis_3p1_reactor_allowed_2_95pctCL  -> Write( "lim_nuedis_3p1_reactor_allowed_2_95pctCL");
+  lim_nuedis_3p1_reactor_allowed_3_95pctCL  -> Write( "lim_nuedis_3p1_reactor_allowed_3_95pctCL");
+  lim_nuedis_3p1_gallium_allowed_95pctCL    -> Write( "lim_nuedis_3p1_gallium_allowed_95pctCL"  );
+  lim_nuedis_3p1_solar_excluded_95pctCL     -> Write( "lim_nuedis_3p1_solar_excluded_95pctCL"   );
+  lim_nuedis_3p1_nueC_excluded_95pctCL      -> Write( "lim_nuedis_3p1_nueC_excluded_95pctCL"    );
+  lim_nuedis_3p1_stereo_excluded_95pctCL    -> Write( "lim_nuedis_3p1_stereo_excluded_95pctCL"  );
+  lim_nuedis_3p1_prospect_excluded_95pctCL  -> Write( "lim_nuedis_3p1_prospect_excluded_95pctCL");
   f.Close();
 }
 
