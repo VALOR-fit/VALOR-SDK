@@ -2645,13 +2645,16 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       std::vector<double> debug_reco_vals;
       std::vector<double> debug_xsec_reco_vals;
       std::vector<double> debug_true_vals;
+      const VALORBinning * debug_xsec_true_binning = fBinning->XsecTrueBinning(m);
+      const VALORBinning * debug_xsec_reco_binning = fBinning->XsecRecoBinning();
+      const KineSpace_t xsec_reco_ks =  debug_xsec_reco_binning->KineSpace();
       debug_reco_vals.push_back(debug_reco0);
       if(util::NDimReco(reco_ks) > 1) { 
         debug_reco_vals.push_back(debug_reco1); 
       }
       debug_true_vals.push_back(debug_true0);
       debug_xsec_reco_vals.push_back(debug_reco0);
-      if(util::NDimReco(reco_ks) > 1) { 
+      if(util::NDimReco(xsec_reco_ks) > 1) {
         debug_xsec_reco_vals.push_back(debug_reco1);
       }
       debug_ireco = reco_ob->FindBin(debug_reco_vals);
@@ -2661,8 +2664,6 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       else {
         debug_itrue = 0;
       }
-      const VALORBinning * debug_xsec_true_binning = fBinning->XsecTrueBinning(m);
-      const VALORBinning * debug_xsec_reco_binning = fBinning->XsecRecoBinning();
       double debug_xsec_ireco = debug_xsec_reco_binning->FindBin(debug_xsec_reco_vals);
       double debug_xsec_itrue = debug_xsec_true_binning->FindBin(debug_true_vals);
       if(debug_mode != conv::kmUndefined || imode == 0) {
