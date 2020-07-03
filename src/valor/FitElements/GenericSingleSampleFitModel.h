@@ -151,6 +151,7 @@ private:
   void ApplySystematics                  (Option_t * opt = 0);
   void ApplyPhysics                      (Option_t * opt = 0);
   void ApplyOscProb                      (Option_t * opt = 0);
+  void ApplyEBShift                      (const PhysParm p, bool simple_binning);
   void UpdatePDFs                        (Option_t * opt = 0);
 
   void ApplyErecoCuts                    (Option_t * opt = 0);
@@ -191,6 +192,7 @@ private:
   std::vector<conv::PhysParamId_t> fNormParams;
   std::vector<conv::PhysParamId_t> fSplineParams;
   std::vector<conv::PhysParamId_t> fLateralPostOscParams;
+  std::vector<conv::PhysParamId_t> fLateralEBPostOscParams;
 
   // Keep a list of the parameters for every given mode
   std::vector<std::vector<conv::PhysParamId_t>> fNormParamsAppliedTo  ;

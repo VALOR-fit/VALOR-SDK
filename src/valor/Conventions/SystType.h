@@ -36,6 +36,7 @@ namespace valor {
       kSystLateralPostOsc,
       kSystResponse,
       kSystSpecial,
+      kSystLateralEBPostOsc,
       kSystDisabled
     }
     SystType_t;

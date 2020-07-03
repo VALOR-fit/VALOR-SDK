@@ -1333,6 +1333,7 @@ void GenericSingleSampleFitModel::BuildParamLists()
   std::set<PhysParamId_t> norm_params_set;
   std::set<PhysParamId_t> spline_params_set;
   std::set<PhysParamId_t> lateral_post_osc_params_set;
+  std::set<PhysParamId_t> lateral_eb_post_osc_params_set;
   const std::vector<Parameter> & params = ParameterPool::Instance()->GetParams();
   for (const Parameter & param : params) {
     if(!util::IsSystematic(param.GetID())) { continue; } // Osc params are handled in ApplyOscProb()
@@ -1382,6 +1383,10 @@ void GenericSingleSampleFitModel::BuildParamLists()
             lateral_post_osc_params_set.insert(p);
             LOG("GenericSingleSampleFitModel",pINFO) << "Will apply lateral (post-osc) param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
             break;
+	  case kSystLateralEBPostOsc:
+	    // Handle post-oscillation lateral EB systematics after all templates have been filled, but before integration of modes
+	    lateral_eb_post_osc_params_set.insert(p);
+	    LOG("GenericSingleSampleFitModel",pINFO) << "Will apply lateral EB (post-osc) param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
           case kSystUndefined:
           case kSystLateral:
             LOG("GenericSingleSampleFitModel",pFATAL) << "Cannot handle parameter "<<param.GetName()<<" ("<<fName<<")";
@@ -1413,6 +1418,8 @@ void GenericSingleSampleFitModel::BuildParamLists()
   std::sort(fSplineParams.begin(),fSplineParams.end());
   fLateralPostOscParams = std::vector<PhysParamId_t>(lateral_post_osc_params_set.begin(),lateral_post_osc_params_set.end());
   std::sort(fLateralPostOscParams.begin(),fLateralPostOscParams.end());
+  fLateralEBPostOscParams = std::vector<PhysParamId_t>(lateral_eb_post_osc_params_set.begin(),lateral_eb_post_osc_params_set.end());
+  std::sort(fLateralEBPostOscParams.begin(),fLateralEBPostOscParams.end());
 
 }
 //________________________________________________________________________________________
@@ -3521,6 +3528,17 @@ void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
 
   }//imode
 
+  //jump in here and apply the EB to the template
+  // - after true variables integrated out
+  // - before modes have been merged together
+  for(size_t ip = 0; ip < fLateralEBPostOscParams.size(); ip++) {
+    PhysParamId_t p = fLateralEBPostOscParams[ip];
+    if(p == kPhypUndefined) { continue; }
+    this->ApplyEBShift(p, false);
+    if(update_mct_sb)
+      this->ApplyEBShift(p, true);
+  }//fLateralEBPostOscParams
+  
   //
   // Now integrate the above-computed PDF components over the true reaction mode
   // and calculate the total PDF
@@ -4018,6 +4036,259 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
   }
 }
 //________________________________________________________________________________________
+void GenericSingleSampleFitModel::ApplyEBShift(const PhysParm p, bool simple_binning)
+{
+  LOG("GenericSingleSampleFitModel",pINFO)
+    << "Applying EB Shift to binning: "
+    << (simple_binning ? "simple" : "ob");
+
+  if (!fPhysHypothesis.Contains(p)) {
+    LOG("Lateral",pINFO) << "Skipping lateral EB parameter not defined in PhysHypothesis: "
+                         << util::NameRegistry::Instance()->ParamAsString(p);
+    return;
+  }
+
+  const Parameter & param = ParameterPool::Instance()->GetParam(p);
+  const std::string & param_name = param.GetName();
+  if(!param.HasKinematicRange()) {
+    LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+                          << " has no kinematic range. Cannot apply";
+    util::Die(-1);
+  }
+
+  const std::vector<conv::KineVar_t> & kvs = param.GetKineVars();
+  if(kvs.size() != 1) {
+    LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+                          << " is applied to " << kvs.size() << " kinematic variables. Cannot apply";
+    util::Die(-1);
+  }
+  const conv::KineVar_t & kv = kvs[0];
+  if(!util::IsReco(kv)) {
+    LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+                          << " is applied to " << util::AsString(kv)
+                          << ", but only reco kinevars can be applied";
+    util::Die(-1);
+  }
+
+  const VALORBinning * recoBinning = simple_binning ? fBinning->RecoSmpBinning() : fBinning->RecoOptBinning();
+  if(!recoBinning->Contains(kv)) {
+    LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+                          << " is applied to " << util::AsString(kv)
+                          << ", but this kine var is not in the binning scheme";
+    util::Die(-1);
+  }
+
+  // Get a vector of kine vars that are present in the binning scheme, but without the kine var we're
+  // applying the lateral syst to
+  std::vector<conv::KineVar_t> unapplied_kvs;
+  for(conv::KineVar_t binning_kv : recoBinning->KineVars()) {
+    if(binning_kv != kv) { unapplied_kvs.push_back(binning_kv); }
+  }
+
+  //get the amount we shift the x-axis by
+  double shift = fPhysHypothesis.CurrValue(p);
+  if(param.HasLimits()) {
+    shift = param.GetNearestPhysicalValue(shift);
+  }
+  shift = 50 * 1E-3;
+  LOG("Lateral", WARN) << "TODO EB Shift set to 50 MeV for debugging";
+  
+  bool tweaked = TMath::Abs(shift) > kASmallNum;
+  if(!tweaked) return;
+
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+  LOG("Lateral",pDEBUG) << "Applying lateral EB systematic parameter: " << param_name
+			<< "to PDF [" << pdf->GetName() << "] "
+			<< " with kine var " << util::AsString(kv) << " and scale = " << scale;
+#endif
+
+  unsigned int nbins = recoBinning->NBins(); // number of reco bins across all reco kinevars in the binning scheme
+
+  LOG("Lateral", WARN) << "TODO Check fScaledBinEdgesOb and fScaledBinToGlobalBinOb are appropriate for this";
+  std::vector<double>            * unshifted_bin_edges        = & fUnscaledBinEdgesOb      .at(kv);
+  std::vector<double>            * bin_edges_to_shift         = & fScaledBinEdgesOb        .at(kv);
+  std::vector<bool>              * is_unshifted_bin_overflow   = & fIsUnscaledBinOverflowOb .at(kv);
+  std::vector<unsigned int>      * shifted_bin_to_global_bin   = & fScaledBinToGlobalBinOb  .at(kv);
+  std::vector<unsigned int>      * unshifted_bin_to_global_bin = & fUnscaledBinToGlobalBinOb.at(kv);
+  std::vector<std::vector<bool>> * bins_to_skip               = & fSkipBinOb               .at(kv);
+  unsigned int                   * n_overflow_bins            = & fNOverflowBinsOb         .at(kv);
+  if(simple_binning) {
+    unshifted_bin_edges         = & fUnscaledBinEdgesSb      .at(kv);
+    bin_edges_to_shift         = & fScaledBinEdgesSb        .at(kv);
+    is_unshifted_bin_overflow   = & fIsUnscaledBinOverflowSb .at(kv);
+    shifted_bin_to_global_bin   = & fScaledBinToGlobalBinSb  .at(kv);
+    unshifted_bin_to_global_bin = & fUnscaledBinToGlobalBinSb.at(kv);
+    bins_to_skip               = & fSkipBinSb               .at(kv);
+    n_overflow_bins            = & fNOverflowBinsSb         .at(kv);
+  }
+  std::vector<double> shifted_bin_edges = *bin_edges_to_shift;
+
+  // Shift the bin edges for this kine var. Assuming uniform distribution of events within each bin.
+  for(double & edge : shifted_bin_edges) {
+    edge += shift;
+  }
+
+  for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+    ReacMode_t m = fReactionModes[imode];
+    if(m         == kmUndefined) continue;
+    if(fDetector == kdUndefined) continue;
+    if(fBeam     == kbUndefined) continue;
+    if(fSample   == ksUndefined) continue;
+
+    //only applies to CCQE modes
+    if(! (m == kmNuMuCCQE ||
+	  m == kmNuMuBarCCQE ||
+	  m == kmNuECCQE ||
+	  m == kmNuEBarCCQE ||
+	  m == kmNuMuToNuECCQE ||
+	  m == kmNuMuToNuTauCCQE ||
+	  m == kmNuEToNuMuCCQE ||
+	  m == kmNuEToNuTauCCQE ||
+	  m == kmNuMuBarToNuEBarCCQE ||
+	  m == kmNuMuBarToNuTauBarCCQE ||
+	  m == kmNuEBarToNuMuBarCCQE ||
+	  m == kmNuEBarToNuTauBarCCQE))
+      continue;
+
+    //get the PDF for the mode
+    VALORArray * pdf = simple_binning ? fPDFCompSb[imode] : fPDFCompOb[imode];
+
+    //check if its empty
+    double orig_pdf_integral = pdf->Integral();
+    if(orig_pdf_integral < conv::kASmallNum) {
+      LOG("Lateral",pINFO) << "No need to apply lateral parameter to empty PDF " << pdf->GetName();
+      continue;
+    }
+
+    // Recast VALORArray blocks so they can be used addressed like normal arrays (fast).
+    // Hard to read, so should only be used in code for which speed is essential.
+    typedef double (pdftype)[nbins];
+    pdftype & pdfArr = *reinterpret_cast<pdftype *>(&(pdf->GetEntryRef(0)));
+
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+    // Copy the un-modified PDF contents into a vector, so we can print comparisons later
+    std::vector<double> old_events_per_bin (nbins, 0.0);
+    for(unsigned int ireco = 0; ireco < nbins; ireco++) {
+      old_events_per_bin[ireco] = pdfArr[ireco];
+    }
+#endif
+
+    // Calculate the new number of events per bin by seeing how much overlap there is between shifted and unshifted bins.
+    // Note: We have underflow and overflow bins here. This is because as we scale the bin edges, events can drop off
+    // either end of the shifted binning. These under/overflow bins catch these events, which are then added back on to
+    // the first or last bin at the end, respectively.
+    std::vector<double> new_events_per_bin (nbins + *n_overflow_bins, 0.0);
+    double factor = 0.0;
+    int ibin_s = -1;
+    for (size_t iedge_s = 0 ; iedge_s < shifted_bin_edges.size() - 1 ; iedge_s++) { // Loop over shifted edges
+      const double & bin_min_s = shifted_bin_edges[iedge_s]  ;
+      const double & bin_max_s = shifted_bin_edges[iedge_s+1];
+
+      // If the binning scheme is > 1D, looping over the edges of the shifted and unshifted bins will give a number of
+      // nonsense 'bins', where the 'lower' edge will be greater than the 'upper' edge, so account for that here when
+      // calculating the bin number (as we don't assign these nonsense bins a bin number, we skip them at a later check).
+      if(bin_min_s < bin_max_s) { ibin_s++; }
+
+      int ibin_u = -1;
+      for (size_t iedge_u = 0 ; iedge_u < (*unshifted_bin_edges).size() - 1 ; iedge_u++) {  // Loop over unshifted bins
+	const double & bin_min_u = (*unshifted_bin_edges)[iedge_u]  ;
+	const double & bin_max_u = (*unshifted_bin_edges)[iedge_u+1];
+	if(bin_min_u < bin_max_u) { ibin_u++; }
+
+	// Only consider unshifted bins for the same kine var values as the shifted bin
+	// (for the kine vars that we're not applying the lateral syst to).
+	// Note: We end up with bins that go from the upper edge of an overflow to the lower edge of next
+	// set of bins. This is fine, as this check automatically skips these bins
+	if((*is_unshifted_bin_overflow)[ibin_u] && (*bins_to_skip)[ibin_s][ibin_u - 1]) { continue; }  // Set the overflow bin kine var value to that of the last bin
+	else if((*bins_to_skip)[ibin_s][ibin_u]) { continue; }
+
+	if(bin_min_u > bin_max_s)
+	  {  // Unshifted bin entirely larger than shifted bin, stop checking higher unshifted
+	    break;
+	  }
+	else if(bin_min_s > bin_max_u)
+	  {  // Shifted bin entirely larger than unshifted bin, skip to next unshifted bin
+	    continue;
+	  }
+	else if(bin_min_u >= bin_min_s && bin_max_u <= bin_max_s)
+	  {  // Unshifted bin subset of shifted bin
+	    factor = (bin_max_u - bin_min_u) / (bin_max_s - bin_min_s);
+	  }
+	else if(bin_min_s >= bin_min_u && bin_max_s <= bin_max_u)
+	  {  // Shifted bin subset of unshifted bin
+	    // Take the contents of this bin unchanged, there could be additional shifted bins contributing
+	    factor = 1.0;
+	  }
+	else if(bin_max_u > bin_max_s && bin_min_u >= bin_min_s)
+	  {  // Shifted bin overlaps low part of unshifted bin
+	    factor = (bin_max_s - bin_min_u) / (bin_max_s - bin_min_s);
+	  }
+	else if(bin_min_u <  bin_min_s && bin_max_u <= bin_max_s)
+	  {  // Shifted bin overlaps high part of unshifted bin
+	    factor = (bin_max_u - bin_min_s) / (bin_max_s - bin_min_s);
+	  }
+	else
+	  {  // Shouldn't get here
+	    factor = 0.0;
+	  }
+
+	if(factor <= 0.0) {
+	  LOG("Lateral",pWARN) << "Got a factor <= 0 for ibin_s = " << ibin_s << ", ibin_u = "
+			       << ibin_u << ". This shouldn't happen!";
+	  continue;
+	}
+
+	const unsigned int & glob_bin_s = (*shifted_bin_to_global_bin)[ibin_s];
+	new_events_per_bin[ibin_u] += pdfArr[glob_bin_s] * factor;
+
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+	LOG("Lateral", pDEBUG)
+	  << "shifted bin "    << ibin_s << " [" << bin_min_s << ", " << bin_max_s << "]; "
+	  << "un-shifted bin " << ibin_u << " [" << bin_min_u << ", " << bin_max_u << "]; "
+	  << "factor = " << factor << "; old Nevents = " << pdfArr[glob_bin_s] << "; new Nevents = " << new_events_per_bin[ibin_u];
+#endif
+
+      }
+    }
+
+    // Modify the PDF and print debug info
+    for (unsigned int ibin = 0 ; ibin < nbins ; ibin++) {  // Loop over global bins
+      pdfArr[ibin] = 0.;
+    }
+
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+    LOG("Lateral", pDEBUG) << "PDF contents before and after applying lateral systematic:";
+#endif
+
+    int ibin_u = -1;
+    for (size_t iedge_u = 0 ; iedge_u < (*unshifted_bin_edges).size() - 1 ; iedge_u++) {  // Loop over unshifted bins
+      const double & bin_min_u = (*unshifted_bin_edges)[iedge_u]  ;
+      const double & bin_max_u = (*unshifted_bin_edges)[iedge_u+1];
+      if(bin_min_u < bin_max_u) { ibin_u++; }
+      else                      { continue; }
+      const unsigned int & ibin = (*unshifted_bin_to_global_bin)[ibin_u];
+      pdfArr[ibin] += new_events_per_bin[ibin_u];
+
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+      LOG("Lateral", pDEBUG)
+	<< "bin " << ibin << " [" << recoBinning->BinMinimum(ibin, kv) << ", " << recoBinning->BinMaximum(ibin, kv) << "]"
+	<< "; old content = " << old_events_per_bin[ibin] << "; new content = " << pdfArr[ibin];
+#endif
+
+    }
+
+    // Lateral systematics should just migrate events between bins, while keeping the total number of events constant.
+    // Check that we haven't changed the total number of events
+    if ( fabs((pdf->Integral()/orig_pdf_integral)-1) > conv::kASmallNum ) {
+      LOG("Lateral", pFATAL) << std::fixed << std::setprecision(9)
+			     << "Failed normalisation check after applying lateral systematic for PDF"
+			     << pdf->GetName() << ". Original integral = " << orig_pdf_integral
+			     << ", new integral = " << pdf->Integral();
+      util::Die(-1);
+    }
+  }//imode
+}
+//________________________________________________________________________________________
 void GenericSingleSampleFitModel::ReadExtTuningHistsAll(TXMLEngine* xmleng_mc, XMLNodePointer_t top_node_mc)
 {
   if(util::NodeExists(xmleng_mc, top_node_mc, "tuning")) {
@@ -4224,7 +4495,7 @@ void GenericSingleSampleFitModel::FillNonEmptyBinVectors()
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_binning)
 {
-  if(fLateralPostOscParams.size() == 0) { return; }
+  if(fLateralPostOscParams.size() == 0 && fLateralEBPostOscParams.size() == 0) { return; }
 
   const VALORBinning * recoBinning = use_simple_binning ? fBinning->RecoSmpBinning() : fBinning->RecoOptBinning();
   unsigned int nbins = recoBinning->NBins(); // number of reco bins across all reco kinevars in the binning scheme

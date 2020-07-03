@@ -24,6 +24,7 @@ string util::AsString(SystType_t t, Option_t * opt)
     case (kSystNorm    )        : name = "normalisation";     break;
     case (kSystLateral )        : name = "lateral";           break;
     case (kSystLateralPostOsc ) : name = "lateral_post_osc";  break;
+    case (kSystLateralEBPostOsc ) : name = "lateral_eb_post_osc";  break;
     case (kSystResponse)        : name = "response";          break;
     case (kSystSpecial)         : name = "special";           break;
     case (kSystDisabled)        : name = "disabled";          break;
