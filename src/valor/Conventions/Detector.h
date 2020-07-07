@@ -7,7 +7,7 @@
 
 \author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
-          
+
 \created   April 1, 2016
 
 \copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
@@ -27,15 +27,15 @@ using std::string;
 namespace valor {
 namespace conv {
 
-static const int kNDetectorsDefined = 15;
+static const int kNDetectorsDefined = 18;
 
 typedef enum EDetector
 {
-   kdUndefined = -1, 
+   kdUndefined = -1,
    kdDUNEND,          // Generic DUNE near detector
    kdDUNEFD1ph,       // Single-phase LArTPC DUNE far detector
    kdDUNEFD2ph,       // Double-phase LArTPC DUNE far detector
-   kdSBND,            // SBN near detector 
+   kdSBND,            // SBN near detector
    kdSBNuBooNE,       // MicroBooNE detector in SBN
    kdSBNICARUS,       // Refurshished ICARUS detector in SBN
    kdSuperK,          // Super-Kamiokande
@@ -46,9 +46,12 @@ typedef enum EDetector
    kdNuPRISM,         // NuPRISM
    kdNuTIT,           // appropriate shorter name for TITUS
    kdNOvAND,          // NOvA near detector
-   kdNOvAFD           // NOvA far detector
-} 
-Detector_t; 
+   kdNOvAFD,          // NOvA far detector
+   kdNuSTORMd1,       // NuSTORM detector 1 (unspecified)
+   kdNuSTORMd2,       // NuSTORM detector 2 (unspecified)
+   kdNuSTORMd3        // NuSTORM detector 3 (unspecified)
+}
+Detector_t;
 
 } // conv
 
@@ -64,10 +67,9 @@ namespace util {
   conv::Detector_t DetectorFromInt    (int b);
   conv::Detector_t DetectorFromString (string b);
   bool             IsLongBaseline     (conv::Detector_t d);
-  
+
 } // util
 
 } // valor
-  
-#endif 
 
+#endif

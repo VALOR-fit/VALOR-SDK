@@ -16,8 +16,8 @@ srcdir=$VALOR_FMWK/src
 # VALOR/FMWK libraries:
 libs="-L$libdir -lValorMesg -lValorArray -lValorNtuple -lValorRegistry -lValorConv -lValorUtil -lValorOsc -lValorCmdLine -lValorFitCore -lValorKBin -lValorFitElements -lValorTesting"
 
-#VALOR/DUNE genie-dependent libraries
-glibs="-lValorGenieUtil"
+#VALOR/FMWK genie-dependent libraries
+glibs="-L$libdir -lValorGenieUtil"
 
 
 #

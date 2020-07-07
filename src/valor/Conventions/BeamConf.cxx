@@ -22,14 +22,18 @@ string util::AsString(BeamConf_t b, Option_t * opt)
   string name = "";
 
   switch(b) {
-    case (kbLBNF_FHC   ) : name = "LBNF_FHC";    break;
-    case (kbLBNF_RHC   ) : name = "LBNF_RHC";    break;        
-    case (kbJPARC_FHC  ) : name = "JPARC_FHC";   break; 
-    case (kbJPARC_RHC  ) : name = "JPARC_RHC";   break; 
-    case (kbNuMI_FHC   ) : name = "NUMI_FHC";    break;
-    case (kbNuMI_RHC   ) : name = "NUMI_RHC";    break; 
-    case (kbBNB_FHC    ) : name = "BNB_FHC";     break;
-    case (kbBNB_RHC    ) : name = "BNB_RHC";     break; 
+    case (kbLBNF_FHC        ) : name = "LBNF_FHC";         break;
+    case (kbLBNF_RHC        ) : name = "LBNF_RHC";         break;
+    case (kbJPARC_FHC       ) : name = "JPARC_FHC";        break;
+    case (kbJPARC_RHC       ) : name = "JPARC_RHC";        break;
+    case (kbNuMI_FHC        ) : name = "NUMI_FHC";         break;
+    case (kbNuMI_RHC        ) : name = "NUMI_RHC";         break;
+    case (kbBNB_FHC         ) : name = "BNB_FHC";          break;
+    case (kbBNB_RHC         ) : name = "BNB_RHC";          break;
+    case (kbNuSTORM_MuP     ) : name = "NuSTORM_MuP";      break;
+    case (kbNuSTORM_MuM     ) : name = "NuSTORM_MuM";      break;
+    case (kbNuSTORM_MuPflash) : name = "NuSTORM_MuPflash"; break;
+    case (kbNuSTORM_MuMflash) : name = "NuSTORM_MuMflash"; break;
     default : name = "--";  
   }
 
@@ -65,7 +69,7 @@ BeamConf_t util::BeamConfFromString(string beam)
       return s;
     }
   }
-    
+
   return kbUndefined;
 }
 //________________________________________________________________________________________
