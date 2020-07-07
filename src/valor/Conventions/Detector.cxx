@@ -42,9 +42,8 @@ string util::AsString(Detector_t d, Option_t * /*opt*/)
     case (kdNuTIT    ) : name = "titus";      break;
     case (kdNOvAND   ) : name = "nova_nd";    break;
     case (kdNOvAFD   ) : name = "nova_fd";    break;
-    case (kdNuSTORMd1) : name = "nustorm_d1"; break;
-    case (kdNuSTORMd2) : name = "nustorm_d2"; break;
-    case (kdNuSTORMd3) : name = "nustorm_d3"; break;
+    case (kdNuStormND) : name = "nustorm_nd"; break;
+    case (kdNuStormFD) : name = "nustorm_fd"; break;
     default            : name = "--";
   }
 /*
@@ -80,9 +79,8 @@ string util::AsStringTeX(Detector_t d, bool root)
     case (kdNuTIT    ) : name = "TITUS";                break;
     case (kdNOvAND   ) : name = "NO{#nu}A ND";          break;
     case (kdNOvAFD   ) : name = "NO{#nu}A FD";          break;
-    case (kdNuSTORMd1) : name = "{#nu}STORM D1";        break;
-    case (kdNuSTORMd2) : name = "{#nu}STORM D2";        break;
-    case (kdNuSTORMd3) : name = "{#nu}STORM D3";        break;
+    case (kdNuStormND) : name = "{#nu}Storm ND";        break;
+    case (kdNuStormFD) : name = "{#nu}Storm FD";        break;
     default            : name = "--";
   }
   if(root) return name;
@@ -135,9 +133,8 @@ bool util::IsLongBaseline(Detector_t d)
     case (kdNuTIT    ) : return false;
     case (kdNOvAND   ) : return false;
     case (kdNOvAFD   ) : return true;
-    case (kdNuSTORMd1) : return false;
-    case (kdNuSTORMd2) : return false;
-    case (kdNuSTORMd3) : return false; 
+    case (kdNuStormND) : return false;
+    case (kdNuStormFD) : return false;
     default: break;
   }
   LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);

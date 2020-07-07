@@ -45,10 +45,10 @@ typedef enum EBeamConf
    kbNuMI_RHC,             // reverse horn current beam @ FNAL/NuMI
    kbBNB_FHC,              // forward horn current beam @ FNAL/Booster
    kbBNB_RHC,              // reverse horn current beam @ FNAL/Booster
-   kbNuSTORM_MuP,          // beam from a stored mu+ beam
-   kbNuSTORM_MuM,          // beam from a stored mu- beam
-   kbNuSTORM_MuPflash,     // neutrino flash from decays of injected mesons yielding stored mu+
-   kbNuSTORM_MuMflash      // neutrino flash from decays of injected mesons yielding stored mu-
+   kbNuStorm_MuP,          // beam from a stored mu+ beam
+   kbNuStorm_MuM,          // beam from a stored mu- beam
+   kbNuStorm_MuPflash,     // neutrino flash from decays of injected mesons yielding stored mu+
+   kbNuStorm_MuMflash      // neutrino flash from decays of injected mesons yielding stored mu-
 }
 BeamConf_t;
 

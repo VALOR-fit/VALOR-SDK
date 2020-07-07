@@ -47,9 +47,8 @@ typedef enum EDetector
    kdNuTIT,           // appropriate shorter name for TITUS
    kdNOvAND,          // NOvA near detector
    kdNOvAFD,          // NOvA far detector
-   kdNuSTORMd1,       // NuSTORM detector 1 (unspecified)
-   kdNuSTORMd2,       // NuSTORM detector 2 (unspecified)
-   kdNuSTORMd3        // NuSTORM detector 3 (unspecified)
+   kdNuStormND,       // NuStorm near detector
+   kdNuStormFD        // NuStorm far detector
 }
 Detector_t;
 

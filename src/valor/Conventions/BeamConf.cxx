@@ -30,11 +30,11 @@ string util::AsString(BeamConf_t b, Option_t * opt)
     case (kbNuMI_RHC        ) : name = "NUMI_RHC";         break;
     case (kbBNB_FHC         ) : name = "BNB_FHC";          break;
     case (kbBNB_RHC         ) : name = "BNB_RHC";          break;
-    case (kbNuSTORM_MuP     ) : name = "NuSTORM_MuP";      break;
-    case (kbNuSTORM_MuM     ) : name = "NuSTORM_MuM";      break;
-    case (kbNuSTORM_MuPflash) : name = "NuSTORM_MuPflash"; break;
-    case (kbNuSTORM_MuMflash) : name = "NuSTORM_MuMflash"; break;
-    default : name = "--";  
+    case (kbNuStorm_MuP     ) : name = "NuStorm_MuP";      break;
+    case (kbNuStorm_MuM     ) : name = "NuStorm_MuM";      break;
+    case (kbNuStorm_MuPflash) : name = "NuStorm_MuPflash"; break;
+    case (kbNuStorm_MuMflash) : name = "NuStorm_MuMflash"; break;
+    default : name = "--";
   }
 
   if(opt) {
