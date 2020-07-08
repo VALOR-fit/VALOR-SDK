@@ -151,7 +151,7 @@ private:
   void ApplySystematics                  (Option_t * opt = 0);
   void ApplyPhysics                      (Option_t * opt = 0);
   void ApplyOscProb                      (Option_t * opt = 0);
-  void ApplyEBShift                      (const PhysParm p, bool simple_binning);
+  void ApplyEBShift                      (const conv::PhysParamId_t p, bool simple_binning);
   void UpdatePDFs                        (Option_t * opt = 0);
 
   void ApplyErecoCuts                    (Option_t * opt = 0);
@@ -294,7 +294,8 @@ private:
   
   // Spline library
   util::RFL * fRFL;
-
+  std::map<conv::NuFlavour_t, TSpline3 *> fEBSplines;
+  
   // Pointer to our systematics
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;

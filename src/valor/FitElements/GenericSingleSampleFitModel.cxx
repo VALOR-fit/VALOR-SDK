@@ -205,6 +205,14 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   LOG("GenericSingleSampleFitModel",pINFO)
     << "Fiducial mass = " << fFiducialMass*1000 << " tonnes";
 
+  //Get the EB splines
+  conv::NuFlavour_t flavours[4] = {kNuE, kNuEBar, kNuMu, kNuMuBar};
+  for(int iflav = 0; iflav < 4; iflav++) {
+    name = TString::Format("eb_splines/%s", util::AsString(flavours[iflav]).c_str()).Data();
+    LOG("GenericSingleSampleFitModel",pINFO) << "Getting EB spline from node: " << name;
+    fEBSplines.emplace(flavours[iflav], util::XML2TSpline3(xml, root_node, name, "<env>"));
+  }//iflav
+  
   // Check whether or not we should apply the osc prob to ALL detectors (i.e. skipping the util::OscProbIsAppliedTo check)
   name = "force_apply_osc_prob_to_all_detectors";
   if(util::NodeExists(xml,root_node,name)) {
@@ -1283,8 +1291,10 @@ void GenericSingleSampleFitModel::Book(void)
   }//imode
 
   std::vector<conv::KineVar_t> kvs_already_considered;
-  for(size_t ip = 0; ip < fLateralPostOscParams.size(); ip++) {
-    PhysParamId_t p = fLateralPostOscParams[ip];
+  std::vector<conv::PhysParamId_t> all_lateral_params(fLateralPostOscParams);
+  all_lateral_params.insert(all_lateral_params.end(), fLateralEBPostOscParams.begin(), fLateralEBPostOscParams.end());
+  for(size_t ip = 0; ip < all_lateral_params.size(); ip++) {
+    PhysParamId_t p = all_lateral_params[ip];
     if(p == kPhypUndefined) { continue; }
 
     const Parameter & param = ParameterPool::Instance()->GetParam(p);
@@ -1387,6 +1397,7 @@ void GenericSingleSampleFitModel::BuildParamLists()
 	    // Handle post-oscillation lateral EB systematics after all templates have been filled, but before integration of modes
 	    lateral_eb_post_osc_params_set.insert(p);
 	    LOG("GenericSingleSampleFitModel",pINFO) << "Will apply lateral EB (post-osc) param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
+	    break;
           case kSystUndefined:
           case kSystLateral:
             LOG("GenericSingleSampleFitModel",pFATAL) << "Cannot handle parameter "<<param.GetName()<<" ("<<fName<<")";
@@ -4036,7 +4047,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
   }
 }
 //________________________________________________________________________________________
-void GenericSingleSampleFitModel::ApplyEBShift(const PhysParm p, bool simple_binning)
+void GenericSingleSampleFitModel::ApplyEBShift(const conv::PhysParamId_t p, bool simple_binning)
 {
   LOG("GenericSingleSampleFitModel",pINFO)
     << "Applying EB Shift to binning: "
@@ -4085,26 +4096,8 @@ void GenericSingleSampleFitModel::ApplyEBShift(const PhysParm p, bool simple_bin
     if(binning_kv != kv) { unapplied_kvs.push_back(binning_kv); }
   }
 
-  //get the amount we shift the x-axis by
-  double shift = fPhysHypothesis.CurrValue(p);
-  if(param.HasLimits()) {
-    shift = param.GetNearestPhysicalValue(shift);
-  }
-  shift = 50 * 1E-3;
-  LOG("Lateral", WARN) << "TODO EB Shift set to 50 MeV for debugging";
-  
-  bool tweaked = TMath::Abs(shift) > kASmallNum;
-  if(!tweaked) return;
-
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-  LOG("Lateral",pDEBUG) << "Applying lateral EB systematic parameter: " << param_name
-			<< "to PDF [" << pdf->GetName() << "] "
-			<< " with kine var " << util::AsString(kv) << " and scale = " << scale;
-#endif
-
   unsigned int nbins = recoBinning->NBins(); // number of reco bins across all reco kinevars in the binning scheme
 
-  LOG("Lateral", WARN) << "TODO Check fScaledBinEdgesOb and fScaledBinToGlobalBinOb are appropriate for this";
   std::vector<double>            * unshifted_bin_edges        = & fUnscaledBinEdgesOb      .at(kv);
   std::vector<double>            * bin_edges_to_shift         = & fScaledBinEdgesOb        .at(kv);
   std::vector<bool>              * is_unshifted_bin_overflow   = & fIsUnscaledBinOverflowOb .at(kv);
@@ -4121,12 +4114,6 @@ void GenericSingleSampleFitModel::ApplyEBShift(const PhysParm p, bool simple_bin
     bins_to_skip               = & fSkipBinSb               .at(kv);
     n_overflow_bins            = & fNOverflowBinsSb         .at(kv);
   }
-  std::vector<double> shifted_bin_edges = *bin_edges_to_shift;
-
-  // Shift the bin edges for this kine var. Assuming uniform distribution of events within each bin.
-  for(double & edge : shifted_bin_edges) {
-    edge += shift;
-  }
 
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
@@ -4136,28 +4123,45 @@ void GenericSingleSampleFitModel::ApplyEBShift(const PhysParm p, bool simple_bin
     if(fSample   == ksUndefined) continue;
 
     //only applies to CCQE modes
-    if(! (m == kmNuMuCCQE ||
-	  m == kmNuMuBarCCQE ||
-	  m == kmNuECCQE ||
-	  m == kmNuEBarCCQE ||
-	  m == kmNuMuToNuECCQE ||
-	  m == kmNuMuToNuTauCCQE ||
-	  m == kmNuEToNuMuCCQE ||
-	  m == kmNuEToNuTauCCQE ||
-	  m == kmNuMuBarToNuEBarCCQE ||
-	  m == kmNuMuBarToNuTauBarCCQE ||
-	  m == kmNuEBarToNuMuBarCCQE ||
-	  m == kmNuEBarToNuTauBarCCQE))
+    if(! (util::ReacModeToType(m) == kmtCCQE))
       continue;
 
     //get the PDF for the mode
     VALORArray * pdf = simple_binning ? fPDFCompSb[imode] : fPDFCompOb[imode];
 
+    //get the amount we shift the x-axis by
+    // it's different for each interaction flavour
+    double value = fPhysHypothesis.CurrValue(p);
+    if(param.HasLimits()) {
+      value = param.GetNearestPhysicalValue(value);
+    }
+    //the tweak value is how much of a fraction of 9 MeV the shift is, relative to the nominal of 27 MeV
+    const double eb = 27 + value * 9;
+    const double shift = fEBSplines.at(util::ReacModeToFinalFlavor(m))->Eval(eb) * 1E-3; //shift splines in MeV. VALOR uses GeV
+  
+    bool tweaked = TMath::Abs(shift) > kASmallNum;
+    if(!tweaked) return;
+
+    //#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+    LOG("Lateral",pDEBUG) << "Applying lateral EB systematic parameter: " << param_name
+			  << "to PDF [" << pdf->GetName() << "] "
+			  << " with kine var " << util::AsString(kv) << " and shift = " << shift;
+    //#endif
+
     //check if its empty
     double orig_pdf_integral = pdf->Integral();
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+    LOG("Lateral",pDEBUG) << "Original PDF " << pdf->GetName() << " has integral " << orig_pdf_integral;
+#endif
     if(orig_pdf_integral < conv::kASmallNum) {
       LOG("Lateral",pINFO) << "No need to apply lateral parameter to empty PDF " << pdf->GetName();
       continue;
+    }
+
+    // Shift the bin edges for this kine var. Assuming uniform distribution of events within each bin.
+    std::vector<double> shifted_bin_edges = *bin_edges_to_shift;
+    for(double & edge : shifted_bin_edges) {
+      edge += shift;
     }
 
     // Recast VALORArray blocks so they can be used addressed like normal arrays (fast).
@@ -4501,12 +4505,17 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
   unsigned int nbins = recoBinning->NBins(); // number of reco bins across all reco kinevars in the binning scheme
 
   std::vector<conv::KineVar_t> kvs_already_considered;
-  for(size_t ip = 0; ip < fLateralPostOscParams.size(); ip++) {
-    PhysParamId_t p = fLateralPostOscParams[ip];
+
+  std::vector<conv::PhysParamId_t> all_lateral_params(fLateralPostOscParams);
+  all_lateral_params.insert(all_lateral_params.end(), fLateralEBPostOscParams.begin(), fLateralEBPostOscParams.end());
+  for(size_t ip = 0; ip < all_lateral_params.size(); ip++) {
+    PhysParamId_t p = all_lateral_params[ip];
     if(p == kPhypUndefined) { continue; }
 
     const Parameter & param = ParameterPool::Instance()->GetParam(p);
     const std::string & param_name = param.GetName();
+    LOG("Lateral", pDEBUG) << "PreComputing lateral parameter " << param_name;
+
     if(!param.HasKinematicRange()) {
       LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
                             << " has no kinematic range. Cannot apply";
@@ -4537,6 +4546,9 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
                             << ", but this kine var is not in the binning scheme";
       util::Die(-1);
     }
+
+    LOG("Lateral",pDEBUG) << "Lateral systematic parameter " << param_name
+			  << " is applied to " << util::AsString(kv);
 
     // Get a vector of kine vars that are present in the binning scheme, but without the kine var we're
     // applying the lateral syst to
