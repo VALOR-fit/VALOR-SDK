@@ -1109,7 +1109,7 @@ void GenericSingleSampleFitModel::Init(void)
   fSkipOscProbApplyCheck = false;
   fSuppressOutOfBinningRangeWarning = false;
 
-  fSinDM2WeightVec.clear();
+  fLoverEPerEvent.clear();
 
   fSystematics = 0;
 
@@ -1168,7 +1168,7 @@ void GenericSingleSampleFitModel::Book(void)
   fNormParamsAppliedTo  .resize(fReactionModes.size());
   fSplineParamsAppliedTo.resize(fReactionModes.size());
 
-  fSinDM2WeightVec = std::vector<std::vector<std::vector<double>> >(fReactionModes.size());
+  fLoverEPerEvent = std::vector<std::vector<std::vector<double>> >(fReactionModes.size());
 
   this->BuildParamLists();
 
@@ -1201,7 +1201,7 @@ void GenericSingleSampleFitModel::Book(void)
     fMCTFinSb [imode] = new VALORArray(n_reco_bins_sb, n_true_bins);
     fMCStatSb [imode] = new VALORArray(n_reco_bins_sb, n_true_bins);
 
-    fSinDM2WeightVec.at(imode).resize(n_true_bins);
+    fLoverEPerEvent.at(imode).resize(n_true_bins);
     
     fMCTNomSb [imode]->SetDimensionName(0,"reco");
     fMCTTunSb [imode]->SetDimensionName(0,"reco");
@@ -1477,7 +1477,7 @@ void GenericSingleSampleFitModel::Clean(void)
       fMCTFinSb[imode] = 0;
       fMCStatSb[imode] = 0;
 
-      fSinDM2WeightVec.at(imode).clear();
+      fLoverEPerEvent.at(imode).clear();
       
       // PDF components
       if(fPDFCompSb[imode]) delete fPDFCompSb[imode];
@@ -1931,7 +1931,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     if (util::IsShortBaseline(fDetector)) {
       if (util::IsNeutrinoAny(m)) { // we only oscillate neutrinos
         const double & trueE = kinematics.at(conv::kvEtrue);
-        fSinDM2WeightVec.at(imode).at(true_bin).push_back(baseline/trueE);
+        fLoverEPerEvent.at(imode).at(true_bin).push_back(baseline/trueE);
       }
     }
 
@@ -3606,12 +3606,12 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       else if (hypid == kHypOscSterileEff) {
         // Using Dom Barker's method for exact oscillation probabilities
         double sindm2 = 1;
-        if(fSinDM2WeightVec.at(imode).at(itrue).size() > 0) {
+        if(fLoverEPerEvent.at(imode).at(itrue).size() > 0) {
           sindm2 = 0;
-          for(auto const& LOverE: fSinDM2WeightVec.at(imode).at(itrue)) {
+          for(auto const& LOverE: fLoverEPerEvent.at(imode).at(itrue)) {
             sindm2 += util::Calculate2FSterileSinSqDM(LOverE,dm41sq);
           }
-          sindm2 /= fSinDM2WeightVec.at(imode).at(itrue).size();
+          sindm2 /= fLoverEPerEvent.at(imode).at(itrue).size();
         }
         p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , sinsq2thmue, sinsq2thmumu, sindm2);
         p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , sinsq2thmue, sinsq2thmumu, sindm2);
