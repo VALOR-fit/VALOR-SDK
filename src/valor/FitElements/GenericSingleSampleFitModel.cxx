@@ -154,9 +154,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   skip_spline_read = true;
 #endif
 
-  if (fDetector == conv::kdSBND ||
-      fDetector == conv::kdSBNICARUS ||
-      fDetector == conv::kdSBNuBooNE) {
+  if (util::IsShortBaseline(fDetector)) {
     fGetBaselineFromSplines = true;
   }
   if (no_spline_baseline) {fGetBaselineFromSplines = false;}
@@ -1159,9 +1157,6 @@ void GenericSingleSampleFitModel::Book(void)
   fMCStatSb .resize(fReactionModes.size(),nullptr);
   fPDFCompSb.resize(fReactionModes.size(),nullptr);
 
-  fSinDM2Weight.resize(fReactionModes.size(),nullptr);
-  fSinDM2WeightN.resize(fReactionModes.size(),nullptr);
-
   fMCTNullOb.resize(fReactionModes.size(),true);
   fMCTNomOb .resize(fReactionModes.size(),nullptr);
   fMCTTunOb .resize(fReactionModes.size(),nullptr);
@@ -1206,14 +1201,8 @@ void GenericSingleSampleFitModel::Book(void)
     fMCTFinSb [imode] = new VALORArray(n_reco_bins_sb, n_true_bins);
     fMCStatSb [imode] = new VALORArray(n_reco_bins_sb, n_true_bins);
 
-    fSinDM2Weight[imode] = new VALORArray(n_true_bins);
-    fSinDM2WeightN[imode] = new VALORArray(n_true_bins);
-
     fSinDM2WeightVec.at(imode).resize(n_true_bins);
-    for(int bin=0; bin<n_true_bins; ++bin){
-      fSinDM2Weight [imode]->SetEntry(0,bin);
-      fSinDM2WeightN [imode]->SetEntry(0,bin);
-    }
+    
     fMCTNomSb [imode]->SetDimensionName(0,"reco");
     fMCTTunSb [imode]->SetDimensionName(0,"reco");
     fMCTSysSb [imode]->SetDimensionName(0,"reco");
@@ -1488,12 +1477,8 @@ void GenericSingleSampleFitModel::Clean(void)
       fMCTFinSb[imode] = 0;
       fMCStatSb[imode] = 0;
 
-      if(fSinDM2Weight[imode]) delete fSinDM2Weight[imode];
-      if(fSinDM2WeightN[imode]) delete fSinDM2WeightN[imode];
-      fSinDM2Weight[imode]  = 0;
-      fSinDM2WeightN[imode] = 0;
-
       fSinDM2WeightVec.at(imode).clear();
+      
       // PDF components
       if(fPDFCompSb[imode]) delete fPDFCompSb[imode];
       fPDFCompSb[imode] = 0;
@@ -1942,21 +1927,12 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 #endif
 
 
-    //    Apply Oscillations Here for exact baseline stiff 
-    if(true_vars.size() == 1){
-      double trueE = true_vars[0];
-      //std::cout << "baseline: " << baseline << " trueE: "      << trueE  << std::endl;
-
-      double sindm2 = 1;//OsciallationWeight(m,baseline, trueE);
-      double sindm2_n = fSinDM2WeightN[imode]->GetEntry( true_bin     );
-
-      sindm2 += fSinDM2Weight[imode]->GetEntry(true_bin);
-      ++sindm2_n;
-
-      fSinDM2Weight[imode]->SetEntry(sindm2, true_bin);
-      fSinDM2WeightN[imode]->SetEntry(sindm2_n, true_bin);
-      fSinDM2WeightVec.at(imode).at(true_bin).push_back(baseline/trueE);
-
+    // If we're doing SBL, save the baseline per event
+    if (util::IsShortBaseline(fDetector)) {
+      if (util::IsNeutrinoAny(m)) { // we only oscillate neutrinos
+        const double & trueE = kinematics.at(conv::kvEtrue);
+        fSinDM2WeightVec.at(imode).at(true_bin).push_back(baseline/trueE);
+      }
     }
 
 

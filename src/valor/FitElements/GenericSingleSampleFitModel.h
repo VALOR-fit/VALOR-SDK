@@ -266,9 +266,8 @@ private:
   std::vector<VALORArray *> fMCTSysSb ; 
   std::vector<VALORArray *> fMCTFinSb ; 
   std::vector<VALORArray *> fMCStatSb ; // MC statistics
-
-  std::vector<VALORArray *> fSinDM2Weight;
-  std::vector<VALORArray *> fSinDM2WeightN;
+  
+  // Holds L/E per event, if we're doing sterile oscillations
   std::vector<std::vector<std::vector<double> > > fSinDM2WeightVec;
 
 
