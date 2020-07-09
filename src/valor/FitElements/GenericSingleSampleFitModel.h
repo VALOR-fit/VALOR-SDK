@@ -136,9 +136,6 @@ public:
   void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
   void ResetSystematicVariationIDs();
   
-  // If we've made baseline splines, we should allow the user to cache them
-  void WriteBaselineSplinesToFile(TFile * f) const;
-  
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
@@ -301,14 +298,6 @@ private:
   // Pointer to our systematics
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;
-  
-  // Splines to handle implementation of variable baseline if necessary
-  bool fGetBaselineFromSplines;
-  bool fBaselineSplinesFilled;
-  // This vector will only include initial flavour, not reaction type
-  std::vector<VALORArrayP*> fBaselineSplines;
-  // and how many places we evaluate them in. Should become configurable later
-  int fNSplineEvalPoints;
   
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices
