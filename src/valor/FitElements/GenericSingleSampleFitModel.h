@@ -268,7 +268,7 @@ private:
   std::vector<VALORArray *> fMCStatSb ; // MC statistics
   
   // Holds L/E per event, if we're doing sterile oscillations
-  std::vector<std::vector<std::vector<double> > > fSinDM2WeightVec;
+  std::vector<std::vector<std::vector<double> > > fLoverEPerEvent;
 
 
   // MC PDFs
