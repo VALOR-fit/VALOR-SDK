@@ -3584,6 +3584,11 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         else if( util::IsNuEBarToNuMuBar(m)  ) { posc = p_nuebar_numubar;        }
         else if( util::IsNuEBarToNuTauBar(m) ) { posc = p_nuebar_nutaubar;       }
       }
+      // Apply numu disappearance probability to NC templates
+      else 
+      {
+        if( util::IsNuMu(m) ) { posc = p_numu_numu; }
+      }
       if(fMCTNullOb[imode]) {continue;}
 
       for(int ireco_ob = 0; ireco_ob < n_reco_bins_ob; ireco_ob++) {
