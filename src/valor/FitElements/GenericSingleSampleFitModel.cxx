@@ -3587,7 +3587,20 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       // Apply numu disappearance probability to NC templates
       else 
       {
-        if( util::IsNuMu(m) ) { posc = p_numu_numu; }
+        if(      util::IsNuMu(m))    { posc = p_numu_numu; }
+        else if( util::IsNuMuBar(m)) { posc = p_numubar_numubar; }
+        else if( util::IsNuE(m)        ) { posc = p_nue_nue;         }
+        else if( util::IsNuEBar(m)     ) { posc = p_nuebar_nuebar;   }
+
+        else if( util::IsNuMuToNuE(m)  ) { posc = p_numu_nue;        }
+        else if( util::IsNuMuToNuTau(m)) { posc = p_numu_nutau;      }
+        else if( util::IsNuEToNuMu(m)  ) { posc = p_nue_numu;        }
+        else if( util::IsNuEToNuTau(m) ) { posc = p_nue_nutau;       }
+
+        else if( util::IsNuMuBarToNuEBar(m)  ) { posc = p_numubar_nuebar;        }
+        else if( util::IsNuMuBarToNuTauBar(m)) { posc = p_numubar_nutaubar;      }
+        else if( util::IsNuEBarToNuMuBar(m)  ) { posc = p_nuebar_numubar;        }
+        else if( util::IsNuEBarToNuTauBar(m) ) { posc = p_nuebar_nutaubar;       }
       }
       if(fMCTNullOb[imode]) {continue;}
 
