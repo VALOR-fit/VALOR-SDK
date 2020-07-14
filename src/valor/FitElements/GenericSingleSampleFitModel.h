@@ -266,11 +266,9 @@ private:
   std::vector<VALORArray *> fMCTSysSb ; 
   std::vector<VALORArray *> fMCTFinSb ; 
   std::vector<VALORArray *> fMCStatSb ; // MC statistics
-
-  std::vector<VALORArray *> fSinDM2Weight;
-  std::vector<VALORArray *> fSinDM2WeightN;
-  std::vector<std::vector<std::vector<double> > > fSinDM2WeightVec;
-
+  
+  // Holds L/E per event, if we're doing sterile oscillations
+  std::vector<std::vector<std::vector<std::pair<double,double>> > > fLoverEPerEvent;
 
   // MC PDFs
   // Each PDF is (currently always) a 2-D Nev = Nev(Enu_reco, y_reco) array that can be directly compared with data.
