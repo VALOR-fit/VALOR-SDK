@@ -85,9 +85,6 @@ GenericSingleSampleFitModel::GenericSingleSampleFitModel() :
   fRFL(NULL),
   fSystematics(NULL),
   fOwnerOfSystematics(false),
-  fGetBaselineFromSplines (false),
-  fBaselineSplinesFilled  (false),
-  fNSplineEvalPoints(40), // make this an option
   fApplyUniverseVariations(false),
   fFirstUniverseToSave(0),
   fLastUniverseToSave (0),
@@ -143,23 +140,16 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   bool force_use_dst      = ts_opt.Contains("forcedst");
   bool skip_spline_read   = ts_opt.Contains("nosplines");
   bool skip_mc_read       = ts_opt.Contains("nomc");
-  bool no_spline_baseline = ts_opt.Contains("fixedbaseline");
+  bool fixed_baseline     = ts_opt.Contains("fixedbaseline");
   LOG("GenericSingleSampleFitModel",pDEBUG) << " Read options are: " << ts_opt << "\n"
     << " Given these, this is how the following booleans are set: \n"
     << " Force  use DST:    " << force_use_dst << "\n"
     << " Skip spline read:  " << skip_spline_read << "\n"
     << " Skip MC read:      " << skip_mc_read << "\n"
-    << " No spline basline: " << no_spline_baseline << "\n";
+    << " Fixed baseline: "    << fixed_baseline << "\n";
 #ifdef SPLINE_WEIGHTS_ARE_ONE
   skip_spline_read = true;
 #endif
-
-  if (fDetector == conv::kdSBND ||
-      fDetector == conv::kdSBNICARUS ||
-      fDetector == conv::kdSBNuBooNE) {
-    fGetBaselineFromSplines = true;
-  }
-  if (no_spline_baseline) {fGetBaselineFromSplines = false;}
 
   // Set up the initial XML reader
   LOG("GenericSingleSampleFitModel", pNOTICE) 
@@ -1111,11 +1101,10 @@ void GenericSingleSampleFitModel::Init(void)
   fSkipOscProbApplyCheck = false;
   fSuppressOutOfBinningRangeWarning = false;
 
-  fSinDM2WeightVec.clear();
+  fLoverEPerEvent.clear();
 
   fSystematics = 0;
 
-  fGetBaselineFromSplines = false;
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::Book(void)
@@ -1159,9 +1148,6 @@ void GenericSingleSampleFitModel::Book(void)
   fMCStatSb .resize(fReactionModes.size(),nullptr);
   fPDFCompSb.resize(fReactionModes.size(),nullptr);
 
-  fSinDM2Weight.resize(fReactionModes.size(),nullptr);
-  fSinDM2WeightN.resize(fReactionModes.size(),nullptr);
-
   fMCTNullOb.resize(fReactionModes.size(),true);
   fMCTNomOb .resize(fReactionModes.size(),nullptr);
   fMCTTunOb .resize(fReactionModes.size(),nullptr);
@@ -1173,7 +1159,7 @@ void GenericSingleSampleFitModel::Book(void)
   fNormParamsAppliedTo  .resize(fReactionModes.size());
   fSplineParamsAppliedTo.resize(fReactionModes.size());
 
-  fSinDM2WeightVec = std::vector<std::vector<std::vector<double>> >(fReactionModes.size());
+  fLoverEPerEvent = std::vector<std::vector<std::vector<double>> >(fReactionModes.size());
 
   this->BuildParamLists();
 
@@ -1206,14 +1192,8 @@ void GenericSingleSampleFitModel::Book(void)
     fMCTFinSb [imode] = new VALORArray(n_reco_bins_sb, n_true_bins);
     fMCStatSb [imode] = new VALORArray(n_reco_bins_sb, n_true_bins);
 
-    fSinDM2Weight[imode] = new VALORArray(n_true_bins);
-    fSinDM2WeightN[imode] = new VALORArray(n_true_bins);
-
-    fSinDM2WeightVec.at(imode).resize(n_true_bins);
-    for(int bin=0; bin<n_true_bins; ++bin){
-      fSinDM2Weight [imode]->SetEntry(0,bin);
-      fSinDM2WeightN [imode]->SetEntry(0,bin);
-    }
+    fLoverEPerEvent.at(imode).resize(n_true_bins);
+    
     fMCTNomSb [imode]->SetDimensionName(0,"reco");
     fMCTTunSb [imode]->SetDimensionName(0,"reco");
     fMCTSysSb [imode]->SetDimensionName(0,"reco");
@@ -1488,12 +1468,8 @@ void GenericSingleSampleFitModel::Clean(void)
       fMCTFinSb[imode] = 0;
       fMCStatSb[imode] = 0;
 
-      if(fSinDM2Weight[imode]) delete fSinDM2Weight[imode];
-      if(fSinDM2WeightN[imode]) delete fSinDM2WeightN[imode];
-      fSinDM2Weight[imode]  = 0;
-      fSinDM2WeightN[imode] = 0;
-
-      fSinDM2WeightVec.at(imode).clear();
+      fLoverEPerEvent.at(imode).clear();
+      
       // PDF components
       if(fPDFCompSb[imode]) delete fPDFCompSb[imode];
       fPDFCompSb[imode] = 0;
@@ -1541,20 +1517,6 @@ void GenericSingleSampleFitModel::Clean(void)
   for(TuningInfo pairpair : fBinByBinTuningHists) {
     delete pairpair.second;
   }
-
-  for (VALORArrayP * va : fBaselineSplines) {
-    if (!va) {continue;}
-    for (int i = 0 ; i < va->GetSize(); i++) {
-      void * o = (void*)va->GetArray()[i];
-      if (o) {
-        delete static_cast<TObject*>(o);
-      }
-    }
-    delete va;
-  }
-  fBaselineSplines.clear();
-  fBaselineSplinesFilled  = false;
-  fGetBaselineFromSplines = false;
 
   this->ResetSystematicVariationIDs();
   this->ResetUniversesToRead();
@@ -1616,51 +1578,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
   Long_t nev = t->GetEntries();
   LOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
-
-  /*
-   *
-   * THE SPLINE METHOD
-   *
-   *
-  // Turn off all the branches by default
-  t->SetBranchStatus("*",0);
-
-  bool any_bad_status = false;
-
-  // If we're saving the baselines, we need that branch
-  // and to calculate limits for it
-  bool fill_baseline_splines_here = fGetBaselineFromSplines && !fBaselineSplinesFilled;
-  std::vector<int> n_baseline_knots; // per mode, defaults to Nbins_true
-  for (conv::ReacMode_t m : fReactionModes) {
-  n_baseline_knots.push_back(fBinning->TrueSmpBinning(m)->NBins());
-  }
-  double baseline = conv::kBadResult;
-  double min_baseline =  9E99;
-  double max_baseline = -9E99;
-  std::vector<VALORArrayD*> baseline_arrays;
-  if (fill_baseline_splines_here) {
-  t->SetBranchStatus("baseline",1);
-  bool bstat_baseline = t->SetBranchAddress("baseline",&baseline);
-  any_bad_status = any_bad_status || bstat_baseline;
-  // and do a quick loop to calculate the baseline limits
-  // Note - does not cut on mode etc (or detector/baseline - could be weird if using detector/beam inputs from one file)
-  for(Long_t iev = 0; iev < nev; iev++) {
-  t->GetEntry(iev);
-  min_baseline = std::min(min_baseline,baseline);
-  max_baseline = std::max(max_baseline,baseline);
-  }
-  LOG("GenericSingleSampleFitModel",pNOTICE) << fName<<" got baseline range of ("
-  <<min_baseline<<","<<max_baseline<<")";
-
-  // Make the arrays we need
-  for (size_t im = 0 ; im<fReactionModes.size(); im++) {
-  conv::ReacMode_t m = fReactionModes[im];
-  int nbins_true = fBinning->TrueSmpBinning(m)->NBins();
-  baseline_arrays.push_back(new VALORArrayD(nbins_true,n_baseline_knots[im]));
-  fBaselineSplines.push_back(new VALORArrayP(nbins_true));
-  }
-  }
-  */
+  
   // Get a list of all the kinematic variables we care about
   const std::vector<conv::KineVar_t> & kinevars = fBinning->KineVars();
 
@@ -1942,21 +1860,12 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 #endif
 
 
-    //    Apply Oscillations Here for exact baseline stiff 
-    if(true_vars.size() == 1){
-      double trueE = true_vars[0];
-      //std::cout << "baseline: " << baseline << " trueE: "      << trueE  << std::endl;
-
-      double sindm2 = 1;//OsciallationWeight(m,baseline, trueE);
-      double sindm2_n = fSinDM2WeightN[imode]->GetEntry( true_bin     );
-
-      sindm2 += fSinDM2Weight[imode]->GetEntry(true_bin);
-      ++sindm2_n;
-
-      fSinDM2Weight[imode]->SetEntry(sindm2, true_bin);
-      fSinDM2WeightN[imode]->SetEntry(sindm2_n, true_bin);
-      fSinDM2WeightVec.at(imode).at(true_bin).push_back(baseline/trueE);
-
+    // If we're doing SBL, save the baseline per event to calculate exact oscillation probabilities
+    if (util::IsShortBaseline(fDetector)) {
+      if (util::IsNeutrinoAny(m)) { // we only oscillate neutrinos
+        const double & trueE = kinematics.at(conv::kvEtrue);
+        fLoverEPerEvent.at(imode).at(true_bin).push_back(baseline/trueE);
+      }
     }
 
 
@@ -2012,14 +1921,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     fMCTFinSb [imode]->SetEntry(curr_wght_sb, reco_bin_sb, true_bin);
     fMCStatSb [imode]->SetEntry(           1, reco_bin_sb, true_bin);
 
-    /*
-    // And add it to the relevant baseline bin if we're making splines here
-    if (fill_baseline_splines_here) {
-    //~ conv::NuFlavour_t init_flav = util::ReacModeToInitFlavor(m);
-    int baseline_bin = TMath::FloorNint(n_baseline_knots[imode]*(baseline-min_baseline)/(max_baseline-min_baseline));
-    baseline_arrays[imode]->AddToEntry(this_entry,true_bin,baseline_bin);
-    }
-    */
   }//iev
 
   // If we're storing the weights from the universes, here we should
@@ -2066,27 +1967,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   }
   LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTNomOb integral summed over all modes = " << fMCTNomOb_tot_integral;
 
-  /*
-  // If we need to make baseline splines, do that now
-  if (fill_baseline_splines_here) {
-  for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
-  ReacMode_t m = fReactionModes[im];
-  const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
-  const int n_true_bins = true_sb->NBins();
-  for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
-  double * y = &(baseline_arrays[im]->GetEntryRef(true_bin,0));
-  TSpline3 * spl = new TSpline3("",min_baseline,max_baseline,y,n_baseline_knots[im]);
-  fBaselineSplines[im]->SetEntry((intptr_t)spl,true_bin);
-  }
-  }
-  fBaselineSplinesFilled = true;
-  }
-
-  // And let's clean up those arrays from earlier if we made them
-  for (VALORArray * va : baseline_arrays) {
-  if (va) {delete va;}
-  }
-  */
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::ReadTune(
@@ -3631,12 +3511,12 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       else if (hypid == kHypOscSterileEff) {
         // Using Dom Barker's method for exact oscillation probabilities
         double sindm2 = 1;
-        if(fSinDM2WeightVec.at(imode).at(itrue).size() > 0) {
+        if(fLoverEPerEvent.at(imode).at(itrue).size() > 0) {
           sindm2 = 0;
-          for(auto const& LOverE: fSinDM2WeightVec.at(imode).at(itrue)) {
+          for(auto const& LOverE: fLoverEPerEvent.at(imode).at(itrue)) {
             sindm2 += util::Calculate2FSterileSinSqDM(LOverE,dm41sq);
           }
-          sindm2 /= fSinDM2WeightVec.at(imode).at(itrue).size();
+          sindm2 /= fLoverEPerEvent.at(imode).at(itrue).size();
         }
         p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , sinsq2thmue, sinsq2thmumu, sindm2);
         p_numu_nue        = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuE    , sinsq2thmue, sinsq2thmumu, sindm2);
@@ -4656,26 +4536,5 @@ util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_na
 
   return new util::ToyStream(file_name, read_or_write, typeid(this), this->Name(),
       valor_array_format, this->StreamSize());
-}
-//________________________________________________________________________________________
-void GenericSingleSampleFitModel::WriteBaselineSplinesToFile(TFile * f) const
-{
-  if (!fBaselineSplinesFilled) {
-    LOG("GenericSingleSampleFitModel",pFATAL) << fName <<" trying to write splines without them filled.";
-    util::Die(-1); return;
-  }
-  for (size_t im = 0 ; im < fReactionModes.size() ; im++) {
-    ReacMode_t m = fReactionModes[im];
-    int n_true_bins = fBinning->TrueSmpBinning(m)->NBins();
-    for (int itrue = 0 ; itrue < n_true_bins ; itrue++) {
-      //~ util::Interpolator * spl_vf = fBaselineSplines[im].GetEntry(itrue);
-      //~ TSpline3 spl = spl_vf->AsTSpline3();
-      const void * addr = (void*)fBaselineSplines[im]->GetEntry(itrue);
-      const TSpline * spl = static_cast<const TSpline*>(addr);
-
-      TString spline_name = TString::Format("baseline_%s_%s_%d",fName.c_str(),util::AsString(m).c_str(),itrue);
-      f->WriteObject(spl,spline_name.Data());
-    }
-  }
 }
 //________________________________________________________________________________________
