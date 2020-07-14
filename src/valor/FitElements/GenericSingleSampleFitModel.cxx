@@ -1159,7 +1159,7 @@ void GenericSingleSampleFitModel::Book(void)
   fNormParamsAppliedTo  .resize(fReactionModes.size());
   fSplineParamsAppliedTo.resize(fReactionModes.size());
 
-  fLoverEPerEvent = std::vector<std::vector<std::vector<double>> >(fReactionModes.size());
+  fLoverEPerEvent = std::vector<std::vector<std::vector<std::pair<double,double> > > >(fReactionModes.size());
 
   this->BuildParamLists();
 
@@ -1864,7 +1864,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     if (util::IsShortBaseline(fDetector)) {
       if (util::IsNeutrinoAny(m)) { // we only oscillate neutrinos
         const double & trueE = kinematics.at(conv::kvEtrue);
-        fLoverEPerEvent.at(imode).at(true_bin).push_back(baseline/trueE);
+        fLoverEPerEvent.at(imode).at(true_bin).push_back(std::make_pair(baseline/trueE,this_entry));
       }
     }
 
@@ -3513,8 +3513,8 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         double sindm2 = 1;
         if(fLoverEPerEvent.at(imode).at(itrue).size() > 0) {
           sindm2 = 0;
-          for(auto const& LOverE: fLoverEPerEvent.at(imode).at(itrue)) {
-            sindm2 += util::Calculate2FSterileSinSqDM(LOverE,dm41sq);
+          for(const std::pair<double,double> &LOverEandWeight: fLoverEPerEvent.at(imode).at(itrue)) {
+            sindm2 += LOverEandWeight.second*util::Calculate2FSterileSinSqDM(LOverEandWeight.first,dm41sq);
           }
           sindm2 /= fLoverEPerEvent.at(imode).at(itrue).size();
         }
