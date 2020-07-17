@@ -15,6 +15,7 @@ ChangeLog:
 #include "TApplication.h"
 #include "TROOT.h"
 #include "TString.h"
+#include "TObjString.h"
 #include "TSystem.h"
 #include "TPRegexp.h"
 
