@@ -91,7 +91,6 @@ int main(int argc, char ** argv)
   string fit_output          = arg.GetString("fit-output-file");
   int    output_entry        = arg.GetInt("fit-output-entry");
   bool write_data            = arg.GetBool("write-data");
-  bool save_baseline_splines = arg.GetBool("save-baselines");
 
   // If pot_override is set to a positive number, every sample will be initialised with the same POT - this number
   double pot_override     = arg.GetDouble("pot-override");
@@ -105,15 +104,7 @@ int main(int argc, char ** argv)
   if (force_dst) {
     readopt += " forcedst";
   }
-
-  // If we want to not use baseline splines, shouldn't be the default but useful for testing
-  bool variable_baseline = arg.GetBool("no-fix-baseline");
-  if(!variable_baseline){
-    readopt += " fixedbaseline";
-    if(save_baseline_splines)
-      LOG("write_pdf",pWARN) << "Asked to save the baseline splines but chosen the fixed baseline so can't";
-  }
-
+  
   Messenger::Instance()->Configure(util::CompleteConfigPath(mesg_thresholds));
 
   bool generate_fd = arg.GetBool("generate-fd-pred");
@@ -229,13 +220,6 @@ int main(int argc, char ** argv)
     std::string model_name = cmodel->GetSubModel(i)->Name();
     GenericSingleSampleFitModel * gmodel = dynamic_cast<GenericSingleSampleFitModel*>(cmodel->GetSubModel(i));
     gmodel->UpdateObservableBinningFromSimple();
-    if(save_baseline_splines && variable_baseline){
-      LOG("valor", pNOTICE) << "Chosen to save the baseline splines";
-      std::string baseline_filename = model_name+"_basline_spline_variable.root";
-      TFile *baseline_splines = new TFile(baseline_filename.c_str(), "RECREATE");
-      gmodel->WriteBaselineSplinesToFile(baseline_splines);
-      delete baseline_splines;
-    }
   }
 
   if(generate_fd)
