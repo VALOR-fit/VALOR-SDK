@@ -9,5 +9,6 @@ mesg-thresholds                      |   string       |  optional   |   verbosit
 nthreads                             |   integer      |  optional   |   -1
 #
 params                               |   string       |  optional   |   allsyst
+params-exclude                       |   string       |  optional   |   NONE
 prior-file                           |   string       |  mandatory  |   -
 rethrow-unphysical,accept-unphysical |   boolean_list |  optional   |   rethrow-unphysical

@@ -15,6 +15,9 @@
              --mesg-thresholds     : Message thresholds [def: "verbosity.xml"]
              --enu-reco-max        : Maximum Ereco to show on the plot [def: 10]
              --params              : Which parameters to tweak [def: allsyst]
+             --params-exclude      : If e.g. you want to tweak all params in a large set (e.g. flux)
+                                     except for some small subset, use this option to remove the
+                                     specified params from those passed to the --params option
 
              --input-mixing12,etc  : Option to give input values to osc params (in .arg)
 
@@ -72,6 +75,7 @@
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
 #include "valor/Utilities/UtlSystem.h"
+#include "valor/Utilities/UtlForMacros.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/VThreadPool.h"
@@ -98,12 +102,13 @@ int main(int argc, char ** argv)
   LOG("valor", pNOTICE) << arg;
 
   // Read the command line
-  int ntoys               = arg.GetInt("ntoys");
-  int n_threads           = arg.GetInt("nthreads");
-  string hypname          = arg.GetString("physics-hypothesis");
-  string fplopt           = arg.GetString("fit-param-opt");
-  string output_rootfile  = arg.GetString("output");
-  string params_to_tweak  = arg.GetString("params");
+  int ntoys                 = arg.GetInt("ntoys");
+  int n_threads             = arg.GetInt("nthreads");
+  string hypname            = arg.GetString("physics-hypothesis");
+  string fplopt             = arg.GetString("fit-param-opt");
+  string output_rootfile    = arg.GetString("output");
+  string params_to_tweak    = arg.GetString("params");
+  string params_to_exclude  = arg.GetString("params-exclude");
   bool rethrow_unphysical = arg.GetBool("rethrow-unphysical");
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
@@ -149,7 +154,14 @@ int main(int argc, char ** argv)
   // Array to store the number of events in each sample for each toy
   double events [cm->GetNSubModels()][ntoys];
 
-  std::vector<PhysParamId_t> param_set = util::GetParameterSet(params_to_tweak);
+  std::vector<PhysParamId_t> param_set = util::GetParameterSet(params_to_tweak, true);   // The 2nd arg makes it only return exact matches. This prevents e.g. askign for 'mixing12' and getting 'mixing12_bar' as well as 'mixing12'
+  std::vector<PhysParamId_t> params_to_remove;
+  if(params_to_exclude != "NONE") {
+    params_to_remove = util::GetParameterSet(params_to_exclude, true);
+  }
+  if(params_to_remove.size() > 0) {
+    util::RemoveItemsFromVector<PhysParamId_t>(param_set, params_to_remove);
+  }
   assert(param_set.size());
 
   std::map<PhysParamId_t,bool> syst_param_map;
@@ -158,6 +170,15 @@ int main(int argc, char ** argv)
     PhysParamId_t p = param_set[ip];
     if(!util::IsSystematic(p)) { osc_params.push_back(p); }
     else                    { syst_param_map[p] = true; }
+  }
+
+  cout << "Randomising osc params:" << endl;
+  for(PhysParamId_t p : osc_params) {
+    cout << "\t" << util::NameRegistry::Instance()->ParamAsStringVerySimple(p) << endl;
+  }
+  cout << "Randomising syst params:" << endl;
+  for(auto const& pair : syst_param_map) {
+    cout << "\t" << util::NameRegistry::Instance()->ParamAsStringVerySimple(pair.first) << endl;
   }
 
   FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
@@ -201,10 +222,6 @@ int main(int argc, char ** argv)
     }
 
     for(PhysParamId_t p : osc_params) {
-      // TODO: Can this be removed now that we have osc params in the config files?
-      std::cerr << "Osc param randomisation is not yet supported. Exiting" << std::endl;
-      util::Die(-1);
-
       double rnd_value = util::oscillation::GetRandomizedOscParam(p,*fp);
       fp->Update(p, rnd_value);
       if(p == conv::kPhypMixing14    || p == conv::kPhypMixing15    || p == conv::kPhypMixing24    ||
@@ -281,7 +298,12 @@ int main(int argc, char ** argv)
 
   streamer << "\t\t\\hline\n\t\\end{tabular}" << endl;
   streamer << "\t\\caption{ Randomisation statistics from " << ntoys
-           << " pseudo-data sets, with the following set of parameters varied: " << params_to_tweak << " }" << endl;
+           << " pseudo-data sets, with the following set of parameters varied: \'" << params_to_tweak << "\'";
+  if(params_to_remove.size() > 0) {
+    streamer << ", and with the following parameters excluded from the list of varied params: \'"
+             << params_to_exclude << "\'";
+  }
+  streamer << " }" << endl;
   streamer << "\\end{table}" << endl;
 
   output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak);
