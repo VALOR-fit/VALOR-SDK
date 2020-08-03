@@ -846,3 +846,38 @@ bool GenericSingleSampleFitData::DataExists(Option_t * opt_in) const
   return exists;
 }
 //________________________________________________________________________________________
+void GenericSingleSampleFitData::OverwriteData(VALORArray* replacement_data_ob, VALORArray* replacement_data_sb)
+{
+  if(replacement_data_ob) {
+    if(fDataObNull) {
+      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite null Ob data arrays.";
+      util::Die(-1);
+    }
+    if(fDataOb->GetSize() != replacement_data_ob->GetSize()) {
+      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite Ob data array with an array of a different size.";
+      util::Die(-1);
+    }
+    fDataOb = new VALORArray(*replacement_data_ob);
+    if(!fDataOb) {
+      LOG("GenericSingleSampleFitData",pFATAL) << "Could not overwrite Ob data array.";
+      util::Die(-1);
+    }
+  }
+
+  if(replacement_data_sb) {
+    if(fDataSbNull) {
+      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite null Sb data arrays.";
+      util::Die(-1);
+    }
+    if(fDataSb->GetSize() != replacement_data_sb->GetSize()) {
+      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite Sb data array with an array of a different size.";
+      util::Die(-1);
+    }
+    fDataSb = new VALORArray(*replacement_data_sb);
+    if(!fDataSb) {
+      LOG("GenericSingleSampleFitData",pFATAL) << "Could not overwrite Sb data array.";
+      util::Die(-1);
+    }
+  }
+}
+//________________________________________________________________________________________
