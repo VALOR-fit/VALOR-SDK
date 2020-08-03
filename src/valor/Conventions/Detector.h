@@ -64,6 +64,7 @@ namespace util {
   conv::Detector_t DetectorFromInt    (int b);
   conv::Detector_t DetectorFromString (string b);
   bool             IsLongBaseline     (conv::Detector_t d);
+  bool             IsShortBaseline    (conv::Detector_t d);
   
 } // util
 
