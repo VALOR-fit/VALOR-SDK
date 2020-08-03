@@ -107,6 +107,7 @@ void SetOscillationParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
 {
    // Read in the priors XML file
    std::string prior_file_name = arg.GetString("prior-file");
+   if(util::ToLowerCase(prior_file_name) == "none") { return; }
    std::string file_priors_full = util::CompleteConfigPath(prior_file_name);
 
    // Check that the prior file exists, either in the config directory or the current directory
@@ -713,11 +714,13 @@ void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_
     valor::conv::PhysParamId_t p = util::NameRegistry::Instance()->PhysParamFromString(
             param.c_str());
 
-    double free_value = init_val + bin*step;
-    fpl.Update(p, free_value);
-    
-    LOG("UtlOscillation", pDEBUG) << "Increasing free paramter" << param << " value " << free_value
-                                     << " for the bin " << bin;
+    if(p != conv::kPhypUndefined){
+      double free_value = init_val + bin*step;
+      fpl.Update(p, free_value);
+
+      LOG("UtlOscillation", pDEBUG) << "Increasing free paramter" << param << " value " << free_value
+                                    << " for the bin " << bin;
+    }
 
     return;
 }
