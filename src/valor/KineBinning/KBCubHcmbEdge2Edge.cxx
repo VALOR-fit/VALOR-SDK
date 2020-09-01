@@ -125,10 +125,11 @@ bool KBCubHcmbEdge2Edge::Read(string file)
            << "No range `min,max' was specified for dimension: " << idim;
          return false;
       }
-      fBinEdges.push_back(std::vector<double>());
+      fBinEdges.push_back(vector<double>());
       double dx = (range[1] - range[0]) / nbins_this_dim;
       double x = range[0];
       for(unsigned int i = 0; i < nbins_this_dim+1; i++) {
+        if(x > range[1]) break;
         fBinEdges[idim].push_back(x);
         x += dx;
       }
