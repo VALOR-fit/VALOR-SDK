@@ -198,7 +198,9 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   fBinning->Read(binning_file);
 
   this->Book();
+  LOG("GenericSingleSampleFitModel",pINFO) << "Booked";
   this->Zero();
+  LOG("GenericSingleSampleFitModel",pINFO) << "Zeroed";
 
   //------------------------
   // TODO
@@ -254,13 +256,12 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   else if(fUseMCDST) {
     LOG("GenericSingleSampleFitModel",pINFO) << "Filling in VALOR MC templates using VALOR DSTs";
     string node_name = "mc/dst/" + util::AsString(fBeam, "lowercase");
-    TTree * mc_dst = util::XML2TTree (xml,root_node,node_name);
-    if (!mc_dst) {
+    fMCDST = util::XML2TTree (xml,root_node,node_name);
+    if (!fMCDST) {
       LOG("GenericSingleSampleFitModel",pFATAL) << "Failed to read DST tree";
       util::Die(-1); return false;
     }
-    this->FillFromDST(mc_dst);
-    delete mc_dst;
+    this->FillFromDST(fMCDST);
   } 
   else {
     LOG("GenericSingleSampleFitModel",pINFO) << "Using stored VALOR MC templates";
@@ -1091,6 +1092,7 @@ void GenericSingleSampleFitModel::Init(void)
   fPOT          = 0;
   fUseMCDST     = false;
   fRFL          = 0;
+  fMCDST        = nullptr;
 
   fPDFTotOb      = 0;
   fPDFTotNullOb  = true;
@@ -1276,6 +1278,7 @@ void GenericSingleSampleFitModel::Book(void)
     fPDFCompOb[imode]->SetName(TString::Format("%s_%s_%s_%s",tag,"pdfc_ob_vf",fName.c_str(),util::AsString(m).c_str()));
     fPDFCompOb[imode]->SetDimensionName(0,"reco");
     fPDFCompOb[imode]->SetDimensionName(1,"true");
+    
     // >> PDF total
     // should get here for at least one imode value
     if(fPDFTotNullOb) {              
@@ -1304,13 +1307,23 @@ void GenericSingleSampleFitModel::Book(void)
       vec.resize(imode); // dumb but easier than making it reserve earlier
       if(!fUniversesAsList) 
         assert(fLastUniverseToSave>=fFirstUniverseToSave);
-      auto it  = vec.begin();
-      vec.insert(it+imode,VALORArrayF(n_reco_bins_ob,n_true_bins,n_universes));
+      auto it_vec  = vec.begin();
+      vec.insert(it_vec+imode,VALORArrayF(n_reco_bins_ob,n_true_bins,n_universes));
       vec[imode].SetDimensionName(0,"reco");
       vec[imode].SetDimensionName(1,"true");
       vec[imode].SetDimensionName(2,"universe");
       vec[imode].SetAll(0.0f);
     }
+    std::vector<VALORArrayF> & product = fUniverseVariationProducts;
+    product.resize(imode); // dumb but easier than making it reserve earlier
+    if(!fUniversesAsList) 
+      assert(fLastUniverseToSave>=fFirstUniverseToSave);
+    auto it_product  = product.begin();
+    product.insert(it_product+imode,VALORArrayF(n_reco_bins_ob,n_true_bins,n_universes));
+    product[imode].SetDimensionName(0,"reco");
+    product[imode].SetDimensionName(1,"true");
+    product[imode].SetDimensionName(2,"universe");
+    product[imode].SetAll(0.0f);
 
   }//imode
 
@@ -1869,40 +1882,70 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     }
 
 
-    std::map<const int,double> universe_weights;
-
     VLOG("GenericSingleSampleFitModel",pDEBUG) << "Getting weights from " << fUniverseParametersToSave.size() << " systematic parameters";
 
     // If necessary, get the weight from the systematic variations
-    for (const std::string & name : fUniverseParametersToSave) {
-      if(!fUniversesAsList){
-        size_t universe_offset = 0;
-        VLOG("GenericSingleSampleFitModel",pDEBUG) << "By range";
-        for (size_t universe_id = fFirstUniverseToSave ; universe_id <= fLastUniverseToSave ; universe_id++) {
+    if(!fUniversesAsList){
+      size_t universe_offset = 0;
+      VLOG("GenericSingleSampleFitModel",pDEBUG) << "By range";
+      for (size_t universe_id = fFirstUniverseToSave ; universe_id <= fLastUniverseToSave ; universe_id++) {
+        float product_weight = this_entry;
+        for (const std::string & name : fUniverseParametersToSave) {
           universe_offset = universe_id - fFirstUniverseToSave;
           const std::vector<float> & universes = branch_universes.at(name);
           // Right now we'll sum up the weighted bin totals
           float universe_entry = this_entry*universes.at(universe_id);
+          product_weight *= universes.at(universe_id);
           fUniverseVariations[name][imode].AddToEntry(
               universe_entry,
               reco_bin_ob, true_bin, universe_offset
               );
         }
-      } // Universes by range
-      else{
-        VLOG("GenericSingleSampleFitModel",pDEBUG) << "From list";
-        for (size_t universe_offset = 0; universe_offset < fUniversesToRead.size(); universe_offset++) {
+        // Testing: If the product of the weights with the nominal rate is exactly the same as nominal, skip the event
+        if(abs(product_weight-this_entry) < std::numeric_limits<float>::epsilon()) {
+          LOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
+                                                    << "\n Universe: " << universe_id
+                                                    << "\n The product of the event weights is: " << product_weight
+                                                    << "\n The nominal event rate is: " << this_entry 
+                                                    << "\n They are too similar, no weights are being applied, skipping the event";
+          continue;
+        }
+        fUniverseVariationProducts[imode].AddToEntry(
+            product_weight,
+            reco_bin_ob, true_bin, universe_offset
+            );
+      }
+    } // Universes by range
+    else{
+      VLOG("GenericSingleSampleFitModel",pDEBUG) << "From list";
+      for (size_t universe_offset = 0; universe_offset < fUniversesToRead.size(); universe_offset++) {
+        float product_weight = this_entry;
+        for (const std::string & name : fUniverseParametersToSave) {
           size_t universe_id = fUniversesToRead.at(universe_offset);
           const std::vector<float> & universes = branch_universes.at(name);
           // Right now we'll sum up the weighted bin totals
           float universe_entry = this_entry*universes.at(universe_id);
+          product_weight *= universes.at(universe_id);
           fUniverseVariations[name][imode].AddToEntry(
               universe_entry,
               reco_bin_ob, true_bin, universe_offset
               );
         }
-      } // Universes by range
-    }
+        // Testing: If the product of the weights with the nominal rate is exactly the same as nominal, skip the event
+        if(abs(product_weight-this_entry) < std::numeric_limits<float>::epsilon()) {
+          LOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
+                                                    << "\n Universe: " << universe_offset
+                                                    << "\n The product of the event weights is: " << product_weight
+                                                    << "\n The nominal event rate is: " << this_entry 
+                                                    << "\n They are too similar, no weights are being applied, skipping the event";
+          continue;
+        }
+        fUniverseVariationProducts[imode].AddToEntry(
+            product_weight,
+            reco_bin_ob, true_bin, universe_offset
+            );
+      } 
+    }// Universes from list
 
     // Add `nom' array entry (and init `tun', `sys' and `fin' arrays = `nom')
     double curr_wght = fMCTNomOb[imode]->GetEntry(reco_bin_ob, true_bin);
@@ -1932,28 +1975,37 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     n_universes_to_save = fUniversesToRead.size();
 
   int n_reco_bins_ob = reco_ob->NBins();
-  for (const std::string & name : fUniverseParametersToSave) {
-    for (size_t universe_offset = 0 ; universe_offset < n_universes_to_save ; universe_offset++) {
-      for(size_t imode = 0; imode < fReactionModes.size(); imode++){
-        ReacMode_t m = fReactionModes[imode];
-        if(m == kmUndefined) continue;
-        const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
-        const int n_true_bins = true_sb->NBins();
+  for (size_t universe_offset = 0 ; universe_offset < n_universes_to_save ; universe_offset++) {
+    for(size_t imode = 0; imode < fReactionModes.size(); imode++){
+      ReacMode_t m = fReactionModes[imode];
+      if(m == kmUndefined) continue;
+      const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
+      const int n_true_bins = true_sb->NBins();
 
-        for(int reco_bin_ob = 0 ; reco_bin_ob < n_reco_bins_ob ; reco_bin_ob++) {
-          for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
+      for(int reco_bin_ob = 0 ; reco_bin_ob < n_reco_bins_ob ; reco_bin_ob++) {
+        for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
+          // For the product of all parameters
+          const float & orig_entry = fMCTFinOb [imode]->GetEntryRef(reco_bin_ob,true_bin);
+          float product_entry = fUniverseVariationProducts[imode].GetEntry(reco_bin_ob,true_bin,universe_offset);
+          float product_weight = 1.;
+          if (std::abs(orig_entry) > conv::kASmallNum) {
+            product_weight = product_entry/orig_entry;
+          }
+          fUniverseVariationProducts[imode].SetEntry(product_weight,reco_bin_ob,true_bin,universe_offset);
+
+          // Now per parameter
+          for (const std::string & name : fUniverseParametersToSave) {
             float varied_entry = fUniverseVariations[name][imode].GetEntry(reco_bin_ob,true_bin,universe_offset);
-            const float & orig_entry = fMCTFinOb [imode]->GetEntryRef(reco_bin_ob,true_bin);
             float universe_weight = 1.;
             if (std::abs(orig_entry) > conv::kASmallNum) {
               universe_weight = varied_entry/orig_entry;
             }
             fUniverseVariations[name][imode].SetEntry(universe_weight,reco_bin_ob,true_bin,universe_offset);
-          }//true bins
-        }//reco bins
-      }//modes
-    }//universe
-  }//param
+          }//param
+        }//true bins
+      }//reco bins
+    }//modes
+  }//universe
 
   LOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAfter filling MC templates from the input MC tree, the fMCTNomOb integrals for each mode are:";
@@ -3306,12 +3358,13 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         }
         for (int ireco = 0 ; ireco < n_reco_bins_ob ; ireco++) {
           for (int itrue = 0 ; itrue < n_true_bins_sb ; itrue++) {
-            float & wght = fUniverseVariations[name][imode].GetEntryRef(ireco,itrue,universe_offset);
+            //float & wght = ;
+            float & wght = (name == "product") ? fUniverseVariationProducts[imode].GetEntryRef(ireco,itrue,universe_offset) : fUniverseVariations[name][imode].GetEntryRef(ireco,itrue,universe_offset);
             double & val = templFinOb[ireco][itrue];
             val *= wght;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel",pDEBUG) << " Parameter name and ID: " << universe_id << ", " << name
-                                                      << ", universe offset: " << universe_offset << " weight: " << wght << " new value: " << val;
+            LOG("GenericSingleSampleFitModel",pINFO) << "\n Parameter name and ID: " << universe_id << ", " << name
+                                                      << "\n Universe offset: " << universe_offset << " weight: " << wght << " new value: " << val;
 #endif
           } // true
         } //reco
@@ -3822,6 +3875,11 @@ const valor::ModeList * GenericSingleSampleFitModel::GetModeList(Option_t * /*op
 const double &  GenericSingleSampleFitModel::GetPOT() const
 {
   return fPOT;
+}
+//________________________________________________________________________________________
+TTree * GenericSingleSampleFitModel::GetDST() const
+{
+  return fMCDST;
 }
 //________________________________________________________________________________________
 const double & GenericSingleSampleFitModel::GetFiducialMass() const
