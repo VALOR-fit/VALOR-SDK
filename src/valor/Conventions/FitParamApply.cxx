@@ -246,7 +246,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllMEC       , "allmec") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllELScat    , "allelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll1pi       , "all1pi") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNCn0pi    , "alln0pi") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAlln0pi      , "alln0pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNonRes    , "allnonres") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll          , "all") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCoh    , "allbutcoh") );
