@@ -78,7 +78,7 @@ const double enu_reco_max = 10;
 
 const char * fit_result_tree_name = "valor_fit_ntp";
 
-const KineVar_t kv = conv::kvEreco;
+//const KineVar_t kv = conv::kvEreco;
 
 int main(int argc, char ** argv)
 {
@@ -95,6 +95,10 @@ int main(int argc, char ** argv)
   string fplopt           = arg.GetString("fit-param-opt");
   string output_rootfile  = arg.GetString("output");
   string params_to_tweak  = arg.GetString("params");
+  string kine_var         = arg.GetString("kinevar");
+
+  // Get the kinematic variable we're tweaking
+  const KineVar_t kv = util::KineVarFromString(kine_var);
 
   string read_prior_from_file = arg.GetString("load-prior-from-file");
   int prior_fit_number = arg.GetInt("prior-fit-number");
