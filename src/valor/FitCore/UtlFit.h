@@ -23,7 +23,7 @@
 #include <TMatrixDSym.h>
 
 #include "valor/FitCore/FitterABC.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/PhysParamList.h"
 
 namespace valor {
@@ -40,19 +40,19 @@ namespace util {
 //   - VectorBFGS
 //   - SteepestDescent
 //
-FitterABC * GetFitter (FitInputs * inputs, Option_t * option);
+FitterABC * GetFitter (Likelihood * lkhd, Option_t * option);
 
   // Randomise the parameters in an FPL  using accept/reject with the chi-square probability
-  double RandomiseParametersByAcceptance(FitInputs & fi, const TMatrixD * cholesky_for_throws = 0,
+  double RandomiseParametersByAcceptance(Likelihood & lkhd, const TMatrixD * cholesky_for_throws = 0,
       int max_attempts = 100000, double scaling_factor = 1.);
   // WARNING - version with no cholesky matrix given is not properly validated
   // Also, scales very badly with num of parameters. Unusably slow with high dimensions
   // Should replace with eg MCMC
-  
+
   // Tweak the parameters in an FPL  using MCMC with the chi-square probability
-  bool AttemptMCMCStep(FitInputs & fitinputs, double & current_chisq, int & n_attempts_out,
+  bool AttemptMCMCStep(Likelihood & lkhd, double & current_chisq, int & n_attempts_out,
     double step_size_factor, const TMatrixD * cholesky_for_throws = NULL, int max_attempts = 1000);
-  
+
   // Take a vector of parameter sets, and generate a covariance matrix
   TMatrixDSym CalculateCovariance(std::vector<valor::PhysParamList> param_sets,
       const CorrelatedSystematics & example_format);
@@ -61,4 +61,3 @@ FitterABC * GetFitter (FitInputs * inputs, Option_t * option);
 } // valor
 
 #endif
-
