@@ -190,7 +190,7 @@ void Fit(CmdLnArgList& arg)
       FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
       // Set the priors
-      util::oscillation::SetOscillationParameterPriors(arg, *fpl);
+      util::oscillation::SetParameterPriors(arg, *fpl);
       // Fix or set marginalisation flag for oscillation parameters
       util::oscillation::SetOscillationParameters(arg, *fpl);
 

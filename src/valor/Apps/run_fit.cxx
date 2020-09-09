@@ -283,7 +283,7 @@ int main(int argc, char ** argv)
     }
     Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
 
-    util::oscillation::SetOscillationParameterPriors(arg, *fp);
+    util::oscillation::SetParameterPriors(arg, *fp);
 
     // Set input parameters
     RgKeyList input_args = arg.FindKeys("input-");

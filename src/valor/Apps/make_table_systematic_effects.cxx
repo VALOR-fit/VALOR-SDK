@@ -161,7 +161,7 @@ int main(int argc, char ** argv)
   }
 
   FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-  util::oscillation::SetOscillationParameterPriors(arg, *fp);
+  util::oscillation::SetParameterPriors(arg, *fp);
 
   // Generate pdfs
   for(int itoy = 0; itoy < ntoys; itoy++) {
