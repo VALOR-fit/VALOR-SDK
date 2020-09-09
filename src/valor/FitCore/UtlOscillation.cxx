@@ -81,6 +81,7 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
                }
                else
                {
+      
                   LOG("UtlOscillation", pERROR) << "--fit-param2 specified " <<
                      "without accompanying --fit-param2-value.";
                   exit(1);
@@ -103,30 +104,49 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
 }
 
 //____________________________________________________________________________
-void SetOscillationParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
+void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
 {
    // Read in the priors XML file
-   std::string prior_file_name = arg.GetString("prior-file");
-   std::string file_priors_full = util::CompleteConfigPath(prior_file_name);
+   std::string osc_prior_file_name = arg.GetString("osc-prior-file");
+   std::string osc_file_priors = util::CompleteConfigPath(osc_prior_file_name);
 
+   // Read syst priors form XML file 
+
+   std::string syst_prior_file_name = arg.GetString("syst-prior-file");
+   std::string syst_file_priors = util::CompleteConfigPath(syst_prior_file_name);
+   
    // Check that the prior file exists, either in the config directory or the current directory
+   //Oscillation prios should be set always. sytematic prior is now(2020) used for T2K analysis. 
+   //Just in case it thorws only an INFO message if cannot find syst prior file.
    FileStat_t dummy;
-   if (gSystem->GetPathInfo(file_priors_full.c_str(), dummy))
+   if (gSystem->GetPathInfo(osc_file_priors.c_str(), dummy))
    {
-      file_priors_full = prior_file_name.c_str();
-      if (gSystem->GetPathInfo(file_priors_full.c_str(), dummy)) {
-         LOG("UtlOscillation", pERROR) << "Prior config file not found: " << prior_file_name;
+      osc_file_priors = osc_prior_file_name.c_str();
+      if (gSystem->GetPathInfo(osc_file_priors.c_str(), dummy)) {
+         LOG("UtlOscillation", pERROR) << "Prior config file not found: " << osc_prior_file_name;
          exit(1);
       }
    }
 
-   // Parse the input XML priors file
+   if (gSystem->GetPathInfo(syst_file_priors.c_str(), dummy))
+   {
+      syst_file_priors = syst_prior_file_name.c_str();
+
+       if (gSystem->GetPathInfo(syst_file_priors.c_str(), dummy)) {
+         LOG("UtlOscillation", pINFO) << "Systematic prior config file not found: " << syst_prior_file_name << " . Maybe you never wanted to set it though." ;
+         syst_file_priors = "";
+      }
+   }
+
+
+   // Parse the input XML priors file for oscillation parameters 
    TXMLEngine* xmleng = new TXMLEngine;
-   XMLDocPointer_t xmldoc = xmleng->ParseFile(file_priors_full.c_str());
+   XMLDocPointer_t xmldoc = xmleng->ParseFile(osc_file_priors.c_str());
    if (xmldoc==0) {
-      LOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << file_priors_full << "]";
+      LOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << osc_file_priors << "]";
       exit(1);
    }
+
    XMLNodePointer_t root_node = xmleng->DocGetRootElement(xmldoc);
    const char * list_name_cstr = xmleng->GetAttr(root_node,"name");
    LOG("UtlOscillation", pNOTICE) << "Reading priors from element list named" << list_name_cstr;
@@ -145,6 +165,37 @@ void SetOscillationParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
       }
       curr_node = xmleng->GetNext(curr_node);
    }
+
+   // Now parse file  with systematic parameters priors 
+   if (syst_file_priors!="")
+   {
+      xmldoc=0;
+      xmldoc = xmleng->ParseFile(syst_file_priors.c_str());
+      if (xmldoc==0) {
+         LOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << syst_file_priors << "]";
+         exit(1);
+      }
+   
+   
+      root_node = xmleng->DocGetRootElement(xmldoc);
+      list_name_cstr = xmleng->GetAttr(root_node,"name");
+      LOG("UtlOscillation", pNOTICE) << "Reading priors from element list named" << list_name_cstr;
+   
+      curr_node = xmleng->GetChild(root_node);
+      npriors_set = 0; // ¿why do we actually need this parameter?
+      while(curr_node) {
+         string curr_node_name = xmleng->GetNodeName(curr_node);
+         if(!strcmp(curr_node_name.c_str(),"prior")) {
+            bool success = util::oscillation::SetSinglePrior(xmleng,curr_node,fpl);
+            if (!success) {
+               LOG("UtlOscillation", pERROR) << "Failed to read prior list. Exiting.";
+               exit(1);
+            }
+            npriors_set++;
+         }
+         curr_node = xmleng->GetNext(curr_node);
+      }
+   }//end parsing syst prios 
 
    // TODO: Put in some check to see if we've set priors on every oscillation parameter in our phys hypothesis
 }
@@ -576,24 +627,24 @@ PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg,string penaltyparam)
 
     {
         // Read in the priors XML file
-        std::string prior_file_name = arg.GetString("prior-file");
-        std::string file_priors_full = util::CompleteConfigPath(prior_file_name);
+        std::string osc_prior_file_name = arg.GetString("prior-file");
+        std::string osc_file_priors = util::CompleteConfigPath(osc_prior_file_name);
         // Check that the prior file exists, either in the config directory or the current directory
         FileStat_t dummy;
-        if (gSystem->GetPathInfo(file_priors_full.c_str(), dummy))
+        if (gSystem->GetPathInfo(osc_file_priors.c_str(), dummy))
         {
-            file_priors_full = prior_file_name.c_str();
-            if (gSystem->GetPathInfo(file_priors_full.c_str(), dummy)) {
-                LOG("UtlOscillation", pERROR) << "Prior config file with penalty info not found: " << prior_file_name;
+            osc_file_priors = osc_prior_file_name.c_str();
+            if (gSystem->GetPathInfo(osc_file_priors.c_str(), dummy)) {
+                LOG("UtlOscillation", pERROR) << "Prior config file with penalty info not found: " << osc_prior_file_name;
                 exit(1);
             }
         }
 
         // Parse the input XML priors file
         TXMLEngine* xmleng = new TXMLEngine;
-        XMLDocPointer_t xmldoc = xmleng->ParseFile(file_priors_full.c_str());
+        XMLDocPointer_t xmldoc = xmleng->ParseFile(osc_file_priors.c_str());
         if (xmldoc==0) {
-            LOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << file_priors_full << "]";
+            LOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << osc_file_priors << "]";
             exit(1);
         }
         XMLNodePointer_t root_node = xmleng->DocGetRootElement(xmldoc);

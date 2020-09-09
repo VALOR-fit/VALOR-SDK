@@ -45,7 +45,7 @@ namespace oscillation
                  priors should be read.
       \param fpl The FitParamList to be updated with the values determined by arg.
    */
-   void SetOscillationParameterPriors(CmdLnArgList& arg, FitParamList& fpl);
+   void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl);
 
   /**
      Set a single prior from an XML file. The prior can be on a single parameter,
