@@ -36,5 +36,6 @@ fit-param2-max-value                 |   double       |  optional   |   0.0
 fit-param2-nbins                     |   integer      |  optional   |   0
 fit-param2-start-bin                 |   integer      |  optional   |   0
 n-sigma-limit                        |   double       |  optional   |   0.0
-prior-file                           |   string       |  mandatory  |   -
+osc-prior-file                       |   string       |  mandatory  |   -
+syst-prior-file                      |   string       |  optional   |   -
 use-penalty-term                     |   string       |  optional   |   -
