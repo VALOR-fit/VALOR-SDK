@@ -128,8 +128,7 @@ public:
 
 
   // Throw flagged in UtlOsc systematic parameters according to their priors ///// test to see if it works 
-  void ThrowSystParameters(FitParamList& fpl)  ;
-  double GetRandomizedParam(conv::PhysParamId_t p, FitParamList& fpl);
+  void ThrowNonGaussianSystParameters(FitParamList& fpl);
 
     
 protected:

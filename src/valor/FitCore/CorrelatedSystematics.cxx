@@ -41,6 +41,7 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/CorrelatedSystematics.h"
 #include "valor/Utilities/Rnd.h"
+#include "valor/FitCore/UtlOscillation.h"
 
 using std::cout;
 using std::cerr;
@@ -589,7 +590,10 @@ void CorrelatedSystematics::Tweak(
      
      // Now throw values for some of the parameters according to the prior 
      // these parameters shoudl be specified in an xml file and they are getting a special flag in UtlOsc
-     ThrowSystParameters(fpl);
+     if (fpl.NonGaussianSystParExists())
+    {
+      ThrowNonGaussianSystParameters(fpl);
+    }
   }
 
   return;
@@ -676,7 +680,10 @@ void CorrelatedSystematics::Tweak(
     
     // Now throw values for some of the parameters according to the prior 
     // these parameters shoudl be specified in an xml file and they are getting a special flag in UtlOsc
-    ThrowSystParameters(fpl);
+    if (fpl.NonGaussianSystParExists())
+    {
+      ThrowNonGaussianSystParameters(fpl);
+    }
   }
   return;
 }
@@ -761,7 +768,11 @@ void CorrelatedSystematics::Tweak(
 
     // Now throw values for some of the parameters according to the prior 
     // these parameters shoudl be specified in an xml file and they are getting a special flag in UtlOsc
-    ThrowSystParameters(fpl);
+    // works only if we are  this prior 
+    if (fpl.NonGaussianSystParExists())
+    {
+      ThrowNonGaussianSystParameters(fpl);
+    }
   }
   return;
 }
@@ -797,13 +808,13 @@ double CorrelatedSystematics::ChisqPenalty(bool /*all_syst*/) const
 
 //________________________________________________________________________________________
 
-void CorrelatedSystematics::ThrowSystParameters(FitParamList& fpl) 
+void CorrelatedSystematics::ThrowNonGaussianSystParameters(FitParamList& fpl) 
 {
 
  for (unsigned int i = 0 ; i < this->fNSystParameters; i++) 
   {
-    if (fpl.IsSystParWithPrior(fSystParameters[i])){
-    double value = this->GetRandomizedParam(fSystParameters[i], fpl);
+    if (fpl.IsSystParWithNonGaussianPrior(fSystParameters[i])){
+    double value = util::oscillation::GetRandomizedParam(fSystParameters[i], fpl);
     LOG("CorrelatedSystematics", pDEBUG) << "throwing prior for syst parameter " << util::NameRegistry::Instance()->ParamAsString(fSystParameters[i])
                                    << " hope it will work correctly";
     this->SetCurrentValue(fSystParameters[i],value);
@@ -811,57 +822,6 @@ void CorrelatedSystematics::ThrowSystParameters(FitParamList& fpl)
     else { continue; }
   }
   return; 
-}
-//________________________________________________________________________________________
-double CorrelatedSystematics::GetRandomizedParam(conv::PhysParamId_t p, FitParamList& fpl) 
-{
-  // Here we throw the parameter according to the scheme set for its prior.
-  string mode = fpl.GetPriorModeName(p);
-  if(!ParameterPool::Instance()->IsParamInPool(p)) {
-    LOG("CorrelatedSystematics", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
-                                   << "\' was in the FPL but not the ParameterPool";
-    util::Die(-1);
-  }
-
-  const Parameter & param = ParameterPool::Instance()->GetParam(p);
-  double min = param.GetLimits().first;
-  double max = param.GetLimits().second;
-
-  double value = -999;
-  // Curretly support only flat and gaussian priors. Not sure if we want to have histos too and not sure if we need gauss  
-  if(mode == "flat")
-  {
-     // Get the limits imposed by the prior
-     double min_prior = fpl.GetMinValueFlat(p);
-     double max_prior = fpl.GetMaxValueFlat(p);
-
-     value = min_prior - 1.0;
-     do
-     {
-        value = Rnd::Instance()->RndToyMCosc().Uniform(min_prior, max_prior);
-     }
-     while(value < min || value > max || value < min_prior || value > max_prior);
-  }
-  else if(mode == "gaus")
-  {
-     double mean = fpl.GetMeanGaus(p);
-     double sigma = fpl.GetSigmaGaus(p);
-     // Get the absolute physical limits, these are hard-coded assuming some conventions,
-     // so are converted to the conventions used for the throw in e.g. OscParamMinValue
-
-     value = min - 1.0;
-     do
-     {
-        value = Rnd::Instance()->RndToyMCosc().Gaus(mean, sigma);
-     }
-     while(value < min || value > max);
-  }
-  else {
-     LOG("CorrelatedSystematics", pERROR) << "Invalid prior type, can not throw oscillation parameter, "
-                                   << util::NameRegistry::Instance()->ParamAsStringVerySimple(p);
-     exit(1);
-  }
-  return value;
 }
 
 //________________________________________________________________________________________
