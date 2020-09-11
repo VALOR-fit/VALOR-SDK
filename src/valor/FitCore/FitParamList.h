@@ -288,7 +288,10 @@ namespace valor {
     TH2D * GetToyHisto2D    (valor::conv::PhysParamId_t p) const { return fToyHisto2D    [this->Id(p)]; }
     
     bool   IsPrior2D        (valor::conv::PhysParamId_t p) const { return fIsPrior2D     [this->Id(p)]; }
-    
+
+    // Setting flag for the systematic paramiters with prior to correctly handle them further in CorrelatedSystematics
+    void   SetSystParWithPrior (valor::conv::PhysParamId_t p); 
+    bool   IsSystParWithPrior  (valor::conv::PhysParamId_t p) const { return fIsSystParWithPrior   [this->Id(p)]; }
     //
     
     
@@ -408,6 +411,8 @@ namespace valor {
     TH2D **fToyHisto2D;   //[fNParams]  // Extracted histgram from Prior 
     
     bool *fIsPrior2D; //[fNParams] If user prior is used define if the 1D or 2D one has to be used
+
+    bool *fIsSystParWithPrior; //[fNParams] If for this systematic parameter a special prior was defined 
     
     ////////////////////////////////////
     
