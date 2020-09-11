@@ -165,8 +165,8 @@ $min_par1              = -3.14159265358979312e+00                               
 $min_par2              = 0.                                                                  unless (defined $min_par2 || $use_t2k_presets == 1);
 $max_par1              = +3.14159265358979312e+00                                            unless (defined $max_par1 || $use_t2k_presets == 1);
 $max_par2              = 0                                                                   unless (defined $max_par2 || $use_t2k_presets == 1);
-$osc_prior_file        = ""                                                                  unless defined $osc_prior_file;
-$syst_prior_file       = ""                                                                  unless defined $syst_prior_file;
+$osc_prior_file        = ""                                                                  unless defined $osc_prior_file; # TODO: check if such deafult value really work
+$syst_prior_file       = "-"                                                              unless defined $syst_prior_file;
 $store_mode_arrays     = 0                                                                   unless defined $store_mode_arrays;
 $npt_job_par1          = 1                                                                   unless (defined $npt_job_par1 || $use_t2k_presets == 1);
 $npt_job_par2          = 1                                                                   unless (defined $npt_job_par2 || $use_t2k_presets == 1);
@@ -663,7 +663,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
         print PBS "#!/bin/bash \n";
         print PBS "#PBS -N $tag-$irun \n";
         print PBS "#PBS -l mem=$mem \n";
-        print PBS "#PBS -q short \n"; # Max walltime of for long - 24h, in case of 2D fit use long4
+        print PBS "#PBS -q long \n"; # Max walltime of for long - 24h, in case of 2D fit use long4
         print PBS "#PBS -l nodes=1:ppn=1 \n"; #use only ppn=1 
         print PBS "#PBS -o $job_dir/$tag-$irun.pbs.out \n";
         print PBS "#PBS -e $job_dir/$tag-$irun.pbs.err \n";

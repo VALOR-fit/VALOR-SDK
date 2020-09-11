@@ -205,7 +205,7 @@ int main(int argc, char ** argv)
       std::cerr << "Osc param randomisation is not yet supported. Exiting" << std::endl;
       util::Die(-1);
 
-      double rnd_value = util::oscillation::GetRandomizedOscParam(p,*fp);
+      double rnd_value = util::oscillation::GetRandomizedParam(p,*fp);
       fp->Update(p, rnd_value);
       if(p == conv::kPhypMixing14    || p == conv::kPhypMixing15    || p == conv::kPhypMixing24    ||
          p == conv::kPhypMixing25    || p == conv::kPhypMixing34    || p == conv::kPhypMixing35    ||

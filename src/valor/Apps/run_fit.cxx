@@ -345,7 +345,7 @@ int main(int argc, char ** argv)
           fp->FixParameter(param);
         }
         else if(param_values_ts.Contains("randomize-all")) {
-          double rnd_value = util::oscillation::GetRandomizedOscParam(param,*fp);
+          double rnd_value = util::oscillation::GetRandomizedParam(param,*fp);
           fp->Update      (param, rnd_value);
           fp->SetInitValue(param, rnd_value);
         }
