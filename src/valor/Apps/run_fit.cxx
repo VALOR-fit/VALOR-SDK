@@ -207,10 +207,10 @@ int main(int argc, char ** argv)
       util::Die(-1);
     }
 
-    model->ResetSystematics("all");
+    model->ResetSystematics(*fp, "all");
     // If required, randomise the systematics in the model, and copy them to the FPL
     if (param_values_ts.Contains("randomize")) {
-      model->RandomizeSystematics(param_values_ts.Data());
+      model->RandomizeSystematics(*fp, param_values_ts.Data());
     }
 
     if (tweak_parameter_set != "none" && tweak_parameter_set != "-") {
@@ -234,7 +234,7 @@ int main(int argc, char ** argv)
           PhysParamId_t p = param_set[ip];
           param_map[p] = true;
         }
-        model->RandomizeSystematics(param_map);
+        model->RandomizeSystematics(param_map, *fp);
       }
     }
 

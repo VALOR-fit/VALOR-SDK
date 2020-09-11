@@ -166,8 +166,8 @@ int main(int argc, char ** argv)
   // Generate pdfs
   for(int itoy = 0; itoy < ntoys; itoy++) {
     // Randomise the systematics in the model, and copy them to the FPL
-    model->ResetSystematics("all");
-    model->RandomizeSystematics(syst_param_map);
+    model->ResetSystematics(*fp, "all");
+    model->RandomizeSystematics(syst_param_map, *fp);
     fp->FromPhysParamList(model->Tweaks(),"current-silent");
 
     // Set input parameters
