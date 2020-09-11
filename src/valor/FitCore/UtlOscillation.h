@@ -56,7 +56,7 @@ namespace oscillation
      \param fpl The FitParamList to be updated with the prior.
      \return True if successful.
   */
-   bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList& fpl);
+   bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList& fpl, bool IsSyst = false);
 
    /**
       Throw any marginalised oscillation parameters according to the content of

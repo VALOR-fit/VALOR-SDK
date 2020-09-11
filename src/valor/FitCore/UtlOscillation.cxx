@@ -169,6 +169,7 @@ void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
    // Now parse file  with systematic parameters priors 
    if (syst_file_priors!="")
    {
+      bool syst_params = true;
       xmldoc=0;
       xmldoc = xmleng->ParseFile(syst_file_priors.c_str());
       if (xmldoc==0) {
@@ -186,7 +187,7 @@ void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
       while(curr_node) {
          string curr_node_name = xmleng->GetNodeName(curr_node);
          if(!strcmp(curr_node_name.c_str(),"prior")) {
-            bool success = util::oscillation::SetSinglePrior(xmleng,curr_node,fpl);
+            bool success = util::oscillation::SetSinglePrior(xmleng,curr_node,fpl,syst_params);
             if (!success) {
                LOG("UtlOscillation", pERROR) << "Failed to read prior list. Exiting.";
                exit(1);
@@ -201,7 +202,7 @@ void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
 }
 
 //____________________________________________________________________________
-bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList& fpl)
+bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList& fpl, bool IsSyst)
 {
    // First read the information that's common to each prior type
    string param_names    = "";  // Comma-separated list of simple parameter names
@@ -379,7 +380,13 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
       prior_root_file->Close();
       delete prior_root_file;
    }
-
+   // set flag if it is a systematic parameter with a prior ti properly handle it further in CorrelatedSytematics
+   if(IsSyst)
+   {
+      fpl.SetSystParWithPrior(params[0]);
+      LOG("UtlOscillation", pDEBUG) << "Setting parameter " << nr->ParamAsStringVerySimple(params[0]) << " "
+                                          << " as systematic paraemter with " << prior_type << " prior";
+   }
    return true;
 }
 
