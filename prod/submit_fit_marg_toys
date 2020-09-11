@@ -186,7 +186,7 @@ $min_par2            = 0.                                                       
 $max_par1            = +3.14159265358979312e+00                                            unless (defined $max_par1 || $use_t2k_presets == 1);
 $max_par2            = 0                                                                   unless (defined $max_par2 || $use_t2k_presets == 1);
 $osc_prior_file        = ""                                                                unless defined $osc_prior_file;
-$syst_prior_file       = ""                                                                unless defined $syst_prior_file;
+$syst_prior_file       = "-"                                                               unless defined $syst_prior_file;
 $gen_fakedata        = 1                                                                   unless defined $gen_fakedata;
 $ntoys_fakedata      = 1                                                                   unless defined $ntoys_fakedata;
 $start_toy_fakedata  = 0                                                                   unless defined $start_toy_fakedata;
