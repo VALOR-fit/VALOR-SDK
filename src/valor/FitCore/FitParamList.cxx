@@ -159,10 +159,17 @@ void FitParamList::SetCurrentValueByIndex(int i, double v)
   fCurrValue [i] = v;
 }
 //________________________________________________________________________________________
- void  FitParamList::SetSystParWithPrior(PhysParamId_t p)
- {
-  fIsSystParWithPrior[this->Id(p)] = true;
- }
+void  FitParamList::SetSystParWithNonGaussianPrior(PhysParamId_t p)
+{
+  // TODO: add check if it is a systematic parameter 
+  fIsSystParWithNonGaussianPrior[this->Id(p)] = true; 
+}
+
+//________________________________________________________________________________________
+void FitParamList::SetNonGaussianSystParExists()
+{
+  fNonGaussianSystParExists = true;
+}
 //________________________________________________________________________________________
 void FitParamList::ResetCurrToInitValues(void)
 {
@@ -1651,7 +1658,7 @@ void FitParamList::Copy(const FitParamList & plst)
     
     this->fIsPrior2D[i]        = plst.fIsPrior2D[i];
 
-    this->fIsSystParWithPrior[i]  = plst.fIsSystParWithPrior[i];
+    this->fIsSystParWithNonGaussianPrior[i]  = plst.fIsSystParWithNonGaussianPrior[i];
     
     if(plst.fPriorHisto[i]!=0) this->fPriorHisto[i]      = (TH1D*) plst.fPriorHisto[i]->Clone("");
     else this->fPriorHisto[i] = 0;
@@ -1690,6 +1697,8 @@ void FitParamList::Copy(const FitParamList & plst)
   
   this->fShowCurrValuesOnly    = plst.fShowCurrValuesOnly;
   this->fShowBestFitValuesOnly = plst.fShowBestFitValuesOnly;
+
+  this->fNonGaussianSystParExists = plst.fNonGaussianSystParExists;
 }
 //________________________________________________________________________________________
 void FitParamList::Init(int nparams)
@@ -1733,7 +1742,7 @@ void FitParamList::Init(int nparams)
     fPriorHisto2D       = new TH2D *    [fNParams];
     fToyHisto2D         = new TH2D *    [fNParams];
 
-    fIsSystParWithPrior = new bool      [fNParams];
+    fIsSystParWithNonGaussianPrior = new bool      [fNParams];
     //
     
   } else {
@@ -1768,7 +1777,8 @@ void FitParamList::Init(int nparams)
     fPriorHisto2D       = 0;
     fToyHisto2D         = 0;
     
-    fIsSystParWithPrior = 0;
+    fIsSystParWithNonGaussianPrior       = 0;
+  
     //
     
   }
@@ -1804,7 +1814,7 @@ void FitParamList::Init(int nparams)
     fPriorHisto2D      [i] = 0;
     fToyHisto2D        [i] = 0;
 
-    fIsSystParWithPrior[i] = 0;
+    fIsSystParWithNonGaussianPrior[i] = 0;
     //
     
     
@@ -1824,6 +1834,8 @@ void FitParamList::Init(int nparams)
   fMigradErrorsSet = false;
   fHesseErrorsSet  = false;
   fMinosErrorsSet  = false;
+
+  fNonGaussianSystParExists = 0;
 }
 //________________________________________________________________________________________
 void FitParamList::CleanUp(void)
@@ -1865,7 +1877,7 @@ void FitParamList::CleanUp(void)
   if (fPriorHisto2D  ) { delete [] fPriorHisto2D ; fPriorHisto2D  = 0 ; }
   if (fToyHisto2D    ) { delete [] fToyHisto2D   ; fToyHisto2D    = 0 ; }
 
-  if (fIsSystParWithPrior    ) { delete [] fIsSystParWithPrior   ; fIsSystParWithPrior    = 0 ; }
+  if (fIsSystParWithNonGaussianPrior    ) { delete [] fIsSystParWithNonGaussianPrior   ; fIsSystParWithNonGaussianPrior    = 0 ; }
 
   
   //
@@ -1878,6 +1890,8 @@ void FitParamList::CleanUp(void)
   
   fParListName = "";
   fSystMode    = -1;
+
+  fNonGaussianSystParExists = 0;
 }
 //________________________________________________________________________________________
 int FitParamList::Id(PhysParamId_t p) const

@@ -290,10 +290,12 @@ namespace valor {
     bool   IsPrior2D        (valor::conv::PhysParamId_t p) const { return fIsPrior2D     [this->Id(p)]; }
 
     // Setting flag for the systematic paramiters with prior to correctly handle them further in CorrelatedSystematics
-    void   SetSystParWithPrior (valor::conv::PhysParamId_t p); 
-    bool   IsSystParWithPrior  (valor::conv::PhysParamId_t p) const { return fIsSystParWithPrior   [this->Id(p)]; }
+    void   SetSystParWithNonGaussianPrior (valor::conv::PhysParamId_t p); 
+    bool   IsSystParWithNonGaussianPrior  (valor::conv::PhysParamId_t p) const { return fIsSystParWithNonGaussianPrior   [this->Id(p)]; }
     //
     
+    void SetNonGaussianSystParExists();
+    bool NonGaussianSystParExists() const { return fNonGaussianSystParExists;}
     
     // Returns a fit param list with a physics hypothesis, and 'nuisance' empty parameters.
     static FitParamList * NuOsc3FlavourFit                          (int nuisance = 0);
@@ -412,7 +414,8 @@ namespace valor {
     
     bool *fIsPrior2D; //[fNParams] If user prior is used define if the 1D or 2D one has to be used
 
-    bool *fIsSystParWithPrior; //[fNParams] If for this systematic parameter a special prior was defined 
+    bool *fIsSystParWithNonGaussianPrior; //[fNParams] If for this systematic parameter a special prior was defined 
+    bool fNonGaussianSystParExists;
     
     ////////////////////////////////////
     
