@@ -815,8 +815,6 @@ void CorrelatedSystematics::ThrowNonGaussianSystParameters(FitParamList& fpl)
   {
     if (fpl.IsSystParWithNonGaussianPrior(fSystParameters[i])){
     double value = util::oscillation::GetRandomizedParam(fSystParameters[i], fpl);
-    LOG("CorrelatedSystematics", pDEBUG) << "throwing prior for syst parameter " << util::NameRegistry::Instance()->ParamAsString(fSystParameters[i])
-                                   << " hope it will work correctly";
     this->SetCurrentValue(fSystParameters[i],value);
     }
     else { continue; }
