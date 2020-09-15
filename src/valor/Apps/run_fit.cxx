@@ -69,7 +69,7 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/CompoundFitElements.h"
 #include "valor/FitCore/UtlFit.h"
@@ -447,13 +447,13 @@ int main(int argc, char ** argv)
 
     // Get fitter
     LOG("valor", pNOTICE) << "Preparing the fitter";
-    FitInputs * fit_inputs = new FitInputs(data,model,fp);
-    FitterABC * fitter = util::GetFitter(fit_inputs, fittername.c_str());
+    Likelihood * likelihood = new Likelihood(data,model,fp);
+    FitterABC * fitter = util::GetFitter(likelihood, fittername.c_str());
 
     // Do the fit
     LOG("valor", pNOTICE) << "Running the fitter";
     LOG("valor", pNOTICE) << "Fit starts with the following fit parameter list: " << *fp;
-    LOG("valor", pNOTICE) << "Fit starts with statistic: " << fit_inputs->Statistic();
+    LOG("valor", pNOTICE) << "Fit starts with statistic: " << likelihood->Statistic();
 
     time_t startrawtime;
     struct tm * starttimeinfo;
@@ -464,7 +464,7 @@ int main(int argc, char ** argv)
     std::cout << "-----------------------------------------------------------" << std::endl;
 
     fitter->DoTheFit();
-    LOG("valor", pNOTICE) << "Fit ends with statistic: " << fit_inputs->Statistic();
+    LOG("valor", pNOTICE) << "Fit ends with statistic: " << likelihood->Statistic();
 
     //  migradmin = fitter->FitStatusCode("migrad_min");
     //  migraderr = fitter->FitStatusCode("migrad_err");
@@ -491,7 +491,7 @@ int main(int argc, char ** argv)
     ntp.Fill();
 
     delete fp;
-    delete fit_inputs;
+    delete likelihood;
     delete fitter;
 
   }//itoymc
