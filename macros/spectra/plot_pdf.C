@@ -276,7 +276,7 @@ void plot_pdf(
           TH1F *pdf_frame = (TH1F *) this_pad->DrawFrame(0, 0, kinevar_x_max_2D, kinevar_y_max_2D);
           pdf_frame->GetXaxis()->SetTitle(title_x);
           pdf_frame->GetYaxis()->SetTitle(title_y);
-          pdf_frame->Draw();
+          pdf_frame->GetYaxis()->SetTitleOffset(0.95);
 
           TLatex * pdf_title = nullptr;
           if(!one_plot_per_canv) {
@@ -297,8 +297,6 @@ void plot_pdf(
             caveat->Draw();
           }
 
-          pdf_tot->GetXaxis()->SetTitle(title_x);
-          pdf_tot->GetYaxis()->SetTitle(title_y);
           pdf_tot->GetZaxis()->SetTitle("Number of Events");
           pdf_tot->GetZaxis()->SetLabelSize(pdf_frame->GetXaxis()->GetLabelSize()); // The x and y axis labels and titles are set somewhere when running write_pdf, so just copy the styles here
           pdf_tot->GetZaxis()->SetLabelOffset(pdf_frame->GetXaxis()->GetLabelOffset());
@@ -313,6 +311,7 @@ void plot_pdf(
             data_graph_outer->Draw("P0,same");
             data_graph_inner->Draw("P0,same");
           }
+          pdf_frame->Draw("AXIS,SAME");
         }
       }
       
