@@ -451,10 +451,10 @@ void SetUnoscillated(FitParamList& fpl)
 double GetRandomizedParam(conv::PhysParamId_t p, FitParamList& fpl)
 {
   // Here we throw the parameter according to the scheme set for its prior.
-  // After throwing, the value is converted to whichever scheme we're using internally.
-  string mode = fpl.GetPriorModeName(p);
-  string prior_scheme_name  = fpl.GetPriorSchemeName(p);
-  string target_scheme_name = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
+  // After throwing,  if  it is  an oscillation parameter, the value is converted to whichever scheme we're using internally.
+   string prior_scheme_name; 
+   string target_scheme_name = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
+   string mode = fpl.GetPriorModeName(p);
 
   if(!ParameterPool::Instance()->IsParamInPool(p)) {
      LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
@@ -509,6 +509,7 @@ double GetRandomizedParam(conv::PhysParamId_t p, FitParamList& fpl)
   }
 
   if(!util::IsSystematic(p)){
+   prior_scheme_name  = fpl.GetPriorSchemeName(p);
    return util::ConvertOscParamToUsedScheme(p, value, prior_scheme_name, target_scheme_name);
   }
   else {
@@ -740,7 +741,7 @@ void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_
    double free_value = init_val + bin*step;
    fpl.Update(p, free_value);
     
-   LOG("UtlOscillation", pDEBUG) << "Increasing free paramter" << param << " value " << free_value
+   LOG("UtlOscillation", pDEBUG) << "Increasing free paramter " << param << " value " << free_value
                                      << " for the bin " << bin;
 
    return;
