@@ -350,7 +350,7 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
    if(util::IsSystematic(params[0]))
    {
       fpl.SetSystParWithNonGaussianPrior(params[0]);
-      LOG("UtlOscillation", pDEBUG) << "Setting parameter " << nr->ParamAsStringVerySimple(params[0]) << " "
+      LOG("UtlOscillation", pNOTICE) << "Setting parameter " << nr->ParamAsStringVerySimple(params[0]) << " "
                                           << " as systematic paraemter with " << prior_type << " prior";
    }
    return true;
