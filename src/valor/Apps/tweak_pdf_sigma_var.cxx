@@ -55,7 +55,6 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/UtlFit.h"
 #include "valor/FitCore/CompoundFitElements.h"
@@ -314,10 +313,10 @@ void GeneratePDFNominal(FitModelABC * model, CompoundFitModel * cm, FitParamList
   cout << "\n\nGenerating nominal PDF:" << std::endl;
   outfile->cd();
   if(test_force_untuned) {
-    model->ForceSystematicsToUntuned();
+    model->ForceSystematicsToUntuned(*fp);
   }
   else {
-    model->ResetSystematics("all");
+    model->ResetSystematics(*fp, "all");
   }
   fp->FromPhysParamList(model->Tweaks(),"current-silent");
 
@@ -381,10 +380,10 @@ void GeneratePDFTweaked(FitModelABC * model, CompoundFitModel * cm, FitParamList
   std::string param_name = util::NameRegistry::Instance()->ParamAsString(p);
   cout << "\n\nGenerating " << tag << " PDF with tweak dial = " << tweak_dial << " for param " << param_name << std::endl;
   if(test_force_untuned) {
-    model->ForceSystematicsToUntuned();
+    model->ForceSystematicsToUntuned(*fp);
   }
   else {
-    model->ResetSystematics("all");
+    model->ResetSystematics(*fp, "all");
   }
 
   model->TweakSystematic(p, tweak_dial, "");
