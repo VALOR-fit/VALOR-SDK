@@ -81,6 +81,11 @@ public:
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
+  // Overwrite the arrays fDataOb and/or fDataSb, which hold the data. This is intended primarily for e.g.
+  // making hybrid data+Asimov toys, where the data arrays in one or more samples are replaced by the total
+  // PDF from an Asimov prediction.
+  void OverwriteData(VALORArray* replacement_data_ob = nullptr, VALORArray* replacement_data_sb = nullptr);
+
 private:
 
   void Init  (void);

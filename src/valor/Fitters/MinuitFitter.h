@@ -31,7 +31,7 @@
 
 namespace valor {
 
-class FitInputs;
+class Likelihood;
 
 class MinuitFitter: public FitterABC_new
 {
@@ -42,10 +42,10 @@ public:
    //
    // Configuration options:
    // ...................................................
-   // name         Type     Posible values       Default  
+   // name         Type     Posible values       Default
    // ...................................................
    // Minimizer    string   Migrad,Simplex       Migrad
-   // ErrType      string   Migrad,Hesse,Minos   Migrad   
+   // ErrType      string   Migrad,Hesse,Minos   Migrad
    // Tolerance    double                        0.01      [1]
    // Strategy     int                           1         [2]
    // MaxNumCalls  int                           1E+6
@@ -71,12 +71,12 @@ public:
 
    //
    //
-   virtual bool DoTheFit  (FitInputs * inputs);
+   virtual bool DoTheFit  (Likelihood * likelihood);
 
    //
    //
    virtual const Registry & FitInfo (void) const;
-   
+
 protected:
 
    void  Init    (void);
@@ -104,4 +104,3 @@ protected:
 } // valor
 
 #endif
-

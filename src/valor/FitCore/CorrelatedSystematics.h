@@ -67,10 +67,12 @@ public:
   double ChisqPenalty (bool all_syst = true) const;
   
   // Tweak all the systematics, either to a specific vector or randomly with correlations.
-  void Tweak(bool force_inputs, const TVectorD * input_vec, Option_t * opt = 0);
-  void Tweak(bool force_inputs, const TVectorD * input_vec, const std::map<valor::conv::PhysParamId_t,bool> & should_tweak, Option_t * opt = 0);
-  void Tweak(bool force_inputs, const TVectorD * input_vec, bool (* use_twk_param)(conv::PhysParamId_t), Option_t * opt = 0);
-  
+  void Tweak(bool force_inputs, const TVectorD * input_vec, FitParamList& fpl,Option_t * opt = 0);
+  void Tweak(bool force_inputs, const TVectorD * input_vec, const std::map<valor::conv::PhysParamId_t,bool> & should_tweak, FitParamList& fpl, Option_t * opt = 0);
+  void Tweak(bool force_inputs, const TVectorD * input_vec, bool (* use_twk_param)(conv::PhysParamId_t), FitParamList& fpl, Option_t * opt = 0);
+
+
+
   // Access vector values
   double CurrentValueByIndex(int idx) const;
   double CurrentValue(conv::PhysParamId_t p) const;
@@ -123,6 +125,11 @@ public:
 
   int  Param2Idx (conv::PhysParamId_t p) const;     ///< convert flux PhysParamId_t to a covariance matrix or vector index
   conv::PhysParamId_t  Idx2Param (int index) const; ///< convert flux a covariance matrix or vector index to PhysParamId_t
+
+
+  // Throw flagged in UtlOsc systematic parameters according to their priors ///// test to see if it works 
+  void ThrowNonGaussianSystParameters(FitParamList& fpl);
+
     
 protected:
 
@@ -151,6 +158,7 @@ protected:
   double * fUntunedArray; //! ///< Pointer to the actual memory location of the untuned values
   double * fInitialArray; //! ///< Pointer to the actual memory location of the initial values
   double * fCurrentArray; //! ///< Pointer to the actual memory location of the current values
+
   
   int fParam2Idx[conv::knppmax];
   

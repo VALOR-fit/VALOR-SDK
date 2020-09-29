@@ -33,7 +33,8 @@
 #  --max-par2               : Maximum value of the 2nd fit parameter
 #  --npt-job-par1           : Number of points of the 1st fit parameter to run in each job	# TODO: Not yet implemented
 #  --npt-job-par2           : Number of points of the 2nd fit parameter to run in each job	# TODO: Not yet implemented
-#  --prior-file             : Config file containing the priors used to throw toys
+#  --osc-prior-file         : Config file containing the priors used to throw toys for oscillation parameters 
+#  --syst-prior-file        : Config file containing the priors used to throw toys for systematic parameters 
 #  --gen-fakedata           : Generate fakedata to fit to instead of fitting data from an input file.
 #                           : Use this with the --param-set option
 #  --ntoys-fakedata         : The number of fakedata toys to read. Use with --gen-fakedata 0
@@ -117,7 +118,8 @@ foreach (@ARGV) {
   elsif($_ eq '--max-par2'           ) { $max_par2            = $ARGV[$iarg+1]; }
   elsif($_ eq '--npt-job-par1'       ) { $npt_job_par1        = $ARGV[$iarg+1]; }
   elsif($_ eq '--npt-job-par2'       ) { $npt_job_par2        = $ARGV[$iarg+1]; }
-  elsif($_ eq '--prior-file'         ) { $prior_file          = $ARGV[$iarg+1]; }
+  elsif($_ eq '--osc-prior-file'     ) { $osc_prior_file      = $ARGV[$iarg+1]; }
+  elsif($_ eq '--syst-prior-file'    ) { $syst_prior_file     = $ARGV[$iarg+1]; }
   elsif($_ eq '--gen-fakedata'       ) { $gen_fakedata        = $ARGV[$iarg+1]; }
   elsif($_ eq '--ntoys-fakedata'     ) { $ntoys_fakedata      = $ARGV[$iarg+1]; }
   elsif($_ eq '--start-toy-fakedata' ) { $start_toy_fakedata  = $ARGV[$iarg+1]; }
@@ -183,7 +185,8 @@ $min_par1            = -3.14159265358979312e+00                                 
 $min_par2            = 0.                                                                  unless (defined $min_par2 || $use_t2k_presets == 1);
 $max_par1            = +3.14159265358979312e+00                                            unless (defined $max_par1 || $use_t2k_presets == 1);
 $max_par2            = 0                                                                   unless (defined $max_par2 || $use_t2k_presets == 1);
-$prior_file          = "-"                                                                 unless defined $prior_file;
+$osc_prior_file        = ""                                                                unless defined $osc_prior_file;
+$syst_prior_file       = "-"                                                               unless defined $syst_prior_file;
 $gen_fakedata        = 1                                                                   unless defined $gen_fakedata;
 $ntoys_fakedata      = 1                                                                   unless defined $ntoys_fakedata;
 $start_toy_fakedata  = 0                                                                   unless defined $start_toy_fakedata;
@@ -567,8 +570,8 @@ for($i_fc_par2 = $start_pt_fc_par2; $i_fc_par2 < $start_pt_fc_par2 + $npt_fc_par
 										 "--$hierarchy --$mix_param_choice --fit-param1-nbins $npt_par1_use " .
 										 "--fit-param2-nbins $npt_par2_use $fake_data_args --data-file $data_file_use " .
 										 "--seed-toys-osc $seed_osc --seed-toys-stat $seed_stat --seed-toys-syst $seed_syst --seed-other $seed_other " .
-										 "--prior-file $prior_file --gen-fakedata $gen_fakedata --ntoys-fakedata $ntoys_fakedata " .
-										 "--start-toy-fakedata $start_toy_fakedata --dmsq-scheme $dmsq_scheme";
+										 "--osc-prior-file $osc_prior_file --syst-prior-file $syst_prior_file --gen-fakedata $gen_fakedata " .
+										 "--ntoys-fakedata $ntoys_fakedata --start-toy-fakedata $start_toy_fakedata --dmsq-scheme $dmsq_scheme";
 
 				if($store_specra       == 1)       { $arguments = "$arguments --store-spectra"      } else { $arguments = "$arguments --discard-spectra"    }
 				if($rethrow_unphysical == 1)       { $arguments = "$arguments --rethrow-unphysical" } else { $arguments = "$arguments --accept-unphysical"  }
