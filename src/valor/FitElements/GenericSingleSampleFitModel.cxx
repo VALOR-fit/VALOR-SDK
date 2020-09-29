@@ -2943,21 +2943,21 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           }
         }
         double & val = templFinOb[ireco][itrue];
+        double val_before_syst = templFinOb[ireco][itrue];
         val *= response;
 #ifdef DEBUG_SINGLE_BIN
         if(fSample == debug_sample && fBeam == debug_beam && (m == debug_mode || debug_mode == conv::kmUndefined) && ireco == debug_ireco && (itrue == debug_itrue || debug_true0 == -999) && (debug_param == conv::kPhypUndefined || p == debug_param)) {
           unsigned int use_debug_itrue = debug_itrue;
           if(debug_true0 == -999) {
             use_debug_itrue = itrue;
-            LOG("GenericSingleSampleFitModel",pNOTICE) << "True kinevar 0 = " << true_sb->BinCentre(use_debug_itrue, 0);
           }
           LOG("GenericSingleSampleFitModel",pNOTICE)
-            << std::fixed << std::setprecision(9)
+            << std::fixed << std::setprecision(5)
             << "Applying spline param [" << param_name
-            << "] with curr val = " << f << ", untuned val = " << untuned
+            << "] to true kv#0 bin centred on " << true_sb->BinCentre(use_debug_itrue, 0) << "GeV. Param val = " << f << ", generated val = " << untuned
             << ", weight = " << response
-            << "; new bin content = " << templFinOb[debug_ireco][use_debug_itrue]
-            << ", from spline with name [" << spl->GetName() << "] and title [" << spl->GetTitle() << "]";
+            << ", bin content before & after = " << val_before_syst << " --> " << templFinOb[debug_ireco][use_debug_itrue]
+            << ", from spline named [" << spl->GetName() << "]";
         }
 #endif
         last_itrue = itrue;
@@ -2967,18 +2967,20 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 
 #ifdef DEBUG_SINGLE_BIN
     if(fSample == debug_sample && fBeam == debug_beam && (m == debug_mode || debug_mode == conv::kmUndefined) && debug_reco0 != -999 && debug_reco1 != -999 && debug_print_sum_over_true0) {
-      double debug_sum_over_true_bins = 0;
+      double debug_sum_over_true_bins      = 0;
+      double debug_sum_over_true_bins_init = 0;
       for(int i_non_empty = 0; i_non_empty < fNumOfNonEmptyBinsOb[imode]; i_non_empty++) {
         // Only loop over non-empty MC template bins
         int itrue =  fNonEmptyBinsOb[imode][i_non_empty] % n_true_bins_sb;
         int ireco = (fNonEmptyBinsOb[imode][i_non_empty] - itrue) / n_true_bins_sb;
         if(ireco != debug_ireco) { continue; }
-        debug_sum_over_true_bins += templFinOb[ireco][itrue];
+        debug_sum_over_true_bins      += templFinOb[ireco][itrue];
+        debug_sum_over_true_bins_init += fMCTNomOb[imode]->GetEntry(ireco,itrue);
       }
       LOG("GenericSingleSampleFitModel",pNOTICE)
-        << std::fixed << std::setprecision(9)
-        << "After applying all params, new reco bin content summed over all true kv #0 bins (for mode "
-        << util::AsString(m) <<") = " << debug_sum_over_true_bins;
+        << std::fixed << std::setprecision(5)
+        << "Before & after applying all params, new reco bin content summed over all Etrue bins (for mode "
+        << util::AsString(m) <<") = " << debug_sum_over_true_bins_init << " --> " << debug_sum_over_true_bins;
     }
 
 #endif
