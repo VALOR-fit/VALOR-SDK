@@ -55,16 +55,16 @@ public:
   virtual bool Generate             (const PhysHypothesis & ph, Option_t * opt = 0) = 0;
   
   // This one will randomize all systematics
-  virtual void RandomizeSystematics (Option_t * opt = 0) = 0;
+  virtual void RandomizeSystematics (FitParamList& fpl, Option_t * opt = 0) = 0;
   // These two only randomize the systematics inside that return "true" in the should_randomize argument
-  virtual void RandomizeSystematics (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0) = 0;
-  virtual void RandomizeSystematics (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0) = 0;
+  virtual void RandomizeSystematics (bool (*should_randomize)(conv::PhysParamId_t), FitParamList& fpl, Option_t * opt = 0) = 0;
+  virtual void RandomizeSystematics (std::map<valor::conv::PhysParamId_t, bool> should_randomize, FitParamList& fpl, Option_t * opt = 0) = 0;
    
   virtual void TweakSystematic      (std::string syst_name, double twkdial=0., Option_t * opt = 0) = 0; 
   virtual void TweakSystematic      (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0) = 0; 
   // Additional related methods to reset the systematics and enquire their values.
-  virtual void ResetSystematics         (Option_t * opt = 0) = 0;
-  virtual void ForceSystematicsToUntuned(Option_t * opt = 0) = 0;
+  virtual void ResetSystematics         (FitParamList& fpl, Option_t * opt = 0) = 0;
+  virtual void ForceSystematicsToUntuned(FitParamList& fpl, Option_t * opt = 0) = 0;
   virtual void PrintSystematics         (std::ostream & stream = std::cout, Option_t * opt = 0) const = 0;
   virtual PhysParamList Tweaks          (Option_t * opt = 0) const = 0;
 

@@ -161,13 +161,13 @@ int main(int argc, char ** argv)
   }
 
   FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-  util::oscillation::SetOscillationParameterPriors(arg, *fp);
+  util::oscillation::SetParameterPriors(arg, *fp);
 
   // Generate pdfs
   for(int itoy = 0; itoy < ntoys; itoy++) {
     // Randomise the systematics in the model, and copy them to the FPL
-    model->ResetSystematics("all");
-    model->RandomizeSystematics(syst_param_map);
+    model->ResetSystematics(*fp, "all");
+    model->RandomizeSystematics(syst_param_map, *fp);
     fp->FromPhysParamList(model->Tweaks(),"current-silent");
 
     // Set input parameters
@@ -205,7 +205,7 @@ int main(int argc, char ** argv)
       std::cerr << "Osc param randomisation is not yet supported. Exiting" << std::endl;
       util::Die(-1);
 
-      double rnd_value = util::oscillation::GetRandomizedOscParam(p,*fp);
+      double rnd_value = util::oscillation::GetRandomizedParam(p,*fp);
       fp->Update(p, rnd_value);
       if(p == conv::kPhypMixing14    || p == conv::kPhypMixing15    || p == conv::kPhypMixing24    ||
          p == conv::kPhypMixing25    || p == conv::kPhypMixing34    || p == conv::kPhypMixing35    ||

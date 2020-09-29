@@ -20,7 +20,8 @@ true-from-objname                    |   string       |  optional   |   central_
 pot-override                         |   double       |  optional   |   -999
 load-prior-from-file                 |   string       |  optional   |   none
 prior-fit-number                     |   integer      |  optional   |   0
-prior-file                           |   string       |  mandatory  |   -
+osc-prior-file                       |   string       |  mandatory  |   -
+syst-prior-file                      |   string       |  optional   |   -
 #
 tweak-parameter-set                  |   string       |  optional   |   none
 force-tweak-size                     |   double       |  optional   |   0

@@ -40,6 +40,8 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/CorrelatedSystematics.h"
+#include "valor/Utilities/Rnd.h"
+#include "valor/FitCore/UtlOscillation.h"
 
 using std::cout;
 using std::cerr;
@@ -519,6 +521,7 @@ double CorrelatedSystematics::CovMatrixElementByIndex(int idx1, int idx2) const
 void CorrelatedSystematics::Tweak(
   bool             force_inputs, // force the input params or generate random ones internally  
   const TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
+  FitParamList& fpl            , // fpl to throw parameters with priors 
   Option_t *       opt
 )
 {
@@ -584,14 +587,24 @@ void CorrelatedSystematics::Tweak(
      const TMatrixD & L = *fCovMtrxChoL;
      TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
      current_values = vec;
+     
+     // Now throw values for some of the parameters according to the prior 
+     // these parameters shoudl be specified in an xml file and they are getting a special flag in UtlOsc
+     if (fpl.NonGaussianSystParExists())
+    {
+      ThrowNonGaussianSystParameters(fpl);
+    }
   }
+
   return;
 }
+
 //________________________________________________________________________________________
 void CorrelatedSystematics::Tweak(
   bool              force_inputs,  // force the input params or generate random ones internally  
   const TVectorD *  input_vec   ,  // input vector of syst params - Set to 0 to reset to nominal ones 
   const map<conv::PhysParamId_t, bool> & should_tweak,  // If the parameter's entry here is false, no tweak applied
+  FitParamList& fpl            , // fpl to throw parameters with priors 
   Option_t * /*opt*/
 )
 {
@@ -664,6 +677,13 @@ void CorrelatedSystematics::Tweak(
       }
     }
     current_values = vec;
+    
+    // Now throw values for some of the parameters according to the prior 
+    // these parameters shoudl be specified in an xml file and they are getting a special flag in UtlOsc
+    if (fpl.NonGaussianSystParExists())
+    {
+      ThrowNonGaussianSystParameters(fpl);
+    }
   }
   return;
 }
@@ -672,6 +692,7 @@ void CorrelatedSystematics::Tweak(
   bool             force_inputs, // force the input params or generate random ones internally  
   const TVectorD * input_vec   , // input vector of syst params - Set to 0 to reset to nominal ones 
   bool             (* use_twk_param)(PhysParamId_t),
+  FitParamList& fpl            , // fpl to throw parameters with priors 
   Option_t * /*opt*/ 
 )
 {
@@ -744,6 +765,14 @@ void CorrelatedSystematics::Tweak(
        }
      }
      current_values = vec;
+
+    // Now throw values for some of the parameters according to the prior 
+    // these parameters shoudl be specified in an xml file and they are getting a special flag in UtlOsc
+    // works only if we are  this prior 
+    if (fpl.NonGaussianSystParExists())
+    {
+      ThrowNonGaussianSystParameters(fpl);
+    }
   }
   return;
 }
@@ -776,6 +805,23 @@ double CorrelatedSystematics::ChisqPenalty(bool /*all_syst*/) const
 {
   return this->FitStatisticPenalty();
 }
+
+//________________________________________________________________________________________
+
+void CorrelatedSystematics::ThrowNonGaussianSystParameters(FitParamList& fpl) 
+{
+
+ for (unsigned int i = 0 ; i < this->fNSystParameters; i++) 
+  {
+    if (fpl.IsSystParWithNonGaussianPrior(fSystParameters[i])){
+    double value = util::oscillation::GetRandomizedParam(fSystParameters[i], fpl);
+    this->SetCurrentValue(fSystParameters[i],value);
+    }
+    else { continue; }
+  }
+  return; 
+}
+
 //________________________________________________________________________________________
 double CorrelatedSystematics::FitStatisticPenalty(Option_t * /*opt*/) const
 {

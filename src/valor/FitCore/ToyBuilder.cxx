@@ -118,11 +118,11 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
    {
       for( ; ; )
       {
-         this->_model->ResetSystematics("all");
+         this->_model->ResetSystematics(fpl, "all");
          // Randomise the systematics in the model
          if(randomizeSystematics)
          {
-            this->_model->RandomizeSystematics(options);
+            this->_model->RandomizeSystematics(fpl, options);
             util::oscillation::ThrowOscillationParameters(fpl);
          }
          else if(read_systematics) {
