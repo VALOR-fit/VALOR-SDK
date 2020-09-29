@@ -14,7 +14,15 @@
 #  --time-command           : Time the jobs
 #
 #  --gen-fakedata           : Generate fake data toys instead of marginalisation toys.
-# 														 Default: generate marginalisation toys							   # TODO: Implement & allow params to be fixed + syst set to nominal for generating Asimov
+# 														 Default: generate marginalisation toys
+#  --gen-asimov             : Special case of fake data generation. Where '--gen-fakedata 1' would generate N fake
+#                             data toys according to some user-specified priors at X*Y grid points, '--gen-asimov'
+#                             generates a single fake data toy with oscillation params fixed to user-specified
+#                             values, and with all syst params fixed to nominal. This arg is optional for Asimov
+#                             toy generation, it just forces a bunch of other args for convienience.
+#
+#  --fix-at-X               : Used to fix oscillation parameter with name X to the specified value
+#
 #  --stat-fluct             : Apply statistical fluctuations to the generated toys
 #  --rand-syst              : Randomise non-fixed parameters
 #  --ntoys                  : The number of toys to build in each job
@@ -81,10 +89,13 @@ use Cwd 'abs_path';
 #
 # Read command line arguments
 #
+$fix_params = "";
 
 $iarg=0;
 foreach (@ARGV) {
   if($iarg % 2 == 1) {$iarg++; next;}
+
+		 $second=$ARGV[$iarg+1];
 
      if($_ eq '--resource'             ) { $resource              = $ARGV[$iarg+1]; }
   elsif($_ eq '--cpu-time'             ) { $cput                  = $ARGV[$iarg+1]; }
@@ -94,6 +105,7 @@ foreach (@ARGV) {
   elsif($_ eq '--fmwk-dir'             ) { $fmwk_dir              = $ARGV[$iarg+1]; }
   elsif($_ eq '--time-command'         ) { $time_command          = $ARGV[$iarg+1]; }
   elsif($_ eq '--gen-fakedata'         ) { $gen_fakedata          = $ARGV[$iarg+1]; }
+  elsif($_ eq '--gen-asimov'           ) { $gen_asimov            = $ARGV[$iarg+1]; }
   elsif($_ eq '--stat-fluct'           ) { $stat_fluct            = $ARGV[$iarg+1]; }
   elsif($_ eq '--rand-syst'            ) { $rand_syst             = $ARGV[$iarg+1]; }
   elsif($_ eq '--ntoys'                ) { $ntoys                 = $ARGV[$iarg+1]; }
@@ -135,6 +147,8 @@ foreach (@ARGV) {
   elsif($_ eq '--read-throws-from'     ) { $read_throws_from      = $ARGV[$iarg+1]; }
   elsif($_ eq '--read-throws-param-map') { $read_throws_param_map = $ARGV[$iarg+1]; }
 
+  elsif($_ =~ /--fix-at-/) { $fix_params = "$fix_params $_ ${second}"; }		# If '--fix-at-X val' is present, append it to $fix_params
+
   else {
       print "Unrecognised argument ".$_."\n"; exit;
   }
@@ -153,6 +167,7 @@ $softw_dir             = $ENV{'VALOR_EXPT'}                                     
 $fmwk_dir              = $ENV{'VALOR_FMWK'}                                                  unless defined $fmwk_dir;
 $time_command          = 0                                                                   unless defined $time_command;
 $gen_fakedata          = 0                                                                   unless defined $gen_fakedata;
+$gen_asimov            = 0                                                                   unless defined $gen_asimov;
 $stat_fluct            = 0                                                                   unless defined $stat_fluct;
 $rand_syst             = 1                                                                   unless defined $rand_syst;
 $ntoys                 = 40000                                                               unless (defined $ntoys || $use_t2k_presets == 1);
@@ -165,8 +180,8 @@ $min_par1              = -3.14159265358979312e+00                               
 $min_par2              = 0.                                                                  unless (defined $min_par2 || $use_t2k_presets == 1);
 $max_par1              = +3.14159265358979312e+00                                            unless (defined $max_par1 || $use_t2k_presets == 1);
 $max_par2              = 0                                                                   unless (defined $max_par2 || $use_t2k_presets == 1);
-$osc_prior_file        = ""                                                                  unless defined $osc_prior_file; # TODO: check if such deafult value really work
-$syst_prior_file       = "-"                                                              unless defined $syst_prior_file;
+$osc_prior_file        = ""                                                                  unless defined $osc_prior_file;
+$syst_prior_file       = "-"                                                                 unless defined $syst_prior_file;
 $store_mode_arrays     = 0                                                                   unless defined $store_mode_arrays;
 $npt_job_par1          = 1                                                                   unless (defined $npt_job_par1 || $use_t2k_presets == 1);
 $npt_job_par2          = 1                                                                   unless (defined $npt_job_par2 || $use_t2k_presets == 1);
@@ -193,6 +208,21 @@ $gen_fc_toys           = 0                                                      
 $read_throws_from      = "NONE"                                                              unless defined $read_throws_from;
 $read_throws_param_map = "NONE"                                                              unless defined $read_throws_param_map;
 
+# An Asimov fake data toy requires the following
+if($gen_asimov == 1) {
+  $gen_fakedata = 1;
+  $gen_fc       = 0;
+  $stat_fluct   = 0;
+  $rand_syst    = 0;
+  $ntoys        = 1;
+  $par1         = "none";
+  $par2         = "none";
+  $npt_job_par1 = 1;
+  $npt_par1     = 1;
+  $min_par1     = 1;
+  $max_par1     = 1;
+}
+
 # If we have only a single parameter of interest defined, set the options for par2 appropriately
 if($par2 eq "none") {
 	$min_par2     = 0.;
@@ -202,8 +232,11 @@ if($par2 eq "none") {
 }
 
 # Add the hierarchy and the parameters of interest to the file tag
-$tag = "${tag}_${hierarchy}_${par1}";
-if($par2 != "") {
+$tag = "${tag}_${hierarchy}";
+if($par1 ne "" && $par1 ne "none") {
+	$tag = "${tag}_${par1}";
+}
+if($par2 ne "" && $par2 ne "none") {
 	$tag = "${tag}_${par2}";
 }
 
@@ -240,7 +273,7 @@ if($use_t2k_presets == 1) {
     }
 	}
 
-	if($gen_fakedata == 1 && $stat_fluct == 0) {
+	if($gen_fakedata == 1 && $stat_fluct == 0 && $gen_asimov != 1) {
 		print "WARNING: Fake data toys are being generated WITHOUT statistical fluctuations applied. Is this intentional?";
 	}
 	if($gen_fakedata == 0 && $stat_fluct == 1) {
@@ -483,7 +516,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
                  "--npt-job-par1 $npt_job_par1 --npt-job-par2 $npt_job_par2 " .
                  "--npt-par1 $npt_par1 --npt-par2 $npt_par2 " . 
                  "--min-par1 $min_par1 --min-par2 $min_par2 " .
-                 "--step-par1 $step_par1 --step-par2 $step_par2 ";
+                 "--step-par1 $step_par1 --step-par2 $step_par2 $fix_params";
 
 
     if($store_specra       == 1)       { $arguments = "$arguments --store-spectra"      } else { $arguments = "$arguments --discard-spectra"    }

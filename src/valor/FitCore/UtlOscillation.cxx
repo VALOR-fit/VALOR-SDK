@@ -734,15 +734,18 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
    return pval;
 }
 
+
 //________________________________________________________________________________________
 void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_val, int bin, double step)
 {
-   valor::conv::PhysParamId_t p = util::NameRegistry::Instance()->PhysParamFromString(param.c_str());
+  valor::conv::PhysParamId_t p = util::NameRegistry::Instance()->PhysParamFromString(param.c_str());
+  if(p != conv::kPhypUndefined){
    double free_value = init_val + bin*step;
    fpl.Update(p, free_value);
     
    LOG("UtlOscillation", pDEBUG) << "Increasing free paramter " << param << " value " << free_value
-                                     << " for the bin " << bin;
+                                 << " for the bin " << bin;
+  }
 
    return;
 }
