@@ -29,7 +29,8 @@
 #  --max-par2               : Maximum value of the 2nd fit parameter
 #  --npt-job-par1           : Number of points of the 1st fit parameter to run in each job	# TODO: Not yet implemented
 #  --npt-job-par2           : Number of points of the 2nd fit parameter to run in each job	# TODO: Not yet implemented
-#  --prior-file             : Config file containing the priors used to throw toys
+#  --osc-prior-file         : Config file containing the priors used to throw toys for oscillation parameters 
+#  --syst-prior-file        : Config file containing the priors used to throw toys for systematic parameters 
 #  --store-mode-arrays      : If true, stores both the total PDF arrays and those broken down by
 #                             mode contributions. If false, only store the total PDF arrays.
 #
@@ -107,7 +108,8 @@ foreach (@ARGV) {
   elsif($_ eq '--max-par2'             ) { $max_par2              = $ARGV[$iarg+1]; }
   elsif($_ eq '--npt-job-par1'         ) { $npt_job_par1          = $ARGV[$iarg+1]; }
   elsif($_ eq '--npt-job-par2'         ) { $npt_job_par2          = $ARGV[$iarg+1]; }
-  elsif($_ eq '--prior-file'           ) { $prior_file            = $ARGV[$iarg+1]; }
+  elsif($_ eq '--osc-prior-file'       ) { $osc_prior_file        = $ARGV[$iarg+1]; }
+  elsif($_ eq '--syst-prior-file'      ) { $syst_prior_file       = $ARGV[$iarg+1]; }
   elsif($_ eq '--store-mode-arrays'    ) { $store_mode_arrays     = $ARGV[$iarg+1]; }
   elsif($_ eq '--tag'                  ) { $tag                   = $ARGV[$iarg+1]; }
   elsif($_ eq '--config'               ) { $config                = $ARGV[$iarg+1]; }
@@ -163,7 +165,8 @@ $min_par1              = -3.14159265358979312e+00                               
 $min_par2              = 0.                                                                  unless (defined $min_par2 || $use_t2k_presets == 1);
 $max_par1              = +3.14159265358979312e+00                                            unless (defined $max_par1 || $use_t2k_presets == 1);
 $max_par2              = 0                                                                   unless (defined $max_par2 || $use_t2k_presets == 1);
-$prior_file            = ""                                                                  unless defined $prior_file;
+$osc_prior_file        = ""                                                                  unless defined $osc_prior_file; # TODO: check if such deafult value really work
+$syst_prior_file       = "-"                                                              unless defined $syst_prior_file;
 $store_mode_arrays     = 0                                                                   unless defined $store_mode_arrays;
 $npt_job_par1          = 1                                                                   unless (defined $npt_job_par1 || $use_t2k_presets == 1);
 $npt_job_par2          = 1                                                                   unless (defined $npt_job_par2 || $use_t2k_presets == 1);
@@ -475,7 +478,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		             "--fit-param1-bin $ibin1 --fit-param2 $sub_par2 --fit-param2-value $val_par2 " .
 		             "--fit-param2-bin $sub_ibin2 --$hierarchy --$mix_param_choice --seed-toys-syst $seed_syst " .
 		             "--seed-toys-osc $seed_osc --seed-toys-stat $seed_stat --seed-other $seed_other " .
-		             "--prior-file $prior_file --read-throws-from $read_throws_from " .
+		             "--osc-prior-file $osc_prior_file --syst-prior-file $syst_prior_file --read-throws-from $read_throws_from " .
 		             "--read-throws-param-map $read_throws_param_map --dmsq-scheme $dmsq_scheme " .
                  "--npt-job-par1 $npt_job_par1 --npt-job-par2 $npt_job_par2 " .
                  "--npt-par1 $npt_par1 --npt-par2 $npt_par2 " . 

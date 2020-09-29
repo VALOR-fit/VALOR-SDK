@@ -523,19 +523,19 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
   return true;
 }
 //________________________________________________________________________________________
-void GenericSingleSampleFitModel::RandomizeSystematics(Option_t * options)
+void GenericSingleSampleFitModel::RandomizeSystematics(FitParamList& fpl, Option_t * options)
 {
-  fSystematics->Tweak(false,NULL,options);
+  fSystematics->Tweak(false,NULL, fpl, options);
 }
 //________________________________________________________________________________________
-void GenericSingleSampleFitModel::RandomizeSystematics(bool (* should_randomize)(conv::PhysParamId_t), Option_t * options)
+void GenericSingleSampleFitModel::RandomizeSystematics(bool (* should_randomize)(conv::PhysParamId_t), FitParamList& fpl, Option_t * options)
 {
-  fSystematics->Tweak(false,0,should_randomize,options);
+  fSystematics->Tweak(false,0,should_randomize, fpl, options);
 }
 //________________________________________________________________________________________
-void GenericSingleSampleFitModel::RandomizeSystematics(std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * options)
+void GenericSingleSampleFitModel::RandomizeSystematics(std::map<valor::conv::PhysParamId_t, bool> should_randomize, FitParamList& fpl, Option_t * options)
 {
-  fSystematics->Tweak(false,0,should_randomize,options);
+  fSystematics->Tweak(false,0,should_randomize, fpl, options);
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::TweakSystematic(
@@ -567,15 +567,15 @@ PhysParamList GenericSingleSampleFitModel::Tweaks(Option_t * /*opt*/) const
   return list;
 }
 //________________________________________________________________________________________
-void GenericSingleSampleFitModel::ResetSystematics(Option_t * /*opt*/)
+void GenericSingleSampleFitModel::ResetSystematics(FitParamList& fpl, Option_t * /*opt*/)
 {
-  fSystematics -> Tweak(true, 0);
+  fSystematics -> Tweak(true, 0, fpl);
 }
 //________________________________________________________________________________________
-void GenericSingleSampleFitModel::ForceSystematicsToUntuned(Option_t * /*opt*/)
+void GenericSingleSampleFitModel::ForceSystematicsToUntuned(FitParamList& fpl, Option_t * /*opt*/)
 {
   const TVectorD* untuned_values = &(fSystematics -> UntunedValues());
-  fSystematics -> Tweak(true, untuned_values);
+  fSystematics -> Tweak(true, untuned_values, fpl);
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::PrintSystematics(ostream & stream, Option_t * /*opt*/) const

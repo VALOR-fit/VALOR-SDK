@@ -8,7 +8,7 @@
 \author   Thomas Dealtry <thomas.dealtry \at physics.ox.ac.uk>
           STFC, Rutherford Appleton Laboratory
           Subdepartment of Particle Physics, University of Oxford
-          
+
           Steve Dennis <s.r.dennis \at liverpool.ac.uk>
           University of Liverpool
 
@@ -29,14 +29,14 @@
 #include "valor/FitCore/FitterABC.h"
 
 namespace valor {
-  
-class FitInputs;
+
+class Likelihood;
 
 class FitterMinuit2: public FitterABC
 {
 public:
    FitterMinuit2();
-   FitterMinuit2(FitInputs * inputs, Option_t * option = "minuit2"); // option: "minuit2","minuit2+hesse_err","minuit2+minos_err" (migrad_err by default)
+   FitterMinuit2(Likelihood * lkhd, Option_t * option = "minuit2"); // option: "minuit2","minuit2+hesse_err","minuit2+minos_err" (migrad_err by default)
    // Also supported - fumili
    // Options can also specify tolerance=x and max function evaluations, eg
    // option="minuit+hesse+tolerance=0.01+maxcalls=1E6"
@@ -59,14 +59,14 @@ public:
 protected:
 
    void  Init    (void);
-   void  Init    (FitInputs * fit_inputs, Option_t * option = "minuit2");
+   void  Init    (Likelihood * lkhd, Option_t * option = "minuit2");
    bool  RunOnce (void);
    void  FillPriorCovMatrix(Option_t * opt = "");
-   
+
    void CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & mncov);
 
-   FitInputs*  fFitInputs;        ///< fit inputs
-   TString     fOption;           ///< fit option
+   Likelihood* fLikelihood;          ///< fit inputs
+   TString     fOption;              ///< fit option
    int         fMigradMinStatusCode; ///< MIGRAD minimization status code
    int         fMigradErrStatusCode; ///< MIGRAD err status code
    int         fHesseErrStatusCode;  ///< HESSE err status code
@@ -89,4 +89,3 @@ protected:
 } // valor
 
 #endif
-
