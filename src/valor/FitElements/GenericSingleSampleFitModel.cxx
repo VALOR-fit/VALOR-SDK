@@ -651,7 +651,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
   bool write_pdfcs_rf = (opt.find("pdfcs_rf") != string::npos) || write_all;
 
   if(write_pdfc_rf) {
-    LOG("GenericSingleSampleFitModel",pWARN) << "The option pdfc_rf is not yet implemented.";
+    LOG("GenericSingleSampleFitModel",pWARN) << "The option pdfc_rf for optimised binning is not yet implemented.";
   }
 
   if(!array) {
@@ -733,7 +733,37 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
           LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFCompSb[imode]->GetName();
           array->Add(fPDFCompSb[imode]);
         }
-      }//+SB?          
+      }//+SB?
+
+      if(write_sb) {
+        if (write_pdfc_rf) {
+          const std::vector<KineVar_t>  & reco_vars = reco_smp.KineVars();
+          if(reco_vars.size() == 1) {
+            conv::KineSpace_t ks(util::KineSpaceFromKineVar(reco_vars[0]));
+            TH1 * hob = util::binning::Make1DHistogram(*fPDFCompSb[imode],binning,ks,true);
+            if(hob) {
+              TString hobname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfc_sb_rf",fName.c_str(),util::AsString(reco_vars[0]).c_str(),util::AsString(m).c_str());
+              hob->SetName(hobname.Data());
+              array->Add(hob);
+            }
+          }
+          else if(reco_vars.size() == 2) {
+            conv::KineSpace_t ks = util::KineSpaceFromKineVars(reco_vars);
+            if(ks != conv::kspUndefined) {
+              TH2 *hob = util::binning::Make2DHistogram(*fPDFCompSb[imode],&reco_smp,reco_vars);
+              if(hob) {
+                TString hobname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfc_sb_rf",fName.c_str(),util::AsString(ks).c_str(),util::AsString(m).c_str());
+                hob->SetName(hobname.Data());
+                array->Add(hob);
+              }
+            }
+          }
+          else {
+            LOG("GenericSingleSampleFitModel", pWARN)
+              << "Tried writing PDFC to ROOT format, but number of kine vars != 1 or 2 (" << fPDFTotOb->GetName() << ")";
+          }
+        }
+      }//+SB?
 
     }//imode
   }//pdfc_vf,pdfc_rf
