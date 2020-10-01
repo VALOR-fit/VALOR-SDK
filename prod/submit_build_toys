@@ -250,7 +250,7 @@ if($use_t2k_presets == 1) {
 
   # Are we using a reactor constraint or not?
   $use_reactors = 1;
-  if (index($prior_file, "reactor") == -1) {
+  if (index($osc_prior_file, "reactor") == -1) {
 		$use_reactors = 0;
 		$tag = "${tag}_t2k";
 	}
@@ -640,7 +640,8 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		  print shell "date \n";
 		  print shell "source $fmwk_setup_script \n";
 		  print shell "source $dune_setup_script \n";
-		  print shell "$command \n";
+			if($time_command == 1) { print shell "/usr/bin/time $command \n"; }
+		  else                   { print shell "$command \n"; }
 		  print shell "date \n";
 		  close(shell);
 		
