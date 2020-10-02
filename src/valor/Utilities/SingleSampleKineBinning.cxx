@@ -207,6 +207,7 @@ bool SingleSampleKineBinning::Read(string file)
         return false;
      }
      fTrueSimpleBinningUnique.push_back(def_true_smp_binning);
+     fTrueSimpleBinningSingle = def_true_smp_binning;
      for(size_t im = 0; im < fReactionModes.size(); im++) {
         assert(im==fTrueSimpleBinning.size());
         fTrueSimpleBinning.push_back(def_true_smp_binning);
@@ -301,6 +302,7 @@ bool SingleSampleKineBinning::Read(string file)
             << "Could not read default xsec true binning from: " << def_xsec_true_binning_file;
           return false;
        }
+       fXsecTrueBinningSingle = def_xsec_true_binning;
        fXsecTrueBinningUnique.push_back(def_xsec_true_binning);
        for(size_t im = 0; im < fReactionModes.size(); im++) {
           assert(fXsecTrueBinning.size()==im);
@@ -367,6 +369,7 @@ bool SingleSampleKineBinning::Read(string file)
      LOG("SampleBinning", pNOTICE)
        << "No xsec true binning specified. Using default true binning for xsec model.";
     fXsecTrueBinningUnique = fTrueSimpleBinningUnique;
+    fXsecTrueBinningSingle = fTrueSimpleBinningSingle;
     for (size_t im = 0 ; im <  fReactionModes.size(); im++) {
       assert(fXsecTrueBinning.size()==im);
       fXsecTrueBinning.push_back(fTrueSimpleBinning [im]);
@@ -378,6 +381,11 @@ bool SingleSampleKineBinning::Read(string file)
 
   // Also check that all xsec bin edges lie on a fit bin edge (otherwise the application of spline weights will go wrong)
   CheckBinEdges(fXsecRecoBinning     , fRecoSimpleBinning, "reco xsec binning vs. reco simple binning");
+  
+  // Also check individual truth if it exists
+  if(fXsecTrueBinningSingle && fTrueSimpleBinningSingle)
+    CheckBinEdges(fXsecTrueBinningSingle     , fTrueSimpleBinningSingle, "true xsec single binning vs. true simple single binning");
+
   for (size_t im = 0 ; im <  fReactionModes.size(); im++) {
     std::string desc = "true xsec binning vs. true simple binning for mode " + util::AsString(fReactionModes[im]);
     CheckBinEdges(fXsecTrueBinning[im], fTrueSimpleBinning[im], desc);
@@ -389,9 +397,15 @@ bool SingleSampleKineBinning::Read(string file)
                                 <<") than optimised fit bins ("<<fRecoOptimizedBinning->NBins()<<"). You did something wrong.";
     util::Die(-1); return false;
   }
+  // Check xsec bins
   if (fXsecRecoBinning->NBins() > fRecoSimpleBinning->NBins()) {
     LOG("SampleBinning",pFATAL) << "Fewer simple reco fit bins ("<<fRecoSimpleBinning->NBins()
                                 <<") than reco xsec bins ("<<fXsecRecoBinning->NBins()<<"). You did something wrong.";
+    util::Die(-1); return false;
+  }
+  if (fXsecTrueBinningSingle->NBins() > fTrueSimpleBinningSingle->NBins()) {
+    LOG("SampleBinning",pFATAL) << "Fewer simple true fit bins ("<<fTrueSimpleBinningSingle->NBins()
+                                <<") than true xsec bins ("<<fXsecTrueBinningSingle->NBins()<<"). You did something wrong.";
     util::Die(-1); return false;
   }
   for (size_t im = 0 ; im <  fReactionModes.size(); im++) {
@@ -436,9 +450,11 @@ void SingleSampleKineBinning::Init(void)
   fBeamConf = conv::kbUndefined; 
   fSample   = conv::ksUndefined;
 
-  fRecoOptimizedBinning = nullptr;
-  fRecoSimpleBinning    = nullptr;
-  fXsecRecoBinning      = nullptr;
+  fRecoOptimizedBinning    = nullptr;
+  fRecoSimpleBinning       = nullptr;
+  fXsecRecoBinning         = nullptr;
+  fTrueSimpleBinningSingle = nullptr;
+  fXsecTrueBinningSingle   = nullptr;
   
   fReactionModes.clear();
   fReactionModeIndex.clear();
@@ -462,6 +478,8 @@ void SingleSampleKineBinning::CleanUp(void)
   delete_binning(fRecoOptimizedBinning);  
   delete_binning(fRecoSimpleBinning);  
   delete_binning(fXsecRecoBinning);
+  delete_binning(fTrueSimpleBinningSingle);  
+  delete_binning(fXsecTrueBinningSingle);
   
   for (auto & b : fTrueSimpleBinning      ) {delete_binning(b);}
   for (auto & b : fXsecTrueBinning        ) {delete_binning(b);}
