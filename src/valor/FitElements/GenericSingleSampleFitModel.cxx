@@ -663,6 +663,9 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
   const SingleSampleKineBinning & binning = *fBinning;
   const VALORBinning & reco_smp = *(binning.RecoSmpBinning());
   const VALORBinning & reco_opt = *(binning.RecoOptBinning());
+  if(binning.TrueSmpBinningSingle() == nullptr)
+    fSingleTrueBinning = false;
+  const VALORBinning & true_smp_single = *(binning.TrueSmpBinningSingle());
 
   //
   // Write out MC templates (VALORArray format)
@@ -819,7 +822,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
 
   }//pdft_vf,pdft_rf
 
-  // Write 1d slices for the total in reco only
+  // Write 1d slices for the total
   if (write_pdfts_rf) {
     const std::vector<KineVar_t>  & reco_vars = reco_opt.KineVars();
     for (const conv::KineVar_t kv : reco_vars) {
@@ -837,6 +840,48 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
           TString hsbname = TString::Format("%s_%s_%s_%s",tag,"pdfts_sb_rf",fName.c_str(),util::AsString(kv).c_str());
           hsb->SetName(hsbname.Data());
           array->Add(hsb);
+        }
+      }
+    }
+    if(fSingleTrueBinning){
+      // Loop over all modes and add the VALORArrays together
+      VALORArray *PDFTotTrueOb = new VALORArray(*fMCTFinOb[0]);
+      VALORArray *PDFTotTrueSb = new VALORArray(*fMCTFinSb[0]);
+      const int n_reco_bins_ob = reco_opt.NBins();
+      const int n_reco_bins_sb = reco_smp.NBins();
+      const int n_true_bins    = true_smp_single.NBins();
+      for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+        if(imode == 0) continue;
+        
+        // Loop over true and reco bins and add the valor array entry for the mode to the total
+        for(int ireco = 0; ireco < n_reco_bins_sb; ireco++) {
+          for(int itrue = 0; itrue < n_true_bins; itrue++) {
+            PDFTotTrueSb->AddToEntry(fMCTFinSb[imode]->GetEntry(ireco,itrue), ireco, itrue);
+          }
+        }
+        for(int ireco = 0; ireco < n_reco_bins_ob; ireco++) {
+          for(int itrue = 0; itrue < n_true_bins; itrue++) {
+            PDFTotTrueOb->AddToEntry(fMCTFinOb[imode]->GetEntry(ireco,itrue), ireco, itrue);
+          }
+        }
+      } // imode
+      const std::vector<KineVar_t> & true_vars = true_smp_single.KineVars();
+      for (const conv::KineVar_t kv : true_vars) {
+        conv::KineSpace_t ks(util::KineSpaceFromKineVar(kv));
+        if (ks == conv::kspUndefined) {continue;}
+        TH1 * hob = util::binning::Make1DHistogram(*PDFTotTrueOb,binning,ks,false);
+        if(hob) {
+          TString hobname = TString::Format("%s_%s_%s_%s",tag,"pdfts_ob_rf",fName.c_str(),util::AsString(kv).c_str());
+          hob->SetName(hobname.Data());
+          array->Add(hob);
+        }
+        if (write_sb) {
+          TH1 * hsb = util::binning::Make1DHistogram(*PDFTotTrueSb,binning,ks,true);
+          if(hsb) {
+            TString hsbname = TString::Format("%s_%s_%s_%s",tag,"pdfts_sb_rf",fName.c_str(),util::AsString(kv).c_str());
+            hsb->SetName(hsbname.Data());
+            array->Add(hsb);
+          }
         }
       }
     }
@@ -1087,12 +1132,13 @@ void GenericSingleSampleFitModel::Init(void)
 {
   LOG("GenericSingleSampleFitModel",pDEBUG) << "Initializing...";
 
-  fName         = "none";
-  fFiducialMass = 0;
-  fPOT          = 0;
-  fUseMCDST     = false;
-  fRFL          = 0;
-  fMCDST        = nullptr;
+  fName              = "none";
+  fFiducialMass      = 0;
+  fPOT               = 0;
+  fUseMCDST          = false;
+  fRFL               = 0;
+  fMCDST             = nullptr;
+  fSingleTrueBinning = true;
 
   fPDFTotOb      = 0;
   fPDFTotNullOb  = true;
@@ -1169,7 +1215,7 @@ void GenericSingleSampleFitModel::Book(void)
     ReacMode_t m = fReactionModes[imode];
     assert(m!=conv::kmUndefined);
 
-    const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
+    const VALORBinning * true_sb = fSingleTrueBinning ? fBinning->TrueSmpBinningSingle() : fBinning->TrueSmpBinning(m);
 
     const int n_reco_bins_ob = reco_ob->NBins();
     const int n_reco_bins_sb = reco_sb->NBins();
@@ -1667,17 +1713,19 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
   // Let's work out what universe branches we need
   //~ bool apply_universe_weights = fSystUniverseToApply.size();
-  const size_t max_n_universes = 10000;
   std::map<std::string,int> branch_n_universes;
   std::map<std::string,std::vector<float>> branch_universes;
   for (const auto & variation_name : fUniverseParametersToSave) {
-    branch_universes.emplace(variation_name,std::vector<float>(max_n_universes));
+    std::cout << "Variation name: " << variation_name << std::endl;
     std::string branch_name   = Form("variation_%s",variation_name.c_str());
     std::string branch_name_n = Form("variation_n_%s",variation_name.c_str());
     t->SetBranchStatus (branch_name_n.c_str(),1);
     t->SetBranchStatus (branch_name  .c_str(),1);
     bool bstat_univ_n = t->SetBranchAddress(branch_name_n.c_str(),&branch_n_universes[variation_name]);
-    bool bstat_univ   = t->SetBranchAddress(branch_name.  c_str(),branch_universes  [variation_name].data());
+    t->GetEntry(0);
+    int nuniv = branch_n_universes.at(variation_name);
+    branch_universes.emplace(variation_name,std::vector<float>(nuniv));
+    bool bstat_univ   = t->SetBranchAddress(branch_name.c_str(),branch_universes[variation_name].data());
     if (bstat_univ_n || bstat_univ) {
       LOG("GenericSingleSampleModel",pFATAL) << fName<<" Failed to load needed universe branch.";
       util::Die(-1) ; return;
@@ -1894,8 +1942,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
           universe_offset = universe_id - fFirstUniverseToSave;
           const std::vector<float> & universes = branch_universes.at(name);
           // Right now we'll sum up the weighted bin totals
-          float universe_entry = this_entry*universes.at(universe_id);
-          product_weight *= universes.at(universe_id);
+          float universe_entry = this_entry;
+          if(!isnan(universes.at(universe_id))){
+              universe_entry *= universes.at(universe_id);
+              product_weight *= universes.at(universe_id);
+          }
           fUniverseVariations[name][imode].AddToEntry(
               universe_entry,
               reco_bin_ob, true_bin, universe_offset
@@ -1924,8 +1975,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
           size_t universe_id = fUniversesToRead.at(universe_offset);
           const std::vector<float> & universes = branch_universes.at(name);
           // Right now we'll sum up the weighted bin totals
-          float universe_entry = this_entry*universes.at(universe_id);
-          product_weight *= universes.at(universe_id);
+          float universe_entry = this_entry;
+          if(!isnan(universes.at(universe_id))){
+              universe_entry *= universes.at(universe_id);
+              product_weight *= universes.at(universe_id);
+          }
           fUniverseVariations[name][imode].AddToEntry(
               universe_entry,
               reco_bin_ob, true_bin, universe_offset
@@ -1988,7 +2042,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
           const float & orig_entry = fMCTFinOb [imode]->GetEntryRef(reco_bin_ob,true_bin);
           float product_entry = fUniverseVariationProducts[imode].GetEntry(reco_bin_ob,true_bin,universe_offset);
           float product_weight = 1.;
-          if (std::abs(orig_entry) > conv::kASmallNum) {
+          if (std::abs(orig_entry) > conv::kASmallNum && !isnan(orig_entry)) {
             product_weight = product_entry/orig_entry;
           }
           fUniverseVariationProducts[imode].SetEntry(product_weight,reco_bin_ob,true_bin,universe_offset);
@@ -1997,7 +2051,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
           for (const std::string & name : fUniverseParametersToSave) {
             float varied_entry = fUniverseVariations[name][imode].GetEntry(reco_bin_ob,true_bin,universe_offset);
             float universe_weight = 1.;
-            if (std::abs(orig_entry) > conv::kASmallNum) {
+            if (std::abs(orig_entry) > conv::kASmallNum && !isnan(orig_entry)) {
               universe_weight = varied_entry/orig_entry;
             }
             fUniverseVariations[name][imode].SetEntry(universe_weight,reco_bin_ob,true_bin,universe_offset);
@@ -3358,8 +3412,8 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         }
         for (int ireco = 0 ; ireco < n_reco_bins_ob ; ireco++) {
           for (int itrue = 0 ; itrue < n_true_bins_sb ; itrue++) {
-            //float & wght = ;
             float & wght = (name == "product") ? fUniverseVariationProducts[imode].GetEntryRef(ireco,itrue,universe_offset) : fUniverseVariations[name][imode].GetEntryRef(ireco,itrue,universe_offset);
+
             double & val = templFinOb[ireco][itrue];
             val *= wght;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
@@ -3778,19 +3832,28 @@ void valor::GenericSingleSampleFitModel::UpdateObservableBinningFromSimple(Optio
   LOG("GenericSingleSampleFitModel",pNOTICE)<<"Updating observable binning from simple: "<<fName;
 
 
-  const VALORBinning * reco_ob = fBinning->RecoOptBinning();
-  const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
+  const VALORBinning * reco_ob        = fBinning->RecoOptBinning();
+  const VALORBinning * reco_sb        = fBinning->RecoSmpBinning();
+  const VALORBinning * true_sb = nullptr;
+  int n_true_bins_sb     = 0;
 
-  const int n_reco_bins_ob  = reco_ob->NBins();
-  const int n_reco_bins_sb  = reco_sb->NBins();
+  if(fSingleTrueBinning){
+    true_sb = fBinning->TrueSmpBinningSingle();
+    n_true_bins_sb = true_sb->NBins();
+  }
+
+  const int n_reco_bins_ob        = reco_ob->NBins();
+  const int n_reco_bins_sb        = reco_sb->NBins();
 
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
 
     ReacMode_t m = fReactionModes[imode];
     if(m == kmUndefined) continue;
 
-    const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
-    const int n_true_bins_sb = true_sb->NBins();
+    if(true_sb == nullptr){
+      true_sb = fBinning->TrueSmpBinning(m);
+      n_true_bins_sb = true_sb->NBins();
+    }
 
     // Zero it out, since we'll just be adding to elements
     fMCTFinOb[imode]->SetAll(0.);
