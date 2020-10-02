@@ -186,7 +186,6 @@ int main(int argc, char ** argv)
     if (fp->Exists(conv::kPhypDm23sq  )) { fp->Update(conv::kPhypDm23sq  ,dm23sq  ); }
     if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
 
-
     model->ResetSystematics("all");
     // Randomise the systematics in the model, and copy them to the FPL
     std::vector<PhysParamId_t> param_set = util::GetParameterSet(params_to_tweak);
@@ -244,13 +243,21 @@ int main(int argc, char ** argv)
     err_m1.back()->Reset();
     err_p1.back()->Reset();
     for(int ebin = 1; ebin <= nom_pdf[imodel]->GetNbinsX(); ebin++) {
-       double nom_val = nom_pdf[imodel]->GetBinContent(ebin);
-       double sumsq   = 0;
+       double nom_val   = nom_pdf[imodel]->GetBinContent(ebin);
+       double one_sigma = 1.;
+       double sumsq     = 0;
+       double mean      = 0.;
+
+       for(int itoy = 0; itoy < ntoys; itoy++) {
+          mean += twk_pdf[imodel][itoy]->GetBinContent(ebin);
+       }
+       mean = mean/static_cast<double>(ntoys);
        for(int itoy = 0; itoy < ntoys; itoy++) {
           double curr_val = twk_pdf[imodel][itoy]->GetBinContent(ebin);
-          sumsq += TMath::Power(curr_val-nom_val,2.);
+//          sumsq += TMath::Power(curr_val-nom_val,2.);
+          sumsq += TMath::Power(curr_val-mean,2.);          
        }//itoy
-       double one_sigma = TMath::Sqrt(sumsq/ntoys);
+       one_sigma = TMath::Sqrt(sumsq/static_cast<double>(ntoys));
        err_p1[imodel]->SetBinContent(ebin, nom_val + one_sigma);
        err_m1[imodel]->SetBinContent(ebin, nom_val - one_sigma);
        nom_pdf_werr [imodel] -> SetBinError(ebin,one_sigma);
