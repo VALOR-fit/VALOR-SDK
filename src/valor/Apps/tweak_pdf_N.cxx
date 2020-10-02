@@ -19,6 +19,7 @@
 
              --load-prior-from-file : Option for file to give constrained prior matrix [ use default prior ]
              --prior-fit-number     : Option to specify the entry in the tree for above file [ 0 ]
+             --mean,nominal         : Option to calculate the standard deviation from the mean value or the nominal value, default nominal
 
              [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
 
@@ -96,6 +97,7 @@ int main(int argc, char ** argv)
   string output_rootfile  = arg.GetString("output");
   string params_to_tweak  = arg.GetString("params");
   string kine_var         = arg.GetString("kinevar");
+  bool mean               = arg.GetBool("mean");
 
   // Get the kinematic variable we're tweaking
   const KineVar_t kv = util::KineVarFromString(kine_var);
@@ -246,16 +248,31 @@ int main(int argc, char ** argv)
        double nom_val   = nom_pdf[imodel]->GetBinContent(ebin);
        double one_sigma = 1.;
        double sumsq     = 0;
-       double mean      = 0.;
+       double mean_val      = 0.;
 
-       for(int itoy = 0; itoy < ntoys; itoy++) {
-          mean += twk_pdf[imodel][itoy]->GetBinContent(ebin);
+       if(mean){
+         for(int itoy = 0; itoy < ntoys; itoy++) {
+           mean_val += twk_pdf[imodel][itoy]->GetBinContent(ebin);
+         }
        }
        mean = mean/static_cast<double>(ntoys);
        for(int itoy = 0; itoy < ntoys; itoy++) {
           double curr_val = twk_pdf[imodel][itoy]->GetBinContent(ebin);
-//          sumsq += TMath::Power(curr_val-nom_val,2.);
-          sumsq += TMath::Power(curr_val-mean,2.);          
+          if(mean){
+            if(mean_val<std::numeric_limits<double>::epsilon()){
+              LOG("valor",pERROR) << " Trying to divide by a mean value of 0, reverting to nominal";
+              sumsq += TMath::Power(curr_val-nom_val,2.);
+              LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+            }
+            else{
+              sumsq += TMath::Power(curr_val-mean_val,2.);
+              LOG("valor",pINFO) << " Calculating the standard deviation using the mean";
+            }
+          }
+          else{
+            sumsq += TMath::Power(curr_val-nom_val,2.);
+            LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+          }
        }//itoy
        one_sigma = TMath::Sqrt(sumsq/static_cast<double>(ntoys));
        err_p1[imodel]->SetBinContent(ebin, nom_val + one_sigma);
