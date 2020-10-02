@@ -291,6 +291,7 @@ private:
   
   // Binning
   SingleSampleKineBinning * fBinning;
+  bool fSingleTrueBinning;
   
   // The list of reaction modes we're using
   ModeList* fML;
