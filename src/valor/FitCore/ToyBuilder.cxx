@@ -181,8 +181,8 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
          this->_model->Write(toy_stream);
       }
       else {
-        this->_data->Generate(this->_model, fluctuateStatistics, gen_opt); //     TODO: DO NOT COMMIT
-        this->_data->Write(toy_stream);
+          this->_data->Generate(this->_model, fluctuateStatistics, toy_stream->GetVALORArrayFormat());
+          this->_data->Write(toy_stream);
       }
       this->SaveParamThrows(fpl, t == Ntoys-1, filename);
 
@@ -298,7 +298,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
    Option_t *write_opt =  nullptr;
    const char * tag = "valor";
 
-   // TODO: data/model
    if(!_toys_are_marginalisation) {
        write_opt = "data_rf +SB";
        this->_data->Write(array, tag, write_opt);
@@ -309,7 +308,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
            const conv::KineSpace_t ks = reco_smp.KineSpace();
 
            TString name = TString::Format("%s_data_sb_rf_%s", tag,
-                                          this_data->Name().c_str());  // TODO: name changes for model
+                                          this_data->Name().c_str());
            std::cout << name << std::endl;
            TH1D *curr_pdf = (TH1D *) array->FindObject(name.Data());
            if (!curr_pdf) {
@@ -331,7 +330,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
             const VALORBinning & reco_smp = *(binning.RecoSmpBinning());
             const conv::KineSpace_t ks = reco_smp.KineSpace();
 
-            TString name = TString::Format("%s_%s_%s_%s",tag,"pdft_sb_rf", this_model->Name().c_str(), util::AsString(ks).c_str());  // TODO: name changes for model
+            TString name = TString::Format("%s_%s_%s_%s",tag,"pdft_sb_rf", this_model->Name().c_str(), util::AsString(ks).c_str());
 
             // Determine if 2D or 1D
             const std::vector<conv::KineVar_t>  & reco_vars = reco_smp.KineVars();
@@ -362,8 +361,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
         }
     }
 
-
-   // TODO: Loop over samples & update array of hists
    _tree_pars->Fill();
 
    array->Clear("C");
