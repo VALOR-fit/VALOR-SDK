@@ -98,7 +98,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
       // Build marginalisation toys
       std::string write_opt_str = "pdft_vf";
       if(_store_mode_arrays ) { write_opt_str += "_pdfc_vf"; }
-      //if(_use_simple_binning) { write_opt_str += "+SB";      }    // We never want to write the toy arrays using the simple binning scheme    TODO: DO NOT COMMIT
+      if(_use_simple_binning) { write_opt_str += "+SB";      }
 
       // First generate a dummy toy to be overwritten (so that the model/data arrays can be initialised)
       FitParamList* fpl_void = util::GetFitParameterList("void", "");
@@ -109,7 +109,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
    else {
       // Build fake data toys
       std::string write_opt_str = "data_vf";
-      //if(_use_simple_binning) { write_opt_str += "+SB"; } // We never want to write the toy arrays using the simple binning scheme    TODO: DO NOT COMMIT
+      if(_use_simple_binning) { write_opt_str += "+SB"; }
 
       // First generate a dummy toy to be overwritten (so that the model/data arrays can be initialised)
       FitParamList* fpl_void = util::GetFitParameterList("void", "");
@@ -176,14 +176,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
       LOG("ToyBuilder", pDEBUG) << "Toy-MC generation uses true parameters: " << true_params;
 #endif
       if(t % 100 == 0) { LOG("ToyBuilder", pNOTICE) << "Generating toy-MC #" << t; }
-      std::string gen_opt_str = toy_stream->GetVALORArrayFormat();
-      std::string sb_str = "+SB";
-      if (_use_simple_binning) {
-          gen_opt_str = toy_stream->GetVALORArrayFormat() + sb_str;    //     TODO: DO NOT COMMIT - problem in validation string when saving simple binning arrays
-      }
-      Option_t* gen_opt = gen_opt_str.c_str();
-      this->_model->Generate(fpl, gen_opt);   //     TODO: DO NOT COMMIT
-       std::cout << "model PDF integrals (just after generating):" << this->_model->GetPDFIntegralAsString() << std::endl;
+      this->_model->Generate(fpl, toy_stream->GetVALORArrayFormat());
       if(_toys_are_marginalisation) {
          this->_model->Write(toy_stream);
       }
@@ -288,7 +281,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                    // Get the total PDF
                    std::string model_name = util::nm::MdlName(d, b, s, ks);
                    _tree_pars->Branch(model_name.c_str(), &(pdfs[imodel]), 32000, 0);
-                   std::cout<< "I'm going down the model route" << std::endl;
                }
            }
        }
@@ -350,7 +342,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                     util::Die(-1);
                 }
                 std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl;
-                std::cout << "I'm a 1D boi" << std::endl;
                 pdfs[imodel] = (TH1*) curr_pdf;
                 std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl;
             }
@@ -361,7 +352,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                     util::Die(-1);
                 }
                 std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl;
-                std::cout << "I'm a 2D boi" << std::endl;
                 pdfs[imodel] = (TH1*) curr_pdf;
                 std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl;
             }
@@ -370,9 +360,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                         << "Tried writing PDFT to ROOT format, but number of kine vars != 1 or 2 (" << this_model->Name() << ")";
             }
         }
-       std::cout << "pdfs[0] has " << pdfs[0]->Integral() << " events." << std::endl;
-       std::cout << "pdfs[1] has " << pdfs[1]->Integral() << " events." << std::endl;
-       std::cout << "pdfs[2] has " << pdfs[2]->Integral() << " events." << std::endl;
     }
 
 
