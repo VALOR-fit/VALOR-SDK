@@ -340,9 +340,9 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                     LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
                     util::Die(-1);
                 }
-                std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl;
+                std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl; //TODO: Bugfix remove
                 pdfs[imodel] = (TH1*) curr_pdf;
-                std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl;
+                std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl; //TODO: Bugfix remove
             }
             else if (reco_vars.size() == 2){ //If 2D hist
                 TH2D *curr_pdf = (TH2D *) array->FindObject(name.Data());
@@ -350,9 +350,9 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                     LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
                     util::Die(-1);
                 }
-                std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl;
+                std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl;  //TODO: Bugfix remove
                 pdfs[imodel] = (TH1*) curr_pdf;
-                std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl;
+                std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl; //TODO: Bugfix remove
             }
             else {
                 LOG("ToyBuilder", pWARN)
