@@ -59,8 +59,8 @@ void Marginalisation::ComputeStatistics(const int fitParam1Bin,
    const int lastBatch = firstBatch + Nbatches - 1;
    const int N = Nbatches * Ntoys;
    vector<double> vec_chi2_toy(N);  // Index constructed (ibatch - firstBatch) * Ntoys + itoy
-   const char* read_opt = _va_format.c_str();
-   if (_use_simple_binning) { read_opt = (_va_format + "+SB").c_str(); }
+   std::string read_opt = _va_format;
+   if (_use_simple_binning) { read_opt += "+SB"; }
    for(int b = firstBatch; b <= lastBatch; ++b)
    {
       std::ostringstream oss;
