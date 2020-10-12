@@ -100,13 +100,7 @@ bool valor::util::ToyStream::FileIsEmpty() const
 //______________________________________________________________________________
 const string valor::util::ToyStream::MakeValidationString(const std::type_info& type, const string compound_name) const
 {
-  // Reading the '+' character from a binary file goes quite badly wrong!
-  std::string va_format =  fVALORArrayFormat;
-  if(va_format.find("+SB") != std::string::npos) {
-    va_format = util::ReplaceAll(va_format, "+SB", "plusSB");
-  }
-
-  return ((string) type.name()) + "__" + compound_name + "__" + va_format;
+  return ((string) type.name()) + "__" + compound_name + "__" + fVALORArrayFormat;
 }
 //______________________________________________________________________________
 void valor::util::ToyStream::WriteValidationString()
