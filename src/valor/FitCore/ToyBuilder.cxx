@@ -261,7 +261,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
 
            if(!_toys_are_marginalisation) {
                for (unsigned int idata = 0; idata < N; idata++) {
-                   GenericSingleSampleFitData  *this_data = (GenericSingleSampleFitData *)(cd->GetSubData(idata)); //error here.
+                   GenericSingleSampleFitData  *this_data = (GenericSingleSampleFitData *)(cd->GetSubData(idata));
                    conv::Detector_t d = this_data->GetDetector();
                    conv::BeamConf_t b = this_data->GetBeam();
                    conv::Sample_t s = this_data->GetSample();
@@ -273,7 +273,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
            }
            else {
                for (unsigned int imodel = 0; imodel < N; imodel++) {
-                   GenericSingleSampleFitModel *this_model = (GenericSingleSampleFitModel *)(cm->GetSubModel(imodel)); //error here.
+                   GenericSingleSampleFitModel *this_model = (GenericSingleSampleFitModel *)(cm->GetSubModel(imodel));
                    conv::Detector_t d = this_model->GetDetector();
                    conv::BeamConf_t b = this_model->GetBeam();
                    conv::Sample_t s = this_model->GetSample();
