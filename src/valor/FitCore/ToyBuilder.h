@@ -24,10 +24,14 @@
 #include <string>
 
 #include "valor/FitCore/CompoundFitElements.h"
+#include "valor/FitCore/CompoundFitModel.h"
+#include "valor/FitCore/CompoundFitData.h"
 #include "valor/FitCore/FitDataABC.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitResult.h"
+#include "valor/FitCore/SingleSampleFitDataABC.h"
+
 
 #include "TH1.h"
 #include "TH2.h"

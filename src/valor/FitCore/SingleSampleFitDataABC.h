@@ -33,7 +33,12 @@ class SingleSampleFitDataABC: public FitDataABC
 public:
   virtual ~SingleSampleFitDataABC();
 
-  void Configure(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t k); 
+  void Configure(conv::Detector_t d, conv::BeamConf_t b, conv::Sample_t s, conv::KineSpace_t k);
+
+  conv::Detector_t  GetDetector () const { return fDetector;}
+  conv::BeamConf_t  GetBeam     () const { return fBeam;    }
+  conv::Sample_t    GetSample   () const { return fSample;  }
+  conv::KineSpace_t GetKineSpace() const { return fKSp;     }
 
 protected:
   SingleSampleFitDataABC();

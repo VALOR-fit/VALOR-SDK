@@ -3,6 +3,9 @@
 #include <limits>
 #include <sstream>
 #include <string>
+#include <fstream>
+#include <iomanip>
+
 #include "TMath.h"
 
 #include "valor/Conventions/Constants.h"
@@ -13,6 +16,18 @@
 #include "valor/Utilities/ToyStream.h"
 #include "valor/FitCore/UtlFitParamList.h"
 #include "valor/FitCore/UtlOscillation.h"
+#include "valor/FitElements/GenericSingleSampleFitModel.h"
+#include "valor/FitElements/GenericSingleSampleFitData.h"
+#include "valor/FitCore/CompoundFitModel.h"
+#include "valor/FitCore/CompoundFitData.h"
+#include "valor/Conventions/KineSpace.h"
+#include "valor/Conventions/Detector.h"
+#include "valor/Conventions/Detector.h"
+#include "valor/Conventions/BeamConf.h"
+#include "valor/Conventions/Sample.h"
+#include "valor/Conventions/KineSpace.h"
+#include "valor/Conventions/Names.h"
+
 
 //#define VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
 
@@ -83,7 +98,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
       // Build marginalisation toys
       std::string write_opt_str = "pdft_vf";
       if(_store_mode_arrays ) { write_opt_str += "_pdfc_vf"; }
-      if(_use_simple_binning) { write_opt_str += "+SB";      }
+      //if(_use_simple_binning) { write_opt_str += "+SB";      }    // We never want to write the toy arrays using the simple binning scheme    TODO: DO NOT COMMIT
 
       // First generate a dummy toy to be overwritten (so that the model/data arrays can be initialised)
       FitParamList* fpl_void = util::GetFitParameterList("void", "");
@@ -94,7 +109,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
    else {
       // Build fake data toys
       std::string write_opt_str = "data_vf";
-      if(_use_simple_binning) { write_opt_str += "+SB"; }
+      //if(_use_simple_binning) { write_opt_str += "+SB"; } // We never want to write the toy arrays using the simple binning scheme    TODO: DO NOT COMMIT
 
       // First generate a dummy toy to be overwritten (so that the model/data arrays can be initialised)
       FitParamList* fpl_void = util::GetFitParameterList("void", "");
@@ -161,12 +176,19 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
       LOG("ToyBuilder", pDEBUG) << "Toy-MC generation uses true parameters: " << true_params;
 #endif
       if(t % 100 == 0) { LOG("ToyBuilder", pNOTICE) << "Generating toy-MC #" << t; }
-      this->_model->Generate(fpl, toy_stream->GetVALORArrayFormat());
+      std::string gen_opt_str = toy_stream->GetVALORArrayFormat();
+      std::string sb_str = "+SB";
+      if (_use_simple_binning) {
+          gen_opt_str = toy_stream->GetVALORArrayFormat() + sb_str;    //     TODO: DO NOT COMMIT - problem in validation string when saving simple binning arrays
+      }
+      Option_t* gen_opt = gen_opt_str.c_str();
+      this->_model->Generate(fpl, gen_opt);   //     TODO: DO NOT COMMIT
+       std::cout << "model PDF integrals (just after generating):" << this->_model->GetPDFIntegralAsString() << std::endl;
       if(_toys_are_marginalisation) {
          this->_model->Write(toy_stream);
       }
       else {
-        this->_data->Generate(this->_model, fluctuateStatistics, toy_stream->GetVALORArrayFormat());
+        this->_data->Generate(this->_model, fluctuateStatistics, gen_opt); //     TODO: DO NOT COMMIT
         this->_data->Write(toy_stream);
       }
       this->SaveParamThrows(fpl, t == Ntoys-1, filename);
@@ -189,12 +211,29 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
 void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string binary_file_name)
 {
    if(!_save_throws_to_tree) { return; }
-
    // Set up an array to hold all of the parameter values that we'll save to the output tree
    double param_values[conv::knppmax];
    for(int ip = 0; ip < conv::knppmax; ip++){
       param_values[ip] = -999;
    }
+
+   CompoundFitData  *cd = nullptr;
+   CompoundFitModel *cm = nullptr;
+   int N = 0; // N samples used to switch between GSSFM (Marg Toys) and GSSFD (Fake data toys)
+
+    if(!_toys_are_marginalisation) {
+        cd = dynamic_cast<CompoundFitData *>(this->_data);
+        N = cd->GetNSubData();
+    }
+    else {
+        cm = dynamic_cast<CompoundFitModel *>(this->_model);
+        N = cm->GetNSubModels();
+    }
+
+    TH1* pdfs[N];
+    for(int ih = 0; ih < N; ih++){
+        pdfs[ih] = nullptr;
+    }
 
    // Set up the output file, if we haven't done so already
    if(!_file_pars) {
@@ -220,10 +259,39 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
          std::string param_name = util::NameRegistry::Instance()->ParamAsStringVerySimple(p);
          std::string branch_info = param_name + "/D";
          if (fpl.Exists(p)) {
-            _tree_pars->Branch(param_name.c_str(), &(param_values[ip]), branch_info.c_str() );
+            _tree_pars->Branch(param_name.c_str(), &(param_values[ip]), branch_info.c_str());
          }
       }
-   }
+
+
+
+
+           if(!_toys_are_marginalisation) {
+               for (unsigned int idata = 0; idata < N; idata++) {
+                   GenericSingleSampleFitData  *this_data = (GenericSingleSampleFitData *)(cd->GetSubData(idata)); //error here.
+                   conv::Detector_t d = this_data->GetDetector();
+                   conv::BeamConf_t b = this_data->GetBeam();
+                   conv::Sample_t s = this_data->GetSample();
+                   conv::KineSpace_t ks = this_data->GetKineSpace();
+                   // Get the total PDF
+                   std::string data_name = util::nm::MdlName(d, b, s, ks);
+                   _tree_pars->Branch(data_name.c_str(), &(pdfs[idata]), 32000, 0);
+               }
+           }
+           else {
+               for (unsigned int imodel = 0; imodel < N; imodel++) {
+                   GenericSingleSampleFitModel *this_model = (GenericSingleSampleFitModel *)(cm->GetSubModel(imodel)); //error here.
+                   conv::Detector_t d = this_model->GetDetector();
+                   conv::BeamConf_t b = this_model->GetBeam();
+                   conv::Sample_t s = this_model->GetSample();
+                   conv::KineSpace_t ks = this_model->GetKineSpace();
+                   // Get the total PDF
+                   std::string model_name = util::nm::MdlName(d, b, s, ks);
+                   _tree_pars->Branch(model_name.c_str(), &(pdfs[imodel]), 32000, 0);
+                   std::cout<< "I'm going down the model route" << std::endl;
+               }
+           }
+       }
 
    // Save this throw to the tree
    for (int ip = 0 ; ip < conv::knppmax ; ip++) {
@@ -232,7 +300,87 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
          param_values[ip] = fpl.CurrValue(p);
       }
    }
+
+   TObjArray * array = new TObjArray();
+   array->SetOwner(true);
+   Option_t *write_opt =  nullptr;
+   const char * tag = "valor";
+
+   // TODO: data/model
+   if(!_toys_are_marginalisation) {
+       write_opt = "data_rf +SB";
+       this->_data->Write(array, tag, write_opt);
+       for (unsigned int idata = 0; idata < N; idata++) {
+           GenericSingleSampleFitData *this_data = (GenericSingleSampleFitData *)(cd->GetSubData(idata));
+           const SingleSampleKineBinning &binning = *this_data->GetBinning();
+           const VALORBinning &reco_smp = *(binning.RecoSmpBinning());
+           const conv::KineSpace_t ks = reco_smp.KineSpace();
+
+           TString name = TString::Format("%s_data_sb_rf_%s", tag,
+                                          this_data->Name().c_str());  // TODO: name changes for model
+           std::cout << name << std::endl;
+           TH1D *curr_pdf = (TH1D *) array->FindObject(name.Data());
+           if (!curr_pdf) {
+               LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
+               util::Die(-1);
+           }
+           pdfs[idata] = curr_pdf; //TODO: 1D and 2D if statements.
+       }
+   }
+
+
+    else {
+       write_opt = "pdft_rf +SB";
+        this->_model->Write(array, tag, write_opt);
+        std::cout << "model PDF integrals (in SaveParamThrows):" << this->_model->GetPDFIntegralAsString() << std::endl;
+       for (unsigned int imodel = 0; imodel < N; imodel++) {
+            GenericSingleSampleFitModel *this_model = (GenericSingleSampleFitModel *)(cm->GetSubModel(imodel));
+            const SingleSampleKineBinning & binning = *this_model->GetBinning();
+            const VALORBinning & reco_smp = *(binning.RecoSmpBinning());
+            const conv::KineSpace_t ks = reco_smp.KineSpace();
+
+            TString name = TString::Format("%s_%s_%s_%s",tag,"pdft_sb_rf", this_model->Name().c_str(), util::AsString(ks).c_str());  // TODO: name changes for model
+
+            // Determine if 2D or 1D
+            const std::vector<conv::KineVar_t>  & reco_vars = reco_smp.KineVars();
+            if (reco_vars.size() == 1){ //If 1D hist
+                TH1D *curr_pdf = (TH1D *) array->FindObject(name.Data());
+                if (!curr_pdf) {
+                    LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
+                    util::Die(-1);
+                }
+                std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl;
+                std::cout << "I'm a 1D boi" << std::endl;
+                pdfs[imodel] = (TH1*) curr_pdf;
+                std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl;
+            }
+            else if (reco_vars.size() == 2){ //If 2D hist
+                TH2D *curr_pdf = (TH2D *) array->FindObject(name.Data());
+                if (!curr_pdf) {
+                    LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
+                    util::Die(-1);
+                }
+                std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl;
+                std::cout << "I'm a 2D boi" << std::endl;
+                pdfs[imodel] = (TH1*) curr_pdf;
+                std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl;
+            }
+            else {
+                LOG("ToyBuilder", pWARN)
+                        << "Tried writing PDFT to ROOT format, but number of kine vars != 1 or 2 (" << this_model->Name() << ")";
+            }
+        }
+       std::cout << "pdfs[0] has " << pdfs[0]->Integral() << " events." << std::endl;
+       std::cout << "pdfs[1] has " << pdfs[1]->Integral() << " events." << std::endl;
+       std::cout << "pdfs[2] has " << pdfs[2]->Integral() << " events." << std::endl;
+    }
+
+
+   // TODO: Loop over samples & update array of hists
    _tree_pars->Fill();
+
+   array->Clear("C");
+   delete array;
 
    // If this is the final toy, write the tree to a new file
    if(write_tree) {

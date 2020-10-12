@@ -32,6 +32,7 @@ valor::util::ToyStream::ToyStream(const string file_name, const string read_or_w
   fVALORArrayFormat = valor_array_format;
 
   fValidationString = this->MakeValidationString(type, name);
+  LOG("ToyStream",pFATAL) << "*** test: validation str = " << fValidationString;
 
   if(read_or_write == "read") {
     fStream = new std::fstream(file_name, std::ios::binary | std::ios::in);
