@@ -217,7 +217,7 @@ int main(int argc, char ** argv)
 
   if(force_untuned) {
     LOG("write_pdf",pNOTICE) << "Forcing all systematic parameters to their untuned values - all systematic weights should be 1";
-    model->ForceSystematicsToUntuned();
+    model->ForceSystematicsToUntuned(*fp);
     fp->FromPhysParamList(model->Tweaks(),"current-silent");
   }
 
