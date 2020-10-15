@@ -674,8 +674,27 @@ for($i_fc_par2 = $start_pt_fc_par2; $i_fc_par2 < $start_pt_fc_par2 + $npt_fc_par
 					close(Slurm);
 					`sbatch $job_dir/${tag}.slurm`;
 				}
-
-        #
+				
+				#
+        			# IFIC 
+       				#
+        			if($resource eq "IFIC") {
+          				open(PBS, ">$job_dir/$tag-$irun.pbs") or die("Cannot create the PBS batch script");
+          				print PBS "#!/bin/bash \n";
+         				print PBS "#PBS -N $tag-$irun \n";
+          				print PBS "#PBS -l mem=$mem \n";
+         				print PBS "#PBS -q short \n"; # Max walltime of for long - 24h, in case of 2D fit use long4
+          				print PBS "#PBS -l nodes=1:ppn=1 \n"; #use only ppn=1 
+         				print PBS "#PBS -o $job_dir/$tag-$irun.pbs.out \n";
+          				print PBS "#PBS -e $job_dir/$tag-$irun.pbs.err \n";
+         				print PBS "cd $job_dir \n";
+          				print PBS "source $softw_dir/setup/setup_at_cvmfs_root6.sh $softw_dir $fmwk_dir\n";
+          				print PBS "$command \n";
+          				close(PBS);
+          				`qsub $job_dir/$tag-$irun.pbs`;
+        			}				
+				
+				#
 				# HTCondor @ RAL
 				#
 
