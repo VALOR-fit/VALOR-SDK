@@ -51,6 +51,7 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAllNCNonRes = ktApplyToAllNC1pi 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC       = ktApplyToNCElLike | ktApplyToAllNC1pi | ktApplyToAllNC2pi | ktApplyToNCcoh | ktApplyToNC1Gamma | ktApplyToNCoth | ktApplyToNCELScat;
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCoh       = ktApplyToCCcoh | ktApplyToNCcoh;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllQELike    = ktApplyToCCQELike | ktApplyToNCElLike;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllMEC       = ktApplyToCCMEC | ktApplyToNCMEC;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllELScat    = ktApplyToCCELScat | ktApplyToNuEELScat | ktApplyToNCELScat;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAll1pi       = ktApplyToAllCC1pi | ktApplyToAllNC1pi;
@@ -59,10 +60,12 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAlln0pi      = ktApplyToAllCCn0p
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNonRes    = ktApplyToAllCCNonRes | ktApplyToAllNCNonRes;
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAll          = ktApplyToAllCC | ktApplyToAllNC | ktApplyToAllELScat;
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCoh    = ktApplyToAll & (~ktApplyToAllCoh);
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllButELScat = ktApplyToAll & (~ktApplyToAllELScat);
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithFSI   = ktApplyToAll & (~ktApplyToAllCoh) & (~ktApplyToAllELScat);
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCosmic = ktApplyToAll & (~ktApplyToCosmic);
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllPi        = ktApplyToAll1pi | ktApplyToAll2pi | ktApplyToAlln0pi;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCoh    = ktApplyToAll   & (~ktApplyToAllCoh);
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllButELScat = ktApplyToAll   & (~ktApplyToAllELScat);
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithFSI   = ktApplyToAll   & (~ktApplyToAllCoh) & (~ktApplyToAllELScat) & (~ktApplyToNC1Gamma);
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithPiFSI = ktApplyToAll   & (~ktApplyToAllQELike) & (~ktApplyToAllCoh) & (~ktApplyToAllELScat) & (~ktApplyToNC1Gamma);
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCosmic = ktApplyToAll   & (~ktApplyToCosmic);
 
 // Detectors
 const DetectorApplyMask_t valor::conv::kdApplyToAllDUNE = kdApplyToDUNEND | kdApplyToDUNEFD;
@@ -244,6 +247,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNCNonRes  , "allncnonres") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNC        , "allnc") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCoh       , "allcoh") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllQELike    , "allqelike") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllMEC       , "allmec") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllELScat    , "allelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll1pi       , "all1pi") );
@@ -251,6 +255,8 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAlln0pi      , "alln0pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNonRes    , "allnonres") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll          , "all") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllPi        , "allpi") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllWithPiFSI , "allwithpifsi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCoh    , "allbutcoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButELScat , "allbutelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllWithFSI   , "allwithfsi") );
