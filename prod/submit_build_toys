@@ -674,6 +674,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		  "should_transfer_files    = YES \n".
 		  "when_to_transfer_output  = ON_EXIT \n".
 		  (ncores > 1 ? "request_cpus             = $ncores \n":"").
+		  "Requirements             = (Opsys =?= \"LINUX\") && (OpSysAndVer =?= \"CentOS7\") \n".
 		  "\nqueue\n";
 		  
 		  $cndfn = "$job_dir/${jobname}.condor";
