@@ -476,7 +476,6 @@ die("$job_dir doesn't exist") unless -d $job_dir;
 # Submit jobs by looping over all point of both parameters of interest
 #
 
-$jobID=0;
 $irun=0;
 $step_par1 = 0;
 $step_par2 = 0;
@@ -484,23 +483,25 @@ if($npt_par1 > 1) { $step_par1 = ($max_par1 - $min_par1) / ($npt_par1 - 1); }
 if($npt_par2 > 1) { $step_par2 = ($max_par2 - $min_par2) / ($npt_par2 - 1); }
 
 for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
+	$jobID="${ibin1}";
 	if($len_arr_pt1 != 0) {
 		if(!exists($map_arr_pt1{$ibin1})) {
 			print "\n \n Skipping par 1 point \# ${ibin1}, as it is not in the points array \n \n";
 			$ibin1_p1 = $ibin1 + $npt_job_par1;
 			$irun++;
-			$jobID++;
 			next;
 		}
 	}
   $val_par1 = $min_par1 + $ibin1 * $step_par1;
   for($ibin2 = 0; $ibin2 < $npt_par2; $ibin2 = $ibin2_p1) {
+  	if($par2 ne "none") {
+  		$jobID="${ibin1}_${ibin2}";
+  	}
   	if($len_arr_pt2 != 0) {
   		if(!exists($map_arr_pt2{$ibin2})) {
   			print "\n \n Skipping par 2 point \# ${ibin2}, as it is not in the points array \n \n";
   		  $ibin2_p1 = $ibin2 + $npt_job_par2;
   			$irun++;
-  			$jobID++;
   			next;
   		}
   	}
@@ -566,9 +567,9 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		if($resource eq "Liverpool_Slurm") {
 		  open(Slurm, ">$job_dir/$tag.slurm") or die("Can not create the Slurm batch script");
 		  print Slurm "#!/bin/bash \n";
-		  print Slurm "#SBATCH -J $tag-$irun \n";
-		  print Slurm "#SBATCH -o $job_dir/$tag-$irun.slurm.out \n";
-		  print Slurm "#SBATCH -e $job_dir/$tag-$irun.slurm.err \n";
+		  print Slurm "#SBATCH -J $tag-$jobID \n";
+		  print Slurm "#SBATCH -o $job_dir/$tag-$jobID.slurm.out \n";
+		  print Slurm "#SBATCH -e $job_dir/$tag-$jobID.slurm.err \n";
 		  print Slurm "#SBATCH -t $cput \n";
 		  print Slurm "#SBATCH --mem=$mem \n";
 		  print Slurm "cd $job_dir \n";
@@ -580,29 +581,21 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		}
 
 	  if($resource eq "cedar") {
-
-		  #if(($ibin1 >78 && $ibin1 <88) || ($ibin1 >96 && $ibin1 <99)) {
-		  # }
-		  # else
-		  #{
-		  #  $irun++;
-		  # next;
-		  # }
-	 	  open(Slurm, ">$job_dir/$tag-$irun.slurm") or die("Can not create the Slurm batch script");
+	 	  open(Slurm, ">$job_dir/$tag-$jobID.slurm") or die("Can not create the Slurm batch script");
 	 	  print Slurm "#!/bin/bash \n";
 	 	  print Slurm "#SBATCH --account=def-tanaka-ac \n";		# A larger allocation is available on "rpp-tanaka-ab", but it's only available on cedar
 	 	  print Slurm "#SBATCH --nodes=1 \n";
 	 	  print Slurm "#SBATCH --time=$cput \n";
 	 	  print Slurm "#SBATCH --mem=$mem \n";
-	 	  print Slurm "#SBATCH --job-name=$tag-$irun \n";
-	 	  print Slurm "#SBATCH -o $job_dir/$tag-$irun.slurm.out \n";
-	 	  print Slurm "#SBATCH -e $job_dir/$tag-$irun.slurm.err \n";
+	 	  print Slurm "#SBATCH --job-name=$tag-$jobID \n";
+	 	  print Slurm "#SBATCH -o $job_dir/$tag-$jobID.slurm.out \n";
+	 	  print Slurm "#SBATCH -e $job_dir/$tag-$jobID.slurm.err \n";
 	 	  print Slurm "cd $job_dir \n";
 	 	  print Slurm "source $softw_dir/setup/setup_at_cedar_root6.sh $softw_dir $fmwk_dir\n";
 	 	  if($time_command == 1) { print Slurm "time $command \n"; }
 	 	  else { print Slurm "$command \n"; }
 	 	  close(Slurm);
-	 	  `sbatch $job_dir/$tag-$irun.slurm`;
+	 	  `sbatch $job_dir/$tag-$jobID.slurm`;
 	  }
 
 		if($resource eq "cedar_opt")
@@ -617,9 +610,9 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		  print Slurm "#SBATCH --nodes=1 \n";
 		  print Slurm "#SBATCH --time=$cput \n";
 		  print Slurm "#SBATCH --mem=$mem \n";
-		  print Slurm "#SBATCH --job-name=$tag-$irun \n";
-		  print Slurm "#SBATCH -o $job_dir/$tag-$irun.slurm.out \n";
-		  print Slurm "#SBATCH -e $job_dir/$tag-$irun.slurm.err \n";
+		  print Slurm "#SBATCH --job-name=$tag-$jobID \n";
+		  print Slurm "#SBATCH -o $job_dir/$tag-$jobID.slurm.out \n";
+		  print Slurm "#SBATCH -e $job_dir/$tag-$jobID.slurm.err \n";
 		  print Slurm "the_command=\$(cat $job_dir/temp_${irun}.txt) \n";
 
 			print Slurm "IFS=',' read -r -a tokens <<< \"\$the_command\" \n";
@@ -702,38 +695,38 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		    $fullprogram = `readlink -m $fullprogram`;
 		    $arguments =~ s/\"/\\\"/g;        # All double quotes must be escaped for Condor
 		    $arguments =~ s/\'//g;            # and apparently single quotes are unnecessary but break it
-		    open(JDL, ">$job_dir/$tag-$irun.jdl") or die("Cannot create the JDL script");
+		    open(JDL, ">$job_dir/$tag-$jobID.jdl") or die("Cannot create the JDL script");
 		    print JDL "executable     = $fullprogram \n";
 		    print JDL "universe       = vanilla \n";
 		    print JDL "arguments      = $arguments \n";
-		    print JDL "output         = $job_dir/$tag-$irun.out \n";
-		    print JDL "error          = $job_dir/$tag-$irun.err \n";
-		    print JDL "log            = $job_dir/$tag-$irun.log \n";
+		    print JDL "output         = $job_dir/$tag-$jobID.out \n";
+		    print JDL "error          = $job_dir/$tag-$jobID.err \n";
+		    print JDL "log            = $job_dir/$tag-$jobID.log \n";
 		    print JDL "request_memory = 4000 \n";
 		    print JDL "getenv         = True \n";
 		    print JDL "should_transfer_files    = YES \n";
 		    print JDL "when_to_transfer_output  = ON_EXIT \n";
 		    print JDL "queue 1 \n";
 		    close(JDL);
-		    `condor_submit $job_dir/$tag-$irun.jdl`;
+		    `condor_submit $job_dir/$tag-$jobID.jdl`;
 		}
 
       # IFIC 
     #
     if($resource eq "IFIC") {
-        open(PBS, ">$job_dir/$tag-$irun.pbs") or die("Cannot create the PBS batch script");
+        open(PBS, ">$job_dir/$tag-$jobID.pbs") or die("Cannot create the PBS batch script");
         print PBS "#!/bin/bash \n";
-        print PBS "#PBS -N $tag-$irun \n";
+        print PBS "#PBS -N $tag-$jobID \n";
         print PBS "#PBS -l mem=$mem \n";
         print PBS "#PBS -q long \n"; # Max walltime of for long - 24h, in case of 2D fit use long4
         print PBS "#PBS -l nodes=1:ppn=1 \n"; #use only ppn=1 
-        print PBS "#PBS -o $job_dir/$tag-$irun.pbs.out \n";
-        print PBS "#PBS -e $job_dir/$tag-$irun.pbs.err \n";
+        print PBS "#PBS -o $job_dir/$tag-$jobID.pbs.out \n";
+        print PBS "#PBS -e $job_dir/$tag-$jobID.pbs.err \n";
         print PBS "cd $job_dir \n";
         print PBS "source $softw_dir/setup/setup_at_cvmfs_root6.sh $softw_dir $fmwk_dir\n";
         print PBS "$command \n";
         close(PBS);
-        `qsub $job_dir/$tag-$irun.pbs`;
+        `qsub $job_dir/$tag-$jobID.pbs`;
     }
 
 		#
@@ -744,7 +737,6 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		}
 
 	  $irun++;
-	  $jobID++;
 
   } # freepar 0
   
