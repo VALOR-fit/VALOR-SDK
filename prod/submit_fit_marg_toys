@@ -382,7 +382,7 @@ if($use_t2k_presets == 1) {
 
 	# 2D fit - sinsqth13 vs. CPV
 	if( (($par1 eq "cpv") and ($par2 eq "mixing13")) or (($par1 eq "mixing13") and ($par2 eq "cpv")) ) {
-	  if($par1 eq "deltacp") {
+	  if($par1 eq "cpv") {
 	 	  $par1 = "mixing13";
 	 	  $par2 = "cpv";
 	  }
