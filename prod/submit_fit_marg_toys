@@ -224,7 +224,7 @@ if($par2 eq "") {
 
 # Add the parameters of interest to the file tag
 $tag_prefix = "${tag_prefix}_${par1}";
-if($par2 != "") {
+if($par2 ne "") {
 	$tag_prefix = "${tag_prefix}_${par2}";
 }
 
