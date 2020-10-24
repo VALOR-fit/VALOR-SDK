@@ -21,9 +21,9 @@ TGT = adaptive_mcmc \
       tweak_pdf_N \
       tweak_pdf_sigma_var \
       write_pdf \
-      make_response_functions 
-     # run_tests \
-      batch_tests 
+      TBranchAppend \
+      make_response_functions \
+      batch_tests \
 
 #      run_tests \ # Need to check why these are borking
 #      batch_tests \
@@ -59,7 +59,13 @@ run_fit: FORCE
 write_pdf: FORCE
 	$(CXX) $(CXXFLAGS) -c write_pdf.cxx $(INCLUDES)
 	$(LD) $(LDFLAGS) write_pdf.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-write_pdf
-	
+
+# Combine Trees
+#
+TBranchAppend: FORCE
+	$(CXX) $(CXXFLAGS) -c TBranchAppend.cxx $(INCLUDES)
+	$(LD) $(LDFLAGS) TBranchAppend.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-TBranchAppend
+
 # Randomly throw the pdf t o make envelopes
 # 
 tweak_pdf_N: FORCE
@@ -128,6 +134,7 @@ clean: FORCE
 	$(RM) $(VALOR_FMWK)/bin/valor-make_table_systematic_effects
 	$(RM) $(VALOR_FMWK)/bin/valor-run_fit
 	$(RM) $(VALOR_FMWK)/bin/valor-write_pdf
+	$(RM) $(VALOR_FMWK)/bin/valor-TBranchAppend
 	$(RM) $(VALOR_FMWK)/bin/valor-tweak_pdf_N
 	$(RM) $(VALOR_FMWK)/bin/valor-tweak_pdf_sigma_var
 	$(RM) $(VALOR_FMWK)/bin/valor-fitnt_conv
@@ -143,6 +150,7 @@ distclean: FORCE
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-make_table_systematic_effects
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-run_fit
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-write_pdf
+	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-TBranchAppend
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-weak_pdf_N
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-tweak_pdf_sigma_var
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-fitnt_conv
