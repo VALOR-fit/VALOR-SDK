@@ -62,7 +62,8 @@ string util::AsString(Sample_t s)
     case (ksNuEBarCChigh   ) : return "nuebarCChigh";    break;
     case (ks1Rmu           ) : return "1rmu";            break;
     case (ks1Re            ) : return "1re";             break;
-    case (ksMultiRe        ) : return "multire";         break;
+    case (ksMultiRe        ) : return "multire";         break;//rename 
+    case (ksMultiRmu       ) : return "multirmu";        break;
     default                  : return "--";
   }
   return "";
@@ -111,7 +112,8 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksNuEBarCChigh   ) : name = "#bar{#nu}_{e} CC high-resolution";     break;
     case (ks1Rmu           ) : name = "Single-ring mu-like";                  break;
     case (ks1Re            ) : name = "Single-ring e-like";                   break;
-    case (ksMultiRe        ) : name = "Multi-ring e-like";                    break;
+    case (ksMultiRe        ) : name = "Multi-ring e-like";                    break; //rename 
+    case (ksMultiRmu       ) : name = "Multi-ring mu-like";                   break;
     default                  : name = "--";
   }
 
@@ -136,7 +138,8 @@ bool util::IsFar(Sample_t s)
     case (ksNuEBarCChigh       ) :  return true; break;
     case (ks1Rmu               ) : // intentional fallthrough
     case (ks1Re                ) :
-    case (ksMultiRe            ) :  return true; break;
+    case (ksMultiRe            ) : //rename
+    case (ksMultiRmu           ) :return true; break;
     default: return false;
   }
   return false; 
@@ -186,7 +189,8 @@ bool util::IsCC(Sample_t s)
 
     case (ks1Rmu           ) : // intentional fallthrough
     case (ks1Re            ) :
-    case (ksMultiRe        ) : return true; break;
+    case (ksMultiRe        ) : //rename
+    case (ksMultiRmu       ) : return true; break;
 
     case (ksUndefined      ) : return false;
   }
@@ -198,46 +202,47 @@ bool util::IsCC(Sample_t s)
 bool util::IsCCQELike(Sample_t s) 
 {
   switch(s) {
-    case (ksNuMuCC0pi1trk  ) : // intentional fallthrough
-    case (ksNuMuCC0pi2trk  ) : 
-    case (ksNuMuCC0piNtrk  ) :
-    case (ksNuECC0pi       ) : 
-    case (ksNuMuCCWS0pi    ) : 
-    case (ksNeutrinoElec   ) :
-    case (ksInvMuDecay     ) : 
-    case (ksNuMuLikeCChigh ) : 
-    case (ksNuMuBarCChigh  ) : 
-    case (ksNuELikeCChigh  ) : 
-    case (ksNuEBarCChigh   ) : return true; break;
+    case (ksNuMuCC0pi1trk   ) : // intentional fallthrough
+    case (ksNuMuCC0pi2trk   ) : 
+    case (ksNuMuCC0piNtrk   ) :
+    case (ksNuECC0pi        ) : 
+    case (ksNuMuCCWS0pi     ) : 
+    case (ksNeutrinoElec    ) :
+    case (ksInvMuDecay      ) : 
+    case (ksNuMuLikeCChigh  ) : 
+    case (ksNuMuBarCChigh   ) : 
+    case (ksNuELikeCChigh   ) : 
+    case (ksNuEBarCChigh    ) : return true; break;
 
-    case (ksNuMuCC         ) : // intentional fallthrough
-    case (ksNuMuCC1piC     ) :
-    case (ksNuMuCC1pi0     ) :
-    case (ksNuMuCC1piC1pi0 ) :
-    case (ksNuMuCCoth      ) : 
-    case (ksNuMuCC3trkDelta) :
-    case (ksNuECC1piC      ) : 
-    case (ksNuECC1pi0      ) : 
-    case (ksNuECCoth       ) : 
-    case (ksNuMuCCWS1piC   ) : 
-    case (ksNuMuCCWS1pi0   ) : 
-    case (ksNuMuCCWSoth    ) : 
-    case (ksNC0pi          ) : 
-    case (ksNC1piC         ) : 
-    case (ksNC1pi0         ) : 
-    case (ksNCoth          ) : 
-    case (ksNuMuCC2piC     ) :
-    case (ksNuECC          ) : 
-    case (ksNuMuCCWS       ) : 
-    case (ksNuECCWS        ) :
-    case (ksNC             ) : 
-    case (ksNuMuLikeCClow  ) : 
-    case (ksNuMuBarCClow   ) : 
-    case (ksNuELikeCClow   ) : 
-    case (ksNuEBarCClow    ) :
-    case (ks1Re            ) :
-    case (ks1Rmu           ) :
-    case (ksMultiRe        ) : return false; break;
+    case (ksNuMuCC          ) : // intentional fallthrough
+    case (ksNuMuCC1piC      ) :
+    case (ksNuMuCC1pi0      ) :
+    case (ksNuMuCC1piC1pi0  ) :
+    case (ksNuMuCCoth       ) : 
+    case (ksNuMuCC3trkDelta ) :
+    case (ksNuECC1piC       ) : 
+    case (ksNuECC1pi0       ) : 
+    case (ksNuECCoth        ) : 
+    case (ksNuMuCCWS1piC    ) : 
+    case (ksNuMuCCWS1pi0    ) : 
+    case (ksNuMuCCWSoth     ) : 
+    case (ksNC0pi           ) : 
+    case (ksNC1piC          ) : 
+    case (ksNC1pi0          ) : 
+    case (ksNCoth           ) : 
+    case (ksNuMuCC2piC      ) :
+    case (ksNuECC           ) : 
+    case (ksNuMuCCWS        ) : 
+    case (ksNuECCWS         ) :
+    case (ksNC              ) : 
+    case (ksNuMuLikeCClow   ) : 
+    case (ksNuMuBarCClow    ) : 
+    case (ksNuELikeCClow    ) : 
+    case (ksNuEBarCClow     ) :
+    case (ks1Re             ) :
+    case (ks1Rmu            ) :
+    case (ksMultiRe         ) : //rename
+    case (ksMultiRmu        ) : return false; break;
     default: return false;
   }
   return false;
@@ -279,7 +284,8 @@ bool util::IsNC(Sample_t s)
     case (ksNuEBarCChigh   ) :
     case (ks1Rmu           ) :
     case (ks1Re            ) :
-    case (ksMultiRe        ) : return false;
+    case (ksMultiRe        ) : //rename
+    case (ksMultiRmu       ) : return false;
 
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) : 
@@ -311,7 +317,7 @@ Sample_t util::SampleFromString(string sample)
       return s;
     }
   }
-    
+  LOG("Sample",pDEBUG) << "Unknown sample: "<< lc_sample;   
   return ksUndefined;
 }
 //________________________________________________________________________________________
@@ -368,6 +374,7 @@ bool util::IsMuLike(Sample_t s)
     case ks1Rmu            : return true  ;
     case ks1Re             : return false ;
     case ksMultiRe         : return false ;
+    case ksMultiRmu        : return true  ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
@@ -416,6 +423,7 @@ bool util::IsELike(Sample_t s)
     case ks1Rmu            : return false ;
     case ks1Re             : return true  ;
     case ksMultiRe         : return true  ;
+    case ksMultiRmu        : return false ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;

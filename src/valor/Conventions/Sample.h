@@ -75,7 +75,8 @@ typedef enum ESample
    // SuperK selections
    ks1Rmu                , // Single-ring muon-like
    ks1Re                 , // Single-ring electron-like
-   ksMultiRe               // Multi-ring electron-like
+   ksMultiRe             , // Multi-ring electron-like ( one delayed electron) TODO: rename
+   ksMultiRmu              // Multi-ring (CC1pi+) muon-like 
 } 
 Sample_t; 
 

@@ -103,6 +103,7 @@ namespace valor {
     static const SelecApplyMask_t ksApplyTo1RingMu         = (kApplyMaskOne << 32 ); // SuperK selections
     static const SelecApplyMask_t ksApplyTo1RingE          = (kApplyMaskOne << 33 ); // SuperK selections
     static const SelecApplyMask_t ksApplyToMultiRingE      = (kApplyMaskOne << 34 ); // SuperK selections
+    static const SelecApplyMask_t ksApplyToMultiRingMu     = (kApplyMaskOne << 35 ); // SuperK selections
 
     static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 ); // Reaction type
     static const ReacTypeApplyMask_t ktApplyToCCMEC        = (kApplyMaskOne <<  1 );
