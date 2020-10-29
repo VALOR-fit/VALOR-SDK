@@ -353,8 +353,8 @@ if($use_t2k_presets == 1) {
 		$max_par1     = 0.7        unless defined $max_par1;
 	} # 1D sinsqth23
 
-	# 1D fit - dmsq23
-	if(($par1 eq "dmsq23") and ($par2 eq "")) {
+	# 1D fit - dm23sq
+	if(($par1 eq "dm23sq") and ($par2 eq "")) {
 		if($use_reactors == 1) {
 			$nmargtoy   = 40000       unless defined $nmargtoy;
 			$cput       = "00:45:00"  unless defined $cput;
@@ -368,7 +368,7 @@ if($use_t2k_presets == 1) {
 		$npt_par1     = 101         unless defined $npt_par1;
 		$min_par1     = 2.2e-3      unless defined $min_par1;
 		$max_par1     = 2.8e-3      unless defined $max_par1;
-	} # 1D dmsq23
+	} # 1D dm23sq
 
 	# 2D fit - sinsqth13 vs. CPV
 	if( (($par1 eq "cpv") and ($par2 eq "mixing13")) or (($par1 eq "mixing13") and ($par2 eq "cpv")) ) {
@@ -394,11 +394,11 @@ if($use_t2k_presets == 1) {
     $mem          = "3500M"                  unless defined $mem;
 	} # 2D sinsqth13 vs. CPV
 
-  # 2D fit - sinsqth23 vs. dmsq23
-	if( (($par1 eq "dmsq23") and ($par2 eq "mixing23")) or (($par1 eq "mixing23") and ($par2 eq "dmsq23")) ) {
-		if($par1 eq "dmsq23") {
+  # 2D fit - sinsqth23 vs. dm23sq
+	if( (($par1 eq "dm23sq") and ($par2 eq "mixing23")) or (($par1 eq "mixing23") and ($par2 eq "dm23sq")) ) {
+		if($par1 eq "dm23sq") {
 			$par1 = "mixing23";
-			$par2 = "dmsq23";
+			$par2 = "dm23sq";
 		}
 		if($use_reactors == 1) {
 			$nmargtoy   = 10000      unless defined $nmargtoy;
@@ -418,7 +418,7 @@ if($use_t2k_presets == 1) {
 		$npt_par2     = 51         unless defined $npt_par2;
 		$cput         = "03:00:00" unless defined $cput;
     $mem          = "3500M"    unless defined $mem;
-	} # 2D sinsqth23 vs. dmsq23
+	} # 2D sinsqth23 vs. dm23sq
 
 	# 2D fit - sinsqth23 vs. cpv
 	if( (($par1 eq "mixing23") and ($par2 eq "cpv")) or (($par1 eq "cpv") and ($par2 eq "mixing23")) ) {
@@ -565,7 +565,7 @@ for($i_fc_par2 = $start_pt_fc_par2; $i_fc_par2 < $start_pt_fc_par2 + $npt_fc_par
         if($use_penalty_term   eq "mixing13")       { $arguments = "$arguments --use-penalty-term mixing13" }
          elsif($use_penalty_term   eq "mixing23")       { $arguments = "$arguments --use-penalty-term mixing23" }
          elsif($use_penalty_term   eq "mixing12")       { $arguments = "$arguments --use-penalty-term mixing12" }
-         elsif($use_penalty_term   eq "dmsq23")         { $arguments = "$arguments --use-penalty-term dmsq23"   }
+         elsif($use_penalty_term   eq "dm23sq")         { $arguments = "$arguments --use-penalty-term dm23sq"   }
          else{$arguments = "$arguments --use-penalty-term $use_penalty_term"}
 
 				$command = "$program $arguments";
