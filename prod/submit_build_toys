@@ -91,10 +91,22 @@ use Cwd 'abs_path';
 my @arr_pt1 = ();			# e.g. (5, 7, 30)
 my @arr_pt2 = ();
 
-my $len_arr_pt1 = @arr_pt1;
-my $len_arr_pt2 = @arr_pt2;
-my %map_arr_pt1 = map { $_ => 1 } @arr_pt1;
-my %map_arr_pt2 = map { $_ => 1 } @arr_pt2;
+# This array is also for resubmitting failed jobs, but in a slightly different way.
+# Supply the point numbers as par1point_par2point.
+# While the above is more useful when large blocks of jobs need resubmitting,
+# this one is more useful when scattered jobs need resubmitting, but is more annoying to use.
+my @arr_both_pts = ();		# e.g. ("5_3", "7_21", "30_8")
+
+my $len_arr_pt1      = @arr_pt1;
+my $len_arr_pt2      = @arr_pt2;
+my $len_arr_both_pts = @arr_both_pts;
+my %map_arr_pt1      = map { $_ => 1 } @arr_pt1;
+my %map_arr_pt2      = map { $_ => 1 } @arr_pt2;
+my %map_arr_both_pts = map { $_ => 1 } @arr_both_pts;
+
+if (($len_arr_pt1 > 0 || $len_arr_pt2 > 0) && $len_arr_both_pts > 0) {
+	die("ERROR: Don't use both the \'arr_pt1\' (or \'arr_pt2\') array with the \'arr_both_pts\' array.");
+}
 
 #
 # Read command line arguments
@@ -505,6 +517,15 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
   			next;
   		}
   	}
+  	if($len_arr_both_pts != 0) {
+			if(!exists($map_arr_both_pts{$jobID})) {
+				# print "\n \n Skipping point (${jobID}), as it is not in the points array \n \n";
+				$ibin1_p1 = $ibin1 + $npt_job_par1;
+				$ibin2_p1 = $ibin2 + $npt_job_par2;
+				$irun++;
+				next;
+			}
+		}
     $val_par2 = $min_par2 + $ibin2 * $step_par2;
 
 
