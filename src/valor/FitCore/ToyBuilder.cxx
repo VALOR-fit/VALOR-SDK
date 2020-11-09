@@ -256,9 +256,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
          }
       }
 
-
-
-
            if(!_toys_are_marginalisation) {
                for (unsigned int idata = 0; idata < N; idata++) {
                    GenericSingleSampleFitData  *this_data = (GenericSingleSampleFitData *)(cd->GetSubData(idata));
@@ -292,7 +289,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
          param_values[ip] = fpl.CurrValue(p);
       }
    }
-
+   // Set up array to store spectra
    TObjArray * array = new TObjArray();
    array->SetOwner(true);
    Option_t *write_opt =  nullptr;
@@ -307,23 +304,34 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
            const VALORBinning &reco_smp = *(binning.RecoSmpBinning());
            const conv::KineSpace_t ks = reco_smp.KineSpace();
 
-           TString name = TString::Format("%s_data_sb_rf_%s", tag,
-                                          this_data->Name().c_str());
-           std::cout << name << std::endl;
-           TH1D *curr_pdf = (TH1D *) array->FindObject(name.Data());
-           if (!curr_pdf) {
-               LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
-               util::Die(-1);
+           TString name = TString::Format("%s_data_sb_rf_%s", tag,this_data->Name().c_str());
+           // Determine if 1D or 2D
+           const std::vector<conv::KineVar_t>  & reco_vars = reco_smp.KineVars();
+           if (reco_vars.size() == 1){ //If 1D hist
+               TH1D *curr_pdf = (TH1D *) array->FindObject(name.Data());
+               if (!curr_pdf) {
+                   LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
+                   util::Die(-1);
+               }
+               pdfs[idata] = (TH1*) curr_pdf;
            }
-           pdfs[idata] = curr_pdf; //TODO: 1D and 2D if statements.
+           else if (reco_vars.size() == 2){ //If 2D hist
+               TH2D *curr_pdf = (TH2D *) array->FindObject(name.Data());
+               if (!curr_pdf) {
+                   LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
+                   util::Die(-1);
+               }
+               pdfs[idata] = (TH1*) curr_pdf;}
+           else {
+               LOG("ToyBuilder", pWARN)<< "Tried writing PDFT to ROOT format, but number of kine vars != 1 or 2 (" << this_data->Name() << ")";
+           }
        }
    }
 
-
     else {
        write_opt = "pdft_rf +SB";
-        this->_model->Write(array, tag, write_opt);
-        std::cout << "model PDF integrals (in SaveParamThrows):" << this->_model->GetPDFIntegralAsString() << std::endl;
+       this->_model->Write(array, tag, write_opt);
+       std::cout << "model PDF integrals (in SaveParamThrows):" << this->_model->GetPDFIntegralAsString() << std::endl;
        for (unsigned int imodel = 0; imodel < N; imodel++) {
             GenericSingleSampleFitModel *this_model = (GenericSingleSampleFitModel *)(cm->GetSubModel(imodel));
             const SingleSampleKineBinning & binning = *this_model->GetBinning();
@@ -340,9 +348,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                     LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
                     util::Die(-1);
                 }
-                std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl; //TODO: Bugfix remove
                 pdfs[imodel] = (TH1*) curr_pdf;
-                std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl; //TODO: Bugfix remove
             }
             else if (reco_vars.size() == 2){ //If 2D hist
                 TH2D *curr_pdf = (TH2D *) array->FindObject(name.Data());
@@ -350,13 +356,9 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                     LOG("ToyBuilder", pERROR) << "Could not find histogram " << name;
                     util::Die(-1);
                 }
-                std::cout << "Sample: " << this_model->Name() << " has " << curr_pdf->Integral() << " events." << std::endl;  //TODO: Bugfix remove
-                pdfs[imodel] = (TH1*) curr_pdf;
-                std::cout << "pdfs[imodel] has " << pdfs[imodel]->Integral() << " events." << std::endl; //TODO: Bugfix remove
-            }
+                pdfs[imodel] = (TH1*) curr_pdf;}
             else {
-                LOG("ToyBuilder", pWARN)
-                        << "Tried writing PDFT to ROOT format, but number of kine vars != 1 or 2 (" << this_model->Name() << ")";
+                LOG("ToyBuilder", pWARN)<< "Tried writing PDFT to ROOT format, but number of kine vars != 1 or 2 (" << this_model->Name() << ")";
             }
         }
     }
