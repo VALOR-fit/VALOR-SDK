@@ -239,7 +239,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
          util::Die(-1);
       }
       file_name.replace(start_pos, to_replace.length(), "_toy_throws.root");
-
       _file_pars = new TFile(file_name.c_str(), "RECREATE");
    }
 
@@ -255,7 +254,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
             _tree_pars->Branch(param_name.c_str(), &(param_values[ip]), branch_info.c_str());
          }
       }
-
+      // Set up new branch and address for spectra
            if(!_toys_are_marginalisation) {
                for (unsigned int idata = 0; idata < N; idata++) {
                    GenericSingleSampleFitData  *this_data = (GenericSingleSampleFitData *)(cd->GetSubData(idata));
@@ -263,7 +262,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                    conv::BeamConf_t b = this_data->GetBeam();
                    conv::Sample_t s = this_data->GetSample();
                    conv::KineSpace_t ks = this_data->GetKineSpace();
-                   // Get the total PDF
                    std::string data_name = util::nm::MdlName(d, b, s, ks);
                    _tree_pars->Branch(data_name.c_str(), &(pdfs[idata]), 32000, 0);
                }
@@ -275,7 +273,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                    conv::BeamConf_t b = this_model->GetBeam();
                    conv::Sample_t s = this_model->GetSample();
                    conv::KineSpace_t ks = this_model->GetKineSpace();
-                   // Get the total PDF
                    std::string model_name = util::nm::MdlName(d, b, s, ks);
                    _tree_pars->Branch(model_name.c_str(), &(pdfs[imodel]), 32000, 0);
                }
