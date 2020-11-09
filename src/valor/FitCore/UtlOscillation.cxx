@@ -606,7 +606,7 @@ std::map<conv::PhysParamId_t,double> GetRandomizedParams2DCorrelated(std::pair<P
 PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg,string penaltyparam)
 {
    // Read in the priors XML file
-   std::string osc_prior_file_name = arg.GetString("prior-file");
+   std::string osc_prior_file_name = arg.GetString("osc-prior-file");
    std::string osc_file_priors = util::CompleteConfigPath(osc_prior_file_name);
    // Check that the prior file exists, either in the config directory or the current directory
    FileStat_t dummy;
