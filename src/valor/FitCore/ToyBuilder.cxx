@@ -274,7 +274,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                    conv::Sample_t s = this_model->GetSample();
                    conv::KineSpace_t ks = this_model->GetKineSpace();
                    std::string model_name = util::nm::MdlName(d, b, s, ks);
-                   _tree_pars->Branch(model_name.c_str(), &(pdfs[imodel]), 32000, 0);
+                   _tree_pars->Branch(model_name.c_str(), &(pdfs[imodel]), 32000, 0); //This is the line creating the error.
                }
            }
        }
@@ -328,7 +328,6 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
     else {
        write_opt = "pdft_rf +SB";
        this->_model->Write(array, tag, write_opt);
-       std::cout << "model PDF integrals (in SaveParamThrows):" << this->_model->GetPDFIntegralAsString() << std::endl;
        for (unsigned int imodel = 0; imodel < N; imodel++) {
             GenericSingleSampleFitModel *this_model = (GenericSingleSampleFitModel *)(cm->GetSubModel(imodel));
             const SingleSampleKineBinning & binning = *this_model->GetBinning();
