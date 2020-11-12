@@ -36,7 +36,7 @@ namespace valor {
     static const unsigned long kApplyMaskOne     = 1ul;
     static const int nbitsBeamApplyMask          = 2;
     static const int nbitsFlavApplyMask          = 4;
-    static const int nbitsSelecApplyMask         = 35;
+    static const int nbitsSelecApplyMask         = 36;
     static const int nbitsReacTypeApplyMask      = 28;
     static const int nbitsDetectorApplyMask      = 7;
     static const int nbitsNuclearTargetApplyMask = 7;
