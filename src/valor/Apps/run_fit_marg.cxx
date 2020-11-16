@@ -172,9 +172,9 @@ void Fit(CmdLnArgList& arg)
    FitModelABC* model = elements->FitModel();
    FitDataABC* data = elements->FitData();
 
-   const char* read_opt_data = "";
+   const char* read_opt_data = "data_vf";
    if (use_simple_binning) {
-      read_opt_data = "+SB";
+      read_opt_data = "data_vf+SB"; //TODO: Check with Francis if this was a right fix. Check optimised marg against simple F&C
    }
 
    util::ToyStream* toy_stream = nullptr;
