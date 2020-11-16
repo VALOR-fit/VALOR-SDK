@@ -210,6 +210,8 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
       param_values[ip] = -999;
    }
 
+   bool spectra_branches_created = 1;
+
    CompoundFitData  *cd = nullptr;
    CompoundFitModel *cm = nullptr;
    int N = 0; // N samples used to switch between GSSFM (Marg Toys) and GSSFD (Fake data toys)
@@ -254,30 +256,8 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
             _tree_pars->Branch(param_name.c_str(), &(param_values[ip]), branch_info.c_str());
          }
       }
-      // Set up new branch and address for spectra
-           if(!_toys_are_marginalisation) {
-               for (unsigned int idata = 0; idata < N; idata++) {
-                   GenericSingleSampleFitData  *this_data = (GenericSingleSampleFitData *)(cd->GetSubData(idata));
-                   conv::Detector_t d = this_data->GetDetector();
-                   conv::BeamConf_t b = this_data->GetBeam();
-                   conv::Sample_t s = this_data->GetSample();
-                   conv::KineSpace_t ks = this_data->GetKineSpace();
-                   std::string data_name = util::nm::MdlName(d, b, s, ks);
-                   _tree_pars->Branch(data_name.c_str(), &(pdfs[idata]), 32000, 0);
-               }
-           }
-           else {
-               for (unsigned int imodel = 0; imodel < N; imodel++) {
-                   GenericSingleSampleFitModel *this_model = (GenericSingleSampleFitModel *)(cm->GetSubModel(imodel));
-                   conv::Detector_t d = this_model->GetDetector();
-                   conv::BeamConf_t b = this_model->GetBeam();
-                   conv::Sample_t s = this_model->GetSample();
-                   conv::KineSpace_t ks = this_model->GetKineSpace();
-                   std::string model_name = util::nm::MdlName(d, b, s, ks);
-                   _tree_pars->Branch(model_name.c_str(), &(pdfs[imodel]), 32000, 0); //This is the line creating the error.
-               }
-           }
-       }
+       spectra_branches_created = 0;
+   }
 
    // Save this throw to the tree
    for (int ip = 0 ; ip < conv::knppmax ; ip++) {
@@ -323,9 +303,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
                LOG("ToyBuilder", pWARN)<< "Tried writing PDFT to ROOT format, but number of kine vars != 1 or 2 (" << this_data->Name() << ")";
            }
        }
-   }
-
-    else {
+   } else {
        write_opt = "pdft_rf +SB";
        this->_model->Write(array, tag, write_opt);
        for (unsigned int imodel = 0; imodel < N; imodel++) {
@@ -358,6 +336,31 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
             }
         }
     }
+   if(!spectra_branches_created) {
+       // Set up new branch and address for spectra N.B: This is done after the object type assignment above to avoid errors in setting up TH1 branches (abstract base).
+       if (!_toys_are_marginalisation) {
+           for (unsigned int idata = 0; idata < N; idata++) {
+               GenericSingleSampleFitData *this_data = (GenericSingleSampleFitData * )(cd->GetSubData(idata));
+               conv::Detector_t d = this_data->GetDetector();
+               conv::BeamConf_t b = this_data->GetBeam();
+               conv::Sample_t s = this_data->GetSample();
+               conv::KineSpace_t ks = this_data->GetKineSpace();
+               std::string data_name = util::nm::MdlName(d, b, s, ks);
+               _tree_pars->Branch(data_name.c_str(), &(pdfs[idata]), 32000, 0);
+           }
+       } else {
+           for (unsigned int imodel = 0; imodel < N; imodel++) {
+               GenericSingleSampleFitModel *this_model = (GenericSingleSampleFitModel * )(cm->GetSubModel(imodel));
+               conv::Detector_t d = this_model->GetDetector();
+               conv::BeamConf_t b = this_model->GetBeam();
+               conv::Sample_t s = this_model->GetSample();
+               conv::KineSpace_t ks = this_model->GetKineSpace();
+               std::string model_name = util::nm::MdlName(d, b, s, ks);
+               _tree_pars->Branch(model_name.c_str(), &(pdfs[imodel]), 32000, 0); //This is the line creating the error.
+           }
+       }
+       spectra_branches_created = 1;
+   }
 
    _tree_pars->Fill();
 
