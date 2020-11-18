@@ -3630,6 +3630,18 @@ void valor::GenericSingleSampleFitModel::ApplyErecoCuts(Option_t * option)
 	continue;
       else if(fSample == conv::ksMultiRe && max <= 1.255 /*1.25*/ && max >= 0.445 /*0.45 - first bin with events is 0.40-0.45*/)
 	continue;
+      else if(fSample == conv::ks1Rmu0n && max >= 0.295 /*0.3 - first bin with events is 0.25-0.30*/)
+	continue;
+      else if(fSample == conv::ks1Re0n && max <= 1.255 /*1.25*/ && max >= 0.145 /*0.15 - first bin with events is 0.10-0.15*/)
+	continue;
+      else if(fSample == conv::ksMultiRe0n && max <= 1.255 /*1.25*/ && max >= 0.445 /*0.45 - first bin with events is 0.40-0.45*/)
+	continue;
+      else if(fSample == conv::ks1Rmu1n && max >= 0.295 /*0.3 - first bin with events is 0.25-0.30*/)
+	continue;
+      else if(fSample == conv::ks1Re1n && max <= 1.255 /*1.25*/ && max >= 0.145 /*0.15 - first bin with events is 0.10-0.15*/)
+	continue;
+      else if(fSample == conv::ksMultiRe1n && max <= 1.255 /*1.25*/ && max >= 0.445 /*0.45 - first bin with events is 0.40-0.45*/)
+	continue;
       fBinsToCutOB.push_back(ireco);
       LOG("GenericSingleSampleFitModel",pNOTICE)
 	<< "Will 0 the OB bin " << ireco << ": [" << reco_ob->BinMinimum(ireco, conv::kvEreco) << ", " << max

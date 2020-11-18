@@ -63,6 +63,12 @@ string util::AsString(Sample_t s)
     case (ks1Rmu           ) : return "1rmu";            break;
     case (ks1Re            ) : return "1re";             break;
     case (ksMultiRe        ) : return "multire";         break;
+  case (ks1Rmu0n           ) : return "1rmu0n";            break;
+  case (ks1Re0n            ) : return "1re0n";             break;
+  case (ksMultiRe0n        ) : return "multire0n";         break;
+  case (ks1Rmu1n           ) : return "1rmu1n";            break;
+  case (ks1Re1n            ) : return "1re1n";             break;
+  case (ksMultiRe1n        ) : return "multire1n";         break;
     default                  : return "--";
   }
   return "";
@@ -109,9 +115,15 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksNuELikeCChigh  ) : name = "#nu_{e} CC high-resolution";           break;
     case (ksNuEBarCClow    ) : name = "#bar{#nu}_{e} CC low-resolution";      break;
     case (ksNuEBarCChigh   ) : name = "#bar{#nu}_{e} CC high-resolution";     break;
-    case (ks1Rmu           ) : name = "Single-ring mu-like";                  break;
-    case (ks1Re            ) : name = "Single-ring e-like";                   break;
-    case (ksMultiRe        ) : name = "Multi-ring e-like";                    break;
+  case (ks1Rmu           ) : name = "Single-ring mu-like";                  break;
+  case (ks1Re            ) : name = "Single-ring e-like";                   break;
+  case (ksMultiRe        ) : name = "Multi-ring e-like";                    break;
+  case (ks1Rmu0n           ) : name = "Single-ring mu-like; 0 neutron";                  break;
+  case (ks1Re0n            ) : name = "Single-ring e-like; 0 neutron";                   break;
+  case (ksMultiRe0n        ) : name = "Multi-ring e-like; 0 neutron";                    break;
+  case (ks1Rmu1n           ) : name = "Single-ring mu-like; 1+ neutron";                  break;
+  case (ks1Re1n            ) : name = "Single-ring e-like; 1+ neutron";                   break;
+  case (ksMultiRe1n        ) : name = "Multi-ring e-like; 1+ neutron";                    break;
     default                  : name = "--";
   }
 
@@ -137,6 +149,12 @@ bool util::IsFar(Sample_t s)
     case (ks1Rmu               ) : // intentional fallthrough
     case (ks1Re                ) :
     case (ksMultiRe            ) :  return true; break;
+  case (ks1Rmu0n               ) : // intentional fallthrough
+  case (ks1Re0n                ) :
+  case (ksMultiRe0n            ) :  return true; break;
+  case (ks1Rmu1n               ) : // intentional fallthrough
+  case (ks1Re1n                ) :
+  case (ksMultiRe1n            ) :  return true; break;
     default: return false;
   }
   return false; 
@@ -188,6 +206,14 @@ bool util::IsCC(Sample_t s)
     case (ks1Re            ) :
     case (ksMultiRe        ) : return true; break;
 
+  case (ks1Rmu0n           ) : // intentional fallthrough
+  case (ks1Re0n            ) :
+  case (ksMultiRe0n        ) : return true; break;
+
+  case (ks1Rmu1n           ) : // intentional fallthrough
+  case (ks1Re1n            ) :
+  case (ksMultiRe1n        ) : return true; break;
+
     case (ksUndefined      ) : return false;
   }
   return false;
@@ -238,7 +264,14 @@ bool util::IsCCQELike(Sample_t s)
     case (ks1Re            ) :
     case (ks1Rmu           ) :
     case (ksMultiRe        ) : return false; break;
-    default: return false;
+
+  case (ks1Re0n            ) :
+  case (ks1Rmu0n           ) :
+  case (ksMultiRe0n        ) : return false; break;
+  case (ks1Re1n            ) :
+  case (ks1Rmu1n           ) :
+  case (ksMultiRe1n        ) : return false; break;
+  default: return false;
   }
   return false;
 }
@@ -281,6 +314,13 @@ bool util::IsNC(Sample_t s)
     case (ks1Re            ) :
     case (ksMultiRe        ) : return false;
 
+  case (ks1Rmu0n           ) :
+  case (ks1Re0n            ) :
+  case (ksMultiRe0n        ) : return false;
+  case (ks1Rmu1n           ) :
+  case (ks1Re1n            ) :
+  case (ksMultiRe1n        ) : return false;
+
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) : 
     case (ksNC1pi0         ) : 
@@ -296,7 +336,7 @@ Sample_t util::SampleFromInt(int s)
 {
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
-  if((s >= (int)ksNuMuCC && s <= (int) ksMultiRe)) //RHC
+  if((s >= (int)ksNuMuCC && s <= (int) ksMultiRe1n)) //RHC
     return (Sample_t)s;
   return ksUndefined;
 }
@@ -368,6 +408,13 @@ bool util::IsMuLike(Sample_t s)
     case ks1Rmu            : return true  ;
     case ks1Re             : return false ;
     case ksMultiRe         : return false ;
+
+  case ks1Rmu0n            : return true  ;
+  case ks1Re0n             : return false ;
+  case ksMultiRe0n         : return false ;
+  case ks1Rmu1n            : return true  ;
+  case ks1Re1n             : return false ;
+  case ksMultiRe1n         : return false ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
@@ -416,6 +463,13 @@ bool util::IsELike(Sample_t s)
     case ks1Rmu            : return false ;
     case ks1Re             : return true  ;
     case ksMultiRe         : return true  ;
+
+  case ks1Rmu0n            : return false ;
+  case ks1Re0n             : return true  ;
+  case ksMultiRe0n         : return true  ;
+  case ks1Rmu1n            : return false ;
+  case ks1Re1n             : return true  ;
+  case ksMultiRe1n         : return true  ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;

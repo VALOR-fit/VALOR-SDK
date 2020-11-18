@@ -75,11 +75,19 @@ typedef enum ESample
    // SuperK selections
    ks1Rmu                , // Single-ring muon-like
    ks1Re                 , // Single-ring electron-like
-   ksMultiRe               // Multi-ring electron-like
+   ksMultiRe             , // Multi-ring electron-like
+   // SuperK 0 neutron selections
+   ks1Rmu0n                , // Single-ring muon-like
+   ks1Re0n                 , // Single-ring electron-like
+   ksMultiRe0n             , // Multi-ring electron-like
+   // SuperK 1+ neutron selections
+   ks1Rmu1n                , // Single-ring muon-like
+   ks1Re1n                 , // Single-ring electron-like
+   ksMultiRe1n             , // Multi-ring electron-like
 } 
 Sample_t; 
 
-static const int kMaxNSamples = 39;
+static const int kMaxNSamples = 45;
 
 } // conv
 

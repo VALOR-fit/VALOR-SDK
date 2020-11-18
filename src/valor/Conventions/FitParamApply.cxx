@@ -78,9 +78,15 @@ const SelecApplyMask_t valor::conv::ksApplyToAllND = (
 );
 
 
-const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ksApplyToMultiRingE;                    // SuperK selections
-const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu;                       // SuperK selections
-const SelecApplyMask_t valor::conv::ksApplyToAllRings     = ksApplyTo1RingE | ksApplyTo1RingMu | ksApplyToMultiRingE; // SuperK selections
+const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ksApplyToMultiRingE |
+  ksApplyTo1RingE0n | ksApplyToMultiRingE0n |
+  ksApplyTo1RingE1n | ksApplyToMultiRingE1n;                    // SuperK selections
+const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu |
+  ksApplyTo1RingE0n | ksApplyTo1RingMu0n |
+  ksApplyTo1RingE1n | ksApplyTo1RingMu1n;                       // SuperK selections
+const SelecApplyMask_t valor::conv::ksApplyToAllRings     = ksApplyTo1RingE | ksApplyTo1RingMu | ksApplyToMultiRingE |
+  ksApplyTo1RingE0n | ksApplyTo1RingMu0n | ksApplyToMultiRingE0n |
+  ksApplyTo1RingE1n | ksApplyTo1RingMu1n | ksApplyToMultiRingE1n; // SuperK selections
 
 const SelecApplyMask_t valor::conv::ksApplyToLowRes = ksApplyToMuLikeLowRes | ksApplyToELikeLowRes;
 const SelecApplyMask_t valor::conv::ksApplyToHighRes = ksApplyToMuLikeHighRes | ksApplyToELikeHighRes;
@@ -184,6 +190,12 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu        , "1rmu") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE         , "1re") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE     , "multire") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu0n        , "1rmu0n") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE0n         , "1re0n") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE0n     , "multire0n") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu1n        , "1rmu1n") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE1n         , "1re1n") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE1n     , "multire1n") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToELikeRingAny   , "e-likerings") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingAny       , "1rany") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllRings       , "allrings") );
@@ -350,6 +362,12 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ks1Rmu            : return ksApplyTo1RingMu;
     case ks1Re             : return ksApplyTo1RingE;
     case ksMultiRe         : return ksApplyToMultiRingE;
+  case ks1Rmu0n            : return ksApplyTo1RingMu0n;
+  case ks1Re0n             : return ksApplyTo1RingE0n;
+  case ksMultiRe0n         : return ksApplyToMultiRingE0n;
+  case ks1Rmu1n            : return ksApplyTo1RingMu1n;
+  case ks1Re1n             : return ksApplyTo1RingE1n;
+  case ksMultiRe1n         : return ksApplyToMultiRingE1n;
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
       return 0;
