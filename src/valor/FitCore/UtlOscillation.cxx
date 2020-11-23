@@ -749,6 +749,20 @@ void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_
 
    return;
 }
+
+//________________________________________________________________________________________
+void ForceFreeParameterVal(FitParamList& fpl, std::string param, double force_val)
+{
+  valor::conv::PhysParamId_t p = util::NameRegistry::Instance()->PhysParamFromString(param.c_str());
+  if(p != conv::kPhypUndefined){
+    fpl.Update(p, force_val);
+
+    LOG("UtlOscillation", pDEBUG) << "Forcing free parameter " << param << " value to " << force_val;
+  }
+
+  return;
+}
+
 //________________________________________________________________________________________
 }
 }
