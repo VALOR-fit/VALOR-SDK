@@ -98,7 +98,7 @@ my @arr_pt2 = ();
 my @arr_both_pts = ();		# e.g. ("5_3", "7_21", "30_8")
 
 # For running FC, we have an array of unevenly spaced grid points. Hardcode the grid points here:
-my @arr_custom_grid_pts_x = (-2.3561944905, -1.570796327, -0.7853981635, 0.0, 0.39269908175, 0.7853981635, 1.570796327, 2.3561944905, 2.5918139395499997, 3.141592654);	# TODO: revert to empty before committing
+my @arr_custom_grid_pts_x = ();
 my @arr_custom_grid_pts_y = ();
 
 my $len_arr_pt1      = @arr_pt1;
