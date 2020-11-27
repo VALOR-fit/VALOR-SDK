@@ -174,7 +174,7 @@ void Fit(CmdLnArgList& arg)
 
    const char* read_opt_data = "data_vf";
    if (use_simple_binning) {
-      read_opt_data = "data_vf+SB"; //TODO: Check with Francis if this was a right fix. Check optimised marg against simple F&C
+      read_opt_data = "data_vf+SB";
    }
 
    util::ToyStream* toy_stream = nullptr;

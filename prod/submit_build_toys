@@ -97,6 +97,10 @@ my @arr_pt2 = ();
 # this one is more useful when scattered jobs need resubmitting, but is more annoying to use.
 my @arr_both_pts = ();		# e.g. ("5_3", "7_21", "30_8")
 
+# For running FC, we have an array of unevenly spaced grid points. Hardcode the grid points here:
+my @arr_custom_grid_pts_x = ();
+my @arr_custom_grid_pts_y = ();
+
 my $len_arr_pt1      = @arr_pt1;
 my $len_arr_pt2      = @arr_pt2;
 my $len_arr_both_pts = @arr_both_pts;
@@ -107,6 +111,11 @@ my %map_arr_both_pts = map { $_ => 1 } @arr_both_pts;
 if (($len_arr_pt1 > 0 || $len_arr_pt2 > 0) && $len_arr_both_pts > 0) {
 	die("ERROR: Don't use both the \'arr_pt1\' (or \'arr_pt2\') array with the \'arr_both_pts\' array.");
 }
+
+my $len_arr_custom_grid_pts_x = @arr_custom_grid_pts_x;
+my $len_arr_custom_grid_pts_y = @arr_custom_grid_pts_y;
+my %map_arr_custom_grid_pts_x = map { $_ => 1 } @arr_custom_grid_pts_x;
+my %map_arr_custom_grid_pts_y = map { $_ => 1 } @arr_custom_grid_pts_y;
 
 #
 # Read command line arguments
@@ -480,6 +489,14 @@ if($use_t2k_presets == 1) {
 	} # 2D sinsqth23 vs. cpv
 } # use T2K presets
 
+
+if($len_arr_custom_grid_pts_x > 0 && ($len_arr_custom_grid_pts_x != $npt_par1)) {
+  die("ERROR: A custom list of grid points for free parameter 1 was specified, but the number of entries did not match the number of grid points requested.");
+}
+if($len_arr_custom_grid_pts_y > 0 && ($len_arr_custom_grid_pts_y != $npt_par2)) {
+  die("ERROR: A custom list of grid points for free parameter 2 was specified, but the number of entries did not match the number of grid points requested.");
+}
+
 # Make the job directory
 mkpath ($job_dir, {verbose => 1, mode=>0777});
 die("$job_dir doesn't exist") unless -d $job_dir;
@@ -505,6 +522,10 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		}
 	}
   $val_par1 = $min_par1 + $ibin1 * $step_par1;
+  if($len_arr_custom_grid_pts_x != 0) {
+    $val_par1 = $arr_custom_grid_pts_x[${ibin1}];
+    print "\n Here 1; Setting val_par1 = ${val_par1}\n\n";
+  }
   for($ibin2 = 0; $ibin2 < $npt_par2; $ibin2 = $ibin2_p1) {
   	if($par2 ne "none") {
   		$jobID="${ibin1}_${ibin2}";
@@ -527,6 +548,9 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 			}
 		}
     $val_par2 = $min_par2 + $ibin2 * $step_par2;
+    if($len_arr_custom_grid_pts_y != 0) {
+			$val_par2 = $arr_custom_grid_pts_x[${ibin2}];
+		}
 
 
     $ibin1_p1 = $ibin1 + $npt_job_par1;
@@ -553,6 +577,15 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
     	$sub_ibin2 = -1;		# This tells the ToyBuilder class that we have a 1D fit
     }
 
+    $step_par1_use = $step_par1;
+    if($len_arr_custom_grid_pts_x != 0) {
+    	$step_par1_use = -999.0;
+    }
+    $step_par2_use = $step_par2;
+		if($len_arr_custom_grid_pts_y != 0) {
+			$step_par2_use = -999.0;
+		}
+
 		$program = "valor-run_build_toys";
 
 		$arguments = "--tag $tag --batch $batch --ntoys $ntoys --physics-hypothesis $fit_param_list " .
@@ -566,7 +599,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
                  "--npt-job-par1 $npt_job_par1 --npt-job-par2 $npt_job_par2 " .
                  "--npt-par1 $npt_par1 --npt-par2 $npt_par2 " . 
                  "--min-par1 $min_par1 --min-par2 $min_par2 " .
-                 "--step-par1 $step_par1 --step-par2 $step_par2 $fix_params";
+                 "--step-par1 $step_par1_use --step-par2 $step_par2_use $fix_params";
 
 
     if($store_specra       == 1)       { $arguments = "$arguments --store-spectra"      } else { $arguments = "$arguments --discard-spectra"    }
