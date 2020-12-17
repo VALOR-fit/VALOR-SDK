@@ -619,7 +619,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		# Liverpool_Slurm
 		#
 		if($resource eq "Liverpool_Slurm") {
-		  open(Slurm, ">$job_dir/$tag.slurm") or die("Can not create the Slurm batch script");
+		  open(Slurm, ">$job_dir/$tag-$jobID.slurm") or die("Can not create the Slurm batch script");
 		  print Slurm "#!/bin/bash \n";
 		  print Slurm "#SBATCH -J $tag-$jobID \n";
 		  print Slurm "#SBATCH -o $job_dir/$tag-$jobID.slurm.out \n";
@@ -631,7 +631,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		  if($time_command == 1) { print Slurm "/usr/bin/time $command \n"; }
 		  else { print Slurm "$command \n"; }
 		  close(Slurm);
-		  `sbatch -p compute $job_dir/$tag.slurm`;
+		  `sbatch -p compute $job_dir/$tag-$jobID.slurm`;
 		}
 
 	  if($resource eq "cedar") {
