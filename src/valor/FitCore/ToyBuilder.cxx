@@ -203,7 +203,12 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
 //______________________________________________________________________________
 void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string binary_file_name)
 {
-   if(!_save_throws_to_tree) { return; }
+    bool wantpython = true;
+   /* if(wantpython){
+        std::map<std::string, std::string> name_map = read_param_map("maps/mcmctest_valor_mach3_flux_param_name_map.arg"); //TODO, make input
+    }*/
+
+    if(!_save_throws_to_tree) { return; }
    // Set up an array to hold all of the parameter values that we'll save to the output tree
    double param_values[conv::knppmax];
    for(int ip = 0; ip < conv::knppmax; ip++){
@@ -250,7 +255,12 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
       for (int ip = 0 ; ip < conv::knppmax ; ip++) {
          conv::PhysParamId_t p = (conv::PhysParamId_t)ip;
          if(p == conv::kPhypUndefined) { continue; }
-         std::string param_name = util::NameRegistry::Instance()->ParamAsStringVerySimple(p);
+         std::string param_name = "Param_" + util::NameRegistry::Instance()->ParamAsStringVerySimple(p); //Change made
+
+         /*if(wantpython) { //CHANGEMADE
+             std::map<std::string, std::string>::iterator it = name_map.find(TString::Format("b_%d", i).Data());
+             param_name = it->second;
+         }*/
          std::string branch_info = param_name + "/D";
          if (fpl.Exists(p)) {
             _tree_pars->Branch(param_name.c_str(), &(param_values[ip]), branch_info.c_str());
@@ -478,6 +488,35 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
   LOG("ToyBuilder", pDEBUG) << "Reading toy from input throw file with FPL = " << fpl;
 #endif
 }
+
+/*std::map<std::string, std::string> read_param_map(std::string map_file)
+{
+    std::string full_filename = util::CompleteConfigPath(map_file);
+    std::map<std::string, std::string> param_name_map;
+    std::ifstream file(full_filename);
+    std::string line_in;
+    while (std::getline(file, line_in)) {
+        std::string line = util::RemoveAllWhitespace(line_in);
+        line = line.substr(0, line.find("#", 0));  // Remove '#' and everything after it
+        line = line.substr(0, line.find(")", 0));  // Remove ')' and everything after it
+        line = line.substr(line.find("(")+1);      // Remove '(' and everything before it
+        if(line == "") { continue; }
+        vector<string> tokens = util::Tokens(line, ",");  // Split the line into a vector of strings separated by ','
+        if(tokens.size() != 2) {
+            std::cout << "Tried to read the map file \'" << full_filename
+            << "\', but the number of tokens was != 2 in the line \'"
+            << line_in << "\'" << std::endl;
+            util::Die(-1);
+        }
+        for(std::string & token : tokens) {
+            token = util::ReplaceAll(token, "\'", "");
+        }
+        param_name_map[tokens[1]] = tokens[0];
+    }
+    return param_name_map;
+}*/
+
+
 
 } // valor
 
