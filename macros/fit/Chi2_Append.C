@@ -42,7 +42,7 @@
         std::vector<double> *best_fit_toy = (std::vector<double> *) f2->Get(BestFitToy);
 
         TFile *newFile = new TFile(OutputFile,"recreate");
-        TTree *newTree = (TTree *)t1->CloneTree(); // TODO: Look into this creating TH1 error.
+        TTree *newTree = (TTree *)t1->CloneTree(); 
         newFile->cd();
         std::string vector_name = BestFitToy; // chi2_best_fit_toy is of type vector<double>
         std::string branch_info = vector_name + "/D";
