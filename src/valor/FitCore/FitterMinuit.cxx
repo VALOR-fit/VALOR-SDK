@@ -75,7 +75,7 @@ void FitterMinuit::Init(void)
   fTol                 = 0.1; // 0.01;
   fStr                 = 1;
   fPrintLevel          = -1; // 3;
-  fMaxNumCalls         = 100000;
+  fMaxNumCalls         = 100000; // Increase if fit doesn't converge
   fMigradMinStatusCode = -999;
   fMigradErrStatusCode = -999;
   fHesseErrStatusCode  = -999;
@@ -102,6 +102,7 @@ void FitterMinuit::Init(Likelihood * lkhd, Option_t * option)
   LOG("Minuit", pINFO) << "Fit parameter list size = " << param_list_size;
 
   fOption = option;
+  LOG("Minuit", pINFO) << "Parsed fitter options: " << option;
 
   // calc HESSE or MINOS errors after fit
   fCalcHesseErrors  = fOption.Contains("hesse");
@@ -265,8 +266,8 @@ bool FitterMinuit::DoTheFit(void)
   fFitTries = 1;
 
   if(fMigradMinStatusCode == 4) {
-    LOG("Minuit", pWARN) << "Fit failed...";
-    if( fOption.Contains("with_simplex_fallback") )
+    LOG("Minuit", pWARN) << "Fit failed to converge...";
+    if( fOption.Contains("with_simplex_fallback") ) 
     {
        LOG("Minuit", pWARN) << "Trying SIMPLEX";
        this->RunOnce(true);
