@@ -87,6 +87,13 @@ const SelecApplyMask_t valor::conv::ksApplyToAllND = (
   ksApplyToNuECCWS | ksApplyToNuECC | ksApplyToNuMuCCWS | ksApplyToNC
 );
 
+const SelecApplyMask_t valor::conv::ksApplyToAllNuMuCC = (
+  ksApplyToNuMuCC | ksApplyToNuMuCC0pi1trk| ksApplyToNuMuCC0pi2trk | ksApplyToNuMuCC0piNtrk |
+  ksApplyToNuMuCC3trkDelta | ksApplyToNuMuCC1piC | ksApplyToNuMuCC2piC | ksApplyToNuMuCC1pi0 |
+  ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 |
+  ksApplyToNuMuCCWSoth | ksApplyToNuMuCCWS
+);
+
 
 const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ksApplyToMultiRingE;                    // SuperK selections
 const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu;                       // SuperK selections
@@ -190,6 +197,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllFD          , "allfd") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAll            , "all") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNC          , "allnc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuMuCC      , "allnumucc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuECC       , "allnuecc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu        , "1rmu") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE         , "1re") );
