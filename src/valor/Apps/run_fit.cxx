@@ -168,7 +168,7 @@ int main(int argc, char ** argv)
       util::Die(-1);
     }
   }
-
+  
   // Create file and tree to store outputs
   TString outfilename = TString::Format("%s_%d.root", arg.GetString("tag").c_str(), arg.GetInt("run"));
   StdFitNtp ntp;
