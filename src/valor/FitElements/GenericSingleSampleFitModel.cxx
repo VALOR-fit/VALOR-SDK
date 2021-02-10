@@ -3633,11 +3633,11 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, sinsq2thmue, sinsq2thmumu, sindm2);
         p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , sinsq2thmue, sinsq2thmumu, sindm2);
         p_numubar_nutaubar= 0.;
-        p_nue_nue         = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuE    , sinsq2thee, sinsq2thmumu, sindm2);
-        p_nue_numu        = util::Calculate2FSterileOscMuE(conv::kPdgNuE    , conv::kPdgNuMu   , sinsq2thee, sinsq2thmumu, sindm2);
+        p_nue_nue         = util::Calculate2FSterileOsc(conv::kPdgNuE    , conv::kPdgNuE    , sinsq2thee, sinsq2thmumu, sindm2);
+        p_nue_numu        = util::Calculate2FSterileOsc(conv::kPdgNuE    , conv::kPdgNuMu   , sinsq2thee, sinsq2thmumu, sindm2);
         p_nue_nutau       = 0;
-        p_nuebar_nuebar   = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuEBar , sinsq2thee, sinsq2thmumu, sindm2);
-        p_nuebar_numubar  = util::Calculate2FSterileOscMuE(conv::kPdgNuEBar , conv::kPdgNuMuBar, sinsq2thee, sinsq2thmumu, sindm2);
+        p_nuebar_nuebar   = util::Calculate2FSterileOsc(conv::kPdgNuEBar , conv::kPdgNuEBar , sinsq2thee, sinsq2thmumu, sindm2);
+        p_nuebar_numubar  = util::Calculate2FSterileOsc(conv::kPdgNuEBar , conv::kPdgNuMuBar, sinsq2thee, sinsq2thmumu, sindm2);
         p_nuebar_nutaubar  = 0;
       }
       
