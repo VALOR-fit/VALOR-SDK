@@ -686,14 +686,17 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       fMCTTunOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mcttun_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
       fMCTSysOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctsys_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
       fMCTFinOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctfin_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
+      fMCStatOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mcstat_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
       LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTNomOb [imode]->GetName();
       LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTTunOb [imode]->GetName();
       LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTSysOb [imode]->GetName();
       LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTFinOb [imode]->GetName();
+      LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCStatOb [imode]->GetName();
       array -> Add ( fMCTNomOb [imode] ); 
       array -> Add ( fMCTTunOb [imode] ); 
       array -> Add ( fMCTSysOb [imode] ); 
       array -> Add ( fMCTFinOb [imode] );
+      array -> Add ( fMCStatOb [imode] );
 
       if(write_sb) {
         if(fMCTNullSb[imode]) continue;
@@ -701,14 +704,17 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         fMCTTunSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mcttun_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
         fMCTSysSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctsys_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
         fMCTFinSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctfin_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
+        fMCStatSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mcstat_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
         LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTNomSb [imode]->GetName();
         LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTTunSb [imode]->GetName();
         LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTSysSb [imode]->GetName();
         LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTFinSb [imode]->GetName();
+        LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCStatSb [imode]->GetName();
         array -> Add ( fMCTNomSb [imode] ); 
         array -> Add ( fMCTTunSb [imode] ); 
         array -> Add ( fMCTSysSb [imode] ); 
         array -> Add ( fMCTFinSb [imode] );
+        array -> Add ( fMCStatSb [imode] );
       }//+SB?
     }//imode
   }//mct_vf
