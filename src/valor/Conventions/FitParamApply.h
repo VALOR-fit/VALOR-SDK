@@ -35,7 +35,7 @@ namespace valor {
 
     static const unsigned long kApplyMaskOne     = 1ul;
     static const int nbitsBeamApplyMask          = 2;
-    static const int nbitsFlavApplyMask          = 4;
+    static const int nbitsFlavApplyMask          = 5;
     static const int nbitsSelecApplyMask         = 35;
     static const int nbitsReacTypeApplyMask      = 28;
     static const int nbitsDetectorApplyMask      = 7;
@@ -67,6 +67,7 @@ namespace valor {
     static const FlavApplyMask_t kfApplyToNuMuBar         = (kApplyMaskOne << 1 );
     static const FlavApplyMask_t kfApplyToNuE             = (kApplyMaskOne << 2 );
     static const FlavApplyMask_t kfApplyToNuEBar          = (kApplyMaskOne << 3 );
+    static const FlavApplyMask_t kfApplyToCosmic          = (kApplyMaskOne << 4 );
 
     static const SelecApplyMask_t ksApplyToNuMuCC          = (kApplyMaskOne <<  0 ); // Sample
     static const SelecApplyMask_t ksApplyToNuMuCC0pi1trk   = (kApplyMaskOne <<  1 );
@@ -163,6 +164,7 @@ namespace valor {
     extern const FlavApplyMask_t kfApplyToNuBarAny;
     extern const FlavApplyMask_t kfApplyToNuEAny;
     extern const FlavApplyMask_t kfApplyToNuMuAny;
+    extern const FlavApplyMask_t kfApplyToAllCosmic;
     extern const FlavApplyMask_t kfApplyToAll;
 
     // Reaction type
@@ -194,6 +196,7 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllCosmic;
 
     extern const ReacTypeApplyMask_t ktApplyToAll;
+    extern const ReacTypeApplyMask_t ktApplyToAllPlusCosmic;
     extern const ReacTypeApplyMask_t ktApplyToAllPi;
     extern const ReacTypeApplyMask_t ktApplyToAllWithPiFSI;
     extern const ReacTypeApplyMask_t ktApplyToAllButCoh;
