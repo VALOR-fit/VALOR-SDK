@@ -28,6 +28,7 @@ string util::AsString(NuFlavour_t f)
    case (kNuEBar  ) : return "NuEBar" ;
    case (kNuMuBar ) : return "NuMuBar";
    case (kNuTauBar) : return "NuTauBar";
+   case (kCosmic)   : return "Cosmic";
    default          : return "Undefined";
   }
 }
@@ -41,6 +42,7 @@ string util::AsStringTeX(NuFlavour_t f)
    case (kNuEBar  ) : return "\\bar{\\nu}_{e}" ;
    case (kNuMuBar ) : return "\\bar{\\nu}_{\\mu}";
    case (kNuTauBar) : return "\\bar{\\nu}_{\\tau}";
+   case (kCosmic)   : return "Cosmic";
    default          : return "Undefined";
   }
 }
@@ -72,6 +74,7 @@ NuFlavour_t util::FlavourFromPDG(int nu_pdg)
    case (conv::kPdgNuEBar  ) : return kNuEBar  ;
    case (conv::kPdgNuMuBar ) : return kNuMuBar ;
    case (conv::kPdgNuTauBar) : return kNuTauBar;
+   case (conv::kPdgCosmic)   : return kCosmic  ;
    
    default : return kNuFlavourUndefined;
   }
