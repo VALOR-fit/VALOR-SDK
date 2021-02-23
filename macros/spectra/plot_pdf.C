@@ -10,6 +10,7 @@ bool t2k               = false;   // make this configurable later
 bool one_plot_per_canv = false;   // make this configurable later
 double title_text_size = 0.05;
 std::string caveat_text_str = "T2K Run1-9 Preliminary";
+const double error_bar_significance = 0.6827;
 
 void plot_pdf(
   const char * config_file,
@@ -61,7 +62,10 @@ void plot_pdf(
   TFile * fdata = 0;
   if (plot_data) {
     fdata = new TFile(data_filename);
-    assert(fdata);
+    if(!fdata->IsOpen()) {
+      std::cout << "ERROR: Could not open data file \'" << data_filename << "\'" << std::endl;
+      util::Die(-1);
+    }
   }
 
   const char * binning = (option.Contains("OB")?"ob":"sb");
@@ -276,6 +280,7 @@ void plot_pdf(
           TH1F *pdf_frame = (TH1F *) this_pad->DrawFrame(0, 0, kinevar_x_max_2D, kinevar_y_max_2D);
           pdf_frame->GetXaxis()->SetTitle(title_x);
           pdf_frame->GetYaxis()->SetTitle(title_y);
+          pdf_frame->GetYaxis()->SetTitleOffset(0.85);
           pdf_frame->Draw();
 
           TLatex * pdf_title = nullptr;
@@ -297,8 +302,6 @@ void plot_pdf(
             caveat->Draw();
           }
 
-          pdf_tot->GetXaxis()->SetTitle(title_x);
-          pdf_tot->GetYaxis()->SetTitle(title_y);
           pdf_tot->GetZaxis()->SetTitle("Number of Events");
           pdf_tot->GetZaxis()->SetLabelSize(pdf_frame->GetXaxis()->GetLabelSize()); // The x and y axis labels and titles are set somewhere when running write_pdf, so just copy the styles here
           pdf_tot->GetZaxis()->SetLabelOffset(pdf_frame->GetXaxis()->GetLabelOffset());
@@ -313,6 +316,7 @@ void plot_pdf(
             data_graph_outer->Draw("P0,same");
             data_graph_inner->Draw("P0,same");
           }
+          pdf_frame->Draw("AXIS,SAME");
         }
       }
       
@@ -396,10 +400,10 @@ void plot_pdf(
               // For T2K, the binning used in the FHC1Rmu and RHC1Rmu plots are coarser than the fit binning.
               // As problems are caused when filling the MC templates when the simple binning has fewer bins than the opt
               // binning, rebin the relevant hists here instead of changing the binning.
-              if(s == conv::ks1Rmu && b == conv::kbJPARC_FHC) {
+              if(b == conv::kbJPARC_FHC) {
                 pdf_contrib[imode]->Rebin(2);
               }
-              else if(s == conv::ks1Rmu && b == conv::kbJPARC_RHC) {
+              else if(b == conv::kbJPARC_RHC) {
                 pdf_contrib[imode]->Rebin(3);
               }
             }
@@ -479,8 +483,11 @@ void plot_pdf(
           }//ebin
 
           TH1D * data_hist = 0;
+          TGraphAsymmErrors * data_graph_draw = 0;
           // If we need data, get that histogram now (as 1D data should be binned)
           if (plot_data) {
+            data_graph_draw = new	TGraphAsymmErrors();
+
             // First try reading data from a stored TGraph
             TGraph * data_graph = 0;
             TString data_name = TString::Format("%s_%s_%s_%s_%s",
@@ -488,8 +495,10 @@ void plot_pdf(
                                                 vutil::AsString(b).c_str(), vutil::AsString(s).c_str());
             TObject * tmp = fdata->Get(data_name.Data());
             std::cout << "Reading 2D data TGraph [" << data_name << "]\t pointer = " << tmp << std::endl;
-            TGraph * gtmp = (TGraph*)tmp;
-            data_graph = new TGraph(*gtmp);
+            if(tmp){
+              TGraph * gtmp = (TGraph*)tmp;
+              data_graph = new TGraph(*gtmp);
+            }
 
             if(data_graph) {
               // Copy the binning of the hists in the stack
@@ -522,8 +531,10 @@ void plot_pdf(
                                           data_tag, "data", binning, "rf_slice", subdata.Name().c_str(), kinevar.c_str());
               TObject * tmp = fdata->Get(data_name.Data());
               std::cout << "Reading data array [" << data_name << "]\t pointer = " << tmp << std::endl;
-              TH1D * htmp = (TH1D*)tmp;
-              data_hist = new TH1D(*htmp);
+              if(tmp) {
+                TH1D * htmp = (TH1D*)tmp;
+                data_hist = new TH1D(*htmp);
+              }
 
               if(!data_hist) {
                 std::cerr << "ERROR: Could not read 1D data hist directly ["
@@ -542,31 +553,52 @@ void plot_pdf(
               }
             }
 
+            // Convert the data hist to a TGraphAsymmErrors so we can set the data error bars appropriately.
+            // Setting sqrt(N) as the statistical error on a data point is wrong, as the data has no stat error.
+            // Instead calculate an error band showing how far away the prediction can be while still keeping
+            // the data point within its Poisson stat errors.
+            const double alpha = 1 - error_bar_significance;
+            for (int ibin = 1 ; ibin <= data_hist->GetXaxis()->GetNbins(); ibin++) {
+              double center  = data_hist->GetXaxis()->GetBinCenter(ibin);
+              double content = data_hist->GetBinContent(ibin);
+              double width   = data_hist->GetXaxis()->GetBinWidth(ibin);
+
+              double err_ylow  = (content==0) ? content : content - (ROOT::Math::gamma_quantile(alpha/2, content, 1.));
+              double err_yhigh = ROOT::Math::gamma_quantile_c(alpha/2, content+1, 1) - content;
+              double err_x     = width*0.5;
+
+              data_graph_draw->SetPoint(ibin-1, center, content);
+              data_graph_draw->SetPointError(ibin-1, err_x, err_x, err_ylow, err_yhigh);
+            }
+
             if(t2k) {
-              data_hist->SetLineStyle(0);
-              data_hist->SetLineColor(kBlack);
-              data_hist->SetMarkerColor(kBlack);
-              data_hist->SetMarkerStyle(kFullCircle);
-              data_hist->SetMarkerSize(1.5);
-              data_hist->SetBarWidth(0.4);
+              data_graph_draw->SetLineStyle(0);
+              data_graph_draw->SetLineColor(kBlack);
+              data_graph_draw->SetMarkerColor(kBlack);
+              data_graph_draw->SetMarkerStyle(kFullCircle);
+              data_graph_draw->SetMarkerSize(1.5);
+              //data_graph_draw->SetBarWidth(0.4);
             }
             else {
-              data_hist->SetLineStyle(0);
-              data_hist->SetMarkerColor(kRed);
-              data_hist->SetMarkerStyle(kFullTriangleDown);
+              data_graph_draw->SetLineStyle(0);
+              data_graph_draw->SetMarkerColor(kRed);
+              data_graph_draw->SetMarkerStyle(kFullTriangleDown);
             }
 
             // Scan the data + error for max in the desired range
-            for(int ebin = 1; ebin <= data_hist->GetNbinsX(); ebin++) {
-              if(data_hist->GetBinCenter(ebin) < kinevar_x_max_1D ) {
-                double val = data_hist->GetBinContent(ebin) +  data_hist->GetBinError(ebin);
+            for(int ipt = 0; ipt < data_graph_draw->GetN(); ipt++) {
+              double X = 0;
+              double Y = 0;
+              data_graph_draw->GetPoint(ipt, X, Y);
+              if(X < kinevar_x_max_1D ) {
+                double val = Y + data_graph_draw->GetErrorYhigh(ipt);
                 max_n = TMath::Max(max_n, val);
               }//<emax
-            }//ebin
+            }//ipt
           } // plot data?
 
           // Start drawing
-          TLegend * contrib_legend = new TLegend(0.7,0.55,0.9,0.95);
+          TLegend * contrib_legend = new TLegend(0.75,0.55,0.95,0.95);
           contrib_legend->SetFillColor(0);
           for(int imodec = 0; imodec < NReacModesCoarse; imodec++) {
               conv::ReacModeCoarse_t mc = coarse_modes.at(imodec);
@@ -579,6 +611,10 @@ void plot_pdf(
               contrib_stack->Add(relevant_hist);
               contrib_legend->AddEntry(relevant_hist,Form("%s",vutil::AsStringTex(mc,true).c_str()), "F");
           }//imodec
+
+          if (plot_data) {
+            contrib_legend->AddEntry(data_graph_draw,"Data", "LP");
+          }
 
           double max_y_1D = 1.1 * max_n;
           TVirtualPad * this_pad = c_pdf_contrib->cd(iplot+1); // Pad for this plot
@@ -626,8 +662,9 @@ void plot_pdf(
             if(t2k) { contrib_frame->GetYaxis()->SetTitle("Number of Events"); }
             else    { contrib_frame->GetYaxis()->SetTitle("Events /bin"); }
           }
+          contrib_frame->GetYaxis()->SetTitleOffset(0.85);
           contrib_stack->Draw("same");
-          if (plot_data) {data_hist->Draw("e same");}
+          if (plot_data) {data_graph_draw->Draw("P,()");}
           gPad->RedrawAxis();  // Draw the axes again, so that the axis tick marks are not obscured by the stack
           contrib_legend->SetTextFont(contrib_frame->GetXaxis()->GetTitleFont());
           contrib_legend->SetTextSize(0.75 * contrib_frame->GetXaxis()->GetTitleSize());

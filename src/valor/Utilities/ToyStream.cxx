@@ -12,6 +12,7 @@ ChangeLog:
 
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/ToyStream.h"
+#include "valor/Utilities/UtlStr.h"
 
 using namespace valor;
 

@@ -53,7 +53,7 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
+//#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/UtlFit.h"
 #include "valor/FitCore/CompoundFitElements.h"
@@ -183,7 +183,7 @@ int main(int argc, char ** argv)
     if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
 
 
-    model->ResetSystematics("all");
+    model->ResetSystematics(*fp, "all");
     // Randomise the systematics in the model, and copy them to the FPL
     std::vector<PhysParamId_t> param_set = util::GetParameterSet(params_to_tweak);
     std::map<PhysParamId_t,bool> param_map;
@@ -197,7 +197,7 @@ int main(int argc, char ** argv)
     }
 
     if (itoy > -1) {
-      model->RandomizeSystematics(param_map);
+      model->RandomizeSystematics(param_map, *fp);
     }
     fp->FromPhysParamList(model->Tweaks(),"current");
 

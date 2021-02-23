@@ -162,7 +162,7 @@ void run_osc_fit
 	 // tweak all sources of systematic error
 	 if(tweak_systematics == 1) {
 	   cout << "- Randomizing all systematic params in model..." << endl;
-	   model->RandomizeSystematics(); 
+	   model->RandomizeSystematics(*fparm); 
 	 }
 	 model->PrintSystematics();
 	 // generate mock data using the current model (incl. systematic variations) 
@@ -177,12 +177,12 @@ void run_osc_fit
 	 }
 	 // reset all systematics so that the model used in the fitter is the nominal one
 	 cout << "- Reseting all systematic params in model..." << endl;
-	 model->ResetSystematics();
+	 model->ResetSystematics(*fparm);
 	 model->PrintSystematics();
        }
        else {
 	 //make sure systematics are reset
-	 model->ResetSystematics();
+	 model->ResetSystematics(*fparm);
 	 // generate mock data using the current model (without systematic variations) 
 	 // with statistical fluctuations if requested (Poisson fluctuation in each bin)
 	 cout << "- Generating toy-MC..." << endl;

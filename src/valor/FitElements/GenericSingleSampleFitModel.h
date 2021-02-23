@@ -75,13 +75,13 @@ public:
   bool          Read                     (string file, Option_t * opt = 0);
   virtual bool  Read                     (util::ToyStream* stream);
   bool          Generate                 (const PhysHypothesis & ph, Option_t * opt = 0);
-  void          RandomizeSystematics     (Option_t * opt = 0);
-  void          RandomizeSystematics     (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
-  void          RandomizeSystematics     (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0);
+  void          RandomizeSystematics     (FitParamList& fpl, Option_t * opt = 0);
+  void          RandomizeSystematics     (bool (*should_randomize)(conv::PhysParamId_t), FitParamList& fpl, Option_t * opt = 0);
+  void          RandomizeSystematics     (std::map<valor::conv::PhysParamId_t, bool> should_randomize,FitParamList& fpl,  Option_t * opt = 0);
   void          TweakSystematic          (string syst_name, double twkdial=0., Option_t * opt = 0);
   void          TweakSystematic          (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
-  void          ResetSystematics         (Option_t * opt = 0);
-  void          ForceSystematicsToUntuned(Option_t * opt = 0);
+  void          ResetSystematics         (FitParamList& fpl,Option_t * opt = 0);
+  void          ForceSystematicsToUntuned(FitParamList& fpl,Option_t * opt = 0);
   void          PrintSystematics         (ostream & stream = std::cout, Option_t * opt = 0) const;
   PhysParamList Tweaks                   (Option_t * opt = 0) const;
   bool          Generate                 (const FitParamList & fp, Option_t * opt = 0);
@@ -265,7 +265,7 @@ private:
   std::vector<VALORArray *> fMCStatSb ; // MC statistics
   
   // Holds L/E per event, if we're doing sterile oscillations
-  std::vector<std::vector<std::vector<double> > > fLoverEPerEvent;
+  std::vector<std::vector<std::vector<std::pair<double,double>> > > fLoverEPerEvent;
 
 
   // MC PDFs
