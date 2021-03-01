@@ -1712,10 +1712,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   {
     t->GetEntry(iev);
 
-    if(iev && iev%(nev/1000)==0) {
+    //this gives floating point exception if nev<100
+    /*if(iev && iev%(nev/1000)==0) {
       double pct = (100 * (double)(iev+1)) / (double)nev;
       LOG("GenericSingleSampleFitModel",pINFO) << "Reading "<< fName <<" MC DST: "<< TMath::Nint(pct) << "% done";
-    }
+      }*/
 
     // Get sample index
     Sample_t s = util::SampleFromInt(sample);
