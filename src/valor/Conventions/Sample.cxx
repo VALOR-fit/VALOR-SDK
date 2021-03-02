@@ -349,7 +349,7 @@ Sample_t util::SampleFromInt(int s)
 {
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
-  if((s >= (int)ksNuMuCC && s <= (int) ksMultiRe)) //RHC
+  if((s >= (int)ksNuMuCC && s <= (int) ksNuMuCCoa09)) //RHC
     return (Sample_t)s;
   return ksUndefined;
 }
