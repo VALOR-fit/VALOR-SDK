@@ -6,21 +6,10 @@
   sbn_simulation_inputs              | sbnd_geometry | 2020a     | RJ    | LIV1   |
   sbn_simulation_inputs              | sbnd_flux     | 2020a     | RJ    | LIV1   |
 
-  sbn_numu_disappearance             | dsts          | 2019a1    | RJ    | LIV1   | sbn_numu_disapp_2019a1_01a1_1
-  sbn_numu_disappearance             | dsts          | 2019b1    | RJ    | LIV1   | sbn_numu_disapp_2019b1_01a1_1
-  sbn_numu_disappearance             | dsts          | 2019b2    | RJ    | LIV1   | sbn_numu_disapp_2019b2_01a1_1, sbn_numu_disapp_2019b2_02a1_1, sbn_numu_disapp_2019b2_02a2_1, sbn_numu_disapp_2019b3_02b1_1
-  sbn_numu_disappearance             | dsts          | 2019b3    | RJ    | LIV1   | sbn_numu_disapp_2019b3_02a1_1, sbn_numu_disapp_2019b3_02a2_1, sbn_numu_disapp_2019b3_02b1_1, sbn_numu_disapp_2019b3_02b2_1, sbn_numu_disapp_2019b3_02c1_1, sbn_numu_disapp_2019b3_02c2_1
-  sbn_numu_disappearance             | dsts          | 2019b3_2  | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_03a1_1, sbn_numu_disapp_2019b3_2_03b1_1, sbn_numu_disapp_2019b3_2_03c1_1
-  sbn_numu_disappearance             | dsts          | 2020a1    | RJ    | LIV1   | sbn_numu_disapp_2020a1_03c1_1, sbn_numu_disapp_2020a1_03c2_1
-  sbn_numu_disappearance_exclusive_1 | dsts          | 2020a1    | RJ    | LIV1   | sbn_numu_disapp_exclusive_1_2020a1_03c1_1, sbn_numu_disapp_exclusive_1_2020a1_03c2_1
+  sbn_numu_disappearance             | dsts          | 2019b3_2  | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_03a1_1, sbn_numu_disapp_2019b3_2_03b1_1, sbn_numu_disapp_2019b3_2_03c1_1, sbn_numu_disapp_2019b3_2_02b1_2, sbn_numu_disapp_2019b3_2_02b2_2, sbn_numu_disapp_2019b3_2_02c1_2 sbn_disapp_2019b3_2_02c2_2
+  sbn_numu_disappearance             | dsts          | 2020a1    | RJ    | LIV1   | sbn_numu_disapp_2020a1_03c1_1, sbn_numu_disapp_2020a1_03c2_1, sbn_numu_disapp_2020a1_03c3_1
+  sbn_numu_disappearance_exclusive_1 | dsts          | 2020a1    | RJ    | LIV1   | sbn_numu_disapp_exclusive_1_2020a1_03c1_1, sbn_numu_disapp_exclusive_1_2020a1_03c2_1, sbn_numu_disapp_exclusive_1_2020a1_03c3_1
 
-  sbn_numu_disappearance             | prior_errors  | 01a1      | RJ    | LIV1   | sbn_numu_disapp_2019a1_01a1_1, sbn_numu_disapp_2019b1_01a1_1, sbn_numu_disapp_2019b2_01a1_1
-  sbn_numu_disappearance             | prior_errors  | 02a1      | RJ    | LIV1   | sbn_numu_disapp_2019b2_02a1_1, sbn_numu_disapp_2019b3_02a1_1
-  sbn_numu_disappearance             | prior_errors  | 02a2      | RJ    | LIV1   | sbn_numu_disapp_2019b2_02a2_1, sbn_numu_disapp_2019b3_02a2_1
-  sbn_numu_disappearance             | prior_errors  | 02b1      | RJ    | LIV1   | sbn_numu_disapp_2019b2_02b1_1, sbn_numu_disapp_2019b3_02b1_1
-  sbn_numu_disappearance             | prior_errors  | 02b2      | RJ    | LIV1   | sbn_numu_disapp_2019b3_02b2_1
-  sbn_numu_disappearance             | prior_errors  | 02c1      | RJ    | LIV1   | sbn_numu_disapp_2019b3_02c1_1
-  sbn_numu_disappearance             | prior_errors  | 02c2      | RJ    | LIV1   | sbn_numu_disapp_2019b3_02c2_1
   sbn_numu_disappearance             | prior_errors  | 02b1_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02b1_2
   sbn_numu_disappearance             | prior_errors  | 02b2_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02b2_2
   sbn_numu_disappearance             | prior_errors  | 02c1_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02c1_2
@@ -34,10 +23,10 @@
   sbn_numu_disappearance_exclusive_1 | prior_errors  | 03c2      | RJ    | LIV1   | sbn_numu_disapp_exclusive_1_2020a1_03c2_1
   sbn_numu_disappearance_exclusive_1 | prior_errors  | 03c3      | RJ    | LIV1   | sbn_numu_disapp_exclusive_1_2020a1_03c3_1
                                      
-  sbn_numu_disappearance             | responses     | 02b1      | RJ    | LIV1   | sbn_numu_disapp_2019b3_02b1_1
-  sbn_numu_disappearance             | responses     | 02b2      | RJ    | LIV1   | sbn_numu_disapp_2019b3_02b2_1
-  sbn_numu_disappearance             | responses     | 02c1      | RJ    | LIV1   | sbn_numu_disapp_2019b3_02c1_1
-  sbn_numu_disappearance             | responses     | 02c2      | RJ    | LIV1   | sbn_numu_disapp_2019b3_02c2_1
+  sbn_numu_disappearance             | responses     | 02b1_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02b1_2
+  sbn_numu_disappearance             | responses     | 02b2_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02b2_2
+  sbn_numu_disappearance             | responses     | 02c1_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02c1_2
+  sbn_numu_disappearance             | responses     | 02c2_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02c2_2
   sbn_numu_disappearance             | responses     | 03b1      | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_03b1_1
   sbn_numu_disappearance             | responses     | 03c1      | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_03c1_1, sbn_numu_disapp_2020a1_03c1_1
   sbn_numu_disappearance             | responses     | 03c2      | RJ    | LIV1   | sbn_numu_disapp_2020a1_03c2_1
