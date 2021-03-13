@@ -98,6 +98,15 @@ int main(int argc, char ** argv)
   string params_to_tweak  = arg.GetString("params");
   string kine_var         = arg.GetString("kinevar");
   bool mean               = arg.GetBool("mean");
+  string detector         = arg.GetString("detector");
+
+  // Should we check the detector in the config?
+  bool checkDetector = false;
+  Detector_t d = kdUndefined;
+  if(detector != "none" && detector != "-"){
+    checkDetector = true;
+    d = util::DetectorFromString(detector);
+  }
 
   // Get the kinematic variable we're tweaking
   const KineVar_t kv = util::KineVarFromString(kine_var);
@@ -296,6 +305,7 @@ int main(int argc, char ** argv)
 
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
     SingleSampleFitModelABC * this_model = dynamic_cast<SingleSampleFitModelABC*>(cm->GetSubModel(imodel));
+    if(checkDetector && d != this_model->GetDetector()) continue;
     BeamConf_t b = this_model->GetBeam();
     Sample_t   s = this_model->GetSample();
     //~ ic++;
