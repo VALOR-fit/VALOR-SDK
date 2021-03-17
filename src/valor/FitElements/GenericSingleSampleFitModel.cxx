@@ -4572,3 +4572,9 @@ util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_na
       valor_array_format, this->StreamSize());
 }
 //________________________________________________________________________________________
+ void GenericSingleSampleFitModel::UpdateMassHierarchyFromOpt()
+ {
+  fNuOsc3Flavour.SetMassHierarchy(Opt::Instance()->gMassHierarchyAssumed);
+ }
+//________________________________________________________________________________________
+
