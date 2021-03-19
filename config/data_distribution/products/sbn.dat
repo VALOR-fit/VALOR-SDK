@@ -41,20 +41,6 @@
   sbn_numu_disappearance | universes     | 2019b3    | RJ    | LIV1   | 
   sbn_numu_disappearance | universes     | 2020a1    | RJ    | LIV1   | 
 
-  sbn_nue_appearance     | dsts          | 2020a     | TH    | LIV1   |
-  sbn_nue_appearance     | prior_errors  | 2020a     | TH    | LIV1   |
-  sbn_nue_appearance     | responses     | 2020a     | TH    | LIV1   |
-
-  sbn_nue_appearance     | dsts          | 2019b2    | TH    | LIV1   | sbn_nue_app_2019b2_01a1_1
-  sbn_nue_appearance     | dsts          | 2019b1    | TH    | LIV1   | sbn_nue_app_2019b1_01a1_1
-  
-  sbn_nue_appearance     | prior_errors  | 01a1      | TH    | LIV1   | sbn_nue_app_2019b1_01a1_1, sbn_nue_app_2019b2_01a1_1
-  
-  sbn_nue_appearance     | responses     | 2019b2    | TH    | LIV1   | 
-  sbn_nue_appearance     | responses     | 2019b1    | TH    | LIV1   | 
-
-  sbn_nue_disappearance  | dsts          | 2020a     | GDSP  | LIV1   |
-  sbn_nue_disappearance  | prior_errors  | 2020a     | GDSP  | LIV1   |
-  sbn_nue_disappearance  | responses     | 2020a     | GDSP  | LIV1   |
-
-
+  sbn_nue_inclusive      | dsts          | 2020a1    | TH    | LIV1   | sbn_nue_app_2020a1_03c1_1, sbn_nue_disapp_2020a1_03c1_1
+  sbn_nue_inclusive      | prior_errors  | 03c1      | TH    | LIV1   | sbn_nue_app_2020a1_03c1_1, sbn_nue_disapp_2020a1_03c1_1
+  sbn_nue_inclusive	 | responses     | 03c1      | TH    | LIV1   | sbn_nue_app_2020a1_03c1_1, sbn_nue_disapp_2020a1_03c1_1
