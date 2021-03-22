@@ -31,13 +31,13 @@
 
 namespace valor {
 
-class FitInputs;
+class Likelihood;
 
 class FitterMinuit: public FitterABC
 {
 public:
    FitterMinuit();
-   FitterMinuit(FitInputs * inputs, Option_t * option = "minuit"); // option: "minuit","minuit+hesse_err","minuit+minos_err" (migrad_err by default)
+   FitterMinuit(Likelihood * lkhd, Option_t * option = "minuit"); // option: "minuit","minuit+hesse_err","minuit+minos_err" (migrad_err by default)
    // Options can also specify tolerance=x and max function evaluations, eg
    // option="minuit+hesse+tolerance=0.01+maxcalls=1E6"
    virtual ~FitterMinuit();
@@ -53,14 +53,14 @@ public:
    virtual void       SetTol        (double tol)        { fTol  = tol ;                       }//Minuit targets an EDM of 0.001*tolerance for chisq dist
    virtual void       SetStr        (int str   )        { fStr  = str ;                       }
    virtual void       SetMaxCalls   (int ncalls)        { fMaxNumCalls = ncalls ;             }
-   
+
 protected:
 
    void  Init    (void);
-   void  Init    (FitInputs * fit_inputs, Option_t * option = "minuit");
+   void  Init    (Likelihood * lkhd, Option_t * option = "minuit");
    bool  RunOnce (bool use_simplex);
 
-   FitInputs*  fFitInputs;           ///< fit inputs
+   Likelihood* fLikelihood;          ///< likelihood
    TString     fOption;              ///< fit option
    int         fMigradMinStatusCode; ///< MIGRAD minimization status code
    int         fMigradErrStatusCode; ///< MIGRAD err status code
@@ -81,4 +81,3 @@ protected:
 } // valor
 
 #endif
-

@@ -230,7 +230,7 @@ const Parameter & ParameterPool::ParamFromString(std::string str) const
   this->CheckForCollisions();
   std::string str_search = util::ToLowerCase(util::RemoveAllWhitespace(str));
   for (const Parameter & p : fParams) {
-    if (p.GetName() == str_search) {
+    if (util::ToLowerCase(util::RemoveAllWhitespace(p.GetName())) == str_search) {
       return p;
     }
   }

@@ -69,7 +69,7 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/CompoundFitElements.h"
 #include "valor/FitCore/UtlFit.h"
@@ -168,7 +168,7 @@ int main(int argc, char ** argv)
       util::Die(-1);
     }
   }
-
+  
   // Create file and tree to store outputs
   TString outfilename = TString::Format("%s_%d.root", arg.GetString("tag").c_str(), arg.GetInt("run"));
   StdFitNtp ntp;
@@ -215,10 +215,10 @@ int main(int argc, char ** argv)
       util::Die(-1);
     }
 
-    model->ResetSystematics("all");
+    model->ResetSystematics(*fp, "all");
     // If required, randomise the systematics in the model, and copy them to the FPL
     if (param_values_ts.Contains("randomize")) {
-      model->RandomizeSystematics(param_values_ts.Data());
+      model->RandomizeSystematics(*fp, param_values_ts.Data());
     }
 
     if (tweak_parameter_set != "none" && tweak_parameter_set != "-") {
@@ -242,7 +242,7 @@ int main(int argc, char ** argv)
           PhysParamId_t p = param_set[ip];
           param_map[p] = true;
         }
-        model->RandomizeSystematics(param_map);
+        model->RandomizeSystematics(param_map, *fp);
       }
     }
 
@@ -291,7 +291,7 @@ int main(int argc, char ** argv)
     }
     Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
 
-    util::oscillation::SetOscillationParameterPriors(arg, *fp);
+    util::oscillation::SetParameterPriors(arg, *fp);
 
     // Set input parameters
     RgKeyList input_args = arg.FindKeys("input-");
@@ -353,7 +353,7 @@ int main(int argc, char ** argv)
           fp->FixParameter(param);
         }
         else if(param_values_ts.Contains("randomize-all")) {
-          double rnd_value = util::oscillation::GetRandomizedOscParam(param,*fp);
+          double rnd_value = util::oscillation::GetRandomizedParam(param,*fp);
           fp->Update      (param, rnd_value);
           fp->SetInitValue(param, rnd_value);
         }
@@ -455,16 +455,16 @@ int main(int argc, char ** argv)
 
     // Get fitter
     LOG("valor", pNOTICE) << "Preparing the fitter";
-    FitInputs * fit_inputs = new FitInputs(data,model,fp);
-    FitterABC * fitter = util::GetFitter(fit_inputs, fittername.c_str());
+    Likelihood * likelihood = new Likelihood(data,model,fp);
+    FitterABC * fitter = util::GetFitter(likelihood, fittername.c_str());
 
     // Do the fit
     LOG("valor", pNOTICE) << "Running the fitter";
     LOG("valor", pNOTICE) << "Fit starts with the following fit parameter list: " << *fp;
-    LOG("valor", pNOTICE) << "Fit starts with statistic: " << fit_inputs->Statistic();
+    LOG("valor", pNOTICE) << "Fit starts with statistic: " << likelihood->Statistic();
 
     fitter->DoTheFit();
-    LOG("valor", pNOTICE) << "Fit ends with statistic: " << fit_inputs->Statistic();
+    LOG("valor", pNOTICE) << "Fit ends with statistic: " << likelihood->Statistic();
 
     //  migradmin = fitter->FitStatusCode("migrad_min");
     //  migraderr = fitter->FitStatusCode("migrad_err");
@@ -491,7 +491,7 @@ int main(int argc, char ** argv)
     ntp.Fill();
 
     delete fp;
-    delete fit_inputs;
+    delete likelihood;
     delete fitter;
 
   }//itoymc

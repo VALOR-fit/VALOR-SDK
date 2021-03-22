@@ -21,11 +21,12 @@ using namespace valor::conv;
 const BeamApplyMask_t valor::conv::kbApplyToAll = kbApplyToFHC | kbApplyToRHC;
 
 // Nu flavour
-const FlavApplyMask_t valor::conv::kfApplyToNuAny    = kfApplyToNuMu    | kfApplyToNuE   ; // NuAny means any non-barred
-const FlavApplyMask_t valor::conv::kfApplyToNuBarAny = kfApplyToNuMuBar | kfApplyToNuEBar;
-const FlavApplyMask_t valor::conv::kfApplyToNuEAny   = kfApplyToNuE     | kfApplyToNuEBar;
-const FlavApplyMask_t valor::conv::kfApplyToNuMuAny  = kfApplyToNuMu    | kfApplyToNuMuBar;
-const FlavApplyMask_t valor::conv::kfApplyToAll      = kfApplyToNuAny   | kfApplyToNuBarAny;
+const FlavApplyMask_t valor::conv::kfApplyToNuAny     = kfApplyToNuMu    | kfApplyToNuE   ; // NuAny means any non-barred
+const FlavApplyMask_t valor::conv::kfApplyToNuBarAny  = kfApplyToNuMuBar | kfApplyToNuEBar;
+const FlavApplyMask_t valor::conv::kfApplyToNuEAny    = kfApplyToNuE     | kfApplyToNuEBar;
+const FlavApplyMask_t valor::conv::kfApplyToNuMuAny   = kfApplyToNuMu    | kfApplyToNuMuBar;
+const FlavApplyMask_t valor::conv::kfApplyToAll       = kfApplyToNuAny   | kfApplyToNuBarAny;
+const FlavApplyMask_t valor::conv::kfApplyToAllCosmic = kfApplyToAll     | kfApplyToCosmic;
 
 // Reaction type
 const ReacTypeApplyMask_t valor::conv::ktApplyToT2KLegCCoth = ktApplyToCCDIS    | ktApplyToCCMpi    |  ktApplyToCCmisc;
@@ -60,6 +61,7 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAlln0pi      = ktApplyToAllCCn0p
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllNonRes    = ktApplyToAllCCNonRes | ktApplyToAllNCNonRes;
 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAll          = ktApplyToAllCC | ktApplyToAllNC | ktApplyToAllELScat;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllPlusCosmic= ktApplyToAllCC | ktApplyToAllNC | ktApplyToAllELScat | ktApplyToCosmic;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllPi        = ktApplyToAll1pi | ktApplyToAll2pi | ktApplyToAlln0pi;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCoh    = ktApplyToAll   & (~ktApplyToAllCoh);
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButELScat = ktApplyToAll   & (~ktApplyToAllELScat);
@@ -85,6 +87,13 @@ const SelecApplyMask_t valor::conv::ksApplyToAllND = (
   ksApplyToNuMuCCWSoth | ksApplyToNuECC0pi | ksApplyToNuECC1piC | ksApplyToNuECC1pi0 | ksApplyToNuECCoth |
   ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth | ksApplyToNeutrinoElec | ksApplyToInvMuDecay |
   ksApplyToNuECCWS | ksApplyToNuECC | ksApplyToNuMuCCWS | ksApplyToNC
+);
+
+const SelecApplyMask_t valor::conv::ksApplyToAllNuMuCC = (
+  ksApplyToNuMuCC | ksApplyToNuMuCC0pi1trk| ksApplyToNuMuCC0pi2trk | ksApplyToNuMuCC0piNtrk |
+  ksApplyToNuMuCC3trkDelta | ksApplyToNuMuCC1piC | ksApplyToNuMuCC2piC | ksApplyToNuMuCC1pi0 |
+  ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 |
+  ksApplyToNuMuCCWSoth | ksApplyToNuMuCCWS
 );
 
 
@@ -140,15 +149,16 @@ void valor::util::ApplyMaskNaming::Init(void)
   }
 
   // Flavour mask names
-  fFlavMaskToName.insert( std::make_pair(kfApplyToNuMu    , "numu") );
-  fFlavMaskToName.insert( std::make_pair(kfApplyToNuMuBar , "numubar") );
-  fFlavMaskToName.insert( std::make_pair(kfApplyToNuE     , "nue") );
-  fFlavMaskToName.insert( std::make_pair(kfApplyToNuEBar  , "nuebar") );
-  fFlavMaskToName.insert( std::make_pair(kfApplyToNuAny   , "nuany") );
-  fFlavMaskToName.insert( std::make_pair(kfApplyToNuBarAny, "nubarany") );
-  fFlavMaskToName.insert( std::make_pair(kfApplyToNuEAny  , "nueany") );
-  fFlavMaskToName.insert( std::make_pair(kfApplyToNuMuAny , "numuany") );
-  fFlavMaskToName.insert( std::make_pair(kfApplyToAll     , "all") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuMu      , "numu") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuMuBar   , "numubar") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuE       , "nue") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuEBar    , "nuebar") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuAny     , "nuany") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuBarAny  , "nubarany") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuEAny    , "nueany") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuMuAny   , "numuany") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToAll       , "all") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToAllCosmic , "allcosmic") );
   for(auto const& pair : fFlavMaskToName) {
     fFlavNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
@@ -190,6 +200,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllFD          , "allfd") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAll            , "all") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNC          , "allnc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuMuCC      , "allnumucc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuECC       , "allnuecc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu        , "1rmu") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE         , "1re") );
@@ -255,6 +266,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAlln0pi      , "alln0pi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNonRes    , "allnonres") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAll          , "all") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllPlusCosmic, "allpluscosmic") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllPi        , "allpi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllWithPiFSI , "allwithpifsi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCoh    , "allbutcoh") );
@@ -410,6 +422,7 @@ const FlavApplyMask_t valor::util::ApplyToFlavour(conv::NuFlavour_t f)
     case kNuEBar   : return kfApplyToNuEBar;
     case kNuMuBar  : return kfApplyToNuMuBar;
     case kNuTauBar : return 0;
+    case kCosmic   : return kfApplyToCosmic;
     default:
       LOG("ApplyMask",pWARN) << "No flavour apply mask set for " << util::AsString(f) << ". Applying to none.";
       return 0;

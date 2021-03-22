@@ -159,6 +159,18 @@ void FitParamList::SetCurrentValueByIndex(int i, double v)
   fCurrValue [i] = v;
 }
 //________________________________________________________________________________________
+void  FitParamList::SetSystParWithNonGaussianPrior(PhysParamId_t p)
+{
+  // TODO: add check if it is a systematic parameter 
+  fIsSystParWithNonGaussianPrior[this->Id(p)] = true; 
+}
+
+//________________________________________________________________________________________
+void FitParamList::SetNonGaussianSystParExists()
+{
+  fNonGaussianSystParExists = true;
+}
+//________________________________________________________________________________________
 void FitParamList::ResetCurrToInitValues(void)
 {
   for(int ip = 0; ip < fNParams; ip++) {
@@ -1645,6 +1657,8 @@ void FitParamList::Copy(const FitParamList & plst)
     this->fMaxValueFlat[i]  = plst.fMaxValueFlat[i];
     
     this->fIsPrior2D[i]        = plst.fIsPrior2D[i];
+
+    this->fIsSystParWithNonGaussianPrior[i]  = plst.fIsSystParWithNonGaussianPrior[i];
     
     if(plst.fPriorHisto[i]!=0) this->fPriorHisto[i]      = (TH1D*) plst.fPriorHisto[i]->Clone("");
     else this->fPriorHisto[i] = 0;
@@ -1683,6 +1697,8 @@ void FitParamList::Copy(const FitParamList & plst)
   
   this->fShowCurrValuesOnly    = plst.fShowCurrValuesOnly;
   this->fShowBestFitValuesOnly = plst.fShowBestFitValuesOnly;
+
+  this->fNonGaussianSystParExists = plst.fNonGaussianSystParExists;
 }
 //________________________________________________________________________________________
 void FitParamList::Init(int nparams)
@@ -1711,20 +1727,22 @@ void FitParamList::Init(int nparams)
     fCovMatrix    = new TMatrixDSym(fNParams);
     
     // MARGINALIZATION
-    fDoMarg        = new bool      [fNParams];
-    fPriorMode     = new int       [fNParams];
-    fPriorModeName = new TObjString[fNParams];
-    fPriorScheme   = new int       [fNParams];
-    fMeanGaus      = new double    [fNParams];
-    fSigmaGaus     = new double    [fNParams];
-    fMinValueFlat  = new double    [fNParams];
-    fMaxValueFlat  = new double    [fNParams];
-    fPriorHisto    = new TH1D *    [fNParams];
-    fToyHisto      = new TH1D *    [fNParams];
-    
-    fIsPrior2D     = new bool      [fNParams];
-    fPriorHisto2D  = new TH2D *    [fNParams];
-    fToyHisto2D    = new TH2D *    [fNParams];
+    fDoMarg             = new bool      [fNParams];
+    fPriorMode          = new int       [fNParams];
+    fPriorModeName      = new TObjString[fNParams];
+    fPriorScheme        = new int       [fNParams];
+    fMeanGaus           = new double    [fNParams];
+    fSigmaGaus          = new double    [fNParams];
+    fMinValueFlat       = new double    [fNParams];
+    fMaxValueFlat       = new double    [fNParams];
+    fPriorHisto         = new TH1D *    [fNParams];
+    fToyHisto           = new TH1D *    [fNParams];
+          
+    fIsPrior2D          = new bool      [fNParams];
+    fPriorHisto2D       = new TH2D *    [fNParams];
+    fToyHisto2D         = new TH2D *    [fNParams];
+
+    fIsSystParWithNonGaussianPrior = new bool      [fNParams];
     //
     
   } else {
@@ -1745,19 +1763,22 @@ void FitParamList::Init(int nparams)
     fCovMatrix        = 0;
     
     // MARGINALIZATION
-    fDoMarg        = 0;
-    fPriorMode     = 0;
-    fPriorModeName = 0;
-    fPriorScheme   = 0;
-    fMeanGaus      = 0;
-    fSigmaGaus     = 0;
-    fMinValueFlat  = 0;
-    fMaxValueFlat  = 0;
-    fIsPrior2D     = 0;
-    fPriorHisto    = 0;
-    fToyHisto      = 0;
-    fPriorHisto2D  = 0;
-    fToyHisto2D    = 0;
+    fDoMarg             = 0;
+    fPriorMode          = 0;
+    fPriorModeName      = 0;
+    fPriorScheme        = 0;
+    fMeanGaus           = 0;
+    fSigmaGaus          = 0;
+    fMinValueFlat       = 0;
+    fMaxValueFlat       = 0;
+    fIsPrior2D          = 0;
+    fPriorHisto         = 0;
+    fToyHisto           = 0;
+    fPriorHisto2D       = 0;
+    fToyHisto2D         = 0;
+    
+    fIsSystParWithNonGaussianPrior       = 0;
+  
     //
     
   }
@@ -1779,19 +1800,21 @@ void FitParamList::Init(int nparams)
     fParameterScaling[i] = 1;
     
     // MARGINALIZATION
-    fDoMarg       [i] = 0;
-    fPriorMode    [i] = 0;
-    fPriorModeName[i].SetString("Uninitialised");
-    fPriorScheme  [i] = -1;
-    fMeanGaus     [i] = 0;
-    fSigmaGaus    [i] = 0;
-    fMinValueFlat [i] = 0;
-    fMaxValueFlat [i] = 0;
-    fIsPrior2D    [i] = 0;
-    fPriorHisto   [i] = 0;
-    fToyHisto     [i] = 0;
-    fPriorHisto2D [i] = 0;
-    fToyHisto2D   [i] = 0;
+    fDoMarg            [i] = 0;
+    fPriorMode         [i] = 0;
+    fPriorModeName     [i].SetString("Uninitialised");
+    fPriorScheme       [i] = -1;
+    fMeanGaus          [i] = 0;
+    fSigmaGaus         [i] = 0;
+    fMinValueFlat      [i] = 0;
+    fMaxValueFlat      [i] = 0;
+    fIsPrior2D         [i] = 0;
+    fPriorHisto        [i] = 0;
+    fToyHisto          [i] = 0;
+    fPriorHisto2D      [i] = 0;
+    fToyHisto2D        [i] = 0;
+
+    fIsSystParWithNonGaussianPrior[i] = 0;
     //
     
     
@@ -1811,6 +1834,8 @@ void FitParamList::Init(int nparams)
   fMigradErrorsSet = false;
   fHesseErrorsSet  = false;
   fMinosErrorsSet  = false;
+
+  fNonGaussianSystParExists = 0;
 }
 //________________________________________________________________________________________
 void FitParamList::CleanUp(void)
@@ -1851,6 +1876,10 @@ void FitParamList::CleanUp(void)
   if (fIsPrior2D     ) { delete [] fIsPrior2D    ; fIsPrior2D     = 0 ; }
   if (fPriorHisto2D  ) { delete [] fPriorHisto2D ; fPriorHisto2D  = 0 ; }
   if (fToyHisto2D    ) { delete [] fToyHisto2D   ; fToyHisto2D    = 0 ; }
+
+  if (fIsSystParWithNonGaussianPrior    ) { delete [] fIsSystParWithNonGaussianPrior   ; fIsSystParWithNonGaussianPrior    = 0 ; }
+
+  
   //
   
   fBestFitStatisticContributions.clear();
@@ -1861,6 +1890,8 @@ void FitParamList::CleanUp(void)
   
   fParListName = "";
   fSystMode    = -1;
+
+  fNonGaussianSystParExists = 0;
 }
 //________________________________________________________________________________________
 int FitParamList::Id(PhysParamId_t p) const

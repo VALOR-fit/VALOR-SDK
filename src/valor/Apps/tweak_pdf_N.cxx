@@ -54,7 +54,7 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
+//#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/UtlFit.h"
 #include "valor/FitCore/CompoundFitElements.h"
@@ -98,6 +98,15 @@ int main(int argc, char ** argv)
   string params_to_tweak  = arg.GetString("params");
   string kine_var         = arg.GetString("kinevar");
   bool mean               = arg.GetBool("mean");
+  string detector         = arg.GetString("detector");
+
+  // Should we check the detector in the config?
+  bool checkDetector = false;
+  Detector_t d = kdUndefined;
+  if(detector != "none" && detector != "-"){
+    checkDetector = true;
+    d = util::DetectorFromString(detector);
+  }
 
   // Get the kinematic variable we're tweaking
   const KineVar_t kv = util::KineVarFromString(kine_var);
@@ -188,7 +197,8 @@ int main(int argc, char ** argv)
     if (fp->Exists(conv::kPhypDm23sq  )) { fp->Update(conv::kPhypDm23sq  ,dm23sq  ); }
     if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
 
-    model->ResetSystematics("all");
+    model->ResetSystematics(*fp, "all");
+    
     // Randomise the systematics in the model, and copy them to the FPL
     std::vector<PhysParamId_t> param_set = util::GetParameterSet(params_to_tweak);
     std::map<PhysParamId_t,bool> param_map;
@@ -202,7 +212,7 @@ int main(int argc, char ** argv)
     }
 
     if (itoy > -1) {
-      model->RandomizeSystematics(param_map);
+      model->RandomizeSystematics(param_map, *fp);
     }
     fp->FromPhysParamList(model->Tweaks(),"current");
 
@@ -295,6 +305,7 @@ int main(int argc, char ** argv)
 
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
     SingleSampleFitModelABC * this_model = dynamic_cast<SingleSampleFitModelABC*>(cm->GetSubModel(imodel));
+    if(checkDetector && d != this_model->GetDetector()) continue;
     BeamConf_t b = this_model->GetBeam();
     Sample_t   s = this_model->GetSample();
     //~ ic++;

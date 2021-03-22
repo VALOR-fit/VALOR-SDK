@@ -53,7 +53,7 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/UtlFit.h"
 #include "valor/FitCore/CompoundFitElements.h"
@@ -114,6 +114,10 @@ int main(int argc, char ** argv)
       util::Die(-1);
     }
   }
+
+  // If true, then force all systematic parameters to their untuned values.
+  // This is for testing weights as is intended to be used with e.g. the DEBUG_SINGLE_BIN preprocessor directive in GSSFM
+  bool force_untuned = arg.GetBool("force-untuned");
 
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
@@ -209,6 +213,12 @@ int main(int argc, char ** argv)
 
     // Write-out the mock data
     data->Write(outfilename,"toymc","all", "recreate");
+  }
+
+  if(force_untuned) {
+    LOG("write_pdf",pNOTICE) << "Forcing all systematic parameters to their untuned values - all systematic weights should be 1";
+    model->ForceSystematicsToUntuned(*fp);
+    fp->FromPhysParamList(model->Tweaks(),"current-silent");
   }
 
   // Generate predictions

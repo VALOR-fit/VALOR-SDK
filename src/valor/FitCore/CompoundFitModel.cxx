@@ -183,38 +183,38 @@ bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
   return status;
 }
 //________________________________________________________________________________________
-void CompoundFitModel::RandomizeSystematics (Option_t * opt)
+void CompoundFitModel::RandomizeSystematics (FitParamList& fpl, Option_t * opt)
 {
   if (fSystematics) {  // If we have our own systematic model, tweak that
-    fSystematics->Tweak(false, NULL,opt);
+    fSystematics->Tweak(false, NULL, fpl, opt);
   }
   else {// otherwise loop over all submodels.
     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      (*it)->RandomizeSystematics(opt);
+      (*it)->RandomizeSystematics(fpl, opt);
     }
   }
 }
 //________________________________________________________________________________________
-void CompoundFitModel::RandomizeSystematics (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt)
+void CompoundFitModel::RandomizeSystematics (bool (*should_randomize)(conv::PhysParamId_t), FitParamList& fpl, Option_t * opt)
 {
   if (fSystematics) {  // If we have our own systematic model, tweak that
-    fSystematics->Tweak(false, NULL, should_randomize, opt);
+    fSystematics->Tweak(false, NULL, should_randomize, fpl, opt);
   }
   else {// otherwise loop over all submodels.
     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      (*it)->RandomizeSystematics(should_randomize, opt);
+      (*it)->RandomizeSystematics( should_randomize, fpl, opt);
     }
   }
 }
 //________________________________________________________________________________________
-void CompoundFitModel::RandomizeSystematics (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt)
+void CompoundFitModel::RandomizeSystematics (std::map<valor::conv::PhysParamId_t, bool> should_randomize, FitParamList& fpl, Option_t * opt)
 {
   if (fSystematics) {  // If we have our own systematic model, tweak that
-    fSystematics->Tweak(false, NULL, should_randomize, opt);
+    fSystematics->Tweak(false, NULL, should_randomize, fpl, opt);
   }
   else {// otherwise loop over all submodels.
     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      (*it)->RandomizeSystematics(should_randomize, opt);
+      (*it)->RandomizeSystematics(should_randomize, fpl, opt);
     }
   }
 }
@@ -242,25 +242,25 @@ void CompoundFitModel::TweakSystematic (conv::PhysParamId_t syst, double twkdial
   }
 }
 //________________________________________________________________________________________
-void CompoundFitModel::ResetSystematics (Option_t * opt) {
+void CompoundFitModel::ResetSystematics (FitParamList& fpl, Option_t * opt) {
   if (fSystematics) {
-    fSystematics->Tweak(true,NULL);
+    fSystematics->Tweak(true,NULL, fpl);
   }
   else {
     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      (*it)->ResetSystematics(opt);
+      (*it)->ResetSystematics(fpl, opt);
     }
   }
   return;
 }
 //________________________________________________________________________________________
-void CompoundFitModel::ForceSystematicsToUntuned (Option_t * opt) {
+void CompoundFitModel::ForceSystematicsToUntuned (FitParamList& fpl, Option_t * opt) {
   if (fSystematics) {
-    fSystematics->Tweak(true,&(fSystematics->UntunedValues()));
+    fSystematics->Tweak(true,&(fSystematics->UntunedValues()), fpl);
   }
   else {
     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      (*it)->ForceSystematicsToUntuned(opt);
+      (*it)->ForceSystematicsToUntuned(fpl, opt);
     }
   }
   return;
@@ -273,7 +273,7 @@ void CompoundFitModel::PrintSystematics (std::ostream & stream, Option_t * opt) 
   }
   else {
     for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      (*it)->PrintSystematics(stream,opt);
+      (*it)->PrintSystematics(stream, opt);
     }
   }
   return;

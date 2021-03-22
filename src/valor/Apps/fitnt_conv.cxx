@@ -42,7 +42,7 @@
 #include "valor/Messenger/Messenger.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/FitParamList.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/UtlFitParamList.h"
 #include "valor/FitCore/CompoundFitElements.h"
 #include "valor/Utilities/NameRegistry.h"

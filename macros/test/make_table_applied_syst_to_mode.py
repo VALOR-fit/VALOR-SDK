@@ -33,8 +33,8 @@ def main(beam_mode_arg = None, sample_arg = None,
          config_file = "dune_ndfit.xml",
          skipflux=False, skipint=False, skipdet =False, include_empty = False, color = True, unosc = False):
   
-  elements = valor.CompoundFitElements();
-  elements.Read(base_dir+"/config/"+config_file,"nosplines nomc")
+  elements = valor.CompoundFitElements()
+  elements.Read(util.CompleteConfigPath(config_file),"nosplines nomc")
   model = elements.FitModel()
   
   syst = model.GetSystematics()
@@ -130,8 +130,12 @@ def main(beam_mode_arg = None, sample_arg = None,
         print this_categories,last_categories
         if this_categories!=last_categories:
           tex_output.write(" \\hline ")
-          
-      entries = ["$"+param.GetTeXName().ljust(col1_width)+"$"]
+
+      tex_name = param.GetTeXName().ljust(col1_width)
+      if not "$" in tex_name:
+        # Only enter math mode if the parameter name is not already in math mode
+        tex_name = "$" + tex_name + "$"
+      entries = [tex_name]
       include_row = include_empty
       for m in modes:
         if util.IsAppliedTo(param.GetApplyMask(),beam_mode,sample,detector,m,conv.kntInclusive):
