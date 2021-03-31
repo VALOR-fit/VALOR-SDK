@@ -76,7 +76,7 @@ typedef enum ESample
    ks1Rmu                , // Single-ring muon-like
    ks1Re                 , // Single-ring electron-like
    ksMultiRe             , // Multi-ring electron-like
-   ksMultiRmu             // Multi-ring (CC1pi+) muon-like 
+   ksMultiRmu              // Multi-ring electron-like
 } 
 Sample_t; 
 

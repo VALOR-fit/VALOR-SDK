@@ -113,7 +113,7 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ks1Rmu           ) : name = "Single-ring mu-like";                  break;
     case (ks1Re            ) : name = "Single-ring e-like";                   break;
     case (ksMultiRe        ) : name = "Multi-ring e-like";                    break;
-    case (ksMultiRmu       ) : name = "Multi-ring mu-like";                   break;
+    case (ksMultiRmu        ) : name = "Multi-ring mu-like";                    break;
     default                  : name = "--";
   }
 
@@ -138,8 +138,8 @@ bool util::IsFar(Sample_t s)
     case (ksNuEBarCChigh       ) :  return true; break;
     case (ks1Rmu               ) : // intentional fallthrough
     case (ks1Re                ) :
-    case (ksMultiRe            ) :  
-    case (ksMultiRmu           ) :return true; break;
+    case (ksMultiRmu           ) :
+    case (ksMultiRe            ) :  return true; break;
     default: return false;
   }
   return false; 
@@ -189,8 +189,8 @@ bool util::IsCC(Sample_t s)
 
     case (ks1Rmu           ) : // intentional fallthrough
     case (ks1Re            ) :
-    case (ksMultiRe        ) : 
-    case (ksMultiRmu       ) : return true; break;
+    case (ksMultiRmu       ) :
+    case (ksMultiRe        ) : return true; break;
 
     case (ksUndefined      ) : return false;
   }
@@ -241,8 +241,8 @@ bool util::IsCCQELike(Sample_t s)
     case (ksNuEBarCClow    ) :
     case (ks1Re            ) :
     case (ks1Rmu           ) :
-    case (ksMultiRe        ) : 
-    case (ksMultiRmu       ) : return false; break;
+    case (ksMultiRmu       ) :
+    case (ksMultiRe        ) : return false; break;
     default: return false;
   }
   return false;
@@ -284,8 +284,8 @@ bool util::IsNC(Sample_t s)
     case (ksNuEBarCChigh   ) :
     case (ks1Rmu           ) :
     case (ks1Re            ) :
-    case (ksMultiRe        ) : 
-    case (ksMultiRmu       ) : return false;
+    case (ksMultiRmu       ) :
+    case (ksMultiRe        ) : return false;
 
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) : 
@@ -373,8 +373,8 @@ bool util::IsMuLike(Sample_t s)
     case ksNuEBarCClow     : return false ;
     case ks1Rmu            : return true  ;
     case ks1Re             : return false ;
-    case ksMultiRe         : return false ;
     case ksMultiRmu        : return true  ;
+    case ksMultiRe         : return false ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;

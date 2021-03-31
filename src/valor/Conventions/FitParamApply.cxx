@@ -85,7 +85,7 @@ const SelecApplyMask_t valor::conv::ksApplyToAllND = (
 
 
 const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ksApplyToMultiRingE;                    // SuperK selections
-const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu;                       // SuperK selections
+const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu;                      // SuperK selections
 const SelecApplyMask_t valor::conv::ksApplyToAllRings     = ksApplyTo1RingE | ksApplyTo1RingMu | ksApplyToMultiRingE | ksApplyToMultiRingMu; // SuperK selections
 
 const SelecApplyMask_t valor::conv::ksApplyToLowRes = ksApplyToMuLikeLowRes | ksApplyToELikeLowRes;
@@ -367,7 +367,7 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ks1Rmu            : return ksApplyTo1RingMu;
     case ks1Re             : return ksApplyTo1RingE;
     case ksMultiRe         : return ksApplyToMultiRingE;
-    case ksMultiRmu        : return ksApplyToMultiRingMu;
+    case ksMultiRmu         : return ksApplyToMultiRingMu;
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
       return 0;
