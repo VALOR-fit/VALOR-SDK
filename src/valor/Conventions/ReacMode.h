@@ -27,7 +27,7 @@
 namespace valor {
 namespace conv {
 
-static const int kNReacModes = 184; //excluding undefined and other
+static const int kNReacModes = 204; //excluding undefined and other
 
 typedef enum EReacMode 
 {
@@ -46,13 +46,13 @@ typedef enum EReacMode
    kmNuMuCCMpi,           // numu    CC multi pi (>1 pion of any charge(s))
    kmNuMuCCmisc,          // numu    CC miscellaneous modes that require separate treatment to CC other
    kmNuMuCCoth,           // numu    CC other
-//   kmNuMuNCEL,            // numu    NC EL
-//   kmNuMuNCMEC,           // numu    NC MEC
+   kmNuMuNCEL,            // numu    NC EL
+   kmNuMuNCMEC,           // numu    NC MEC
    kmNuMuNC1piC,          // numu    NC 1 pi+/-
    kmNuMuNC1pi0,          // numu    NC 1 pi0
-//   kmNuMuNC2piC,          // numu    NC 2 pi+/-
-//   kmNuMuNC2pi0,          // numu    NC 2 pi0
-//   kmNuMuNCpiCpi0,        // numu    NC 1 pi0 + 1 pi+/-
+   kmNuMuNC2piC,          // numu    NC 2 pi+/-
+   kmNuMuNC2pi0,          // numu    NC 2 pi0
+   kmNuMuNCpiCpi0,        // numu    NC 1 pi0 + 1 pi+/-
    kmNuMuNCcoh,           // numu    NC coherent
    kmNuMuNC1Gamma,        // numu    NC 1 gamma
    kmNuMuNCELScat,        // numu + e- -> numu + e- NC elastic scattering
@@ -70,13 +70,13 @@ typedef enum EReacMode
    kmNuMuBarCCMpi,        // numubar CC multi pi (>1 pion of any charge(s))
    kmNuMuBarCCmisc,       // numubar CC miscellaneous modes that require separate treatment to CC other
    kmNuMuBarCCoth,        // numubar CC other
-//   kmNuMuBarNCEL,         // numubar NC EL
-//   kmNuMuBarNCMEC,        // numubar NC MEC
+   kmNuMuBarNCEL,         // numubar NC EL
+   kmNuMuBarNCMEC,        // numubar NC MEC
    kmNuMuBarNC1piC,       // numubar NC 1 pi+/-
    kmNuMuBarNC1pi0,       // numubar NC 1 pi0
-//   kmNuMuBarNC2piC,       // numubar NC 2 pi+/-
-//   kmNuMuBarNC2pi0,       // numubar NC 2 pi0
-//   kmNuMuBarNCpiCpi0,     // numubar NC 1 pi0 + 1 pi+/-
+   kmNuMuBarNC2piC,       // numubar NC 2 pi+/-
+   kmNuMuBarNC2pi0,       // numubar NC 2 pi0
+   kmNuMuBarNCpiCpi0,     // numubar NC 1 pi0 + 1 pi+/-
    kmNuMuBarNCcoh,        // numubar NC coherent
    kmNuMuBarNC1Gamma,     // numubar NC 1 gamma
    kmNuMuBarNCELScat,     // numubar + e- -> numubar + e- NC elastic scattering
@@ -93,13 +93,13 @@ typedef enum EReacMode
    kmNuECCMpi,            // nue     CC multi pi (>1 pion of any charge(s))
    kmNuECCmisc,           // nue     CC miscellaneous modes that require separate treatment to CC other
    kmNuECCoth,            // nue     CC other
-//   kmNuENCEL,             // nue     NC EL
-//   kmNuENCMEC,            // nue     NC MEC
+   kmNuENCEL,             // nue     NC EL
+   kmNuENCMEC,            // nue     NC MEC
    kmNuENC1piC,           // nue     NC 1 pi+/-
    kmNuENC1pi0,           // nue     NC 1 pi0
-//   kmNuENC2piC,           // nue     NC 2 pi+/-
-//   kmNuENC2pi0,           // nue     NC 2 pi0
-//   kmNuENCpiCpi0,         // nue     NC 1 pi0 + 1 pi+/-
+   kmNuENC2piC,           // nue     NC 2 pi+/-
+   kmNuENC2pi0,           // nue     NC 2 pi0
+   kmNuENCpiCpi0,         // nue     NC 1 pi0 + 1 pi+/-
    kmNuENCcoh,            // nue     NC coherent
    kmNuENC1Gamma,         // nue     NC 1 gamma
    kmNuEELScat,           // nue + e- -> nue + e- NC+CC+interference elastic scattering
@@ -117,13 +117,13 @@ typedef enum EReacMode
    kmNuEBarCCMpi,         // nuebar  CC multi pi (>1 pion of any charge(s))
    kmNuEBarCCmisc,        // nuebar  CC miscellaneous modes that require separate treatment to CC other
    kmNuEBarCCoth,         // nuebar  CC other
-//   kmNuEBarNCEL,          // nuebar  NC EL
-//   kmNuEBarNCMEC,         // nuebar  NC MEC
+   kmNuEBarNCEL,          // nuebar  NC EL
+   kmNuEBarNCMEC,         // nuebar  NC MEC
    kmNuEBarNC1piC,        // nuebar  NC 1 pi+/-
    kmNuEBarNC1pi0,        // nuebar  NC 1 pi0
-//   kmNuEBarNC2piC,        // nuebar  NC 2 pi+/-
-//   kmNuEBarNC2pi0,        // nuebar  NC 2 pi0
-//   kmNuEBarNCpiCpi0,      // nuebar  NC 1 pi0 + 1 pi+/-
+   kmNuEBarNC2piC,        // nuebar  NC 2 pi+/-
+   kmNuEBarNC2pi0,        // nuebar  NC 2 pi0
+   kmNuEBarNCpiCpi0,      // nuebar  NC 1 pi0 + 1 pi+/-
    kmNuEBarNCcoh,         // nuebar  NC coherent
    kmNuEBarNC1Gamma,      // nuebar  NC 1 gamma
    kmNuEBarELScat,        // nuebar + e- -> nuebar + e- NC+CC+interference elastic scattering
@@ -297,13 +297,13 @@ static const ReacType_t kReacModeToType[kNReacModes] =
    /*   kmNuMuCCMpi         */ kmtCCMpi    ,
    /*   kmNuMuCCmisc        */ kmtCCmisc   ,
    /*   kmNuMuCCoth         */ kmtCCoth    ,
-// /*   kmNuMuNCEL          */ kmtNCEL     ,
-// /*   kmNuMuNCMEC         */ kmtNCMEC    ,
+   /*   kmNuMuNCEL          */ kmtNCEL     ,
+   /*   kmNuMuNCMEC         */ kmtNCMEC    ,
    /*   kmNuMuNC1piC        */ kmtNC1piC   ,
    /*   kmNuMuNC1pi0        */ kmtNC1pi0   ,
-// /*   kmNuMuNC2piC        */ kmtNC2piC   ,
-// /*   kmNuMuNC2pi0        */ kmtNC2pi0   ,
-// /*   kmNuMuNCpiCpi0      */ kmtNCpiCpi0 ,
+   /*   kmNuMuNC2piC        */ kmtNC2piC   ,
+   /*   kmNuMuNC2pi0        */ kmtNC2pi0   ,
+   /*   kmNuMuNCpiCpi0      */ kmtNCpiCpi0 ,
    /*   kmNuMuNCcoh         */ kmtNCcoh    ,
    /*   kmNuMuN1Gamma       */ kmtNC1Gamma ,
    /*   kmNuMuNCELScat      */ kmtNCELScat ,
@@ -321,13 +321,13 @@ static const ReacType_t kReacModeToType[kNReacModes] =
    /*   kmNuMuBarCCMpi      */ kmtCCMpi    ,
    /*   kmNuMuBarCCmisc     */ kmtCCmisc   ,
    /*   kmNuMuBarCCoth      */ kmtCCoth    ,
-// /*   kmNuMuBarNCEL       */ kmtNCEL     ,
-// /*   kmNuMuBarNCMEC      */ kmtNCMEC    ,
+   /*   kmNuMuBarNCEL       */ kmtNCEL     ,
+   /*   kmNuMuBarNCMEC      */ kmtNCMEC    ,
    /*   kmNuMuBarNC1piC     */ kmtNC1piC   ,
    /*   kmNuMuBarNC1pi0     */ kmtNC1pi0   ,
-// /*   kmNuMuBarNC2piC     */ kmtNC2piC   ,
-// /*   kmNuMuBarNC2pi0     */ kmtNC2pi0   ,
-// /*   kmNuMuBarNCpiCpi0   */ kmtNCpiCpi0 ,
+   /*   kmNuMuBarNC2piC     */ kmtNC2piC   ,
+   /*   kmNuMuBarNC2pi0     */ kmtNC2pi0   ,
+   /*   kmNuMuBarNCpiCpi0   */ kmtNCpiCpi0 ,
    /*   kmNuMuBarNCcoh      */ kmtNCcoh    ,
    /*   kmNuMuBarNC1Gamma   */ kmtNC1Gamma ,
    /*   kmNuMuBarNCELScat   */ kmtNCELScat ,
@@ -344,13 +344,13 @@ static const ReacType_t kReacModeToType[kNReacModes] =
    /*   kmNuECCMpi          */ kmtCCMpi    ,
    /*   kmNuECCmisc         */ kmtCCmisc   ,
    /*   kmNuECCoth          */ kmtCCoth    ,
-// /*   kmNuENCEL           */ kmtNCEL     ,
-// /*   kmNuENCMEC          */ kmtNCMEC    ,
+   /*   kmNuENCEL           */ kmtNCEL     ,
+   /*   kmNuENCMEC          */ kmtNCMEC    ,
    /*   kmNuENC1piC         */ kmtNC1piC   ,
    /*   kmNuENC1pi0         */ kmtNC1pi0   ,
-// /*   kmNuENC2piC         */ kmtNC2piC   ,
-// /*   kmNuENC2pi0         */ kmtNC2pi0   ,
-// /*   kmNuENCpiCpi0       */ kmtNCpiCpi0 ,
+   /*   kmNuENC2piC         */ kmtNC2piC   ,
+   /*   kmNuENC2pi0         */ kmtNC2pi0   ,
+   /*   kmNuENCpiCpi0       */ kmtNCpiCpi0 ,
    /*   kmNuENCcoh          */ kmtNCcoh    ,
    /*   kmNuENC1Gamma       */ kmtNC1Gamma ,
    /*   kmNuEELScat         */ kmtELScat   ,
@@ -368,13 +368,13 @@ static const ReacType_t kReacModeToType[kNReacModes] =
    /*   kmNuEBarCCMpi       */ kmtCCMpi    ,
    /*   kmNuEBarCCmisc      */ kmtCCmisc   ,
    /*   kmNuEBarCCoth       */ kmtCCoth    ,
-// /*   kmNuEBarNCEL        */ kmtNCEL     ,
-// /*   kmNuEBarNCMEC       */ kmtNCMEC    ,
+   /*   kmNuEBarNCEL        */ kmtNCEL     ,
+   /*   kmNuEBarNCMEC       */ kmtNCMEC    ,
    /*   kmNuEBarNC1piC      */ kmtNC1piC   ,
    /*   kmNuEBarNC1pi0      */ kmtNC1pi0   ,
-// /*   kmNuEBarNC2piC      */ kmtNC2piC   ,
-// /*   kmNuEBarNC2pi0      */ kmtNC2pi0   ,
-// /*   kmNuEBarNCpiCpi0    */ kmtNCpiCpi0 ,
+   /*   kmNuEBarNC2piC      */ kmtNC2piC   ,
+   /*   kmNuEBarNC2pi0      */ kmtNC2pi0   ,
+   /*   kmNuEBarNCpiCpi0    */ kmtNCpiCpi0 ,
    /*   kmNuEBarNCcoh       */ kmtNCcoh    ,
    /*   kmNuEBarNC1Gamma    */ kmtNC1Gamma ,
    /*   kmNuEBarELScat      */ kmtELScat   ,
@@ -507,13 +507,13 @@ static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
    /*   kmNuMuCCMpi         */ kNuMu    ,
    /*   kmNuMuCCmisc        */ kNuMu    ,
    /*   kmNuMuCCoth         */ kNuMu    ,
-// /*   kmNuMuNCEL          */ kNuMu    ,
-// /*   kmNuMuNCMEC         */ kNuMu    ,
+   /*   kmNuMuNCEL          */ kNuMu    ,
+   /*   kmNuMuNCMEC         */ kNuMu    ,
    /*   kmNuMuNC1piC        */ kNuMu    ,
    /*   kmNuMuNC1pi0        */ kNuMu    ,
-// /*   kmNuMuNC2piC        */ kNuMu    ,
-// /*   kmNuMuNC2pi0        */ kNuMu    ,
-// /*   kmNuMuNCpiCpi0      */ kNuMu    ,
+   /*   kmNuMuNC2piC        */ kNuMu    ,
+   /*   kmNuMuNC2pi0        */ kNuMu    ,
+   /*   kmNuMuNCpiCpi0      */ kNuMu    ,
    /*   kmNuMuNCcoh         */ kNuMu    ,
    /*   kmNuMuNC1Gamma      */ kNuMu    ,
    /*   kmNuMuNCELScat      */ kNuMu    ,
@@ -531,13 +531,13 @@ static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
    /*   kmNuMuBarCCMpi      */ kNuMuBar ,
    /*   kmNuMuBarCCmisc     */ kNuMuBar ,
    /*   kmNuMuBarCCoth      */ kNuMuBar ,
-// /*   kmNuMuBarNCEL       */ kNuMuBar ,
-// /*   kmNuMuBarNCMEC      */ kNuMuBar ,
+   /*   kmNuMuBarNCEL       */ kNuMuBar ,
+   /*   kmNuMuBarNCMEC      */ kNuMuBar ,
    /*   kmNuMuBarNC1piC     */ kNuMuBar ,
    /*   kmNuMuBarNC1pi0     */ kNuMuBar ,
-// /*   kmNuMuBarNC2piC     */ kNuMuBar ,
-// /*   kmNuMuBarNC2pi0     */ kNuMuBar ,
-// /*   kmNuMuBarNCpiCpi0   */ kNuMuBar ,
+   /*   kmNuMuBarNC2piC     */ kNuMuBar ,
+   /*   kmNuMuBarNC2pi0     */ kNuMuBar ,
+   /*   kmNuMuBarNCpiCpi0   */ kNuMuBar ,
    /*   kmNuMuBarNCcoh      */ kNuMuBar ,
    /*   kmNuMuBarNC1Gamma   */ kNuMuBar ,
    /*   kmNuMuBarNCELScat   */ kNuMuBar ,
@@ -554,13 +554,13 @@ static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
    /*   kmNuECCMpi          */ kNuE     ,
    /*   kmNuECCmisc         */ kNuE     ,
    /*   kmNuECCoth          */ kNuE     ,
-// /*   kmNuENCEL           */ kNuE     ,
-// /*   kmNuENCMEC          */ kNuE     ,
+   /*   kmNuENCEL           */ kNuE     ,
+   /*   kmNuENCMEC          */ kNuE     ,
    /*   kmNuENC1piC         */ kNuE     ,
    /*   kmNuENC1pi0         */ kNuE     ,
-// /*   kmNuENC2piC         */ kNuE     ,
-// /*   kmNuENC2pi0         */ kNuE     ,
-// /*   kmNuENCpiCpi0       */ kNuE     ,
+   /*   kmNuENC2piC         */ kNuE     ,
+   /*   kmNuENC2pi0         */ kNuE     ,
+   /*   kmNuENCpiCpi0       */ kNuE     ,
    /*   kmNuENCcoh          */ kNuE     ,
    /*   kmNuENC1Gamma       */ kNuE     ,
    /*   kmNuEELScat         */ kNuE     ,
@@ -578,13 +578,13 @@ static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
    /*   kmNuEBarCCMpi       */ kNuEBar  ,
    /*   kmNuEBarCCmisc      */ kNuEBar  ,
    /*   kmNuEBarCCoth       */ kNuEBar  ,
-// /*   kmNuEBarNCEL        */ kNuEBar  ,
-// /*   kmNuEBarNCMEC       */ kNuEBar  ,
+   /*   kmNuEBarNCEL        */ kNuEBar  ,
+   /*   kmNuEBarNCMEC       */ kNuEBar  ,
    /*   kmNuEBarNC1piC      */ kNuEBar  ,
    /*   kmNuEBarNC1pi0      */ kNuEBar  ,
-// /*   kmNuEBarNC2piC      */ kNuEBar  ,
-// /*   kmNuEBarNC2pi0      */ kNuEBar  ,
-// /*   kmNuEBarNCpiCpi0    */ kNuEBar  ,
+   /*   kmNuEBarNC2piC      */ kNuEBar  ,
+   /*   kmNuEBarNC2pi0      */ kNuEBar  ,
+   /*   kmNuEBarNCpiCpi0    */ kNuEBar  ,
    /*   kmNuEBarNCcoh       */ kNuEBar  ,
    /*   kmNuEBarNC1Gamma    */ kNuEBar  ,
    /*   kmNuEBarELScat      */ kNuEBar  ,
@@ -695,7 +695,7 @@ static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCMpi        */ kNuTauBar    ,
    /*   kmNuEBarToNuTauBarCCmisc       */ kNuTauBar    ,
    /*   kmNuEBarToNuTauBarCCoth        */ kNuTauBar    ,
-   /*   kmCosmic                       */ kNuFlavourUndefined,
+   /*   kmCosmic                       */ kCosmic      ,
    /*   kmDirt                         */ kNuFlavourUndefined,
 // /*   kmOther             */ kNuFlavourUndefined
 };
@@ -716,13 +716,13 @@ static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
    /*   kmNuMuCCMpi         */ kNuMu    ,
    /*   kmNuMuCCmisc        */ kNuMu    ,
    /*   kmNuMuCCoth         */ kNuMu    ,
-// /*   kmNuMuNCEL          */ kNuMu    ,
-// /*   kmNuMuNCMEC         */ kNuMu    ,
+   /*   kmNuMuNCEL          */ kNuMu    ,
+   /*   kmNuMuNCMEC         */ kNuMu    ,
    /*   kmNuMuNC1piC        */ kNuMu    ,
    /*   kmNuMuNC1pi0        */ kNuMu    ,
-// /*   kmNuMuNC2piC        */ kNuMu    ,
-// /*   kmNuMuNC2pi0        */ kNuMu    ,
-// /*   kmNuMuNCpiCpi0      */ kNuMu    ,
+   /*   kmNuMuNC2piC        */ kNuMu    ,
+   /*   kmNuMuNC2pi0        */ kNuMu    ,
+   /*   kmNuMuNCpiCpi0      */ kNuMu    ,
    /*   kmNuMuNCcoh         */ kNuMu    ,
    /*   kmNuMuNC1Gamma      */ kNuMu    ,
    /*   kmNuMuNCELScat      */ kNuMu    ,
@@ -740,13 +740,13 @@ static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
    /*   kmNuMuBarCCMpi      */ kNuMuBar ,
    /*   kmNuMuBarCCmisc     */ kNuMuBar ,
    /*   kmNuMuBarCCoth      */ kNuMuBar ,
-// /*   kmNuMuBarNCEL       */ kNuMuBar ,
-// /*   kmNuMuBarNCMEC      */ kNuMuBar ,
+   /*   kmNuMuBarNCEL       */ kNuMuBar ,
+   /*   kmNuMuBarNCMEC      */ kNuMuBar ,
    /*   kmNuMuBarNC1piC     */ kNuMuBar ,
    /*   kmNuMuBarNC1pi0     */ kNuMuBar ,
-// /*   kmNuMuBarNC2piC     */ kNuMuBar ,
-// /*   kmNuMuBarNC2pi0     */ kNuMuBar ,
-// /*   kmNuMuBarNCpiCpi0   */ kNuMuBar ,
+   /*   kmNuMuBarNC2piC     */ kNuMuBar ,
+   /*   kmNuMuBarNC2pi0     */ kNuMuBar ,
+   /*   kmNuMuBarNCpiCpi0   */ kNuMuBar ,
    /*   kmNuMuBarNCcoh      */ kNuMuBar ,
    /*   kmNuMuBarNC1Gamma   */ kNuMuBar ,
    /*   kmNuMuBarNCELScat   */ kNuMuBar ,
@@ -763,13 +763,13 @@ static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
    /*   kmNuECCMpi          */ kNuE     ,
    /*   kmNuECCmisc         */ kNuE     ,
    /*   kmNuECCoth          */ kNuE     ,
-// /*   kmNuENCEL           */ kNuE     ,
-// /*   kmNuENCMEC          */ kNuE     ,
+   /*   kmNuENCEL           */ kNuE     ,
+   /*   kmNuENCMEC          */ kNuE     ,
    /*   kmNuENC1piC         */ kNuE     ,
    /*   kmNuENC1pi0         */ kNuE     ,
-// /*   kmNuENC2piC         */ kNuE     ,
-// /*   kmNuENC2pi0         */ kNuE     ,
-// /*   kmNuENCpiCpi0       */ kNuE     ,
+   /*   kmNuENC2piC         */ kNuE     ,
+   /*   kmNuENC2pi0         */ kNuE     ,
+   /*   kmNuENCpiCpi0       */ kNuE     ,
    /*   kmNuENCcoh          */ kNuE     ,
    /*   kmNuENC1Gamma       */ kNuE     ,
    /*   kmNuEELScat         */ kNuE     ,
@@ -787,13 +787,13 @@ static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
    /*   kmNuEBarCCMpi       */ kNuEBar  ,
    /*   kmNuEBarCCmisc      */ kNuEBar  ,
    /*   kmNuEBarCCoth       */ kNuEBar  ,
-// /*   kmNuEBarNCEL        */ kNuEBar  ,
-// /*   kmNuEBarNCMEC       */ kNuEBar  ,
+   /*   kmNuEBarNCEL        */ kNuEBar  ,
+   /*   kmNuEBarNCMEC       */ kNuEBar  ,
    /*   kmNuEBarNC1piC      */ kNuEBar  ,
    /*   kmNuEBarNC1pi0      */ kNuEBar  ,
-// /*   kmNuEBarNC2piC      */ kNuEBar  ,
-// /*   kmNuEBarNC2pi0      */ kNuEBar  ,
-// /*   kmNuEBarNCpiCpi0    */ kNuEBar  ,
+   /*   kmNuEBarNC2piC      */ kNuEBar  ,
+   /*   kmNuEBarNC2pi0      */ kNuEBar  ,
+   /*   kmNuEBarNCpiCpi0    */ kNuEBar  ,
    /*   kmNuEBarNCcoh       */ kNuEBar  ,
    /*   kmNuEBarNC1Gamma    */ kNuEBar  ,
    /*   kmNuEBarELScat      */ kNuEBar  ,
@@ -904,7 +904,7 @@ static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCMpi        */ kNuEBar    ,
    /*   kmNuEBarToNuTauBarCCmisc       */ kNuEBar    ,
    /*   kmNuEBarToNuTauBarCCoth        */ kNuEBar    ,
-   /*   kmCosmic                       */ kNuFlavourUndefined,
+   /*   kmCosmic                       */ kCosmic    ,
    /*   kmDirt                         */ kNuFlavourUndefined,
 // /*   kmOther             */ kNuFlavourUndefined
 };

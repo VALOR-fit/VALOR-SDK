@@ -103,6 +103,9 @@ public:
   const valor::ModeList * GetModeList(Option_t * opt = "") const;
   const std::vector<conv::ReacMode_t> GetReactionModes(Option_t * opt = "") const;
   
+  // Get MC DST
+  TTree * GetDST() const;
+
   // Get POT
   const double & GetPOT() const;
 
@@ -212,6 +215,9 @@ private:
   // Name of the config file read
   std::string fConfigFileRead;
 
+  // For directly accessing DST Tree if needed
+  TTree * fMCDST;
+
   // Input VALOR MC DSTs
   bool fUseMCDST;
 
@@ -285,6 +291,7 @@ private:
   
   // Binning
   SingleSampleKineBinning * fBinning;
+  bool fSingleTrueBinning;
   
   // The list of reaction modes we're using
   ModeList* fML;
@@ -312,7 +319,7 @@ private:
   // and the actual variations
   // param name, mode(nmodes)->universe variations(reco,true,universe)
   std::map<std::string,std::vector<VALORArrayF> > fUniverseVariations;
-
+  std::vector<VALORArrayF> fUniverseVariationProducts;
 
   // Vector of tuning hists and the apply masks and kine vars that they should be used for
   std::vector<TuningInfo> fEventByEventTuningHists;

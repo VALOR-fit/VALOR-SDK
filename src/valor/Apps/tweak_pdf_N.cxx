@@ -19,6 +19,7 @@
 
              --load-prior-from-file : Option for file to give constrained prior matrix [ use default prior ]
              --prior-fit-number     : Option to specify the entry in the tree for above file [ 0 ]
+             --mean,nominal         : Option to calculate the standard deviation from the mean value or the nominal value, default nominal
 
              [--nthreads ]         : Number of CPU threads to use [ std::thread::hardware_concurrency ]
 
@@ -78,7 +79,7 @@ const double enu_reco_max = 10;
 
 const char * fit_result_tree_name = "valor_fit_ntp";
 
-const KineVar_t kv = conv::kvEreco;
+//const KineVar_t kv = conv::kvEreco;
 
 int main(int argc, char ** argv)
 {
@@ -95,6 +96,20 @@ int main(int argc, char ** argv)
   string fplopt           = arg.GetString("fit-param-opt");
   string output_rootfile  = arg.GetString("output");
   string params_to_tweak  = arg.GetString("params");
+  string kine_var         = arg.GetString("kinevar");
+  bool mean               = arg.GetBool("mean");
+  string detector         = arg.GetString("detector");
+
+  // Should we check the detector in the config?
+  bool checkDetector = false;
+  Detector_t d = kdUndefined;
+  if(detector != "none" && detector != "-"){
+    checkDetector = true;
+    d = util::DetectorFromString(detector);
+  }
+
+  // Get the kinematic variable we're tweaking
+  const KineVar_t kv = util::KineVarFromString(kine_var);
 
   string read_prior_from_file = arg.GetString("load-prior-from-file");
   int prior_fit_number = arg.GetInt("prior-fit-number");
@@ -182,8 +197,8 @@ int main(int argc, char ** argv)
     if (fp->Exists(conv::kPhypDm23sq  )) { fp->Update(conv::kPhypDm23sq  ,dm23sq  ); }
     if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
 
-
     model->ResetSystematics(*fp, "all");
+    
     // Randomise the systematics in the model, and copy them to the FPL
     std::vector<PhysParamId_t> param_set = util::GetParameterSet(params_to_tweak);
     std::map<PhysParamId_t,bool> param_map;
@@ -240,13 +255,36 @@ int main(int argc, char ** argv)
     err_m1.back()->Reset();
     err_p1.back()->Reset();
     for(int ebin = 1; ebin <= nom_pdf[imodel]->GetNbinsX(); ebin++) {
-       double nom_val = nom_pdf[imodel]->GetBinContent(ebin);
-       double sumsq   = 0;
+       double nom_val   = nom_pdf[imodel]->GetBinContent(ebin);
+       double one_sigma = 1.;
+       double sumsq     = 0;
+       double mean_val      = 0.;
+
+       if(mean){
+         for(int itoy = 0; itoy < ntoys; itoy++) {
+           mean_val += twk_pdf[imodel][itoy]->GetBinContent(ebin);
+         }
+       }
+       mean = mean/static_cast<double>(ntoys);
        for(int itoy = 0; itoy < ntoys; itoy++) {
           double curr_val = twk_pdf[imodel][itoy]->GetBinContent(ebin);
-          sumsq += TMath::Power(curr_val-nom_val,2.);
+          if(mean){
+            if(mean_val<std::numeric_limits<double>::epsilon()){
+              LOG("valor",pERROR) << " Trying to divide by a mean value of 0, reverting to nominal";
+              sumsq += TMath::Power(curr_val-nom_val,2.);
+              LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+            }
+            else{
+              sumsq += TMath::Power(curr_val-mean_val,2.);
+              LOG("valor",pINFO) << " Calculating the standard deviation using the mean";
+            }
+          }
+          else{
+            sumsq += TMath::Power(curr_val-nom_val,2.);
+            LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+          }
        }//itoy
-       double one_sigma = TMath::Sqrt(sumsq/ntoys);
+       one_sigma = TMath::Sqrt(sumsq/static_cast<double>(ntoys));
        err_p1[imodel]->SetBinContent(ebin, nom_val + one_sigma);
        err_m1[imodel]->SetBinContent(ebin, nom_val - one_sigma);
        nom_pdf_werr [imodel] -> SetBinError(ebin,one_sigma);
@@ -267,6 +305,7 @@ int main(int argc, char ** argv)
 
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
     SingleSampleFitModelABC * this_model = dynamic_cast<SingleSampleFitModelABC*>(cm->GetSubModel(imodel));
+    if(checkDetector && d != this_model->GetDetector()) continue;
     BeamConf_t b = this_model->GetBeam();
     Sample_t   s = this_model->GetSample();
     //~ ic++;

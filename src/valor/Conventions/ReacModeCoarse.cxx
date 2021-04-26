@@ -75,6 +75,7 @@ string util::AsString(ReacModeCoarse_t m)
     case (kmcNuEBarNC       ) : return "nuebarNC";        break;
     case (kmcNuTauNuTauBarCC) : return "nutaunutaubarCC"; break;
     case (kmcNC             ) : return "NC";              break;
+    case (kmcNC0pi          ) : return "NC0pi";           break;
     case (kmcNC1piC         ) : return "NC1piC";          break;
     case (kmcNC1pi0         ) : return "NC1pi0";          break;
     case (kmcNCoth          ) : return "NCoth";           break;
@@ -153,6 +154,7 @@ string util::AsStringTex(ReacModeCoarse_t m, bool root)
     case (kmcNuEBarNC       ) : name = "#bar{#nu}_{e} NC";            break;
     case (kmcNuTauNuTauBarCC) : name = "#nu_{#tau}/#bar{#nu}_{#tau} CC";  break;
     case (kmcNC             ) : name = "NC";                          break;
+    case (kmcNC0pi          ) : name = "NC 0#pi^{#pm,0}";             break;
     case (kmcNC1piC         ) : name = "NC 1#pi^{#pm}";               break;
     case (kmcNC1pi0         ) : name = "NC 1#pi^{0}";                 break;
     case (kmcNCoth          ) : name = "NC other";                    break;

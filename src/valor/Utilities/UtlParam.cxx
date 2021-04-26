@@ -159,11 +159,13 @@ std::vector<PhysParamId_t> util::GetParameterSet(std::string set_name_in, conv::
         if((!only_exact_match && param.GetName().find(set_name) != string::npos) ||                    // Search param name (search for sub-string, not exact match)
            param.SearchCategories(set_name) ||                                                         // Search param category for a direct match
            // Special cases:
-           (set_name == "ndflux"  && param.SearchCategories("nd") && param.SearchCategories("flux") ) ||  // ND flux
-           (set_name == "fdflux"  && param.SearchCategories("fd") && param.SearchCategories("flux") ) ||  // FD flux
-           (set_name == "nddet"   && param.SearchCategories("nd") && param.SearchCategories("det")  ) ||  // ND Detector
-           (set_name == "fddet"   && param.SearchCategories("fd") && param.SearchCategories("det")  ) ||  // FD Detector
-           (set_name == "allsyst" && util::IsSystematic(param.GetID()))                                  // All systematic params
+           (set_name == "ndflux"         && param.SearchCategories("nd") && param.SearchCategories("flux") )  ||  // ND flux
+           (set_name == "ndfluxnumu"     && param.SearchCategories("nd") && param.SearchCategories("flux")  && param.SearchCategories("numu"))  ||  // ND flux
+           (set_name == "fdflux"         && param.SearchCategories("fd") && param.SearchCategories("flux") )  ||  // FD flux
+           (set_name == "nddet"          && param.SearchCategories("nd") && param.SearchCategories("det")  )  ||  // ND Detector
+           (set_name == "fddet"          && param.SearchCategories("fd") && param.SearchCategories("det")  )  ||  // FD Detector
+           (set_name == "allxsecsplines" && param.SearchCategories("int") && param.SearchCategories("splines")  )  ||  // FD Detector
+           (set_name == "allsyst"        && util::IsSystematic(param.GetID()))                                  // All systematic params
           ) {
           vec_to_append.push_back(param.GetID());
         }
