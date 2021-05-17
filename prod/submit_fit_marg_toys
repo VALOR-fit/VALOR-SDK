@@ -116,8 +116,6 @@ foreach (@ARGV) {
   elsif($_ eq '--min-par2'           ) { $min_par2            = $ARGV[$iarg+1]; }
   elsif($_ eq '--max-par1'           ) { $max_par1            = $ARGV[$iarg+1]; }
   elsif($_ eq '--max-par2'           ) { $max_par2            = $ARGV[$iarg+1]; }
-  elsif($_ eq '--npt-job-par1'       ) { $npt_job_par1        = $ARGV[$iarg+1]; }
-  elsif($_ eq '--npt-job-par2'       ) { $npt_job_par2        = $ARGV[$iarg+1]; }
   elsif($_ eq '--osc-prior-file'     ) { $osc_prior_file      = $ARGV[$iarg+1]; }
   elsif($_ eq '--syst-prior-file'    ) { $syst_prior_file     = $ARGV[$iarg+1]; }
   elsif($_ eq '--gen-fakedata'       ) { $gen_fakedata        = $ARGV[$iarg+1]; }
@@ -191,8 +189,6 @@ $gen_fakedata        = 1                                                        
 $ntoys_fakedata      = 1                                                                   unless defined $ntoys_fakedata;
 $start_toy_fakedata  = 0                                                                   unless defined $start_toy_fakedata;
 $data_file           = "-"                                                                 unless defined $data_file;
-$npt_job_par1        = 1                                                                   unless (defined $npt_job_par1 || $use_t2k_presets == 1);
-$npt_job_par2        = 1                                                                   unless (defined $npt_job_par2 || $use_t2k_presets == 1);
 $fit_param_list      = "3f_osc"                                                            unless defined $fit_param_list;
 $fit_param_opt       = "NONE"                                                              unless defined $fit_param_opt;
 $param_values_option = "randomize-all\\;prefit-errors"                                     unless defined $param_values_option;
@@ -224,12 +220,11 @@ if($par2 eq "") {
 	$min_par2     = 0.;
 	$max_par2     = 0.;
 	$npt_par2     = 1;
-	$npt_job_par2 = 1;
 }
 
 # Add the parameters of interest to the file tag
 $tag_prefix = "${tag_prefix}_${par1}";
-if($par2 != "") {
+if($par2 ne "") {
 	$tag_prefix = "${tag_prefix}_${par2}";
 }
 
@@ -243,7 +238,7 @@ if($use_t2k_presets == 1) {
 
   # Are we using a reactor constraint or not?
   $use_reactors = 1;
-  if (index($prior_file, "reactor") == -1) {
+  if (index($osc_prior_file, "reactor") == -1) {
 		$use_reactors = 0;
 		$tag_prefix = "${tag_prefix}_t2k";
 	}
@@ -262,8 +257,8 @@ if($use_t2k_presets == 1) {
 	      "--fix-at-dm23sq 2.509E-3 " .
         "--fix-at-dm12sq 7.53E-5 " .
         "--fix-at-mixing23 0.528 " .
-        "--fix-at-mixing13 0.0212 " .
-        "--fix-at-mixing12 0.304 " .
+        "--fix-at-mixing13 0.0218 " .
+        "--fix-at-mixing12 0.307 " .
         "--fix-at-cpv -1.601 ";
       $mixparamoctant  = "two";
 	  }
@@ -272,11 +267,31 @@ if($use_t2k_presets == 1) {
         "--fix-at-dm23sq 2.509E-3 " .
         "--fix-at-dm12sq 7.53E-5 " .
         "--fix-at-mixing23 0.45 " .
-        "--fix-at-mixing13 0.0212 " .
-        "--fix-at-mixing12 0.304 " .
+        "--fix-at-mixing13 0.0218 " .
+        "--fix-at-mixing12 0.307 " .
         "--fix-at-cpv 0. ";
       $mixparamoctant  = "one";
 	  }
+	  elsif($param_set eq "T2K_run10_data_wRC_NO_BF") {
+			$fake_data_args = "" .
+				"--fix-at-dm23sq 0.002488 " .
+				"--fix-at-dm12sq 7.53E-5 " .
+				"--fix-at-mixing23 0.555 " .
+				"--fix-at-mixing13 0.021825 " .
+				"--fix-at-mixing12 0.307 " .
+				"--fix-at-cpv -2.0106 ";
+			$mixparamoctant  = "two";
+		}
+		elsif($param_set eq "T2K_run10_data_wRC_IO_BF") {
+			$fake_data_args = "" .
+				"--fix-at-dm23sq 0.002452 " .
+				"--fix-at-dm12sq 7.53E-5 " .
+				"--fix-at-mixing23 0.555 " .
+				"--fix-at-mixing13 0.0220875 " .
+				"--fix-at-mixing12 0.307 " .
+				"--fix-at-cpv -1.3823 ";
+			$mixparamoctant  = "two";
+		}
 	  else {
 	  	print "ERROR: Unrecognised param set [$param_set]. Exiting.";
       exit;
@@ -298,7 +313,6 @@ if($use_t2k_presets == 1) {
     $npt_par1       = 2           unless defined $npt_par1;
     $min_par1       = 0           unless defined $min_par1;
     $max_par1       = 1           unless defined $max_par1;
-    $npt_job_par1   = 1           unless defined $npt_job_par1;
     $marg_hierarchy = 1           unless defined $marg_hierarchy;
   } # 1D beta
 
@@ -324,7 +338,6 @@ if($use_t2k_presets == 1) {
 		$npt_par1        = 101                      unless defined $npt_par1;
 		$min_par1        = -3.14159265358979312e+00 unless defined $min_par1;
 		$max_par1        = +3.14159265358979312e+00 unless defined $max_par1;
-		$npt_job_par1    = 1                        unless defined $npt_job_par1;
 	} # 1D CPV
 
   # 1D fit - sinsqth13
@@ -341,11 +354,10 @@ if($use_t2k_presets == 1) {
     $cput         = "00:15:00" unless defined $cput;
     $mem          = "2500M"    unless defined $mem;
 		$npt_par1     = 101        unless defined $npt_par1;
-		$npt_job_par1 = 1          unless defined $npt_job_par1;
 	} # 1D sinsqth13
 
 	# 1D fit - sinsqth23
-	if(($par1 eq "mixing12") and ($par2 eq "")) {
+	if(($par1 eq "mixing23") and ($par2 eq "")) {
 		if($use_reactors == 1) {
 			$nmargtoy   = 40000      unless defined $nmargtoy;
 			$cput       = "00:15:00" unless defined $cput;
@@ -359,11 +371,10 @@ if($use_t2k_presets == 1) {
 		$npt_par1     = 101        unless defined $npt_par1;
 		$min_par1     = 0.3        unless defined $min_par1;
 		$max_par1     = 0.7        unless defined $max_par1;
-		$npt_job_par1 = 1          unless defined $npt_job_par1;
 	} # 1D sinsqth23
 
-	# 1D fit - dmsq23
-	if(($par1 eq "dmsq23") and ($par2 eq "")) {
+	# 1D fit - dm23sq
+	if(($par1 eq "dm23sq") and ($par2 eq "")) {
 		if($use_reactors == 1) {
 			$nmargtoy   = 40000       unless defined $nmargtoy;
 			$cput       = "00:45:00"  unless defined $cput;
@@ -377,12 +388,11 @@ if($use_t2k_presets == 1) {
 		$npt_par1     = 101         unless defined $npt_par1;
 		$min_par1     = 2.2e-3      unless defined $min_par1;
 		$max_par1     = 2.8e-3      unless defined $max_par1;
-		$npt_job_par1 = 1           unless defined $npt_job_par1;
-	} # 1D dmsq23
+	} # 1D dm23sq
 
 	# 2D fit - sinsqth13 vs. CPV
 	if( (($par1 eq "cpv") and ($par2 eq "mixing13")) or (($par1 eq "mixing13") and ($par2 eq "cpv")) ) {
-	  if($par1 eq "deltacp") {
+	  if($par1 eq "cpv") {
 	 	  $par1 = "mixing13";
 	 	  $par2 = "cpv";
 	  }
@@ -397,20 +407,18 @@ if($use_t2k_presets == 1) {
       $max_par1   = 0.053                    unless defined $max_par1;
 		}
 		$npt_par1     = 81                       unless defined $npt_par1;
-		$npt_job_par1 = 4                        unless defined $npt_job_par1;
 		$min_par2     = -3.14159265358979312e+00 unless defined $min_par2;
     $max_par2     = +3.14159265358979312e+00 unless defined $max_par2;
     $npt_par2     = 51                       unless defined $npt_par2;
-    $npt_job_par2 = 3                        unless defined $npt_job_par2;
     $cput         = "05:00:00"               unless defined $cput;		# TODO: these default CPU time and memory for this fit was not set in the old analysis, so these are a guess
     $mem          = "3500M"                  unless defined $mem;
 	} # 2D sinsqth13 vs. CPV
 
-  # 2D fit - sinsqth23 vs. dmsq23
-	if( (($par1 eq "dmsq23") and ($par2 eq "mixing23")) or (($par1 eq "mixing23") and ($par2 eq "dmsq23")) ) {
-		if($par1 eq "dmsq23") {
+  # 2D fit - sinsqth23 vs. dm23sq
+	if( (($par1 eq "dm23sq") and ($par2 eq "mixing23")) or (($par1 eq "mixing23") and ($par2 eq "dm23sq")) ) {
+		if($par1 eq "dm23sq") {
 			$par1 = "mixing23";
-			$par2 = "dmsq23";
+			$par2 = "dm23sq";
 		}
 		if($use_reactors == 1) {
 			$nmargtoy   = 10000      unless defined $nmargtoy;
@@ -425,14 +433,12 @@ if($use_t2k_presets == 1) {
 		$npt_par1     = 81         unless defined $npt_par1;
 		$min_par1     = 0.3        unless defined $min_par1;
     $max_par1     = 0.7        unless defined $max_par1;
-		$npt_job_par1 = 4          unless defined $npt_job_par1;
 		$min_par2     = 2.2e-3     unless defined $min_par2;
 		$max_par2     = 2.8e-3     unless defined $max_par2;
 		$npt_par2     = 51         unless defined $npt_par2;
-		$npt_job_par2 = 3          unless defined $npt_job_par2;
 		$cput         = "03:00:00" unless defined $cput;
     $mem          = "3500M"    unless defined $mem;
-	} # 2D sinsqth23 vs. dmsq23
+	} # 2D sinsqth23 vs. dm23sq
 
 	# 2D fit - sinsqth23 vs. cpv
 	if( (($par1 eq "mixing23") and ($par2 eq "cpv")) or (($par1 eq "cpv") and ($par2 eq "mixing23")) ) {
@@ -453,11 +459,9 @@ if($use_t2k_presets == 1) {
 		$npt_par1     = 81                       unless defined $npt_par1;
 		$min_par1     = 0.3                      unless defined $min_par1;
 		$max_par1     = 0.7                      unless defined $max_par1;
-		$npt_job_par1 = 4                        unless defined $npt_job_par1;
 		$min_par2     = -3.14159265358979312e+00 unless defined $min_par2;
 		$max_par2     = +3.14159265358979312e+00 unless defined $max_par2;
 		$npt_par2     = 51                       unless defined $npt_par2;
-		$npt_job_par2 = 3                        unless defined $npt_job_par2;
 		$cput         = "03:00:00"               unless defined $cput;
     $mem          = "3500M"                  unless defined $mem;
 	} # 2D sinsqth23 vs. cpv
@@ -581,7 +585,7 @@ for($i_fc_par2 = $start_pt_fc_par2; $i_fc_par2 < $start_pt_fc_par2 + $npt_fc_par
         if($use_penalty_term   eq "mixing13")       { $arguments = "$arguments --use-penalty-term mixing13" }
          elsif($use_penalty_term   eq "mixing23")       { $arguments = "$arguments --use-penalty-term mixing23" }
          elsif($use_penalty_term   eq "mixing12")       { $arguments = "$arguments --use-penalty-term mixing12" }
-         elsif($use_penalty_term   eq "dmsq23")         { $arguments = "$arguments --use-penalty-term dmsq23"   }
+         elsif($use_penalty_term   eq "dm23sq")         { $arguments = "$arguments --use-penalty-term dm23sq"   }
          else{$arguments = "$arguments --use-penalty-term $use_penalty_term"}
 
 				$command = "$program $arguments";
@@ -674,8 +678,27 @@ for($i_fc_par2 = $start_pt_fc_par2; $i_fc_par2 < $start_pt_fc_par2 + $npt_fc_par
 					close(Slurm);
 					`sbatch $job_dir/${tag}.slurm`;
 				}
-
-        #
+				
+				#
+        			# IFIC 
+       				#
+        			if($resource eq "IFIC") {
+          				open(PBS, ">$job_dir/$tag-$irun.pbs") or die("Cannot create the PBS batch script");
+          				print PBS "#!/bin/bash \n";
+         				print PBS "#PBS -N $tag-$irun \n";
+          				print PBS "#PBS -l mem=$mem \n";
+         				print PBS "#PBS -q short \n"; # Max walltime of for long - 24h, in case of 2D fit use long4
+          				print PBS "#PBS -l nodes=1:ppn=1 \n"; #use only ppn=1 
+         				print PBS "#PBS -o $job_dir/$tag-$irun.pbs.out \n";
+          				print PBS "#PBS -e $job_dir/$tag-$irun.pbs.err \n";
+         				print PBS "cd $job_dir \n";
+          				print PBS "source $softw_dir/setup/setup_at_cvmfs_root6.sh $softw_dir $fmwk_dir\n";
+          				print PBS "$command \n";
+          				close(PBS);
+          				`qsub $job_dir/$tag-$irun.pbs`;
+        			}				
+				
+				#
 				# HTCondor @ RAL
 				#
 
@@ -706,6 +729,7 @@ for($i_fc_par2 = $start_pt_fc_par2; $i_fc_par2 < $start_pt_fc_par2 + $npt_fc_par
 				  "should_transfer_files    = YES \n".
 				  "when_to_transfer_output  = ON_EXIT \n".
 				  (ncores > 1 ? "request_cpus             = $ncores \n":"").
+				  "Requirements             = (Opsys =?= \"LINUX\") && (OpSysAndVer =?= \"CentOS7\") \n".
 				  "\nqueue\n";
 
 				  $cndfn = "$job_dir/${jobname}.condor";

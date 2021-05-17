@@ -86,6 +86,37 @@
 use File::Path;
 use Cwd 'abs_path';
 
+# These two arrays are for resubmitting failed jobs. Write the par1 and par2 point numbers below
+# and only the jobs for those points will be submitted.
+my @arr_pt1 = ();			# e.g. (5, 7, 30)
+my @arr_pt2 = ();
+
+# This array is also for resubmitting failed jobs, but in a slightly different way.
+# Supply the point numbers as par1point_par2point.
+# While the above is more useful when large blocks of jobs need resubmitting,
+# this one is more useful when scattered jobs need resubmitting, but is more annoying to use.
+my @arr_both_pts = ();		# e.g. ("5_3", "7_21", "30_8")
+
+# For running FC, we have an array of unevenly spaced grid points. Hardcode the grid points here:
+my @arr_custom_grid_pts_x = ();
+my @arr_custom_grid_pts_y = ();
+
+my $len_arr_pt1      = @arr_pt1;
+my $len_arr_pt2      = @arr_pt2;
+my $len_arr_both_pts = @arr_both_pts;
+my %map_arr_pt1      = map { $_ => 1 } @arr_pt1;
+my %map_arr_pt2      = map { $_ => 1 } @arr_pt2;
+my %map_arr_both_pts = map { $_ => 1 } @arr_both_pts;
+
+if (($len_arr_pt1 > 0 || $len_arr_pt2 > 0) && $len_arr_both_pts > 0) {
+	die("ERROR: Don't use both the \'arr_pt1\' (or \'arr_pt2\') array with the \'arr_both_pts\' array.");
+}
+
+my $len_arr_custom_grid_pts_x = @arr_custom_grid_pts_x;
+my $len_arr_custom_grid_pts_y = @arr_custom_grid_pts_y;
+my %map_arr_custom_grid_pts_x = map { $_ => 1 } @arr_custom_grid_pts_x;
+my %map_arr_custom_grid_pts_y = map { $_ => 1 } @arr_custom_grid_pts_y;
+
 #
 # Read command line arguments
 #
@@ -342,7 +373,7 @@ if($use_t2k_presets == 1) {
 	} # 1D sinsqth13
 
 	# 1D fit - sinsqth23
-	if(($par1 eq "mixing12") and ($par2 eq "none")) {
+	if(($par1 eq "mixing23") and ($par2 eq "none")) {
 		if($use_reactors == 1) {
 			$ntoys      = 40000      unless defined $ntoys;
 			$cput       = "8:00:00"  unless defined $cput;
@@ -359,8 +390,8 @@ if($use_t2k_presets == 1) {
 		$npt_job_par1 = 1          unless defined $npt_job_par1;
 	} # 1D sinsqth23
 
-	# 1D fit - dmsq23
-	if(($par1 eq "dmsq23") and ($par2 eq "none")) {
+	# 1D fit - dm23sq
+	if(($par1 eq "dm23sq") and ($par2 eq "none")) {
 		if($use_reactors == 1) {
 			$ntoys      = 40000      unless defined $ntoys;
 			$cput       = "8:00:00"  unless defined $cput;
@@ -375,7 +406,7 @@ if($use_t2k_presets == 1) {
 		$min_par1     = 2.2e-3     unless defined $min_par1;
 		$max_par1     = 2.8e-3     unless defined $max_par1;
 		$npt_job_par1 = 1          unless defined $npt_job_par1;
-	} # 1D dmsq23
+	} # 1D dm23sq
 
 	# 2D fit - sinsqth13 vs. CPV
 	if( (($par1 eq "cpv") and ($par2 eq "mixing13")) or (($par1 eq "mixing13") and ($par2 eq "cpv")) ) {
@@ -405,11 +436,11 @@ if($use_t2k_presets == 1) {
     $npt_job_par2 = 3                        unless defined $npt_job_par2;
 	} # 2D sinsqth13 vs. CPV
 
-  # 2D fit - sinsqth23 vs. dmsq23
-	if( (($par1 eq "dmsq23") and ($par2 eq "mixing23")) or (($par1 eq "mixing23") and ($par2 eq "dmsq23")) ) {
-		if($par1 eq "dmsq23") {
+  # 2D fit - sinsqth23 vs. dm23sq
+	if( (($par1 eq "dm23sq") and ($par2 eq "mixing23")) or (($par1 eq "mixing23") and ($par2 eq "dm23sq")) ) {
+		if($par1 eq "dm23sq") {
 			$par1 = "mixing23";
-			$par2 = "dmsq23";
+			$par2 = "dm23sq";
 		}
 		if($use_reactors == 1) {
 			$ntoys      = 10000      unless defined $ntoys;
@@ -429,7 +460,7 @@ if($use_t2k_presets == 1) {
 		$max_par2     = 2.8e-3     unless defined $max_par2;
 		$npt_par2     = 51         unless defined $npt_par2;
 		$npt_job_par2 = 3          unless defined $npt_job_par2;
-	} # 2D sinsqth23 vs. dmsq23
+	} # 2D sinsqth23 vs. dm23sq
 
 	# 2D fit - sinsqth23 vs. cpv
 	if( (($par1 eq "mixing23") and ($par2 eq "cpv")) or (($par1 eq "cpv") and ($par2 eq "mixing23")) ) {
@@ -458,6 +489,14 @@ if($use_t2k_presets == 1) {
 	} # 2D sinsqth23 vs. cpv
 } # use T2K presets
 
+
+if($len_arr_custom_grid_pts_x > 0 && ($len_arr_custom_grid_pts_x != $npt_par1)) {
+  die("ERROR: A custom list of grid points for free parameter 1 was specified, but the number of entries did not match the number of grid points requested.");
+}
+if($len_arr_custom_grid_pts_y > 0 && ($len_arr_custom_grid_pts_y != $npt_par2)) {
+  die("ERROR: A custom list of grid points for free parameter 2 was specified, but the number of entries did not match the number of grid points requested.");
+}
+
 # Make the job directory
 mkpath ($job_dir, {verbose => 1, mode=>0777});
 die("$job_dir doesn't exist") unless -d $job_dir;
@@ -466,7 +505,6 @@ die("$job_dir doesn't exist") unless -d $job_dir;
 # Submit jobs by looping over all point of both parameters of interest
 #
 
-$jobID=0;
 $irun=0;
 $step_par1 = 0;
 $step_par2 = 0;
@@ -474,9 +512,45 @@ if($npt_par1 > 1) { $step_par1 = ($max_par1 - $min_par1) / ($npt_par1 - 1); }
 if($npt_par2 > 1) { $step_par2 = ($max_par2 - $min_par2) / ($npt_par2 - 1); }
 
 for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
+	$jobID="${ibin1}";
+	if($len_arr_pt1 != 0) {
+		if(!exists($map_arr_pt1{$ibin1})) {
+			print "\n \n Skipping par 1 point \# ${ibin1}, as it is not in the points array \n \n";
+			$ibin1_p1 = $ibin1 + $npt_job_par1;
+			$irun++;
+			next;
+		}
+	}
   $val_par1 = $min_par1 + $ibin1 * $step_par1;
+  if($len_arr_custom_grid_pts_x != 0) {
+    $val_par1 = $arr_custom_grid_pts_x[${ibin1}];
+    print "\n Here 1; Setting val_par1 = ${val_par1}\n\n";
+  }
   for($ibin2 = 0; $ibin2 < $npt_par2; $ibin2 = $ibin2_p1) {
+  	if($par2 ne "none") {
+  		$jobID="${ibin1}_${ibin2}";
+  	}
+  	if($len_arr_pt2 != 0) {
+  		if(!exists($map_arr_pt2{$ibin2})) {
+  			print "\n \n Skipping par 2 point \# ${ibin2}, as it is not in the points array \n \n";
+  		  $ibin2_p1 = $ibin2 + $npt_job_par2;
+  			$irun++;
+  			next;
+  		}
+  	}
+  	if($len_arr_both_pts != 0) {
+			if(!exists($map_arr_both_pts{$jobID})) {
+				# print "\n \n Skipping point (${jobID}), as it is not in the points array \n \n";
+				$ibin1_p1 = $ibin1 + $npt_job_par1;
+				$ibin2_p1 = $ibin2 + $npt_job_par2;
+				$irun++;
+				next;
+			}
+		}
     $val_par2 = $min_par2 + $ibin2 * $step_par2;
+    if($len_arr_custom_grid_pts_y != 0) {
+			$val_par2 = $arr_custom_grid_pts_x[${ibin2}];
+		}
 
 
     $ibin1_p1 = $ibin1 + $npt_job_par1;
@@ -503,6 +577,15 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
     	$sub_ibin2 = -1;		# This tells the ToyBuilder class that we have a 1D fit
     }
 
+    $step_par1_use = $step_par1;
+    if($len_arr_custom_grid_pts_x != 0) {
+    	$step_par1_use = -999.0;
+    }
+    $step_par2_use = $step_par2;
+		if($len_arr_custom_grid_pts_y != 0) {
+			$step_par2_use = -999.0;
+		}
+
 		$program = "valor-run_build_toys";
 
 		$arguments = "--tag $tag --batch $batch --ntoys $ntoys --physics-hypothesis $fit_param_list " .
@@ -516,7 +599,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
                  "--npt-job-par1 $npt_job_par1 --npt-job-par2 $npt_job_par2 " .
                  "--npt-par1 $npt_par1 --npt-par2 $npt_par2 " . 
                  "--min-par1 $min_par1 --min-par2 $min_par2 " .
-                 "--step-par1 $step_par1 --step-par2 $step_par2 $fix_params";
+                 "--step-par1 $step_par1_use --step-par2 $step_par2_use $fix_params";
 
 
     if($store_specra       == 1)       { $arguments = "$arguments --store-spectra"      } else { $arguments = "$arguments --discard-spectra"    }
@@ -536,11 +619,11 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		# Liverpool_Slurm
 		#
 		if($resource eq "Liverpool_Slurm") {
-		  open(Slurm, ">$job_dir/$tag.slurm") or die("Can not create the Slurm batch script");
+		  open(Slurm, ">$job_dir/$tag-$jobID.slurm") or die("Can not create the Slurm batch script");
 		  print Slurm "#!/bin/bash \n";
-		  print Slurm "#SBATCH -J $tag-$irun \n";
-		  print Slurm "#SBATCH -o $job_dir/$tag-$irun.slurm.out \n";
-		  print Slurm "#SBATCH -e $job_dir/$tag-$irun.slurm.err \n";
+		  print Slurm "#SBATCH -J $tag-$jobID \n";
+		  print Slurm "#SBATCH -o $job_dir/$tag-$jobID.slurm.out \n";
+		  print Slurm "#SBATCH -e $job_dir/$tag-$jobID.slurm.err \n";
 		  print Slurm "#SBATCH -t $cput \n";
 		  print Slurm "#SBATCH --mem=$mem \n";
 		  print Slurm "cd $job_dir \n";
@@ -548,33 +631,25 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		  if($time_command == 1) { print Slurm "/usr/bin/time $command \n"; }
 		  else { print Slurm "$command \n"; }
 		  close(Slurm);
-		  `sbatch -p compute $job_dir/$tag.slurm`;
+		  `sbatch -p compute $job_dir/$tag-$jobID.slurm`;
 		}
 
 	  if($resource eq "cedar") {
-
-		  #if(($ibin1 >78 && $ibin1 <88) || ($ibin1 >96 && $ibin1 <99)) {
-		  # }
-		  # else
-		  #{
-		  #  $irun++;
-		  # next;
-		  # }
-	 	  open(Slurm, ">$job_dir/$tag-$irun.slurm") or die("Can not create the Slurm batch script");
+	 	  open(Slurm, ">$job_dir/$tag-$jobID.slurm") or die("Can not create the Slurm batch script");
 	 	  print Slurm "#!/bin/bash \n";
 	 	  print Slurm "#SBATCH --account=def-blairt2k \n";		# A larger allocation is available on "rpp-blairt2k", but it's only available on cedar
 	 	  print Slurm "#SBATCH --nodes=1 \n";
 	 	  print Slurm "#SBATCH --time=$cput \n";
 	 	  print Slurm "#SBATCH --mem=$mem \n";
-	 	  print Slurm "#SBATCH --job-name=$tag-$irun \n";
-	 	  print Slurm "#SBATCH -o $job_dir/$tag-$irun.slurm.out \n";
-	 	  print Slurm "#SBATCH -e $job_dir/$tag-$irun.slurm.err \n";
+	 	  print Slurm "#SBATCH --job-name=$tag-$jobID \n";
+	 	  print Slurm "#SBATCH -o $job_dir/$tag-$jobID.slurm.out \n";
+	 	  print Slurm "#SBATCH -e $job_dir/$tag-$jobID.slurm.err \n";
 	 	  print Slurm "cd $job_dir \n";
 	 	  print Slurm "source $softw_dir/setup/setup_at_cedar_root6.sh $softw_dir $fmwk_dir\n";
 	 	  if($time_command == 1) { print Slurm "time $command \n"; }
 	 	  else { print Slurm "$command \n"; }
 	 	  close(Slurm);
-	 	  `sbatch $job_dir/$tag-$irun.slurm`;
+	 	  `sbatch $job_dir/$tag-$jobID.slurm`;
 	  }
 
 		if($resource eq "cedar_opt")
@@ -589,9 +664,9 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		  print Slurm "#SBATCH --nodes=1 \n";
 		  print Slurm "#SBATCH --time=$cput \n";
 		  print Slurm "#SBATCH --mem=$mem \n";
-		  print Slurm "#SBATCH --job-name=$tag-$irun \n";
-		  print Slurm "#SBATCH -o $job_dir/$tag-$irun.slurm.out \n";
-		  print Slurm "#SBATCH -e $job_dir/$tag-$irun.slurm.err \n";
+		  print Slurm "#SBATCH --job-name=$tag-$jobID \n";
+		  print Slurm "#SBATCH -o $job_dir/$tag-$jobID.slurm.out \n";
+		  print Slurm "#SBATCH -e $job_dir/$tag-$jobID.slurm.err \n";
 		  print Slurm "the_command=\$(cat $job_dir/temp_${irun}.txt) \n";
 
 			print Slurm "IFS=',' read -r -a tokens <<< \"\$the_command\" \n";
@@ -653,6 +728,7 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		  "should_transfer_files    = YES \n".
 		  "when_to_transfer_output  = ON_EXIT \n".
 		  (ncores > 1 ? "request_cpus             = $ncores \n":"").
+		  "Requirements             = (Opsys =?= \"LINUX\") && (OpSysAndVer =?= \"CentOS7\") \n".
 		  "\nqueue\n";
 		  
 		  $cndfn = "$job_dir/${jobname}.condor";
@@ -674,38 +750,38 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		    $fullprogram = `readlink -m $fullprogram`;
 		    $arguments =~ s/\"/\\\"/g;        # All double quotes must be escaped for Condor
 		    $arguments =~ s/\'//g;            # and apparently single quotes are unnecessary but break it
-		    open(JDL, ">$job_dir/$tag-$irun.jdl") or die("Cannot create the JDL script");
+		    open(JDL, ">$job_dir/$tag-$jobID.jdl") or die("Cannot create the JDL script");
 		    print JDL "executable     = $fullprogram \n";
 		    print JDL "universe       = vanilla \n";
 		    print JDL "arguments      = $arguments \n";
-		    print JDL "output         = $job_dir/$tag-$irun.out \n";
-		    print JDL "error          = $job_dir/$tag-$irun.err \n";
-		    print JDL "log            = $job_dir/$tag-$irun.log \n";
+		    print JDL "output         = $job_dir/$tag-$jobID.out \n";
+		    print JDL "error          = $job_dir/$tag-$jobID.err \n";
+		    print JDL "log            = $job_dir/$tag-$jobID.log \n";
 		    print JDL "request_memory = 4000 \n";
 		    print JDL "getenv         = True \n";
 		    print JDL "should_transfer_files    = YES \n";
 		    print JDL "when_to_transfer_output  = ON_EXIT \n";
 		    print JDL "queue 1 \n";
 		    close(JDL);
-		    `condor_submit $job_dir/$tag-$irun.jdl`;
+		    `condor_submit $job_dir/$tag-$jobID.jdl`;
 		}
 
       # IFIC 
     #
     if($resource eq "IFIC") {
-        open(PBS, ">$job_dir/$tag-$irun.pbs") or die("Cannot create the PBS batch script");
+        open(PBS, ">$job_dir/$tag-$jobID.pbs") or die("Cannot create the PBS batch script");
         print PBS "#!/bin/bash \n";
-        print PBS "#PBS -N $tag-$irun \n";
+        print PBS "#PBS -N $tag-$jobID \n";
         print PBS "#PBS -l mem=$mem \n";
         print PBS "#PBS -q long \n"; # Max walltime of for long - 24h, in case of 2D fit use long4
         print PBS "#PBS -l nodes=1:ppn=1 \n"; #use only ppn=1 
-        print PBS "#PBS -o $job_dir/$tag-$irun.pbs.out \n";
-        print PBS "#PBS -e $job_dir/$tag-$irun.pbs.err \n";
+        print PBS "#PBS -o $job_dir/$tag-$jobID.pbs.out \n";
+        print PBS "#PBS -e $job_dir/$tag-$jobID.pbs.err \n";
         print PBS "cd $job_dir \n";
         print PBS "source $softw_dir/setup/setup_at_cvmfs_root6.sh $softw_dir $fmwk_dir\n";
         print PBS "$command \n";
         close(PBS);
-        `qsub $job_dir/$tag-$irun.pbs`;
+        `qsub $job_dir/$tag-$jobID.pbs`;
     }
 
 		#
@@ -716,7 +792,6 @@ for($ibin1 = 0; $ibin1 < $npt_par1; $ibin1 = $ibin1_p1) {
 		}
 
 	  $irun++;
-	  $jobID++;
 
   } # freepar 0
   
