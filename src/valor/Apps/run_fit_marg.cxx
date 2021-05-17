@@ -172,9 +172,9 @@ void Fit(CmdLnArgList& arg)
    FitModelABC* model = elements->FitModel();
    FitDataABC* data = elements->FitData();
 
-   const char* read_opt_data = "";
+   const char* read_opt_data = "data_vf";
    if (use_simple_binning) {
-      read_opt_data = "+SB";
+      read_opt_data = "data_vf+SB";
    }
 
    util::ToyStream* toy_stream = nullptr;
