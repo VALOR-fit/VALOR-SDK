@@ -189,8 +189,8 @@ FitResult* Marginalisation::Fit(FitDataABC* data, const int Ntoys, const int Nba
             {
                 this->ComputeStatistics(i, j, data, Ntoys, Nbatches, firstBatch);
                 this->_likelihood_2D->SetBinContent(i + 1, j + 1, this->_likelihood);
-                if (penaltyset.param_names != ""){
-                    this->CalcPenaltyTerm(this->_chi2_2D->GetXaxis()->GetBinCenter(i + 1), penaltyset);
+                if (penaltyset.type != ""){
+                    this->CalcPenaltyTerm(this->_chi2_2D->GetXaxis()->GetBinCenter(i + 1), penaltyset, this->_chi2_2D->GetYaxis()->GetBinCenter(i + 1));
                     this->_chi2_2D->SetBinContent(i + 1, j + 1, this->_chi2 + this->_penaltyterm);
                 }
                 else{
@@ -212,11 +212,13 @@ FitResult* Marginalisation::Fit(FitDataABC* data, const int Ntoys, const int Nba
             this->ComputeStatistics(i, data, Ntoys, Nbatches, firstBatch);
             this->_likelihood_1D->SetBinContent(i + 1, this->_likelihood);
 
-            if (penaltyset.param_names != ""){
+            if (penaltyset.type != ""){
+            LOG("Marginalisation", pDEBUG) <<"will use penalty term for the fit";
                 this->CalcPenaltyTerm(this->_chi2_1D->GetBinCenter(i + 1), penaltyset);
                 this->_chi2_1D->SetBinContent(i + 1, this->_chi2 + this->_penaltyterm);
             }
             else{
+              LOG("Marginalisation", pDEBUG) <<"won't use penalty term for the fit";
                 this->_chi2_1D->SetBinContent(i + 1, this->_chi2);
             }
         }
@@ -401,20 +403,54 @@ void Marginalisation::CheckLocalMinimum(int& binX, int& binY,
    binY = binMinY;
 }
 
-void Marginalisation::CalcPenaltyTerm(const double par0,util::oscillation::PenaltyTerm penaltyset){
+void Marginalisation::CalcPenaltyTerm(const double par0,util::oscillation::PenaltyTerm penaltyset, const double par1){
+    
+    if (penaltyset.type==""){
+      LOG("Marginalisation", pINFO) << "Making fit without applying penalty term ";
+    }
+    else if (penaltyset.type =="gaus"){
     double fpenalty_mean0  = penaltyset.mean ;
     double fpenalty_sigma0 = penaltyset.sigma;
-    std::string penalty_scheme = penaltyset.scheme;
     std::string parameter_scheme_name_p0 = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
-    conv::PhysParamId_t par0_id = util::NameRegistry::Instance()->PhysParamFromString(penaltyset.param_names);
+     
+    //Convert parameter value to teh same scheme as penalty
+    double parval0 = util::ConvertOscParamToUsedScheme(penaltyset.param_id_0, par0 , parameter_scheme_name_p0, penaltyset.scheme);
+
+    double penalty = (parval0 - fpenalty_mean0)*(parval0 - fpenalty_mean0) /  ( fpenalty_sigma0 * fpenalty_sigma0);
+  
+    this->_penaltyterm = penalty; 
+  }
+  else if (penaltyset.type == "user" && penaltyset.param_id_1 == conv::kPhypUndefined){
+  
+    std::string parameter_scheme_name_p0 = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
     
     //Convert parameter value to teh same scheme as penalty
-    double parval0 = util::ConvertOscParamToUsedScheme(par0_id, par0 , parameter_scheme_name_p0, penalty_scheme);
+    double parval0 = util::ConvertOscParamToUsedScheme(penaltyset.param_id_0, par0 , parameter_scheme_name_p0, penaltyset.scheme);
 
-    double penalty0 = (parval0 - fpenalty_mean0)*(parval0 - fpenalty_mean0) /  ( fpenalty_sigma0 * fpenalty_sigma0);
-  
-    this->_penaltyterm = penalty0; 
+    double penalty = penaltyset.penalty_graph->Eval(parval0);
 
+    this->_penaltyterm = penalty;
+    LOG("Marginalisation", pDEBUG) <<"for parameter value "<< parval0<< " the penalty term is "<<penalty;
+  }
+  else if (penaltyset.type == "user" && penaltyset.param_id_1 != conv::kPhypUndefined){
+
+    std::string parameter_scheme_name_p0 = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
+    std::string parameter_scheme_name_p1 = ""; // Leave this as an empty string to allow util::ConvertOscParamToUsedScheme to set the target scheme according to the values set in Opt::Instance
+    
+    //Convert parameter value to teh same scheme as penalty
+    double parval0 = util::ConvertOscParamToUsedScheme(penaltyset.param_id_0, par0 , parameter_scheme_name_p0, penaltyset.scheme);
+    double parval1 = util::ConvertOscParamToUsedScheme(penaltyset.param_id_1, par1 , parameter_scheme_name_p1, penaltyset.scheme_par1);
+    
+    // Getting  chi2 value using Interpolate method of TGraph2D
+    double penalty = penaltyset.penalty_graph2D->Interpolate(parval0,parval1);
+
+    this->_penaltyterm = penalty;
+    LOG("Marginalisation", pDEBUG) <<"for parameter 0 value "<< parval0<<" and parameter 1 value "<<parval1<<" the penalty term is "<<penalty;
+  }
+  else {
+    LOG("Marginalisation", pFATAL) <<"Unkonw penalty parameter type. Can't work like this...";
+    util::Die(-1);
+  }
 }
 } // valor
 

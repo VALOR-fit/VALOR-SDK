@@ -22,6 +22,10 @@
 #include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/OscParamValues.h"
 
+#include "TH2.h"
+#include "TGraph.h"
+#include "TGraph2D.h"
+
 namespace valor
 {
 namespace util
@@ -103,8 +107,13 @@ namespace oscillation
     struct PenaltyTerm{
         double mean;
         double sigma;
+        std::string type;
         std::string scheme;
-        std::string param_names; 
+        std::string scheme_par1; // NOTE: to be used in case of 2D histo penalty term 
+        conv::PhysParamId_t param_id_0;
+        conv::PhysParamId_t param_id_1;
+        TGraph* penalty_graph; //NOTE: do we need graph here? 
+        TGraph2D* penalty_graph2D;
     };
 
 

@@ -673,18 +673,23 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
   // Now read the information that's specific to each prior type
   string penalty_attribute1 = "";  // If type  = gaus, this is mean.
   string penalty_attribute2 = "";  // If type  = gaus, this is sigma.
-  //string prior_attribute3 = "";    // If type = user, this is the prior hist name. Otherwise this stays as an empty string
+  string penalty_attribute3 = "";    // If type = user, this is the prior hist name. Otherwise this stays as an empty string
   curr_node = xmleng->GetChild(top_node);   // Put the current node back to the top of the list
   while(curr_node) {
       string curr_node_name = xmleng->GetNodeName(curr_node);
       if(xmleng->GetNodeContent(curr_node)) {
           string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
-          if(penalty_type == "gaus") {
-              if(curr_node_name == "mean" ) { penalty_attribute1 = content;  }
-              if(curr_node_name == "sigma") { penalty_attribute2 = content;  }
-          }
-          else {
-              LOG("UtlOscillation", pERROR) << "Could not understand the prior type [" << penalty_type << "]";
+         if(penalty_type == "gaus") {
+            if(curr_node_name == "mean" ) { penalty_attribute1 = content;  }
+            if(curr_node_name == "sigma") { penalty_attribute2 = content;  }
+         }
+            else if(penalty_type == "user") {
+            if(curr_node_name == "file_nh"  ) { penalty_attribute1 = content; }
+            if(curr_node_name == "file_ih"  ) { penalty_attribute2 = content; }
+            if(curr_node_name == "hist_name") { penalty_attribute3 = content; } 
+         }
+         else {
+              LOG("UtlOscillation", pERROR) << "Could not understand the penalty type [" << penalty_type << "]";
               exit(1);
           }
       }
@@ -696,6 +701,10 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
    if(penalty_type == "gaus" && (penalty_attribute1 == "" || penalty_attribute2 == "")) {
        LOG("UtlOscillation", pERROR) << "Something went wrong when setting the Gaussian penalty named [" << param_names << "]";
        exit(1);
+   }
+   else if(penalty_type == "user" && (penalty_attribute1 == "" || penalty_attribute2 == "" || penalty_attribute3 == "")) {
+      LOG("UtlOscillation", pERROR) << "Something went wrong when setting the user penalty named [" << param_names << "]";
+      exit(1);
    }
    // Get the parameter(s) that we'll apply this penalty to
    const util::NameRegistry * nr = util::NameRegistry::Instance();
@@ -718,19 +727,103 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
        scheme_name = util::RemoveAllWhitespace(scheme_name);
        schemes.push_back(scheme_name);
    }
+   if(schemes.size() != params.size()) {
+      LOG("UtlOscillation", pERROR) << "The prior named [" << param_names
+                                    << "] has a mismatch in the number of schemes and parameters defined";
+      exit(1);
+   }
 
    if(schemes.size() != params.size()) {
-       LOG("UtlOscillation", pERROR) << "The prior named [" << param_names
+       LOG("UtlOscillation", pERROR) << "The penalty named [" << param_names
                                      << "] has a mismatch in the number of schemes and parameters defined";
        exit(1);
    }
+   if((penalty_type == "gaus") && params.size() != 1) {
+      LOG("UtlOscillation", pERROR) << "The number of parameters specified for Gaussian penalty term named [" << param_names << "] was != 1";
+      exit(1);
+   }
+   else if(!(params.size() == 1 || params.size() == 2)){
+      LOG("UtlOscillation", pERROR) << "The number of parameters specified for user penalty named [" << param_names << "] was not 1 or 2";
+      exit(1);
+   }
    //!! so far penalty term is supported for only one variable. So only the first entry of the scheme vector
+   //UWAGA: test version to handle two penalty types 
+   PenaltyTerm pval;
+   if (penalty_type == "gaus"){
+      double mean  = atof(penalty_attribute1.c_str());
+      double sigma = atof(penalty_attribute2.c_str());
+      pval.type = penalty_type;
+      pval.mean = mean;
+      pval.sigma = sigma;
+      pval.scheme = schemes[0];
+      pval.param_id_0 = params[0];
+   }
+   else {
 
+      std::string penalty_hist_file_name = "";
+      if(Opt::Instance()->gMassHierarchyAssumed == util::HierarchyFromString("normal")) {
+         penalty_hist_file_name = penalty_attribute1;
+      }
+      else {
+         penalty_hist_file_name = penalty_attribute2;
+      }
+      TString base_dir = Env::Instance()->TopLevelDataDir().c_str();
+      TFile* penalty_root_file = new TFile((base_dir + "/" + penalty_hist_file_name.c_str()).Data(), "read");
+      if(!penalty_root_file->IsOpen()) {
+         LOG("UtlOscillation", pERROR) << "Could not find penalty hist file [" << penalty_hist_file_name << "]";
+         exit(1);
+      }
+
+      if(params.size() == 1) {
+         pval.param_id_1 = conv::kPhypUndefined;
+         TGraph* penalty_graph = (TGraph*) penalty_root_file->Get(penalty_attribute3.c_str());
+         if(!penalty_graph) {
+            LOG("UtlOscillation", pERROR) << "Could not find 1D penalty graph [" << penalty_attribute3 << "] in file ["
+                                          << penalty_hist_file_name << "]";
+            exit(1);
+         }
+         pval.param_id_0 = params[0];
+         pval.type = "user";
+         pval.penalty_graph= penalty_graph;
+         pval.scheme = schemes[0];
+         LOG("UtlOscillation", pNOTICE) << "Setting 1D graph penalty for param " << param_names
+                                        << ": file = " << penalty_hist_file_name
+                                        << ", using scheme: " << schemes[0];
+      }
+      else {
+         // Set the axis titles to the parameter names they correspond to, so we know which is which when we come to throw from the hist
+         TGraph2D* penalty_graph = (TGraph2D*) penalty_root_file->Get(penalty_attribute3.c_str());
+         if(!penalty_graph) {
+            LOG("UtlOscillation", pERROR) << "Could not find 2D penalty graph [" << penalty_attribute3 << "] in file ["
+                                          << penalty_hist_file_name << "]";
+            exit(1);
+         }
+         penalty_graph->GetXaxis()->SetTitle(nr->ParamAsStringVerySimple(params[0]).c_str());
+         penalty_graph->GetYaxis()->SetTitle(nr->ParamAsStringVerySimple(params[1]).c_str());
+         pval.param_id_0 = params[0];
+         pval.param_id_1 = params[1];
+         pval.type = "user";
+         pval.penalty_graph2D = penalty_graph;
+         pval.scheme = schemes[0];
+         pval.scheme_par1 = schemes[1];
+         LOG("UtlOscillation", pNOTICE) << "Setting 2D graph penalty for params " << param_names
+                                        << ": file = " << penalty_hist_file_name
+                                        << "; Associating x-axis with " << nr->ParamAsStringVerySimple(params[0])
+                                        << " (scheme = " << schemes[0] << ")"
+                                        << "; Associating y-axis with " << nr->ParamAsStringVerySimple(params[1])
+                                        << " (scheme = " << schemes[1] << ")";
+      }
+      penalty_root_file->Close();
+      delete penalty_root_file;
+   }
+
+/*
    double mean  = atof(penalty_attribute1.c_str());
    double sigma = atof(penalty_attribute2.c_str());
    PenaltyTerm pval = {mean,sigma,schemes[0],param_names};
    LOG("UtlOscillation", pNOTICE) << "Setting Gaussian penalty for param " << param_names
                                        << ": mean = " << mean << ", sigma = " << sigma;
+                                       */
    return pval;
 }
 

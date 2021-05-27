@@ -34,7 +34,7 @@
 #include "valor/FitCore/UtlOscillation.h"
 
 
-#include "TH1.h"
+#include "TGraph.h"
 #include "TH2.h"
 
 #include <TTree.h>
@@ -269,7 +269,7 @@ private:
      \param par0  Value of the oscillation parameter
      \param penaltyset  Parameters of the penalty term
     */
-   void CalcPenaltyTerm(const double par0, util::oscillation::PenaltyTerm penaltyset);
+   void CalcPenaltyTerm(const double par0, util::oscillation::PenaltyTerm penaltyset,const double par1 = 0.0);
 
 private:
    string _filePrefix; 

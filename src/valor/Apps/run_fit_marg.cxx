@@ -158,7 +158,8 @@ bool fusepenalty = false;
 
 if(arg.Exists("use-penalty-term") and arg.GetString("use-penalty-term") != "-" ){
 
-  if (penaltyparam == fp1_name || penaltyparam == fp2_name ){fusepenalty = true;}
+  if (penaltyparam == fp1_name || penaltyparam == fp2_name ){fusepenalty = true; 
+    std::cout<<"will use penalty for one of the parameters "<<std::endl;}
   else{
     LOG("valor", pFATAL) << "Penalty term specified for a parameter that is different from fitting one(s)" <<
     " penalty set for " << penaltyparam;
@@ -251,16 +252,8 @@ if(!fit_is_2D)
   {
    toy_stream->SetPositionToToy(start_toy_fake_data);
  }
-  //Cretaing a tree to store Chi2 surface for each toy TODO:add a flag for FC dcp BF toy, so thi IO won't be a case for all points
- std::ostringstream oss;
- oss << arg.GetString("tag");
- oss << "_" << start_toy_fake_data << "_" << start_toy_fake_data + Ntoys_fake_data;
- oss << "_result.root";
- string filename = oss.str();
- auto fitFile = new TFile(filename.c_str(), "RECREATE");
- TH1D* chisq_toy = new TH1D();
- auto tree_chi = new TTree("chi2_tree","A tree to store chi2 surfaces for every toy");
- tree_chi->Branch("chisq_toy","TH1D", &chisq_toy,32000,0);
+
+
  for(int ifake = start_toy_fake_data; ifake < start_toy_fake_data + Ntoys_fake_data; ifake++)
  {
       // Read a fakedata toy, if requested
@@ -277,7 +270,9 @@ if(!fit_is_2D)
   {
     penaltyset = util::oscillation::SetPenaltyTermParameters(arg, penaltyparam);
   }
-  else { penaltyset = {0,0,"",""};}
+  else { //UWAGA: 2D penalty test code
+    penaltyset.type = "";}
+    //penaltyset = {0,0,"",""};}
   result = marginalisation.Fit(data, Ntoys, Nbatches, penaltyset, firstBatch);
       // Perform an optimised fit starting at the specified value
    /*   if(!fit_is_2D)
@@ -289,83 +284,83 @@ if(!fit_is_2D)
          result = marginalisation.Fit(fp1_val, fp2_val, data, Ntoys, Nbatches,
                firstBatch);
       }*/
-  if(ifake % 100 == 0) {
+     if(ifake % 100 == 0) {
+         if(!fit_is_2D)
+         {
+            LOG("valor", pNOTICE) << "For fakedata toy #" << ifake <<
+               ", Best fit: " << fp1_name << " = " <<
+               result->GetParam1BestFit() << " Chi^2 = " << result->GetChi2BestFit() <<
+               " " << " L = " << result->GetLikelihoodBestFit();
+         }
+         else
+         {
+            LOG("valor", pNOTICE) << "For fakedata toy #" << ifake <<
+               ", Best fit param 1: " << fp1_name << " = " << result->GetParam1BestFit() <<
+               ", Best fit param 2: " << fp2_name << " = " << result->GetParam2BestFit() <<
+               result->GetChi2BestFit() << " " << " L = "  << result->GetLikelihoodBestFit();
+         }
+      }
+
+      chi2_best_fit_toy->at(ifake - start_toy_fake_data) = result->GetChi2BestFit();
+   }
+   delete toy_stream;
+
+   std::ostringstream oss;
+   oss << arg.GetString("tag");
+   oss << "_" << start_toy_fake_data << "_" << start_toy_fake_data + Ntoys_fake_data;
+   oss << "_result.root";
+   string filename = oss.str();
+   TFile* fitFile = new TFile(filename.c_str(), "RECREATE");
+
+   // Store surfaces
+   LOG("valor", pNOTICE) << "Only storing the chi2 and likelihood surfaces of the last fakedata toy (to avoid bloat)";
    if(!fit_is_2D)
    {
-    LOG("valor", pNOTICE) << "For fakedata toy #" << ifake <<
-    ", Best fit: " << fp1_name << " = " <<
-    result->GetParam1BestFit() << " Chi^2 = " << result->GetChi2BestFit() <<
-    " " << " L = " << result->GetLikelihoodBestFit();
-    }
-    else
-    {
-    LOG("valor", pNOTICE) << "For fakedata toy #" << ifake <<
-    ", Best fit param 1: " << fp1_name << " = " << result->GetParam1BestFit() <<
-    ", Best fit param 2: " << fp2_name << " = " << result->GetParam2BestFit() <<
-    result->GetChi2BestFit() << " " << " L = "  << result->GetLikelihoodBestFit();
-    }
-  }
-  chi2_best_fit_toy->at(ifake - start_toy_fake_data) = result->GetChi2BestFit();
-  if(!fit_is_2D)
-  {
-    chisq_toy = result->GetChi2Surface1D();
-    if (chisq_toy->GetEntries()!=0){
-      tree_chi->Fill();
-      std::cout<< "filling the tree with chi2 surf for toy "<< ifake<< std::endl;
-    }
-  }
-}
-delete toy_stream;
- tree_chi->Write();
-   // Store surfaces
-LOG("valor", pNOTICE) << "Only storing the chi2 and likelihood surfaces of the last fakedata toy (to avoid bloat)";
-if(!fit_is_2D)
-{
-  TH1D* chi2Surface = result->GetChi2Surface1D();
-  TH1D* likelihoodSurface = result->GetLikelihoodSurface1D();
-  chi2Surface->Write("chi2");
-  likelihoodSurface->Write("likelihood");
-}
-else
-{
-  TH2D* chi2Surface = result->GetChi2Surface2D();
-  TH2D* likelihoodSurface = result->GetLikelihoodSurface2D();
-  chi2Surface->Write("chi2");
-  likelihoodSurface->Write("likelihood");
-}
+      TH1D* chi2Surface = result->GetChi2Surface1D();
+      TH1D* likelihoodSurface = result->GetLikelihoodSurface1D();
+      chi2Surface->Write("chi2");
+      likelihoodSurface->Write("likelihood");
+   }
+   else
+   {
+      TH2D* chi2Surface = result->GetChi2Surface2D();
+      TH2D* likelihoodSurface = result->GetLikelihoodSurface2D();
+      chi2Surface->Write("chi2");
+      likelihoodSurface->Write("likelihood");
+   }
 
    // Store vector of marginal chi2 values
-fitFile->WriteObject(chi2_best_fit_toy, "chi2_best_fit_toy");
+   fitFile->WriteObject(chi2_best_fit_toy, "chi2_best_fit_toy");
 
-fitFile->Close();
-delete fitFile;
+   fitFile->Close();
+   delete fitFile;
 
 /*   marginalisation.ComputeStatistics(fp1_bin, data, Ntoys, Nbatches, firstBatch);
    double likelihood = marginalisation.GetLikelihood();
    double chi2 = marginalisation.GetChi2();
    LOG("valor", pNOTICE) << "chi2(marg): " << chi2 << " L(marg): " <<
       likelihood;*/
-clock.Stop();
+   clock.Stop();
 
-LOG("valor", pNOTICE) << "Read: " << Ntoys * Ntoys_fake_data <<
-" spectra. Real time: " << clock.RealTime() << "   CPU time: " <<
-clock.CpuTime();
+   LOG("valor", pNOTICE) << "Read: " << Ntoys * Ntoys_fake_data <<
+      " spectra. Real time: " << clock.RealTime() << "   CPU time: " <<
+      clock.CpuTime();
 }
 
 void Init(CmdLnArgList& arg)
 {
- Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
+   Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
 
- Opt::Instance()->gMassHierarchyAssumed = ( (arg.GetBool("inverted"))     ? conv::kNmhInverted      : conv::kNmhNormal);
- Opt::Instance()->gOscMixingParamChoice = ( (arg.GetBool("sinsq2theta"))  ? conv::kNuMixSinsq2Theta : conv::kNuMixSinsqTheta);
- Opt::Instance()->gOscOctantChoice      = ( (arg.GetBool("second-octant"))? conv::kNuOctantTwo      : conv::kNuOctantOne);
+   Opt::Instance()->gMassHierarchyAssumed = ( (arg.GetBool("inverted"))     ? conv::kNmhInverted      : conv::kNmhNormal);
+   Opt::Instance()->gOscMixingParamChoice = ( (arg.GetBool("sinsq2theta"))  ? conv::kNuMixSinsq2Theta : conv::kNuMixSinsqTheta);
+   Opt::Instance()->gOscOctantChoice      = ( (arg.GetBool("second-octant"))? conv::kNuOctantTwo      : conv::kNuOctantOne);
 
- conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
- if(dmsq_scheme == kNuDmsqUndefined) {
-  LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
-  util::Die(-1);
-}
-Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
+  conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
+  if(dmsq_scheme == kNuDmsqUndefined) {
+    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    util::Die(-1);
+  }
+  Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
 
-Rnd::Instance()->SetSeeds(arg);
+   Rnd::Instance()->SetSeeds(arg);
 }
