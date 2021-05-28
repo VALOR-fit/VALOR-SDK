@@ -696,7 +696,7 @@ static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCmisc       */ kNuTauBar    ,
    /*   kmNuEBarToNuTauBarCCoth        */ kNuTauBar    ,
    /*   kmCosmic                       */ kCosmic      ,
-   /*   kmDirt                         */ kNuFlavourUndefined,
+   /*   kmDirt                         */ kDirt,
 // /*   kmOther             */ kNuFlavourUndefined
 };
 
@@ -905,7 +905,7 @@ static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
    /*   kmNuEBarToNuTauBarCCmisc       */ kNuEBar    ,
    /*   kmNuEBarToNuTauBarCCoth        */ kNuEBar    ,
    /*   kmCosmic                       */ kCosmic    ,
-   /*   kmDirt                         */ kNuFlavourUndefined,
+   /*   kmDirt                         */ kDirt,
 // /*   kmOther             */ kNuFlavourUndefined
 };
 
