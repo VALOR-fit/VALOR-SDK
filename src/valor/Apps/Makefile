@@ -36,8 +36,8 @@ all: $(TGT)
 #
 make_response_functions: FORCE
 ifeq ("YES","$(OPT_ENABLE_GENIE)")
-	$(CXX) $(CXXFLAGS) -c make_response_functions.cxx $(GINCLUDES)
-	$(LD) $(LDFLAGS) make_response_functions.o $(GLIBRARIES) $(VALOR_GLIBRARIES) -o $(VALOR_FMWK)/bin/valor-make_response_functions
+	$(CXX) $(CXXFLAGS) -c make_response_functions.cxx $(INCLUDES)
+	$(LD) $(LDFLAGS) make_response_functions.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-make_response_functions
 else
 	@echo "Skipping make_response_functions due to no GENIE"
 endif
@@ -155,8 +155,8 @@ endif
 
 batch_tests: FORCE
 ifdef GENIE
-	$(CXX) $(CXXFLAGS) -c batch_tests.cxx $(GINCLUDES)
-	$(LD) $(LDFLAGS) batch_tests.o $(GLIBRARIES)  $(VALOR_GLIBRARIES) -o $(VALOR_FMWK)/bin/valor-batch_tests
+	$(CXX) $(CXXFLAGS) -c batch_tests.cxx $(INCLUDES)
+	$(LD) $(LDFLAGS) batch_tests.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-batch_tests
 else
 	@echo "Skipping batch_tests due to no GENIE"
 endif

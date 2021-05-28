@@ -64,10 +64,10 @@ void Marginalisation::ComputeStatistics(const int fitParam1Bin,
    for(int b = firstBatch; b <= lastBatch; ++b)
    {
       std::ostringstream oss;
-      oss << this->_filePrefix << "_" << fitParam1Bin;
+      oss << this->_filePrefix << "_" << _param1_start_bin + fitParam1Bin;
       if(fitParam2Bin > -1)
       {  // File name for 2D fit
-         oss << "_v_" << fitParam2Bin;
+         oss << "_v_" << _param2_start_bin + fitParam2Bin;
       }
       oss << "_" << b << "_" << Ntoys << ".bin";
       std::string filename = oss.str();
@@ -188,13 +188,13 @@ FitResult* Marginalisation::Fit(FitDataABC* data, const int Ntoys, const int Nba
             for(int j = 0; j < Ny; ++j)
             {
                 this->ComputeStatistics(i, j, data, Ntoys, Nbatches, firstBatch);
-                this->_likelihood_2D->SetBinContent(i + 1  - _param1_start_bin, j + 1  - _param1_start_bin, this->_likelihood);
+                this->_likelihood_2D->SetBinContent(i + 1, j + 1, this->_likelihood);
                 if (penaltyset.param_names != ""){
-                    this->CalcPenaltyTerm(this->_chi2_2D->GetXaxis()->GetBinCenter(i + 1-_param1_start_bin), penaltyset);
-                    this->_chi2_2D->SetBinContent(i + 1 - _param1_start_bin, j + 1 - _param1_start_bin, this->_chi2 + this->_penaltyterm);
+                    this->CalcPenaltyTerm(this->_chi2_2D->GetXaxis()->GetBinCenter(i + 1), penaltyset);
+                    this->_chi2_2D->SetBinContent(i + 1, j + 1, this->_chi2 + this->_penaltyterm);
                 }
                 else{
-                    this->_chi2_2D->SetBinContent(i + 1 - _param1_start_bin, j + 1 - _param2_start_bin, this->_chi2);
+                    this->_chi2_2D->SetBinContent(i + 1, j + 1, this->_chi2);
                 }
             }
         }
@@ -213,11 +213,11 @@ FitResult* Marginalisation::Fit(FitDataABC* data, const int Ntoys, const int Nba
             this->_likelihood_1D->SetBinContent(i + 1, this->_likelihood);
 
             if (penaltyset.param_names != ""){
-                this->CalcPenaltyTerm(this->_chi2_1D->GetBinCenter(i + 1-_param1_start_bin), penaltyset);
-                this->_chi2_1D->SetBinContent(i + 1  - _param1_start_bin, this->_chi2 + this->_penaltyterm);
+                this->CalcPenaltyTerm(this->_chi2_1D->GetBinCenter(i + 1), penaltyset);
+                this->_chi2_1D->SetBinContent(i + 1, this->_chi2 + this->_penaltyterm);
             }
             else{
-                this->_chi2_1D->SetBinContent(i + 1 - _param1_start_bin, this->_chi2);
+                this->_chi2_1D->SetBinContent(i + 1, this->_chi2);
             }
         }
         // Store the result of the fit

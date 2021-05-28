@@ -186,9 +186,15 @@ void valor::util::ToyStream::SetPositionToToy(unsigned int toy_index)
 
   // Get the length of the validation string, which we need to skip over
   const size_t len_validation_string = ReadValidationStringSize();
+  if(len_validation_string == -1) {
+    LOG("ToyStream",pFATAL) << "Could not get the validation string size";
+    util::Die(-1);
+  }
 
-  // Set the new position of the stream
-  fStream->seekg(len_validation_string + (toy_index * fToySize), std::ios_base::beg);
+  // Set the new position of the stream.
+  // We also skip over sizeof(size_t), because that's the number which tells us how large the validation string is,
+  // and is stored in the file right before the validation string.
+  fStream->seekg(sizeof(size_t) + len_validation_string + (toy_index * fToySize), std::ios_base::beg);
 
   // Check that we're at a valid position in the file
   fStream->peek();
