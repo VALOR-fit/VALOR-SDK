@@ -62,7 +62,7 @@ string util::AsString(Sample_t s)
     case (ksNuEBarCChigh   ) : return "nuebarCChigh";    break;
     case (ks1Rmu           ) : return "1rmu";            break;
     case (ks1Re            ) : return "1re";             break;
-    case (ks1Re1dcy        ) : return "multire";         break;
+    case (ks1Re1dcy        ) : return "1re1dcy";         break;
     case (ksMultiRmu       ) : return "multirmu";        break;
     default                  : return "--";
   }
