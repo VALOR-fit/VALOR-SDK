@@ -366,7 +366,7 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksNuEBarCClow     : return ksApplyToELikeLowRes;
     case ks1Rmu            : return ksApplyTo1RingMu;
     case ks1Re             : return ksApplyTo1RingE;
-    case ksMultiRe         : return ksApplyToMultiRingE;
+    case ks1Re1dcy         : return ksApplyToMultiRingE;
     case ksMultiRmu         : return ksApplyToMultiRingMu;
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
