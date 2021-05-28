@@ -33,6 +33,7 @@ typedef enum ENuFlavour
    kNuMuBar,
    kNuTauBar,
    kCosmic,
+   kDirt,
 } 
 NuFlavour_t;
 
