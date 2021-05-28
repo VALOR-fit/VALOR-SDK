@@ -455,7 +455,13 @@ def get_t2k_legacy_hist_name(param_name, sigma_var, m):
   is_RHC = False
   if "rhc" in util.ToLowerCase(_beam):
     is_RHC = True
-  if "1re" in util.ToLowerCase(_selec):
+  if "1re1dcy" in util.ToLowerCase(_selec):
+    if is_RHC:
+      print "ERROR: no RHC 1Re1Dcy samples!"
+      sys.exit()
+    else:
+      comp_sample = "1Re1dcy"
+  elif "1re" in util.ToLowerCase(_selec):
     if is_RHC:
       comp_sample = "RHC1Re"
     else:
@@ -465,12 +471,6 @@ def get_t2k_legacy_hist_name(param_name, sigma_var, m):
       comp_sample = "RHC1Rmu"
     else:
       comp_sample = "1Rmu"
-  elif "multire" in util.ToLowerCase(_selec):
-    if is_RHC:
-      print "ERROR: no RHC MultiRe samples!"
-      sys.exit()
-    else:
-      comp_sample = "MultiRe"
 
   comp_mode_name = ""
   if _by_mode:
