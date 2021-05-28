@@ -189,7 +189,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuECC       , "allnuecc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu        , "1rmu") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE         , "1re") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE     , "multire") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE     , "1re1dcy") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingMu    , "multirmu") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToELikeRingAny   , "e-likerings") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingAny       , "1rany") );
