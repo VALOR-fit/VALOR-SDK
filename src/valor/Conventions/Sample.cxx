@@ -112,7 +112,7 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksNuEBarCChigh   ) : name = "#bar{#nu}_{e} CC high-resolution";     break;
     case (ks1Rmu           ) : name = "Single-ring mu-like";                  break;
     case (ks1Re            ) : name = "Single-ring e-like";                   break;
-    case (ks1Re1dcy        ) : name = "Multi-ring e-like";                    break;
+    case (ks1Re1dcy        ) : name = "1 e-like, 1 decay e";                    break;
     case (ksMultiRmu        ) : name = "Multi-ring mu-like";                    break;
     default                  : name = "--";
   }
