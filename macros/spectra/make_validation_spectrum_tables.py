@@ -30,7 +30,7 @@ min_channels_to_landscape = 7   # If we get more than this number of channels, t
 def main(config_file, param_values,
     hierarchy,angle_scheme,octant,dmsqscheme,
     output_file,label,hypname,fplopt,num_decimal_places,
-    force_untuned):
+    force_untuned, maqe):
   
   opt.gMassHierarchyAssumed = util.HierarchyFromString(hierarchy)
   opt.gOscMixingParamChoice = util.MixingTypeFromString(angle_scheme)
@@ -63,6 +63,18 @@ def main(config_file, param_values,
       fpl.SetInitValue(p,val)
       print(util.NameRegistry.Instance().ParamAsString(p).ljust(25),fpl.CurrValue(p))
       relevant_params.append(p)
+      #NOTE: a bit for code to run event rates with a systematic a parameter set to a specific value 
+#update fpl with MAQE, set init val and add to relevant params 
+# m = util.NameRegistry.Instance().PhysParamFromString("MAQE")
+# if (fpl.Exists(m)):
+#   print "adding value of maqe at knot "
+#   fpl.Update(m,0.495869)
+#   fpl.SetInitValue(m,0.495869)
+#   print(util.NameRegistry.Instance().ParamAsString(m).ljust(25),fpl.CurrValue(m))
+#   relevant_params.append(m)
+# else:
+#   print"MAQE is not in the list ???"
+
   relevant_params.sort()
   
   tex_output = open(output_file,"w")
@@ -262,7 +274,11 @@ if __name__=="__main__":
 
   parser.add_option('-u', '--force-untuned' , dest='force_untuned' , default=False, action="store_true", help="If true, force all systematics to their untuned values (so their weights should = 1).")
 
+  parser.add_option( '--maqe' , dest='maqe' , default=1, help="maque val ")
+#UWAGA: add MAQE as  an option here. Delete after the test 
+
   all_parnames = []
+
   for p in range(conv.kNuis000):
     parname = util.NameRegistry.Instance().ParamAsStringVerySimple(p)
     default = opt.GetGlobalBestFit(p)
@@ -279,7 +295,7 @@ if __name__=="__main__":
 
   main(o.config, param_values,
     o.hierarchy,o.mixparamchoice,o.mixparamoctant,o.dmsqscheme,
-    o.output_file,o.label,o.hypname,o.fplopt,o.ndp, o.force_untuned)
+    o.output_file,o.label,o.hypname,o.fplopt,o.ndp, o.force_untuned, o.maqe)
   
   if other:
     print("Warning - ignored arguments: ",other)
