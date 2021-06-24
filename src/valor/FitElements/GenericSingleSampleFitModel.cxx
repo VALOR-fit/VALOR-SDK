@@ -651,7 +651,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
   bool write_pdfcs_rf = (opt.find("pdfcs_rf") != string::npos) || write_all;
 
   if(write_pdfc_rf) {
-    LOG("GenericSingleSampleFitModel",pWARN) << "The option pdfc_rf is not yet implemented.";
+    LOG("GenericSingleSampleFitModel",pWARN) << "The option pdfc_rf for optimised binning is not yet implemented.";
   }
 
   if(!array) {
@@ -733,7 +733,37 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
           LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFCompSb[imode]->GetName();
           array->Add(fPDFCompSb[imode]);
         }
-      }//+SB?          
+      }//+SB?
+
+      if(write_sb) {
+        if (write_pdfc_rf) {
+          const std::vector<KineVar_t>  & reco_vars = reco_smp.KineVars();
+          if(reco_vars.size() == 1) {
+            conv::KineSpace_t ks(util::KineSpaceFromKineVar(reco_vars[0]));
+            TH1 * hob = util::binning::Make1DHistogram(*fPDFCompSb[imode],binning,ks,true);
+            if(hob) {
+              TString hobname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfc_sb_rf",fName.c_str(),util::AsString(reco_vars[0]).c_str(),util::AsString(m).c_str());
+              hob->SetName(hobname.Data());
+              array->Add(hob);
+            }
+          }
+          else if(reco_vars.size() == 2) {
+            conv::KineSpace_t ks = util::KineSpaceFromKineVars(reco_vars);
+            if(ks != conv::kspUndefined) {
+              TH2 *hob = util::binning::Make2DHistogram(*fPDFCompSb[imode],&reco_smp,reco_vars);
+              if(hob) {
+                TString hobname = TString::Format("%s_%s_%s_%s_%s",tag,"pdfc_sb_rf",fName.c_str(),util::AsString(ks).c_str(),util::AsString(m).c_str());
+                hob->SetName(hobname.Data());
+                array->Add(hob);
+              }
+            }
+          }
+          else {
+            LOG("GenericSingleSampleFitModel", pWARN)
+              << "Tried writing PDFC to ROOT format, but number of kine vars != 1 or 2 (" << fPDFTotOb->GetName() << ")";
+          }
+        }
+      }//+SB?
 
     }//imode
   }//pdfc_vf,pdfc_rf
@@ -2913,21 +2943,21 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           }
         }
         double & val = templFinOb[ireco][itrue];
+        double val_before_syst = templFinOb[ireco][itrue];
         val *= response;
 #ifdef DEBUG_SINGLE_BIN
         if(fSample == debug_sample && fBeam == debug_beam && (m == debug_mode || debug_mode == conv::kmUndefined) && ireco == debug_ireco && (itrue == debug_itrue || debug_true0 == -999) && (debug_param == conv::kPhypUndefined || p == debug_param)) {
           unsigned int use_debug_itrue = debug_itrue;
           if(debug_true0 == -999) {
             use_debug_itrue = itrue;
-            LOG("GenericSingleSampleFitModel",pNOTICE) << "True kinevar 0 = " << true_sb->BinCentre(use_debug_itrue, 0);
           }
           LOG("GenericSingleSampleFitModel",pNOTICE)
-            << std::fixed << std::setprecision(9)
+            << std::fixed << std::setprecision(5)
             << "Applying spline param [" << param_name
-            << "] with curr val = " << f << ", untuned val = " << untuned
+            << "] to true kv#0 bin centred on " << true_sb->BinCentre(use_debug_itrue, 0) << "GeV. Param val = " << f << ", generated val = " << untuned
             << ", weight = " << response
-            << "; new bin content = " << templFinOb[debug_ireco][use_debug_itrue]
-            << ", from spline with name [" << spl->GetName() << "] and title [" << spl->GetTitle() << "]";
+            << ", bin content before & after = " << val_before_syst << " --> " << templFinOb[debug_ireco][use_debug_itrue]
+            << ", from spline named [" << spl->GetName() << "]";
         }
 #endif
         last_itrue = itrue;
@@ -2937,18 +2967,20 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 
 #ifdef DEBUG_SINGLE_BIN
     if(fSample == debug_sample && fBeam == debug_beam && (m == debug_mode || debug_mode == conv::kmUndefined) && debug_reco0 != -999 && debug_reco1 != -999 && debug_print_sum_over_true0) {
-      double debug_sum_over_true_bins = 0;
+      double debug_sum_over_true_bins      = 0;
+      double debug_sum_over_true_bins_init = 0;
       for(int i_non_empty = 0; i_non_empty < fNumOfNonEmptyBinsOb[imode]; i_non_empty++) {
         // Only loop over non-empty MC template bins
         int itrue =  fNonEmptyBinsOb[imode][i_non_empty] % n_true_bins_sb;
         int ireco = (fNonEmptyBinsOb[imode][i_non_empty] - itrue) / n_true_bins_sb;
         if(ireco != debug_ireco) { continue; }
-        debug_sum_over_true_bins += templFinOb[ireco][itrue];
+        debug_sum_over_true_bins      += templFinOb[ireco][itrue];
+        debug_sum_over_true_bins_init += fMCTNomOb[imode]->GetEntry(ireco,itrue);
       }
       LOG("GenericSingleSampleFitModel",pNOTICE)
-        << std::fixed << std::setprecision(9)
-        << "After applying all params, new reco bin content summed over all true kv #0 bins (for mode "
-        << util::AsString(m) <<") = " << debug_sum_over_true_bins;
+        << std::fixed << std::setprecision(5)
+        << "Before & after applying all params, new reco bin content summed over all Etrue bins (for mode "
+        << util::AsString(m) <<") = " << debug_sum_over_true_bins_init << " --> " << debug_sum_over_true_bins;
     }
 
 #endif
@@ -4540,3 +4572,9 @@ util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_na
       valor_array_format, this->StreamSize());
 }
 //________________________________________________________________________________________
+ void GenericSingleSampleFitModel::UpdateMassHierarchyFromOpt()
+ {
+  fNuOsc3Flavour.SetMassHierarchy(Opt::Instance()->gMassHierarchyAssumed);
+ }
+//________________________________________________________________________________________
+

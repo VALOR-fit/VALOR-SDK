@@ -254,7 +254,7 @@ def main(output_filename, in_file, param_set_str, config, det, beam, selec, comp
           if len(modes) > 1:
             if im == 0:
               start_pdf = True
-            elif im == len(modes) -1:
+            elif im == len(modes) -1 and ip == len(param_set) -1:
               end_pdf   = True
         else:
           if len(param_set) > 1:

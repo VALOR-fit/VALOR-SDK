@@ -141,6 +141,8 @@ namespace oscillation
 
     void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_val, int bin, double step);
 
+    void ForceFreeParameterVal(FitParamList& fpl, std::string param, double force_val);
+
 }
 }
 }

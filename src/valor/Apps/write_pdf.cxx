@@ -115,6 +115,10 @@ int main(int argc, char ** argv)
     }
   }
 
+  // If true, then force all systematic parameters to their untuned values.
+  // This is for testing weights as is intended to be used with e.g. the DEBUG_SINGLE_BIN preprocessor directive in GSSFM
+  bool force_untuned = arg.GetBool("force-untuned");
+
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
 
@@ -209,6 +213,12 @@ int main(int argc, char ** argv)
 
     // Write-out the mock data
     data->Write(outfilename,"toymc","all", "recreate");
+  }
+
+  if(force_untuned) {
+    LOG("write_pdf",pNOTICE) << "Forcing all systematic parameters to their untuned values - all systematic weights should be 1";
+    model->ForceSystematicsToUntuned(*fp);
+    fp->FromPhysParamList(model->Tweaks(),"current-silent");
   }
 
   // Generate predictions

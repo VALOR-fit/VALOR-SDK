@@ -139,6 +139,8 @@ public:
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
+  //A function to access fNuOsc3Flavour and set MH 
+  void UpdateMassHierarchyFromOpt();
 private:
 
   void Init  (void);
