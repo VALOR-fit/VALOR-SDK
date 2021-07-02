@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include "TMath.h"
+#include "TGraph2D.h"
 
 #include "valor/Messenger/Messenger.h"
 #include "valor/Conventions/Constants.h"
@@ -440,12 +441,25 @@ void Marginalisation::CalcPenaltyTerm(const double par0,util::oscillation::Penal
     //Convert parameter value to teh same scheme as penalty
     double parval0 = util::ConvertOscParamToUsedScheme(penaltyset.param_id_0, par0 , parameter_scheme_name_p0, penaltyset.scheme);
     double parval1 = util::ConvertOscParamToUsedScheme(penaltyset.param_id_1, par1 , parameter_scheme_name_p1, penaltyset.scheme_par1);
-    
+    double penalty = 999;
+    //assert(penaltyset.penalty_graph2D);
+    std::cout<<" n "<< penaltyset.penalty_graph2D->GetN()<<std::endl;
+    std::cout<<" nX "<< penaltyset.penalty_graph2D->GetNpx()<<" NY " <<penaltyset.penalty_graph2D->GetNpy()<< std::endl;
+    double b = penaltyset.penalty_graph2D->Interpolate(0.016, 0.0023);
+    std::cout<<" test of interpolate "<< b<<std::endl;
     // Getting  chi2 value using Interpolate method of TGraph2D
-    double penalty = penaltyset.penalty_graph2D->Interpolate(parval0,parval1);
+    //if ((parval0 > penaltyset.penalty_graph2D->GetXmin()) && (parval1 > penaltyset.penalty_graph2D->GetYmin()))
+    //{
+    //if ( parval0>0.016){
+      LOG("Marginalisation", pNOTICE) <<"Penalty graph is inside the range for parameter 1 value "<< parval0<<" and parameter 2 value "<<parval1;
 
+      penalty = penaltyset.penalty_graph2D->Interpolate(parval0,parval1);
+    //}
+    //else{
+    //  LOG("Marginalisation", pNOTICE) <<"Penalty graph is outside of range for parameter 1 value "<< parval0<<" and parameter 2 value "<<parval1;
+//
     this->_penaltyterm = penalty;
-    LOG("Marginalisation", pDEBUG) <<"for parameter 0 value "<< parval0<<" and parameter 1 value "<<parval1<<" the penalty term is "<<penalty;
+    LOG("Marginalisation", pDEBUG) <<"for parameter 1 value "<< parval0<<" and parameter 2 value "<<parval1<<" the penalty term is "<<penalty;
   }
   else {
     LOG("Marginalisation", pFATAL) <<"Unkonw penalty parameter type. Can't work like this...";

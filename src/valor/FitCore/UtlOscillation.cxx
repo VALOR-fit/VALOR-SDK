@@ -658,11 +658,11 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
        if(xmleng->GetNodeContent(curr_node)) {
            string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
            if(curr_node_name == "params") { param_names = content;
-               if(strcmp(penaltyparam.c_str(),param_names.c_str())!=0){
-                   LOG("Marginalisation", pERROR) << "Penalty parameter is not specified in xml file, sad it is ";
-                   exit(1);
-               }
-           }
+          //     if(strcmp(penaltyparam.c_str(),param_names.c_str())!=0){
+          //         LOG("Marginalisation", pERROR) << "Penalty parameter is not specified in xml file, sad it is ";
+          //         exit(1);
+          //     }
+          }
            if(curr_node_name == "type"  ) { penalty_type = content; }
            if(curr_node_name == "scheme") { opt        = content; }
        }
@@ -798,8 +798,10 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
                                           << penalty_hist_file_name << "]";
             exit(1);
          }
+
          penalty_graph->GetXaxis()->SetTitle(nr->ParamAsStringVerySimple(params[0]).c_str());
          penalty_graph->GetYaxis()->SetTitle(nr->ParamAsStringVerySimple(params[1]).c_str());
+         penalty_graph->SetDirectory(0);
          pval.param_id_0 = params[0];
          pval.param_id_1 = params[1];
          pval.type = "user";
