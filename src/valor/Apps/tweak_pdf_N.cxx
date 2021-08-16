@@ -190,12 +190,21 @@ int main(int argc, char ** argv)
     // (toy-MC #-1 is special: default)
     FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
-    if (fp->Exists(conv::kPhypMixing12)) { fp->Update(conv::kPhypMixing12,mixing12); }
-    if (fp->Exists(conv::kPhypMixing13)) { fp->Update(conv::kPhypMixing13,mixing13); }
-    if (fp->Exists(conv::kPhypMixing23)) { fp->Update(conv::kPhypMixing23,mixing23); }
-    if (fp->Exists(conv::kPhypDm12sq  )) { fp->Update(conv::kPhypDm12sq  ,dm12sq  ); }
-    if (fp->Exists(conv::kPhypDm23sq  )) { fp->Update(conv::kPhypDm23sq  ,dm23sq  ); }
-    if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
+    if(hypname == "eff_sterile_osc"){
+        fp->Update(conv::kPhypDm41sq,   100);
+        fp->Update(conv::kPhypMixingMuMu, 0);
+        fp->Update(conv::kPhypMixingMuE,  1);
+        fp->Update(conv::kPhypMixingEE,   0);
+    }
+    else{
+
+      if (fp->Exists(conv::kPhypMixing12)) { fp->Update(conv::kPhypMixing12,mixing12); }
+      if (fp->Exists(conv::kPhypMixing13)) { fp->Update(conv::kPhypMixing13,mixing13); }
+      if (fp->Exists(conv::kPhypMixing23)) { fp->Update(conv::kPhypMixing23,mixing23); }
+      if (fp->Exists(conv::kPhypDm12sq  )) { fp->Update(conv::kPhypDm12sq  ,dm12sq  ); }
+      if (fp->Exists(conv::kPhypDm23sq  )) { fp->Update(conv::kPhypDm23sq  ,dm23sq  ); }
+      if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
+    }
 
     model->ResetSystematics(*fp, "all");
     
