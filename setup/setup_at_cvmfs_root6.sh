@@ -11,8 +11,11 @@
 # Setup LArSoft. This gives us modern g++, ROOT and GENIE
 # The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
 if [ -z "$SETUP_GENIE" ] ; then
-  . /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
-  setup genie v3_00_06c -q e17:prof
+  #. /cvmfs/fermilab.opensciencegrid.org/products/larsoft/setup && retval="$?"
+  . /cvmfs/larsoft.opensciencegrid.org/products/setup && retval="$?"
+  source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+  setup genie v3_00_06e -q e19:prof:py2
+  #setup gcc v4_9_1
 fi
 
 if [ -z "$VALOR_FMWK" ]; then
