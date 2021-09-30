@@ -17,6 +17,7 @@ ChangeLog:
 #include "TString.h"
 #include "TSystem.h"
 #include "TPRegexp.h"
+#include "TObjString.h"
 
 #include "valor/Messenger/Messenger.h"
 #include "valor/Utilities/Env.h"
