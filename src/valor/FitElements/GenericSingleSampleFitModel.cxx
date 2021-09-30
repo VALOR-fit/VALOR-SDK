@@ -500,11 +500,24 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
   }
   LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTFinOb integral summed over all modes = " << fMCTFinOb_tot_integral;
 
-  this->ApplyOscProb(opt);      // `fin' MC templates --> `fin' MC templates
+  //special mode where no oscillation weights are applied
+  // Handled simply like this, because input and source VArrays are identical
+  bool create_spectral_inputs_mode = false;
+  if(opt) {
+    string optstr = opt;
+    if(optstr.find("CREATESPECTRALINPUTS") != string::npos) {
+      create_spectral_inputs_mode = true;
+      LOG("GenericSingleSampleFitModel",pINFO) << "CREATESPECTRALINPUTS option found. Will not apply oscillation probability weights, or apply any Ereco cuts";
+    }
+  }
+
+  if(!create_spectral_inputs_mode)
+    this->ApplyOscProb(opt);      // `fin' MC templates --> `fin' MC templates
   this->UpdatePDFs(opt);        // `fin' MC templates --> p.d.f
 
   //HACK: Remove events that have migrated into originally-empty Ereco bins (below in all samples, above in e-like)
-  this->ApplyErecoCuts(opt);
+  if(!create_spectral_inputs_mode)
+    this->ApplyErecoCuts(opt);
   /* DO THIS IN THE FIT STATISTIC CALCULATION
   //HACK: Collapse the 2D e-like into 1D, to match Osc3++ (can't do with binning because splines are 2D)
   // actually... this is done in GSSFD instead, during the chisq calculation. Allows one set of toys to be made & fit with either 1D or 2D chisq calculation
