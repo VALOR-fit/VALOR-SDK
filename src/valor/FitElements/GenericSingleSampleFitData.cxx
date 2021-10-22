@@ -109,11 +109,14 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * opt)
   else {
     LOG("GenericSingleSampleFitData",pINFO)
       << "Reading stored VALOR data arrays";
-    // -------------------------------------------------
-    // TODO:
-    LOG("GenericSingleSampleFitData",pFATAL) << "Case not implemented yet";
-    util::Die(-1); return false;
-    // -------------------------------------------------
+    string node_name = "data/valor_array";
+    TFile * data_varray_file = util::XML2TFile (xml,root_node,node_name);
+    if (!data_varray_file) {
+      LOG("GenericSingleSampleFitData",pFATAL) << "Failed to read VALORArray data file";
+      util::Die(-1); return false;
+    }
+    this->FillFromVALORArrayFile(data_varray_file);
+    delete data_varray_file;
   }
 
   // Release memory
@@ -839,6 +842,48 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     curr_wght_sb += this_entry;
     fDataSb->SetEntry(curr_wght_sb, reco_bin_sb);
   }//iev
+
+  fDataObNull = false;
+  fDataSbNull = false;
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitData::FillFromVALORArrayFile(TFile * f)
+{
+  if(!f) return;
+
+  //make the VALORArray name for this sample
+  std::stringstream vname;
+  vname << "valor_pdft_sb_vf_" << util::AsString(fDetector)
+	<< "__" << util::AsString(fBeam)
+	<< "__" << util::AsString(fSample);
+  
+  VALORArray * v = 0;
+  f->GetObject(vname.str().c_str(), v);
+
+  if(!v) {
+    LOG("GenericSingleSampleFitData",pFATAL)
+      << "Could not get VALORArray " << vname.str()
+      << " From file:";
+    f->Print();
+    util::Die(-1); return;
+  }
+  else
+    LOG("GenericSingleSampleFitData",pNOTICE)
+      << "Read in VALORArray data from " << vname.str();
+
+  std::cout << fDataSb->GetSize() << " "
+	    << fDataOb->GetSize() << " "
+	    << v->GetSize() << std::endl;
+  std::cout << fDataSb->GetNDim() << " "
+	    << fDataOb->GetNDim() << " "
+	    << v->GetNDim() << std::endl;
+  assert(fDataSb->GetSize() == v->GetSize());
+  assert(fDataOb->GetSize() == v->GetSize());
+  assert(fDataSb->GetNDim() == v->GetNDim());
+  assert(fDataOb->GetNDim() == v->GetNDim());
+
+  fDataOb->CopyFrom(*v);
+  fDataSb->CopyFrom(*v);
 
   fDataObNull = false;
   fDataSbNull = false;
