@@ -88,6 +88,7 @@ string util::AsString(ReacModeCoarse_t m)
     case (kmcNuTauCC        ) : return "nutauCC";         break;
     case (kmcNuTauBarCC     ) : return "nutaubarCC";      break;
     case (kmcCosmic         ) : return "cosmic";          break;
+    case (kmcDirt           ) : return "dirt";          break;
     default                   : return "--";           
   }
   return "";
@@ -167,6 +168,7 @@ string util::AsStringTex(ReacModeCoarse_t m, bool root)
     case (kmcNuTauCC        ) : name = "#nu_{#tau} CC";               break;
     case (kmcNuTauBarCC     ) : name = "#bar{#nu}_{#tau} CC";         break;
     case (kmcCosmic         ) : name = "Cosmic";                      break;
+    case (kmcDirt           ) : name = "Dirt";                        break;
     default                   : name = "--"; 
   }
 
