@@ -76,10 +76,21 @@ typedef enum ESample
    ks1Rmu                , // Single-ring muon-like
    ks1Re                 , // Single-ring electron-like
    ksMultiRe               // Multi-ring electron-like
+   // PRISM selections
+   ksNuMuCCoa00          , // numuCC-like, off-axis bin "00" (arbitrary definition of off-axis bin: specified by range of off-axis angles in input DST)
+   ksNuMuCCoa01          , // numuCC-like, off-axis bin "01"
+   ksNuMuCCoa02          , // numuCC-like, off-axis bin "02"
+   ksNuMuCCoa03          , // numuCC-like, off-axis bin "03"
+   ksNuMuCCoa04          , // numuCC-like, off-axis bin "04"
+   ksNuMuCCoa05          , // numuCC-like, off-axis bin "05"
+   ksNuMuCCoa06          , // numuCC-like, off-axis bin "06"
+   ksNuMuCCoa07          , // numuCC-like, off-axis bin "07"
+   ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
+   ksNuMuCCoa09            // numuCC-like, off-axis bin "09"
 } 
 Sample_t; 
 
-static const int kMaxNSamples = 39;
+static const int kMaxNSamples = 49;
 
 } // conv
 

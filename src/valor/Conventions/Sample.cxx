@@ -63,6 +63,16 @@ string util::AsString(Sample_t s)
     case (ks1Rmu           ) : return "1rmu";            break;
     case (ks1Re            ) : return "1re";             break;
     case (ksMultiRe        ) : return "multire";         break;
+    case (ksNuMuCCoa00     ) : return "numuCCinclOA00";  break;
+    case (ksNuMuCCoa01     ) : return "numuCCinclOA01";  break;
+    case (ksNuMuCCoa02     ) : return "numuCCinclOA02";  break;
+    case (ksNuMuCCoa03     ) : return "numuCCinclOA03";  break;
+    case (ksNuMuCCoa04     ) : return "numuCCinclOA04";  break;
+    case (ksNuMuCCoa05     ) : return "numuCCinclOA05";  break;
+    case (ksNuMuCCoa06     ) : return "numuCCinclOA06";  break;
+    case (ksNuMuCCoa07     ) : return "numuCCinclOA07";  break;
+    case (ksNuMuCCoa08     ) : return "numuCCinclOA08";  break;
+    case (ksNuMuCCoa09     ) : return "numuCCinclOA09";  break;
     default                  : return "--";
   }
   return "";
@@ -112,6 +122,16 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ks1Rmu           ) : name = "Single-ring mu-like";                  break;
     case (ks1Re            ) : name = "Single-ring e-like";                   break;
     case (ksMultiRe        ) : name = "Multi-ring e-like";                    break;
+    case (ksNuMuCCoa00     ) : name = "#nu_{#mu} CC incl., off-axis bin 00";  break;
+    case (ksNuMuCCoa01     ) : name = "#nu_{#mu} CC incl., off-axis bin 01";  break;
+    case (ksNuMuCCoa02     ) : name = "#nu_{#mu} CC incl., off-axis bin 02";  break;
+    case (ksNuMuCCoa03     ) : name = "#nu_{#mu} CC incl., off-axis bin 03";  break;
+    case (ksNuMuCCoa04     ) : name = "#nu_{#mu} CC incl., off-axis bin 04";  break;
+    case (ksNuMuCCoa05     ) : name = "#nu_{#mu} CC incl., off-axis bin 05";  break;
+    case (ksNuMuCCoa06     ) : name = "#nu_{#mu} CC incl., off-axis bin 06";  break;
+    case (ksNuMuCCoa07     ) : name = "#nu_{#mu} CC incl., off-axis bin 07";  break;
+    case (ksNuMuCCoa08     ) : name = "#nu_{#mu} CC incl., off-axis bin 08";  break;
+    case (ksNuMuCCoa09     ) : name = "#nu_{#mu} CC incl., off-axis bin 09";  break;
     default                  : name = "--";
   }
 
@@ -188,6 +208,17 @@ bool util::IsCC(Sample_t s)
     case (ks1Re            ) :
     case (ksMultiRe        ) : return true; break;
 
+    case (ksNuMuCCoa00     ) : // intentional fallthrough
+    case (ksNuMuCCoa01     ) :
+    case (ksNuMuCCoa02     ) :
+    case (ksNuMuCCoa03     ) :
+    case (ksNuMuCCoa04     ) :
+    case (ksNuMuCCoa05     ) :
+    case (ksNuMuCCoa06     ) :
+    case (ksNuMuCCoa07     ) :
+    case (ksNuMuCCoa08     ) :
+    case (ksNuMuCCoa09     ) : return true; break;
+
     case (ksUndefined      ) : return false;
   }
   return false;
@@ -237,7 +268,19 @@ bool util::IsCCQELike(Sample_t s)
     case (ksNuEBarCClow    ) :
     case (ks1Re            ) :
     case (ks1Rmu           ) :
-    case (ksMultiRe        ) : return false; break;
+    case (ksMultiRe        ) :
+    case (ksNuMuCCoa00     ) :
+    case (ksNuMuCCoa01     ) :
+    case (ksNuMuCCoa02     ) :
+    case (ksNuMuCCoa03     ) :
+    case (ksNuMuCCoa04     ) :
+    case (ksNuMuCCoa05     ) :
+    case (ksNuMuCCoa06     ) :
+    case (ksNuMuCCoa07     ) :
+    case (ksNuMuCCoa08     ) :
+    case (ksNuMuCCoa09     ) : return false; break;
+
+    return false; break;
     default: return false;
   }
   return false;
@@ -279,7 +322,17 @@ bool util::IsNC(Sample_t s)
     case (ksNuEBarCChigh   ) :
     case (ks1Rmu           ) :
     case (ks1Re            ) :
-    case (ksMultiRe        ) : return false;
+    case (ksMultiRe        ) : 
+    case (ksNuMuCCoa00     ) :
+    case (ksNuMuCCoa01     ) :
+    case (ksNuMuCCoa02     ) :
+    case (ksNuMuCCoa03     ) :
+    case (ksNuMuCCoa04     ) :
+    case (ksNuMuCCoa05     ) :
+    case (ksNuMuCCoa06     ) :
+    case (ksNuMuCCoa07     ) :
+    case (ksNuMuCCoa08     ) :
+    case (ksNuMuCCoa09     ) : return false;
 
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) : 
@@ -368,6 +421,16 @@ bool util::IsMuLike(Sample_t s)
     case ks1Rmu            : return true  ;
     case ks1Re             : return false ;
     case ksMultiRe         : return false ;
+    case (ksNuMuCCoa00     ) : // intentional fallthrough
+    case (ksNuMuCCoa01     ) :
+    case (ksNuMuCCoa02     ) :
+    case (ksNuMuCCoa03     ) :
+    case (ksNuMuCCoa04     ) :
+    case (ksNuMuCCoa05     ) :
+    case (ksNuMuCCoa06     ) :
+    case (ksNuMuCCoa07     ) :
+    case (ksNuMuCCoa08     ) :
+    case (ksNuMuCCoa09     ) : return true; break;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
@@ -416,6 +479,16 @@ bool util::IsELike(Sample_t s)
     case ks1Rmu            : return false ;
     case ks1Re             : return true  ;
     case ksMultiRe         : return true  ;
+    case (ksNuMuCCoa00     ) : // intentional fallthrough
+    case (ksNuMuCCoa01     ) :
+    case (ksNuMuCCoa02     ) :
+    case (ksNuMuCCoa03     ) :
+    case (ksNuMuCCoa04     ) :
+    case (ksNuMuCCoa05     ) :
+    case (ksNuMuCCoa06     ) :
+    case (ksNuMuCCoa07     ) :
+    case (ksNuMuCCoa08     ) :
+    case (ksNuMuCCoa09     ) : return false; break; 
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
