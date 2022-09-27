@@ -23,7 +23,14 @@
   
   // VALOR modern disappearance files
   TFile *f_stat = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/inclusive/stat-only-2020a1_contours_as_graphs.root","read");
-  
+ 
+  // Updated POT:
+  //    SBND   = 9e20
+  //    ICARUS = 14e20
+  //
+  TFile *f_syst_sbnPOT  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/newPOT/output_contours_as_graphs_newPOT_numu_syst.root");
+  TFile *f_syst_2detPOT = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/newPOT/output_contours_as_graphs_newPOT_numu_sbnd_icarus_syst.root");
+
   // Inclusive
   TFile *f_syst_03d1 = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/output_contours_as_graphs_numu_disapp_03d1.root"); 
   TFile *f_syst_03c1 = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/inclusive/stat-syst-2020a1-03c1-fix_contours_as_graphs.root"); 
@@ -110,7 +117,11 @@
   TGraph * lim_numudis_3p1_minisciboone_90pctCL = (TGraph*)f->Get("lim_numudis_3p1_minisciboone_90pctCL" );
   TGraph * lim_numudis_3p1_icecube_90pctCL      = (TGraph*)f->Get("lim_numudis_3p1_icecube_90pctCL" );
   TGraph * lim_numudis_3p1_icecube_99pctCL      = (TGraph*)f->Get("lim_numudis_3p1_icecube_99pctCL" );
-                                                               
+  
+  // New POT
+  TGraph * valor_modern_sbn_3p1_contour_90pct_syst_sbn_newPOT   = dynamic_cast<TGraph *>( f_syst_sbnPOT->Get("contour_90pct_lin_0"));
+  TGraph * valor_modern_sbn_3p1_contour_90pct_syst_2det_newPOT  = dynamic_cast<TGraph *>( f_syst_2detPOT->Get("contour_90pct_lin_0"));
+  
   // Stat+syst                                                 
   TGraph * valor_modern_sbn_3p1_contour_90pct_syst_03d1         = dynamic_cast<TGraph *>( f_syst_03d1->Get("contour_90pct_lin_0"));
   TGraph * valor_modern_sbn_3p1_contour_5sig_syst_03d1          = dynamic_cast<TGraph *>( f_syst_03d1->Get("contour_5sigma_lin_0"));
@@ -226,8 +237,10 @@
   TGraph *injected1   = new TGraph(1,&x.data()[6],&y.data()[6]);
   
   TGraph * valor_modern_sbn_3p1_contour_5sig_stat_all               = dynamic_cast<TGraph *>( f_stat_all->Get("stat_only_5sigma_lin_0")); // 2020a1 sample
+  TGraph * valor_modern_sbn_3p1_contour_5sig_stat_allW              = dynamic_cast<TGraph *>( f_stat_all->Get("stat_only_5sigma_lin_0")); // 2020a1 sample
   TGraph * valor_modern_sbn_3p1_contour_90pct_syst_03c1_all         = dynamic_cast<TGraph *>( f_syst_03c1_all->Get("stat_syst_90pct_lin_1"));
   TGraph * valor_modern_sbn_3p1_contour_5sig_syst_03c1_all          = dynamic_cast<TGraph *>( f_syst_03c1_all->Get("stat_syst_5sigma_lin_1"));
+  TGraph * valor_modern_sbn_3p1_contour_5sig_syst_03c1_allW         = dynamic_cast<TGraph *>( f_syst_03c1_all->Get("stat_syst_5sigma_lin_1"));
   TGraph * valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all      = dynamic_cast<TGraph *>( f_syst_03c1_exc_all->Get("stat_syst_5sigma_lin_1"));
   TGraph * valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all      = dynamic_cast<TGraph *>( f_syst_03c2_exc_all->Get("stat_syst_5sigma_lin_2"));
   TGraph * valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc_all      = dynamic_cast<TGraph *>( f_syst_03c3_exc_all->Get("stat_syst_5sigma_lin_4"));
@@ -244,161 +257,161 @@
   // Stat only
   valor_modern_sbn_3p1_contour_5sig_stat       -> SetLineColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat       -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat       -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat       -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_stat_exc   -> SetLineColor(kAzure+3);
   valor_modern_sbn_3p1_contour_5sig_stat_exc   -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_exc   -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_exc   -> SetLineWidth(3);
 
   // Detectors
   valor_modern_sbn_3p1_contour_5sig_stat_nd    -> SetLineColor(kOrange+2);
   valor_modern_sbn_3p1_contour_5sig_stat_nd    -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_nd    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_nd    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_stat_ub    -> SetLineColor(kAzure+5);
   valor_modern_sbn_3p1_contour_5sig_stat_ub    -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_ub    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_ub    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_stat_fd    -> SetLineColor(kSpring-5);
   valor_modern_sbn_3p1_contour_5sig_stat_fd    -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_fd    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_fd    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_stat_nd_fd -> SetLineColor(kViolet-5);
   valor_modern_sbn_3p1_contour_5sig_stat_nd_fd -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_nd_fd -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_nd_fd -> SetLineWidth(2);
   
   valor_modern_sbn_3p1_contour_5sig_stat_nd_ub -> SetLineColor(kOrange+5);
   valor_modern_sbn_3p1_contour_5sig_stat_nd_ub -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_nd_ub -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_nd_ub -> SetLineWidth(2);
   
   valor_modern_sbn_3p1_contour_5sig_stat_ub_fd -> SetLineColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_ub_fd -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_ub_fd -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_ub_fd -> SetLineWidth(2);
   
   valor_modern_sbn_3p1_contour_5sig_stat_3det  -> SetLineColor(kGray+3);
   valor_modern_sbn_3p1_contour_5sig_stat_3det  -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_3det  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_3det  -> SetLineWidth(2);
  
   valor_modern_sbn_3p1_contour_5sig_syst_nd    -> SetLineColor(kOrange+2);
   valor_modern_sbn_3p1_contour_5sig_syst_nd    -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_syst_nd    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_nd    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_ub    -> SetLineColor(kAzure+5);
   valor_modern_sbn_3p1_contour_5sig_syst_ub    -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_syst_ub    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_ub    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_fd    -> SetLineColor(kSpring-5);
   valor_modern_sbn_3p1_contour_5sig_syst_fd    -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_syst_fd    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_fd    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_nd_fd -> SetLineColor(kViolet-5);
   valor_modern_sbn_3p1_contour_5sig_syst_nd_fd -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_nd_fd -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_nd_fd -> SetLineWidth(2);
   
   valor_modern_sbn_3p1_contour_5sig_syst_nd_ub -> SetLineColor(kOrange+5);
   valor_modern_sbn_3p1_contour_5sig_syst_nd_ub -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_nd_ub -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_nd_ub -> SetLineWidth(2);
   
   valor_modern_sbn_3p1_contour_5sig_syst_ub_fd -> SetLineColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_syst_ub_fd -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_ub_fd -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_ub_fd -> SetLineWidth(2);
   
   valor_modern_sbn_3p1_contour_5sig_syst_3det  -> SetLineColor(kGray+3);
   valor_modern_sbn_3p1_contour_5sig_syst_3det  -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_syst_3det  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_3det  -> SetLineWidth(2);
  
   // 2019b3
   valor_modern_sbn_3p1_contour_5sig_stat_2019b3_nd    -> SetLineColor(kOrange+2);
   valor_modern_sbn_3p1_contour_5sig_stat_2019b3_nd    -> SetLineStyle(3);
-  valor_modern_sbn_3p1_contour_5sig_stat_2019b3_nd    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_2019b3_nd    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_stat_2019b3_fd    -> SetLineColor(kSpring-5);
   valor_modern_sbn_3p1_contour_5sig_stat_2019b3_fd    -> SetLineStyle(3);
-  valor_modern_sbn_3p1_contour_5sig_stat_2019b3_fd    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_2019b3_fd    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_stat_2019b3_nd_fd -> SetLineColor(kViolet-5);
   valor_modern_sbn_3p1_contour_5sig_stat_2019b3_nd_fd -> SetLineStyle(3);
-  valor_modern_sbn_3p1_contour_5sig_stat_2019b3_nd_fd -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_2019b3_nd_fd -> SetLineWidth(3);
  
   // 2020a1
   valor_modern_sbn_3p1_contour_5sig_stat_2020a1_nd    -> SetLineColor(kOrange+2);
   valor_modern_sbn_3p1_contour_5sig_stat_2020a1_nd    -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_2020a1_nd    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_2020a1_nd    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_stat_2020a1_fd    -> SetLineColor(kSpring-5);
   valor_modern_sbn_3p1_contour_5sig_stat_2020a1_fd    -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_2020a1_fd    -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_2020a1_fd    -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_stat_2020a1_nd_fd -> SetLineColor(kViolet-5);
   valor_modern_sbn_3p1_contour_5sig_stat_2020a1_nd_fd -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_2020a1_nd_fd -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_2020a1_nd_fd -> SetLineWidth(3);
   
   // Selection
   valor_modern_sbn_3p1_contour_5sig_stat_sel_nd    -> SetLineColor(kOrange+2);
   valor_modern_sbn_3p1_contour_5sig_stat_sel_nd    -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_sel_nd    -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_sel_nd    -> SetLineWidth(2);
                                                    
   valor_modern_sbn_3p1_contour_5sig_stat_sel_fd    -> SetLineColor(kSpring-5);
   valor_modern_sbn_3p1_contour_5sig_stat_sel_fd    -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_sel_fd    -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_sel_fd    -> SetLineWidth(2);
                                                    
   valor_modern_sbn_3p1_contour_5sig_stat_sel_nd_fd -> SetLineColor(kViolet-5);
   valor_modern_sbn_3p1_contour_5sig_stat_sel_nd_fd -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_sel_nd_fd -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_sel_nd_fd -> SetLineWidth(2);
 
   valor_modern_sbn_3p1_contour_5sig_syst_sel_03c2_nd_fd -> SetLineColor(kSpring-5);
   valor_modern_sbn_3p1_contour_5sig_syst_sel_03c2_nd_fd -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_sel_03c2_nd_fd -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_sel_03c2_nd_fd -> SetLineWidth(2);
 
   valor_modern_sbn_3p1_contour_5sig_syst_2020a1_03c2_nd_fd -> SetLineColor(kViolet-5);
   valor_modern_sbn_3p1_contour_5sig_syst_2020a1_03c2_nd_fd -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_2020a1_03c2_nd_fd -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_2020a1_03c2_nd_fd -> SetLineWidth(2);
 
   valor_modern_sbn_3p1_contour_5sig_stat_2_sel_nd_fd -> SetLineColor(kSpring-5);
   valor_modern_sbn_3p1_contour_5sig_stat_2_sel_nd_fd -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_2_sel_nd_fd -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_2_sel_nd_fd -> SetLineWidth(3);
 
   // MC/Reco
   ratio_mc_reco_nd    . SetLineColor(kOrange+2);
   ratio_mc_reco_nd    . SetLineStyle(2);
-  ratio_mc_reco_nd    . SetLineWidth(4);
+  ratio_mc_reco_nd    . SetLineWidth(3);
                                                    
   ratio_mc_reco_fd    . SetLineColor(kSpring-5);
   ratio_mc_reco_fd    . SetLineStyle(2);
-  ratio_mc_reco_fd    . SetLineWidth(4);
+  ratio_mc_reco_fd    . SetLineWidth(3);
                                                    
   ratio_mc_reco_nd_fd . SetLineColor(kViolet-5);
   ratio_mc_reco_nd_fd . SetLineStyle(2);
-  ratio_mc_reco_nd_fd . SetLineWidth(4);
+  ratio_mc_reco_nd_fd . SetLineWidth(3);
 
   ratio_mc_reco_v2_nd    . SetLineColor(kOrange+2);
   ratio_mc_reco_v2_nd    . SetLineStyle(1);
-  ratio_mc_reco_v2_nd    . SetLineWidth(3);
+  ratio_mc_reco_v2_nd    . SetLineWidth(2);
                                                    
   ratio_mc_reco_v2_fd    . SetLineColor(kSpring-5);
   ratio_mc_reco_v2_fd    . SetLineStyle(3);
-  ratio_mc_reco_v2_fd    . SetLineWidth(4);
+  ratio_mc_reco_v2_fd    . SetLineWidth(3);
                                                    
   ratio_mc_reco_v2_nd_fd . SetLineColor(kViolet-5);
   ratio_mc_reco_v2_nd_fd . SetLineStyle(3);
-  ratio_mc_reco_v2_nd_fd . SetLineWidth(4);
+  ratio_mc_reco_v2_nd_fd . SetLineWidth(3);
 
   // Models
   valor_modern_sbn_3p1_contour_5sig_stat_2019b3-> SetLineColor(kOrange+5);
   valor_modern_sbn_3p1_contour_5sig_stat_2019b3-> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_2019b3-> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_2019b3-> SetLineWidth(2);
 
   valor_modern_sbn_3p1_contour_5sig_stat_susav2-> SetLineColor(kAzure+5);
   valor_modern_sbn_3p1_contour_5sig_stat_susav2-> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_susav2-> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_susav2-> SetLineWidth(2);
   
   valor_modern_sbn_3p1_contour_5sig_stat_smith -> SetLineColor(kSpring-5);
   valor_modern_sbn_3p1_contour_5sig_stat_smith -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_smith -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_smith -> SetLineWidth(2);
   
   valor_modern_sbn_3p1_contour_5sig_stat_lse   -> SetLineColor(kOrange+2);
   valor_modern_sbn_3p1_contour_5sig_stat_lse   -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_stat_lse   -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_lse   -> SetLineWidth(2);
  
   // Model ratios
   ratio_ref    . SetLineColor(kBlack);
@@ -407,138 +420,147 @@
 
   ratio_susav2 . SetLineColor(kAzure+5);
   ratio_susav2 . SetLineStyle(1);
-  ratio_susav2 . SetLineWidth(3);
+  ratio_susav2 . SetLineWidth(2);
   
   ratio_smith  . SetLineColor(kSpring-5);
   ratio_smith  . SetLineStyle(1);
-  ratio_smith  . SetLineWidth(3);
+  ratio_smith  . SetLineWidth(2);
                
   ratio_lse    . SetLineColor(kOrange+2);
   ratio_lse    . SetLineStyle(1);
-  ratio_lse    . SetLineWidth(3);
+  ratio_lse    . SetLineWidth(2);
                
   ratio_nd_fd  . SetLineColor(kViolet-5);
   ratio_nd_fd  . SetLineStyle(1);
-  ratio_nd_fd  . SetLineWidth(3);
+  ratio_nd_fd  . SetLineWidth(2);
   
+  // New POT
+  valor_modern_sbn_3p1_contour_90pct_syst_sbn_newPOT  -> SetLineColor(kAzure+4);  
+  valor_modern_sbn_3p1_contour_90pct_syst_sbn_newPOT  -> SetLineStyle(9);
+  valor_modern_sbn_3p1_contour_90pct_syst_sbn_newPOT  -> SetLineWidth(3);
+
+  valor_modern_sbn_3p1_contour_90pct_syst_2det_newPOT  -> SetLineColor(kAzure+4);  
+  valor_modern_sbn_3p1_contour_90pct_syst_2det_newPOT  -> SetLineStyle(9);
+  valor_modern_sbn_3p1_contour_90pct_syst_2det_newPOT  -> SetLineWidth(3);
+
   // VALOR modern syst
   // Inclusive
   valor_modern_sbn_3p1_contour_90pct_syst_03d1  -> SetLineColor(kOrange+4);  
   valor_modern_sbn_3p1_contour_90pct_syst_03d1  -> SetLineStyle(9);
-  valor_modern_sbn_3p1_contour_90pct_syst_03d1  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_90pct_syst_03d1  -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03d1  -> SetLineColor(kOrange+4);  
   valor_modern_sbn_3p1_contour_5sig_syst_03d1  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03d1  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_03d1  -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_90pct_syst_03c1  -> SetLineColor(kOrange+4);  
   valor_modern_sbn_3p1_contour_90pct_syst_03c1  -> SetLineStyle(9);
-  valor_modern_sbn_3p1_contour_90pct_syst_03c1  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_90pct_syst_03c1  -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c1  -> SetLineColor(kOrange+4);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c1  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1  -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c2  -> SetLineColor(kAzure+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c2  -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c2  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c2  -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c3  -> SetLineColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c3  -> SetLineStyle(3);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c3  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c3  -> SetLineWidth(3);
  
   // Exclusive
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc  -> SetLineColor(kOrange+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc  -> SetLineWidth(2);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc  -> SetLineColor(kAzure+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc  -> SetLineWidth(2);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc  -> SetLineColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc  -> SetLineWidth(2);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_bias_exc  -> SetLineColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_bias_exc  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c1_bias_exc  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_bias_exc  -> SetLineWidth(2);
 
   // IncExc
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_inc  -> SetLineColor(kViolet-5);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_inc  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c1_inc  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_inc  -> SetLineWidth(2);
 
   // Systematic groups
   valor_modern_sbn_3p1_contour_5sig_syst_det   -> SetLineColor(kAzure+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_det   -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_det   -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_det   -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_prop  -> SetLineColor(kOrange+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_prop  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_prop  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_prop  -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_mod   -> SetLineColor(kSpring-5);  
   valor_modern_sbn_3p1_contour_5sig_syst_mod   -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_mod   -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_mod   -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_xsec  -> SetLineColor(kViolet-5);  
   valor_modern_sbn_3p1_contour_5sig_syst_xsec  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_xsec  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_xsec  -> SetLineWidth(3);
 
   valor_modern_sbn_3p1_contour_5sig_syst_flux  -> SetLineColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_flux  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_flux  -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_flux  -> SetLineWidth(3);
 
   // Systematic group ratios
   ratio_stat_ref . SetLineColor(kTeal-5);
   ratio_stat_ref . SetLineStyle(2);
-  ratio_stat_ref . SetLineWidth(4);
+  ratio_stat_ref . SetLineWidth(3);
 
   ratio_det      . SetLineColor(kAzure+5);  
   ratio_det      . SetLineStyle(1);
-  ratio_det      . SetLineWidth(4);
+  ratio_det      . SetLineWidth(3);
                  
   ratio_prop     . SetLineColor(kOrange+5);  
   ratio_prop     . SetLineStyle(1);
-  ratio_prop     . SetLineWidth(4);
+  ratio_prop     . SetLineWidth(3);
                  
   ratio_mod      . SetLineColor(kSpring-5);  
   ratio_mod      . SetLineStyle(1);
-  ratio_mod      . SetLineWidth(4);
+  ratio_mod      . SetLineWidth(3);
                  
   ratio_xsec     . SetLineColor(kViolet-5);  
   ratio_xsec     . SetLineStyle(1);
-  ratio_xsec     . SetLineWidth(4);
+  ratio_xsec     . SetLineWidth(3);
                  
   ratio_flux     . SetLineColor(kOrange+2);  
   ratio_flux     . SetLineStyle(1);
-  ratio_flux     . SetLineWidth(4);
+  ratio_flux     . SetLineWidth(3);
 
   // Energy scale
   valor_modern_sbn_3p1_contour_5sig_syst_escale_1pct   -> SetLineColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_escale_1pct   -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_syst_escale_1pct   -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_escale_1pct   -> SetLineWidth(3);
   
   valor_modern_sbn_3p1_contour_5sig_syst_escale_2pct   -> SetLineColor(kAzure+5); 
   valor_modern_sbn_3p1_contour_5sig_syst_escale_2pct   -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_syst_escale_2pct   -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_escale_2pct   -> SetLineWidth(3);
   
   valor_modern_sbn_3p1_contour_5sig_syst_escale_5pct   -> SetLineColor(kSpring-5);  
   valor_modern_sbn_3p1_contour_5sig_syst_escale_5pct   -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_syst_escale_5pct   -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_escale_5pct   -> SetLineWidth(3);
   
   ratio_escale_1pct   . SetLineColor(kOrange+2);  
   ratio_escale_1pct   . SetLineStyle(2);
-  ratio_escale_1pct   . SetLineWidth(4);
+  ratio_escale_1pct   . SetLineWidth(3);
   
   ratio_escale_2pct   . SetLineColor(kAzure+5);  
   ratio_escale_2pct   . SetLineStyle(2);
-  ratio_escale_2pct   . SetLineWidth(4);
+  ratio_escale_2pct   . SetLineWidth(3);
   
   ratio_escale_5pct   . SetLineColor(kSpring-5);  
   ratio_escale_5pct   . SetLineStyle(2);
-  ratio_escale_5pct   . SetLineWidth(4);
+  ratio_escale_5pct   . SetLineWidth(3);
  
   // Allowed
   injectedW->SetMarkerColor(kWhite);
@@ -573,90 +595,96 @@
 
   valor_modern_sbn_3p1_contour_5sig_stat_all -> SetLineColor(kOrange+5);
   valor_modern_sbn_3p1_contour_5sig_stat_all -> SetLineStyle(7);
-  valor_modern_sbn_3p1_contour_5sig_stat_all -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_all -> SetLineWidth(3);
   valor_modern_sbn_3p1_contour_5sig_stat_all -> SetFillColor(kOrange+5);
   valor_modern_sbn_3p1_contour_5sig_stat_all -> SetFillStyle(3001);
+  valor_modern_sbn_3p1_contour_5sig_stat_allW -> SetFillColor(kWhite);
+  valor_modern_sbn_3p1_contour_5sig_stat_allW -> SetFillStyle(1001);
+  valor_modern_sbn_3p1_contour_5sig_stat_allW -> SetLineStyle(0);
 
   valor_modern_sbn_3p1_contour_90pct_syst_03c1_all -> SetLineColor(kOrange+4); 
   valor_modern_sbn_3p1_contour_90pct_syst_03c1_all -> SetLineStyle(9);
-  valor_modern_sbn_3p1_contour_90pct_syst_03c1_all -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_90pct_syst_03c1_all -> SetLineWidth(3);
   valor_modern_sbn_3p1_contour_90pct_syst_03c1_all -> SetFillColor(kOrange+4);  
   valor_modern_sbn_3p1_contour_90pct_syst_03c1_all -> SetFillStyle(3002);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_all -> SetLineColor(kOrange+4);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_all -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c1_all -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_all -> SetLineWidth(3);
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_all -> SetFillColor(kOrange+4);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_all -> SetFillStyle(3001);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_allW -> SetFillColor(kWhite);  
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_allW -> SetFillStyle(1001);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_allW -> SetLineStyle(0);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all  -> SetLineColor(kOrange+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all  -> SetLineWidth(2);
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all  -> SetFillColor(kOrange+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all  -> SetFillStyle(3002);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all  -> SetLineColor(kAzure+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all  -> SetLineWidth(2);
   valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all  -> SetFillColor(kAzure+5);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all  -> SetFillStyle(3002);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc_all  -> SetLineColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc_all  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc_all  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc_all  -> SetLineWidth(2);
   valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc_all  -> SetFillColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc_all  -> SetFillStyle(3002);
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all_bias  -> SetLineColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all_bias  -> SetLineStyle(1);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all_bias  -> SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all_bias  -> SetLineWidth(2);
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all_bias  -> SetFillColor(kOrange+2);  
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all_bias  -> SetFillStyle(3002);
 
   /*
   valor_modern_sbn_3p1_contour_5sig_stat_all_a -> SetLineColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_all_a -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_all_a -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_all_a -> SetLineWidth(3);
   valor_modern_sbn_3p1_contour_5sig_stat_all_a -> SetFillColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_all_a -> SetFillStyle(3002);
 
   valor_modern_sbn_3p1_contour_5sig_stat_all_b -> SetLineColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_all_b -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_all_b -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_all_b -> SetLineWidth(3);
   valor_modern_sbn_3p1_contour_5sig_stat_all_b -> SetFillColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_all_b -> SetFillStyle(3002);
 
   valor_modern_sbn_3p1_contour_5sig_stat_all_c -> SetLineColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_all_c -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_all_c -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_all_c -> SetLineWidth(3);
   valor_modern_sbn_3p1_contour_5sig_stat_all_c -> SetFillColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_all_c -> SetFillStyle(3002);
 
   valor_modern_sbn_3p1_contour_5sig_stat_all_d -> SetLineColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_all_d -> SetLineStyle(2);
-  valor_modern_sbn_3p1_contour_5sig_stat_all_d -> SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_stat_all_d -> SetLineWidth(3);
   valor_modern_sbn_3p1_contour_5sig_stat_all_d -> SetFillColor(kTeal-5);
   valor_modern_sbn_3p1_contour_5sig_stat_all_d -> SetFillStyle(3002);
   */
 
   // External
   lim_numudis_3p1_sbnproposal_5sigCL       -> SetLineColor(kGray+2);
-  lim_numudis_3p1_sbnproposal_5sigCL       -> SetLineWidth(3);
+  lim_numudis_3p1_sbnproposal_5sigCL       -> SetLineWidth(2);
   
   lim_numudis_3p1_minosp_90pctCL           -> SetLineColor(kGray+2); 
-  lim_numudis_3p1_minosp_90pctCL           -> SetLineWidth(3); 
+  lim_numudis_3p1_minosp_90pctCL           -> SetLineWidth(2); 
   lim_numudis_3p1_minosp_90pctCL           -> SetLineStyle(2); 
   
   lim_numudis_3p1_minisciboone_90pctCL     -> SetLineColor(kGray+2); 
-  lim_numudis_3p1_minisciboone_90pctCL     -> SetLineWidth(3); 
+  lim_numudis_3p1_minisciboone_90pctCL     -> SetLineWidth(2); 
   lim_numudis_3p1_minisciboone_90pctCL     -> SetLineStyle(3); 
 
   lim_numudis_3p1_icecube_90pctCL          -> SetLineColor(kGray+2); 
-  lim_numudis_3p1_icecube_90pctCL          -> SetLineWidth(3); 
+  lim_numudis_3p1_icecube_90pctCL          -> SetLineWidth(2); 
   lim_numudis_3p1_icecube_90pctCL          -> SetLineStyle(4); 
 
   lim_numudis_3p1_icecube_99pctCL          -> SetLineColor(kGray+2); 
-  lim_numudis_3p1_icecube_99pctCL          -> SetLineWidth(3); 
+  lim_numudis_3p1_icecube_99pctCL          -> SetLineWidth(2); 
   lim_numudis_3p1_icecube_99pctCL          -> SetLineStyle(5); 
 
   TCanvas * c1 = new TCanvas("c1","",20,20,900,900);
@@ -673,7 +701,7 @@
   hf1->Draw();
   hf1->GetYaxis()->SetTitleOffset(1);
   hf1->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu}");
-  hf1->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hf1->GetYaxis()->SetTitle("#Deltam^{2}_{41} (eV^{2})");
   hf1->GetXaxis()->SetTitleFont(132);
   hf1->GetYaxis()->SetTitleFont(132);
   hf1->GetXaxis()->SetLabelFont(132);
@@ -712,9 +740,9 @@
   lgd->SetBorderSize(0);
   lgd->SetTextFont(132);
   
-  lgd->AddEntry(injected1,                                  "sin^{2}2#theta_{#mu#mu} = 0.0185, #Delta m_{41}^{2} = 1", "P");
-  lgd->AddEntry(injectedBF,                                 "sin^{2}2#theta_{#mu#mu} = 0.0700, #Delta m_{41}^{2} = 1.32", "P");
-  lgd->AddEntry(injected100,                                "sin^{2}2#theta_{#mu#mu} = 0.0065, #Delta m_{41}^{2} = 100", "P");
+  lgd->AddEntry(injected1,                                  "sin^{2}2#theta_{#mu#mu} = 0.0185, #Deltam_{41}^{2} = 1 eV^{2}", "P");
+  lgd->AddEntry(injectedBF,                                 "sin^{2}2#theta_{#mu#mu} = 0.0700, #Deltam_{41}^{2} = 1.32 eV^{2}", "P");
+  lgd->AddEntry(injected100,                                "sin^{2}2#theta_{#mu#mu} = 0.0065, #Deltam_{41}^{2} = 100 eV^{2}", "P");
   lgd->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat,     "5#sigma Stat-Only Exclusion Region", "L");
   lgd->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all, "5#sigma Stat-Only Allowed Region",   "F");
   lgd->Draw();
@@ -1005,7 +1033,7 @@
   hfR->Draw();
   hfR->GetYaxis()->SetTitleOffset(1);
   hfR->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu}/sin^{2}2#theta_{#mu#mu, REF}");
-  hfR->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hfR->GetYaxis()->SetTitle("#Deltam^{2}_{41} (eV^{2})");
   hfR->GetXaxis()->SetTitleFont(132);
   hfR->GetYaxis()->SetTitleFont(132);
   hfR->GetXaxis()->SetLabelFont(132);
@@ -1052,7 +1080,7 @@
   hfR2->Draw();
   hfR2->GetYaxis()->SetTitleOffset(1);
   hfR2->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu}/sin^{2}2#theta_{#mu#mu, REF}");
-  hfR2->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hfR2->GetYaxis()->SetTitle("#Deltam^{2}_{41} (eV^{2})");
   hfR2->GetXaxis()->SetTitleFont(132);
   hfR2->GetYaxis()->SetTitleFont(132);
   hfR2->GetXaxis()->SetLabelFont(132);
@@ -1102,7 +1130,7 @@
   hfR3->Draw();
   hfR3->GetYaxis()->SetTitleOffset(1);
   hfR3->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu, MC}/sin^{2}2#theta_{#mu#mu, Reco}");
-  hfR3->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hfR3->GetYaxis()->SetTitle("#Deltam^{2}_{41} (eV^{2})");
   hfR3->GetXaxis()->SetTitleFont(132);
   hfR3->GetYaxis()->SetTitleFont(132);
   hfR3->GetXaxis()->SetLabelFont(132);
@@ -1154,7 +1182,7 @@
   hfR4->Draw();
   hfR4->GetYaxis()->SetTitleOffset(1);
   hfR4->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu}/sin^{2}2#theta_{#mu#mu, REF}");
-  hfR4->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hfR4->GetYaxis()->SetTitle("#Deltam^{2}_{41} (eV^{2})");
   hfR4->GetXaxis()->SetTitleFont(132);
   hfR4->GetYaxis()->SetTitleFont(132);
   hfR4->GetXaxis()->SetLabelFont(132);
@@ -1292,11 +1320,11 @@
   lg13b->SetTextSize(0.03);
   lg13b->SetMargin(0.2);
   
-  lg13->AddEntry(injectedBF,                                          "sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m_{41}^{2} = 1.32", "P");
-  lg13->AddEntry(injecteda,                                           "sin^{2}2#theta_{#mu#mu} = 0.007, #Delta m_{41}^{2} = 1.32", "P");
-  lg13->AddEntry(injectedb,                                           "sin^{2}2#theta_{#mu#mu} = 0.7, #Delta m_{41}^{2} = 1.32", "P");
-  lg13->AddEntry(injectedc,                                           "sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m_{41}^{2} = 13.2", "P");
-  lg13->AddEntry(injectedd,                                           "sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m_{41}^{2} = 0.132", "P");
+  lg13->AddEntry(injectedBF,                                          "sin^{2}2#theta_{#mu#mu} = 0.07, #Deltam_{41}^{2} = 1.32", "P");
+  lg13->AddEntry(injecteda,                                           "sin^{2}2#theta_{#mu#mu} = 0.007, #Deltam_{41}^{2} = 1.32", "P");
+  lg13->AddEntry(injectedb,                                           "sin^{2}2#theta_{#mu#mu} = 0.7, #Deltam_{41}^{2} = 1.32", "P");
+  lg13->AddEntry(injectedc,                                           "sin^{2}2#theta_{#mu#mu} = 0.07, #Deltam_{41}^{2} = 13.2", "P");
+  lg13->AddEntry(injectedd,                                           "sin^{2}2#theta_{#mu#mu} = 0.07, #Deltam_{41}^{2} = 0.132", "P");
   lg13b->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all, "5#sigma Flux+Interaction+Detector Syst", "L");
   lg13b->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all, "5#sigma Flux+Interaction Syst", "L");
   lg13b->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all,          "5#sigma Stat-Only", "L");
@@ -1335,7 +1363,7 @@
   lg14->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all,               "5#sigma Stat-Only", "L");
   lg14->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all,      "5#sigma Flux+Interaction Syst", "L");
   lg14->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all_bias, "5#sigma Flux+Interaction+Bias Syst", "L");
-  lg14->AddEntry(injected,                                                 "Injected Point: sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m_{41}^{2} = 1.32", "P");
+  lg14->AddEntry(injected,                                                 "Injected Point: sin^{2}2#theta_{#mu#mu} = 0.07, #Deltam_{41}^{2} = 1.32", "P");
   lg14->Draw("same");
   
   c14->SaveAs((location+"allowed_03c1_bias_syst_comparison.root").c_str());
@@ -1357,6 +1385,7 @@
   c14->SetLogy();
 
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_all      -> Draw("LF");
+  valor_modern_sbn_3p1_contour_5sig_stat_allW          -> Draw("F");
   valor_modern_sbn_3p1_contour_5sig_stat_all           -> Draw("LF");
   injectedBF                                           -> Draw("P");
 
@@ -1368,7 +1397,7 @@
   
   lg14->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all,           "5#sigma Stat", "L");
   lg14->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_all,      "5#sigma Stat+Syst", "L");
-  lg14->AddEntry(injectedBF,                                           "Injected Point: sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m_{41}^{2} = 1.32", "P");
+  lg14->AddEntry(injectedBF,                                           "Injected Point: sin^{2}2#theta_{#mu#mu} = 0.07, #Deltam_{41}^{2} = 1.32 eV^{2}", "P");
   lg14->Draw("same");
   
   c14->SaveAs((location+"numu_disapp_allowed_stat_03c1_syst_comparison.root").c_str());
@@ -1379,8 +1408,8 @@
   // All, TN sensitivity
   // -------------------------------------------------------
 
-  TCanvas * c15 = new TCanvas("c15","",20,20,1000,900);
-  c15->SetTopMargin(0.024);
+  TCanvas * c15 = new TCanvas("c15","",20,20,945,900);
+  c15->SetTopMargin(0.05);
   c15->SetBottomMargin(0.13);
   c15->SetLeftMargin(0.13);
   c15->SetRightMargin(0.024);
@@ -1388,7 +1417,7 @@
   hf2->Draw();
   hf2->GetYaxis()->SetTitleOffset(1);
   hf2->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu}");
-  hf2->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hf2->GetYaxis()->SetTitle("#Deltam^{2}_{41} (eV^{2})");
   hf2->GetXaxis()->SetTitleFont(132);
   hf2->GetYaxis()->SetTitleFont(132);
   hf2->GetXaxis()->SetLabelFont(132);
@@ -1406,8 +1435,10 @@
   lim_numudis_3p1_minisciboone_90pctCL                -> Draw("L");
   lim_numudis_3p1_minosp_90pctCL                      -> Draw("L");
   valor_modern_sbn_3p1_contour_5sig_syst_03d1         -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_allW    -> Draw("F");
   valor_modern_sbn_3p1_contour_5sig_syst_03c1_all     -> Draw("FL");
   valor_modern_sbn_3p1_contour_90pct_syst_03d1        -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_stat_allW         -> Draw("F");
   valor_modern_sbn_3p1_contour_5sig_stat_all          -> Draw("FL");
   injectedBF                                          -> Draw("P");
 
@@ -1418,7 +1449,7 @@
   lg15->SetTextFont(132);
   lg15->SetTextSize(0.028);
 
-  TLegend * lg15b = new TLegend(0.18,0.75,0.66,0.90);
+  TLegend * lg15b = new TLegend(0.14,0.72,0.56,0.88);
   lg15b->SetFillStyle(0);
   lg15b->SetBorderSize(0);
   lg15b->SetMargin(0.18);
@@ -1436,14 +1467,256 @@
   lg15->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all,          "5#sigma SBN Stat-Only", "F");
   lg15b->AddEntry(injectedW,                                          "Injected Point,", "P");
   lg15b->AddEntry(injectedBF,                                         "sin^{2}2#theta_{#mu#mu} = 0.07,", "P");
-  lg15b->AddEntry(injectedW,                                          "#Deltam_{41}^{2} = 1.32", "P");
+  lg15b->AddEntry(injectedW,                                          "#Deltam_{41}^{2} = 1.32 eV^{2}", "P");
   lg15->Draw("same");
   lg15b->Draw("same");
+  
+  TLatex latex1;
+  latex1.SetTextFont(132);
+  latex1.SetTextSize(0.026);
+  latex1.DrawLatexNDC(0.13,0.96,"#color[2]{SBN Preliminary}");
+  latex1.SetTextSize(0.026);
+  latex1.DrawLatexNDC(0.30,0.96,"#color[1]{SBND (6.6e20 POT) MicroBooNE (13.2e20 POT) ICARUS (6.6e20 POT)}");
   
   c15->SaveAs((location+"numu_disapp_full_03c1_sensitivity_comparison.C").c_str());
   c15->SaveAs((location+"numu_disapp_full_03c1_sensitivity_comparison.root").c_str());
   c15->SaveAs((location+"numu_disapp_full_03c1_sensitivity_comparison.pdf").c_str());
   c15->SaveAs((location+"numu_disapp_full_03c1_sensitivity_comparison.png").c_str());
+  
+  // --------------------------------------------------------
+  // Proposal vs modern
+  // -------------------------------------------------------
+
+  TCanvas * c16 = new TCanvas("c16","",20,20,1000,900);
+  c16->SetTopMargin(0.024);
+  c16->SetBottomMargin(0.13);
+  c16->SetLeftMargin(0.13);
+  c16->SetRightMargin(0.024);
+  hf2->Draw();
+  c16->SetLogx();
+  c16->SetLogy();
+  
+  lim_numudis_3p1_sbnproposal_5sigCL          -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_syst_03d1 -> Draw("L");
+
+  TLegend * lg16 = new TLegend(0.18,0.16,0.6,0.4);
+  lg16->SetFillStyle(0);
+  lg16->SetBorderSize(0);
+  lg16->SetTextFont(132);
+  lg16->SetTextSize(0.032);
+
+  lg16->AddEntry(lim_numudis_3p1_sbnproposal_5sigCL,          "5#sigma Proposal Stat+Syst", "L");
+  lg16->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03d1, "5#sigma Modern Stat+Syst", "L");
+  lg16->Draw("same");
+  
+  c16->SaveAs((location+"numu_disapp_prop_mod_03c1_sensitivity_comparison.C").c_str());
+  c16->SaveAs((location+"numu_disapp_prop_mod_03c1_sensitivity_comparison.root").c_str());
+  c16->SaveAs((location+"numu_disapp_prop_mod_03c1_sensitivity_comparison.pdf").c_str());
+  c16->SaveAs((location+"numu_disapp_prop_mod_03c1_sensitivity_comparison.png").c_str());
+  
+  // --------------------------------------------------------
+  // All SBN
+  // -------------------------------------------------------
+
+  TCanvas * c17 = new TCanvas("c17","",20,20,945,900);
+  c17->SetTopMargin(0.05);
+  c17->SetBottomMargin(0.13);
+  c17->SetLeftMargin(0.13);
+  c17->SetRightMargin(0.024);
+  hf2->Draw();
+  
+  c17->SetLogx();
+  c17->SetLogy();
+
+  valor_modern_sbn_3p1_contour_5sig_syst_03d1         -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_allW    -> Draw("F");
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_all     -> Draw("FL");
+  valor_modern_sbn_3p1_contour_90pct_syst_03d1        -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_stat_allW         -> Draw("F");
+  valor_modern_sbn_3p1_contour_5sig_stat_all          -> Draw("FL");
+  injectedBF                                          -> Draw("P");
+
+  TLegend * lg17 = new TLegend(0.16,0.16,0.5,0.4);
+  lg17->SetFillStyle(0);
+  lg17->SetBorderSize(0);
+  lg17->SetMargin(0.22);
+  lg17->SetTextFont(132);
+  lg17->SetTextSize(0.028);
+
+  TLegend * lg17b = new TLegend(0.14,0.72,0.56,0.88);
+  lg17b->SetFillStyle(0);
+  lg17b->SetBorderSize(0);
+  lg17b->SetMargin(0.18);
+  lg17b->SetTextFont(132);
+  lg17b->SetTextSize(0.028);
+  
+  lg17->AddEntry(valor_modern_sbn_3p1_contour_90pct_syst_03d1,        "90\% SBN Stat+Syst", "L");
+  lg17->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03d1,         "5#sigma SBN Stat+Syst", "L");
+  lg17->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_all,     "5#sigma SBN Stat+Syst", "F");
+  lg17->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all,          "5#sigma SBN Stat-Only", "F");
+  lg17b->AddEntry(injectedW,                                          "Injected Point,", "P");
+  lg17b->AddEntry(injectedBF,                                         "sin^{2}2#theta_{#mu#mu} = 0.07,", "P");
+  lg17b->AddEntry(injectedW,                                          "#Deltam_{41}^{2} = 1.32 eV^{2}", "P");
+  lg17->Draw("same");
+  lg17b->Draw("same");
+  
+  latex1.SetTextFont(132);
+  latex1.SetTextSize(0.026);
+  latex1.DrawLatexNDC(0.13,0.96,"#color[2]{SBN Preliminary}");
+  latex1.SetTextSize(0.026);
+  latex1.DrawLatexNDC(0.30,0.96,"#color[1]{SBND (6.6e20 POT) MicroBooNE (13.2e20 POT) ICARUS (6.6e20 POT)}");
+  
+  c17->SaveAs((location+"numu_disapp_sbn_03c1_sensitivity_comparison.C").c_str());
+  c17->SaveAs((location+"numu_disapp_sbn_03c1_sensitivity_comparison.root").c_str());
+  c17->SaveAs((location+"numu_disapp_sbn_03c1_sensitivity_comparison.pdf").c_str());
+  c17->SaveAs((location+"numu_disapp_sbn_03c1_sensitivity_comparison.png").c_str());
+  
+  // --------------------------------------------------------
+  // All, TN sensitivity + full SBN new POT
+  // -------------------------------------------------------
+
+  TCanvas * c18 = new TCanvas("c18","",20,20,945,900);
+  c18->SetTopMargin(0.05);
+  c18->SetBottomMargin(0.13);
+  c18->SetLeftMargin(0.13);
+  c18->SetRightMargin(0.024);
+  
+  hf2->Draw();
+  
+  c18->SetLogx();
+  c18->SetLogy();
+
+  lim_numudis_3p1_icecube_90pctCL                     -> Draw("L");
+  lim_numudis_3p1_icecube_99pctCL                     -> Draw("L");
+  lim_numudis_3p1_minisciboone_90pctCL                -> Draw("L");
+  lim_numudis_3p1_minosp_90pctCL                      -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_syst_03d1         -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_allW    -> Draw("F");
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_all     -> Draw("FL");
+  valor_modern_sbn_3p1_contour_90pct_syst_03d1        -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_stat_allW         -> Draw("F");
+  valor_modern_sbn_3p1_contour_5sig_stat_all          -> Draw("FL");
+  valor_modern_sbn_3p1_contour_90pct_syst_sbn_newPOT  -> Draw("L");
+  injectedBF                                          -> Draw("P");
+
+  TLegend * lg18 = new TLegend(0.16,0.16,0.5,0.44);
+  lg18->SetFillStyle(0);
+  lg18->SetBorderSize(0);
+  lg18->SetMargin(0.22);
+  lg18->SetTextFont(132);
+  lg18->SetTextSize(0.026);
+
+  TLegend * lg18b = new TLegend(0.16,0.65,0.56,0.92);
+  lg18b->SetFillStyle(0);
+  lg18b->SetBorderSize(0);
+  lg18b->SetMargin(0.18);
+  lg18b->SetTextFont(132);
+  lg18b->SetTextSize(0.026);
+  
+  lg18->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_all,     "5#sigma SBN Stat+Syst", "F");
+  lg18->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all,          "5#sigma SBN Stat-Only", "F");
+  lg18->AddEntry(injectedW,                                           " ", "P");
+  lg18->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03d1,         "5#sigma SBN Stat+Syst", "L");
+  lg18->AddEntry(valor_modern_sbn_3p1_contour_90pct_syst_03d1,        "90\% SBN Stat+Syst", "L");
+  lg18->AddEntry(valor_modern_sbn_3p1_contour_90pct_syst_sbn_newPOT,  "90\% SBN, Increased POT Projection:", "L");
+  lg18->AddEntry(injectedW,                                           "SBND (9e20) MicroBooNE (13.2e20) ICARUS (14e20)", "P");
+  
+  lg18b->AddEntry(injectedW,                                          "Injected Point,", "P");
+  lg18b->AddEntry(injectedBF,                                         "sin^{2}2#theta_{#mu#mu} = 0.07,", "P");
+  lg18b->AddEntry(injectedW,                                          "#Deltam_{41}^{2} = 1.32 eV^{2}", "P");
+  lg18b->AddEntry(injectedW,                                           " ", "P");
+  lg18b->AddEntry(lim_numudis_3p1_minosp_90pctCL,                     "90\% MINOS/MINOS+", "L");
+  lg18b->AddEntry(lim_numudis_3p1_minisciboone_90pctCL,               "90\% MiniBooNE", "L");
+  lg18b->AddEntry(lim_numudis_3p1_icecube_90pctCL,                    "90\% IceCube", "L");
+  lg18b->AddEntry(lim_numudis_3p1_icecube_99pctCL,                    "99\% IceCube", "L");
+  lg18->Draw("same");
+  lg18b->Draw("same");
+  
+  TLatex latex18;
+  latex18.SetTextFont(132);
+  latex18.SetTextSize(0.026);
+  latex18.DrawLatexNDC(0.13,0.96,"#color[2]{SBN Preliminary}");
+  latex18.SetTextSize(0.026);
+  latex18.DrawLatexNDC(0.30,0.96,"#color[1]{SBND (6.6e20 POT) MicroBooNE (13.2e20 POT) ICARUS (6.6e20 POT)}");
+  
+  c18->SaveAs((location+"numu_disapp_full_newPOT_sensitivity_comparison.C").c_str());
+  c18->SaveAs((location+"numu_disapp_full_newPOT_sensitivity_comparison.root").c_str());
+  c18->SaveAs((location+"numu_disapp_full_newPOT_sensitivity_comparison.pdf").c_str());
+  c18->SaveAs((location+"numu_disapp_full_newPOT_sensitivity_comparison.png").c_str());
+  
+  // --------------------------------------------------------
+  // All, TN sensitivity + SBND+ICARUS new POT
+  // -------------------------------------------------------
+
+  TCanvas * c19 = new TCanvas("c19","",20,20,945,900);
+  c19->SetTopMargin(0.05);
+  c19->SetBottomMargin(0.13);
+  c19->SetLeftMargin(0.13);
+  c19->SetRightMargin(0.024);
+  
+  hf2->Draw();
+  
+  c19->SetLogx();
+  c19->SetLogy();
+
+  lim_numudis_3p1_icecube_90pctCL                     -> Draw("L");
+  lim_numudis_3p1_icecube_99pctCL                     -> Draw("L");
+  lim_numudis_3p1_minisciboone_90pctCL                -> Draw("L");
+  lim_numudis_3p1_minosp_90pctCL                      -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_syst_03d1         -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_allW    -> Draw("F");
+  valor_modern_sbn_3p1_contour_5sig_syst_03c1_all     -> Draw("FL");
+  valor_modern_sbn_3p1_contour_90pct_syst_03d1        -> Draw("L");
+  valor_modern_sbn_3p1_contour_5sig_stat_allW         -> Draw("F");
+  valor_modern_sbn_3p1_contour_5sig_stat_all          -> Draw("FL");
+  valor_modern_sbn_3p1_contour_90pct_syst_2det_newPOT -> Draw("L");
+  injectedBF                                          -> Draw("P");
+
+  TLegend * lg19 = new TLegend(0.16,0.16,0.5,0.44);
+  lg19->SetFillStyle(0);
+  lg19->SetBorderSize(0);
+  lg19->SetMargin(0.22);
+  lg19->SetTextFont(132);
+  lg19->SetTextSize(0.026);
+
+  TLegend * lg19b = new TLegend(0.16,0.65,0.56,0.92);
+  lg19b->SetFillStyle(0);
+  lg19b->SetBorderSize(0);
+  lg19b->SetMargin(0.18);
+  lg19b->SetTextFont(132);
+  lg19b->SetTextSize(0.026);
+  
+  lg19->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_all,     "5#sigma SBN Stat+Syst", "F");
+  lg19->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all,          "5#sigma SBN Stat-Only", "F");
+  lg19->AddEntry(injectedW,                                           " ", "P");
+  lg19->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03d1,         "5#sigma SBN Stat+Syst", "L");
+  lg19->AddEntry(valor_modern_sbn_3p1_contour_90pct_syst_03d1,        "90\% SBN Stat+Syst", "L");
+  lg19->AddEntry(valor_modern_sbn_3p1_contour_90pct_syst_2det_newPOT, "90\% SBN, Increased POT Projection:", "L");
+  lg19->AddEntry(injectedW,                                           "SBND (9e20) ICARUS (14e20) Only", "P");
+  
+  lg19b->AddEntry(injectedW,                                          "Injected Point,", "P");
+  lg19b->AddEntry(injectedBF,                                         "sin^{2}2#theta_{#mu#mu} = 0.07,", "P");
+  lg19b->AddEntry(injectedW,                                          "#Deltam_{41}^{2} = 1.32 eV^{2}", "P");
+  lg19b->AddEntry(injectedW,                                           " ", "P");
+  lg19b->AddEntry(lim_numudis_3p1_minosp_90pctCL,                     "90\% MINOS/MINOS+", "L");
+  lg19b->AddEntry(lim_numudis_3p1_minisciboone_90pctCL,               "90\% MiniBooNE", "L");
+  lg19b->AddEntry(lim_numudis_3p1_icecube_90pctCL,                    "90\% IceCube", "L");
+  lg19b->AddEntry(lim_numudis_3p1_icecube_99pctCL,                    "99\% IceCube", "L");
+  lg19->Draw("same");
+  lg19b->Draw("same");
+  
+  TLatex latex19;
+  latex19.SetTextFont(132);
+  latex19.SetTextSize(0.026);
+  latex19.DrawLatexNDC(0.13,0.96,"#color[2]{SBN Preliminary}");
+  latex19.SetTextSize(0.026);
+  latex19.DrawLatexNDC(0.30,0.96,"#color[1]{SBND (6.6e20 POT) MicroBooNE (13.2e20 POT) ICARUS (6.6e20 POT)}");
+  
+  c19->SaveAs((location+"numu_disapp_2det_newPOT_sensitivity_comparison.C").c_str());
+  c19->SaveAs((location+"numu_disapp_2det_newPOT_sensitivity_comparison.root").c_str());
+  c19->SaveAs((location+"numu_disapp_2det_newPOT_sensitivity_comparison.pdf").c_str());
+  c19->SaveAs((location+"numu_disapp_2det_newPOT_sensitivity_comparison.png").c_str());
+  
  /* 
   // --------------------------------------------------------
   // All, final sensitivity
@@ -1458,7 +1731,7 @@
   hf2->Draw();
   hf2->GetYaxis()->SetTitleOffset(1);
   hf2->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu}");
-  hf2->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hf2->GetYaxis()->SetTitle("#Deltam^{2}_{41} (eV^{2})");
   hf2->GetXaxis()->SetTitleFont(132);
   hf2->GetYaxis()->SetTitleFont(132);
   hf2->GetXaxis()->SetLabelFont(132);
@@ -1471,10 +1744,10 @@
   c15->SetLogx();
   c15->SetLogy();
 
-  valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc->SetLineWidth(4);
-  valor_modern_sbn_3p1_contour_5sig_stat->SetLineWidth(4);
-  valor_modern_sbn_3p1_contour_5sig_stat_all->SetLineWidth(4);
-  valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all->SetLineWidth(4);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc->SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat->SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_stat_all->SetLineWidth(3);
+  valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all->SetLineWidth(3);
   valor_modern_sbn_3p1_contour_5sig_stat_all->SetFillStyle(3001);
   valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all->SetFillStyle(3001);
 
@@ -1581,7 +1854,7 @@
   lg17->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all, "5#sigma Flux+Interaction Syst", "L");
   lg17->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all, "5#sigma Flux+Interaction+Detector Syst", "L");
   lg17->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c3_exc_all, "5#sigma Flux+Interaction+Detector+Bias Syst", "L");
-  lg17->AddEntry(injected,                                            "Injected Point: sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m_{41}^{2} = 1.32", "P");
+  lg17->AddEntry(injected,                                            "Injected Point: sin^{2}2#theta_{#mu#mu} = 0.07, #Deltam_{41}^{2} = 1.32", "P");
   lg17->Draw("same");
   
   c17->SaveAs((location+"allowed_03c1_03c2_03c3_syst_comparison.root").c_str());
@@ -1721,7 +1994,7 @@
   lg21->AddEntry(valor_modern_sbn_3p1_contour_5sig_stat_all,          "5#sigma Stat-Only", "L");
   lg21->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c1_exc_all, "5#sigma Flux+Interaction Syst", "L");
   lg21->AddEntry(valor_modern_sbn_3p1_contour_5sig_syst_03c2_exc_all, "5#sigma Flux+Interaction+Detector Syst", "L");
-  lg21->AddEntry(injected,                                            "Injected Point: sin^{2}2#theta_{#mu#mu} = 0.07, #Delta m_{41}^{2} = 1.32", "P");
+  lg21->AddEntry(injected,                                            "Injected Point: sin^{2}2#theta_{#mu#mu} = 0.07, #Deltam_{41}^{2} = 1.32", "P");
   lg21->Draw("same");
   
   c21->SaveAs((location+"allowed_03c1_03c2_syst_comparison.root").c_str());
@@ -1771,7 +2044,7 @@
   hfR3->Draw();
   hfR3->GetYaxis()->SetTitleOffset(1);
   hfR3->GetXaxis()->SetTitle("sin^{2}2#theta_{#mu#mu, MC}/sin^{2}2#theta_{#mu#mu, Reco}");
-  hfR3->GetYaxis()->SetTitle("#Delta m^{2}_{41} (eV^{2})");
+  hfR3->GetYaxis()->SetTitle("#Deltam^{2}_{41} (eV^{2})");
   hfR3->GetXaxis()->SetTitleFont(132);
   hfR3->GetYaxis()->SetTitleFont(132);
   hfR3->GetXaxis()->SetLabelFont(132);
