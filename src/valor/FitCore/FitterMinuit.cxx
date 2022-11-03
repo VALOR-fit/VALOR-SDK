@@ -402,7 +402,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
       ifree++;
     }
   }
-  // Copy prior errors along diagonal for unfixed
+  // Copy prior errors along diagonal for fixed
   const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fFitInputs->Expectation());
   if (cm) {
     for (int i = 0; i < num_of_params; i++) {
