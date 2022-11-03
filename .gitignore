@@ -4,6 +4,7 @@
 make/Make.config
 src/valor/Conventions/Build.h
 src/valor/Conventions/Version.h
+external/python/valor/
 
 bin/
 lib/
