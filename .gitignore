@@ -1,5 +1,6 @@
 *.o
 *_RootDict_*
+*.pyc
 *~
 make/Make.config
 src/valor/Conventions/Build.h
