@@ -71,6 +71,7 @@ using namespace valor::conv;
 
 //#define SPLINE_WEIGHTS_ARE_ONE
 //#define VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+//#define VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
 
 #define APPLY_ALL_AUTOWGHT_BRANCHES
 
@@ -3931,7 +3932,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
   bool tweaked = TMath::Abs(scale-1) > kASmallNum;
   if(!tweaked) return;
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
   LOG("Lateral",pDEBUG) << "Applying lateral systematic parameter: " << param_name
                        << "to PDF [" << pdf->GetName() << "] "
                        << " with kine var " << util::AsString(kv) << " and scale = " << scale;
@@ -3967,7 +3968,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
     edge *= scale;
   }
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
   // Copy the un-modified PDF contents into a vector, so we can print comparisons later
   std::vector<double> old_events_per_bin (nbins, 0.0);
   for(unsigned int ireco = 0; ireco < nbins; ireco++) {
@@ -4004,11 +4005,11 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
       if((*is_unscaled_bin_overflow)[ibin_u] && (*bins_to_skip)[ibin_s][ibin_u - 1]) { continue; }  // Set the overflow bin kine var value to that of the last bin
       else if((*bins_to_skip)[ibin_s][ibin_u]) { continue; }
 
-      if(bin_min_u > bin_max_s)
+      if(bin_min_u >= bin_max_s)
       {  // Unscaled bin entirely larger than scaled bin, stop checking higher unscaled
         break;
       }
-      else if(bin_min_s > bin_max_u)
+      else if(bin_min_s >= bin_max_u)
       {  // Scaled bin entirely larger than unscaled bin, skip to next unscaled bin
         continue;
       }
@@ -4023,27 +4024,43 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
       }
       else if(bin_max_u > bin_max_s && bin_min_u >= bin_min_s)
       {  // Scaled bin overlaps low part of unscaled bin
-        factor = (bin_max_s - bin_min_u) / (bin_max_s - bin_min_s);
+	if(TMath::Abs(bin_max_s - bin_min_u) < 1E-18)
+	  break; //skip when edges just touch
+	else
+	  factor = (bin_max_s - bin_min_u) / (bin_max_s - bin_min_s);
+	if(factor <= 0.0) {
+	  LOG("Lateral",pWARN) << "Factor <=0 Scaled bin overlaps low part of unscaled bin"
+			       << "\n  Scaled [" << bin_min_s << "," << bin_max_s << "]"
+			       << "\nUnScaled [" << bin_min_u << "," << bin_max_u << "]";
+	}
       }
       else if(bin_min_u <  bin_min_s && bin_max_u <= bin_max_s)
       {  // Scaled bin overlaps high part of unscaled bin
-        factor = (bin_max_u - bin_min_s) / (bin_max_s - bin_min_s);
+	if(TMath::Abs(bin_max_u - bin_min_s) < 1E-18)
+	  continue; //skip when edges just touch
+	else
+	  factor = (bin_max_u - bin_min_s) / (bin_max_s - bin_min_s);
+	if(factor <= 0.0) {
+	  LOG("Lateral",pWARN) << "Factor <=0 Scaled bin overlaps high part of unscaled bin";
+	}
       }
       else
       {  // Shouldn't get here
         factor = 0.0;
+	LOG("Lateral",pWARN) << "Set factor to 0...";
       }
 
       if(factor <= 0.0) {
         LOG("Lateral",pWARN) << "Got a factor <= 0 for ibin_s = " << ibin_s << ", ibin_u = "
-                             << ibin_u << ". This shouldn't happen!";
+                             << ibin_u << ". This shouldn't happen! " << util::AsString(fSample)
+			     << " " << util::AsString(fBeam);
         continue;
       }
 
       const unsigned int & glob_bin_s = (*scaled_bin_to_global_bin)[ibin_s];
       new_events_per_bin[ibin_u] += pdfArr[glob_bin_s] * factor;
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
       LOG("Lateral", pDEBUG)
         << "scaled bin "    << ibin_s << " [" << bin_min_s << ", " << bin_max_s << "]; "
         << "un-scaled bin " << ibin_u << " [" << bin_min_u << ", " << bin_max_u << "]; "
@@ -4058,7 +4075,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
     pdfArr[ibin] = 0.;
   }
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
   LOG("Lateral", pDEBUG) << "PDF contents before and after applying lateral systematic:";
 #endif
 
@@ -4071,7 +4088,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
     const unsigned int & ibin = (*unscaled_bin_to_global_bin)[ibin_u];
     pdfArr[ibin] += new_events_per_bin[ibin_u];
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
     LOG("Lateral", pDEBUG)
       << "bin " << ibin << " [" << recoBinning->BinMinimum(ibin, kv) << ", " << recoBinning->BinMaximum(ibin, kv) << "]"
       << "; old content = " << old_events_per_bin[ibin] << "; new content = " << pdfArr[ibin];
@@ -4193,7 +4210,7 @@ void GenericSingleSampleFitModel::ApplyEBShift(const conv::PhysParamId_t p, bool
 
     //check if its empty
     double orig_pdf_integral = pdf->Integral();
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL_LATERAL
     LOG("Lateral",pDEBUG) << "Original PDF " << pdf->GetName() << " has integral " << orig_pdf_integral;
 #endif
     if(orig_pdf_integral < conv::kASmallNum) {
@@ -4212,7 +4229,7 @@ void GenericSingleSampleFitModel::ApplyEBShift(const conv::PhysParamId_t p, bool
     typedef double (pdftype)[nbins];
     pdftype & pdfArr = *reinterpret_cast<pdftype *>(&(pdf->GetEntryRef(0)));
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
     // Copy the un-modified PDF contents into a vector, so we can print comparisons later
     std::vector<double> old_events_per_bin (nbins, 0.0);
     for(unsigned int ireco = 0; ireco < nbins; ireco++) {
@@ -4288,7 +4305,7 @@ void GenericSingleSampleFitModel::ApplyEBShift(const conv::PhysParamId_t p, bool
 	const unsigned int & glob_bin_s = (*shifted_bin_to_global_bin)[ibin_s];
 	new_events_per_bin[ibin_u] += pdfArr[glob_bin_s] * factor;
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
 	LOG("Lateral", pDEBUG)
 	  << "shifted bin "    << ibin_s << " [" << bin_min_s << ", " << bin_max_s << "]; "
 	  << "un-shifted bin " << ibin_u << " [" << bin_min_u << ", " << bin_max_u << "]; "
@@ -4303,7 +4320,7 @@ void GenericSingleSampleFitModel::ApplyEBShift(const conv::PhysParamId_t p, bool
       pdfArr[ibin] = 0.;
     }
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
     LOG("Lateral", pDEBUG) << "PDF contents before and after applying lateral systematic:";
 #endif
 
@@ -4316,7 +4333,7 @@ void GenericSingleSampleFitModel::ApplyEBShift(const conv::PhysParamId_t p, bool
       const unsigned int & ibin = (*unshifted_bin_to_global_bin)[ibin_u];
       pdfArr[ibin] += new_events_per_bin[ibin_u];
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
       LOG("Lateral", pDEBUG)
 	<< "bin " << ibin << " [" << recoBinning->BinMinimum(ibin, kv) << ", " << recoBinning->BinMaximum(ibin, kv) << "]"
 	<< "; old content = " << old_events_per_bin[ibin] << "; new content = " << pdfArr[ibin];
@@ -4667,7 +4684,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
         (*scaled_bin_to_global_bin  )[iedge_s-1 - n_up_edges_added] = ireco;
         (*unscaled_bin_to_global_bin)[iedge_u-1 - n_up_edges_added] = ireco;
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
         LOG("Lateral", pDEBUG) << "ireco = " << ireco << "; scaled bin = " << iedge_s-1 - n_up_edges_added
                              << "; un-scaled bin = " << iedge_u-1 - n_up_edges_added
                              << "; iedge_u = " << iedge_u-1 << "; iedge_s = " << iedge_s-1
@@ -4687,7 +4704,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
           n_up_edges_added++;
           end_bins_it++;
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
           LOG("Lateral", pDEBUG) << "un-scaled bin = " << iedge_u-2 - (n_up_edges_added-1)
                                << "; iedge_u = " << iedge_u-2 << "; iedge_s = " << iedge_s-1
                                << "; un-scaled edge = " << (*unscaled_bin_edges)[iedge_u-2]
@@ -4767,7 +4784,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
             break;
           }
 
-#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
+#ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED_LATERAL
           LOG("Lateral", pDEBUG)
              << "scaled bin "    << ibin_s << " [" << bin_min_s << ", " << bin_max_s << "]; "
              << "un-scaled bin " << ibin_u << " [" << bin_min_u << ", " << bin_max_u << "]; "
