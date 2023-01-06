@@ -73,6 +73,14 @@ string util::AsString(Sample_t s)
     case (ksNuMuCCoa07     ) : return "numuCCinclOA07";  break;
     case (ksNuMuCCoa08     ) : return "numuCCinclOA08";  break;
     case (ksNuMuCCoa09     ) : return "numuCCinclOA09";  break;
+    case (ksNuECCoa00      ) : return "nueCCinclOA00";   break;
+    case (ksNuECCoa01      ) : return "nueCCinclOA01";   break;
+    case (ksNuECCoa02      ) : return "nueCCinclOA02";   break;
+    case (ksNuECCoa03      ) : return "nueCCinclOA03";   break;
+    case (ksNuECCoa04      ) : return "nueCCinclOA04";   break;
+    case (ksNuECCoa05      ) : return "nueCCinclOA05";   break;
+    case (ksNuECCoa06      ) : return "nueCCinclOA06";   break;
+    case (ksNuECCoa07      ) : return "nueCCinclOA07";   break;
     default                  : return "--";
   }
   return "";
@@ -132,6 +140,14 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksNuMuCCoa07     ) : name = "#nu_{#mu} CC incl., off-axis bin 07";  break;
     case (ksNuMuCCoa08     ) : name = "#nu_{#mu} CC incl., off-axis bin 08";  break;
     case (ksNuMuCCoa09     ) : name = "#nu_{#mu} CC incl., off-axis bin 09";  break;
+    case (ksNuECCoa00      ) : name = "#nu_{e} CC incl., off-axis bin 00";  break;
+    case (ksNuECCoa01      ) : name = "#nu_{e} CC incl., off-axis bin 01";  break;
+    case (ksNuECCoa02      ) : name = "#nu_{e} CC incl., off-axis bin 02";  break;
+    case (ksNuECCoa03      ) : name = "#nu_{e} CC incl., off-axis bin 03";  break;
+    case (ksNuECCoa04      ) : name = "#nu_{e} CC incl., off-axis bin 04";  break;
+    case (ksNuECCoa05      ) : name = "#nu_{e} CC incl., off-axis bin 05";  break;
+    case (ksNuECCoa06      ) : name = "#nu_{e} CC incl., off-axis bin 06";  break;
+    case (ksNuECCoa07      ) : name = "#nu_{e} CC incl., off-axis bin 07";  break;
     default                  : name = "--";
   }
 
@@ -219,6 +235,15 @@ bool util::IsCC(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
 
+    case (ksNuECCoa00     ) : // intentional fallthrough
+    case (ksNuECCoa01     ) :
+    case (ksNuECCoa02     ) :
+    case (ksNuECCoa03     ) :
+    case (ksNuECCoa04     ) :
+    case (ksNuECCoa05     ) :
+    case (ksNuECCoa06     ) :
+    case (ksNuECCoa07     ) : return true; break;
+
     case (ksUndefined      ) : return false;
   }
   return false;
@@ -278,7 +303,15 @@ bool util::IsCCQELike(Sample_t s)
     case (ksNuMuCCoa06     ) :
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
-    case (ksNuMuCCoa09     ) : return false; break;
+    case (ksNuMuCCoa09     ) :
+    case (ksNuECCoa00      ) :
+    case (ksNuECCoa01      ) :
+    case (ksNuECCoa02      ) :
+    case (ksNuECCoa03      ) :
+    case (ksNuECCoa04      ) :
+    case (ksNuECCoa05      ) :
+    case (ksNuECCoa06      ) :
+    case (ksNuECCoa07      ) : return false; break;
 
     return false; break;
     default: return false;
@@ -332,7 +365,15 @@ bool util::IsNC(Sample_t s)
     case (ksNuMuCCoa06     ) :
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
-    case (ksNuMuCCoa09     ) : return false; break;
+    case (ksNuMuCCoa09     ) :
+    case (ksNuECCoa00      ) :
+    case (ksNuECCoa01      ) :
+    case (ksNuECCoa02      ) :
+    case (ksNuECCoa03      ) :
+    case (ksNuECCoa04      ) :
+    case (ksNuECCoa05      ) :
+    case (ksNuECCoa06      ) :
+    case (ksNuECCoa07      ) : return false; break;
 
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) :
@@ -350,6 +391,8 @@ Sample_t util::SampleFromInt(int s)
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
   if((s >= (int)ksNuMuCC && s <= (int) ksNuMuCCoa09)) //RHC
+    return (Sample_t)s;
+  else if((s >= (int)ksNuECC && s <= (int) ksNuECCoa07)) //RHC
     return (Sample_t)s;
   return ksUndefined;
 }
@@ -431,6 +474,14 @@ bool util::IsMuLike(Sample_t s)
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
+    case (ksNuECCoa00      ) : // intentional fallthrough
+    case (ksNuECCoa01      ) :
+    case (ksNuECCoa02      ) :
+    case (ksNuECCoa03      ) :
+    case (ksNuECCoa04      ) :
+    case (ksNuECCoa05      ) :
+    case (ksNuECCoa06      ) :
+    case (ksNuECCoa07      ) : return true; break;
 
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
@@ -490,6 +541,15 @@ bool util::IsELike(Sample_t s)
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return false; break;      
+    case (ksNuECCoa00      ) : // intentional fallthrough
+    case (ksNuECCoa01      ) :
+    case (ksNuECCoa02      ) :
+    case (ksNuECCoa03      ) :
+    case (ksNuECCoa04      ) :
+    case (ksNuECCoa05      ) :
+    case (ksNuECCoa06      ) :
+    case (ksNuECCoa07      ) : return false; break;
+
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;

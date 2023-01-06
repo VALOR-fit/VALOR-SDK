@@ -193,8 +193,11 @@ def main(config_file, param_values,
     for reac_type in reac_types:
       ev = event_counts_per_channel[reac_type]
       # ~ if not total_event_counts_per_reac_type[reac_type]: continue
-      reac_type_name = util.ReacTypeAsString(reac_type)
+      print(reac_type)
+      reac_type_name = util.ReacTypeAsStringTeX(reac_type)
+      print(reac_type_name)
       tex_output.write(" "+reac_type_name.ljust(col1_width)+" & ")
+      #tex_output.write(" "+"$"+reac_type_name.ljust(col1_width)+"$"+" & ")
       ev_counts = []
       for channel in channels:
         try:

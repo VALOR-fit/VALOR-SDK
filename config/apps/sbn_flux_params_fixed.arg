@@ -1,0 +1,29 @@
+# argument                           |   type         |  require?   |   default
+# .......................................................................................................
+# SBN flux params
+input-horncurrent_FluxUnisim         |   double       |  optional   |   0
+input-expskin_FluxUnisim             |   double       |  optional   |   0
+input-nucleoninexsec_FluxUnisim      |   double       |  optional   |   0
+input-nucleonqexsec_FluxUnisim       |   double       |  optional   |   0
+input-nucleontotxsec_FluxUnisim      |   double       |  optional   |   0
+input-pioninexsec_FluxUnisim         |   double       |  optional   |   0
+input-pionqexsec_FluxUnisim          |   double       |  optional   |   0
+input-piontotxsec_FluxUnisim         |   double       |  optional   |   0
+
+fix-horncurrent_FluxUnisim           |   boolean      |  optional   |   true
+fix-expskin_FluxUnisim               |   boolean      |  optional   |   true
+fix-nucleoninexsec_FluxUnisim        |   boolean      |  optional   |   true
+fix-nucleonqexsec_FluxUnisim         |   boolean      |  optional   |   true
+fix-nucleontotxsec_FluxUnisim        |   boolean      |  optional   |   true
+fix-pioninexsec_FluxUnisim           |   boolean      |  optional   |   true
+fix-pionqexsec_FluxUnisim            |   boolean      |  optional   |   true
+fix-piontotxsec_FluxUnisim           |   boolean      |  optional   |   true
+
+fix-at-horncurrent_FluxUnisim        |   double       |  optional   |   0
+fix-at-expskin_FluxUnisim            |   double       |  optional   |   0
+fix-at-nucleoninexsec_FluxUnisim     |   double       |  optional   |   0
+fix-at-nucleonqexsec_FluxUnisim      |   double       |  optional   |   0
+fix-at-nucleontotxsec_FluxUnisim     |   double       |  optional   |   0
+fix-at-pioninexsec_FluxUnisim        |   double       |  optional   |   0
+fix-at-pionqexsec_FluxUnisim         |   double       |  optional   |   0
+fix-at-piontotxsec_FluxUnisim        |   double       |  optional   |   0

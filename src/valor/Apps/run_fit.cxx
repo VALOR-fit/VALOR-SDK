@@ -111,6 +111,7 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/run_fit.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
+  //arg.Read(argc,argv,"$VALOR_FMWK/config/apps/run_fit.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg:$VALOR_FMWK/config/apps/sbn_flux_params_fixed.arg");
   LOG("valor", pNOTICE) << arg;
 
   TString param_values_ts(arg.GetString("param-values-option"));

@@ -518,6 +518,51 @@ std::string util::AsString(conv::ReacType_t t)
   return "--";
 }
 //________________________________________________________________________________________
+string util::AsStringTeX2(ReacType_t t, bool root)
+{
+  string name = "";
+
+  switch(t) {
+    case (kmtCCQE     ) : name =  "CCQE"; break;
+    case (kmtCCMEC    ) : name =  "CCMEC"; break;
+    case (kmtCC1piC   ) : name =  "CC1#pi^{#pm}"; break;
+    case (kmtCC1pi0   ) : name =  "CC1#pi^{0}"; break;
+    case (kmtCC2piC   ) : name =  "CC2#pi^{#pm}"; break;
+    case (kmtCC2pi0   ) : name =  "CC2#pi^{0}"; break;
+    case (kmtCCpiCpi0 ) : name =  "CC1#pi^{0}1#pi^{#pm}"; break;
+    case (kmtCCcoh    ) : name =  "CCcoherent"; break;
+    case (kmtCCIMD    ) : name =  "CCIMD"; break;
+    case (kmtCCELScat ) : name =  "CC#nu_{e}#text{El}"; break;
+    case (kmtCCDIS    ) : name =  "CCDIS"; break;
+    case (kmtCCMpi    ) : name =  "CCMpi"; break;
+    case (kmtCCmisc   ) : name =  "CCmisc"; break;
+    case (kmtCCoth    ) : name =  "CCother"; break;
+    case (kmtNCEL     ) : name =  "NCEL"; break;
+    case (kmtNCMEC    ) : name =  "NCMEC"; break;
+    case (kmtNC1piC   ) : name =  "NC1#pi^{#pm}"; break;
+    case (kmtNC1pi0   ) : name =  "NC1#pi^{0}"; break;
+    case (kmtNC2piC   ) : name =  "NC2#pi^{#pm}"; break;
+    case (kmtNC2pi0   ) : name =  "NC2#pi^{0}"; break;
+    case (kmtNCpiCpi0 ) : name =  "NC1#pi^{0}1#pi^{#pm}"; break;
+    case (kmtNCcoh    ) : name =  "NCcoherent"; break;
+    case (kmtNC1Gamma ) : name =  "NC1#gamma"; break;
+    case (kmtNCELScat ) : name =  "NC#nu_{e}#text{El}"; break;
+    case (kmtNCoth    ) : name =  "NCother"; break;
+    case (kmtELScat   ) : name =  "#nu_{e}#text{El}"; break;
+    case (kmtOther    ) : name =  "misc"; break;
+    case (kmtCosmic   ) : name =  "cosmic"; break;
+    case (kmtDirt     ) : name =  "dirt"; break;
+    default             : name =  "--"; 
+  }
+
+  if(root) return name;
+
+  // normal TeX, not ROOT TeX - change '#' with '\'
+  replace( name.begin(), name.end(), '#', '\\');
+
+  return name;
+}
+//________________________________________________________________________________________
 conv::NuFlavour_t  util::ReacModeToInitFlavor(conv::ReacMode_t m)
 {
   //~ int idx = ArrIdx::Instance()->ReacModeIdx(m);
@@ -836,6 +881,7 @@ string    util::ModeAsStringTeX (ReacMode_t m, bool root) {return util::AsString
 string    util::ModeAsString    (ReacMode_t m) {return util::AsString(m);}
 bool      util::ModeIsCC        (ReacMode_t m) {return util::IsCC(m);}
 string    util::ReacTypeAsString(ReacType_t t) {return util::AsString(t);}
+string    util::ReacTypeAsStringTeX(ReacType_t t, bool root) {return util::AsStringTeX2(t,root);}
 //________________________________________________________________________________________
 ReacMode_t util::NuEModeToOscNuEMode(ReacMode_t m)
 {

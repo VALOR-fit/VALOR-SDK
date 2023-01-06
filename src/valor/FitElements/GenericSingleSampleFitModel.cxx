@@ -1874,6 +1874,9 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     // in true
     for (conv::KineVar_t kv : true_sb->KineVars()) {
       double val = kinematics.at(kv);
+      // cosmics by definiton don't have a true neutrino energy. In SBN the energy is set to -99999.
+      // Let's set val to 0 here so they pass this check - maybe should do something more rigorous.. 
+      if(util::AsString(m) == "cosmic"){val = 0;}
       if (val < true_sb->Minimum(kv) || val > true_sb->Maximum(kv)) {
         LOG("GenericSingleSampleFitModel",pWARN) 
           << "MC event: " << iev << " has true kinematic value outside range: "<<util::AsString(kv) << " = "<<val
@@ -3726,6 +3729,154 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
 }
 
 //_________________________________________________________________________________________
+/*
+void GenericSingleSampleFitModel::ApplyDecayProb(Option_t * option)
+{ 
+  
+  // Apply neutrino decay probabilities ala osc probabilities 
+
+  LOG("GenericSingleSampleFitModel",pINFO)
+    << "Applying oscillation probabilities (option: "
+    << ((option) ? option : "")
+    << ")";
+
+  bool update_mct_sb = false;
+  if(option) {
+    string opt = option;
+    if(opt.find("+SB") != string::npos) {
+      update_mct_sb = true;
+    }
+  }
+  //first, check that there are actually decay params in the fit params list 
+  bool apply_decay_prob = false;
+  for(size_t imode = 0; imode < fReactionModes.size(); imode++){ // also loop over reacmodes
+    for(int ip = 0; ip < conv::kNuis000; ip++) {
+      PhysParamId_t p = (PhysParamId_t) ip;
+      if(fPhysHypothesis.Contains(p)) {
+        apply_decay_prob = true;
+      }
+    }
+  }
+
+  // If not, just set the oscillated modes to zero and move on
+  if (!apply_decay_prob) {
+    for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+      ReacMode_t m = fReactionModes[imode];
+      if(m == kmUndefined) {continue;}
+      conv::NuFlavour_t init_flav   = util::ReacModeToInitFlavor(m);
+      conv::NuFlavour_t final_flav  = util::ReacModeToFinalFlavor(m);
+      if (init_flav != final_flav) {
+        fMCTFinOb[imode]->SetAll(0.);
+        if (update_mct_sb) {fMCTFinSb[imode]->SetAll(0.);}
+      }
+    }
+    return;
+  }
+  PhysHypothesis_t hypid = fPhysHypothesis.Hypothesis();
+  // Variables for the sterile oscillations if we need them, since they don't come in an object
+  double sinsq2thmue = -1, sinsq2thmumu = -1, sinsq2thee = -1, dm41sq = -1;
+
+  if(hypid == kHypDecay){
+    alphadecay = fPhysHypothesis.CurrValue(kPhypAlphaDecay);
+    thetadecay = fPhysHypothesis.CurrValue(kPhypSinsq2ThetaDecay);
+  }
+
+  double p_neutrino_decay       = -1;
+
+  const VALORBinning * reco_ob = fBinning->RecoOptBinning();
+  const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
+
+  const int n_reco_bins_ob = reco_ob->NBins();
+  const int n_reco_bins_sb = reco_sb->NBins();
+
+  for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
+    ReacMode_t m = fReactionModes[imode];
+    
+    // Make sure the mode is a neutrino since this is what's supposed to decay. 
+    if (!util::IsNeutrinoAny(m)) {continue;}
+    
+    if(fDetector == kdUndefined) continue;
+    if(fBeam     == kbUndefined) continue;
+    if(fSample   == ksUndefined) continue;
+
+    const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
+    const int n_true_bins_sb = true_sb->NBins();
+
+    // Recast our VALORarrays as simple C-arrays to speed up the many rapid accesses this function needs
+    typedef double (templtypeOb)[n_reco_bins_ob][n_true_bins_sb];
+    templtypeOb & templFinOb = *reinterpret_cast<templtypeOb *>(&(fMCTFinOb[imode]->GetEntryRef(0,0)));
+    typedef double (templtypeSb)[n_reco_bins_sb][n_true_bins_sb];
+    templtypeSb & templFinSb = *reinterpret_cast<templtypeSb *>(&(fMCTFinSb[imode]->GetEntryRef(0,0)));
+
+    for(int itrue = 0; itrue < n_true_bins_sb; itrue++) {
+      //get the true energy to calculate osc prob
+      double Etrue = true_sb->BinCentre(itrue,conv::kvEtrue);
+
+      double CalculateDecayProb(double L, double nu_mass, double nu_lifetime, double nu_momentum){
+        double exponent = -(L * nu_mass) / (nu_lifetime * nu_momentum);
+        double prob = exp(exponent);
+        
+        return prob;
+      }
+
+      if (hypid == kHypOscSterileEff) {
+        p_neutrino_decay  = CalculateDecayProb(L, nu_mass, nu_lifetime, nu_momentum);
+      }
+      
+      double posc = 1.;
+      if(util::IsCC(m))
+      {
+        if     ( util::IsNuMu(m)       ) { posc = p_numu_numu;       }
+        else if( util::IsNuMuBar(m)    ) { posc = p_numubar_numubar; }
+        else if( util::IsNuE(m)        ) { posc = p_nue_nue;         }
+        else if( util::IsNuEBar(m)     ) { posc = p_nuebar_nuebar;   }
+
+        else if( util::IsNuMuToNuE(m)  ) { posc = p_numu_nue;        }
+        else if( util::IsNuMuToNuTau(m)) { posc = p_numu_nutau;      }
+        else if( util::IsNuEToNuMu(m)  ) { posc = p_nue_numu;        }
+        else if( util::IsNuEToNuTau(m) ) { posc = p_nue_nutau;       }
+
+        else if( util::IsNuMuBarToNuEBar(m)  ) { posc = p_numubar_nuebar;        }
+        else if( util::IsNuMuBarToNuTauBar(m)) { posc = p_numubar_nutaubar;      }
+        else if( util::IsNuEBarToNuMuBar(m)  ) { posc = p_nuebar_numubar;        }
+        else if( util::IsNuEBarToNuTauBar(m) ) { posc = p_nuebar_nutaubar;       }
+      }
+      // Apply numu disappearance probability to NC templates
+      else 
+      {
+        if(      util::IsNuMu(m))    { posc = p_numu_numu; }
+        else if( util::IsNuMuBar(m)) { posc = p_numubar_numubar; }
+        else if( util::IsNuE(m)        ) { posc = p_nue_nue;         }
+        else if( util::IsNuEBar(m)     ) { posc = p_nuebar_nuebar;   }
+
+        else if( util::IsNuMuToNuE(m)  ) { posc = p_numu_nue;        }
+        else if( util::IsNuMuToNuTau(m)) { posc = p_numu_nutau;      }
+        else if( util::IsNuEToNuMu(m)  ) { posc = p_nue_numu;        }
+        else if( util::IsNuEToNuTau(m) ) { posc = p_nue_nutau;       }
+
+        else if( util::IsNuMuBarToNuEBar(m)  ) { posc = p_numubar_nuebar;        }
+        else if( util::IsNuMuBarToNuTauBar(m)) { posc = p_numubar_nutaubar;      }
+        else if( util::IsNuEBarToNuMuBar(m)  ) { posc = p_nuebar_numubar;        }
+        else if( util::IsNuEBarToNuTauBar(m) ) { posc = p_nuebar_nutaubar;       }
+      }
+      if(fMCTNullOb[imode]) {continue;}
+
+      for(int ireco_ob = 0; ireco_ob < n_reco_bins_ob; ireco_ob++) {
+        templFinOb[ireco_ob][itrue] *= posc;
+      }//ireco
+
+      if(update_mct_sb) {
+        if(fMCTNullSb[imode]) {continue;}
+        for(int ireco_sb = 0; ireco_sb < n_reco_bins_sb; ireco_sb++) {
+          templFinSb[ireco_sb][itrue] *= posc;
+        }//ireco_sb
+      }//update_mct_sb
+    }//itrue
+  }//imode
+}
+*/
+//_________________________________________________________________________________________
+
 void GenericSingleSampleFitModel::UpdatePDFs(Option_t * option)
 {
   bool update_mct_sb = false;

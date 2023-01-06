@@ -1,0 +1,7 @@
+input-alphadecay                     |   double       |  optional   |   -999
+fix-alphadecay                       |   boolean      |  optional   |   false
+fix-at-alphadecay                    |   double       |  optional   |   -999
+input-thetadecay                     |   double       |  optional   |   -999
+fix-thetadecay                       |   boolean      |  optional   |   false
+fix-at-thetadecay                    |   double       |  optional   |   -999
+
