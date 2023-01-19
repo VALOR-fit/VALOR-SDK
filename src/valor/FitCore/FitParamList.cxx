@@ -210,9 +210,9 @@ void FitParamList::CopyBestFitToInitValues(const FitParamList & plst)
   }
 }
 //________________________________________________________________________________________
-void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix, unsigned int start_at)
+void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix, unsigned int start_at, bool set_hesse_matrix)
 {
-  TMatrixDSym & m = *fCovMatrix;
+  TMatrixDSym & m = set_hesse_matrix ? *fHesseCovMatrix : *fCovMatrix;
   int tot_rows = m.GetNrows()-start_at;
   if (tot_rows < 0) {
     LOG("FitParmList",pERROR) << "Can't start at row "<<start_at<<" in a "<<m.GetNrows()<<" matrix.";
@@ -1664,6 +1664,7 @@ void FitParamList::Copy(const FitParamList & plst)
   for(int i = 0; i < plst.fNParams; i++) {
     for(int j = 0; j < plst.fNParams; j++) {
       (*this->fCovMatrix)[i][j] =  (*plst.fCovMatrix)[i][j];
+      (*this->fHesseCovMatrix)[i][j] =  (*plst.fHesseCovMatrix)[i][j];
     }
   }
   
@@ -1706,7 +1707,8 @@ void FitParamList::Init(int nparams)
     fPlusError        = new double[fNParams];
     fMinusError       = new double[fNParams];
     fParameterScaling = new double[fNParams];
-    fCovMatrix    = new TMatrixDSym(fNParams);
+    fCovMatrix        = new TMatrixDSym(fNParams);
+    fHesseCovMatrix   = new TMatrixDSym(fNParams);
     
     // MARGINALIZATION
     fDoMarg        = new bool      [fNParams];
@@ -1741,6 +1743,7 @@ void FitParamList::Init(int nparams)
     fMinusError       = 0;
     fParameterScaling = 0;
     fCovMatrix        = 0;
+    fHesseCovMatrix   = 0;
     
     // MARGINALIZATION
     fDoMarg        = 0;
@@ -1834,6 +1837,7 @@ void FitParamList::CleanUp(void)
   if( fMinusError        ) { delete [] fMinusError        ; fMinusError        = 0; }
   if( fParameterScaling  ) { delete [] fParameterScaling  ; fParameterScaling  = 0; }
   if( fCovMatrix         ) { delete    fCovMatrix         ; fCovMatrix         = 0; }
+  if( fHesseCovMatrix    ) { delete    fHesseCovMatrix    ; fHesseCovMatrix    = 0; }
   
   // MARGINALIZATION
   if (fDoMarg        ) { delete [] fDoMarg       ; fDoMarg        = 0 ; }

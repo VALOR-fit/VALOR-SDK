@@ -130,8 +130,8 @@ namespace valor {
     using TNamed::Copy; //supress clang 'hides overloaded virtual function [-Woverloaded-virtual]' warnings
     void Copy (const FitParamList & plst);
     
-    // Set the covariance matrix
-    void SetCovMatrix(TMatrixDSym & covmatrix, unsigned int start_at = 0);
+    // Set the Migrad covariance matrix
+    void SetCovMatrix(TMatrixDSym & covmatrix, unsigned int start_at = 0, bool set_hesse_cov_matrix = false);
     
     // Set the errors
     void SetErrors(double * errplus, double * errminus, double * errmigrad);
@@ -206,6 +206,8 @@ namespace valor {
     
     TMatrixDSym *       GetCovMatrix(void)       { return fCovMatrix; }
     const TMatrixDSym * GetCovMatrix(void) const { return fCovMatrix; }
+    TMatrixDSym *       GetHesseCovMatrix(void)       { return fHesseCovMatrix; }
+    const TMatrixDSym * GetHesseCovMatrix(void) const { return fHesseCovMatrix; }
     
     // Calculate the fit statistic penalty
     double HypothesisFitStatisticPenalty(Option_t * opt = 0) const;
@@ -370,6 +372,7 @@ namespace valor {
     double     * fMinusError;   //[fNParams]
     double     * fParameterScaling; //[fNParams] - scale all parameters by this value before copying too/from fitter
     TMatrixDSym* fCovMatrix;
+    TMatrixDSym* fHesseCovMatrix;
     double       fBestFitStatistic;
     double       fCurrStatistic;
     double       fFitTime;

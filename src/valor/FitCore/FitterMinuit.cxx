@@ -452,6 +452,39 @@ bool FitterMinuit::RunOnce(bool use_simplex)
       hesse_err[ip] = fitter->GetParError(ip)/fp.ParameterScalingByIndex(ip);
     }
     fp.SetHesseErrors (hesse_err);
+
+
+    //We also want to save the HESSE matrix
+    // Copy errors from HESSE for free parameters
+    TMatrixDSym covHesse(num_of_params);
+    ifree = 0;
+    jfree = 0;
+    for(int i = 0; i<num_of_params; i++) {
+      if (!fp.IsFixedByIndex(i)) {
+	for(int j = 0; j<num_of_params; j++) {
+	  // Put unfixed errors in the matrix
+	  if (!fp.IsFixedByIndex(j)) {
+	    double scaling = fp.ParameterScalingByIndex(i)*fp.ParameterScalingByIndex(j);
+	    cov[i][j] = fitter->GetCovarianceMatrixElement(ifree,jfree)/scaling;
+	    jfree++;
+	  }
+	}
+	jfree = 0;
+	ifree++;
+      }//j
+    }//i
+    // Copy prior errors along diagonal for fixed
+    if (cm) {
+      for (int i = 0; i < num_of_params; i++) {
+	if (!fp.IsFixedByIndex(i)) {continue;}
+	PhysParamId_t p = fp.WhichParam(i);
+	if (cm->GetSystematics()->Contains(p)) {
+	  cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
+	}
+      }
+    }
+    //set the HesseCovMatrix (rather the standard one)
+    fp.SetCovMatrix(cov, 0, true);
   }
   
   //else 
