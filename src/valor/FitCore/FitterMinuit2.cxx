@@ -7,12 +7,12 @@
 //____________________________________________________________________________
 
 #define __show_fit_init_info__ 
-//#define __show_fit_cov_matrix_debug__
+#define __show_fit_cov_matrix_debug__
 #define __show_fit_result__ 
 #define __show_fit_steps__ 
-//~ #define __show_fit_steps_debug__
+#define __show_fit_steps_debug__
 #define __show_fit_cpu_time__
-#define __give_fitter_covariance_matrix__
+//#define __give_fitter_covariance_matrix__
 
 #include <cassert> 
 #include <cstdlib> 
@@ -76,6 +76,8 @@ FitterMinuit2::~FitterMinuit2()
 //____________________________________________________________________________ 
 void FitterMinuit2::Init(void) 
 {
+  ROOT::Minuit2::MnPrint::SetLevel(4);
+  
   fFitInputs           = 0;
   fOption              = "";
   fNFitBins            = 0;
@@ -90,6 +92,8 @@ void FitterMinuit2::Init(void)
   fMinosErrStatusCode  = -999; 
   fFitTime             = 0;
   fFitTries            = 0;
+  fNCalls              = 0;
+  fEDM                 = -999;
   
   fUseFumili = false;
 }
@@ -133,6 +137,7 @@ void FitterMinuit2::Init(FitInputs * fit_inputs, Option_t * option)
   if(fOption.Contains("tolerance",TString::kIgnoreCase)) {
     TPRegexp tol_re("(?<=tolerance\\=)-?[\\d.]+(?:e-?\\d+)?");
     /*               |Lookahead name |Generic number pattern| */
+    //example use tolerance=0.01
     TObjArray * matches = tol_re.MatchS(fOption,"i"); // i is case insensitive
     double tolerance = 0;
     if(matches->GetEntries()==1) {
@@ -256,6 +261,9 @@ bool FitterMinuit2::DoTheFit(void)
   fFitTime = w.CpuTime();
 #endif
 
+  fFitInputs->FitParams().SetFitTime ( fFitTime );
+  fFitInputs->FitParams().SetFitTries(fFitTries);
+
   return ok;
 }
 //____________________________________________________________________________ 
@@ -333,16 +341,32 @@ bool FitterMinuit2::RunOnce(void)
   cout << "FitterMinuit2/RunOnce >> Getting fit success status..." << endl;
 #endif
 
-  fMigradMinStatusCode = bestfit.UserState().CovarianceStatus();
-  fMigradErrStatusCode = bestfit.UserState().CovarianceStatus();
+  LOG("FitterMinuit2",pINFO) << "User State" << bestfit.UserState();
+
+  fNCalls = bestfit.UserState().NFcn();
+  fEDM    = bestfit.UserState().Edm();
   
-  if (fMigradMinStatusCode <2) {
-    LOG("FitterMinuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
+  fMigradMinStatusCode = bestfit.UserState().IsValid();
+  fMigradErrStatusCode = bestfit.UserState().CovarianceStatus();
+
+  if(!fMigradMinStatusCode) {
+    LOG("FitterMinuit2",pWARN) << "Bad MINUIT minimisation status: "<<fMigradMinStatusCode;
   }
+  //0 = not valid, 1 approximate, 2, full but made pos def, 3 accurate and not pos def
+  if (fMigradErrStatusCode <2) {
+    LOG("FitterMinuit2",pWARN) << "Bad MINUIT covariance status: "<<fMigradErrStatusCode;
+  }
+  fFitInputs->FitParams().SetStatusCode("migrad_min", fMigradMinStatusCode);
+  fFitInputs->FitParams().SetStatusCode("migrad_err", fMigradErrStatusCode);
   
   // Done! Copy current --> best-fit values
   fFitInputs->FitParams().CopyCurrToBestFitValues();
-  
+
+  fFitInputs->FitParams().SetNCalls(fNCalls);
+  fFitInputs->FitParams().SetEDM(fEDM);
+  cout << "SET FITPARAM NCALLS TO " << fNCalls << endl;
+  cout << fFitInputs->FitParams() << endl;
+
   //get the best fit vector, for use in this function
   std::vector<ROOT::Minuit2::MinuitParameter> bestfit_params = bestfit.UserParameters().Parameters();
   for(unsigned int ip = 0; ip < bestfit_params.size(); ip++) {
@@ -362,7 +386,7 @@ bool FitterMinuit2::RunOnce(void)
   // migrad covariance
   if(bestfit.HasCovariance()) {
     ROOT::Minuit2::MnUserCovariance cov_migrad(bestfit.UserState().Covariance());
-    this->CopyCovarianceToFPL(cov_migrad);
+    this->CopyCovarianceToFPL(cov_migrad, false);
   }
 
   // migrad error
@@ -381,13 +405,15 @@ bool FitterMinuit2::RunOnce(void)
     ROOT::Minuit2::MnHesse hesse(2);
     // perform hesse error calculation
     ROOT::Minuit2::MnUserParameterState hesse_state = hesse(*fFitInputs, bestfit.UserState(),fMaxNumCalls);
+    LOG("FitterMinuit2",pINFO) << "HESSE state" << hesse_state;
     //Check if fit succeeded
     fHesseErrStatusCode = hesse_state.CovarianceStatus();
+    fFitInputs->FitParams().SetStatusCode("hesse_err", fHesseErrStatusCode);
 
     // hesse covariance
     if(hesse_state.HasCovariance()) {
       ROOT::Minuit2::MnUserCovariance cov_hesse(hesse_state.Covariance());
-      this->CopyCovarianceToFPL(cov_hesse);
+      this->CopyCovarianceToFPL(cov_hesse, true);
     }
     err_hesse_err =  bestfit.UserParameters().Errors(); 
     fFitInputs->FitParams().SetHesseErrors(err_hesse_err);
@@ -416,11 +442,7 @@ bool FitterMinuit2::RunOnce(void)
     fFitInputs->FitParams().SetMinosErrors(err_minosplus, err_minosminus);
   } // minos
 
-
-  fFitInputs->FitParams().SetFitTime ( fFitTime );
-  fFitInputs->FitParams().SetFitTries(fFitTries);
-  fFitInputs->FitParams().SetBestFitStatistic(fFitInputs->FitParams().GetBestFitStatistic());
-
+  fFitInputs->FitParams().SetBestFitStatistic(bestfit.Fval());
 
   // Print fit result
 #ifdef __show_fit_result__
@@ -444,6 +466,7 @@ bool FitterMinuit2::RunOnce(void)
 #endif
 
   if (mnapp) {delete mnapp;}
+  fFitTries++;
 
   return true;
 }
@@ -472,7 +495,7 @@ int FitterMinuit2::NFitParams() const
   return fFitInputs->FitParams().GetNumberFreeParameters();
 }
 //____________________________________________________________________________ 
-void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & mncov)
+void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & mncov, bool ishesse)
 {
   FitParamList & fp = fFitInputs->FitParams();
   int num_of_params      = fp.GetNumberParameters();
@@ -500,10 +523,13 @@ void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & 
     for (int i = 0; i < num_of_params; i++) {
       if (!fp.IsFixedByIndex(i)) {continue;}
       PhysParamId_t p = fp.WhichParam(i);
-      cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
+      if(util::IsSystematic(p))
+	cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
+      else
+	cov[i][i] = 100; //dummy value
     }
   }
-  fp.SetCovMatrix(cov);
+  fp.SetCovMatrix(cov,0,ishesse);
   return;
 }
 //____________________________________________________________________________ 

@@ -63,7 +63,7 @@ protected:
    bool  RunOnce (void);
    void  FillPriorCovMatrix(Option_t * opt = "");
    
-   void CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & mncov);
+   void CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & mncov, bool ishesse);
 
    FitInputs*  fFitInputs;        ///< fit inputs
    TString     fOption;           ///< fit option
@@ -80,6 +80,8 @@ protected:
    int         fMaxNumCalls;         ///< Maximum number of evaluations of fit function
    int         fStr;                 ///< strategy
    TMatrixD    fCovMtrx;             ///< covariance matrix of all free parameters in the fit
+   double      fEDM;                 ///< fit estimated distance to minimum
+   double      fNCalls;              ///< fit number of calls
 
    ROOT::Minuit2::MnUserParameters fUserParams;   ///< store the user parameters
    bool fUseFumili;
