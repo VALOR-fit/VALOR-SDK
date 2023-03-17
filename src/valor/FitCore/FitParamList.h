@@ -197,6 +197,11 @@ namespace valor {
     double GetFitTime          (void) const       { return fFitTime;             }
     void   SetFitTries         (int   fit_tries)  { fFitTries = fit_tries;       }
     int    GetFitTries         (void) const       { return fFitTries;            }
+
+    void   SetNCalls           (int ncalls)       { fNCalls = ncalls;            }
+    int    GetNCalls           (void) const       { return fNCalls;              }
+    void   SetEDM              (double edm)       { fEDM = edm;                  }
+    double GetEDM              (void) const       { return fEDM;                 }
     
     void   SetBestFitStatisticContributions (const std::map<std::string,double> & stat_bf)   { fBestFitStatisticContributions = stat_bf; }
     const std::map<std::string,double> & GetBestFitStatisticContributions (void) const { return fBestFitStatisticContributions;    }
@@ -377,6 +382,8 @@ namespace valor {
     double       fCurrStatistic;
     double       fFitTime;
     int          fFitTries;
+    int          fNCalls;
+    double       fEDM;
     
     bool fMigradErrorsSet;
     bool fHesseErrorsSet;
@@ -419,7 +426,7 @@ namespace valor {
     double fUserMix13Central;
     double fUserMix13Error;
 
-    ClassDef(FitParamList,3)
+    ClassDef(FitParamList,4)
   };
   
   std::ostream & operator<< (std::ostream & stream, const FitParamList & plst);

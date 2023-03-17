@@ -719,7 +719,9 @@ void FitParamList::Print(ostream & stream) const
     stream << setw(20) << name << setw(10) << code << endl;
   }
   stream << "Fit time: " << fFitTime  << " sec" << ", tries: " << fFitTries << endl;
+  stream << "NCalls: " << fNCalls << endl;
   stream << "Best-fit statistic: " << fBestFitStatistic << endl;
+  stream << "Estimated distance to minimum: " << fEDM << endl;
 }
 //________________________________________________________________________________________
 void FitParamList::Print(Option_t *) const
@@ -1673,6 +1675,8 @@ void FitParamList::Copy(const FitParamList & plst)
   this->fCurrStatistic    = plst.fCurrStatistic;
   this->fFitTime          = plst.fFitTime;
   this->fFitTries         = plst.fFitTries;
+  this->fNCalls           = plst.fNCalls;
+  this->fEDM              = plst.fEDM;
   
   this->fStatusCodes.insert(plst.fStatusCodes.begin(),  plst.fStatusCodes.end());
   
@@ -1806,6 +1810,8 @@ void FitParamList::Init(int nparams)
   fCurrStatistic    = 0.;
   fFitTime          = -1;
   fFitTries         = 0;
+  fNCalls           = -1;
+  fEDM              = -999;
   
   fStatusCodes.clear();
   
