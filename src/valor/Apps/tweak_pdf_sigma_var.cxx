@@ -76,7 +76,7 @@ using namespace std;
 using namespace valor;
 using namespace valor::conv;
 
-bool t2k = false;
+bool t2k = true;
 
 void SpecialCaseTweak(PhysParamId_t p, FitParamList * fp, double& tweak_p1, double& tweak_m1, double& tweak_p3, double& tweak_m3);
 void GeneratePDFNominal(FitModelABC * model, CompoundFitModel * cm, FitParamList * fp, KineVar_t kv,
@@ -229,40 +229,33 @@ int main(int argc, char ** argv)
 void SpecialCaseTweak(conv::PhysParamId_t p, FitParamList * fp, double& tweak_p1, double& tweak_m1, double& tweak_p3, double& tweak_m3)
 {
   if(t2k) {
-    if(p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_shape_O")) {
-      double one_sigma_err_upper   = 0.5;
-      double one_sigma_err_lower   = -0.5;
-      double three_sigma_err_upper = 1.0;
-      double three_sigma_err_lower = -1.0;
-      tweak_p1 = one_sigma_err_upper;
-      tweak_m1 = one_sigma_err_lower;
-      tweak_p3 = three_sigma_err_upper;
-      tweak_m3 = three_sigma_err_lower;
-    }
+      if(p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_shape_O_np")    ||
+         p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_shape_O_NN")   ||
+         p == util::NameRegistry::Instance()->PhysParamFromString("P1_2Shell_MF_PMissShape_O")   ||
+         p == util::NameRegistry::Instance()->PhysParamFromString("P3_2Shell_MF_PMissShape_O")   ||
+         p == util::NameRegistry::Instance()->PhysParamFromString("SShell_MF_PMissShape_O")   ||
+         p == util::NameRegistry::Instance()->PhysParamFromString("MPi_BY_Axial")  ||
+         p == util::NameRegistry::Instance()->PhysParamFromString("MPi_Multi_TotXSec")    ||
+         p == util::NameRegistry::Instance()->PhysParamFromString("MPi_BY_Vector"))    {
+          std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+          double one_sigma_err_upper   = 0.5;
+          double one_sigma_err_lower   = -0.5;
+          double three_sigma_err_upper = 1.0;
+          double three_sigma_err_lower = -1.0;
+          tweak_p1 = one_sigma_err_upper;
+          tweak_m1 = one_sigma_err_lower;
+          tweak_p3 = three_sigma_err_upper;
+          tweak_m3 = three_sigma_err_lower;
+      }
 
-    if(p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_Edep_lowEnu")) {
-      double one_sigma_err_upper   = 0.5;
-      double one_sigma_err_lower   = 0.25;
-      double three_sigma_err_upper = 0.75;
-      double three_sigma_err_lower = 0.0;
-      tweak_p1 = one_sigma_err_upper;
-      tweak_m1 = one_sigma_err_lower;
-      tweak_p3 = three_sigma_err_upper;
-      tweak_m3 = three_sigma_err_lower;
-    }
-
-    if(p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_Edep_highEnu")) {
-      double one_sigma_err_upper   = 0.5;
-      double one_sigma_err_lower   = 0.25;
-      double three_sigma_err_upper = 0.75;
-      double three_sigma_err_lower = 0.0;
-      tweak_p1 = one_sigma_err_upper;
-      tweak_m1 = one_sigma_err_lower;
-      tweak_p3 = three_sigma_err_upper;
-      tweak_m3 = three_sigma_err_lower;
-    }
-
-    if(p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_Edep_lowEnubar")) {
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_Edep_lowEnu")     ||
+       p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_Edep_highEnu")    ||
+       p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_Edep_lowEnubar")  ||
+       p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_Edep_highEnubar") ||
+       p == util::NameRegistry::Instance()->PhysParamFromString("Optical_Potential_O")   ||
+       p == util::NameRegistry::Instance()->PhysParamFromString("MPi_Multi_Shape")    ||
+       p == util::NameRegistry::Instance()->PhysParamFromString("RS_Delta_Decay"))   {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
       double one_sigma_err_upper   = 0.5;
       double one_sigma_err_lower   = 0.25;
       double three_sigma_err_upper = 0.75;
@@ -273,20 +266,12 @@ void SpecialCaseTweak(conv::PhysParamId_t p, FitParamList * fp, double& tweak_p1
       tweak_m3 = three_sigma_err_lower;
     }
 
-    if(p == util::NameRegistry::Instance()->PhysParamFromString("2p2h_Edep_highEnubar")) {
-      double one_sigma_err_upper   = 0.5;
-      double one_sigma_err_lower   = 0.25;
-      double three_sigma_err_upper = 0.75;
-      double three_sigma_err_lower = 0.0;
-      tweak_p1 = one_sigma_err_upper;
-      tweak_m1 = one_sigma_err_lower;
-      tweak_p3 = three_sigma_err_upper;
-      tweak_m3 = three_sigma_err_lower;
-    }
 
-    if(p == util::NameRegistry::Instance()->PhysParamFromString("EB_dial_O_nu")) {
-      double one_sigma_err_upper   = 7;
-      double one_sigma_err_lower   = -5;
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("EB_dial_O_nu")     ||
+       p == util::NameRegistry::Instance()->PhysParamFromString("EB_dial_O_nubar"))     {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+      double one_sigma_err_upper   = 6;
+      double one_sigma_err_lower   = -6;
       double three_sigma_err_upper = 15;
       double three_sigma_err_lower = -10;
       tweak_p1 = one_sigma_err_upper;
@@ -295,17 +280,80 @@ void SpecialCaseTweak(conv::PhysParamId_t p, FitParamList * fp, double& tweak_p1
       tweak_m3 = three_sigma_err_lower;
     }
 
-    if(p == util::NameRegistry::Instance()->PhysParamFromString("EB_dial_O_nubar")) {
-      double one_sigma_err_upper   = 7;
-      double one_sigma_err_lower   = -5;
-      double three_sigma_err_upper = 15;
-      double three_sigma_err_lower = -10;
-      tweak_p1 = one_sigma_err_upper;
-      tweak_m1 = one_sigma_err_lower;
-      tweak_p3 = three_sigma_err_upper;
-      tweak_m3 = three_sigma_err_lower;
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("Q2_norm_7")) {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+        double three_sigma_err_upper = 2.0;
+        tweak_p3 = three_sigma_err_upper;
     }
+
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("P3_2Shell_MF_Norm_O")) {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+        double three_sigma_err_upper = 1.0;
+        tweak_p3 = three_sigma_err_upper;
+
+    }
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("SRC_Norm_O")) {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+        double one_sigma_err_upper   = 1.5;
+        double one_sigma_err_lower   = 0.5;
+        double three_sigma_err_upper = 2.0;
+        tweak_p1 = one_sigma_err_upper;
+        tweak_m1 = one_sigma_err_lower;
+        tweak_p3 = three_sigma_err_upper;
+    }
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("Pauli_Blocking_O_nu") ||
+    p == util::NameRegistry::Instance()->PhysParamFromString("Pauli_Blocking_O_nubar")) {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+        double three_sigma_err_upper = 2.0;
+        double three_sigma_err_lower = -2.0;
+        tweak_p3 = three_sigma_err_upper;
+        tweak_m3 = three_sigma_err_lower;
+    }
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("ISO_BKG")) {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+        double three_sigma_err_upper = 1.909;
+        double three_sigma_err_lower = 0.691;
+        tweak_p3 = three_sigma_err_upper;
+        tweak_m3 = three_sigma_err_lower;
+    }
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("RES_Eb_O_numu")     ||
+    p == util::NameRegistry::Instance()->PhysParamFromString("RES_Eb_O_numubar"))     {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+        double one_sigma_err_upper   = 37.5;
+        double one_sigma_err_lower   = 12.5;
+        double three_sigma_err_upper = 50.0;
+        double three_sigma_err_lower = 0.0;
+        tweak_p1 = one_sigma_err_upper;
+        tweak_m1 = one_sigma_err_lower;
+        tweak_p3 = three_sigma_err_upper;
+        tweak_m3 = three_sigma_err_lower;
+    }
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("CC_Misc")     ||
+    p == util::NameRegistry::Instance()->PhysParamFromString("NC_1gamma"))     {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+        double one_sigma_err_upper   = 2.5;
+        double one_sigma_err_lower   = 1.5;
+        double three_sigma_err_upper = 4;
+        double three_sigma_err_lower = 0.0;
+        tweak_p1 = one_sigma_err_upper;
+        tweak_m1 = one_sigma_err_lower;
+        tweak_p3 = three_sigma_err_upper;
+        tweak_m3 = three_sigma_err_lower;
+    }
+    if(p == util::NameRegistry::Instance()->PhysParamFromString("Nucleon_FSI")) {
+        std::cout << "Setting special parameter tweak for parameter: " << p << std::endl;
+        double one_sigma_err_upper   = 0.3;
+        double one_sigma_err_lower   = -0.3;
+        double three_sigma_err_upper = 0.467;
+        double three_sigma_err_lower = -0.467;
+        tweak_p1 = one_sigma_err_upper;
+        tweak_m1 = one_sigma_err_lower;
+        tweak_p3 = three_sigma_err_upper;
+        tweak_m3 = three_sigma_err_lower;
+    }
+
   }
+
 }
 //________________________________________________________________________________________
 void GeneratePDFNominal(FitModelABC * model, CompoundFitModel * cm, FitParamList * fp, KineVar_t kv, TFile * outfile, bool test_force_untuned)
