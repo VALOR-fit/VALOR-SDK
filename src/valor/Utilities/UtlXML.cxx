@@ -228,6 +228,48 @@ double valor::util::XML2Dbl(
   return value;
 }
 //____________________________________________________________________________________________________
+VALORArray valor::util::XML2VArray(
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
+{
+  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VALORArray * array;
+  int bin = 0;
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
+  if(!found_node) {
+    LOG("XML",pFATAL)
+       << "No node was found at input XML node node_path: " << node_path;
+    util::Die(1); return * array;
+  }
+  const char * nc = xml_eng->GetNodeContent(found_node);
+  if (not nc) return * array;
+  
+  string content = TrimSpaces(nc);
+  
+  vector<string> str_tokens = Tokens(content, ",");
+  vector<string>::const_iterator str_tokens_iter = str_tokens.begin();
+  for( ; str_tokens_iter != str_tokens.end(); ++str_tokens_iter) {
+     string token = TrimSpaces(*str_tokens_iter);
+     if (not token.size() ) continue;
+     if(util::ToLowerCase(token) == "inf"){
+   //    array.push_back(max_limits.second);
+       array->SetEntry(max_limits.second,bin);
+       bin++;
+     }
+     else if(util::ToLowerCase(token) == "-inf"){
+//       array.push_back(max_limits.first);
+       array->SetEntry(max_limits.first,bin);
+       bin++;
+     }
+     else{
+//       array.push_back( atof(token.c_str()) );
+       array->SetEntry(atof(token.c_str()),bin);
+       bin++;
+     }
+  }
+
+  return * array;
+}
+//____________________________________________________________________________________________________
 vector<double> valor::util::XML2DblArray(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
@@ -806,7 +848,7 @@ TAxis *  valor::util::XML2BinInfo(
 {
 //
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  LOG("XML", pNOTICE) << "Reading info at XML node node_path: " << node_path;
 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {

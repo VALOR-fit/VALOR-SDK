@@ -1774,10 +1774,17 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     t->GetEntry(iev);
 
     //this gives floating point exception if nev<100
+<<<<<<< Updated upstream
     /*if(iev && iev%(nev/1000)==0) {
       double pct = (100 * (double)(iev+1)) / (double)nev;
       LOG("GenericSingleSampleFitModel",pINFO) << "Reading "<< fName <<" MC DST: "<< TMath::Nint(pct) << "% done";
       }*/
+=======
+ /*   if(iev && iev%(nev/1000)==0) {
+      double pct = (100 * (double)(iev+1)) / (double)nev;
+      LOG("GenericSingleSampleFitModel",pINFO) << "Reading "<< fName <<" MC DST: "<< TMath::Nint(pct) << "% done";
+    }*/
+>>>>>>> Stashed changes
 
     // Get sample index
     Sample_t s = util::SampleFromInt(sample);
@@ -1838,6 +1845,10 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         << " (value stored in DST: " << reac_mode << "). Ignoring event.";
       continue;
     }
+    //Removing bkgs for comp with marco
+    //if(util::IsNuMu(m) && !util::IsCC(m)) continue;
+    //if(util::IsDirt(m)) continue; 
+    //if(util::IsCosmic(m)) continue;
 
     long imode = fReactionModeIndex[m];
     if(imode==-1) {
@@ -3666,11 +3677,11 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         p_numubar_numubar = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuMuBar, sinsq2thmue, sinsq2thmumu, sindm2);
         p_numubar_nuebar  = util::Calculate2FSterileOscMuE(conv::kPdgNuMuBar, conv::kPdgNuEBar , sinsq2thmue, sinsq2thmumu, sindm2);
         p_numubar_nutaubar= 0.;
-        p_nue_nue         = util::Calculate2FSterileOsc(conv::kPdgNuE    , conv::kPdgNuE    , sinsq2thee, sinsq2thmumu, sindm2);
-        p_nue_numu        = util::Calculate2FSterileOsc(conv::kPdgNuE    , conv::kPdgNuMu   , sinsq2thee, sinsq2thmumu, sindm2);
+        p_nue_nue         = util::Calculate2FSterileOsc(conv::kPdgNuE    , conv::kPdgNuE    , sinsq2thee, sinsq2thmumu, sindm2);//set to OscMuE for nueapp (just osc for other 2 channels) for stat only
+        p_nue_numu        = util::Calculate2FSterileOsc(conv::kPdgNuE    , conv::kPdgNuMu   , sinsq2thee, sinsq2thmumu, sindm2);//""
         p_nue_nutau       = 0;
-        p_nuebar_nuebar   = util::Calculate2FSterileOsc(conv::kPdgNuEBar , conv::kPdgNuEBar , sinsq2thee, sinsq2thmumu, sindm2);
-        p_nuebar_numubar  = util::Calculate2FSterileOsc(conv::kPdgNuEBar , conv::kPdgNuMuBar, sinsq2thee, sinsq2thmumu, sindm2);
+        p_nuebar_nuebar   = util::Calculate2FSterileOsc(conv::kPdgNuEBar , conv::kPdgNuEBar , sinsq2thee, sinsq2thmumu, sindm2);//""
+        p_nuebar_numubar  = util::Calculate2FSterileOsc(conv::kPdgNuEBar , conv::kPdgNuMuBar, sinsq2thee, sinsq2thmumu, sindm2);//""
         p_nuebar_nutaubar  = 0;
       }
       

@@ -68,6 +68,10 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAllButELScat = ktApplyToAll   & 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithFSI   = ktApplyToAll   & (~ktApplyToAllCoh) & (~ktApplyToAllELScat) & (~ktApplyToNC1Gamma);
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithPiFSI = ktApplyToAll   & (~ktApplyToAllQELike) & (~ktApplyToAllCoh) & (~ktApplyToAllELScat) & (~ktApplyToNC1Gamma);
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCosmic = ktApplyToAll   & (~ktApplyToCosmic);
+<<<<<<< Updated upstream
+=======
+//const ReacTypeApplyMask_t valor::conv::ktApplyToAllButNuECC = (ktApplyToAll)    & (~ksApplyToNuECC0pi) & (~ksApplyToNuECC1piC) & (~ksApplyToNuECC1pi0) & (~ksApplyToNuECCoth);
+>>>>>>> Stashed changes
 
 // Detectors
 const DetectorApplyMask_t valor::conv::kdApplyToAllDUNE = kdApplyToDUNEND | kdApplyToDUNEFD;
@@ -107,6 +111,7 @@ const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyTo
 const SelecApplyMask_t valor::conv::ksApplyToAll = ksApplyToAllND | ksApplyToAllFD;
 const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
 const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
+const SelecApplyMask_t valor::conv::ksApplyToAllButNuECC = (ksApplyToAllND | ksApplyToAllFD)    & (~ksApplyToNuECC0pi) & (~ksApplyToNuECC1piC) & (~ksApplyToNuECC1pi0) & (~ksApplyToNuECCoth);
 
 
 // Targets
@@ -202,6 +207,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNC          , "allnc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuMuCC      , "allnumucc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuECC       , "allnuecc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllButNuECC    , "allbutnuecc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu        , "1rmu") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE         , "1re") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE     , "multire") );
@@ -394,6 +400,14 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksNuMuCCoa05      : return ksApplyToNuMuCC;
     case ksNuMuCCoa06      : return ksApplyToNuMuCC;
     case ksNuMuCCoa07      : return ksApplyToNuMuCC;
+    case ksNuECCoa00       : return ksApplyToNuECC;
+    case ksNuECCoa01       : return ksApplyToNuECC;
+    case ksNuECCoa02       : return ksApplyToNuECC;
+    case ksNuECCoa03       : return ksApplyToNuECC;
+    case ksNuECCoa04       : return ksApplyToNuECC;
+    case ksNuECCoa05       : return ksApplyToNuECC;
+    case ksNuECCoa06       : return ksApplyToNuECC;
+    case ksNuECCoa07       : return ksApplyToNuECC;
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
       return 0;

@@ -223,6 +223,7 @@ namespace valor {
     extern const SelecApplyMask_t ksApplyToAllNC;
     extern const SelecApplyMask_t ksApplyToAllNuMuCC;
     extern const SelecApplyMask_t ksApplyToAllNuECC;
+    extern const SelecApplyMask_t ksApplyToAllButNuECC;
     extern const SelecApplyMask_t ksApplyToELikeRingAny;  // SuperK selections
     extern const SelecApplyMask_t ksApplyTo1RingAny;      // SuperK selections
     extern const SelecApplyMask_t ksApplyToAllRings;      // SuperK selections

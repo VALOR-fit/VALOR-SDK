@@ -27,7 +27,7 @@
 namespace valor {
 namespace conv {
 
-static const int kNReacModes = 204; //excluding undefined and other
+static const int kNReacModes = 205; //excluding undefined and other
 
 typedef enum EReacMode 
 {

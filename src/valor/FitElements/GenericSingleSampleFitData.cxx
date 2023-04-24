@@ -90,6 +90,8 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
   // Using input in VALOR DST format?
   // If use_dst=true, read the ROOT TTree and fill-in the VALOR data arrays.
   bool use_dst = util::XML2Bool(xml,root_node,"data/using_dst_format");
+  bool use_varray = util::XML2Bool(xml,root_node,"data/using_varray_format");
+  bool use_hist = util::XML2Bool(xml,root_node,"data/using_hist_format");
   if(use_dst) {
     LOG("GenericSingleSampleFitData",pINFO)
       << "Populating VALOR data arrays from VALOR DSTs";
@@ -99,22 +101,68 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
       LOG("GenericSingleSampleFitData",pFATAL) << "Failed to read DST tree";
       util::Die(-1); return false;
     }
-    this->FillFromDST(data_dst);
-    delete data_dst;
   }
   // If use_dst=false, read in the VALOR data arrays directly.
   // In this case, the data arrays are pre-binned so the binning can not change.
   // Make sure the arrays you read in correspond to the expected binning.
-  else {
-    LOG("GenericSingleSampleFitData",pINFO)
-      << "Reading stored VALOR data arrays";
+  //editsstart
+  else if(use_hist){
+    LOG("GenericSingleSampleFitData",pNOTICE) << "Reading data stored in histograms";
     // -------------------------------------------------
-    // TODO:
-    LOG("GenericSingleSampleFitData",pFATAL) << "Case not implemented yet";
+    //convert to varray then fill from array
+    string node_name = "data/hist/" + util::AsString(fBeam, "lowercase"); //need to be careful that config/data xmls are set up right for each different type
+    //string node_binning = "default_binning";
+    TH1D * data_hist = util::XML2TH1D (xml,root_node,node_name);
+    if (!data_hist){
+      LOG("GenericSingleSampleFitData",pFATAL) << "Failed to read histogram";
+      util::Die(-1); return false;
+    }
+    //check binning:
+    LOG("GenericSingleSampleFitData",pWARN) << "Not implimented binning check yet, please manually check histogram binning matches expected";
+
+
+/*    string binning_file = util::XML2String(xml,root_node,"default_binning");
+    if (fBinning) {delete fBinning;}
+    fBinning = new SingleSampleKineBinning(fDetector,fBeam,fSample,fReactionModes);
+    fBinning->Read(binning_file);
+*/
+
+
+
+    //TAxis * config_binning = util::XML2BinInfo (xml,root_node,"default_binning");
+    //double *config_edges;
+    //double *hist_edges;
+   /* config_binning->GetLowEdge(config_edges);
+    data_hist->GetXaxis()->GetLowEdge(hist_edges);
+    if (config_edges != hist_edges){
+      LOG("GenericSingleSampleFitData",pFATAL) << "Histogram and config binning do not match";
+      util::Die(-1); return false;
+    }*/
+    VALORArray * data_hist2varray = new VALORArray(data_hist->GetXaxis()->GetNbins());
+    for(int i=1; i<=data_hist->GetXaxis()->GetNbins();i++){
+      data_hist2varray->SetEntry(data_hist->GetBinContent(i),i);
+    }
+    this->FillFromVArray(data_hist2varray);
+    delete data_hist2varray;
+    delete data_hist;
+  } 
+  else if(use_varray){
+    LOG("GenericSingleSampleFitData",pNOTICE) << "Reading data stored VALOR data arrays";
+    // -------------------------------------------------
+    string node_name = "data/varray/" + util::AsString(fBeam, "lowercase");
+    VALORArray * data_varray = new VALORArray(util::XML2VArray (xml,root_node,node_name));  //to make XML2VArray in UtlXMl
+    if (!data_varray){
+      LOG("GenericSingleSampleFitData",pFATAL) << "Failed to read histogram";
+      util::Die(-1); return false;
+    }
+    this->FillFromVArray(data_varray);
+    delete data_varray;
+  } else{
+    LOG("GenericSingleSampleFitData",pFATAL) << "Data format not accepted (yet)";
     util::Die(-1); return false;
     // -------------------------------------------------
   }
-
+//editsend  
   // Release memory
   xml->FreeDoc(xmldoc);
   delete xml;
@@ -640,6 +688,18 @@ void GenericSingleSampleFitData::Zero(Option_t * opt)
   if (!fDataSbNull) { fDataSb->SetAll(0.); }
 }
 //________________________________________________________________________________________
+//editsstart
+void GenericSingleSampleFitData::FillFromVArray (VALORArray * a)
+{
+  if(!a) return;
+  VALORArray * array = new VALORArray(*a);
+  fDataSb = array;
+  fDataOb = array;
+  fDataObNull = false;
+  fDataSbNull = false;
+}
+//editsend
+//________________________________________________________________________________________
 void GenericSingleSampleFitData::FillFromDST (TTree * t)
 {
   if(!t) return;
@@ -855,6 +915,9 @@ void GenericSingleSampleFitData::OverwriteData(VALORArray* replacement_data_ob, 
     }
     if(fDataOb->GetSize() != replacement_data_ob->GetSize()) {
       LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite Ob data array with an array of a different size.";
+    }
+    if(fDataOb->GetSize() != replacement_data_ob->GetSize()) {
+      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite Ob data array with an array of a different size.";
       util::Die(-1);
     }
     fDataOb = new VALORArray(*replacement_data_ob);
@@ -880,4 +943,5 @@ void GenericSingleSampleFitData::OverwriteData(VALORArray* replacement_data_ob, 
     }
   }
 }
+
 //________________________________________________________________________________________
