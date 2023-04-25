@@ -68,10 +68,7 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAllButELScat = ktApplyToAll   & 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithFSI   = ktApplyToAll   & (~ktApplyToAllCoh) & (~ktApplyToAllELScat) & (~ktApplyToNC1Gamma);
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithPiFSI = ktApplyToAll   & (~ktApplyToAllQELike) & (~ktApplyToAllCoh) & (~ktApplyToAllELScat) & (~ktApplyToNC1Gamma);
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCosmic = ktApplyToAll   & (~ktApplyToCosmic);
-<<<<<<< Updated upstream
-=======
 //const ReacTypeApplyMask_t valor::conv::ktApplyToAllButNuECC = (ktApplyToAll)    & (~ksApplyToNuECC0pi) & (~ksApplyToNuECC1piC) & (~ksApplyToNuECC1pi0) & (~ksApplyToNuECCoth);
->>>>>>> Stashed changes
 
 // Detectors
 const DetectorApplyMask_t valor::conv::kdApplyToAllDUNE = kdApplyToDUNEND | kdApplyToDUNEFD;

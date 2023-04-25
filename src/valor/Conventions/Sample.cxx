@@ -365,9 +365,6 @@ bool util::IsNC(Sample_t s)
     case (ksNuMuCCoa06     ) :
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
-<<<<<<< Updated upstream
-    case (ksNuMuCCoa09     ) : return false; break;
-=======
     case (ksNuMuCCoa09     ) :
     case (ksNuECCoa00      ) :
     case (ksNuECCoa01      ) :
@@ -377,7 +374,6 @@ bool util::IsNC(Sample_t s)
     case (ksNuECCoa05      ) :
     case (ksNuECCoa06      ) :
     case (ksNuECCoa07      ) : return false; break;
->>>>>>> Stashed changes
 
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) :
@@ -395,11 +391,8 @@ Sample_t util::SampleFromInt(int s)
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
   if((s >= (int)ksNuMuCC && s <= (int) ksNuMuCCoa09)) //RHC
-<<<<<<< Updated upstream
-=======
     return (Sample_t)s;
   else if((s >= (int)ksNuECC && s <= (int) ksNuECCoa07)) //RHC                                                                                                                          
->>>>>>> Stashed changes
     return (Sample_t)s;
   return ksUndefined;
 }
@@ -481,8 +474,6 @@ bool util::IsMuLike(Sample_t s)
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
-<<<<<<< Updated upstream
-=======
     case (ksNuECCoa00      ) : // intentional fallthrough
     case (ksNuECCoa01      ) :
     case (ksNuECCoa02      ) :
@@ -491,7 +482,6 @@ bool util::IsMuLike(Sample_t s)
     case (ksNuECCoa05      ) :
     case (ksNuECCoa06      ) :
     case (ksNuECCoa07      ) : return true; break;
->>>>>>> Stashed changes
 
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
@@ -550,9 +540,7 @@ bool util::IsELike(Sample_t s)
     case (ksNuMuCCoa06     ) :
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
-    case (ksNuMuCCoa09     ) : return false; break;      
-<<<<<<< Updated upstream
-=======
+    case (ksNuMuCCoa09     ) :    
     case (ksNuECCoa00      ) : // intentional fallthrough
     case (ksNuECCoa01      ) :
     case (ksNuECCoa02      ) :
@@ -561,7 +549,6 @@ bool util::IsELike(Sample_t s)
     case (ksNuECCoa05      ) :
     case (ksNuECCoa06      ) :
     case (ksNuECCoa07      ) : return false; break;
->>>>>>> Stashed changes
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;

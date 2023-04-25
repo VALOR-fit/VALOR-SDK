@@ -86,9 +86,6 @@ typedef enum ESample
    ksNuMuCCoa06          , // numuCC-like, off-axis bin "06"
    ksNuMuCCoa07          , // numuCC-like, off-axis bin "07"
    ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
-<<<<<<< Updated upstream
-   ksNuMuCCoa09            // numuCC-like, off-axis bin "09"
-=======
    ksNuMuCCoa09          , // numuCC-like, off-axis bin "09"
    ksNuECCoa00           , // nueCC-like, off-axis bin "00" (arbitrary definition of off-axis bin: specified by range of off-axis angles in input DST)
    ksNuECCoa01           , // nueCC-like, off-axis bin "01"
@@ -98,7 +95,6 @@ typedef enum ESample
    ksNuECCoa05           , // nueCC-like, off-axis bin "05"
    ksNuECCoa06           , // nueCC-like, off-axis bin "06"
    ksNuECCoa07             // nueCC-like, off-axis bin "07"
->>>>>>> Stashed changes
 }
 Sample_t; 
 
