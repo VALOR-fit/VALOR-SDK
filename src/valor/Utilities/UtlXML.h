@@ -96,7 +96,7 @@ namespace util {
   TMatrixD *       XML2TMatrixD      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TMatrixD *       XML2TH2D2TMatrixD (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TSpline3 *       XML2TSpline3      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
-
+  vector<double>   XML2BinLowEdges   (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string binning_scheme);
   TAxis *          XML2BinInfo       (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   
 } // util

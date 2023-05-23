@@ -104,11 +104,11 @@ typedef enum EReacModeCoarse
    kmcUnOscNuEBarCC,         // nuebar->nuebar  CC all
    kmcNuTauCC,               // numu(nue)->nutau CC all (separated from nutaubar)
    kmcNuTauBarCC,            // numubar(nuebar)->nutaubar CC all (separated from nutau)
-   kmcCosmic                 // cosmics
+   kmcCosmic,                 // cosmics
+   kmcDirt                   // dirt
 } 
 ReacModeCoarse_t;
 
-//static const int kNReacModesCoarse = (int)kmcCosmic + 1;
 //static const int kNReacModesCoarse = (int)kmcDirt + 1;
 static const int kNReacModesCoarse = 205;
 
@@ -325,7 +325,7 @@ static const ReacModeCoarse_t kCoarseReacPriority[kNReacModes][kMaxCoarseReacOpt
    /* kmNuEBarToNuTauBarCCmisc     */ {kmcNuTauBarCC   , kmcNuTauNuTauBarCC, kmcUndefined     , kmcUndefined   , kmcUndefined, kmcUndefined},
    /* kmNuEBarToNuTauBarCCoth      */ {kmcNuTauBarCC   , kmcNuTauNuTauBarCC, kmcUndefined     , kmcUndefined   , kmcUndefined, kmcUndefined},
    /* kmCosmic                     */ {kmcCosmic       , kmcAllButNuECC      , kmcUndefined     , kmcUndefined   , kmcUndefined, kmcUndefined},
-//   /* kmDirt                       */ {kmcDirt         , kmcAllButNuECC      , kmcUndefined     , kmcUndefined   , kmcUndefined, kmcUndefined},
+   /* kmDirt                       */ {kmcDirt         , kmcAllButNuECC      , kmcUndefined     , kmcUndefined   , kmcUndefined, kmcUndefined},
    /* kmNuECCQE                    */ {kmcAllButNuECC  , kmcNuECCoth   , kmcUndefined      , kmcUndefined, kmcUndefined, kmcUndefined}
 // /* kmOther                      */ {kmcAllButNuECC , kmcUndefined   , kmcUndefined, kmcUndefined, kmcUndefined },
 
