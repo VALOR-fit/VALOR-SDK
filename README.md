@@ -38,6 +38,7 @@ Copyright (c) 2010-2023, The VALOR Fitting Group. **All Rights Reserved.**
 * **Maria Antonova**, *IFIC Valencia*
 * **Thomas Dealtry**, *Lancaster University*
 * **Rhiannon Jones**, *University of Sheffield*
+* **Tereza Kroupova**, *University of Pennsylvania*
 * **Jaiden Parlone**, *University of Liverpool*
 * **Davide Sgalaberna**, *ETHZ*
 * **Beth Slater**, *University of Liverpool*
