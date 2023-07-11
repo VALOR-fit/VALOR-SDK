@@ -1,6 +1,6 @@
 # The VALOR Software Development Kit (VALOR-SDK)
 
-VALOR SDK contains software **modules enabling the implementation** of the **VALOR neutrino oscillation fits** for sereval experiments (SBN, DUNE, T2K and HyperK). 
+VALOR SDK contains the core, expertiment-agnostic software modules enabling the implementation of the **VALOR neutrino oscillation analyses** on sereval experiments. 
 
 The SDK is a **highly-abstracted** neutrino oscillation fit. Specific applications built on top of the SDK can specify, almost entirely via XML configuration files:
 - A list event samples to be included in the fit (each a specific combination of beam configuration, detector, and observed topology).
@@ -14,39 +14,38 @@ The SDK is a **highly-abstracted** neutrino oscillation fit. Specific applicatio
 
 ## Copyright
 
-Copyright (c) 2010-2020, The VALOR Fitting Group. **All Rights Reserved.**
+Copyright (c) 2010-2023, The VALOR Fitting Group. **All Rights Reserved.**
 
 ## Authors
 
-* **Costas Andreopoulos**, *University of Liverpool & STFC/RAL*
+* **Costas Andreopoulos**, *University of Liverpool*
 * **Maria Antonova**, *IFIC Valencia*
-* **Dom Barker**, *University of Sheffield*
-* **Francis Bench**, *University of Liverpool*
 * **Thomas Dealtry**, *Lancaster University*
-* **Steve Dennis**, *University of Liverpool*
-* **Pablo Fernandez Menendez**, *IFIC Valencia*
-* **Thomas Ham**, *University of Liverpool*
-* **Rhiannon Jones**, *University of Liverpool*
+* **Rhiannon Jones**, *University of Sheffield*
 * **Jaiden Parlone**, *University of Liverpool*
-* **Glória de Sá Pereira**, *University of Liverpool*
-* **Davide Sgalaberna**, *CERN*
+* **Davide Sgalaberna**, *ETHZ*
+* **Beth Slater**, *University of Liverpool*
 
 Past authors:
 
+* **Dom Barker**, *University of Sheffield*
 * **Chistopher Barry**, *University of Liverpool*
+* **Francis Bench**, *University of Liverpool*
 * **Andrew Chappell**, *University of Warwick*
+* **Steve Dennis**, *University of Warwick & STFC/RAL; University of Liverpool; Universirt of Cambridge*
 * **Lorena Escudero**, *University of Cambridge; IFIC Valencia*
+* **Pablo Fernandez Menendez**, *IFIC Valencia*
 * **Nick Grant**, *STFC/RAL; Lancaster University; University of Warwick*
+* **Thomas Ham**, *University of Liverpool*
+* **Glória de Sá Pereira**, *University of Liverpool*
 * **Raj Shah**, *University of Oxford & STFC/RAL*
 
 ## Contact
 
-Professor **Costas Andreopoulos** < constantinos.andreopoulos \at cern.ch >
+Professor **Costas Andreopoulos** < c.andreopoulos \at cern.ch >
  
 **University of Liverpool** | Dept. of Physics <br>
 *Oliver Lodge Lab 316, Liverpool L69 7ZE, UK* | *Tel: +44-(0)1517-943201* <br>
-**STFC Rutherford Appleton Laboratory** | Particle Physics Dept. <br>
-*Harwell Oxford Campus, R1 2.89, Oxfordshire OX11 0QX, UK* | *Tel: +44-(0)1235-445091* <br>
 
 
 # Using the VALOR-SDK
