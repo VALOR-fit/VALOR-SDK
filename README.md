@@ -10,6 +10,8 @@ The VALOR-SDK repository contains the core, expertiment-agnostic software module
             `888.8'       .88ooo8888.    888         888      888  888`88b.          
              `888'       .8'     `888.   888       o `88b    d88'  888  `88b.        
               `8'       o88o     o8888o o888ooooood8  `Y8bood8P'  o888o  o888o     
+
+         Software Development Kit                    https://valor.pp.rl.ac.uk
 </pre>
 
 
@@ -51,10 +53,8 @@ Past authors:
 * **Andrew Chappell**, *University of Warwick*
 * **Steve Dennis**, *University of Warwick & STFC/RAL; University of Liverpool; Universirt of Cambridge*
 * **Lorena Escudero**, *University of Cambridge; IFIC Valencia*
-* **Pablo Fernandez Menendez**, *IFIC Valencia*
 * **Nick Grant**, *STFC/RAL; Lancaster University; University of Warwick*
 * **Thomas Ham**, *University of Liverpool*
-* **Glória de Sá Pereira**, *University of Liverpool*
 * **Raj Shah**, *University of Oxford & STFC/RAL*
 
 ## Contact
