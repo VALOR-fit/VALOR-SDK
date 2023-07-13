@@ -11,7 +11,7 @@ The VALOR-SDK repository contains the core, expertiment-agnostic software module
         `888'       .8'     `888.   888       o `88b    d88'  888  `88b.        
          `8'       o88o     o8888o o888ooooood8  `Y8bood8P'  o888o  o888o     
 
-     Software Development Kit                   https://valor.pp.rl.ac.uk
+   Software Development Kit                     https://valor.pp.rl.ac.uk
 </pre>
 
 
