@@ -3,7 +3,7 @@
 The VALOR-SDK repository contains the core, expertiment-agnostic software modules enabling the implementation of the **VALOR neutrino oscillation analyses** on sereval experiments. 
 
 <pre>
-    oooooo     oooo       .o.       ooooo          .oooooo.   ooooooooo.         
+   oooooo     oooo       .o.       ooooo          .oooooo.   ooooooooo.         
     `888.     .8'       .888.      `888'         d8P'  `Y8b  `888   `Y88.       
      `888.   .8'       .8"888.      888         888      888  888   .d88'       
       `888. .8'       .8' `888.     888         888      888  888ooo88P'        
