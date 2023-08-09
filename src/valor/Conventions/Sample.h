@@ -75,7 +75,7 @@ typedef enum ESample
    // SuperK selections
    ks1Rmu                , // Single-ring muon-like
    ks1Re                 , // Single-ring electron-like
-   ksMultiRe               // Multi-ring electron-like
+   ksMultiRe             ,  // Multi-ring electron-like
    // PRISM selections
    ksNuMuCCoa00          , // numuCC-like, off-axis bin "00" (arbitrary definition of off-axis bin: specified by range of off-axis angles in input DST)
    ksNuMuCCoa01          , // numuCC-like, off-axis bin "01"
