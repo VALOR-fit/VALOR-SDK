@@ -282,6 +282,16 @@ if($use_t2k_presets == 1) {
         "--fix-at-cpv 0. ";
       $mixparamoctant  = "one";
 	  }
+	  elsif($param_set eq "AsimovB22") {
+         $fake_data_args = "" .
+           "--fix-at-dm23sq 2.494E-3 " .
+           "--fix-at-dm12sq 7.53E-5 " .
+           "--fix-at-mixing23 0.45 " .
+           "--fix-at-mixing13 0.0220 " .
+           "--fix-at-mixing12 0.307 " .
+           "--fix-at-cpv 0. ";
+         $mixparamoctant  = "one";
+      }
 	  elsif($param_set eq "T2K_run10_data_wRC_NO_BF") {
 			$fake_data_args = "" .
 				"--fix-at-dm23sq 0.002488 " .
