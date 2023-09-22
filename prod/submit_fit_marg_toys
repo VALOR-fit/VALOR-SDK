@@ -362,14 +362,10 @@ if($use_t2k_presets == 1) {
 
   # 1D fit - sinsqth13
 	if(($par1 eq "mixing13") and ($par2 eq "")) {
-	  if($use_reactors == 1) {
-	    $min_par1   = 0.015      unless defined $min_par1;
-      $max_par1   = 0.036      unless defined $max_par1;
-	  }
-	  else {
-	    $min_par1   = 0.007      unless defined $min_par1;
+
+	  $min_par1   = 0.007      unless defined $min_par1;
       $max_par1   = 0.053      unless defined $max_par1;
-	  }
+
 		$nmargtoy     = 40000      unless defined $nmargtoy;
     $cput         = "00:15:00" unless defined $cput;
     $mem          = "2500M"    unless defined $mem;
@@ -416,16 +412,11 @@ if($use_t2k_presets == 1) {
 	 	  $par1 = "mixing13";
 	 	  $par2 = "cpv";
 	  }
-		if($use_reactors == 1) {
-			$nmargtoy   = 10000                    unless defined $nmargtoy;
-			$min_par1   = 0.015                    unless defined $min_par1;
-      $max_par1   = 0.036                    unless defined $max_par1;
-		}
-		else {
-			$nmargtoy   = 20000                    unless defined $nmargtoy;
-			$min_par1   = 0.007                    unless defined $min_par1;
-      $max_par1   = 0.053                    unless defined $max_par1;
-		}
+
+		$nmargtoy   = 20000                    unless defined $nmargtoy;
+		$min_par1   = 0.007                    unless defined $min_par1;
+        $max_par1   = 0.053                    unless defined $max_par1;
+
 		$npt_par1     = 81                       unless defined $npt_par1;
 		$min_par2     = -3.14159265358979312e+00 unless defined $min_par2;
     $max_par2     = +3.14159265358979312e+00 unless defined $max_par2;
