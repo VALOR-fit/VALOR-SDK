@@ -222,9 +222,9 @@ void BuildToys(CmdLnArgList& arg)
         for (int fp_bin02 = fp_bin2; (fp_bin02 < fp_bin2 + npt_job_par2) && (fp_bin02 < npt_par2); fp_bin02++)
         {
 
-          LOG("valor", pDEBUG) << "Now submitting " << fp_bin01 <<" in subrange: par1 bin [ " << fp_bin01 <<
+          LOG("valor", pNOTICE) << "Now submitting " << fp_bin01 <<" in subrange: par1 bin [ " << fp_bin01 <<
                                          "; "<<fp_bin01 +npt_par1 << "]";
-          LOG("valor", pDEBUG) << "Now submitting " << fp_bin02 <<" in subrange: par2 bin [ " << fp_bin02 <<
+          LOG("valor", pNOTICE) << "Now submitting " << fp_bin02 <<" in subrange: par2 bin [ " << fp_bin02 <<
                                          "; "<<fp_bin02 +npt_par2 << "]";
 
           if(TMath::Abs(step_par2 + 999.0) < conv::kASmallNum) {

@@ -296,7 +296,7 @@ void Fit(CmdLnArgList& arg)
          {
             LOG("valor", pNOTICE) << "For fakedata toy #" << ifake <<
                ", Best fit param 1: " << fp1_name << " = " << result->GetParam1BestFit() <<
-               ", Best fit param 2: " << fp2_name << " = " << result->GetParam2BestFit() <<
+               ", Best fit param 2: " << fp2_name << " = " << result->GetParam2BestFit() <<  " Chi^2 = " <<
                result->GetChi2BestFit() << " " << " L = "  << result->GetLikelihoodBestFit();
          }
       }
