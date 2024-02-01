@@ -7,7 +7,7 @@
 
 \author    Costas Andreopoulos <constantinos.andreopoulos \at cern.ch>
            University of Liverpool & STFC Rutherford Appleton Laboratory
-          
+
 \created   April 15, 2014
 
 \copyright Copyright (c) 2010-2020, The VALOR group. All rights reserved
@@ -31,7 +31,7 @@ namespace conv {
 
 typedef enum EBeamConf
 {
-   kbUndefined = -1, 
+   kbUndefined = -1,
    //
    // "Generic" FHC and RHC beam configurations
    // More detailed descriptions can be added if multiple FHC or RHC
@@ -40,15 +40,19 @@ typedef enum EBeamConf
    kbLBNF_FHC,             // forward horn current beam @ FNAL/LBNF
    kbLBNF_RHC,             // reverse horn current beam @ FNAL/LBNF
    kbJPARC_FHC,            // forward horn current beam @ JPARC
-   kbJPARC_RHC,            // reverse horn current beam @ JPARC 
-   kbNuMI_FHC,             // forward horn current beam @ FNAL/NuMI 
-   kbNuMI_RHC,             // reverse horn current beam @ FNAL/NuMI 
+   kbJPARC_RHC,            // reverse horn current beam @ JPARC
+   kbNuMI_FHC,             // forward horn current beam @ FNAL/NuMI
+   kbNuMI_RHC,             // reverse horn current beam @ FNAL/NuMI
    kbBNB_FHC,              // forward horn current beam @ FNAL/Booster
-   kbBNB_RHC               // reverse horn current beam @ FNAL/Booster
-} 
+   kbBNB_RHC,              // reverse horn current beam @ FNAL/Booster
+   kbNuStorm_MuP,          // beam from a stored mu+ beam
+   kbNuStorm_MuM,          // beam from a stored mu- beam
+   kbNuStorm_MuPflash,     // neutrino flash from decays of injected mesons yielding stored mu+
+   kbNuStorm_MuMflash      // neutrino flash from decays of injected mesons yielding stored mu-
+}
 BeamConf_t;
 
-static const int kNBeamsDefined = 8;
+static const int kNBeamsDefined = 12;
 
 } // conv
 
@@ -60,13 +64,12 @@ namespace util {
   string           AsString           (conv::BeamConf_t b, Option_t * opt=0);
   conv::BeamConf_t BeamConfFromInt    (int b);
   conv::BeamConf_t BeamConfFromString (std::string b);
-  
+
   // Alias for above
   string BeamConfAsString(conv::BeamConf_t b, Option_t * opt=0);
 
 } // util
 
 } // valor
-  
-#endif 
 
+#endif
