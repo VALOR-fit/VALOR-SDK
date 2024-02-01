@@ -62,6 +62,7 @@
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/Conventions/KineSpace.h"
 #include "valor/Conventions/Opt.h"
+#include "valor/Conventions/Constants.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/CompoundFitElements.h"
@@ -69,7 +70,7 @@
 #include "valor/FitCore/CompoundFitModel.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/UtlFit.h"
 #include "valor/FitCore/UtlOscillation.h"
@@ -169,7 +170,7 @@ void BuildToys(CmdLnArgList& arg)
 
    FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
    // Set the priors
-   util::oscillation::SetOscillationParameterPriors(arg, *fpl);
+   util::oscillation::SetParameterPriors(arg, *fpl);
    // Fix or set marginalisation flag for oscillation parameters
    util::oscillation::SetOscillationParameters(arg, *fpl);
 
@@ -190,7 +191,16 @@ void BuildToys(CmdLnArgList& arg)
          LOG("valor", pDEBUG) << "Now submitting bin " << fp_bin01 <<" in subrange: par1  [ " << fp_bin01 <<
                                       "; "<<fp_bin01 +npt_par1 << "]";
         Rnd::Instance()->SetSeeds(arg);// set seeds at every point in the group
-        util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name1, min_par1, fp_bin01, step_par1);
+
+        if(TMath::Abs(step_par1 + 999.0) < conv::kASmallNum) {
+          // If we want to force the free parameters to a certain value, we indicate this by setting the step size to -999
+          assert(npt_job_par1 == 1);
+          util::oscillation::ForceFreeParameterVal(*fpl, fp_name1, fp_val1);
+        }
+        else {
+          util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name1, min_par1, fp_bin01, step_par1);
+        }
+
         toys.BuildToys(fp_bin01, batch, Ntoys, *fpl, randomise_systematics, stat_fluct, param_val_opts.c_str(),
                      rethrow_unphysical, toy_throw_file_to_read, param_name_map_file);
       }
@@ -200,7 +210,14 @@ void BuildToys(CmdLnArgList& arg)
       for (int fp_bin01 = fp_bin1; (fp_bin01 < fp_bin1 + npt_job_par1) && (fp_bin01 < npt_par1); fp_bin01++)// loop over param first subrange
       {
 
-        util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name1, min_par1, fp_bin01, step_par1);
+        if(TMath::Abs(step_par1 + 999.0) < conv::kASmallNum) {
+          // If we want to force the free parameters to a certain value, we indicate this by setting the step size to -999
+          assert(npt_job_par1 == 1);
+          util::oscillation::ForceFreeParameterVal(*fpl, fp_name1, fp_val1);
+        }
+        else {
+          util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name1, min_par1, fp_bin01, step_par1);
+        }
 
         for (int fp_bin02 = fp_bin2; (fp_bin02 < fp_bin2 + npt_job_par2) && (fp_bin02 < npt_par2); fp_bin02++)
         {
@@ -210,7 +227,15 @@ void BuildToys(CmdLnArgList& arg)
           LOG("valor", pDEBUG) << "Now submitting " << fp_bin02 <<" in subrange: par2 bin [ " << fp_bin02 <<
                                          "; "<<fp_bin02 +npt_par2 << "]";
 
-          util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name2, min_par2, fp_bin02, step_par2);
+          if(TMath::Abs(step_par2 + 999.0) < conv::kASmallNum) {
+            // If we want to force the free parameters to a certain value, we indicate this by setting the step size to -999
+            assert(npt_job_par2 == 1);
+            util::oscillation::ForceFreeParameterVal(*fpl, fp_name2, fp_val2);
+          }
+          else {
+            util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name2, min_par2, fp_bin02, step_par2);
+          }
+
                //unsigned int seed_offset = fp_bin02*Ntoys + fp_bin01*Ntoys*npt_par2 + batch*Ntoys*npt_par2*npt_par1;
                //Rnd::Instance()->SetSeeds(arg, seed_offset); // seed has to be randomized  for every point
           Rnd::Instance()->SetSeeds(arg);// set seeds at every point in the group

@@ -45,7 +45,7 @@ namespace oscillation
                  priors should be read.
       \param fpl The FitParamList to be updated with the values determined by arg.
    */
-   void SetOscillationParameterPriors(CmdLnArgList& arg, FitParamList& fpl);
+   void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl);
 
   /**
      Set a single prior from an XML file. The prior can be on a single parameter,
@@ -56,7 +56,7 @@ namespace oscillation
      \param fpl The FitParamList to be updated with the prior.
      \return True if successful.
   */
-   bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList& fpl);
+   bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList& fpl );
 
    /**
       Throw any marginalised oscillation parameters according to the content of
@@ -85,7 +85,7 @@ namespace oscillation
     * @param fpl FPL containing a prior for this parameter
     * @return Randomised value of parameter
     */
-   double GetRandomizedOscParam(conv::PhysParamId_t p, FitParamList& fpl);
+   double GetRandomizedParam(conv::PhysParamId_t p, FitParamList& fpl);
 
    /**
     * Randomise a pair of oscillation parameters according to a 2D histogram prior,
@@ -95,7 +95,7 @@ namespace oscillation
     * @param fpl FPL containing a 2D histogram prior for these parameters
     * @return a mapping of the parameter IDs to their randomised values
     */
-   std::map<conv::PhysParamId_t,double> GetRandomizedOscParams2DCorrelated (std::pair<conv::PhysParamId_t,conv::PhysParamId_t> params, FitParamList& fpl);
+   std::map<conv::PhysParamId_t,double> GetRandomizedParams2DCorrelated (std::pair<conv::PhysParamId_t,conv::PhysParamId_t> params, FitParamList& fpl);
     /**
     Struct to handle penalty term parameters
 
@@ -140,6 +140,8 @@ namespace oscillation
 
 
     void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_val, int bin, double step);
+
+    void ForceFreeParameterVal(FitParamList& fpl, std::string param, double force_val);
 
 }
 }

@@ -75,13 +75,13 @@ public:
   bool          Read                     (string file, Option_t * opt = 0);
   virtual bool  Read                     (util::ToyStream* stream);
   bool          Generate                 (const PhysHypothesis & ph, Option_t * opt = 0);
-  void          RandomizeSystematics     (Option_t * opt = 0);
-  void          RandomizeSystematics     (bool (*should_randomize)(conv::PhysParamId_t), Option_t * opt = 0);
-  void          RandomizeSystematics     (std::map<valor::conv::PhysParamId_t, bool> should_randomize, Option_t * opt = 0);
+  void          RandomizeSystematics     (FitParamList& fpl, Option_t * opt = 0);
+  void          RandomizeSystematics     (bool (*should_randomize)(conv::PhysParamId_t), FitParamList& fpl, Option_t * opt = 0);
+  void          RandomizeSystematics     (std::map<valor::conv::PhysParamId_t, bool> should_randomize,FitParamList& fpl,  Option_t * opt = 0);
   void          TweakSystematic          (string syst_name, double twkdial=0., Option_t * opt = 0);
   void          TweakSystematic          (conv::PhysParamId_t syst, double twkdial=0., Option_t * opt = 0);
-  void          ResetSystematics         (Option_t * opt = 0);
-  void          ForceSystematicsToUntuned(Option_t * opt = 0);
+  void          ResetSystematics         (FitParamList& fpl,Option_t * opt = 0);
+  void          ForceSystematicsToUntuned(FitParamList& fpl,Option_t * opt = 0);
   void          PrintSystematics         (ostream & stream = std::cout, Option_t * opt = 0) const;
   PhysParamList Tweaks                   (Option_t * opt = 0) const;
   bool          Generate                 (const FitParamList & fp, Option_t * opt = 0);
@@ -136,12 +136,11 @@ public:
   void SetSystematicVariationIDToApply(const std::string & param_name,size_t id);
   void ResetSystematicVariationIDs();
   
-  // If we've made baseline splines, we should allow the user to cache them
-  void WriteBaselineSplinesToFile(TFile * f) const;
-  
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
+  //A function to access fNuOsc3Flavour and set MH 
+  void UpdateMassHierarchyFromOpt();
 private:
 
   void Init  (void);
@@ -266,10 +265,9 @@ private:
   std::vector<VALORArray *> fMCTSysSb ; 
   std::vector<VALORArray *> fMCTFinSb ; 
   std::vector<VALORArray *> fMCStatSb ; // MC statistics
-
-  std::vector<VALORArray *> fSinDM2Weight;
-  std::vector<VALORArray *> fSinDM2WeightN;
-  std::vector<std::vector<std::vector<double> > > fSinDM2WeightVec;
+  
+  // Holds L/E per event, if we're doing sterile oscillations
+  std::vector<std::vector<std::vector<std::pair<double,double>> > > fLoverEPerEvent;
 
 
   // MC PDFs
@@ -302,14 +300,6 @@ private:
   // Pointer to our systematics
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;
-  
-  // Splines to handle implementation of variable baseline if necessary
-  bool fGetBaselineFromSplines;
-  bool fBaselineSplinesFilled;
-  // This vector will only include initial flavour, not reaction type
-  std::vector<VALORArrayP*> fBaselineSplines;
-  // and how many places we evaluate them in. Should become configurable later
-  int fNSplineEvalPoints;
   
   // For implementing of event-by-event systematics
   // eg for making spectra that can be used for covariance matrices

@@ -55,7 +55,7 @@
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/FitModelABC.h"
 #include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitInputs.h"
+#include "valor/FitCore/Likelihood.h"
 #include "valor/FitCore/FitterABC.h"
 #include "valor/FitCore/UtlFit.h"
 #include "valor/FitCore/CompoundFitElements.h"
@@ -172,9 +172,9 @@ void Fit(CmdLnArgList& arg)
    FitModelABC* model = elements->FitModel();
    FitDataABC* data = elements->FitData();
 
-   const char* read_opt_data = "";
+   const char* read_opt_data = "data_vf";
    if (use_simple_binning) {
-      read_opt_data = "+SB";
+      read_opt_data = "data_vf+SB";
    }
 
    util::ToyStream* toy_stream = nullptr;
@@ -190,7 +190,7 @@ void Fit(CmdLnArgList& arg)
       FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
       // Set the priors
-      util::oscillation::SetOscillationParameterPriors(arg, *fpl);
+      util::oscillation::SetParameterPriors(arg, *fpl);
       // Fix or set marginalisation flag for oscillation parameters
       util::oscillation::SetOscillationParameters(arg, *fpl);
 

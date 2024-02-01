@@ -13,4 +13,4 @@ fit-output-file                      |   string       |  optional   |   NONE
 fit-output-entry                     |   integer      |  optional   |   0
 write-data, no-write-data            |   boolean_list |  optional   |   no-write-data
 fix-baseline, no-fix-baseline        |   boolean_list |  optional   |   no-fix-baseline
-save-baselines, no-save-baselines    |   boolean_list |  optional   |   no-save-baselines
+force-untuned                        |   boolean      |  optional   |   -

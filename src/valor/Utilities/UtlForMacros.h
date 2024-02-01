@@ -39,6 +39,29 @@ namespace util {
 
   // Helper function. Get a TH2D from a file & check its valid
   TH2D * GetTH2DFromTFile(TFile * f, const char * name);
+
+  // Remove from vector 'a' any items which also appear in vector 'b'
+  template<class T> void RemoveItemsFromVector(std::vector<T>& a, std::vector<T>& b)
+  // Implementation must stay in the .h file for the linker to find it...
+  {
+    // Use the erase-remove idiom
+    a.erase(
+      remove_if(
+        a.begin(),
+        a.end(),
+
+        // This lambda returns true if current element 'e'
+        // (from vector 'a') is in vector 'b'.
+        [&b](const T& e)
+        {
+          auto it = find(b.begin(), b.end(), e);
+          return (it != b.end());
+        }
+      ),
+
+      a.end()
+    );
+  }
   
 } // util
 } // valor

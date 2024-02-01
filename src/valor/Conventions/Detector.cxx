@@ -141,3 +141,27 @@ bool util::IsLongBaseline(Detector_t d)
   return false;
 }
 //________________________________________________________________________________________
+bool util::IsShortBaseline(Detector_t d)
+{
+  switch(d) {
+    case (kdDUNEND   ) : return true;
+    case (kdDUNEFD1ph) : return false;
+    case (kdDUNEFD2ph) : return false;
+    case (kdSBND     ) : return true;
+    case (kdSBNuBooNE) : return true;
+    case (kdSBNICARUS) : return true;
+    case (kdSuperK   ) : return false;
+    case (kdHyperK   ) : return false;
+    case (kdND280    ) : return true;
+    case (kdND280Up  ) : return true;
+    case (kdINGRID   ) : return true;
+    case (kdNuPRISM  ) : return true; // well, probably
+    case (kdNuTIT    ) : return true;
+    case (kdNOvAND   ) : return true;
+    case (kdNOvAFD   ) : return false;
+    default: break;
+  }
+  LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);
+  return false;
+}
+//________________________________________________________________________________________
