@@ -31,7 +31,7 @@ namespace conv {
 // ...........................................................................
 // Define samples
 //
-typedef enum ESample 
+typedef enum ESample
 {
    //2016b near detector selections
    ksUndefined       = -1,
@@ -42,7 +42,7 @@ typedef enum ESample
    ksNuMuCC2piC      =  4, // numu CC 2 pions+/- (mu + 2 pi+/- + X) - disabled in 2016b
    ksNuMuCC1pi0      =  5, // numu CC 1 pion0  (mu + 1 pi0 + X)
    ksNuMuCC1piC1pi0  =  6, // numu CC 1 pion+/- & 1 pion0 (mu + 1 pi+/- + 1pi0 + X)
-   ksNuMuCCoth       =  7, // numu CC - other 
+   ksNuMuCCoth       =  7, // numu CC - other
    ksNuECC           =  8, // nue CC inclusive - disabled in 2016b, split in subsamples
    ksNuMuCCWS        =  9, // wrong sign numu CC inclusive - disabled in 2016b, split in subsamples
    ksNC              = 10, // NC inclusive - disabled in 2016b, split in subsamples
@@ -60,22 +60,22 @@ typedef enum ESample
    ksNC1piC          = 22, // NC - 1 pion+/- (1 pi+/- + X)
    ksNC1pi0          = 23, // NC - 1 pion0 (1 pi0 + X)
    ksNCoth           = 24, // NC - other
-   ksNeutrinoElec    = 25, // Neutrino-electron elastic scattering nu + e 
+   ksNeutrinoElec    = 25, // Neutrino-electron elastic scattering nu + e
    ksInvMuDecay      = 26, // Inverse muon decay (nuebar + e -> mu + numubar or numu + e -> mu + nue)
-   ksNuECCWS         = 27, // wrong sign nue CC inclusive 
+   ksNuECCWS         = 27, // wrong sign nue CC inclusive
    //2016b far detector selections
    ksNuMuLikeCChigh      , // numu-like (for the moment both numu and numubar), high resolution (CCQE-like)
    ksNuMuLikeCClow       , // numu-like (for the moment both numu and numubar), low resolution (nonCCQE-like)
    ksNuMuBarCChigh       , // numubar, high resolution (CCQE-like)   - CURRENTLY UNUSED
    ksNuMuBarCClow        , // numubar, low resolution (nonCCQE-like) - CURRENTLY UNUSED
    ksNuELikeCChigh       , // nue-like (for the moment both nue and nuebar), high resolution (CCQE-like)
-   ksNuELikeCClow        , // nue-like (for the moment both nue and nuebar), low resolution (nonCCQE-like)   
+   ksNuELikeCClow        , // nue-like (for the moment both nue and nuebar), low resolution (nonCCQE-like)
    ksNuEBarCChigh        , // nuebar, high resolution (CCQE-like)    - CURRENTLY UNUSED
    ksNuEBarCClow         , // nuebar, low resolution (nonCCQE-like)  - CURRENTLY UNUSED
    // SuperK selections
    ks1Rmu                , // Single-ring muon-like
    ks1Re                 , // Single-ring electron-like
-   ksMultiRe             ,  // Multi-ring electron-like
+   ksMultiRe             , // Multi-ring electron-like
    // PRISM selections
    ksNuMuCCoa00          , // numuCC-like, off-axis bin "00" (arbitrary definition of off-axis bin: specified by range of off-axis angles in input DST)
    ksNuMuCCoa01          , // numuCC-like, off-axis bin "01"
@@ -87,7 +87,7 @@ typedef enum ESample
    ksNuMuCCoa07          , // numuCC-like, off-axis bin "07"
    ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
    ksNuMuCCoa09            // numuCC-like, off-axis bin "09"
-} 
+}
 Sample_t; 
 
 static const int kMaxNSamples = 49;
@@ -106,11 +106,11 @@ namespace util {
   bool           IsELike          (conv::Sample_t s);
   conv::Sample_t SampleFromInt    (int s);
   conv::Sample_t SampleFromString (std::string s);
-  
+
   // aliases methods
   std::string  SampleAsString    (conv::Sample_t s);
   std::string  SampleAsStringTeX (conv::Sample_t s, bool root = false);
-  
+
   bool SampleIsCC       (conv::Sample_t s);
   bool SampleIsCCQELike (conv::Sample_t s);
   bool SampleIsNC       (conv::Sample_t s);
@@ -119,6 +119,5 @@ namespace util {
   bool SampleIsELike    (conv::Sample_t s);
 } // util
 } // valor
-  
-#endif 
 
+#endif
