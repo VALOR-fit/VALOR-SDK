@@ -5,6 +5,7 @@ import math
 import array
 import sys
 import os
+import csv
 
 R = ROOT
 
@@ -30,7 +31,7 @@ min_channels_to_landscape = 7   # If we get more than this number of channels, t
 def main(config_file, param_values,
     hierarchy,angle_scheme,octant,dmsqscheme,
     output_file,label,hypname,fplopt,num_decimal_places,
-    force_untuned):
+    force_untuned, maqe, write_csv):
   
   opt.gMassHierarchyAssumed = util.HierarchyFromString(hierarchy)
   opt.gOscMixingParamChoice = util.MixingTypeFromString(angle_scheme)
@@ -55,18 +56,46 @@ def main(config_file, param_values,
       if fpl.Exists(p) and syst.Contains(p):
           fpl.Update(p, syst.UntunedValue(p))
 
+
+
   relevant_params = []
   for (parname,val) in param_values.items():
     p = util.NameRegistry.Instance().PhysParamFromString(parname)
+
     if (fpl.Exists(p)):
+
       fpl.Update(p,val)
       fpl.SetInitValue(p,val)
       print(util.NameRegistry.Instance().ParamAsString(p).ljust(25),fpl.CurrValue(p))
       relevant_params.append(p)
+
+  m = valor.ParameterPool.Instance().ParamFromString("FEFQEH")
+  m.Print()
+      #NOTE: a bit for code to run event rates with a systematic a parameter set to a specific value 
+#update fpl with MAQE, set init val and add to relevant params 
+# m = util.NameRegistry.Instance().PhysParamFromString("MAQE")
+# if (fpl.Exists(m)):
+#   print "adding value of maqe at knot "
+#   fpl.Update(m,0.495869)
+#   fpl.SetInitValue(m,0.495869)
+#   print(util.NameRegistry.Instance().ParamAsString(m).ljust(25),fpl.CurrValue(m))
+#   relevant_params.append(m)
+# else:
+#   print"MAQE is not in the list ???"
+
   relevant_params.sort()
-  
+  fpl.Print()
   tex_output = open(output_file,"w")
-  
+
+  #Create and write first part of CSV File
+  output_file_csv = os.path.splitext(output_file)[0] + ".csv"
+  if write_csv:
+    print"Writing to a CSV file called ", output_file_csv
+    with open(output_file_csv, 'w') as csvfile:
+      writer = csv.writer(csvfile)
+      writer.writerow(["VALOR_EVENT_RATES"])
+      writer.writerow([])
+
   tex_output.write("""\documentclass[10pt,a4paper]{article}
 \\usepackage[utf8]{inputenc}
 \\usepackage{amsmath}
@@ -80,14 +109,23 @@ def main(config_file, param_values,
 """)
 
   # Write osc params
-  
+
   tex_output.write("\n\\section*{Job details}\n\n")
-  
+
   tex_output.write("\n\\begin{minipage}[t]{0.5\\textwidth}")
   if len(relevant_params):
     tex_output.write("\n\\begin{itemize}\n")
     for param in relevant_params:
       tex_output.write("\\item[] "+util.NameRegistry.Instance().ParamAsStringTex(param)+" = "+str(fpl.CurrValue(param))+"\n")
+
+      if write_csv:
+        with open(output_file_csv, 'a') as csvfile:
+          writer = csv.writer(csvfile)
+          writer.writerow([util.NameRegistry.Instance().ParamAsStringSimple(param), str(fpl.CurrValue(param))])
+    if write_csv:
+      with open(output_file_csv, 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow("")
 
     tex_output.write("\\end{itemize}\n")
 
@@ -99,25 +137,29 @@ def main(config_file, param_values,
     tex_output.write("Hierarchy: "+hierarchy.capitalize()+"\n\n")
   if label: tex_output.write(label+"\n\n")
 
+
+
+
+  #Show parameter list.
   model.Generate(fpl)
-  
+
   n_submodels = model.GetNSubModels()
-  
+
   for imodel in range(n_submodels):
-    
+
     submodel = model.GetSubModel(imodel)
     submodel_name = submodel.Name()
     tag = "valor"
     model_arr = R.TObjArray()
     submodel.Write(model_arr,tag,"pdft_vf pdfc_vf")
-    
+
     nev_tot = 0.
-    
+
     modes = [m for m in submodel.GetReactionModes() if m >=0 and m<1E4]
-    
+
     reac_types = []
     channels = [] # here channel is init neutrino flavour + final neutrino flavour
-    
+
     for m in modes:
         init_flav  = util.ReacModeToInitFlavor(m)
         final_flav = util.ReacModeToFinalFlavor(m)
@@ -128,115 +170,146 @@ def main(config_file, param_values,
         else:
             channel = "Non-neutrino"
         if channel not in channels: channels.append(channel)
-    
+
     if len(channels) > min_channels_to_landscape:
       tex_output.write("\\begin{landscape}\n")
 
-      
+
     event_counts_per_channel         = dict() # Holds dictionaries of formatted strings
     total_event_counts_per_channel   = dict() # Holds float
     total_event_counts_per_reac_type = dict() # Holds float
-    
+
     for reac_type in reac_types:
       event_counts_per_channel        [reac_type] = dict()
       total_event_counts_per_reac_type[reac_type] = 0.
-      
+
     for channel in channels:
       total_event_counts_per_channel[channel] = 0.
-    
+
     total_event_counts_per_channel["Non-neutrino"] = 0.
-    
+
     # Signal not implemented yet
     signal_events     = 0.
     background_events = 0.
-    
+
     osc_channel_pattern = r"$%s \rightarrow %s$"
     formatted_channels = dict()
-    
+
     for m in modes:
-      
+
       mode_name = util.ModeAsString(m)
       mode_array_name = ("%s_pdfc_ob_vf_%s_%s")%(tag,submodel_name,mode_name)
       spectrum = model_arr.FindObject(mode_array_name)
-      
+
       assert(spectrum)
-      
+
       channel = (util.ReacModeToInitFlavor(m),util.ReacModeToFinalFlavor(m))
+      #print "channel ", channel #DEBUG
       reac_type = util.ReacModeToType(m)
       if util.IsNeutrinoAny(m):
         formatted_channels[channel] = osc_channel_pattern%tuple(map(util.FlavourAsStringTeX,channel))
       else:
         channel = "Non-neutrino"
         formatted_channels[channel] = channel
-      
+      #print "formatted_channels ", formatted_channels[channel] #DEBUG
+
       nev = spectrum.Integral()
       nev_tot += nev
       total_event_counts_per_channel  [channel] += nev
       total_event_counts_per_reac_type[reac_type] += nev
       event_counts_per_channel[reac_type][channel] = to_ndp.format(nev)
-      
+
       # ~ if (signal_for_sample[sample_name]==spec): signal_events+=nev
       # ~ else: background_events+=nev
-      
-      # ~ print channel,"\t",util.ReacTypeAsString(reac_type),reac_type,"\t",event_counts_per_channel[reac_type][channel]
-      
-    
-    # Format the chanenls in a nice way
+
+      #print util.FlavourAsString(channel),"\t",util.ReacTypeAsString(reac_type),reac_type,"\t",event_counts_per_channel[reac_type][channel]
+
+  # Format the chanenls in a nice way
     formatted_channels["total"] = "Total"
-    
+
     # Start writing output
     submodel_name_escaped_underscores = submodel_name.replace("_",r"\_")
     tex_output.write("\n\\section*{"+submodel_name_escaped_underscores+"}\n")
     tex_output.write("\\begin{tabular} { | l ||"+("r | "*len(channels))+"| r | }\n\\hline\n")
     tex_output.write(" "+"".ljust(col1_width)+" & "+ " & ".join([formatted_channels[c].ljust(coln_width) for c in channels+["total"]]) + " \\\\ \\hline\\hline\n")
-    
+    if write_csv:
+      with open(output_file_csv, 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([submodel_name])
+        writer.writerow(["Mode","numu-x-numu", "numub-x-numub", "nue-x-nue", "numu-x-nue", "nueb-x-nueb","numub-x-nueb","Total"])
+
     for reac_type in reac_types:
       ev = event_counts_per_channel[reac_type]
       # ~ if not total_event_counts_per_reac_type[reac_type]: continue
       reac_type_name = util.ReacTypeAsString(reac_type)
       tex_output.write(" "+reac_type_name.ljust(col1_width)+" & ")
       ev_counts = []
+      csv_react_event_row = [reac_type_name]
       for channel in channels:
         try:
           ev_counts.append(ev[channel].ljust(coln_width))
+          csv_react_event_row.append(event_counts_per_channel[reac_type][channel])
         except KeyError:
           ev_counts.append("N/A".ljust(coln_width))
-      
+          csv_react_event_row.append(0)
+
+
+      if write_csv:
+        with open(output_file_csv, 'a') as csvfile:
+          writer = csv.writer(csvfile)
+          csv_react_event_row.append(to_ndp.format(total_event_counts_per_reac_type[reac_type]))
+          writer.writerow(csv_react_event_row)
+      csv_total_event_row = [("Total")]
+
       ev_counts.append(to_ndp.format(total_event_counts_per_reac_type[reac_type]).ljust(coln_width))
-          
       tex_output.write(" & ".join(ev_counts) + " \\\\ \\hline\n")
-    
+
+
+    if write_csv:
+      with open(output_file_csv, 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        for channel in channels:
+          csv_total_event_row.append(to_ndp.format(total_event_counts_per_channel[channel]))
+
+        csv_total_event_row.append(to_ndp.format(nev_tot))
+        writer.writerow(csv_total_event_row)
+        POT_String= [("POT: ")]
+        POT_String.append(to_ndp.format(submodel.GetPOT()*1E-20)+"E20")
+        writer.writerow(POT_String)
+        writer.writerow("")
+
+
     # Write totals
     tex_output.write("\\hline\n")
     tex_output.write(" "+"Total".ljust(col1_width)+" & ")
     string_totals = [to_ndp.format(total_event_counts_per_channel[channel]).ljust(coln_width) for channel in channels]
     string_totals.append(to_ndp.format(nev_tot).ljust(coln_width))
     tex_output.write(" & ".join(string_totals) + " \\\\ \\hline\n")
-    
+
     tex_output.write("\n\\end{tabular}\n")
-    
+
     total_array_name = ("%s_pdft_ob_vf_%s")%(tag,submodel_name)
-    
+
     total_spectrum  = model_arr.FindObject(total_array_name)
     assert(total_spectrum)
     total_events = total_spectrum.Integral()
-    
+
     print(submodel_name,total_events)
-    
+
     tex_output.write("\nTotal: "           +to_ndp.format(total_events)     +"    ("+to_ndp.format(nev_tot)+")\n\n")
     # ~ tex_output.write("\nTotal signal: "    +to_ndp.format(signal_events)    +"\n\n")
     # ~ tex_output.write("\nTotal background: "+to_ndp.format(background_events)+"\n\n")
-    
+
     tex_output.write("POT: "+to_ndp.format(submodel.GetPOT()*1E-20)+"E20\n\n")
 
     if len(channels) > min_channels_to_landscape:
       tex_output.write("\\end{landscape}\n")
 
     tex_output.write("\n\n\\clearpage\n\n")
-    
-  
+
+
   tex_output.write("\\end{document}\n")
-  
+
   print("Table output written to ",output_file)
 
 if __name__=="__main__":
@@ -262,7 +335,13 @@ if __name__=="__main__":
 
   parser.add_option('-u', '--force-untuned' , dest='force_untuned' , default=False, action="store_true", help="If true, force all systematics to their untuned values (so their weights should = 1).")
 
+  parser.add_option( '--maqe' , dest='maqe' , default=1, help="maque val ")
+
+  parser.add_option('--csv' , dest='write_csv', default=False, action="store_true", help="Write output to csv file as well")
+#UWAGA: add MAQE as  an option here. Delete after the test 
+
   all_parnames = []
+
   for p in range(conv.kNuis000):
     parname = util.NameRegistry.Instance().ParamAsStringVerySimple(p)
     default = opt.GetGlobalBestFit(p)
@@ -279,7 +358,7 @@ if __name__=="__main__":
 
   main(o.config, param_values,
     o.hierarchy,o.mixparamchoice,o.mixparamoctant,o.dmsqscheme,
-    o.output_file,o.label,o.hypname,o.fplopt,o.ndp, o.force_untuned)
+    o.output_file,o.label,o.hypname,o.fplopt,o.ndp, o.force_untuned, o.maqe, o.write_csv)
   
   if other:
     print("Warning - ignored arguments: ",other)

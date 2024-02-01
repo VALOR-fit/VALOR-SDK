@@ -36,7 +36,7 @@ namespace valor {
     static const unsigned long kApplyMaskOne     = 1ul;
     static const int nbitsBeamApplyMask          = 2;
     static const int nbitsFlavApplyMask          = 4;
-    static const int nbitsSelecApplyMask         = 35;
+    static const int nbitsSelecApplyMask         = 36;
     static const int nbitsReacTypeApplyMask      = 28;
     static const int nbitsDetectorApplyMask      = 7;
     static const int nbitsNuclearTargetApplyMask = 7;
@@ -102,7 +102,8 @@ namespace valor {
     static const SelecApplyMask_t ksApplyToELikeLowRes     = (kApplyMaskOne << 31 );
     static const SelecApplyMask_t ksApplyTo1RingMu         = (kApplyMaskOne << 32 ); // SuperK selections
     static const SelecApplyMask_t ksApplyTo1RingE          = (kApplyMaskOne << 33 ); // SuperK selections
-    static const SelecApplyMask_t ksApplyToMultiRingE      = (kApplyMaskOne << 34 ); // SuperK selections
+    static const SelecApplyMask_t ksApplyTo1Re1dcy         = (kApplyMaskOne << 34 ); // SuperK selections
+    static const SelecApplyMask_t ksApplyToMultiRingMu     = (kApplyMaskOne << 35 ); // SuperK selections
 
     static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 ); // Reaction type
     static const ReacTypeApplyMask_t ktApplyToCCMEC        = (kApplyMaskOne <<  1 );

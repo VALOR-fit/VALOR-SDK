@@ -62,7 +62,8 @@ string util::AsString(Sample_t s)
     case (ksNuEBarCChigh   ) : return "nuebarCChigh";    break;
     case (ks1Rmu           ) : return "1rmu";            break;
     case (ks1Re            ) : return "1re";             break;
-    case (ksMultiRe        ) : return "multire";         break;
+    case (ks1Re1dcy        ) : return "1re1dcy";         break;
+    case (ksMultiRmu       ) : return "multirmu";        break;
     default                  : return "--";
   }
   return "";
@@ -111,7 +112,8 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksNuEBarCChigh   ) : name = "#bar{#nu}_{e} CC high-resolution";     break;
     case (ks1Rmu           ) : name = "Single-ring mu-like";                  break;
     case (ks1Re            ) : name = "Single-ring e-like";                   break;
-    case (ksMultiRe        ) : name = "Multi-ring e-like";                    break;
+    case (ks1Re1dcy        ) : name = "1 e-like, 1 decay e";                    break;
+    case (ksMultiRmu        ) : name = "Multi-ring mu-like";                    break;
     default                  : name = "--";
   }
 
@@ -136,7 +138,8 @@ bool util::IsFar(Sample_t s)
     case (ksNuEBarCChigh       ) :  return true; break;
     case (ks1Rmu               ) : // intentional fallthrough
     case (ks1Re                ) :
-    case (ksMultiRe            ) :  return true; break;
+    case (ksMultiRmu           ) :
+    case (ks1Re1dcy            ) :  return true; break;
     default: return false;
   }
   return false; 
@@ -186,7 +189,8 @@ bool util::IsCC(Sample_t s)
 
     case (ks1Rmu           ) : // intentional fallthrough
     case (ks1Re            ) :
-    case (ksMultiRe        ) : return true; break;
+    case (ksMultiRmu       ) :
+    case (ks1Re1dcy        ) : return true; break;
 
     case (ksUndefined      ) : return false;
   }
@@ -237,7 +241,8 @@ bool util::IsCCQELike(Sample_t s)
     case (ksNuEBarCClow    ) :
     case (ks1Re            ) :
     case (ks1Rmu           ) :
-    case (ksMultiRe        ) : return false; break;
+    case (ksMultiRmu       ) :
+    case (ks1Re1dcy        ) : return false; break;
     default: return false;
   }
   return false;
@@ -279,7 +284,8 @@ bool util::IsNC(Sample_t s)
     case (ksNuEBarCChigh   ) :
     case (ks1Rmu           ) :
     case (ks1Re            ) :
-    case (ksMultiRe        ) : return false;
+    case (ksMultiRmu       ) :
+    case (ks1Re1dcy        ) : return false;
 
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) : 
@@ -296,7 +302,7 @@ Sample_t util::SampleFromInt(int s)
 {
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
-  if((s >= (int)ksNuMuCC && s <= (int) ksMultiRe)) //RHC
+  if((s >= (int)ksNuMuCC && s <= (int) ksMultiRmu)) //RHC
     return (Sample_t)s;
   return ksUndefined;
 }
@@ -367,7 +373,8 @@ bool util::IsMuLike(Sample_t s)
     case ksNuEBarCClow     : return false ;
     case ks1Rmu            : return true  ;
     case ks1Re             : return false ;
-    case ksMultiRe         : return false ;
+    case ksMultiRmu        : return true  ;
+    case ks1Re1dcy         : return false ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
@@ -415,7 +422,8 @@ bool util::IsELike(Sample_t s)
     case ksNuEBarCClow     : return true  ;
     case ks1Rmu            : return false ;
     case ks1Re             : return true  ;
-    case ksMultiRe         : return true  ;
+    case ks1Re1dcy         : return true  ;
+    case ksMultiRmu        : return false ;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
