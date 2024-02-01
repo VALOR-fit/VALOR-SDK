@@ -120,9 +120,7 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
       LOG("GenericSingleSampleFitData",pFATAL) << "Failed to read histogram";
       util::Die(-1); return false;
     }
-
     //check binning:
-    //LOG("GenericSingleSampleFitData",pWARN) << "Not fully implimented binning check yet, only looking at reco opt atm";
     vector<double> config_low_edges = util::XML2BinLowEdges(xml,root_node,node_binning,node_binning_scheme);
     if(config_low_edges.size() != data_hist->GetXaxis()->GetNbins()){
       LOG("GenericSingleSampleFitData",pFATAL) << "Histogram and config binning do not match (size)";
@@ -144,12 +142,12 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
     delete data_hist;
   } 
   else if(use_varray){
-    LOG("GenericSingleSampleFitData",pNOTICE) << "Reading data stored VALOR data arrays";
+    LOG("GenericSingleSampleFitData",pNOTICE) << "Reading data stored VALOR data arrays (check your own binning schemes)";
     // -------------------------------------------------
     string node_name = "data/varray/" + util::AsString(fBeam, "lowercase");
     VALORArray * data_varray = new VALORArray(util::XML2VArray (xml,root_node,node_name));  //to make XML2VArray in UtlXMl
     if (!data_varray){
-      LOG("GenericSingleSampleFitData",pFATAL) << "Failed to read histogram";
+      LOG("GenericSingleSampleFitData",pFATAL) << "Failed to read VALOR Array";
       util::Die(-1); return false;
     }
     this->FillFromVArray(data_varray);
@@ -159,7 +157,6 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
     util::Die(-1); return false;
     // -------------------------------------------------
   }
-//editsend  
   // Release memory
   xml->FreeDoc(xmldoc);
   delete xml;

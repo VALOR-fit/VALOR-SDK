@@ -458,6 +458,7 @@ static const double kMaxChisqSurfaceSinsq2Theta23     = 1.00;
 //
 static const double kMaxAllowedWght = 2E+3;                          // Complain if any computed weights exceeds this value
 static const double kSetNegEventsTo = 1E-8;                          // Set any bins with nevent < 0 to this value
+static const double kALittleNum     = 1E-5;                          // This precision for event_ratio in making splines
 static const double kASmallNum      = 1E-10;                         // Need to keep this precision for Escale computation (worse than E-15)
 static const double kAVerySmallNum  = 1E-15;                         // Need to keep this precision for Marginalization (histo->GetBinCenter() has a precision of E-19)  
 static const double kALargeNum      = 999999999.;                    // 

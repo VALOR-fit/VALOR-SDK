@@ -231,7 +231,7 @@ double valor::util::XML2Dbl(
 VALORArray valor::util::XML2VArray(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  LOG("XML", pNOTICE) << "Reading info at XML node node_path: " << node_path;
   VALORArray * array;
   int bin = 0;
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
