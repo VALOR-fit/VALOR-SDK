@@ -105,7 +105,7 @@ TH1D* Make1DHistogram(const VALORArray& v,
   const conv::KineVar_t target_kv = util::KineVar(ks)[0];
   const bool targetIsReco = util::IsPureReco(ks);
   
-  if (!targetIsReco && m==conv::kmUndefined) {
+  if (!targetIsReco && m==conv::kmUndefined && b.TrueSmpBinningSingle() == nullptr) {
     LOG("UtlBinning",pWARN) << "Cannot contract to truth without a specified reaction mode.";
     return nullptr;
   }
@@ -124,13 +124,19 @@ TH1D* Make1DHistogram(const VALORArray& v,
     if(tmpb_true) { oldNDim += tmpb_true->NDimensions(); }
   }
   else {
-    tmpb = b.TrueSmpBinning(m);
+    tmpb = (b.TrueSmpBinningSingle() != nullptr) ? b.TrueSmpBinningSingle() : b.TrueSmpBinning(m);
 
     const KBCubHcmbEdge2Edge * tmpb_true = dynamic_cast<const KBCubHcmbEdge2Edge*>(tmpb);
     oldNDim += tmpb_true->NDimensions();
 
     const KBCubHcmbEdge2Edge * tmpb_reco = dynamic_cast<const KBCubHcmbEdge2Edge*>(use_simple ? b.RecoSmpBinning() : b.RecoOptBinning());
     if(tmpb_reco) { oldNDim += tmpb_reco->NDimensions(); }
+  }
+  if(oldNDim != v.GetNDim()){
+    LOG("UtlBinning",pNOTICE) << " Old number of dimensions counted: " << oldNDim 
+                              << " does not match the number of dimensions in the VALORArray " << v.GetNDim()
+                              << "\n Using the number from the array";
+    oldNDim = v.GetNDim();
   }
   origBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(tmpb);
   if (!origBinning) {
@@ -157,10 +163,13 @@ TH1D* Make1DHistogram(const VALORArray& v,
     // Need to integrate out the reco variables here, before integrating over
     // truth
     const KBCubHcmbEdge2Edge * recoBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(b.RecoSmpBinning() );
-    const KBCubHcmbEdge2Edge * trueBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(b.TrueSmpBinning(m));
-    targetV = Contract(v, newBinning,recoBinning,trueBinning);
+    const KBCubHcmbEdge2Edge * trueBinning = b.TrueSmpBinningSingle() == nullptr ? 
+      dynamic_cast<const KBCubHcmbEdge2Edge*>(b.TrueSmpBinning(m)) : 
+      dynamic_cast<const KBCubHcmbEdge2Edge*>(b.TrueSmpBinningSingle());
+      targetV = Contract(v,newBinning,recoBinning,trueBinning);
   }
   else {
+    LOG("UtlBinning",pINFO) << "Only 1 dimension, therefore keeping the binning scheme";
     newBinning = origBinning;
     targetV = &v;
   }

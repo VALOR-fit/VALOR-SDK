@@ -97,6 +97,14 @@ const char * fit_result_tree_name = "valor_fit_ntp";
 int main(int argc, char ** argv)
 {
 
+  time_t startrawtime;
+  struct tm * starttimeinfo;
+  time (&startrawtime);
+  starttimeinfo = localtime (&startrawtime);
+  std::cout << "-----------------------------------------------------------" << std::endl;
+  std::cout << " Start local time and date:  " << asctime(starttimeinfo);
+  std::cout << "-----------------------------------------------------------" << std::endl;
+
   valor::util::PrintBanner(Env::Instance()->Banner(),500);
 
   //  util::InitializeOAPriors();
@@ -160,7 +168,7 @@ int main(int argc, char ** argv)
       util::Die(-1);
     }
   }
-
+  
   // Create file and tree to store outputs
   TString outfilename = TString::Format("%s_%d.root", arg.GetString("tag").c_str(), arg.GetInt("run"));
   StdFitNtp ntp;
@@ -455,14 +463,6 @@ int main(int argc, char ** argv)
     LOG("valor", pNOTICE) << "Fit starts with the following fit parameter list: " << *fp;
     LOG("valor", pNOTICE) << "Fit starts with statistic: " << likelihood->Statistic();
 
-    time_t startrawtime;
-    struct tm * starttimeinfo;
-    time (&startrawtime);
-    starttimeinfo = localtime (&startrawtime);
-    std::cout << "-----------------------------------------------------------" << std::endl;
-    std::cout << " Start local time and date:  " << asctime(starttimeinfo);
-    std::cout << "-----------------------------------------------------------" << std::endl;
-
     fitter->DoTheFit();
     LOG("valor", pNOTICE) << "Fit ends with statistic: " << likelihood->Statistic();
 
@@ -509,8 +509,10 @@ int main(int argc, char ** argv)
   struct tm * endtimeinfo;
   time (&endrawtime);
   endtimeinfo = localtime (&endrawtime);
+  time_t total_time = endrawtime-startrawtime;
   std::cout << "-----------------------------------------------------------" << std::endl;
   std::cout << " End local time and date  :  " << asctime(endtimeinfo);
+  std::cout << " Total time taken         :  " << total_time/static_cast<double>(60) << " minutes" << std::endl;
   std::cout << "-----------------------------------------------------------" << std::endl;
 
   return 0;

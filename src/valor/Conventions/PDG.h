@@ -37,6 +37,10 @@ static const int kPdgNuS5     =  100;
 static const int kPdgNuS4Bar  =  -80;
 static const int kPdgNuS5Bar  = -100;
 
+// External BGs, also made up and obviously unphysical
+static const int kPdgCosmic   =  -99;
+static const int kPdgDirt     =  -999;
+
 static const int kPdgNuFlavs[kNNuFlavour] = {
   12,
   14,

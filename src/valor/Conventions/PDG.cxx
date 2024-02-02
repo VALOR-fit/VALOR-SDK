@@ -49,6 +49,8 @@ string util::Pdg2String(int pdg_code)
      case ( kPdgNuEBar   ) : return "nuebar";   break;
      case ( kPdgNuMuBar  ) : return "numubar";  break;
      case ( kPdgNuTauBar ) : return "nutaubar"; break;
+     case ( kPdgCosmic   ) : return "cosmic";   break;
+     case ( kPdgDirt     ) : return "dirt";     break;
      default               : return "";
   }
   return "";
@@ -63,6 +65,8 @@ string util::Pdg2StringTex(int pdg_code)
      case ( kPdgNuEBar   ) : return "$\\bar{\\nu_e}$";   break;
      case ( kPdgNuMuBar  ) : return "$\\bar{\\nu_\\mu}$";  break;
      case ( kPdgNuTauBar ) : return "$\\bar{\\nu_\\tau}$"; break;
+     case ( kPdgCosmic   ) : return "Cosmic"; break;
+     case ( kPdgDirt     ) : return "Dirt"; break;
      default               : return "";
   }
   return "";

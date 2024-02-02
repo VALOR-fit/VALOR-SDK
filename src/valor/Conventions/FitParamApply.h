@@ -35,9 +35,9 @@ namespace valor {
 
     static const unsigned long kApplyMaskOne     = 1ul;
     static const int nbitsBeamApplyMask          = 2;
-    static const int nbitsFlavApplyMask          = 4;
+    static const int nbitsFlavApplyMask          = 6;
     static const int nbitsSelecApplyMask         = 35;
-    static const int nbitsReacTypeApplyMask      = 28;
+    static const int nbitsReacTypeApplyMask      = 29;
     static const int nbitsDetectorApplyMask      = 7;
     static const int nbitsNuclearTargetApplyMask = 7;
 
@@ -67,6 +67,8 @@ namespace valor {
     static const FlavApplyMask_t kfApplyToNuMuBar         = (kApplyMaskOne << 1 );
     static const FlavApplyMask_t kfApplyToNuE             = (kApplyMaskOne << 2 );
     static const FlavApplyMask_t kfApplyToNuEBar          = (kApplyMaskOne << 3 );
+    static const FlavApplyMask_t kfApplyToCosmic          = (kApplyMaskOne << 4 );
+    static const FlavApplyMask_t kfApplyToDirt            = (kApplyMaskOne << 5 );
 
     static const SelecApplyMask_t ksApplyToNuMuCC          = (kApplyMaskOne <<  0 ); // Sample
     static const SelecApplyMask_t ksApplyToNuMuCC0pi1trk   = (kApplyMaskOne <<  1 );
@@ -132,6 +134,7 @@ namespace valor {
     static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 25 ); //only for nue: CC + NC + interference
     static const ReacTypeApplyMask_t ktApplyToOther        = (kApplyMaskOne << 26 ); //only for nue: CC + NC + interference
     static const ReacTypeApplyMask_t ktApplyToCosmic       = (kApplyMaskOne << 27 ); //only for nue: CC + NC + interference
+    static const ReacTypeApplyMask_t ktApplyToDirt         = (kApplyMaskOne << 28 ); //only for nue: CC + NC + interference
 
     static const DetectorApplyMask_t kdApplyToDUNEND          = (kApplyMaskOne << 0 ); // Dectectors
     static const DetectorApplyMask_t kdApplyToDUNEFD          = (kApplyMaskOne << 1 );
@@ -163,6 +166,8 @@ namespace valor {
     extern const FlavApplyMask_t kfApplyToNuBarAny;
     extern const FlavApplyMask_t kfApplyToNuEAny;
     extern const FlavApplyMask_t kfApplyToNuMuAny;
+    extern const FlavApplyMask_t kfApplyToAllCosmic;
+    extern const FlavApplyMask_t kfApplyToAllDirt;
     extern const FlavApplyMask_t kfApplyToAll;
 
     // Reaction type
@@ -184,18 +189,26 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllNC;
 
     extern const ReacTypeApplyMask_t ktApplyToAllCoh;
+    extern const ReacTypeApplyMask_t ktApplyToAllQELike; // CC & NC QE Like
     extern const ReacTypeApplyMask_t ktApplyToAllMEC;
     extern const ReacTypeApplyMask_t ktApplyToAllELScat;
     extern const ReacTypeApplyMask_t ktApplyToAll1pi;
+    extern const ReacTypeApplyMask_t ktApplyToAll2pi;
     extern const ReacTypeApplyMask_t ktApplyToAlln0pi;
     extern const ReacTypeApplyMask_t ktApplyToAllNonRes;
     extern const ReacTypeApplyMask_t ktApplyToAllCosmic;
+    extern const ReacTypeApplyMask_t ktApplyToAllDirt;
 
     extern const ReacTypeApplyMask_t ktApplyToAll;
+    extern const ReacTypeApplyMask_t ktApplyToAllPlusCosmic;
+    extern const ReacTypeApplyMask_t ktApplyToAllPlusDirt;
+    extern const ReacTypeApplyMask_t ktApplyToAllPi;
+    extern const ReacTypeApplyMask_t ktApplyToAllWithPiFSI;
     extern const ReacTypeApplyMask_t ktApplyToAllButCoh;
     extern const ReacTypeApplyMask_t ktApplyToAllButELScat;
     extern const ReacTypeApplyMask_t ktApplyToAllWithFSI;
     extern const ReacTypeApplyMask_t ktApplyToAllButCosmic;
+    extern const ReacTypeApplyMask_t ktApplyToPiAndOth;
 
     extern const ReacTypeApplyMask_t ktApplyToT2KLegCCoth;
     extern const ReacTypeApplyMask_t ktApplyToCCDISMpi;
@@ -214,6 +227,7 @@ namespace valor {
     extern const SelecApplyMask_t ksApplyToAllFD;
     extern const SelecApplyMask_t ksApplyToAll;
     extern const SelecApplyMask_t ksApplyToAllNC;
+    extern const SelecApplyMask_t ksApplyToAllNuMuCC;
     extern const SelecApplyMask_t ksApplyToAllNuECC;
     extern const SelecApplyMask_t ksApplyToELikeRingAny;  // SuperK selections
     extern const SelecApplyMask_t ksApplyTo1RingAny;      // SuperK selections

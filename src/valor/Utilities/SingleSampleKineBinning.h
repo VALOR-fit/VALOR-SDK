@@ -83,14 +83,16 @@ public:
 
   bool Read(string file);
 
-  const VALORBinning * RecoOptBinning(void)   const { return fRecoOptimizedBinning;    }
-  const VALORBinning * RecoSmpBinning(void)   const { return fRecoSimpleBinning;       }
-  const VALORBinning * TrueSmpBinning(int im) const { return fTrueSimpleBinning [im];  }
+  const VALORBinning * RecoOptBinning(void)       const { return fRecoOptimizedBinning;    }
+  const VALORBinning * RecoSmpBinning(void)       const { return fRecoSimpleBinning;       }
+  const VALORBinning * TrueSmpBinningSingle(void) const { return fTrueSimpleBinningSingle;  }
+  const VALORBinning * TrueSmpBinning(int im)     const { return fTrueSimpleBinning [im];  }
   // Return Simple Binning for the reaction mode, m
   const VALORBinning * TrueSmpBinning(conv::ReacMode_t m) const;
   
   // Cross sections binnings. For now truth is always the same as the simple binning, and reco is always optimised
-  const VALORBinning * XsecRecoBinning(void              )  const { return fXsecRecoBinning  ;}
+  const VALORBinning * XsecRecoBinning(void              )  const { return fXsecRecoBinning;}
+  const VALORBinning * XsecTrueBinningSingle(void        )  const { return fXsecTrueBinningSingle;}
   const VALORBinning * XsecTrueBinning(conv::ReacMode_t m)  const;
   const VALORBinning * XsecTrueBinning(int im            )  const { return fXsecTrueBinning[im];}
 
@@ -125,11 +127,13 @@ private:
   conv::Sample_t                    fSample;
   VALORBinning *                    fRecoOptimizedBinning;     //
   VALORBinning *                    fRecoSimpleBinning;        //
+  VALORBinning *                    fTrueSimpleBinningSingle;  // Single object for true binning when not defined per mode
   std::vector<VALORBinning *>       fTrueSimpleBinning;        // Per mode
   std::vector<VALORBinning *>       fTrueSimpleBinningUnique;  // 
   
   
   VALORBinning *              fXsecRecoBinning;        // Binning for Xsec splines
+  VALORBinning *              fXsecTrueBinningSingle;  // Binning for Xsec splines
   std::vector<VALORBinning *> fXsecTrueBinning;        // Per mode
   std::vector<VALORBinning *> fXsecTrueBinningUnique;  // 
   

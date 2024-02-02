@@ -31,11 +31,13 @@ typedef enum ENuFlavour
    kNuTau,
    kNuEBar,
    kNuMuBar,
-   kNuTauBar
+   kNuTauBar,
+   kCosmic,
+   kDirt,
 } 
 NuFlavour_t;
 
-static const int kNNuFlavour = 6;
+static const int kNNuFlavour = 7;
 
 } // conv
 
