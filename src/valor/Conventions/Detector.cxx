@@ -34,15 +34,17 @@ string util::AsString(Detector_t d, Option_t * /*opt*/)
     case (kdSBNuBooNE) : name = "sbn_uboone"; break;
     case (kdSBNICARUS) : name = "sbn_icarus"; break;
     case (kdSuperK   ) : name = "superk";     break;
-    case (kdHyperK   ) : name = "hyperk";     break; 
-    case (kdND280    ) : name = "nd280";      break; 
-    case (kdND280Up  ) : name = "nd280up";    break; 
-    case (kdINGRID   ) : name = "ingrid";     break; 
-    case (kdNuPRISM  ) : name = "nuprism";    break; 
+    case (kdHyperK   ) : name = "hyperk";     break;
+    case (kdND280    ) : name = "nd280";      break;
+    case (kdND280Up  ) : name = "nd280up";    break;
+    case (kdINGRID   ) : name = "ingrid";     break;
+    case (kdNuPRISM  ) : name = "nuprism";    break;
     case (kdNuTIT    ) : name = "titus";      break;
     case (kdNOvAND   ) : name = "nova_nd";    break;
     case (kdNOvAFD   ) : name = "nova_fd";    break;
-    default            : name = "--";  
+    case (kdNuStormND) : name = "nustorm_nd"; break;
+    case (kdNuStormFD) : name = "nustorm_fd"; break;
+    default            : name = "--";
   }
 /*
   if(opt) {
@@ -69,15 +71,17 @@ string util::AsStringTeX(Detector_t d, bool root)
     case (kdSBNuBooNE) : name = "SBN-#muBooNE";         break;
     case (kdSBNICARUS) : name = "SBN-ICARUS";           break;
     case (kdSuperK   ) : name = "Super-K";              break;
-    case (kdHyperK   ) : name = "Hyper-K";              break; 
-    case (kdND280    ) : name = "ND280";                break; 
-    case (kdND280Up  ) : name = "ND280 Upgrade";        break; 
-    case (kdINGRID   ) : name = "INGRID";               break; 
-    case (kdNuPRISM  ) : name = "#nu Prism";            break; 
+    case (kdHyperK   ) : name = "Hyper-K";              break;
+    case (kdND280    ) : name = "ND280";                break;
+    case (kdND280Up  ) : name = "ND280 Upgrade";        break;
+    case (kdINGRID   ) : name = "INGRID";               break;
+    case (kdNuPRISM  ) : name = "#nu Prism";            break;
     case (kdNuTIT    ) : name = "TITUS";                break;
     case (kdNOvAND   ) : name = "NO{#nu}A ND";          break;
     case (kdNOvAFD   ) : name = "NO{#nu}A FD";          break;
-    default            : name = "--";  
+    case (kdNuStormND) : name = "{#nu}Storm ND";        break;
+    case (kdNuStormFD) : name = "{#nu}Storm FD";        break;
+    default            : name = "--";
   }
   if(root) return name;
 
@@ -107,7 +111,7 @@ Detector_t util::DetectorFromString(string detector)
       return d;
     }
   }
-    
+
   return kdUndefined;
 }
 //________________________________________________________________________________________
@@ -129,6 +133,8 @@ bool util::IsLongBaseline(Detector_t d)
     case (kdNuTIT    ) : return false;
     case (kdNOvAND   ) : return false;
     case (kdNOvAFD   ) : return true;
+    case (kdNuStormND) : return false;
+    case (kdNuStormFD) : return false;
     default: break;
   }
   LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);
