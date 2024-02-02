@@ -22,73 +22,73 @@
   // VALOR modern disappearance files
 
   
-  TFile *f_stat_nc         = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/July2020/stat-only-logged_contours_as_graphs.root","read");
-  TFile *f_stat            = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/July2020_StatOnly/stat-only-nonc_contours_as_graphs.root","read");
-  TFile *f_syst            = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/mock_data_challenge/true_baseline/contours/new-syst-etrue_contours_as_graphs.root","read"); // true baseline
-  TFile *f_stat_p          = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/proposal_stat_3_det_contours_as_graphs.root","read");
-  TFile *f_syst_p          = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/proposal_syst_3_det_contours_as_graphs.root","read");
-  TFile *f_syst_a          = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_injection_syst_contours_as_graphs.root");
-  TFile *f_stat_a          = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_injection_stat_contours_as_graphs.root");
-  //TFile *f_syst_03c1       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Sept2020/stat-syst-03c1_contours_as_graphs.root"); 
-  TFile *f_syst_02c2       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/August2020/stat_syst_02c1_contours_as_graphs.root");
-  //TFile *f_syst_02c2  === new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Sept2020/stat-syst-02c2_contours_as_graphs.root");
-  TFile *f_syst_02c1       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-02c1_contours_as_graphs.root"); 
-  TFile *f_syst_02b2       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/June2020/02b2/stat-syst-mec_contours_as_graphs.root");
-  TFile *f_syst_02b1       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-02b1_contours_as_graphs.root");
-  TFile *f_syst_02a2       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/May2020_2019b3_02a2/stat-allsyst_contours_as_graphs.root");
+  TFile *f_stat_nc         = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/July2020/stat-only-logged_contours_as_graphs.root","read");
+  TFile *f_stat            = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/July2020_StatOnly/stat-only-nonc_contours_as_graphs.root","read");
+  TFile *f_syst            = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/mock_data_challenge/true_baseline/contours/new-syst-etrue_contours_as_graphs.root","read"); // true baseline
+  TFile *f_stat_p          = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/proposal_stat_3_det_contours_as_graphs.root","read");
+  TFile *f_syst_p          = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/proposal_syst_3_det_contours_as_graphs.root","read");
+  TFile *f_syst_a          = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_injection_syst_contours_as_graphs.root");
+  TFile *f_stat_a          = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/december_2019/ubfix_injection_stat_contours_as_graphs.root");
+  //TFile *f_syst_03c1       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Sept2020/stat-syst-03c1_contours_as_graphs.root"); 
+  TFile *f_syst_02c2       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/August2020/stat_syst_02c1_contours_as_graphs.root");
+  //TFile *f_syst_02c2  === new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Sept2020/stat-syst-02c2_contours_as_graphs.root");
+  TFile *f_syst_02c1       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-02c1_contours_as_graphs.root"); 
+  TFile *f_syst_02b2       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/June2020/02b2/stat-syst-mec_contours_as_graphs.root");
+  TFile *f_syst_02b1       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-02b1_contours_as_graphs.root");
+  TFile *f_syst_02a2       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/May2020_2019b3_02a2/stat-allsyst_contours_as_graphs.root");
                            
-  TFile *f_syst_03a1       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03a1_contours_as_graphs.root");
-  TFile *f_syst_03b1       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03b1_contours_as_graphs.root");
-  TFile *f_syst_03a1_mec   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03a1-mec_contours_as_graphs.root");
-  TFile *f_syst_03b1_mec   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03b1-mec_contours_as_graphs.root");
-  TFile *f_syst_03c1_mec   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03c1-mec_contours_as_graphs.root");
+  TFile *f_syst_03a1       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03a1_contours_as_graphs.root");
+  TFile *f_syst_03b1       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03b1_contours_as_graphs.root");
+  TFile *f_syst_03a1_mec   = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03a1-mec_contours_as_graphs.root");
+  TFile *f_syst_03b1_mec   = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03b1-mec_contours_as_graphs.root");
+  TFile *f_syst_03c1_mec   = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2019b3_2-03c1-mec_contours_as_graphs.root");
 
-  TFile *f_syst_03c1_exc        = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Jan2021/stat-syst-03c1-exc_contours_as_graphs.root"); 
-  TFile *f_syst_03c1_bias_exc   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Jan2021/stat-syst-03c1-bias-exc_contours_as_graphs.root"); 
-  TFile *f_stat_2020a1_exc      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-only-2020a1-exc_contours_as_graphs.root","read");
+  TFile *f_syst_03c1_exc        = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Jan2021/stat-syst-03c1-exc_contours_as_graphs.root"); 
+  TFile *f_syst_03c1_bias_exc   = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Jan2021/stat-syst-03c1-bias-exc_contours_as_graphs.root"); 
+  TFile *f_stat_2020a1_exc      = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-only-2020a1-exc_contours_as_graphs.root","read");
 
-  TFile *f_syst_03c1_bias        = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Feb2021/stat-syst-2020a1-03c1-1sidedBias_contours_as_graphs.root");
-  TFile *f_syst_03c1_bias_2sided = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Jan2021/stat-syst-03c1-bias-1p5M_contours_as_graphs.root");
-  TFile *f_syst_03c1             = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Feb2021/stat-syst-2020a1-03c1_contours_as_graphs.root");
-  TFile *f_syst_03c1_all         = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-03c1-2020a1-allowed_contours_as_graphs.root");
-  TFile *f_syst_03c1_prop_nomec  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Dec2020/stat-syst-03c1-prop-flipped-1M_contours_as_graphs.root");
-  TFile *f_syst_02c1_prop_mec    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-02c1-2-2020a1_contours_as_graphs.root");
-  TFile *f_syst_03c1_prop_nm_all = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2020a1-proposal-allowed_contours_as_graphs.root");
+  TFile *f_syst_03c1_bias        = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Feb2021/stat-syst-2020a1-03c1-1sidedBias_contours_as_graphs.root");
+  TFile *f_syst_03c1_bias_2sided = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Jan2021/stat-syst-03c1-bias-1p5M_contours_as_graphs.root");
+  TFile *f_syst_03c1             = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Feb2021/stat-syst-2020a1-03c1_contours_as_graphs.root");
+  TFile *f_syst_03c1_all         = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-03c1-2020a1-allowed_contours_as_graphs.root");
+  TFile *f_syst_03c1_prop_nomec  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Dec2020/stat-syst-03c1-prop-flipped-1M_contours_as_graphs.root");
+  TFile *f_syst_02c1_prop_mec    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-02c1-2-2020a1_contours_as_graphs.root");
+  TFile *f_syst_03c1_prop_nm_all = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-syst-2020a1-proposal-allowed_contours_as_graphs.root");
   
-  TFile *f_stat_2020a1           = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Dec2020/stat-only-flipped_contours_as_graphs.root","read");
-  //TFile *f_stat_2020a1           = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-only-2020a1_contours_as_graphs.root","read");
-  TFile *f_stat_2020a1_all       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-only-2020a1-allowed_contours_as_graphs.root","read");
+  TFile *f_stat_2020a1           = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Dec2020/stat-only-flipped_contours_as_graphs.root","read");
+  //TFile *f_stat_2020a1           = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-only-2020a1_contours_as_graphs.root","read");
+  TFile *f_stat_2020a1_all       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Nov2020/stat-only-2020a1-allowed_contours_as_graphs.root","read");
 
-  TFile *f_reco_syst  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/Selection/all-sbn/reco-mc-energy-stat-syst_contours_as_graphs.root");
-  TFile *f_reco_stat  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/Selection/all-sbn/reco-mc-energy-stat-only_contours_as_graphs.root");
-  TFile *f_reco_stat2 = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/Selection/all-sbn/reco-energy-stat-only_contours_as_graphs.root");
+  TFile *f_reco_syst  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/Selection/all-sbn/reco-mc-energy-stat-syst_contours_as_graphs.root");
+  TFile *f_reco_stat  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/Selection/all-sbn/reco-mc-energy-stat-only_contours_as_graphs.root");
+  TFile *f_reco_stat2 = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/contours/numu_disappearance/Selection/all-sbn/reco-energy-stat-only_contours_as_graphs.root");
 
   // CAFAna proposal and modern numu files
-  TFile *f_caf_prop  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/CAFAna/CAFAna_numu_proposal.root","read");
-  TFile *f_caf_mod   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/CAFAna/CAFAna_numu_modern.root","read");
-  TFile *f_caf_2020  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/July2020/CAFAna_numu_exclusion.root","read");
+  TFile *f_caf_prop  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/CAFAna/CAFAna_numu_proposal.root","read");
+  TFile *f_caf_mod   = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/CAFAna/CAFAna_numu_modern.root","read");
+  TFile *f_caf_2020  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/July2020/CAFAna_numu_exclusion.root","read");
 
   // SBNFit proposal and modern numu files
-  TFile *f_sbn_prop     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_proposal.root","read");
-  TFile *f_sbn_prop25   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_proposal_25var.root","read");
-  TFile *f_sbn_mod25    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_modern_25var.root","read");
-  TFile *f_sbn_mod_a    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_modern_allow.root","read");
-  TFile *f_sbn_2020     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/SBNfit_sensitivity_curve.root","read");
-  TFile *f_sbn_2020_sig = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/SBNfit_sensitivity_curve_5sig.root","read");
-  TFile *f_sbn_noalt    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/SBNfit_sensitivity_curve_woutAlt.root","read");
+  TFile *f_sbn_prop     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_proposal.root","read");
+  TFile *f_sbn_prop25   = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_proposal_25var.root","read");
+  TFile *f_sbn_mod25    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_modern_25var.root","read");
+  TFile *f_sbn_mod_a    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-DUNE-LBL/data/sbn/SBNFit/SBNfit_numu_modern_allow.root","read");
+  TFile *f_sbn_2020     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/SBNfit_sensitivity_curve.root","read");
+  TFile *f_sbn_2020_sig = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/SBNfit_sensitivity_curve_5sig.root","read");
+  TFile *f_sbn_noalt    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/SBNfit_sensitivity_curve_woutAlt.root","read");
 
   // 2020a1 sample
-  TFile *f_sbnfit_exc_prop = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/Nov2020/proposal/updated_SBNfit_Numu_disappear_sensitivity.root");
-  TFile *f_sbnfit_all_prop = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/Nov2020/proposal/SBNfit_numu_disappear_allowed_region.root");
-  TFile *f_sbnfit_exc_mod  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/Nov2020/modern/SBNfit_Numu_disappear_sensitivity_noMEC.root");
+  TFile *f_sbnfit_exc_prop = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/Nov2020/proposal/updated_SBNfit_Numu_disappear_sensitivity.root");
+  TFile *f_sbnfit_all_prop = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/Nov2020/proposal/SBNfit_numu_disappear_allowed_region.root");
+  TFile *f_sbnfit_exc_mod  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/SBNFit/Nov2020/modern/SBNfit_Numu_disappear_sensitivity_noMEC.root");
 
-  TFile *f_cafana_exc_prop     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Nov2020/CAFAna_numu_disapp_exclusion.root");
-  TFile *f_cafana_exc_fixed    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Feb2021/CAFAna_numu_dissapp_exclusion.root");
-  TFile *f_cafana_all_prop     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Nov2020/CAFAna_numu_disapp_allowed.root");
-  TFile *f_cafana_exc_prop_mec = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Nov2020/CAFAna_numu_disapp_exclusion_mec.root");
-  TFile *f_cafana_all_prop_mec = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Nov2020/CAFAna_numu_disapp_allowed_mec.root");
+  TFile *f_cafana_exc_prop     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Nov2020/CAFAna_numu_disapp_exclusion.root");
+  TFile *f_cafana_exc_fixed    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Feb2021/CAFAna_numu_dissapp_exclusion.root");
+  TFile *f_cafana_all_prop     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Nov2020/CAFAna_numu_disapp_allowed.root");
+  TFile *f_cafana_exc_prop_mec = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Nov2020/CAFAna_numu_disapp_exclusion_mec.root");
+  TFile *f_cafana_all_prop_mec = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/data/sbn/CAFAna/Nov2020/CAFAna_numu_disapp_allowed_mec.root");
   
-  std::string location = "/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Feb2021/output/";
+  std::string location = "/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/numu_disappearance/Feb2021/output/";
   
   // 
   // Global style settings

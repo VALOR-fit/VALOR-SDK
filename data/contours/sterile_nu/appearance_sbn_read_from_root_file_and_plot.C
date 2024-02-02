@@ -8,18 +8,18 @@
 {
 
   TFile * f              = new TFile("./old_sterile_3p1_limits.root","read");
-  TFile *f_syst_03d1     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/output_contours_as_graphs_nue_app_03d1.root"); 
-  TFile *f_syst_03d1_all = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/output_contours_as_graphs_nue_app_03d1_dmsq_1.32_sinsq2th_0.003.root");
-  TFile *f_stat_all      = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/output_contours_as_graphs_nue_app_stat_dmsq_1.32_sinsq2th_0.003.root");
+  TFile *f_syst_03d1     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/output_contours_as_graphs_nue_app_03d1.root"); 
+  TFile *f_syst_03d1_all = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/output_contours_as_graphs_nue_app_03d1_dmsq_1.32_sinsq2th_0.003.root");
+  TFile *f_stat_all      = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/03d1/output_contours_as_graphs_nue_app_stat_dmsq_1.32_sinsq2th_0.003.root");
 
   // Updated POT:
   //    SBND   = 10e20
   //    ICARUS = 14e20
   //
-  TFile *f_syst_sbnPOT  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-nue-app-2020a1-03d1-newpot_contours_as_graphs.root");
-  TFile *f_syst_2detPOT = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-nue-app-2020a1-03d1-newpot-nd-fd_contours_as_graphs.root");
+  TFile *f_syst_sbnPOT  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-nue-app-2020a1-03d1-newpot_contours_as_graphs.root");
+  TFile *f_syst_2detPOT = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-nue-app-2020a1-03d1-newpot-nd-fd_contours_as_graphs.root");
 
-  std::string location = "/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/output/";
+  std::string location = "/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/tn_2022/output/";
   
   // 
   // Global style settings

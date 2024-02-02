@@ -22,15 +22,15 @@
   TFile * f = new TFile("./sterile_3p1_limits.root","read");
   
   // Standard analysis
-  TFile *f_stat_nd     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-only-2020a1-nd_contours_as_graphs.root","read");
-  TFile *f_stat_fd     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-only-2020a1-fd_contours_as_graphs.root","read");
-  TFile *f_stat_nd_fd  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-only-2020a1-nd-fd_contours_as_graphs.root","read");
-  TFile *f_stat        = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/inclusive/stat-only-2020a1_contours_as_graphs.root","read");
+  TFile *f_stat_nd     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-only-2020a1-nd_contours_as_graphs.root","read");
+  TFile *f_stat_fd     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-only-2020a1-fd_contours_as_graphs.root","read");
+  TFile *f_stat_nd_fd  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-only-2020a1-nd-fd_contours_as_graphs.root","read");
+  TFile *f_stat        = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/inclusive/stat-only-2020a1_contours_as_graphs.root","read");
 
-  TFile *f_syst_nd     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-syst-2020a1-03c1-nd_contours_as_graphs.root","read");
-  TFile *f_syst_fd     = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-syst-2020a1-03c1-fd_contours_as_graphs.root","read");
-  TFile *f_syst_nd_fd  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/oldpot/stat-syst-numu-disapp-2020a1-oldpot_contours_as_graphs.root","read");
-  TFile *f_syst        = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/inclusive/stat-syst-2020a1-03c1_contours_as_graphs.root","read");
+  TFile *f_syst_nd     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-syst-2020a1-03c1-nd_contours_as_graphs.root","read");
+  TFile *f_syst_fd     = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/detectors/stat-syst-2020a1-03c1-fd_contours_as_graphs.root","read");
+  TFile *f_syst_nd_fd  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/oldpot/stat-syst-numu-disapp-2020a1-oldpot_contours_as_graphs.root","read");
+  TFile *f_syst        = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/thesis/inclusive/stat-syst-2020a1-03c1_contours_as_graphs.root","read");
 
   // POTs
   //    New
@@ -40,25 +40,25 @@
   //    Low
   //    SBND   = 1e20
   //    ICARUS = 5e20
-  TFile *f_stat_lowPOT_nd_fd = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-only-2020a1-lowpot-nd-fd_contours_as_graphs.root","read");
-  TFile *f_stat_newPOT_nd_fd = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-only-2020a1-newpot-nd-fd_contours_as_graphs.root","read");
+  TFile *f_stat_lowPOT_nd_fd = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-only-2020a1-lowpot-nd-fd_contours_as_graphs.root","read");
+  TFile *f_stat_newPOT_nd_fd = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-only-2020a1-newpot-nd-fd_contours_as_graphs.root","read");
   
-  //TFile *f_syst_lowPOT_nd    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-syst-numu-disapp-2020a1-03d1-lowpot-nd_contours_as_graphs.root","read");
-  //TFile *f_syst_lowPOT_fd    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-syst-numu-disapp-2020a1-03d1-lowpot-fd_contours_as_graphs.root","read");
-  TFile *f_syst_lowPOT_nd_fd = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-syst-numu-disapp-2020a1-03d1-lowpot-nd-fd_contours_as_graphs.root","read");
-  //TFile *f_syst_lowPOT       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-syst-numu-disapp-2020a1-03d1-lowpot_contours_as_graphs.root","read");
+  //TFile *f_syst_lowPOT_nd    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-syst-numu-disapp-2020a1-03d1-lowpot-nd_contours_as_graphs.root","read");
+  //TFile *f_syst_lowPOT_fd    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-syst-numu-disapp-2020a1-03d1-lowpot-fd_contours_as_graphs.root","read");
+  TFile *f_syst_lowPOT_nd_fd = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-syst-numu-disapp-2020a1-03d1-lowpot-nd-fd_contours_as_graphs.root","read");
+  //TFile *f_syst_lowPOT       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/lowpot/stat-syst-numu-disapp-2020a1-03d1-lowpot_contours_as_graphs.root","read");
   
-  TFile *f_syst_newPOT_nd    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-03d1-newpot-nd_contours_as_graphs.root","read");
-  TFile *f_syst_newPOT_fd    = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-03d1-newpot-fd_contours_as_graphs.root","read");
-  TFile *f_syst_newPOT_nd_fd = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-03d1-newpot-nd-fd_contours_as_graphs.root","read");
-  TFile *f_syst_newPOT       = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-03d1-newpot_contours_as_graphs.root","read");
+  TFile *f_syst_newPOT_nd    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-03d1-newpot-nd_contours_as_graphs.root","read");
+  TFile *f_syst_newPOT_fd    = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-03d1-newpot-fd_contours_as_graphs.root","read");
+  TFile *f_syst_newPOT_nd_fd = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-03d1-newpot-nd-fd_contours_as_graphs.root","read");
+  TFile *f_syst_newPOT       = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-03d1-newpot_contours_as_graphs.root","read");
   
   // 100e20 and 50e20 POT
-  TFile *f_syst_nd_fd_100e20  = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-100e20pot_contours_as_graphs.root","read");
-  TFile *f_syst_nd_fd_50e20   = new TFile("/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-50e20pot_contours_as_graphs.root","read");
+  TFile *f_syst_nd_fd_100e20  = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-100e20pot_contours_as_graphs.root","read");
+  TFile *f_syst_nd_fd_50e20   = new TFile("/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/newpot/stat-syst-numu-disapp-2020a1-50e20pot_contours_as_graphs.root","read");
 
   // Output location
-  std::string location = "/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/output/";
+  std::string location = "/exp/sbnd/app/users/rsjones/VALOR/VALOR-SBN/contours/2023/output/";
   
   // Palette
   std::vector<int> palDark{
