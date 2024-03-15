@@ -41,20 +41,72 @@ VALOR_INCLUDES := -I$(VALOR_FMWK)/src/
 
 # VALOR FMWK libraries
 #
-ifeq ("false",$(is_cln))
-  VALOR_FMWK_LIBRARIES = $(shell valor_fmwk-config --libs 2>/dev/null)
+#ifeq ("false",$(is_cln))
+#VALOR_FMWK_LIBRARIES = $(shell valor_fmwk-config --libs 2>/dev/null)
+#endif
+VALOR_FMWK_LIBRARIES := $(shell valor_fmwk-config --libs)
+
+
+#-------------------------------------------------------------------
+#                            GENIE MC
+#-------------------------------------------------------------------
+
+# Add GENIE includes and libaries for apps that depend both on GENIE and VALOR
+# GENIE needs to be enabled to compile those apps
+
+GENIE_INCLUDES  =
+GENIE_LIBRARIES =
+ 
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
+
+  VALOR_GENIE_LIBRARIES := $(shell valor_fmwk-config --glibs)
+
+  GINCLUDES  = -I$(shell genie-config --topsrcdir)
+ifdef GENIE_REWEIGHT
+  GINCLUDES += -I$(GENIE_REWEIGHT)/src
+endif
+# hack for the FNAL UPS approach
+ifdef GENIE_FQ_DIR
+  GINCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
+endif
+
+# LHAPDF
+ifeq ($(strip $(GOPT_ENABLE_LHAPDF6)),YES)
+LHAPDF_INCLUDES  += -I$(GOPT_WITH_LHAPDF6_INC)
+LHAPDF_LIBRARIES += -L$(GOPT_WITH_LHAPDF6_LIB) -lLHAPDF
+endif
+ifeq ($(strip $(GOPT_ENABLE_LHAPDF5)),YES)
+LHAPDF_INCLUDES  += -I$(GOPT_WITH_LHAPDF5_INC)
+LHAPDF_LIBRARIES += -L$(GOPT_WITH_LHAPDF5_LIB) -lLHAPDF $(FORT_LIBRARIES)
+endif
+
+ifdef GENIE
+ GLIBRARIES = $(shell genie-config --libs)
+ # Hack while GENIE_REWEIGHT independent package is not good at reporting its own libraries
+ ifdef GENIE_REWEIGHT
+   GLIBRARIES += -L$(GENIE_REWEIGHT)/lib -lGRwFwk -lGRwClc -lGRwIO
+ endif 
+endif
+
+
+GENIE_INCLUDES  = $(GINCLUDES)  $(LHAPDF_INCLUDES)
+GENIE_LIBRARIES = $(GLIBRARIES) $(LHAPDF_LIBRARIES) $(VALOR_GLIBRARIES)
+
 endif
 
 #-------------------------------------------------------------------
 #                              ROOT
 #-------------------------------------------------------------------
-
 # ROOT headers and libraries
 ROOT_FLAGS  = $(shell root-config --cflags)
 ROOT_INCLUDES  = -I$(shell root-config --incdir)
 ROOT_LIBRARIES = $(shell root-config --glibs) -lMinuit -lMinuit2 -lMathMore -lXMLIO -lXMLParser
 ROOT_CINT_FLAGS = -c -p
 ROOT_CINT_FLAGS = 
+
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
+  ROOT_LIBRARIES += -lEGPythia6 -lGeom -lGenVector
+endif
 
 # If ROOT doesn't specify a C++ standard, use 0x:
 ifeq (,$(findstring -std=,$(ROOT_FLAGS)))
@@ -87,6 +139,8 @@ endif
 LOG_INCLUDES  := -I$(LOG_INC_DIR)
 LOG_LIBRARIES := -L$(LOG_LIB_DIR) -llog4cpp
 
+
+
 #-------------------------------------------------------------------
 #                             GSL
 #-------------------------------------------------------------------
@@ -103,71 +157,6 @@ ifneq ($(OPT_WITH_GSL_LIB),)
   GSL_LIBRARIES  := -L$(OPT_WITH_GSL_LIB)
 else
   GSL_LIBRARIES  := 
-endif
-
-#-------------------------------------------------------------------
-#                            GENIE MC
-#-------------------------------------------------------------------
-
-ifeq ("YES","$(OPT_ENABLE_GENIE)")
-
-# extra GENIE/Generator includes
-  GENIE_INCLUDES = -I$(shell genie-config --topsrcdir)
-
-# extra GENIE/Reweight includes
-ifdef GENIE_REWEIGHT
-  GENIE_INCLUDES += -I$(GENIE_REWEIGHT)/src
-endif
-
-# other ext includes needed for GENIE
-GENIE_OTHER_EXT_INCLUDES =
-ifdef GOPT_WITH_PYTHIA8_INC
-  GENIE_OTHER_EXT_INCLUDES += -I$(GOPT_WITH_PYTHIA8_INC) 
-endif
-ifdef GOPT_WITH_LHAPDF5_INC
-  GENIE_OTHER_EXT_INCLUDES += -I$(GOPT_WITH_LHAPDF5_INC)
-endif
-ifdef GOPT_WITH_LHAPDF6_INC
-  GENIE_OTHER_EXT_INCLUDES += -I$(GOPT_WITH_LHAPDF6_INC)
-endif
-
-# additional GENIE/Generator libraries
-GENIE_LIBRARIES = $(shell genie-config --libs)
-
-# additional GENIE/Reweight libraries
-# (hack while GENIE_REWEIGHT independent package is not good at reporting its own libraries)
-ifdef GENIE_REWEIGHT
-   GENIE_LIBRARIES += -L$(GENIE_REWEIGHT)/lib -lGRwFwk -lGRwClc -lGRwIO
-endif
-
-# additional ROOT libraries needed with GENIE
-ROOT_LIBRARIES += -lEGPythia6 -lGeom -lGenVector
-
-# additional VALOR libraries that use GENIE
-ifeq ("false",$(is_cln))
-  VALOR_FMWK_LIBRARIES += $(shell valor_fmwk-config --glibs)
-endif
-
-# other ext libraries needed for GENIE
-GENIE_OTHER_EXT_LIBRARIES =
-ifdef GOPT_WITH_PYTHIA6_LIB
-  GENIE_OTHER_EXT_LIBRARIES += -L$(GOPT_WITH_PYTHIA6_LIB) -lPythia6
-endif
-ifdef GOPT_WITH_PYTHIA8_LIB
-# blah
-endif
-ifdef GOPT_WITH_LHAPDF5_LIB
-# blah
-endif
-ifdef GOPT_WITH_LHAPDF6_LIB
-  GENIE_OTHER_EXT_LIBRARIES += -L$(GOPT_WITH_LHAPDF6_LIB) -lLHAPDF
-endif
-
-endif # OPT_ENABLE_GENIE
-
-# hack for the FNAL UPS approach
-ifdef GENIE_FQ_DIR
-  GENIE_INCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
 endif
 
 #-------------------------------------------------------------------
@@ -418,18 +407,16 @@ INCLUDES  := $(VALOR_INCLUDES) \
              $(LOG_INCLUDES) \
              $(ROOT_INCLUDES) \
              $(GSL_INCLUDES) \
-             $(GENIE_OTHER_EXT_INCLUDES) \
              $(LINUX_SYS_INCLUDES)
 
 LIBRARIES := $(SYSLIBS) \
-	     $(VALOR_APP_LIBRARIES) \
 	     $(VALOR_FMWK_LIBRARIES) \
-             $(GENIE_LIBRARIES) \
+	     $(VALOR_GENIE_LIBRARIES) \
+	     $(GENIE_LIBRARIES) \
 	     $(LOG_LIBRARIES) \
 	     $(ROOT_LIBRARIES) \
 	     $(GPROF_LIBRARIES) \
 	     $(GSL_LIBRARIES) \
-             $(GENIE_OTHER_EXT_LIBRARIES) \
 	     $(OPT_WITH_MISC_LIBS)
 
 # Default compiler and preprocessor flags
