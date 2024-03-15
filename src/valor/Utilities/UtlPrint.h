@@ -23,6 +23,7 @@
 
 #include "TVector.h"
 #include "TMatrixD.h"
+#include "TString.h"
 #include "valor/Conventions/PhysParamId.h"
 
 namespace valor {

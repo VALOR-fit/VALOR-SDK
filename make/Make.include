@@ -4,6 +4,10 @@
 
 include $(VALOR_FMWK)/make/Make.config
 
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
+include $(GENIE)/src/make/Make.config
+endif
+
 ifndef OPT_WITH_CXX_USERDEF_FLAGS
  OPT_WITH_CXX_USERDEF_FLAGS=
 endif
@@ -37,24 +41,57 @@ VALOR_INCLUDES := -I$(VALOR_FMWK)/src/
 
 # VALOR FMWK libraries
 #
-ifeq ("false",$(is_cln))
-  VALOR_FMWK_LIBRARIES = $(shell valor_fmwk-config --libs 2>/dev/null)
-endif
+#ifeq ("false",$(is_cln))
+#VALOR_FMWK_LIBRARIES = $(shell valor_fmwk-config --libs 2>/dev/null)
+#endif
+VALOR_FMWK_LIBRARIES := $(shell valor_fmwk-config --libs)
 
 
 #-------------------------------------------------------------------
 #                            GENIE MC
 #-------------------------------------------------------------------
-ifeq ("YES","$(OPT_ENABLE_GENIE)")
-  GENIE_INCLUDES  = -I$(shell genie-config --topsrcdir)
-ifdef GENIE_REWEIGHT
-  GENIE_INCLUDES += -I$(GENIE_REWEIGHT)/src
-endif
-endif
 
+# Add GENIE includes and libaries for apps that depend both on GENIE and VALOR
+# GENIE needs to be enabled to compile those apps
+
+GENIE_INCLUDES  =
+GENIE_LIBRARIES =
+ 
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
+
+  VALOR_GENIE_LIBRARIES := $(shell valor_fmwk-config --glibs)
+
+  GINCLUDES  = -I$(shell genie-config --topsrcdir)
+ifdef GENIE_REWEIGHT
+  GINCLUDES += -I$(GENIE_REWEIGHT)/src
+endif
 # hack for the FNAL UPS approach
 ifdef GENIE_FQ_DIR
-  GENIE_INCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
+  GINCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
+endif
+
+# LHAPDF
+ifeq ($(strip $(GOPT_ENABLE_LHAPDF6)),YES)
+LHAPDF_INCLUDES  += -I$(GOPT_WITH_LHAPDF6_INC)
+LHAPDF_LIBRARIES += -L$(GOPT_WITH_LHAPDF6_LIB) -lLHAPDF
+endif
+ifeq ($(strip $(GOPT_ENABLE_LHAPDF5)),YES)
+LHAPDF_INCLUDES  += -I$(GOPT_WITH_LHAPDF5_INC)
+LHAPDF_LIBRARIES += -L$(GOPT_WITH_LHAPDF5_LIB) -lLHAPDF $(FORT_LIBRARIES)
+endif
+
+ifdef GENIE
+ GLIBRARIES = $(shell genie-config --libs)
+ # Hack while GENIE_REWEIGHT independent package is not good at reporting its own libraries
+ ifdef GENIE_REWEIGHT
+   GLIBRARIES += -L$(GENIE_REWEIGHT)/lib -lGRwFwk -lGRwClc -lGRwIO
+ endif 
+endif
+
+
+GENIE_INCLUDES  = $(GINCLUDES)  $(LHAPDF_INCLUDES)
+GENIE_LIBRARIES = $(GLIBRARIES) $(LHAPDF_LIBRARIES) $(VALOR_GLIBRARIES)
+
 endif
 
 #-------------------------------------------------------------------
@@ -373,34 +410,14 @@ INCLUDES  := $(VALOR_INCLUDES) \
              $(LINUX_SYS_INCLUDES)
 
 LIBRARIES := $(SYSLIBS) \
-	     $(VALOR_APP_LIBRARIES) \
 	     $(VALOR_FMWK_LIBRARIES) \
+	     $(VALOR_GENIE_LIBRARIES) \
+	     $(GENIE_LIBRARIES) \
 	     $(LOG_LIBRARIES) \
 	     $(ROOT_LIBRARIES) \
 	     $(GPROF_LIBRARIES) \
 	     $(GSL_LIBRARIES) \
 	     $(OPT_WITH_MISC_LIBS)
-
-# Add GENIE includes and libaries for apps that depend both on GENIE and VALOR
-# GENIE needs to be enabled to compile those apps
-#
-
-#ifeq(, $(shell which genie-config))
-ifdef GENIE
- GLIBRARIES = $(shell genie-config --libs)
- 
- # Hack while GENIE_REWEIGHT independent package is not good at reporting its own libraries
- ifdef GENIE_REWEIGHT
-   GLIBRARIES += -L$(GENIE_REWEIGHT)/lib -lGRwFwk -lGRwClc -lGRwIO
- endif
- 
- GINCLUDES  = $(GENIE_INCLUDES)
- GINCLUDES  := $(GINCLUDES) $(INCLUDES)
- GLIBRARIES := $(LIBRARIES) $(GLIBRARIES) $(LIBRARIES)
- ifeq ("false",$(is_cln))
-  VALOR_GLIBRARIES := $(shell valor_fmwk-config --glibs)
- endif
-endif
 
 # Default compiler and preprocessor flags
 

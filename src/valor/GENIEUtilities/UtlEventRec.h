@@ -33,6 +33,8 @@ namespace genie {
   class EventRecord;
 }
 
+using namespace std;
+
 namespace valor {
 namespace util {
   
