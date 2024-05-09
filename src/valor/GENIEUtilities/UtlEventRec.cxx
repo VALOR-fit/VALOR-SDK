@@ -27,7 +27,7 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 using namespace valor;
 
-bool valor::util::GetHadronicSystems(const genie::EventRecord * event, vector<int> & prim_had_syst, vector<int> & final_had_syst) 
+bool valor::util::GetHadronicSystems(const genie::EventRecord * event, std::vector<int> & prim_had_syst, std::vector<int> & final_had_syst) 
 {
   // Function adapted from GENIE app gNtpConv (GST).
   prim_had_syst .clear();
@@ -119,7 +119,7 @@ bool valor::util::GetHadronicSystems(const genie::EventRecord * event, vector<in
     // if coherent or free nucleon target set primary states equal to final states
     genie::GHepParticle * target = event->Particle(1);
     if(!genie::pdg::IsIon(target->Pdg()) || (is_coh)) {
-      vector<int>::const_iterator hiter = final_had_syst.begin();
+      std::vector<int>::const_iterator hiter = final_had_syst.begin();
       for( ; hiter != final_had_syst.end(); ++hiter) {
         prim_had_syst.push_back(*hiter);
       }
@@ -201,8 +201,8 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
     return conv::kmUndefined;
     }*/
   
-  vector<int> primary_hadr_system;
-  vector<int> final_hadr_system;
+  std::vector<int> primary_hadr_system;
+  std::vector<int> final_hadr_system;
   
   GetHadronicSystems(event,primary_hadr_system,final_hadr_system);
   
@@ -221,7 +221,7 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
   
   std::vector<const genie::GHepParticle*> unknown_particles;
   
-  const vector<int> & hadr_system = (use_final_state ? final_hadr_system : primary_hadr_system);
+  const std::vector<int> & hadr_system = (use_final_state ? final_hadr_system : primary_hadr_system);
   // We exclude states with the right number of pions but other mesons.
   
 
@@ -265,7 +265,7 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
   bool is_ccnuel   = (is_NuEEl && is_CC);
   bool is_ncnuel   = (is_NuEEl && is_NC);
   
-  vector<conv::ReacMode_t> modes;
+  std::vector<conv::ReacMode_t> modes;
   
   // First do exclusive modes
   if(is_numu) {
