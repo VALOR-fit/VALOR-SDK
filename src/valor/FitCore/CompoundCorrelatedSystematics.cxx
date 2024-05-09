@@ -46,22 +46,22 @@ CompoundCorrelatedSystematics::CompoundCorrelatedSystematics(unsigned int n_cov_
 void CompoundCorrelatedSystematics::CompoundInit(unsigned int n_cov_matrices, const CorrelatedSystematics * const * syst_objs, string xml_node_name)
 {
   // Count how many total elements we have
-  LOG("CompoundCorrelatedSystematics",pNOTICE) << "Initialising a Compound matrix "<<fName<<" from "<<n_cov_matrices<<" smaller matrices";
+  VLOG("CompoundCorrelatedSystematics",pNOTICE) << "Initialising a Compound matrix "<<fName<<" from "<<n_cov_matrices<<" smaller matrices";
   unsigned int total_elements = 0;
   for (unsigned int icov = 0 ; icov < n_cov_matrices ; icov++) {
     const CorrelatedSystematics * corr = syst_objs[icov];
     if (!corr) {
-      LOG("CompoundCorrelatedSystematics",pFATAL) << "Failed to read CorrelatedSystematics object "<<icov;
+      VLOG("CompoundCorrelatedSystematics",pFATAL) << "Failed to read CorrelatedSystematics object "<<icov;
       util::Die(-1);return;
     }
     if (!(corr->IsConfigured())) {
-      LOG("CompoundCorrelatedSystematics",pFATAL) << "CorrelatedSystematics object is not configured properly - "<<corr->GetName()<<"("<<icov<<")";
+      VLOG("CompoundCorrelatedSystematics",pFATAL) << "CorrelatedSystematics object is not configured properly - "<<corr->GetName()<<"("<<icov<<")";
       util::Die(-1);return;
     }
     total_elements += corr->Size();
   } // icov
   
-  LOG("CompoundCorrelatedSystematics",pDEBUG) << "New CompoundCorrelatedSystematics contains "<<total_elements<<" parameters.";
+  VLOG("CompoundCorrelatedSystematics",pDEBUG) << "New CompoundCorrelatedSystematics contains "<<total_elements<<" parameters.";
   
   std::vector<const TMatrixD *> all_cov_matrices;
   std::vector<const TVectorD *> all_untuned_vectors;

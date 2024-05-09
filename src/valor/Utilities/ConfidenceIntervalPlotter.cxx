@@ -85,7 +85,7 @@ ConfidenceIntervalPlotter::~ConfidenceIntervalPlotter()
 // Add a dataset to the plot, generate the confidence interval and set the plotting information
 void ConfidenceIntervalPlotter::Add(string in_file_name = "", string confidence = "90 %")
 {
-    LOG("Messenger", pNOTICE) << " \n Adding dataset " << in_file_name;
+    VLOG("Messenger", pNOTICE) << " \n Adding dataset " << in_file_name;
     ConfidenceInterval *conf = new ConfidenceInterval(in_file_name.c_str(), confidence, param_x, param_y, avg_delta_chi2, find_delta);
     TObjArray *graph_array = new TObjArray();
     graph_array = conf->GetConfidenceInterval();
@@ -149,7 +149,7 @@ void ConfidenceIntervalPlotter::Add(string in_file_name = "", string confidence 
     }
 
     delete conf;
-    LOG("Messenger", pINFO) << "Finished adding dataset " << in_file_name;
+    VLOG("Messenger", pINFO) << "Finished adding dataset " << in_file_name;
 }
 
 
@@ -158,7 +158,7 @@ void ConfidenceIntervalPlotter::Add(string in_file_name = "", string confidence 
 void ConfidenceIntervalPlotter::Draw(TCanvas *canvas)
 {
     // Draw the axes and titles
-    LOG("Messenger", pNOTICE) << "Drawing all added confidence intervals";
+    VLOG("Messenger", pNOTICE) << "Drawing all added confidence intervals";
     canvas->cd();
     frame = canvas->DrawFrame(limits[0], limits[2], limits[1], limits[3], titles.c_str());
 
@@ -202,7 +202,7 @@ void ConfidenceIntervalPlotter::Draw(TCanvas *canvas)
     leg->Draw();
 
     canvas->Update();
-    LOG("Messenger", pINFO) << "Finished drawing all added confidence intervals";
+    VLOG("Messenger", pINFO) << "Finished drawing all added confidence intervals";
 }
 
 

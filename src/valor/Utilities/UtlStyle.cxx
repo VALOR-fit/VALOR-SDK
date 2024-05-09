@@ -217,10 +217,10 @@ void util::PrintBanner(string filename, UInt_t wait_msec)
 //___________________________________________________________________________
 void util::Verbosity(string filename)
 {
-  Messenger * msg = Messenger::Instance();
+  valor::Messenger * msg = valor::Messenger::Instance();
   bool ok = msg->Configure(filename);
   if(!ok) {
-    LOG("Style",pWARN) << "Couldn't set verbosity levels from: " << filename;
+    VLOG("Style",pWARN) << "Couldn't set verbosity levels from: " << filename;
   }
 }
 //___________________________________________________________________________

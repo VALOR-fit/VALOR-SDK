@@ -50,7 +50,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   
   FileStat_t dummy;
   if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-    LOG("Binning", pERROR) << "Binning file not found: " << file;
+    VLOG("Binning", pERROR) << "Binning file not found: " << file;
     util::Die(1); return false;
   }
 
@@ -58,7 +58,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
   if (xmldoc==0) {
-    LOG("Binning",pERROR) 
+    VLOG("Binning",pERROR) 
         << "Can not parse input XML file [" << ts_file << "]";
     delete xml;
     util::Die(1); return false;
@@ -69,11 +69,11 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   string space = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"space"));
   fKineSpace = util::KineSpaceFromString(space);
   if(fKineSpace == conv::kspUndefined) {
-    LOG("Binning", pERROR) 
+    VLOG("Binning", pERROR) 
       << "Undefined kinematical space: " << space;
     return false;
   }
-  LOG("Binning", pNOTICE) 
+  VLOG("Binning", pNOTICE) 
     << "Kinematic space: " << util::AsString(fKineSpace);
 
   //
@@ -92,7 +92,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   //
   string type = util::RemoveAllWhitespace(util::XML2String(xml,root_node,"type"));
   if(type != "edge-to-edge") {
-    LOG("Binning", pERROR) 
+    VLOG("Binning", pERROR) 
       << "Input binning scheme [" << type << "] not `edge-to-edge'";
     return false;
   }
@@ -111,7 +111,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
         
     fNBins *= nbins_this_dim;
 
-    LOG("Binning", pINFO) 
+    VLOG("Binning", pINFO) 
         << "Dimension: " << idim << " (variable: " 
         << kine_var_str << ") -> bin size: `" << bin_size << "'";
 
@@ -121,7 +121,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
       vector<double> range = util::XML2DblArray(
          xml,root_node,Form("%s_binning/range",kine_var_ccs));
       if(range.size() != 2) {
-         LOG("Binning", pERROR) 
+         VLOG("Binning", pERROR) 
            << "No range `min,max' was specified for dimension: " << idim;
          return false;
       }
@@ -143,7 +143,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
       vector<double> bin_edges = util::XML2DblArray(
          xml,root_node,Form("%s_binning/bin_edges",kine_var_ccs));
       if(bin_edges.size() != nbins_this_dim+1) {
-         LOG("Binning", pERROR) 
+         VLOG("Binning", pERROR) 
            << bin_edges.size() << " bin edges were specified for the " 
            << nbins_this_dim << " bins in dimension " << idim;
          return false;
@@ -155,7 +155,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
     } 
 
     else {
-      LOG("Binning", pERROR) 
+      VLOG("Binning", pERROR) 
          << "Bin size is neither `fixed' nor `variable'";
       return false;
     }
@@ -191,7 +191,7 @@ bool KBCubHcmbEdge2Edge::Read(string file)
   for (unsigned int i = 0 ; i < this->NDimensions() ; i++) {
     binning_print<< "("<<this->Minimum(i)<<" < "<<util::AsString(this->KineVar(i))<<" < "<<this->Maximum(i)<<") ";
   }
-  LOG("Binning", pNOTICE) << binning_print.str();
+  VLOG("Binning", pNOTICE) << binning_print.str();
    
   xml->FreeDoc(xmldoc);
   delete xml;
@@ -234,7 +234,7 @@ VALORBinning* KBCubHcmbEdge2Edge::Contract(conv::KineSpace_t ks) const
    }
    if(i != binning->fNDimensions)
    {
-     LOG("KBCubHcmbEdge2Edge",pFATAL) << "Wrong number of kinevars stored in contracted binning scheme.";
+     VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Wrong number of kinevars stored in contracted binning scheme.";
      util::Die(-1) ; return nullptr;
    }
 
@@ -308,7 +308,7 @@ unsigned int KBCubHcmbEdge2Edge::NBins(conv::KineVar_t kv, const std::map<conv::
 bool KBCubHcmbEdge2Edge::FixedWidth(unsigned int dimension) const
 {
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
     util::Die(-1) ; return false;
   }
   return fFixedWidth[dimension];
@@ -334,11 +334,11 @@ double KBCubHcmbEdge2Edge::BinMinimum(
   unsigned int linearized_bin, unsigned int dimension) const
 {
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
     util::Die(-1) ; return false;
   }
   if (linearized_bin >= this->NBins()) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
     util::Die(-1) ; return false;
   }
   const unsigned int & bin = fBin1DArrs[dimension][linearized_bin];
@@ -351,11 +351,11 @@ double KBCubHcmbEdge2Edge::BinMinimum(
 {
   const unsigned int & dimension = this->Dimension(kv);
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
     util::Die(-1) ; return false;
   }
   if (linearized_bin >= this->NBins()) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
     util::Die(-1) ; return false;
   }
   const unsigned int & bin = fBin1DArrs[dimension][linearized_bin];
@@ -367,11 +367,11 @@ double KBCubHcmbEdge2Edge::BinMaximum(
   unsigned int linearized_bin, unsigned int dimension) const
 {
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
     util::Die(-1) ; return false;
   }
   if (linearized_bin >= this->NBins()) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
     util::Die(-1) ; return false;
   }
   const unsigned int & bin = fBin1DArrs[dimension][linearized_bin];
@@ -384,11 +384,11 @@ double KBCubHcmbEdge2Edge::BinMaximum(
 {
   const unsigned int & dimension = this->Dimension(kv);
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
     util::Die(-1) ; return false;
   }
   if (linearized_bin >= this->NBins()) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
     util::Die(-1) ; return false;
   }
   const unsigned int & bin = fBin1DArrs[dimension][linearized_bin];
@@ -400,12 +400,12 @@ const vector<double> & KBCubHcmbEdge2Edge::BinRange(
   unsigned int linearized_bin, unsigned int dimension) const
 {
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension. Input dimension = " << dimension
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension. Input dimension = " << dimension
                                      << "; binning kine space = " << util::AsString(this->KineSpace());
     util::Die(-1) ; return fBinRanges[0][0];
   }
   if (linearized_bin >= this->NBins()) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad linearized bin: " << linearized_bin;
     util::Die(-1) ; return fBinRanges[0][0];
   }
   const unsigned int & bin = fBin1DArrs[dimension][linearized_bin];
@@ -472,7 +472,7 @@ vector<double> KBCubHcmbEdge2Edge::BinCentre(unsigned int linearized_bin) const
 const double * KBCubHcmbEdge2Edge::BinEdgeArr(unsigned int dimension) const
 {
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << "Bad dimension.";
     util::Die(-1) ; return NULL;
   }
   return fBinEdges[dimension].data();
@@ -519,14 +519,14 @@ vector<unsigned int> KBCubHcmbEdge2Edge::FindBin1DArr(const vector<double> & xar
 {
   vector<unsigned int> binarr;
   if (xarr.size() != fNDimensions) {
-    LOG("KBCubHcmbEdge2Edge",pFATAL) << fName<<" Vector has wrong dimension, got "<<xarr.size()<<", need "<<fNDimensions;
+    VLOG("KBCubHcmbEdge2Edge",pFATAL) << fName<<" Vector has wrong dimension, got "<<xarr.size()<<", need "<<fNDimensions;
     util::Die(-1) ; return binarr;
   }
   binarr.reserve(fNDimensions);
   for(unsigned int idim = 0; idim < fNDimensions; idim++) {
     double x = xarr[idim];
     binarr[idim] = this->FindBin1D(x,idim);
-    LOG("Binning", pDEBUG) 
+    VLOG("Binning", pDEBUG) 
      << "dim = " << idim << ", value = " << x << " -> bin = " << binarr[idim];
   }
   return binarr;
@@ -582,7 +582,7 @@ std::vector<TLine>  KBCubHcmbEdge2Edge::GetBinningTLines(void) const
     }
   }
   else {
-    LOG("KBCubHcmbMondrian",pWARN) << "GetBinningTLines can only be used with 2D binnings.";
+    VLOG("KBCubHcmbMondrian",pWARN) << "GetBinningTLines can only be used with 2D binnings.";
   }
   return lines;
 }

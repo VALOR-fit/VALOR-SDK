@@ -34,7 +34,7 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
 {
    const conv::PhysHypothesis_t hyp_id = fpl.PhysicsHypothesis();
    if(hyp_id == conv::kHypUndefined) {
-      LOG("UtlOscillation", pFATAL) << "Could not get a physics hypothesis from the input FitParamList";
+      VLOG("UtlOscillation", pFATAL) << "Could not get a physics hypothesis from the input FitParamList";
       util::Die(-1);
    }
    const PhysHypothesis hyp(hyp_id);
@@ -49,7 +49,7 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
       if(fpl.Exists(p))
       {
          if(!ParameterPool::Instance()->IsParamInPool(p)) {
-            LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
+            VLOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
                                           << "\' was in the FPL but not the ParameterPool";
             util::Die(-1);
          }
@@ -62,7 +62,7 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
             fpl.Update(p, fix_value);
             fpl.SetInitValue(p, fix_value);
             fpl.FixParameter(p);
-            LOG("UtlOscillation", pNOTICE) << "Setting fixed parameter "
+            VLOG("UtlOscillation", pNOTICE) << "Setting fixed parameter "
                                            << util::NameRegistry::Instance()->ParamAsString(p) << " := " << fix_value;
          }
          else if(free_param1 == simple_name ||
@@ -82,7 +82,7 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
                else
                {
       
-                  LOG("UtlOscillation", pERROR) << "--fit-param2 specified " <<
+                  VLOG("UtlOscillation", pERROR) << "--fit-param2 specified " <<
                      "without accompanying --fit-param2-value.";
                   exit(1);
                }
@@ -90,13 +90,13 @@ void SetOscillationParameters(CmdLnArgList& arg, FitParamList& fpl)
             fpl.Update(p, free_value);
             fpl.SetInitValue(p, free_value);
             fpl.FreeParameter(p);
-            LOG("UtlOscillation", pNOTICE) << "Setting free parameter " <<
+            VLOG("UtlOscillation", pNOTICE) << "Setting free parameter " <<
               util::NameRegistry::Instance()->ParamAsString(p) << " := " << free_value;
          }
          else
          {
             fpl.SetDoMarg(p, true);
-            LOG("UtlOscillation", pNOTICE) << "Setting marginalised parameter " <<
+            VLOG("UtlOscillation", pNOTICE) << "Setting marginalised parameter " <<
               util::NameRegistry::Instance()->ParamAsString(p);
          }
       }
@@ -131,7 +131,7 @@ void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
       if (gSystem->GetPathInfo(files_with_priors[i].c_str(), dummy)){
          files_with_priors[i] = prior_file_names[i].c_str();
          if (gSystem->GetPathInfo(files_with_priors[i].c_str(), dummy)) {
-            LOG("UtlOscillation", pERROR) << "Prior config file not found: " << prior_file_names[i];
+            VLOG("UtlOscillation", pERROR) << "Prior config file not found: " << prior_file_names[i];
             exit(1);
          }
       }
@@ -140,13 +140,13 @@ void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
       TXMLEngine* xmleng = new TXMLEngine;
       XMLDocPointer_t xmldoc = xmleng->ParseFile(files_with_priors[i].c_str());
       if (xmldoc==0){
-         LOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << files_with_priors[i] << "]";
+         VLOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << files_with_priors[i] << "]";
          exit(1);
       }
 
       XMLNodePointer_t root_node = xmleng->DocGetRootElement(xmldoc);
       const char * list_name_cstr = xmleng->GetAttr(root_node,"name");
-      LOG("UtlOscillation", pNOTICE) << "Reading priors from element list named" << list_name_cstr;
+      VLOG("UtlOscillation", pNOTICE) << "Reading priors from element list named" << list_name_cstr;
 
       XMLNodePointer_t curr_node = xmleng->GetChild(root_node);
       int npriors_set = 0;
@@ -155,7 +155,7 @@ void SetParameterPriors(CmdLnArgList& arg, FitParamList& fpl)
          if(!strcmp(curr_node_name.c_str(),"prior")){
             bool success = util::oscillation::SetSinglePrior(xmleng,curr_node,fpl);
             if (!success){
-               LOG("UtlOscillation", pERROR) << "Failed to read prior list. Exiting.";
+               VLOG("UtlOscillation", pERROR) << "Failed to read prior list. Exiting.";
                exit(1);
             }
             npriors_set++;
@@ -209,7 +209,7 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
             if(curr_node_name == "hist_name") { prior_attribute3 = content; }
          }
          else {
-            LOG("UtlOscillation", pERROR) << "Could not understand the prior type [" << prior_type << "]";
+            VLOG("UtlOscillation", pERROR) << "Could not understand the prior type [" << prior_type << "]";
             exit(1);
          }
       }
@@ -218,15 +218,15 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
 
    // Check that we read the correct number of attributes for each prior type
    if(prior_type == "flat" && (prior_attribute1 == "" || prior_attribute2 == "" || prior_attribute3 != "")) {
-      LOG("UtlOscillation", pERROR) << "Something went wrong when setting the flat prior named [" << param_names << "]";
+      VLOG("UtlOscillation", pERROR) << "Something went wrong when setting the flat prior named [" << param_names << "]";
       exit(1);
    }
    else if(prior_type == "gaus" && (prior_attribute1 == "" || prior_attribute2 == "" || prior_attribute3 != "")) {
-      LOG("UtlOscillation", pERROR) << "Something went wrong when setting the Gaussian prior named [" << param_names << "]";
+      VLOG("UtlOscillation", pERROR) << "Something went wrong when setting the Gaussian prior named [" << param_names << "]";
       exit(1);
    }
    else if(prior_type == "user" && (prior_attribute1 == "" || prior_attribute2 == "" || prior_attribute3 == "")) {
-      LOG("UtlOscillation", pERROR) << "Something went wrong when setting the user prior named [" << param_names << "]";
+      VLOG("UtlOscillation", pERROR) << "Something went wrong when setting the user prior named [" << param_names << "]";
       exit(1);
    }
 
@@ -238,7 +238,7 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
       param_name = util::RemoveAllWhitespace(param_name);
       conv::PhysParamId_t p = nr->PhysParamFromString(param_name);
       if(p == conv::kPhypUndefined) {
-         LOG("UtlOscillation", pERROR) << "Could not parse parameter [" << param_name << "]";
+         VLOG("UtlOscillation", pERROR) << "Could not parse parameter [" << param_name << "]";
          exit(1);
       }
       params.push_back(p);
@@ -252,18 +252,18 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
       schemes.push_back(scheme_name);
    }
    if(schemes.size() != params.size()) {
-      LOG("UtlOscillation", pERROR) << "The prior named [" << param_names
+      VLOG("UtlOscillation", pERROR) << "The prior named [" << param_names
                                     << "] has a mismatch in the number of schemes and parameters defined";
       exit(1);
    }
 
    // Check that the number of parameters is as expected
    if((prior_type == "flat" || prior_type == "gaus") && params.size() != 1) {
-      LOG("UtlOscillation", pERROR) << "The number of parameters specified for flat or Gaussian prior named [" << param_names << "] was != 1";
+      VLOG("UtlOscillation", pERROR) << "The number of parameters specified for flat or Gaussian prior named [" << param_names << "] was != 1";
       exit(1);
    }
    else if(!(params.size() == 1 || params.size() == 2)){
-      LOG("UtlOscillation", pERROR) << "The number of parameters specified for user prior named [" << param_names << "] was not 1 or 2";
+      VLOG("UtlOscillation", pERROR) << "The number of parameters specified for user prior named [" << param_names << "] was not 1 or 2";
       exit(1);
    }
 
@@ -275,7 +275,7 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
       fpl.SetMinValueFlat(params[0], low       );
       fpl.SetMaxValueFlat(params[0], high      );
       fpl.SetPriorScheme (params[0], schemes[0]);
-      LOG("UtlOscillation", pNOTICE) << "Setting flat prior for param " << param_names
+      VLOG("UtlOscillation", pNOTICE) << "Setting flat prior for param " << param_names
                                      << ": [" << low << ", " << high << "], using scheme: "
                                      << schemes[0];
    }
@@ -286,7 +286,7 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
       fpl.SetMeanGaus   (params[0], mean      );
       fpl.SetSigmaGaus  (params[0], sigma     );
       fpl.SetPriorScheme(params[0], schemes[0]);
-      LOG("UtlOscillation", pNOTICE) << "Setting Gaussian prior for param " << param_names
+      VLOG("UtlOscillation", pNOTICE) << "Setting Gaussian prior for param " << param_names
                                      << ": mean = " << mean << ", sigma = " << sigma
                                      << ", using scheme: " << schemes[0];
    }
@@ -302,21 +302,21 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
       TString base_dir = Env::Instance()->TopLevelDataDir().c_str();
       TFile* prior_root_file = new TFile((base_dir + "/" + prior_hist_file_name.c_str()).Data(), "read");
       if(!prior_root_file->IsOpen()) {
-         LOG("UtlOscillation", pERROR) << "Could not find prior hist file [" << prior_hist_file_name << "]";
+         VLOG("UtlOscillation", pERROR) << "Could not find prior hist file [" << prior_hist_file_name << "]";
          exit(1);
       }
 
       if(params.size() == 1) {
          TH1D* prior_hist = (TH1D*) prior_root_file->Get(prior_attribute3.c_str());
          if(!prior_hist) {
-            LOG("UtlOscillation", pERROR) << "Could not find 1D prior hist [" << prior_attribute3 << "] in file ["
+            VLOG("UtlOscillation", pERROR) << "Could not find 1D prior hist [" << prior_attribute3 << "] in file ["
                                           << prior_hist_file_name << "]";
             exit(1);
          }
          fpl.SetPriorMode  (params[0], "user");
          fpl.SetPriorHisto (params[0], prior_hist);
          fpl.SetPriorScheme(params[0], schemes[0]);
-         LOG("UtlOscillation", pNOTICE) << "Setting 1D hist prior for param " << param_names
+         VLOG("UtlOscillation", pNOTICE) << "Setting 1D hist prior for param " << param_names
                                         << ": file = " << prior_hist_file_name
                                         << ", using scheme: " << schemes[0];
       }
@@ -324,7 +324,7 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
          // Set the axis titles to the parameter names they correspond to, so we know which is which when we come to throw from the hist
          TH2D* prior_hist = (TH2D*) prior_root_file->Get(prior_attribute3.c_str());
          if(!prior_hist) {
-            LOG("UtlOscillation", pERROR) << "Could not find 1D prior hist [" << prior_attribute3 << "] in file ["
+            VLOG("UtlOscillation", pERROR) << "Could not find 1D prior hist [" << prior_attribute3 << "] in file ["
                                           << prior_hist_file_name << "]";
             exit(1);
          }
@@ -336,7 +336,7 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
          fpl.SetPriorMode   (params[1], "user"    );
          fpl.SetPriorHisto2D(params[1], prior_hist);
          fpl.SetPriorScheme (params[1], schemes[1]);
-         LOG("UtlOscillation", pNOTICE) << "Setting 2D hist prior for params " << param_names
+         VLOG("UtlOscillation", pNOTICE) << "Setting 2D hist prior for params " << param_names
                                         << ": file = " << prior_hist_file_name
                                         << "; Associating x-axis with " << nr->ParamAsStringVerySimple(params[0])
                                         << " (scheme = " << schemes[0] << ")"
@@ -350,7 +350,7 @@ bool SetSinglePrior(TXMLEngine* xmleng, XMLNodePointer_t top_node, FitParamList&
    if(util::IsSystematic(params[0]))
    {
       fpl.SetSystParWithNonGaussianPrior(params[0]);
-      LOG("UtlOscillation", pNOTICE) << "Setting parameter " << nr->ParamAsStringVerySimple(params[0]) << " "
+      VLOG("UtlOscillation", pNOTICE) << "Setting parameter " << nr->ParamAsStringVerySimple(params[0]) << " "
                                           << " as systematic paraemter with " << prior_type << " prior";
    }
    return true;
@@ -361,7 +361,7 @@ void ThrowOscillationParameters(FitParamList& fpl)
 {
    const conv::PhysHypothesis_t hyp_id = fpl.PhysicsHypothesis();
    if(hyp_id == conv::kHypUndefined) {
-      LOG("UtlOscillation", pFATAL) << "Could not get a physics hypothesis from the input FitParamList";
+      VLOG("UtlOscillation", pFATAL) << "Could not get a physics hypothesis from the input FitParamList";
       util::Die(-1);
    }
    const PhysHypothesis hyp(hyp_id);
@@ -387,7 +387,7 @@ void ThrowOscillationParameters(FitParamList& fpl)
 
    // Make sure we only have 0 or 2 parameters with a 2D prior hist
    if(!(pars_with_2D_prior_hists.size() == 0 || pars_with_2D_prior_hists.size() == 2)) {
-      LOG("UtlOscillation", pERROR) << "The number of osc params with 2D priors is " << pars_with_2D_prior_hists.size()
+      VLOG("UtlOscillation", pERROR) << "The number of osc params with 2D priors is " << pars_with_2D_prior_hists.size()
                                     << ". Expected either 0 or 2.";
       exit(1);
    }
@@ -457,7 +457,7 @@ double GetRandomizedParam(conv::PhysParamId_t p, FitParamList& fpl)
    string mode = fpl.GetPriorModeName(p);
 
   if(!ParameterPool::Instance()->IsParamInPool(p)) {
-     LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
+     VLOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p)
                                    << "\' was in the FPL but not the ParameterPool";
      util::Die(-1);
   }
@@ -503,7 +503,7 @@ double GetRandomizedParam(conv::PhysParamId_t p, FitParamList& fpl)
      while(value < min || value > max);
   }
   else {
-     LOG("UtlOscillation", pERROR) << "Invalid prior type, can not throw oscillation parameter, "
+     VLOG("UtlOscillation", pERROR) << "Invalid prior type, can not throw oscillation parameter, "
                                    << util::NameRegistry::Instance()->ParamAsStringVerySimple(p);
      exit(1);
   }
@@ -521,7 +521,7 @@ double GetRandomizedParam(conv::PhysParamId_t p, FitParamList& fpl)
 std::map<conv::PhysParamId_t,double> GetRandomizedParams2DCorrelated(std::pair<PhysParamId_t,PhysParamId_t> params, FitParamList& fpl)
 {
   if(!fpl.GetPriorHisto2D(params.first)) {
-     LOG("UtlOscillation", pERROR) << "No 2D prior hist associated with parameter "
+     VLOG("UtlOscillation", pERROR) << "No 2D prior hist associated with parameter "
                                    << util::NameRegistry::Instance()->ParamAsStringVerySimple(params.first);
      exit(1);
   }
@@ -536,7 +536,7 @@ std::map<conv::PhysParamId_t,double> GetRandomizedParams2DCorrelated(std::pair<P
   if     (util::NameRegistry::Instance()->ParamAsStringVerySimple(params.second) == xtitle) { xindex = 1; }
   else if(util::NameRegistry::Instance()->ParamAsStringVerySimple(params.second) == ytitle) { yindex = 1; }
   if(xindex == -1 || yindex == -1) {
-     LOG("UtlOscillation", pERROR) << "Failed to associate parameter "
+     VLOG("UtlOscillation", pERROR) << "Failed to associate parameter "
                                    << util::NameRegistry::Instance()->ParamAsStringVerySimple(params.first)
                                    << " and/or "
                                    << util::NameRegistry::Instance()->ParamAsStringVerySimple(params.second)
@@ -545,7 +545,7 @@ std::map<conv::PhysParamId_t,double> GetRandomizedParams2DCorrelated(std::pair<P
      exit(1);
   }
   if(xindex == yindex) {
-     LOG("UtlOscillation", pERROR) << "Parameters "
+     VLOG("UtlOscillation", pERROR) << "Parameters "
                                    << util::NameRegistry::Instance()->ParamAsStringVerySimple(params.first)
                                    << " and "
                                    << util::NameRegistry::Instance()->ParamAsStringVerySimple(params.second)
@@ -567,12 +567,12 @@ std::map<conv::PhysParamId_t,double> GetRandomizedParams2DCorrelated(std::pair<P
 
   // Rethrow until we get a value inside the physical limits
   if(!ParameterPool::Instance()->IsParamInPool(p0)) {
-     LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p0)
+     VLOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p0)
                                    << "\' was in the FPL but not the ParameterPool";
      util::Die(-1);
   }
    if(!ParameterPool::Instance()->IsParamInPool(p1)) {
-      LOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p1)
+      VLOG("UtlOscillation", pFATAL) << "The osc param \'" << util::NameRegistry::Instance()->ParamAsString(p1)
                                     << "\' was in the FPL but not the ParameterPool";
       util::Die(-1);
    }
@@ -613,7 +613,7 @@ PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg,string penaltyparam)
    if (gSystem->GetPathInfo(osc_file_priors.c_str(), dummy)){
        osc_file_priors = osc_prior_file_name.c_str();
        if (gSystem->GetPathInfo(osc_file_priors.c_str(), dummy)) {
-           LOG("UtlOscillation", pERROR) << "Prior config file with penalty info not found: " << osc_prior_file_name;
+           VLOG("UtlOscillation", pERROR) << "Prior config file with penalty info not found: " << osc_prior_file_name;
            exit(1);
        }
    }
@@ -622,12 +622,12 @@ PenaltyTerm SetPenaltyTermParameters(CmdLnArgList& arg,string penaltyparam)
    TXMLEngine* xmleng = new TXMLEngine;
    XMLDocPointer_t xmldoc = xmleng->ParseFile(osc_file_priors.c_str());
    if (xmldoc==0) {
-       LOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << osc_file_priors << "]";
+       VLOG("UtlOscillation", pERROR) << "Can not parse input XML file [" << osc_file_priors << "]";
        exit(1);
    }
    XMLNodePointer_t root_node = xmleng->DocGetRootElement(xmldoc);
    const char * list_name_cstr = xmleng->GetAttr(root_node,"name");
-   LOG("UtlOscillation", pNOTICE) << "Reading penalty from element list named " << list_name_cstr;
+   VLOG("UtlOscillation", pNOTICE) << "Reading penalty from element list named " << list_name_cstr;
 
    XMLNodePointer_t curr_node = xmleng->GetChild(root_node);
    int npenalty_set = 0;
@@ -659,7 +659,7 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
            string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
            if(curr_node_name == "params") { param_names = content;
                if(strcmp(penaltyparam.c_str(),param_names.c_str())!=0){
-                   LOG("Marginalisation", pERROR) << "Penalty parameter is not specified in xml file, sad it is ";
+                   VLOG("Marginalisation", pERROR) << "Penalty parameter is not specified in xml file, sad it is ";
                    exit(1);
                }
            }
@@ -684,7 +684,7 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
               if(curr_node_name == "sigma") { penalty_attribute2 = content;  }
           }
           else {
-              LOG("UtlOscillation", pERROR) << "Could not understand the prior type [" << penalty_type << "]";
+              VLOG("UtlOscillation", pERROR) << "Could not understand the prior type [" << penalty_type << "]";
               exit(1);
           }
       }
@@ -694,7 +694,7 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
    // Check that we read the correct number of attributes for each prior type
 
    if(penalty_type == "gaus" && (penalty_attribute1 == "" || penalty_attribute2 == "")) {
-       LOG("UtlOscillation", pERROR) << "Something went wrong when setting the Gaussian penalty named [" << param_names << "]";
+       VLOG("UtlOscillation", pERROR) << "Something went wrong when setting the Gaussian penalty named [" << param_names << "]";
        exit(1);
    }
    // Get the parameter(s) that we'll apply this penalty to
@@ -705,7 +705,7 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
        param_name = util::RemoveAllWhitespace(param_name);
        conv::PhysParamId_t p = nr->PhysParamFromString(param_name);
        if(p == conv::kPhypUndefined) {
-           LOG("UtlOscillation", pERROR) << "Could not parse parameter [" << param_name << "]";
+           VLOG("UtlOscillation", pERROR) << "Could not parse parameter [" << param_name << "]";
            exit(1);
        }
        params.push_back(p);
@@ -720,7 +720,7 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
    }
 
    if(schemes.size() != params.size()) {
-       LOG("UtlOscillation", pERROR) << "The prior named [" << param_names
+       VLOG("UtlOscillation", pERROR) << "The prior named [" << param_names
                                      << "] has a mismatch in the number of schemes and parameters defined";
        exit(1);
    }
@@ -729,7 +729,7 @@ PenaltyTerm SetSinglePenalty(TXMLEngine* xmleng, XMLNodePointer_t top_node, stri
    double mean  = atof(penalty_attribute1.c_str());
    double sigma = atof(penalty_attribute2.c_str());
    PenaltyTerm pval = {mean,sigma,schemes[0],param_names};
-   LOG("UtlOscillation", pNOTICE) << "Setting Gaussian penalty for param " << param_names
+   VLOG("UtlOscillation", pNOTICE) << "Setting Gaussian penalty for param " << param_names
                                        << ": mean = " << mean << ", sigma = " << sigma;
    return pval;
 }
@@ -743,7 +743,7 @@ void IncreaseFreeParameterVal(FitParamList& fpl, std::string param, double init_
    double free_value = init_val + bin*step;
    fpl.Update(p, free_value);
     
-   LOG("UtlOscillation", pDEBUG) << "Increasing free paramter " << param << " value " << free_value
+   VLOG("UtlOscillation", pDEBUG) << "Increasing free paramter " << param << " value " << free_value
                                  << " for the bin " << bin;
   }
 

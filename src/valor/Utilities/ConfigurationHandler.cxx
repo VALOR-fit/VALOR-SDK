@@ -34,7 +34,7 @@ void ConfigurationHandler::ReadAnalysis(const std::string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " << filename;
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " << filename;
       util::Die(1);
    }
 
@@ -42,7 +42,7 @@ void ConfigurationHandler::ReadAnalysis(const std::string& filename)
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" << fullFilename <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" << fullFilename <<
          "]";
       util::Die(1);
    }
@@ -73,7 +73,7 @@ void ConfigurationHandler::ReadSampleList(const std::string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " << filename;
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " << filename;
       util::Die(1);
    }
 
@@ -81,7 +81,7 @@ void ConfigurationHandler::ReadSampleList(const std::string& filename)
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" << fullFilename <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" << fullFilename <<
          "]";
       util::Die(1);
    }
@@ -128,7 +128,7 @@ void ConfigurationHandler::ReadMC(const std::string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
          filename;
       util::Die(1);
    }
@@ -137,7 +137,7 @@ void ConfigurationHandler::ReadMC(const std::string& filename)
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
          fullFilename << "]";
       util::Die(1);
    }
@@ -187,7 +187,7 @@ void ConfigurationHandler::ReadBinning(const std::string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
          filename;
       util::Die(1);
    }
@@ -196,7 +196,7 @@ void ConfigurationHandler::ReadBinning(const std::string& filename)
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
          fullFilename << "]";
       util::Die(1);
    }
@@ -230,7 +230,7 @@ void ConfigurationHandler::ReadOptimisedBinning(const std::string& filename,
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
          filename;
       util::Die(1);
    }
@@ -239,7 +239,7 @@ void ConfigurationHandler::ReadOptimisedBinning(const std::string& filename,
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
          fullFilename << "]";
       util::Die(1);
    }
@@ -260,7 +260,7 @@ void ConfigurationHandler::ReadOptimisedBinning(const std::string& filename,
       std::vector<std::string> tokens = util::Tokens(list, ",");
       if(tokens.size() != 4)
       {  // Wrong number of bin edges specified
-         LOG("ConfigurationHandler", pERROR) << "bin_" << i << " has " <<
+         VLOG("ConfigurationHandler", pERROR) << "bin_" << i << " has " <<
             tokens.size() << " edges specifed. Expected 4.";
          util::Die(1);
       }
@@ -284,7 +284,7 @@ void ConfigurationHandler::ReadSimpleBinning(const std::string& filename,
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
          filename;
       util::Die(1);
    }
@@ -293,7 +293,7 @@ void ConfigurationHandler::ReadSimpleBinning(const std::string& filename,
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
          fullFilename << "]";
       util::Die(1);
    }
@@ -328,7 +328,7 @@ void ConfigurationHandler::ReadSimpleBinning(const std::string& filename,
          std::vector<std::string> tokens = util::Tokens(edges, ",");
          if((int)tokens.size() != (nbins + 1))
          {  // Wrong number of bin edges specified
-            LOG("ConfigurationHandler", pERROR) << "bin_" << i << " has " <<
+            VLOG("ConfigurationHandler", pERROR) << "bin_" << i << " has " <<
                tokens.size() << " edges specifed. Expected 4.";
             util::Die(1);
          }
@@ -349,7 +349,7 @@ void ConfigurationHandler::ReadParameterList(const std::string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
          filename;
       util::Die(1);
    }
@@ -358,7 +358,7 @@ void ConfigurationHandler::ReadParameterList(const std::string& filename)
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
          fullFilename << "]";
       util::Die(1);
    }
@@ -391,7 +391,7 @@ void ConfigurationHandler::ReadParameterList(const std::string& filename)
       }
       else
       {  // Undefined group
-         LOG("ConfigurationHandler", pERROR) << "Unknown parameter group " <<
+         VLOG("ConfigurationHandler", pERROR) << "Unknown parameter group " <<
             name;
          util::Die(1);
       }
@@ -405,7 +405,7 @@ void ConfigurationHandler::ReadSplines(const std::string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
          filename;
       util::Die(1);
    }
@@ -414,7 +414,7 @@ void ConfigurationHandler::ReadSplines(const std::string& filename)
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
          fullFilename << "]";
       util::Die(1);
    }
@@ -485,7 +485,7 @@ void ConfigurationHandler::ReadParameters(const std::string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
+      VLOG("ConfigurationHandler", pERROR) << "Config file not found: " <<
          filename;
       util::Die(1);
    }
@@ -494,7 +494,7 @@ void ConfigurationHandler::ReadParameters(const std::string& filename)
    XMLDocPointer_t doc = _engine->ParseFile(fullFilename.c_str());
    if(doc == 0)
    {
-      LOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
+      VLOG("ConfigurationHandler", pERROR) << "Cannot parse XML file [" <<
          fullFilename << "]";
       util::Die(1);
    }

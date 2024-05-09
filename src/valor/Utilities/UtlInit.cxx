@@ -23,8 +23,8 @@ CmdLnArgList Init(const std::string& appArgs,
    arg.Read(argc, argv, (file::GetConfigurationFilename(appArgs) +
             ":" + file::GetConfigurationFilename(seedArgs)).c_str());
 
-   Messenger::Instance()->Configure(file::GetConfigurationFilename(
-            arg.GetString("mesg-thresholds")));
+   valor::Messenger::Instance()->Configure(file::GetConfigurationFilename(
+					   arg.GetString("mesg-thresholds")));
 
    // Set the random seeds
    Rnd::Instance()->SetSeeds(arg);

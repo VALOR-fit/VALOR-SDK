@@ -51,7 +51,7 @@ double valor::util::Calculate2FSterileOsc(int init_pdg, int final_pdg, double lO
       return sinsq2thmue * sinsqdm;
     }
   }
-  LOG("Flavours not supported",pFATAL);
+  VLOG("Flavours not supported",pFATAL);
   util::Die(-1);
   return conv::kBadResult;
 }
@@ -86,7 +86,7 @@ double valor::util::Calculate2FSterileOscMuE(int init_pdg, int final_pdg, double
       return sinsq2thmue * sinsqdm;
     }
   }
-  LOG("Flavours not supported",pFATAL);
+  VLOG("Flavours not supported",pFATAL);
   util::Die(-1);
   return conv::kBadResult;
 }
@@ -116,7 +116,7 @@ double valor::util::Calculate2FSterileOsc(int init_pdg, int final_pdg, double si
       return sinsq2thmue * sinsqdm;
     }
   }
-  LOG("Flavours not supported",pFATAL);
+  VLOG("Flavours not supported",pFATAL);
   util::Die(-1);
   return conv::kBadResult;
 }
@@ -148,7 +148,7 @@ double valor::util::Calculate2FSterileOscMuE(int init_pdg, int final_pdg, double
 			return sinsq2thmue * sinsqdm;
 		}
 	}
-	LOG("Flavours not supported",pFATAL);
+	VLOG("Flavours not supported",pFATAL);
 	util::Die(-1);
 	return conv::kBadResult;
 }

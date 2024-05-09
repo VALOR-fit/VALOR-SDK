@@ -80,7 +80,7 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/write_pdf.arg:$VALOR_FMWK/config/apps/oscparams.arg:$VALOR_FMWK/config/apps/seeds.arg");
-  LOG("write_pdf", pNOTICE) << arg;
+  VLOG("write_pdf", pNOTICE) << arg;
 
   string hypname             = arg.GetString("physics-hypothesis");
   string fplopt              = arg.GetString("fit-param-opt");
@@ -105,12 +105,12 @@ int main(int argc, char ** argv)
     readopt += " forcedst";
   }
   
-  Messenger::Instance()->Configure(util::CompleteConfigPath(mesg_thresholds));
+  valor::Messenger::Instance()->Configure(util::CompleteConfigPath(mesg_thresholds));
 
   bool generate_fd = arg.GetBool("generate-fd-pred");
   if(generate_fd){
     if(fit_output == "NONE"){
-      LOG("write_pdf",pFATAL) << "FD prediction requested but no fit result file given";
+      VLOG("write_pdf",pFATAL) << "FD prediction requested but no fit result file given";
       util::Die(-1);
     }
   }
@@ -122,7 +122,7 @@ int main(int argc, char ** argv)
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
 
-  LOG("write_pdf", pNOTICE) << *Rnd::Instance();
+  VLOG("write_pdf", pNOTICE) << *Rnd::Instance();
 
   // Create file to store outputs
   TString outfilename = TString::Format("%s.root", output_name.c_str());
@@ -147,11 +147,11 @@ int main(int argc, char ** argv)
     TTree * fitnt = (TTree*)f.Get("valor_fit_ntp");
     fitnt->SetBranchAddress("best_fit_params", &fp);
     fitnt->GetEntry(output_entry);
-    LOG("write_pdf",pNOTICE) << "FitParamList read from fit result";
+    VLOG("write_pdf",pNOTICE) << "FitParamList read from fit result";
 
   }
   if(fp == 0){ // Make sure that worked
-    LOG("write_pdf",pFATAL) << "FitParamList not filled";
+    VLOG("write_pdf",pFATAL) << "FitParamList not filled";
     util::Die(-1);
   }
 
@@ -162,7 +162,7 @@ int main(int argc, char ** argv)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    VLOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -174,7 +174,7 @@ int main(int argc, char ** argv)
     TObjArray * matches = input_match.MatchS(argname.c_str());
 
     if (matches->GetEntries() != 2) {
-      LOG("write_pdf",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
+      VLOG("write_pdf",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
       util::Die(-1);
     }
     TObjString * tos_param_name = dynamic_cast<TObjString*>(matches->At(1));
@@ -183,7 +183,7 @@ int main(int argc, char ** argv)
 
     conv::PhysParamId_t param = nr->PhysParamFromString(param_name);
     if (param == conv::kPhypUndefined) {
-      LOG("write_pdf",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
+      VLOG("write_pdf",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
       util::Die(-1);
     }
 
@@ -199,15 +199,15 @@ int main(int argc, char ** argv)
 
   // If we want to read and write the mock data, do so
   if(!write_data){
-    LOG("valor", pNOTICE) << "Not writing any toy-MC data";
+    VLOG("valor", pNOTICE) << "Not writing any toy-MC data";
   }
 
   else{
     if(!elements->DataGiven()){
-      LOG("valor",pFATAL) << "Told to Read data but no data file was given ";
+      VLOG("valor",pFATAL) << "Told to Read data but no data file was given ";
       util::Die(-1);
     }
-    LOG("valor", pNOTICE) << "Reading data from file, and writing toy-MC PDFs";
+    VLOG("valor", pNOTICE) << "Reading data from file, and writing toy-MC PDFs";
     // Write data PDFs if we want to
     FitDataABC * data = elements->FitData();
 
@@ -216,7 +216,7 @@ int main(int argc, char ** argv)
   }
 
   if(force_untuned) {
-    LOG("write_pdf",pNOTICE) << "Forcing all systematic parameters to their untuned values - all systematic weights should be 1";
+    VLOG("write_pdf",pNOTICE) << "Forcing all systematic parameters to their untuned values - all systematic weights should be 1";
     model->ForceSystematicsToUntuned(*fp);
     fp->FromPhysParamList(model->Tweaks(),"current-silent");
   }

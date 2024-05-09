@@ -170,12 +170,12 @@ void CorrelatedSystematics::Init(unsigned int n_syst, const PhysParamId_t * syst
   for (unsigned int ii = 0 ; ii < n_syst ; ii++) {
     if (fSystParameters[ii] == conv::kPhypUndefined) {
       failure = true;
-      LOG("CorrelatedSystematics",pFATAL) << "Parameter "<<ii<<" is undefined.";
+      VLOG("CorrelatedSystematics",pFATAL) << "Parameter "<<ii<<" is undefined.";
       continue;
     }
     for (unsigned int jj = 0 ; jj < ii ; jj++) {
       if (fSystParameters[ii] == fSystParameters[jj]) {
-        LOG("CorrelatedSystematics",pFATAL) << "Parameter "<<fSystParameters[ii]<<" is duplicated - appearing as both entry "<<ii<<" and "<<jj<<".";
+        VLOG("CorrelatedSystematics",pFATAL) << "Parameter "<<fSystParameters[ii]<<" is duplicated - appearing as both entry "<<ii<<" and "<<jj<<".";
         failure = true;
         break;
       }
@@ -243,7 +243,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
       params.push_back(param);
     }
     else {
-      LOG("CorrelatedSystematics",pERROR) << "Could not recognise parameter with name \'" << content
+      VLOG("CorrelatedSystematics",pERROR) << "Could not recognise parameter with name \'" << content
                                           << "\' in the input parameter list, \'" << syst_xml <<"\'";
       util::Die(-1);
     }
@@ -265,7 +265,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     this->Init(fNSystParameters,tmp_par);
   }
   
-  LOG("CorrelatedSystematics",pDEBUG) << this->GetName()<<" reading from root node "<<xml->GetNodeName(root_node);
+  VLOG("CorrelatedSystematics",pDEBUG) << this->GetName()<<" reading from root node "<<xml->GetNodeName(root_node);
 
   
   TString nodepath = "";
@@ -275,18 +275,18 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   if (util::NodeExists(xml,root_node,untuned_values_path.Data())) {
     TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,untuned_values_path.Data());
     if(!tmp_vec) {
-      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<this->GetName()<<" untuned values vector from "<<untuned_values_path;
+      VLOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<this->GetName()<<" untuned values vector from "<<untuned_values_path;
       util::Die(1); return false;
     }
     if (tmp_vec->GetNrows()!=fUntunedValues->GetNrows()) {
-      LOG("CorrelatedSystematics",pFATAL) << this->GetName()<<" untuned values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fUntunedValues->GetNrows();
+      VLOG("CorrelatedSystematics",pFATAL) << this->GetName()<<" untuned values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fUntunedValues->GetNrows();
       util::Die(1); return false;
     }
     (*fUntunedValues) = (*tmp_vec);
     delete tmp_vec;
   }
   else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" untuned values vector to default.";
+    VLOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" untuned values vector to default.";
     (*fUntunedValues) = *fDefaultValues;
   }
   
@@ -295,18 +295,18 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   if (util::NodeExists(xml,root_node,initial_values_path.Data())) {
     TVectorD * tmp_vec = util::XML2TVectorD(xml,root_node,initial_values_path.Data());
     if(!tmp_vec) {
-      LOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<this->GetName()<<" initial values vector from "<<initial_values_path;
+      VLOG("CorrelatedSystematics",pFATAL) << "Failed to read "<<this->GetName()<<" initial values vector from "<<initial_values_path;
       util::Die(1); return false;
     }
     if (tmp_vec->GetNrows()!=fInitialValues->GetNrows()) {
-      LOG("CorrelatedSystematics",pFATAL) << this->GetName()<<" initial values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fInitialValues->GetNrows();
+      VLOG("CorrelatedSystematics",pFATAL) << this->GetName()<<" initial values vector has wrong size "<<tmp_vec->GetNrows()<<" - expecting "<<fInitialValues->GetNrows();
       util::Die(1); return false;
     }
     (*fInitialValues) = (*tmp_vec);
     delete tmp_vec;
   }
   else {
-    LOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to untuned values.";
+    VLOG("CorrelatedSystematics",pINFO) << "Initalising "<<this->GetName()<<" initial values vector to untuned values.";
     (*fInitialValues) = *fUntunedValues;
   }
   
@@ -318,7 +318,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   TString cov_mtrx_path = nodepath+"covariance_matrix";
   fCovMtrx = util::XML2TMatrixD(xml,root_node,cov_mtrx_path.Data());  
   if(!fCovMtrx) {
-    LOG("CorrelatedSystematics",pFATAL) << "No "<<this->GetName()<<" covariance matrix was found at "<<cov_mtrx_path;
+    VLOG("CorrelatedSystematics",pFATAL) << "No "<<this->GetName()<<" covariance matrix was found at "<<cov_mtrx_path;
     util::Die(1); return false;
   }
   
@@ -327,7 +327,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
   const int np = fNSystParameters;  
   if(cov.GetNrows() != np || cov.GetNcols() != np) 
   {
-     LOG("CorrelatedSystematics",pFATAL)
+     VLOG("CorrelatedSystematics",pFATAL)
         << "\n Syst covariance matrix for "<<this->GetName()<<" has unexpected size!"
         << "\n Reading from: " << fCovMtrx->GetName()
         << "\n Expecting: " <<  np << " x " << np << " matrix"
@@ -342,7 +342,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     force_uncorrelated = util::XML2Bool(xml,root_node,force_uncorrelated_path.Data());
   }
   if (force_uncorrelated) {
-    LOG("CorrelatedSystematics",pNOTICE) << "Forcing "<<this->GetName()<<" systematics to be uncorrelated.";
+    VLOG("CorrelatedSystematics",pNOTICE) << "Forcing "<<this->GetName()<<" systematics to be uncorrelated.";
     for (int i = 0 ; i < np; i++) {
       for (int j = 0 ; j < np; j++) {
         if (i!=j) {cov(i,j) = 0;};
@@ -364,7 +364,7 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
     for (int jj = 0 ; jj < np ; jj++) {
       int target = (ii==jj);
       if (fabs(covTimesInverse[ii][jj]-target) > 1E-9) {
-        LOG("CorrelatedSystematics",pERROR) 
+        VLOG("CorrelatedSystematics",pERROR) 
           << "Bad inversion of "<<this->GetName()<<" matrix - element differs from identity by: "
           << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?" (on diagonal)":"");
         fIsConfigured = false;
@@ -375,9 +375,9 @@ bool CorrelatedSystematics::Read(TXMLEngine* xml, XMLNodePointer_t root_node)
 #endif // __init_check_inverse__
   
 #ifdef __show_init_mesg_debug__
-  LOG("CorrelatedSystematics",pDEBUG) << "Input "<<this->GetName()<<" covariance matrix: "; 
+  VLOG("CorrelatedSystematics",pDEBUG) << "Input "<<this->GetName()<<" covariance matrix: "; 
   util::PrintMatrix(cov,7,5); // would be nice to use the same stream and threshold as mesg above
-  LOG("CorrelatedSystematics",pDEBUG) << "Inverse "<<this->GetName()<<" covariance matrix: ";
+  VLOG("CorrelatedSystematics",pDEBUG) << "Inverse "<<this->GetName()<<" covariance matrix: ";
   util::PrintMatrix(*fCovMtrxInv,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
 
@@ -391,7 +391,7 @@ void CorrelatedSystematics::UpdateParametersInPool(void) const
   for(unsigned int ip = 0; ip < fNSystParameters; ++ip) {
     conv::PhysParamId_t p = fSystParameters[ip];
     if(!ParameterPool::Instance()->IsParamInPool(p)) {
-      LOG("CorrelatedSystematics",pFATAL)
+      VLOG("CorrelatedSystematics",pFATAL)
         << "Parameter \'" << NameRegistry::Instance()->AsString(p)
         << "\' is contained in a CorrelatedSystematics, but not the ParameterPool. This should never happen.";
       util::Die(-1);
@@ -401,12 +401,12 @@ void CorrelatedSystematics::UpdateParametersInPool(void) const
     if(!param.DoUpdateFitInfo()) { continue; }
 
     // Update the initial value
-    LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName() << "\' initial value: "
+    VLOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName() << "\' initial value: "
                                          << param.GetInitValue() << " --> " << this->InitialValue(p);
     param.SetInitValue(this->InitialValue(p));
 
     // Update the error
-    LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName() << "\' 1 sigma error: "
+    VLOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName() << "\' 1 sigma error: "
                                          << param.GetError() << " --> " << this->OneSigmaError(p);
     param.SetError(this->OneSigmaError(p));
 
@@ -418,7 +418,7 @@ void CorrelatedSystematics::UpdateParametersInPool(void) const
       abs_range.second = param.GetInitValue() + n_sigma_range.second * param.GetError();
       param.SetThrowRange(abs_range);
       param.SetThrowRangeMode("value");  // The range has been converted from units of sigma to the same units as the parameter
-      LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
+      VLOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
                                            << "\' range. Changed from the n sigma range [" << n_sigma_range.first
                                            << ", " << n_sigma_range.second << "] to the parameter value range ["
                                            << abs_range.first << ", " << abs_range.second << "]";
@@ -431,7 +431,7 @@ void CorrelatedSystematics::UpdateParametersInPool(void) const
       double abs_step = (range.second - range.first) * frac_step;
       param.SetStepSize(abs_step);
       param.SetStepSizeMode("value"); // The range has been converted from units of sigma to the same units as the parameter
-      LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
+      VLOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
                                            << "\' step size. Changed from a fraction step size of " << frac_step
                                            << " to an absolute step size of " << abs_step;
     }
@@ -440,7 +440,7 @@ void CorrelatedSystematics::UpdateParametersInPool(void) const
       double abs_step = sigma_step * this->OneSigmaError(p);
       param.SetStepSize(abs_step);
       param.SetStepSizeMode("value"); // The range has been converted from units of sigma to the same units as the parameter
-      LOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
+      VLOG("CorrelatedSystematics",pINFO) << "Updated parameter \'" << param.GetName()
                                          << "\' step size. Changed from a step size of " << sigma_step
                                          << " sigma, to an absolute step size of " << abs_step;
     }
@@ -527,7 +527,7 @@ void CorrelatedSystematics::Tweak(
 {
   
 #ifdef __show_tweak_mesg_debug__
-  LOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
+  VLOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
 #endif
 
   // Switch flags
@@ -555,7 +555,7 @@ void CorrelatedSystematics::Tweak(
      // This resets the input params to their best-fit values.
      if(input_vec==0) {
 #ifdef __show_tweak_mesg_debug__
-        LOG("CorrelatedSystematics",pDEBUG) << "Reset input params to best-fit values.";
+        VLOG("CorrelatedSystematics",pDEBUG) << "Reset input params to best-fit values.";
 #endif
         fIsTweaked = false;
         current_values = initial_values;
@@ -564,10 +564,10 @@ void CorrelatedSystematics::Tweak(
      else     
      {
 #ifdef __show_tweak_mesg_debug__
-        LOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
+        VLOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
 #endif
         const TVectorD & vec = *input_vec;
-        LOG("CorrelatedSystematics",pDEBUG) << this->GetName() << "\n"
+        VLOG("CorrelatedSystematics",pDEBUG) << this->GetName() << "\n"
                                             << "Vector number of elements: "       << vec.GetNoElements() << "\n"
                                             << "Number of systematic parameters: " << (int)fNSystParameters ;
         assert(vec.GetNoElements() == (int)fNSystParameters);
@@ -582,7 +582,7 @@ void CorrelatedSystematics::Tweak(
   else
   {
 #ifdef __show_tweak_mesg_debug__
-     LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
+     VLOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
 #endif
      const TMatrixD & L = *fCovMtrxChoL;
      TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
@@ -610,7 +610,7 @@ void CorrelatedSystematics::Tweak(
 {
   
 #ifdef __show_tweak_mesg_debug__
-  LOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
+  VLOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
 #endif
 
   // Switch flags
@@ -632,7 +632,7 @@ void CorrelatedSystematics::Tweak(
      // This resets the input params to their best-fit values.
      if(input_vec==0) {
 #ifdef __show_tweak_mesg_debug__
-        LOG("CorrelatedSystematics",pDEBUG) << "Reset input params to best-fit values.";
+        VLOG("CorrelatedSystematics",pDEBUG) << "Reset input params to best-fit values.";
 #endif
         fIsTweaked = false;
         current_values = initial_values;
@@ -641,14 +641,14 @@ void CorrelatedSystematics::Tweak(
      else     
      {
 #ifdef __show_tweak_mesg_debug__
-        LOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
+        VLOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
 #endif
         TVectorD vec(*input_vec);
         assert(vec.GetNoElements() == (int)fNSystParameters);
         for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
           PhysParamId_t p = this->Idx2Param(ip);
           if (!should_tweak.count(p) || !should_tweak.at(p)) {
-            // LOG("CorrelatedSystematics", pNOTICE)
+            // VLOG("CorrelatedSystematics", pNOTICE)
             //   << "Adding to tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
             vec[ip]=current_values[ip];
           }
@@ -664,14 +664,14 @@ void CorrelatedSystematics::Tweak(
   else
   {
 #ifdef __show_tweak_mesg_debug__
-    LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
+    VLOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
 #endif
     const TMatrixD & L = *fCovMtrxChoL;
     TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
     for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
       PhysParamId_t p = this->Idx2Param(ip);
       if (!should_tweak.count(p) || !should_tweak.at(p)) {
-        // LOG("CorrelatedSystematics", pNOTICE)
+        // VLOG("CorrelatedSystematics", pNOTICE)
         //   << "Adding to Chol tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
         vec[ip]=current_values[ip];
       }
@@ -698,7 +698,7 @@ void CorrelatedSystematics::Tweak(
 {
   
 #ifdef __show_tweak_mesg_debug__
-  LOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
+  VLOG("CorrelatedSystematics",pDEBUG) << this->GetName() << " Tweaking syst parameters";
 #endif
 
   // Switch flags
@@ -720,7 +720,7 @@ void CorrelatedSystematics::Tweak(
      // This resets the input params to their best-fit values.
      if(input_vec==0) {
 #ifdef __show_tweak_mesg_debug__
-        LOG("CorrelatedSystematics",pDEBUG) << "Reset input params to best-fit values.";
+        VLOG("CorrelatedSystematics",pDEBUG) << "Reset input params to best-fit values.";
 #endif
         fIsTweaked = false;
         current_values = initial_values;
@@ -729,14 +729,14 @@ void CorrelatedSystematics::Tweak(
      else     
      {
 #ifdef __show_tweak_mesg_debug__
-        LOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
+        VLOG("CorrelatedSystematics",pDEBUG) << "Forcing input syst parameters. ";
 #endif
         TVectorD vec(*input_vec);
         assert(vec.GetNoElements() == (int)fNSystParameters);
         for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
           PhysParamId_t p = this->Idx2Param(ip);
           if (!use_twk_param(p)) {
-            // LOG("CorrelatedSystematics", pNOTICE)
+            // VLOG("CorrelatedSystematics", pNOTICE)
             //   << "Adding to tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
             vec[ip]=current_values[ip];
           }
@@ -752,14 +752,14 @@ void CorrelatedSystematics::Tweak(
   else
   {
 #ifdef __show_tweak_mesg_debug__
-     LOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
+     VLOG("CorrelatedSystematics",pDEBUG) << "Generating random twk dials (correlated)! ";
 #endif
      const TMatrixD & L = *fCovMtrxChoL;
      TVectorD vec = util::CholeskyGenerateCorrelatedParams(L,initial_values);
      for (int ip = 0; ip < vec.GetNoElements() ; ip++) {
        PhysParamId_t p = this->Idx2Param(ip);
        if (!use_twk_param(p)) {
-         // LOG("CorrelatedSystematics", pNOTICE)
+         // VLOG("CorrelatedSystematics", pNOTICE)
          //   << "Adding to Chol tweak vector, parameter " << NameRegistry::Instance()->AsString(p);
          vec[ip]=current_values[ip];
        }
@@ -779,15 +779,15 @@ void CorrelatedSystematics::Tweak(
 //________________________________________________________________________________________
 void CorrelatedSystematics::CholeskyDecomposeMatrix(void)
 {
-  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
+  VLOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   if (fCovMtrxChoL) {delete fCovMtrxChoL; fCovMtrxChoL = NULL;}
 #ifdef __show_cholesky_mesg_info__  
-    LOG("CorrelatedSystematics",pDEBUG) 
+    VLOG("CorrelatedSystematics",pDEBUG) 
       << "Running Cholesky's decomposition method on the syst covariance matrix.";
 #endif
 
 #ifdef __show_cholesky_mesg_debug__
-    LOG("CorrelatedSystematics",pDEBUG) 
+    VLOG("CorrelatedSystematics",pDEBUG) 
        << "Syst covariance matrix: "; 
     util::PrintMatrix(this->CovMatrix(),7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
@@ -795,7 +795,7 @@ void CorrelatedSystematics::CholeskyDecomposeMatrix(void)
     TMatrixD L = util::CholeskyDecomposition(this->CovMatrix());
     fCovMtrxChoL = new TMatrixD(L);
 #ifdef __show_cholesky_mesg_debug__
-    LOG("CorrelatedSystematics",pDEBUG) 
+    VLOG("CorrelatedSystematics",pDEBUG) 
        << "Cholesky decomposition of syst covariance matrix: ";
     util::PrintMatrix(*fCovMtrxChoL,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
@@ -840,14 +840,14 @@ double CorrelatedSystematics::FitStatisticPenalty(Option_t * /*opt*/) const
   }
   
 #ifdef __show_chisqpenalty_mesg_debug__
-  LOG("CorrelatedSystematics",pDEBUG) << "Deviations in syst parameters: ";
+  VLOG("CorrelatedSystematics",pDEBUG) << "Deviations in syst parameters: ";
   util::PrintVectorPair(*fCurrentValues,*fInitialValues,fSystParameters,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
 
 #ifdef __show_chisqpenalty_mesg_debug2__
-    LOG("CorrelatedSystematics",pDEBUG) << "Syst covariance matrix: ";
+    VLOG("CorrelatedSystematics",pDEBUG) << "Syst covariance matrix: ";
     util::PrintMatrix(cov,7,5); // would be nice to use the same stream and threshold as mesg above
-    LOG("CorrelatedSystematics",pDEBUG) << "Inverse syst covariance matrix: ";
+    VLOG("CorrelatedSystematics",pDEBUG) << "Inverse syst covariance matrix: ";
     util::PrintMatrix(covInv,7,5); // would be nice to use the same stream and threshold as mesg above
 #endif
 
@@ -855,7 +855,7 @@ double CorrelatedSystematics::FitStatisticPenalty(Option_t * /*opt*/) const
     double chisq_penalty = chisqpenalty[0][0]; //The final matrix is 1x1, just a number
 
 #ifdef __show_chisqpenalty_mesg_debug__
-    LOG("CorrelatedSystematics",pDEBUG) << "ChisqPenalty = " << chisq_penalty;
+    VLOG("CorrelatedSystematics",pDEBUG) << "ChisqPenalty = " << chisq_penalty;
 #endif
 
   return chisq_penalty;
@@ -875,7 +875,7 @@ int CorrelatedSystematics::Param2Idx(PhysParamId_t p) const
   int idx = fParam2Idx[p];
 #ifdef __VALOR_FMWK_LOW_LEVEL_DEBUG_ENABLED__
   if (idx < 0 || idx > (int)fNSystParameters) {
-    LOG("CorrelatedSystematics",pFATAL)<<this->GetName()<<" got bad index "<<idx<<" for param "<<util::NameRegistry::Instance()->AsString(p);
+    VLOG("CorrelatedSystematics",pFATAL)<<this->GetName()<<" got bad index "<<idx<<" for param "<<util::NameRegistry::Instance()->AsString(p);
     util::Die(-1);
   }
 #endif
@@ -908,7 +908,7 @@ void CorrelatedSystematics::UpdateFrom(const valor::FitParamList  & fpl)
       fCurrentArray[i] = fpl.CurrValue(p);
     }
     else {
-      LOG("CorrelatedSystematics",pWARN) 
+      VLOG("CorrelatedSystematics",pWARN) 
         << "Unable to update syst parameter " << NameRegistry::Instance()->AsString(p) << " from FPL.";
     }
   }
@@ -924,7 +924,7 @@ void CorrelatedSystematics::UpdateFrom(const valor::PhysParamList  & ppl)
       fCurrentArray[i] = ppl.Value(p);
     }
     else {
-      LOG("CorrelatedSystematics",pWARN) 
+      VLOG("CorrelatedSystematics",pWARN) 
         << "Unable to update syst parameter " << NameRegistry::Instance()->AsString(p) << " from PPL.";
     }
   }
@@ -953,13 +953,13 @@ void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor:
       }
     }
     else {
-      LOG("CorrelatedSystematics",pWARN) 
+      VLOG("CorrelatedSystematics",pWARN) 
         << "Unable to update syst parameter " << NameRegistry::Instance()->AsString(p) << " from FPL.";
     }
   }
   
   // Do Cholesky decomposition
-  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
+  VLOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();
   this->InvertMatrices();
   
@@ -982,7 +982,7 @@ void CorrelatedSystematics::CopyTweaksTo(valor::FitParamList & fpl) const
       fpl.SetCurrentValue(p,fCurrentArray[i]);
     }
     else {
-      LOG("CorrelatedSystematics",pWARN) 
+      VLOG("CorrelatedSystematics",pWARN) 
         << "FPL does not contain parameter " << NameRegistry::Instance()->AsString(p);
     }
   }
@@ -1036,7 +1036,7 @@ void CorrelatedSystematics::SetCovMatrix(const TMatrixD & matr)
 {
   *fCovMtrx = matr;
   
-  LOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
+  VLOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();
   
   this->InvertMatrices();
@@ -1050,7 +1050,7 @@ void CorrelatedSystematics::InvertMatrices()
   // Calculate matrix inversion using Cholesky triangular matrices - should be most accurate.
   fCovMtrxChoLInv = new TMatrixD(*fCovMtrxChoL);
   fCovMtrxChoLInv->Invert(&det);
-  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix decomposition determinant: " << det;
+  VLOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix decomposition determinant: " << det;
   TMatrixD cholInvT(TMatrixD::kTransposed,*fCovMtrxChoLInv);
   fCovMtrxInv = new TMatrixD(cholInvT * (*fCovMtrxChoLInv));
   
@@ -1060,12 +1060,12 @@ void CorrelatedSystematics::InvertMatrices()
   // Calculate matrix inversion directly
   fCovMtrxInv = new TMatrixD(cov);
   fCovMtrxInv->Invert(&det);
-  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (direct): " << det;
+  VLOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (direct): " << det;
 #elif defined(__matrix_invert_svd__)
   TMatrixD & cov = *fCovMtrx;
   // Use scalar value decomposition for matrix inverse
   fCovMtrxInv = new TMatrixD(util::MatrixPseudoInverted(cov));
-  LOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (SVD): " << det;
+  VLOG("CorrelatedSystematics",pINFO) << this->GetName()<<" covariance matrix determinant (SVD): " << det;
 #endif
 
 #ifdef __check_inverse__
@@ -1076,7 +1076,7 @@ void CorrelatedSystematics::InvertMatrices()
     for (int jj = 0 ; jj < np ; jj++) {
       int target = (ii==jj);
       if (fabs(covTimesInverse[ii][jj]-target) > 1E-9) {
-        LOG("CorrelatedSystematics",pERROR) 
+        VLOG("CorrelatedSystematics",pERROR) 
           << "Bad inversion of "<<this->GetName()<<" matrix - element differs from identity by: "
           << ii << " , " << jj <<": " << covTimesInverse[ii][jj]-target << (ii==jj?" (on diagonal)":"");
         inv_ok = false;

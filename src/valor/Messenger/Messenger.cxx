@@ -94,7 +94,7 @@ bool Messenger::Configure(string filename)
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(filename.c_str());
   if (xmldoc==0) {
-    LOG("Messenger",pERROR) << "Can not parse input XML file [" << filename << "]";
+    VLOG("Messenger",pERROR) << "Can not parse input XML file [" << filename << "]";
     delete xml;
     return false;  
   }
@@ -110,7 +110,7 @@ bool Messenger::Configure(string filename)
       log4cpp::Priority::Value pv = this->PriorityFromString(priority);
       this->SetPriorityLevel(stream.c_str(), pv);
 
-      LOG("Messenger",pINFO) 
+      VLOG("Messenger",pINFO) 
         << "Setting priority for message stream: " 
         << stream << " --> " << priority;
     }
@@ -120,7 +120,7 @@ bool Messenger::Configure(string filename)
   xml->FreeDoc(xmldoc);
   delete xml;
   
-  LOG("Messenger",pINFO) << "Configured messenger using ["<<filename<<"]";
+  VLOG("Messenger",pINFO) << "Configured messenger using ["<<filename<<"]";
 
   return true;
 }
@@ -136,7 +136,7 @@ log4cpp::Priority::Value Messenger::PriorityFromString(string p)
   if ( p.find("ALERT")  != string::npos ) return log4cpp::Priority::ALERT;
   if ( p.find("FATAL")  != string::npos ) return log4cpp::Priority::FATAL;
 
-  LOG("Messenger", pWARN)
+  VLOG("Messenger", pWARN)
     << "Unknown priority = " << p << " - Setting to INFO";
   return log4cpp::Priority::INFO;
 }

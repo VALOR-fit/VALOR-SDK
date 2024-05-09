@@ -104,7 +104,7 @@ double Likelihood::Statistic(
 #ifndef __VALOR_FMWK_PENALTY_ONLY__
   total_statistic += data_statistic;
 #endif
-  LOG("Likelihood",pINFO)
+  VLOG("Likelihood",pINFO)
     << "Statistic = " << total_statistic
     << " (data/MC = " << data_statistic
     << ", syst penalty = " <<syst_penalty

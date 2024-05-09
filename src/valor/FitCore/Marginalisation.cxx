@@ -71,25 +71,25 @@ void Marginalisation::ComputeStatistics(const int fitParam1Bin,
       }
       oss << "_" << b << "_" << Ntoys << ".bin";
       std::string filename = oss.str();
-      LOG("Marginalisation", pINFO) << "Filename: " << filename;
+      VLOG("Marginalisation", pINFO) << "Filename: " << filename;
 
       util::ToyStream* toy_stream = this->_model->InitToyStream(filename, "read", read_opt);
       for(int t = 0; t < Ntoys; ++t)
       {
          // Read the chi2 of each toy-MC experiment into a vector
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-         LOG("Marginalisation", pDEBUG) << "Reading toy-MC data";
+         VLOG("Marginalisation", pDEBUG) << "Reading toy-MC data";
 #endif
          this->_model->Read(toy_stream);
          double chi2 = data->GetFitStatistic(this->_model, "likelihood-ratio");
          vec_chi2_toy[(b - firstBatch) * Ntoys + t] = chi2;
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-         LOG("Marginalisation", pNOTICE) << "Marg toy #" << t << " event rates:\n" << this->_model->GetPDFIntegralAsString();
+         VLOG("Marginalisation", pNOTICE) << "Marg toy #" << t << " event rates:\n" << this->_model->GetPDFIntegralAsString();
 #endif
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-         LOG("Marginalisation", pDEBUG) << "chi2(" << t << "): " << chi2 <<
+         VLOG("Marginalisation", pDEBUG) << "chi2(" << t << "): " << chi2 <<
             " L(" << t << "): " << exp(-chi2/2.);
 #endif
       }

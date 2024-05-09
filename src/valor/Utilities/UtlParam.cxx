@@ -115,7 +115,7 @@ std::pair<double,double> util::GetKineRange(conv::PhysParamId_t p, conv::KineVar
   // Init with the ranges used for osc params
   const Parameter & param = ParameterPool::Instance()->GetParam(p);
   if(!param.HasKinematicRange()) {
-    LOG("FitParams",pERROR)<<"Parameter " << param.GetName() << " has no kinematic range";
+    VLOG("FitParams",pERROR)<<"Parameter " << param.GetName() << " has no kinematic range";
     util::Die(-1);
   }
   std::pair<double,double> range = param.GetKineRange(k);
@@ -192,7 +192,7 @@ std::vector<PhysParamId_t> util::GetParameterSet(std::string set_name_in, conv::
     if (vec_to_append.size()==0) {
       PhysParamId_t try_param = util::NameRegistry::Instance()->PhysParamFromString(set_name);
       if(try_param != kPhypUndefined) { vec_to_append.push_back(try_param); }
-      else { LOG("FitParams",pWARN)<<"No parameters added to set: "<<set_name; }
+      else { VLOG("FitParams",pWARN)<<"No parameters added to set: "<<set_name; }
     }
 
     // Append the vector for this param set to the main vector
@@ -215,10 +215,10 @@ std::vector<PhysParamId_t> util::GetParameterSet(std::string set_name_in, conv::
 std::vector<conv::PhysParamId_t> util::GetActiveParameters(const PhysHypothesis & ph)
 {
   if(ph.GetParams().size() == 0) {
-    LOG("FitParams",pWARN) << "No parameters in the PhysHypothesis";
+    VLOG("FitParams",pWARN) << "No parameters in the PhysHypothesis";
   }
   if(ParameterPool::Instance()->GetParams().size() == 0) {
-    LOG("FitParams",pWARN)
+    VLOG("FitParams",pWARN)
       << "No parameters in the ParameterPool. If this is unintended then read in a config file to populate it";
   }
 

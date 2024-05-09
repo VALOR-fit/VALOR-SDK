@@ -91,7 +91,7 @@ bool Test::Equal(const double obs, const double exp, const double tol)
    bool equal = (std::abs(obs - exp) < tol);
    if(!equal)
    {
-      LOG("Test", pERROR) << "Test failed: Expected " << exp << ". Found " <<
+      VLOG("Test", pERROR) << "Test failed: Expected " << exp << ". Found " <<
          obs << ".";
    }
    return equal;
@@ -102,7 +102,7 @@ bool Test::Equal(const int obs, const int exp)
    bool equal = obs == exp;
    if(!equal)
    {
-      LOG("Test", pERROR) << "Test failed: Expected " << exp << ". Found " <<
+      VLOG("Test", pERROR) << "Test failed: Expected " << exp << ". Found " <<
          obs << ".";
    }
    return equal;
@@ -113,7 +113,7 @@ bool Test::Equal(const std::string& obs, const std::string& exp)
    bool equal = obs == exp;
    if(!equal)
    {
-      LOG("Test", pERROR) << "Test failed: Expected \'" << exp << "\'. Found \'" <<
+      VLOG("Test", pERROR) << "Test failed: Expected \'" << exp << "\'. Found \'" <<
          obs << "\'.";
    }
    return equal;
@@ -124,7 +124,7 @@ bool Test::True(const bool obs)
    bool equal = obs == true;
    if(!equal)
    {
-      LOG("Test", pERROR) << "Test failed: Expected true. Found false.";
+      VLOG("Test", pERROR) << "Test failed: Expected true. Found false.";
    }
    return equal;
 }
@@ -134,7 +134,7 @@ bool Test::False(const bool obs)
    bool equal = obs == false;
    if(!equal)
    {
-      LOG("Test", pERROR) << "Test failed: Expected false. Found true.";
+      VLOG("Test", pERROR) << "Test failed: Expected false. Found true.";
    }
    return equal;
 }

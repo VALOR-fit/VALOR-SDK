@@ -109,7 +109,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
                           param_name_map_file    != "" && param_name_map_file    != "NONE");
 
    if(_toys_are_marginalisation && fluctuateStatistics){
-      LOG("ToyBuilder", pWARN) << "The option to fluctuate statistics was requested when building "
+      VLOG("ToyBuilder", pWARN) << "The option to fluctuate statistics was requested when building "
                                << "marginalisation toys. This has been ignored, as it is not yet supported.";
    }
 
@@ -136,7 +136,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
          }
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-         LOG("ToyBuilder", pINFO) << fpl;
+         VLOG("ToyBuilder", pINFO) << fpl;
 #endif
 
          // Check parameter name, maybe rethrow
@@ -144,7 +144,7 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
          {
             n_rethrows++;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("ToyBuilder", pDEBUG) << "At least one parameter thrown " <<
+            VLOG("ToyBuilder", pDEBUG) << "At least one parameter thrown " <<
                "outside expected limits. Rethrowing.";
 #endif
          }
@@ -157,10 +157,10 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
 
       // Generate a toy-MC experiment
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-      LOG("ToyBuilder", pDEBUG) << "Generating toy-MC data";
-      LOG("ToyBuilder", pDEBUG) << "Toy-MC generation uses true parameters: " << true_params;
+      VLOG("ToyBuilder", pDEBUG) << "Generating toy-MC data";
+      VLOG("ToyBuilder", pDEBUG) << "Toy-MC generation uses true parameters: " << true_params;
 #endif
-      if(t % 100 == 0) { LOG("ToyBuilder", pNOTICE) << "Generating toy-MC #" << t; }
+      if(t % 100 == 0) { VLOG("ToyBuilder", pNOTICE) << "Generating toy-MC #" << t; }
       this->_model->Generate(fpl, toy_stream->GetVALORArrayFormat());
       if(_toys_are_marginalisation) {
          this->_model->Write(toy_stream);
@@ -173,16 +173,16 @@ void ToyBuilder::BuildToys(const int fitParam1Bin, const int fitParam2Bin,
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
      if(_toys_are_marginalisation) {
-       LOG("ToyBuilder", pNOTICE) << "Marg toy #" << t << " event rates:\n" << this->_model->GetPDFIntegralAsString();
+       VLOG("ToyBuilder", pNOTICE) << "Marg toy #" << t << " event rates:\n" << this->_model->GetPDFIntegralAsString();
      }
      else {
-       LOG("ToyBuilder", pNOTICE) << "Fake data toy #" << t << " event rates:\n" << this->_data->GetPDFIntegralAsString();
+       VLOG("ToyBuilder", pNOTICE) << "Fake data toy #" << t << " event rates:\n" << this->_data->GetPDFIntegralAsString();
      }
 #endif
 
    }
    delete toy_stream;
-   LOG("ToyBuilder", pNOTICE) << "Finished building toys. Generated " << Ntoys
+   VLOG("ToyBuilder", pNOTICE) << "Finished building toys. Generated " << Ntoys
                               << ", re-threw " << n_rethrows;
 }
 //______________________________________________________________________________
@@ -203,7 +203,7 @@ void ToyBuilder::SaveParamThrows(FitParamList& fpl, bool write_tree, std::string
       std::string to_replace = ".bin";
       size_t start_pos = file_name.find(to_replace);
       if(start_pos == std::string::npos) {
-         LOG("ToyBuilder", pERROR) << "Could not construct output file name.";
+         VLOG("ToyBuilder", pERROR) << "Could not construct output file name.";
          util::Die(-1);
       }
       file_name.replace(start_pos, to_replace.length(), "_toy_throws.root");
@@ -249,13 +249,13 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
    // Open the tree containing thrown parameter values, if we don't have it already
    if(!_tree_pars) {
      if(toy_throw_file_to_read == "" || param_name_map_file == "") {
-        LOG("ToyBuilder", pERROR) << "No input toy throw file or parameter name map file was specified.";
+        VLOG("ToyBuilder", pERROR) << "No input toy throw file or parameter name map file was specified.";
         util::Die(-1);
      }
 
      _toy_throw_file = new TFile(toy_throw_file_to_read.c_str(), "READ");
      if(!_toy_throw_file->IsOpen()) {
-        LOG("ToyBuilder", pERROR) << "Could not open file [" << toy_throw_file_to_read << "]";
+        VLOG("ToyBuilder", pERROR) << "Could not open file [" << toy_throw_file_to_read << "]";
         util::Die(-1);
      }
      _toy_throw_file->cd();
@@ -285,7 +285,7 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
         // Open the parameter map file
         std::ifstream map(param_name_map_file);
         if (map.fail()) {
-           LOG("ToyBuilder",pFATAL) << "Failed to open file "<<param_name_map_file;
+           VLOG("ToyBuilder",pFATAL) << "Failed to open file "<<param_name_map_file;
            util::Die(-1) ; return;
         }
         std::string arg_file_line = "";
@@ -302,7 +302,7 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
         }
         int branch_status = _tree_pars->SetBranchAddress(read_param_name.c_str(), &(_read_params[ip]));
         if(branch_status != 0) {
-           LOG("ToyBuilder", pERROR) << "Could not assign parameter [" << read_param_name
+           VLOG("ToyBuilder", pERROR) << "Could not assign parameter [" << read_param_name
                                      << "] (ip = " << ip << ") to a branch in the input thrown tree.";
            util::Die(-1);
         }
@@ -325,7 +325,7 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
      }
 
      if (_read_params[ip] + 999 < conv::kASmallNum) {
-        LOG("ToyBuilder", pERROR) << "The thrown value for param ["
+        VLOG("ToyBuilder", pERROR) << "The thrown value for param ["
                                   << util::NameRegistry::Instance()->ParamAsStringVerySimple(p)
                                   << "] could not be found.";
         util::Die(-1);
@@ -342,7 +342,7 @@ void ToyBuilder::ReadParamsFromThrowFile(FitParamList& fpl, std::string toy_thro
   }
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-  LOG("ToyBuilder", pDEBUG) << "Reading toy from input throw file with FPL = " << fpl;
+  VLOG("ToyBuilder", pDEBUG) << "Reading toy from input throw file with FPL = " << fpl;
 #endif
 }
 

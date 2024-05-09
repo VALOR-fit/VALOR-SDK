@@ -100,9 +100,9 @@ int main(int argc, char** argv)
       "$VALOR_FMWK/config/apps/run_build_toys.arg"
       ":$VALOR_FMWK/config/apps/seeds.arg"
       ":$VALOR_FMWK/config/apps/oscparams.arg");
-   LOG("valor", pNOTICE) << arg;
+   VLOG("valor", pNOTICE) << arg;
    BuildToys(arg);
-   LOG("valor", pNOTICE) << "Finished";
+   VLOG("valor", pNOTICE) << "Finished";
 
    return 0;
 }
@@ -146,7 +146,7 @@ void BuildToys(CmdLnArgList& arg)
                            !(toy_throw_file_to_read != "" && toy_throw_file_to_read != "NONE" &&
                              param_name_map_file    != "" && param_name_map_file    != "NONE");
 
-   LOG("valor", pNOTICE) << "Fit parameter " << fp_name1 << "(" <<
+   VLOG("valor", pNOTICE) << "Fit parameter " << fp_name1 << "(" <<
       fp_bin1 << ") = " << fp_val1;
 
 
@@ -160,7 +160,7 @@ void BuildToys(CmdLnArgList& arg)
       npt_par2      = arg.GetInt("npt-par2");
       min_par2      = arg.GetDouble("min-par2");
       step_par2     = arg.GetDouble("step-par2");
-      LOG("valor", pNOTICE) << "Fit parameter " << fp_name2 << "(" <<
+      VLOG("valor", pNOTICE) << "Fit parameter " << fp_name2 << "(" <<
          fp_bin2 << ") = " << fp_val2;
    }
 
@@ -187,7 +187,7 @@ void BuildToys(CmdLnArgList& arg)
    {  // Build toys for 1D fit
       for (int fp_bin01 = fp_bin1; (fp_bin01 < fp_bin1 + npt_job_par1) && (fp_bin01 < npt_par1); fp_bin01++)// loop over param first subrange
       {
-         LOG("valor", pDEBUG) << "Now submitting bin " << fp_bin01 <<" in subrange: par1  [ " << fp_bin01 <<
+         VLOG("valor", pDEBUG) << "Now submitting bin " << fp_bin01 <<" in subrange: par1  [ " << fp_bin01 <<
                                       "; "<<fp_bin01 +npt_par1 << "]";
         Rnd::Instance()->SetSeeds(arg);// set seeds at every point in the group
         util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name1, min_par1, fp_bin01, step_par1);
@@ -205,9 +205,9 @@ void BuildToys(CmdLnArgList& arg)
         for (int fp_bin02 = fp_bin2; (fp_bin02 < fp_bin2 + npt_job_par2) && (fp_bin02 < npt_par2); fp_bin02++)
         {
 
-          LOG("valor", pDEBUG) << "Now submitting " << fp_bin01 <<" in subrange: par1 bin [ " << fp_bin01 <<
+          VLOG("valor", pDEBUG) << "Now submitting " << fp_bin01 <<" in subrange: par1 bin [ " << fp_bin01 <<
                                          "; "<<fp_bin01 +npt_par1 << "]";
-          LOG("valor", pDEBUG) << "Now submitting " << fp_bin02 <<" in subrange: par2 bin [ " << fp_bin02 <<
+          VLOG("valor", pDEBUG) << "Now submitting " << fp_bin02 <<" in subrange: par2 bin [ " << fp_bin02 <<
                                          "; "<<fp_bin02 +npt_par2 << "]";
 
           util::oscillation::IncreaseFreeParameterVal(*fpl, fp_name2, min_par2, fp_bin02, step_par2);
@@ -223,7 +223,7 @@ void BuildToys(CmdLnArgList& arg)
     }
    clock.Stop();
 
-   LOG("valor", pNOTICE) << "Generate batch " << batch << ": " << Ntoys <<
+   VLOG("valor", pNOTICE) << "Generate batch " << batch << ": " << Ntoys <<
       " spectra. Real time: " << clock.RealTime() << "   CPU time: " <<
       clock.CpuTime();
    // The toy-MC was generated using the `current' values of the input parameter list.
@@ -234,7 +234,7 @@ void BuildToys(CmdLnArgList& arg)
 
 void Init(CmdLnArgList& arg)
 {
-   Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
+   valor::Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
 
    Opt::Instance()->gMassHierarchyAssumed = ( (arg.GetBool("inverted"))     ? conv::kNmhInverted      : conv::kNmhNormal);
    Opt::Instance()->gOscMixingParamChoice = ( (arg.GetBool("sinsq2theta"))  ? conv::kNuMixSinsq2Theta : conv::kNuMixSinsqTheta);
@@ -242,7 +242,7 @@ void Init(CmdLnArgList& arg)
 
    conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
    if(dmsq_scheme == kNuDmsqUndefined) {
-      LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+      VLOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
       util::Die(-1);
    }
    Opt::Instance()->gOscDmsqScheme = dmsq_scheme;

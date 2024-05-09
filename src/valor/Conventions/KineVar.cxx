@@ -33,7 +33,7 @@ string util::AsString(KineVar_t kv)
     case (kvq0reco    ) : return "q0reco";    break;
     case (kvmodqreco  ) : return "|q|reco";   break;
     default : 
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
   }
   return "";
@@ -51,7 +51,7 @@ string util::DSTBranchName(KineVar_t kv)
     case (kvq0reco    ) : return "q0_reco";    break;
     case (kvmodqreco  ) : return "modq_reco";   break;
     default : 
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
   }
   return "";
@@ -71,7 +71,7 @@ string util::AsStringTeX(KineVar_t kv, bool root)
     case (kvq0reco    ) : name = "q_{0 reco}";                    break;
     case (kvmodqreco  ) : name = "|\\overrightarrow{q}|_{reco}";  break;
     default : 
-                          LOG("KineVar",pERROR) 
+                          VLOG("KineVar",pERROR) 
                             << "Unrecognized kinematic variable: " << kv;
   }
 
@@ -98,7 +98,7 @@ bool util::IsReco(KineVar_t kv)
     case (kvq0reco    ) : return true;
     case (kvmodqreco  ) : return true;
     default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic variable: " << kv;
   }
   return false;
@@ -134,7 +134,7 @@ std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
     case (kvq0reco    ) : return std::make_pair(0.  , kALargeNum);
     case (kvmodqreco  ) : return std::make_pair(0.  , kALargeNum);
     default:
-      LOG("KineVar",pFATAL)
+      VLOG("KineVar",pFATAL)
         << "Unrecognized kinematic variable: " << kv;
       util::Die(1); return std::make_pair<double>(conv::kBadResult,conv::kBadResult);
   }

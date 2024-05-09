@@ -78,10 +78,10 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/adaptive_mcmc.arg:$VALOR_FMWK/config/apps/seeds.arg");
-  LOG("valor", pNOTICE) << arg;
+  VLOG("valor", pNOTICE) << arg;
 
   std::string thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  Messenger::Instance()->Configure(thresholds);
+  valor::Messenger::Instance()->Configure(thresholds);
 
   string input_filename        = arg.GetString("input");
   string output_filename       = arg.GetString("output");
@@ -110,7 +110,7 @@ int main(int argc, char ** argv)
 
   // Set the random seeds
   Rnd::Instance()->SetSeeds(arg);
-  LOG("valor", pNOTICE) << *Rnd::Instance();
+  VLOG("valor", pNOTICE) << *Rnd::Instance();
 
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
@@ -119,10 +119,10 @@ int main(int argc, char ** argv)
 
   // Set up the model
   config = util::CompleteConfigPath(config);
-  LOG("valor", pNOTICE) << "Getting and configuring the fit elements";
+  VLOG("valor", pNOTICE) << "Getting and configuring the fit elements";
   CompoundFitElements * elements = new CompoundFitElements();
   elements->Read(config);
-  LOG("valor", pNOTICE) << "FitElements read complete.";
+  VLOG("valor", pNOTICE) << "FitElements read complete.";
   FitDataABC  * data     = elements->FitData();
   FitModelABC * modelabc = elements->FitModel();
   CompoundFitModel * model = dynamic_cast<CompoundFitModel*>(modelabc); assert(model);
@@ -135,8 +135,8 @@ int main(int argc, char ** argv)
   assert(in_tr->GetEntries() > fitnumber);
   in_tr->GetEntry(fitnumber); assert(best_fit_params);
   best_fit_params->CopyBestFitToCurrValues();
-  LOG("valor", pNOTICE) << "Read input FPL.";
-  LOG("valor", pNOTICE) << *best_fit_params;
+  VLOG("valor", pNOTICE) << "Read input FPL.";
+  VLOG("valor", pNOTICE) << *best_fit_params;
 
   // Param list size
   const int npar      = best_fit_params->GetNumberParameters();
@@ -150,7 +150,7 @@ int main(int argc, char ** argv)
   }
 
   // Make the BF data
-  LOG("valor", pNOTICE) << "Generating data";
+  VLOG("valor", pNOTICE) << "Generating data";
   data->Generate(model,*best_fit_params,false);
 
   // Setup the output tree
@@ -171,7 +171,7 @@ int main(int argc, char ** argv)
       out_tr->Branch(pname.c_str(),&(o_params[ip]),pnameD.c_str());
     }
   }
-  LOG("valor", pNOTICE) << "Output tree built";
+  VLOG("valor", pNOTICE) << "Output tree built";
 
   // Build a Cholesky matrix we can use for throws
   CorrelatedSystematics * syst = model->GetSystematics();
@@ -226,7 +226,7 @@ int main(int argc, char ** argv)
   }
 
   TMatrixD init_proposal_cov(util::CorrelationAndErrorToCovarianceMatrix(prop_corr,prop_err));
-  LOG("valor", pNOTICE) << "Proposal covariance built.";
+  VLOG("valor", pNOTICE) << "Proposal covariance built.";
 
   const TMatrixD chol_matrix(util::CholeskyDecomposition(init_proposal_cov));
 
@@ -290,7 +290,7 @@ int main(int argc, char ** argv)
   for (int istep = 1 ; istep < nsteps ; istep++) {
     // Every N steps, print out a status
     if (istep%print_step_every == 0 && istep) {
-      LOG("adaptive_mcmc",pNOTICE)<<istep<<"\t"<<clock.RealTime()<<"\t";
+      VLOG("adaptive_mcmc",pNOTICE)<<istep<<"\t"<<clock.RealTime()<<"\t";
       //~ std::cout<<proposal_step<<std::endl;
       out_tr->AutoSave();
 
@@ -320,7 +320,7 @@ int main(int argc, char ** argv)
     if (!success) {
       if (!disable_adaptive) {
         proposal_step *= 0.1; // If we failed, do smaller steps
-        LOG("adaptive_mcmc",pNOTICE)<<"New proposal step is "<<proposal_step;
+        VLOG("adaptive_mcmc",pNOTICE)<<"New proposal step is "<<proposal_step;
       }
       continue;
     }
@@ -356,9 +356,9 @@ int main(int argc, char ** argv)
     double bf = best_fit_params->BestFitValueByIndex(ip);
     summary<<best_fit_params->NameByIndex(ip)<<"\t"<< mean / bf<<endl;
   }
-  LOG("adaptive_mcmc",pNOTICE)<<summary.str();
+  VLOG("adaptive_mcmc",pNOTICE)<<summary.str();
 
-  LOG("mcmc_step",pNOTICE)<<"Final step size was: "<<proposal_step;
+  VLOG("mcmc_step",pNOTICE)<<"Final step size was: "<<proposal_step;
 
   output_file->Close();
   delete[] o_params;

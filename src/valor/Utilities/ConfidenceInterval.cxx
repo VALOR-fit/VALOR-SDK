@@ -83,11 +83,11 @@ ConfidenceInterval::~ConfidenceInterval()
 void ConfidenceInterval::Generate(string in_file_name, string confidence, bool avg_or_min_delta_chi2, bool find_delta_chi2)
 {
     // Setup a TChain containing the input files
-    LOG("Messenger", pINFO) << "Adding files to TChain";
+    VLOG("Messenger", pINFO) << "Adding files to TChain";
     TChain* chain = new TChain("valor_dune_nd_ntp");
     chain->Add(in_file_name.c_str());
-    if(chain->GetEntries() == 0) LOG("Messenger", pFATAL) << "No input root files detected.";
-    LOG("Messenger", pINFO) << "Finished adding files to TChain";
+    if(chain->GetEntries() == 0) VLOG("Messenger", pFATAL) << "No input root files detected.";
+    VLOG("Messenger", pINFO) << "Finished adding files to TChain";
 
     // Loop over the input files to find the number of bins and the lowest and highest bin edges
     GetBinningAndData(chain);
@@ -131,7 +131,7 @@ void ConfidenceInterval::Generate(string in_file_name, string confidence, bool a
 // Works out the histogram binning based on the input data
 void ConfidenceInterval::GetBinningAndData(TChain* chain)
 {
-    LOG("Messenger", pINFO) << "Calculating Binning and fetching input data";
+    VLOG("Messenger", pINFO) << "Calculating Binning and fetching input data";
     long n_entries = chain->GetEntries();
     std::vector<double> unique_x, unique_y;
     FitParamList *  best_fit_param_array = 0;
@@ -147,12 +147,12 @@ void ConfidenceInterval::GetBinningAndData(TChain* chain)
         chain->GetEntry(entry);
         bool fit_failed = false;
 
-        if(!best_fit_param_array->IsFixed(param_x)) LOG("Messenger", pWARN) << "X parameter  is not fixed";
-        if(param_y != kPhypUndefined && !best_fit_param_array->IsFixed(param_y)) LOG("Messenger", pWARN) << "Y parameter is not fixed";
+        if(!best_fit_param_array->IsFixed(param_x)) VLOG("Messenger", pWARN) << "X parameter  is not fixed";
+        if(param_y != kPhypUndefined && !best_fit_param_array->IsFixed(param_y)) VLOG("Messenger", pWARN) << "Y parameter is not fixed";
 
         double x_val = best_fit_param_array->BestFitValue(param_x);
         if(x_val <= -99999999){
-            LOG("Messenger", pWARN) << "x best fit val <= -99999999 for file " << entry << ". Did the fit fail? Skipping this entry.";
+            VLOG("Messenger", pWARN) << "x best fit val <= -99999999 for file " << entry << ". Did the fit fail? Skipping this entry.";
             fit_failed = true;
 
             // In order to get the limits and bin numbering correct, we need to see what the value was meant to be (which is fine as the value is fixed during the fit)
@@ -172,7 +172,7 @@ void ConfidenceInterval::GetBinningAndData(TChain* chain)
         if(param_y != kPhypUndefined){
             y_val = best_fit_param_array->BestFitValue(param_y);
             if(y_val <= -99999999){
-                LOG("Messenger", pWARN) << "y best fit val <= -99999999 for file " << entry << ". Did the fit fail? Skipping this entry.";
+                VLOG("Messenger", pWARN) << "y best fit val <= -99999999 for file " << entry << ". Did the fit fail? Skipping this entry.";
                 fit_failed = true;
 
                 // In order to get the limits and bin numbering correct, we need to see what the value was meant to be (which is fine as the value is fixed during the fit)
@@ -195,10 +195,10 @@ void ConfidenceInterval::GetBinningAndData(TChain* chain)
             double chi2 = best_fit_param_array->GetBestFitStatistic();
             chi2_vals.push_back(chi2);
 
-            LOG("Messenger", pDEBUG) << "file " << entry << ": ";
-            LOG("Messenger", pDEBUG) << "x_val = " << x_val;
-            LOG("Messenger", pDEBUG) << "y_val = " << y_val;
-            LOG("Messenger", pDEBUG) << "chi^2 = " << chi2 << "\n";
+            VLOG("Messenger", pDEBUG) << "file " << entry << ": ";
+            VLOG("Messenger", pDEBUG) << "x_val = " << x_val;
+            VLOG("Messenger", pDEBUG) << "y_val = " << y_val;
+            VLOG("Messenger", pDEBUG) << "chi^2 = " << chi2 << "\n";
         }
     }
 
@@ -231,11 +231,11 @@ void ConfidenceInterval::GetBinningAndData(TChain* chain)
     hist_limits[2] = bin_low_y;
     hist_limits[3] = bin_high_y;
 
-    LOG("Messenger", pDEBUG) << "par_x ID = " << param_x;
-    LOG("Messenger", pDEBUG) << "min par_x val = " << bin_low_x << "; max par_x val = " << bin_high_x << "; n_bins_x = " << n_bins_x;
-    LOG("Messenger", pDEBUG) << "par_y ID = " << param_y;
-    LOG("Messenger", pDEBUG) << "min par_y val = " << bin_low_y << "; max par_y val = " << bin_high_y << "; n_bins_y = " << n_bins_y;
-    LOG("Messenger", pINFO) << "Finished calculating Binning and fetching input data";
+    VLOG("Messenger", pDEBUG) << "par_x ID = " << param_x;
+    VLOG("Messenger", pDEBUG) << "min par_x val = " << bin_low_x << "; max par_x val = " << bin_high_x << "; n_bins_x = " << n_bins_x;
+    VLOG("Messenger", pDEBUG) << "par_y ID = " << param_y;
+    VLOG("Messenger", pDEBUG) << "min par_y val = " << bin_low_y << "; max par_y val = " << bin_high_y << "; n_bins_y = " << n_bins_y;
+    VLOG("Messenger", pINFO) << "Finished calculating Binning and fetching input data";
 }
 
 
@@ -243,8 +243,8 @@ void ConfidenceInterval::GetBinningAndData(TChain* chain)
 // Add the data to two histograms, one to keep track of the number of entries per bin and another to record the chi^2 per bin
 void ConfidenceInterval::FillHists(bool avg_or_min_delta_chi2)
 {
-    LOG("Messenger", pINFO) << "Filling Histograms";
-    if(x_vals.size() < y_vals.size()) LOG("Messenger", pERROR) << "x_vals.size() < y_vals.size(). This should never happen!";
+    VLOG("Messenger", pINFO) << "Filling Histograms";
+    if(x_vals.size() < y_vals.size()) VLOG("Messenger", pERROR) << "x_vals.size() < y_vals.size(). This should never happen!";
 
     // Add the number of repeat runs for each (par_x, par_y) point into a hist
     for(unsigned int i = 0; i < x_vals.size(); ++i){
@@ -259,12 +259,12 @@ void ConfidenceInterval::FillHists(bool avg_or_min_delta_chi2)
         }
         // Loop over each bin, dividing by the number of entries
         n_bins = chi2_2D->GetSize();
-        if(n_bins != (unsigned int)n_entries_2D->GetSize()) LOG("Messenger", pERROR) << "Different number of bins in chi2_2D and n_entries_2D";
+        if(n_bins != (unsigned int)n_entries_2D->GetSize()) VLOG("Messenger", pERROR) << "Different number of bins in chi2_2D and n_entries_2D";
         for(unsigned int bin = 1; bin < n_bins +1; ++bin){
             if(chi2_2D->IsBinUnderflow(bin) || chi2_2D->IsBinOverflow(bin)) continue;
             double n_bin_entries = n_entries_2D->GetBinContent(bin);
             double sum = chi2_2D->GetBinContent(bin);
-            if(n_bin_entries == 0 && sum != 0) LOG("Messenger", pERROR) <<  "n_bin_entries = 0 but sum != 0. This should never happen!";
+            if(n_bin_entries == 0 && sum != 0) VLOG("Messenger", pERROR) <<  "n_bin_entries = 0 but sum != 0. This should never happen!";
             if(n_bin_entries == 0) continue;
             chi2_2D->SetBinContent(bin, sum / n_bin_entries);
         }
@@ -280,7 +280,7 @@ void ConfidenceInterval::FillHists(bool avg_or_min_delta_chi2)
             }
         }
     }
-    LOG("Messenger", pINFO) << "Finished filling Histograms";
+    VLOG("Messenger", pINFO) << "Finished filling Histograms";
 }
 
 
@@ -288,7 +288,7 @@ void ConfidenceInterval::FillHists(bool avg_or_min_delta_chi2)
 // Checks for underflows/overflows, whether each bin has the expected number of entries and finds the best fit point
 void ConfidenceInterval::Checks()
 {
-    LOG("Messenger", pINFO) << "Performing checks on the histograms";
+    VLOG("Messenger", pINFO) << "Performing checks on the histograms";
     int n_entries_max = n_entries_2D->GetBinContent(n_entries_2D->GetMaximumBin());
     bool initial_val = false;
 
@@ -299,17 +299,17 @@ void ConfidenceInterval::Checks()
             if(content != n_entries_max) {
                 int bin_x, bin_y, bin_z;
                 n_entries_2D->GetBinXYZ(bin, bin_x, bin_y, bin_z);
-                LOG("Messenger", pWARN) <<  content << " runs found for x-axis bin centre = " << n_entries_2D->GetXaxis()->GetBinCenter(bin_x)
+                VLOG("Messenger", pWARN) <<  content << " runs found for x-axis bin centre = " << n_entries_2D->GetXaxis()->GetBinCenter(bin_x)
                                         << ", y-axis bin centre = " << n_entries_2D->GetYaxis()->GetBinCenter(bin_y)
                                         << ". Expected " << n_entries_max << " runs.";
             }
 
             if(content != 0){
                 // Check for underflows and overflows (shouldn't happen)
-                if (chi2_2D->IsBinUnderflow(bin) && chi2_2D->GetBinContent(bin) > 0 ) 				LOG("Messenger", pERROR) <<  "> 0 underflows detected in chi2_2D at global bin # " << bin;
-                else if (chi2_2D->IsBinOverflow(bin) && chi2_2D->GetBinContent(bin) > 0 ) 			LOG("Messenger", pERROR) << "> 0 overflows detected in chi2_2D at global bin # " << bin;
-                if (n_entries_2D->IsBinUnderflow(bin) && n_entries_2D->GetBinContent(bin) > 0 ) 	LOG("Messenger", pERROR) <<  "> 0 underflows detected in n_entries_2D at global bin # " << bin;
-                else if (n_entries_2D->IsBinOverflow(bin) && n_entries_2D->GetBinContent(bin) > 0 ) LOG("Messenger", pERROR) << "> 0 overflows detected in n_entries_2D at global bin # " << bin;
+                if (chi2_2D->IsBinUnderflow(bin) && chi2_2D->GetBinContent(bin) > 0 ) 				VLOG("Messenger", pERROR) <<  "> 0 underflows detected in chi2_2D at global bin # " << bin;
+                else if (chi2_2D->IsBinOverflow(bin) && chi2_2D->GetBinContent(bin) > 0 ) 			VLOG("Messenger", pERROR) << "> 0 overflows detected in chi2_2D at global bin # " << bin;
+                if (n_entries_2D->IsBinUnderflow(bin) && n_entries_2D->GetBinContent(bin) > 0 ) 	VLOG("Messenger", pERROR) <<  "> 0 underflows detected in n_entries_2D at global bin # " << bin;
+                else if (n_entries_2D->IsBinOverflow(bin) && n_entries_2D->GetBinContent(bin) > 0 ) VLOG("Messenger", pERROR) << "> 0 overflows detected in n_entries_2D at global bin # " << bin;
 
                 // Calc. min chi^2
                 double chi2 = chi2_2D->GetBinContent(bin);
@@ -331,10 +331,10 @@ void ConfidenceInterval::Checks()
             }
         }
     }
-    LOG("Messenger", pDEBUG) <<  "min_chi2 = " 	<< best_fit_point[2];
-    LOG("Messenger", pDEBUG) <<  "x_bf = " 		<< best_fit_point[0];
-    LOG("Messenger", pDEBUG) <<  "y_bf = " 		<< best_fit_point[1];
-    LOG("Messenger", pINFO) << "Finished performing checks on the histograms";
+    VLOG("Messenger", pDEBUG) <<  "min_chi2 = " 	<< best_fit_point[2];
+    VLOG("Messenger", pDEBUG) <<  "x_bf = " 		<< best_fit_point[0];
+    VLOG("Messenger", pDEBUG) <<  "y_bf = " 		<< best_fit_point[1];
+    VLOG("Messenger", pINFO) << "Finished performing checks on the histograms";
 }
 
 
@@ -342,7 +342,7 @@ void ConfidenceInterval::Checks()
 // Converts the chi^2 histogram into a delta chi^2 histogram
 void ConfidenceInterval::FindDelta()
 {
-    LOG("Messenger", pINFO) << "Finding delta chi^2";
+    VLOG("Messenger", pINFO) << "Finding delta chi^2";
     for(unsigned int bin = 1; bin < n_bins + 1; ++bin){
         int content = n_entries_2D->GetBinContent(bin);
         if(!n_entries_2D->IsBinUnderflow(bin) && !n_entries_2D->IsBinOverflow(bin) && content != 0) {
@@ -350,7 +350,7 @@ void ConfidenceInterval::FindDelta()
             chi2_2D->SetBinContent(bin, chi2 - min_chi2);
         }
     }
-    LOG("Messenger", pINFO) << "Finished finding delta chi^2";
+    VLOG("Messenger", pINFO) << "Finished finding delta chi^2";
 }
 
 
@@ -359,18 +359,18 @@ void ConfidenceInterval::FindDelta()
 double ConfidenceInterval::FindCriticalChi2(string confidence, bool find_delta_chi2)
 {
     // Parse the input confidence
-    LOG("Messenger", pINFO) << "Calculating the critical delta chi^2";
+    VLOG("Messenger", pINFO) << "Calculating the critical delta chi^2";
     double conf_level = 0.90;
     std::string conf_type = "%";
     std::string buf;
     std::stringstream ss(confidence);
     vector<std::string> conf_info;
     while (ss >> buf)  conf_info.push_back(buf);
-    if(conf_info.size() != 2) LOG("Messenger", pERROR) << "Input confidence level should have 2 entries separated with whitespace";
+    if(conf_info.size() != 2) VLOG("Messenger", pERROR) << "Input confidence level should have 2 entries separated with whitespace";
     bool conf_info_valid = true;
     if(conf_info[0].find_first_not_of("0123456789.") != std::string::npos) conf_info_valid = false;     // The confidence level should only be a number
     if(!((conf_info[1] == "%") || (conf_info[1] == "sigma"))) conf_info_valid = false;     // The confidence level type should only be % or sigma
-    if(!conf_info_valid) LOG("Messenger", pERROR) << "Input confidence should be of the form <confidence> <% or sigma>, e.g. 0.90 %";
+    if(!conf_info_valid) VLOG("Messenger", pERROR) << "Input confidence should be of the form <confidence> <% or sigma>, e.g. 0.90 %";
     conf_level = std::atof(conf_info[0].c_str());
     conf_type = conf_info[1];
     if(conf_type == "sigma") conf_level = 0.5*(TMath::Erf(conf_level/sqrt(2)) - TMath::Erf(-conf_level/sqrt(2)));
@@ -381,9 +381,9 @@ double ConfidenceInterval::FindCriticalChi2(string confidence, bool find_delta_c
     if(param_y == kPhypUndefined) chi2_crit = TMath::ChisquareQuantile(conf_level, 1);
     else chi2_crit = TMath::ChisquareQuantile(conf_level, 2);
     if(!find_delta_chi2) chi2_crit += min_chi2;
-    LOG("Messenger", pDEBUG) << "Confidence level = " << conf_level;
-    LOG("Messenger", pDEBUG) << "Critical delta chi^2 = " << chi2_crit;
-    LOG("Messenger", pINFO) << "Finished calculating the critical delta chi^2";
+    VLOG("Messenger", pDEBUG) << "Confidence level = " << conf_level;
+    VLOG("Messenger", pDEBUG) << "Critical delta chi^2 = " << chi2_crit;
+    VLOG("Messenger", pINFO) << "Finished calculating the critical delta chi^2";
     return chi2_crit;
 }
 
@@ -393,7 +393,7 @@ double ConfidenceInterval::FindCriticalChi2(string confidence, bool find_delta_c
 // Accounts for bins where all fits failed or where there are no data. This prevents them from being considered as delta chi^2 = 0 bins
 void ConfidenceInterval::FixFailure(double chi2_crit)
 {
-    LOG("Messenger", pINFO) << "Fixing bins with no entries";
+    VLOG("Messenger", pINFO) << "Fixing bins with no entries";
     double penalty = 1.01 * chi2_crit;
     vector<int> penalised_bins;
     for(unsigned int bin = 1; bin < n_bins + 1; ++bin){
@@ -438,18 +438,18 @@ void ConfidenceInterval::FixFailure(double chi2_crit)
                 interpolated_val = chi2_2D->Interpolate(x ,y);		// TODO: Interpolation seems to fail unexpectedly (returns 0), look into this
                 if(interpolated_val != 0){
                     chi2_2D->SetBinContent(bin, interpolated_val);
-                    LOG("Messenger", pNOTICE) << "Chi^2 value at x = " << x << ", y = " << y << " has been interpolated and set to " << interpolated_val;
+                    VLOG("Messenger", pNOTICE) << "Chi^2 value at x = " << x << ", y = " << y << " has been interpolated and set to " << interpolated_val;
                 }
-                else LOG("Messenger", pNOTICE) << "Interpolation failed at x = " << x << ", y = " << y;
+                else VLOG("Messenger", pNOTICE) << "Interpolation failed at x = " << x << ", y = " << y;
             }
             if(!can_interpolate || interpolated_val == 0){
                 chi2_2D->SetBinContent(bin, penalty);
                 penalised_bins.push_back(bin);
-                LOG("Messenger", pNOTICE) << "Chi^2 value at x = " << x << ", y = " << y << " could not be interpolated so has been set to 1.01 * critical Delta chi^2, which is " << penalty;
+                VLOG("Messenger", pNOTICE) << "Chi^2 value at x = " << x << ", y = " << y << " could not be interpolated so has been set to 1.01 * critical Delta chi^2, which is " << penalty;
             }
         }
     }
-    LOG("Messenger", pINFO) << "Finished fixing bins with no entries";
+    VLOG("Messenger", pINFO) << "Finished fixing bins with no entries";
 }
 
 
@@ -457,7 +457,7 @@ void ConfidenceInterval::FixFailure(double chi2_crit)
 // Generates the constant delta chi^2 contour graphs
 void ConfidenceInterval::GenerateContour(double chi2_crit)
 {
-    LOG("Messenger", pINFO) << "Generating the confidence interval";
+    VLOG("Messenger", pINFO) << "Generating the confidence interval";
     TCanvas *c = new TCanvas("c", "Contour List", 0, 0, 600, 600);
 
     if(param_y != kPhypUndefined){
@@ -467,7 +467,7 @@ void ConfidenceInterval::GenerateContour(double chi2_crit)
         TObjArray *conts = dynamic_cast<TObjArray *>(gROOT->GetListOfSpecials()->FindObject("contours"));
         if (conts == NULL) {
           util::Die(-1);
-          LOG("Messenger", pERROR) << "No Contours Found";
+          VLOG("Messenger", pERROR) << "No Contours Found";
           return;
         }
 
@@ -513,7 +513,7 @@ void ConfidenceInterval::GenerateContour(double chi2_crit)
         // */
     }
     c->Close();
-    LOG("Messenger", pINFO) << "Finished generating the confidence interval";
+    VLOG("Messenger", pINFO) << "Finished generating the confidence interval";
 }
 
 //________________________________________________________________________________________

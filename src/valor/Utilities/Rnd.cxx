@@ -80,7 +80,7 @@ void Rnd::SetSeeds(
   fSeedOther     = ( other     ? other     : randseeds[4] );
 #endif
 
-  LOG("Rnd", pDEBUG)
+  VLOG("Rnd", pDEBUG)
     << "** Setting seeds to random number generators:"
     << "\n   Generator [toyMC stat] --> " << fSeedToyMCstat
     << "\n   Generator [toyMC syst] --> " << fSeedToyMCsyst
