@@ -349,7 +349,7 @@ void Fit(CmdLnArgList& arg)
 
 void Init(CmdLnArgList& arg)
 {
-   valor::Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
+   Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
 
    Opt::Instance()->gMassHierarchyAssumed = ( (arg.GetBool("inverted"))     ? conv::kNmhInverted      : conv::kNmhNormal);
    Opt::Instance()->gOscMixingParamChoice = ( (arg.GetBool("sinsq2theta"))  ? conv::kNuMixSinsq2Theta : conv::kNuMixSinsqTheta);

@@ -142,7 +142,7 @@ int main(int argc, char ** argv)
   }
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  valor::Messenger::Instance()->Configure(mesg_thresholds);
+  Messenger::Instance()->Configure(mesg_thresholds);
 
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has

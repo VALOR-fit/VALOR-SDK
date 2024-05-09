@@ -105,7 +105,7 @@ int main(int argc, char ** argv)
     readopt += " forcedst";
   }
   
-  valor::Messenger::Instance()->Configure(util::CompleteConfigPath(mesg_thresholds));
+  Messenger::Instance()->Configure(util::CompleteConfigPath(mesg_thresholds));
 
   bool generate_fd = arg.GetBool("generate-fd-pred");
   if(generate_fd){

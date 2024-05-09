@@ -83,7 +83,7 @@
   #define ENDL std::endl
 #endif
 
-// Switch off SLOG and VLOG in AL9 because of an include conflict somewhere...
+// Switch off SLOG and LOG in AL9 because of an include conflict somewhere...
 
 /*!
   \def   SLOG(stream, priority)

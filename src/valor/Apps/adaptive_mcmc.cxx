@@ -81,7 +81,7 @@ int main(int argc, char ** argv)
   VLOG("valor", pNOTICE) << arg;
 
   std::string thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  valor::Messenger::Instance()->Configure(thresholds);
+  Messenger::Instance()->Configure(thresholds);
 
   string input_filename        = arg.GetString("input");
   string output_filename       = arg.GetString("output");

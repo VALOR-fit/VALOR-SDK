@@ -112,7 +112,7 @@ int main(int argc, char ** argv)
   bool rethrow_unphysical = arg.GetBool("rethrow-unphysical");
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  valor::Messenger::Instance()->Configure(mesg_thresholds);
+  Messenger::Instance()->Configure(mesg_thresholds);
 
   VLOG("valor",pINFO) << "Will rethrow unphysical toys";
 
