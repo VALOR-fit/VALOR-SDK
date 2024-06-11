@@ -34,6 +34,7 @@ string util::AsString(BeamConf_t b, Option_t * opt)
     case (kbNuStorm_MuM     ) : name = "NuStorm_MuM";      break;
     case (kbNuStorm_MuPflash) : name = "NuStorm_MuPflash"; break;
     case (kbNuStorm_MuMflash) : name = "NuStorm_MuMflash"; break;
+    case (kbAtmo_JUNO       ) : name = "JUNO_Atmo";        break;
     default : name = "--";
   }
 
@@ -55,14 +56,14 @@ BeamConf_t util::BeamConfFromInt(int b)
 {
 // Cast an integer to BeamConf_t, but with boundary check
 //            [first]              [last]
-  if(b >= (int)kbLBNF_FHC && b <= (int) kbBNB_RHC) return (BeamConf_t)b;
+  if(b >= (int)kbLBNF_FHC && b <= (int) kbJUNO_Atmo) return (BeamConf_t)b;
   return kbUndefined;
 }
 //________________________________________________________________________________________
 BeamConf_t util::BeamConfFromString(string beam)
 {
   string lc_beam = util::ToLowerCase(beam);
-  for (int i = 0 ; i <= (int)kbBNB_RHC ; i++ ) {
+  for (int i = 0 ; i <= (int)kbJUNO_Atmo ; i++ ) {
     BeamConf_t s = (BeamConf_t)i;
     string this_beam = util::ToLowerCase(util::AsString(s));
     if(lc_beam==this_beam && this_beam!="--") {
@@ -72,4 +73,3 @@ BeamConf_t util::BeamConfFromString(string beam)
 
   return kbUndefined;
 }
-//________________________________________________________________________________________
