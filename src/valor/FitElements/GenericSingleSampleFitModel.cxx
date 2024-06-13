@@ -63,6 +63,7 @@
 #include "valor/Conventions/Detector.h"
 #include "valor/Conventions/SystType.h"
 #include "valor/Conventions/FitParamApply.h"
+#include "valor/Conventions/KineVar.h"
 
 using std::endl;
 using std::string;
@@ -1675,8 +1676,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   int    beam          = -1;
   int    reac_mode     = -1;
   double wght          = 1 ; //conv::kBadResult;
-  double wght_pot      = conv::kBadResult;
-  double baseline      = 0.;
+
 
   // Turn off all the branches by default
   t->SetBranchStatus("*",0);
@@ -1700,31 +1700,24 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   t->SetBranchStatus("beam"     , 1);
   t->SetBranchStatus("reac_mode", 1);
   t->SetBranchStatus("wght"     , 1);
-  t->SetBranchStatus("wght_pot" , 1);
-  t->SetBranchStatus("baseline" , 1);
+
 
   bstat_sample    = t->SetBranchAddress("sample",    &sample);
   bstat_sample    = t->SetBranchAddress("beam"  ,    &beam);
   bstat_reac_mode = t->SetBranchAddress("reac_mode", &reac_mode);
-  bstat_baseline  = t->SetBranchAddress("baseline",  &baseline);
+
 
   // Weight is not required - use one if failed
   t->SetBranchAddress("wght"       , &wght);
-  t->SetBranchAddress("wght_pot"   , &wght_pot);
 
-  bool any_bad_status = (bstat_sample || bstat_beam || bstat_reac_mode || bstat_baseline);
 
   for(const conv::KineVar_t & kv : kinevars) {
     const char * branchname = kinematic_branch_names[kv].c_str();
     t->SetBranchStatus(branchname,1);
     bool bstat = t->SetBranchAddress(branchname,&kinematics[kv]);
-    any_bad_status = any_bad_status || bstat;
+
   }
 
-  if (any_bad_status) {
-    LOG("GenericSingleSampleFitModel",pWARN)<<"MiniDST branches not found - giving up";
-    util::Die(-1);
-  }
 
   // Also read any other branches named "wght_"
   TPRegexp wght_branch_pattern("autowght_\\w+");
@@ -1908,12 +1901,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     // Exposure for assumed data - Weight MC templates to that exposure
     double data_pot = fPOT;
 
-    // Calculate POT weight (assumed data exposure) / (generated MC exposure)
-    double pot_wght = wght_pot * data_pot * tree_weight;
 
-    if(fFiducialMass > 0) {
-      pot_wght = pot_wght*fFiducialMass;
-    }
 
     // Now check for weights from external tuning files
     // TODO: Currently we don't consider the nuclear target in FillFromDST, but if that changes the final argument in GetExternalWeight must be modified accordingly
@@ -1931,7 +1919,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       << "\n beam        = " << beam     << " (" << util::AsString(b) << ")"
       << "\n imode       = " << imode    << " (" << util::AsString(m) << ")"
       << "\n wght        = " << wght 
-      << "\n pot_wght    = " << pot_wght
       << "\n ext_wght    = " << ext_wght
       << "\n true_bin    = " << true_bin
       << "\n reco_bin_ob = " << reco_bin_ob
@@ -1941,7 +1928,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
     double this_entry = wght;
 
-    this_entry *= pot_wght * ext_wght;
 
 #ifdef APPLY_ALL_AUTOWGHT_BRANCHES
     // Apply the "autowght" variables
@@ -1949,15 +1935,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       this_entry *= namewght.second;
     }
 #endif
-
-
-    // If we're doing SBL, save the baseline per event to calculate exact oscillation probabilities
-    if (util::IsShortBaseline(fDetector)) {
-      if (util::IsNeutrinoAny(m)) { // we only oscillate neutrinos
-        const double & trueE = kinematics.at(conv::kvEtrue);
-        fLoverEPerEvent.at(imode).at(true_bin).push_back(std::make_pair(baseline/trueE,this_entry));
-      }
-    }
 
 
     VLOG("GenericSingleSampleFitModel",pDEBUG) << "Getting weights from " << fUniverseParametersToSave.size() << " systematic parameters";

@@ -36,6 +36,7 @@ static const double kBNBTgt2uBooNE   =    0.470;  // km
 static const double kBNBTgt2ICARUS   =    0.600;  // km
 static const double kNuMITgt2NOvAFD  =  810.000;  // km
 static const double kNuMITgt2NOvAND  =    1.000;  // km
+static const double kAtmoJUNO        =12742.000;  // km
 
 } // conv
 

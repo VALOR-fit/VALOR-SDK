@@ -650,7 +650,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
   int    sample        = 0;
   int    beam          = 0;
   double wght          = 1.;
-  double wght_pot      = 1.;
+
 
   std::map<KineVar_t,double> kinematics;
 
@@ -663,21 +663,21 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
   int bstat_sample     = TTree::kNoCheck;
   int bstat_beam       = TTree::kNoCheck;
   int bstat_wght       = TTree::kNoCheck;
-  int bstat_wght_pot   = TTree::kNoCheck;
+
   std::map<KineVar_t,int> bstat_kinematics;
 
   bstat_sample = t->SetBranchAddress("sample",   &sample);
   bstat_beam   = t->SetBranchAddress("beam",     &beam);
   bstat_wght   = t->SetBranchAddress("wght",     &wght);
 
-  // Note: Could have called t->SetBranchAddress() directly, but this avoids a non-fatal error being
-  //       thrown if the wght_pot branch doesn't exist (which it won't when reading real data)
-  bool br_wght_pot_exists = (t->GetListOfBranches()->FindObject("wght_pot") != nullptr);
-  if(br_wght_pot_exists){
-    bstat_wght_pot = t->SetBranchAddress("wght_pot", &wght_pot);
-  }
 
-  fIsFakeData = (bstat_wght_pot == TTree::kMatch);
+
+
+
+
+
+
+
 
   bool any_bad_status = (bstat_sample || bstat_beam || bstat_wght);
 
@@ -768,16 +768,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
 
     // weight for this entry
     double this_entry = wght;
-    if(fIsFakeData) {
-      // Exposure for assumed data - Weight MC templates to that exposure
-      double data_pot = fPOT;
-      // Calculate POT weight (assumed data exposure) / (generated MC exposure)
-      double pot_wght = wght_pot * data_pot * tree_weight;
-      if(fFiducialMass > 0) {
-        pot_wght = pot_wght*fFiducialMass;
-      }
-      this_entry *= pot_wght;
-    }
+
 
     // Find the appropriate reconstructed kinematical variable bins
     int reco_bin_sb = reco_sb->FindBin(reco_vars);
