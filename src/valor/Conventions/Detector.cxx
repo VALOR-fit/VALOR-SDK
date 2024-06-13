@@ -82,7 +82,7 @@ string util::AsStringTeX(Detector_t d, bool root)
     case (kdNOvAFD   ) : name = "NO{#nu}A FD";          break;
     case (kdNuStormND) : name = "{#nu}Storm ND";        break;
     case (kdNuStormFD) : name = "{#nu}Storm FD";        break;
-    case (kdJUNOAtmo ) : name = "JUNO"                  break;
+    case (kdJUNOAtmo ) : name = "JUNO";                 break;
     default            : name = "--";
   }
   if(root) return name;
