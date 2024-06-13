@@ -210,52 +210,55 @@ int main(int argc, char ** argv)
     // parameter limits, initial values etc).
     FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
-    if(fp == 0){ // Make sure that worked
-      LOG("valor",pFATAL) << "FitParamList not filled";
-      util::Die(-1);
+if(fp == 0){ // Make sure that worked
+  LOG("valor",pFATAL) << "FitParamList not filled";
+  util::Die(-1);
+}
+
+model->ResetSystematics(*fp, "all");
+
+// If required, randomise the systematics in the model, and copy them to the FPL
+if (param_values_ts.Contains("randomize")) {
+  model->RandomizeSystematics(*fp, param_values_ts.Data());
+}
+
+if (tweak_parameter_set != "none" && tweak_parameter_set != "-") {
+  vector<PhysParamId_t> param_set = util::GetParameterSet(tweak_parameter_set);
+  assert(param_set.size());
+  
+  // Force tweaks to specific value
+  if (std::fabs(force_tweak_size) > conv::kAVerySmallNum) {
+    for (unsigned int ip = 0; ip < param_set.size(); ip++) {
+      PhysParamId_t p = param_set[ip];
+      if (!syst->Contains(p)) {continue;}
+      double central = syst->InitialValue(p);
+      double onesig  = syst->OneSigmaError(p);
+      double tweaked = central + force_tweak_size * onesig;
+      syst->SetCurrentValue(p, tweaked);
     }
-
-    model->ResetSystematics(*fp, "all");
-    // If required, randomise the systematics in the model, and copy them to the FPL
-    if (param_values_ts.Contains("randomize")) {
-      model->RandomizeSystematics(*fp, param_values_ts.Data());
+  }
+  // or just randomise according to prior
+  else {
+    std::map<PhysParamId_t, bool> param_map;
+    for (unsigned int ip = 0; ip < param_set.size(); ip++) {
+      PhysParamId_t p = param_set[ip];
+      param_map[p] = true;
     }
+    model->RandomizeSystematics(param_map, *fp);
+  }
+}
 
-    if (tweak_parameter_set != "none" && tweak_parameter_set != "-") {
-      vector<PhysParamId_t> param_set = util::GetParameterSet(tweak_parameter_set);
-      assert(param_set.size());
-      // Force tweaks to specific value
-      if (std::fabs(force_tweak_size)>conv::kAVerySmallNum) {
-        for (unsigned int ip = 0 ; ip < param_set.size(); ip++) {
-          PhysParamId_t p = param_set[ip];
-          if (!syst->Contains(p)) {continue;}
-          double central = syst->InitialValue(p);
-          double onesig  = syst->OneSigmaError(p);
-          double tweaked = central + force_tweak_size * onesig;
-          syst->SetCurrentValue(p,tweaked);
-        }
-      }
-      // or just randomise according to prior
-      else {
-        std::map<PhysParamId_t,bool> param_map;
-        for (unsigned int ip = 0 ; ip < param_set.size() ; ip++) {
-          PhysParamId_t p = param_set[ip];
-          param_map[p] = true;
-        }
-        model->RandomizeSystematics(param_map, *fp);
-      }
-    }
+PhysParamList tweaks = model->Tweaks();
 
-    PhysParamList tweaks = model->Tweaks();
+//~ // Don't randomise fixed parameters
+//~ for (int ip = 0; ip < conv::knppmax ; ip++) {
+//~ PhysParamId_t p = (PhysParamId_t)ip;
+//~ if (tweaks.Contains(p) and fp->IsFixed(p) ) {
+//~ double init = fp->InitValue(p);
+//~ tweaks.SetValue(p,init);
+//~ }
+//~ }
 
-    //~ // Don't randomise fixed parameters
-    //~ for (int ip = 0; ip < conv::knppmax ; ip++) {
-    //~ PhysParamId_t p = (PhysParamId_t)ip;
-    //~ if (tweaks.Contains(p) and fp->IsFixed(p) ) {
-    //~ double init = fp->InitValue(p);
-    //~ tweaks.SetValue(p,init);
-    //~ }
-    //~ }
 
     fp->FromPhysParamList(tweaks,"current");
 
