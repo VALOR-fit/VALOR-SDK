@@ -782,7 +782,9 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
         << " (value stored in DST: " << sample << ")";
       //util::Die(-1);return;
     }
+    //LOG("GenericSingleSampleFitData",pDEBUG) << "Sample = " << sample;
     if(s != fSample) {
+      LOG("GenericSingleSampleFitData",pDEBUG) << "Sample = " << s << ", fSample = " << fSample;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitData",pDEBUG)
         << "Ignoring data event: " << iev
@@ -792,7 +794,9 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
 #endif
       continue;
     }
+    //LOG("GenericSingleSampleFitData",pDEBUG) << "Sample = " << sample;
     BeamConf_t b = util::BeamConfFromInt(beam);
+    LOG("GenericSingleSampleFitData",pDEBUG) << "Beam = " << util::AsString(b);
     if(b != fBeam) {
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitData",pDEBUG)
@@ -803,6 +807,8 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
 #endif
       continue;
     }
+    LOG("GenericSingleSampleFitData",pDEBUG)
+      << "Sample and beam passed for event: " << iev;
 
     // check kinematic values against built-in limits and make vectors
     std::vector<double> reco_vars;
@@ -819,6 +825,8 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
       reco_vars.push_back(val);
     }
     if (out_of_range) {continue;}
+    LOG("GenericSingleSampleFitData",pDEBUG)
+      << "Kinematic values passed for event: " << iev;
 
     // weight for this entry
     double this_entry = wght;
