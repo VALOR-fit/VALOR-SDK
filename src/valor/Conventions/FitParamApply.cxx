@@ -105,8 +105,9 @@ const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ks
 const SelecApplyMask_t valor::conv::ksApplyToAllRings     = ksApplyTo1RingE | ksApplyTo1RingMu | ksApplyToMultiRingE; // SuperK selections
 
 const SelecApplyMask_t valor::conv::ksApplyToLowRes = ksApplyToMuLikeLowRes | ksApplyToELikeLowRes;
+const SelecApplyMask_t valor::conv::ksApplyToNuBarCC = ksApplyToNuMuBarCC | ksApplyToNuEBarCC;
 const SelecApplyMask_t valor::conv::ksApplyToHighRes = ksApplyToMuLikeHighRes | ksApplyToELikeHighRes;
-const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes | ksApplyToAllRings;
+const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes | ksApplyToAllRings | ksApplyToNuBarCC;
 const SelecApplyMask_t valor::conv::ksApplyToAll = ksApplyToAllND | ksApplyToAllFD;
 const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
 const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
@@ -196,6 +197,8 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC          , "nuecc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS       , "numuccws") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToNC             , "nc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuBarCC      , "numubarcc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuEBarCC       , "nuebarcc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeHighRes  , "mulikehighres") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeLowRes   , "mulikelowres") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToELikeHighRes   , "elikehighres") );
@@ -382,6 +385,8 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksNeutrinoElec    : return ksApplyToNuECC;     // ksApplyToNeutrinoElec
     case ksInvMuDecay      : return ksApplyToNuMuCCoth; // ksApplyToInvMuDecay
     case ksNuECCWS         : return ksApplyToNuECCWS;
+    case ksNuMuBarCC       : return ksApplyToNuMuBarCC;
+    case ksNuEBarCC        : return ksApplyToNuEBarCC;
     case ksNuMuLikeCChigh  : return ksApplyToMuLikeHighRes;
     case ksNuMuLikeCClow   : return ksApplyToMuLikeLowRes;
     case ksNuMuBarCChigh   : return ksApplyToMuLikeHighRes;

@@ -84,7 +84,7 @@ void ConfidenceInterval::Generate(string in_file_name, string confidence, bool a
 {
     // Setup a TChain containing the input files
     LOG("Messenger", pINFO) << "Adding files to TChain";
-    TChain* chain = new TChain("valor_dune_nd_ntp");
+    TChain* chain = new TChain("valor_fit_ntp");
     chain->Add(in_file_name.c_str());
     if(chain->GetEntries() == 0) LOG("Messenger", pFATAL) << "No input root files detected.";
     LOG("Messenger", pINFO) << "Finished adding files to TChain";

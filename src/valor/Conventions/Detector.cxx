@@ -44,7 +44,7 @@ string util::AsString(Detector_t d, Option_t * /*opt*/)
     case (kdNOvAFD   ) : name = "nova_fd";    break;
     case (kdNuStormND) : name = "nustorm_nd"; break;
     case (kdNuStormFD) : name = "nustorm_fd"; break;
-    case (kdAtmoJUNO ) : name = "juno_atmo";  break;
+    case (kdAtmoJUNO ) : name = "Atmo_JUNO";  break;
     default            : name = "--";
   }
 /*
@@ -82,7 +82,7 @@ string util::AsStringTeX(Detector_t d, bool root)
     case (kdNOvAFD   ) : name = "NO{#nu}A FD";          break;
     case (kdNuStormND) : name = "{#nu}Storm ND";        break;
     case (kdNuStormFD) : name = "{#nu}Storm FD";        break;
-    case (kdAtmoJUNO ) : name = "JUNO";                 break;
+    case (kdAtmoJUNO ) : name = "Atmo JUNO";            break;
     default            : name = "--";
   }
   if(root) return name;

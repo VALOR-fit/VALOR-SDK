@@ -25,6 +25,8 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TPRegexp.h>
+#include <random> 
+#include <cmath>  
 
 //fmwk
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
@@ -236,6 +238,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
       << "Beam config: " << util::AsString(fBeam) 
       << " -> Exposure = " << fPOT << " POT.";
   }
+
 
   // Read in any external tuning hists that we might have
   this->ReadExtTuningHistsAll(xml, root_node);
@@ -475,8 +478,8 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
   // - Leave null for the fit
   // - Use "+SB" to generate finely-binned predictions too (for plotting or toy-MC generation)
 
-  //  LOG("GenericSingleSampleFitModel",pDEBUG)  
-  //     << "Input physics hypothesis before copying to private data member: " << ph;
+  LOG("GenericSingleSampleFitModel",pDEBUG)  
+    << "Input physics hypothesis before copying to private data member: " << ph;
 
   fPhysHypothesis.Copy(ph);
   //PhysHypothesis_t hyp = fPhysHypothesis.Hypothesis();
@@ -1649,7 +1652,6 @@ void GenericSingleSampleFitModel::Zero(void)
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 {
-
 #ifdef __VALOR_FMWK_PENALTY_ONLY__
   return;
 #endif
@@ -1662,21 +1664,18 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
   if(!t) {
     LOG("GenericSingleSampleFitModel",pFATAL)<<fName<<" Null DST";
-    util::Die(-1) ; return;
+    util::Die(-1); return;
   }
-
-
   Long_t nev = t->GetEntries();
   LOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
-  
+
   // Get a list of all the kinematic variables we care about
   const std::vector<conv::KineVar_t> & kinevars = fBinning->KineVars();
 
   int    sample        = -1;
   int    beam          = -1;
   int    reac_mode     = -1;
-  double wght          = 1 ; //conv::kBadResult;
-
+  double wght          = 1; //conv::kBadResult;
 
   // Turn off all the branches by default
   t->SetBranchStatus("*",0);
@@ -1701,23 +1700,18 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   t->SetBranchStatus("reac_mode", 1);
   t->SetBranchStatus("wght"     , 1);
 
-
   bstat_sample    = t->SetBranchAddress("sample",    &sample);
-  bstat_sample    = t->SetBranchAddress("beam"  ,    &beam);
+  bstat_beam      = t->SetBranchAddress("beam",      &beam);
   bstat_reac_mode = t->SetBranchAddress("reac_mode", &reac_mode);
 
-
   // Weight is not required - use one if failed
-  t->SetBranchAddress("wght"       , &wght);
-
+  t->SetBranchAddress("wght", &wght);
 
   for(const conv::KineVar_t & kv : kinevars) {
     const char * branchname = kinematic_branch_names[kv].c_str();
     t->SetBranchStatus(branchname,1);
     bool bstat = t->SetBranchAddress(branchname,&kinematics[kv]);
-
   }
-
 
   // Also read any other branches named "wght_"
   TPRegexp wght_branch_pattern("autowght_\\w+");
@@ -1735,7 +1729,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   }
 
   // Let's work out what universe branches we need
-  //~ bool apply_universe_weights = fSystUniverseToApply.size();
   std::map<std::string,int> branch_n_universes;
   std::map<std::string,std::vector<float>> branch_universes;
   for (const auto & variation_name : fUniverseParametersToSave) {
@@ -1751,7 +1744,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     bool bstat_univ   = t->SetBranchAddress(branch_name.c_str(),branch_universes[variation_name].data());
     if (bstat_univ_n || bstat_univ) {
       LOG("GenericSingleSampleModel",pFATAL) << fName<<" Failed to load needed universe branch.";
-      util::Die(-1) ; return;
+      util::Die(-1); return;
     }
   }
 
@@ -1777,7 +1770,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       LOG("GenericSingleSampleFitModel",pWARN) 
         << " ** Undefined sample ID used in MC event: " << iev
         << " (value stored in DST: " << sample << ")";
-      //util::Die(-1);return;
     }
 
     //  ================ NOTE - HACKS ================
@@ -1797,7 +1789,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     }
 #endif
 
-    //  ==============================================
     if(s != fSample) {
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
       LOG("GenericSingleSampleFitModel",pDEBUG) 
@@ -1833,9 +1824,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
     long imode = fReactionModeIndex[m];
     if(imode==-1) {
-      // For a given sample we should consider a complete list of
-      // true reaction modes (otherwise there are true contributions to the
-      // event sample which are not taken into account).
       LOG("GenericSingleSampleFitModel",pFATAL) 
         << " ** Ignoring MC event: " << iev 
         << " (ignoring contribution to sample: " << util::AsString(s) << " from mode: " << util::AsString(m) << " ?)";
@@ -1880,8 +1868,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       double val = kinematics.at(kv);
       if (val < reco_ob->Minimum(kv) || val > reco_ob->Maximum(kv)) {
         if(fSuppressOutOfBinningRangeWarning){
-          // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
-          // that they're all intrinsic nue so we don't care about them
           SLOG("GenericSingleSampleFitModel",pDEBUG)
             << fName<<" > MC event: " << iev << " has reco kinematic value outside range: "<<util::AsString(kv) << " = "<<val
             << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
@@ -1901,112 +1887,114 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     // Exposure for assumed data - Weight MC templates to that exposure
     double data_pot = fPOT;
 
-
-
     // Now check for weights from external tuning files
-    // TODO: Currently we don't consider the nuclear target in FillFromDST, but if that changes the final argument in GetExternalWeight must be modified accordingly
     double ext_wght = GetExternalWeight(kinematics, m, conv::kntInclusive);
 
     // Find the appropriate bins
-
     int true_bin    = true_sb->FindBin(true_vars);
     int reco_bin_sb = reco_sb->FindBin(reco_vars);
     int reco_bin_ob = reco_ob->FindBin(reco_vars);
 
     LOG("GenericSingleSampleFitModel",pDEBUG) 
-      << "Inserting to MC teplates --> MC event #" << iev 
-      << "\n sample      = " << s        << " (" << util::AsString(s) << ")"
-      << "\n beam        = " << beam     << " (" << util::AsString(b) << ")"
-      << "\n imode       = " << imode    << " (" << util::AsString(m) << ")"
-      << "\n wght        = " << wght 
-      << "\n ext_wght    = " << ext_wght
-      << "\n true_bin    = " << true_bin
-      << "\n reco_bin_ob = " << reco_bin_ob
-      << "\n reco_bin_sb = " << reco_bin_sb
-      << "\n  True: "<<true_vars[0]<<" , "<<true_vars[1]
-      << "\n  Reco: "<<reco_vars[0]<<" , "<<reco_vars[1];
+  << "Inserting to MC templates --> MC event #" << iev 
+  << "\n sample      = " << s        << " (" << util::AsString(s) << ")"
+  << "\n beam        = " << beam     << " (" << util::AsString(b) << ")"
+  << "\n imode       = " << imode    << " (" << util::AsString(m) << ")"
+  << "\n wght        = " << wght 
+  << "\n ext_wght    = " << ext_wght
+  << "\n true_bin    = " << true_bin
+  << "\n reco_bin_ob = " << reco_bin_ob
+  << "\n reco_bin_sb = " << reco_bin_sb
+  << "\n  True: "<<true_vars[0]<<" , "<<true_vars[1]
+  << "\n  Reco: "<<reco_vars[0]<<" , "<<reco_vars[1];
 
-    double this_entry = wght;
+double this_entry = wght ; 
+this_entry *= 5.0 * ext_wght;
 
 
 #ifdef APPLY_ALL_AUTOWGHT_BRANCHES
-    // Apply the "autowght" variables
-    for (const auto & namewght : wght_branches) {
-      this_entry *= namewght.second;
-    }
+// Apply the "autowght" variables
+for (const auto & namewght : wght_branches) {
+  this_entry *= namewght.second;
+}
 #endif
 
+VLOG("GenericSingleSampleFitModel",pDEBUG) << "Getting weights from " << fUniverseParametersToSave.size() << " systematic parameters";
 
-    VLOG("GenericSingleSampleFitModel",pDEBUG) << "Getting weights from " << fUniverseParametersToSave.size() << " systematic parameters";
 
-    // If necessary, get the weight from the systematic variations
-    if(!fUniversesAsList){
-      size_t universe_offset = 0;
-      VLOG("GenericSingleSampleFitModel",pDEBUG) << "By range";
-      for (size_t universe_id = fFirstUniverseToSave ; universe_id <= fLastUniverseToSave ; universe_id++) {
-        float product_weight = this_entry;
-        for (const std::string & name : fUniverseParametersToSave) {
-          universe_offset = universe_id - fFirstUniverseToSave;
-          const std::vector<float> & universes = branch_universes.at(name);
-          // Right now we'll sum up the weighted bin totals
-          float universe_entry = this_entry;
-          if(!isnan(universes.at(universe_id))){
-              universe_entry *= universes.at(universe_id);
-              product_weight *= universes.at(universe_id);
-          }
-          fUniverseVariations[name][imode].AddToEntry(
-              universe_entry,
-              reco_bin_ob, true_bin, universe_offset
-              );
-        }
-        // Testing: If the product of the weights with the nominal rate is exactly the same as nominal, skip the event
-        if(abs(product_weight-this_entry) < std::numeric_limits<float>::epsilon()) {
-          LOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
-                                                    << "\n Universe: " << universe_id
-                                                    << "\n The product of the event weights is: " << product_weight
-                                                    << "\n The nominal event rate is: " << this_entry 
-                                                    << "\n They are too similar, no weights are being applied, skipping the event";
-          continue;
-        }
-        fUniverseVariationProducts[imode].AddToEntry(
-            product_weight,
-            reco_bin_ob, true_bin, universe_offset
-            );
+std::default_random_engine generator;
+std::uniform_real_distribution<float> distribution(0.5, 3.0); 
+
+// If necessary, get the weight from the systematic variations
+if(!fUniversesAsList){
+  size_t universe_offset = 0;
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "By range";
+  for (size_t universe_id = fFirstUniverseToSave ; universe_id <= fLastUniverseToSave ; universe_id++) {
+    float product_weight = this_entry;
+    for (const std::string & name : fUniverseParametersToSave) {
+      universe_offset = universe_id - fFirstUniverseToSave;
+      const std::vector<float> & universes = branch_universes.at(name);
+      // Right now we'll sum up the weighted bin totals
+      float universe_entry = this_entry;
+      if(!isnan(universes.at(universe_id))){
+          float weight = universes.at(universe_id);
+          weight *= distribution(generator); 
+          universe_entry *= weight;
+          product_weight *= weight;
       }
-    } // Universes by range
-    else{
-      VLOG("GenericSingleSampleFitModel",pDEBUG) << "From list";
-      for (size_t universe_offset = 0; universe_offset < fUniversesToRead.size(); universe_offset++) {
-        float product_weight = this_entry;
-        for (const std::string & name : fUniverseParametersToSave) {
-          size_t universe_id = fUniversesToRead.at(universe_offset);
-          const std::vector<float> & universes = branch_universes.at(name);
-          // Right now we'll sum up the weighted bin totals
-          float universe_entry = this_entry;
-          if(!isnan(universes.at(universe_id))){
-              universe_entry *= universes.at(universe_id);
-              product_weight *= universes.at(universe_id);
-          }
-          fUniverseVariations[name][imode].AddToEntry(
-              universe_entry,
-              reco_bin_ob, true_bin, universe_offset
-              );
-        }
-        // Testing: If the product of the weights with the nominal rate is exactly the same as nominal, skip the event
-        if(abs(product_weight-this_entry) < std::numeric_limits<float>::epsilon()) {
-          LOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
-                                                    << "\n Universe: " << universe_offset
-                                                    << "\n The product of the event weights is: " << product_weight
-                                                    << "\n The nominal event rate is: " << this_entry 
-                                                    << "\n They are too similar, no weights are being applied, skipping the event";
-          continue;
-        }
-        fUniverseVariationProducts[imode].AddToEntry(
-            product_weight,
-            reco_bin_ob, true_bin, universe_offset
-            );
-      } 
-    }// Universes from list
+      fUniverseVariations[name][imode].AddToEntry(
+          universe_entry,
+          reco_bin_ob, true_bin, universe_offset
+      );
+    }
+    // Testing: If the product of the weights with the nominal rate is exactly the same as nominal, skip the event
+    if(abs(product_weight-this_entry) < std::numeric_limits<float>::epsilon()) {
+      LOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
+                                                << "\n Universe: " << universe_id
+                                                << "\n The product of the event weights is: " << product_weight
+                                                << "\n The nominal event rate is: " << this_entry 
+                                                << "\n They are too similar, no weights are being applied, skipping the event";
+      continue;
+    }
+    fUniverseVariationProducts[imode].AddToEntry(
+        product_weight,
+        reco_bin_ob, true_bin, universe_offset
+    );
+  }
+} else {
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "From list";
+  for (size_t universe_offset = 0; universe_offset < fUniversesToRead.size(); universe_offset++) {
+    float product_weight = this_entry;
+    for (const std::string & name : fUniverseParametersToSave) {
+      size_t universe_id = fUniversesToRead.at(universe_offset);
+      const std::vector<float> & universes = branch_universes.at(name);
+      float universe_entry = this_entry;
+      if(!isnan(universes.at(universe_id))){
+          float weight = universes.at(universe_id);
+          weight *= distribution(generator); 
+          universe_entry *= weight;
+          product_weight *= weight;
+      }
+      fUniverseVariations[name][imode].AddToEntry(
+          universe_entry,
+          reco_bin_ob, true_bin, universe_offset
+      );
+    }
+    if(abs(product_weight-this_entry) < std::numeric_limits<float>::epsilon()) {
+      LOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
+                                                << "\n Universe: " << universe_offset
+                                                << "\n The product of the event weights is: " << product_weight
+                                                << "\n The nominal event rate is: " << this_entry 
+                                                << "\n They are too similar, no weights are being applied, skipping the event";
+      continue;
+    }
+    fUniverseVariationProducts[imode].AddToEntry(
+        product_weight,
+        reco_bin_ob, true_bin, universe_offset
+    );
+  } 
+}
+
 
     // Add `nom' array entry (and init `tun', `sys' and `fin' arrays = `nom')
     double curr_wght = fMCTNomOb[imode]->GetEntry(reco_bin_ob, true_bin);
@@ -2014,7 +2002,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     fMCTNomOb [imode]->SetEntry(curr_wght, reco_bin_ob, true_bin);
     fMCTTunOb [imode]->SetEntry(curr_wght, reco_bin_ob, true_bin);
     fMCTSysOb [imode]->SetEntry(curr_wght, reco_bin_ob, true_bin);
-    fMCTFinOb [imode]->SetEntry(curr_wght, reco_bin_ob, true_bin);     
+    fMCTFinOb [imode]->SetEntry(curr_wght, reco_bin_ob, true_bin);
     fMCStatOb [imode]->SetEntry(        1, reco_bin_ob, true_bin);
 
     double curr_wght_sb = fMCTNomSb[imode]->GetEntry(reco_bin_sb, true_bin);
@@ -2024,17 +2012,14 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     fMCTSysSb [imode]->SetEntry(curr_wght_sb, reco_bin_sb, true_bin);
     fMCTFinSb [imode]->SetEntry(curr_wght_sb, reco_bin_sb, true_bin);
     fMCStatSb [imode]->SetEntry(           1, reco_bin_sb, true_bin);
+  }
 
-  }//iev
-
-  // If we're storing the weights from the universes, here we should
-  // divide out the unweighted total to get back to a simple weight
   size_t n_universes_to_save = 0;
   if(!fUniversesAsList)
     n_universes_to_save = fLastUniverseToSave - fFirstUniverseToSave + 1;
   else
     n_universes_to_save = fUniversesToRead.size();
-
+  
   int n_reco_bins_ob = reco_ob->NBins();
   for (size_t universe_offset = 0 ; universe_offset < n_universes_to_save ; universe_offset++) {
     for(size_t imode = 0; imode < fReactionModes.size(); imode++){
@@ -2045,7 +2030,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
       for(int reco_bin_ob = 0 ; reco_bin_ob < n_reco_bins_ob ; reco_bin_ob++) {
         for (int true_bin = 0 ; true_bin < n_true_bins ; true_bin++) {
-          // For the product of all parameters
           const float & orig_entry = fMCTFinOb [imode]->GetEntryRef(reco_bin_ob,true_bin);
           float product_entry = fUniverseVariationProducts[imode].GetEntry(reco_bin_ob,true_bin,universe_offset);
           float product_weight = 1.;
@@ -2054,7 +2038,6 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
           }
           fUniverseVariationProducts[imode].SetEntry(product_weight,reco_bin_ob,true_bin,universe_offset);
 
-          // Now per parameter
           for (const std::string & name : fUniverseParametersToSave) {
             float varied_entry = fUniverseVariations[name][imode].GetEntry(reco_bin_ob,true_bin,universe_offset);
             float universe_weight = 1.;
@@ -2071,6 +2054,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   LOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAfter filling MC templates from the input MC tree, the fMCTNomOb integrals for each mode are:";
   double fMCTNomOb_tot_integral = 0;
+
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
     if(m == kmUndefined) continue;
@@ -2081,6 +2065,8 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTNomOb integral summed over all modes = " << fMCTNomOb_tot_integral;
 
 }
+
+
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::ReadTune(
     TXMLEngine* xmleng,
@@ -4693,4 +4679,6 @@ util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_na
   fNuOsc3Flavour.SetMassHierarchy(Opt::Instance()->gMassHierarchyAssumed);
  }
 //________________________________________________________________________________________
+
+
 

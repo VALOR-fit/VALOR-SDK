@@ -148,26 +148,48 @@ void ConfigurationHandler::ReadMC(const std::string& filename)
    config.Set("mc.name", _engine->GetAttr(rootNode, "name"));
    config.Set("mc.version", _engine->GetAttr(rootNode, "version"));
    config.Set("mc.detector", _engine->GetAttr(rootNode, "detector"));
-   config.Set("mc.exposure.fhc", util::XML2Dbl(_engine, rootNode,
-            "data/exposure/fhc"));
-   config.Set("mc.exposure.rhc", util::XML2Dbl(_engine, rootNode,
-            "data/exposure/rhc"));
+   config.Set("mc.exposure.atmo_numu", util::XML2Dbl(_engine, rootNode,
+            "data/exposure/atmo_numu"));
+   config.Set("mc.exposure.atmo_nue", util::XML2Dbl(_engine, rootNode,
+            "data/exposure/atmo_nue"));
+   config.Set("mc.exposure.atmo_numubar", util::XML2Dbl(_engine, rootNode,
+            "data/exposure/atmo_numubar"));
+   config.Set("mc.exposure.atmo_nuebar", util::XML2Dbl(_engine, rootNode,
+            "data/exposure/atmo_nuebar"));
    config.Set("mc.fiducial_mass", util::XML2Dbl(_engine, rootNode,
             "fiducial_mass"));
    config.Set("mc.use_dst", util::XML2Bool(_engine, rootNode,
             "mc/using_dst_format"));
-   config.Set("mc.dst.fhc.filename", util::XML2String(_engine, rootNode,
-            "mc/dst/fhc/filename"));
-   config.Set("mc.dst.fhc.objname", util::XML2String(_engine, rootNode,
-            "mc/dst/fhc/objname"));
-   config.Set("mc.dst.fhc.objtype", util::XML2String(_engine, rootNode,
-            "mc/dst/fhc/objtype"));
-   config.Set("mc.dst.rhc.filename", util::XML2String(_engine, rootNode,
-            "mc/dst/rhc/filename"));
-   config.Set("mc.dst.rhc.objname", util::XML2String(_engine, rootNode,
-            "mc/dst/rhc/objname"));
-   config.Set("mc.dst.rhc.objtype", util::XML2String(_engine, rootNode,
-            "mc/dst/rhc/objtype"));
+   //Updated Atmospheric Flux
+   config.Set("mc.dst.atmo_numu.filename", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_numu/filename"));
+   config.Set("mc.dst.atmo_numu.objname", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_numu/objname"));
+   config.Set("mc.dst.atmo_numu.objtype", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_numu/objtype"));
+
+   config.Set("mc.dst.atmo_numubar.filename", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_numubar/filename"));
+   config.Set("mc.dst.atmo_numubar.objname", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_numubar/objname"));
+   config.Set("mc.dst.atmo_numubar.objtype", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_numubar/objtype"));
+
+   config.Set("mc.dst.atmo_nue.filename", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_nue/filename"));
+   config.Set("mc.dst.atmo_nue.objname", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_nue/objname"));
+   config.Set("mc.dst.atmo_nue.objtype", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_nue/objtype"));
+
+   config.Set("mc.dst.atmo_nuebar.filename", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_nuebar/filename"));
+   config.Set("mc.dst.atmo_nuebar.objname", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_nuebar/objname"));
+   config.Set("mc.dst.atmo_nuebar.objtype", util::XML2String(_engine, rootNode,
+            "mc/dst/atmo_nuebar/objtype"));
+   //Updated Atmospheric Flux
+
    config.Set("mc.template.filename", util::XML2String(_engine, rootNode,
             "mc/template/filename"));
    config.Set("mc.template.tag", util::XML2String(_engine, rootNode,

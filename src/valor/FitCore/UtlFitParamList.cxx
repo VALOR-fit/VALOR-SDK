@@ -184,15 +184,39 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
     util::Die(-1); return fparm;
   }
 
-  // Finally, check that all of the params in the PhysHypothesis are in the FPL
-  for(conv::PhysParamId_t hyp_par : hyp.GetParams()) {
-    if(!fparm->Exists(hyp_par)) {
-      LOG("FitParams",pERROR)<<"Parameter \'" << NameRegistry::Instance()->AsString(hyp_par)
-                             << "\' from the PhysHypothesis was not found in the FitParamList";
-      fparm->Print();
-      util::Die(-1); return fparm;
+// Finally, check that all of the params in the PhysHypothesis are in the FPL
+LOG("FitParams", pNOTICE) << "Checking if all parameters in PhysHypothesis are in the FitParamList:";
+for(conv::PhysParamId_t hyp_par : hyp.GetParams()) {
+  if(!fparm->Exists(hyp_par)) {
+    // Print the current FitParamList before logging the error
+    LOG("FitParams", pNOTICE) << "Current FitParamList parameters:";
+    for (int i = 0; i < fparm->Size(); ++i) { // Use Size() to get the number of parameters
+      conv::PhysParamId_t param_id = fparm->WhichParam(i); // Use WhichParam(i) to get the parameter ID by index
+      std::string param_name = NameRegistry::Instance()->AsString(param_id);
+      double init_value = fparm->InitValue(param_id);
+      double min_value = fparm->MinValue(param_id);
+      double max_value = fparm->MaxValue(param_id);
+      double current_value = fparm->CurrValue(param_id); // Use CurrValue(param_id) to get the current value
+      bool is_fixed = fparm->IsFixed(param_id);
+
+      LOG("FitParams", pNOTICE)
+        << "Param: " << param_name
+        << ", Init: " << init_value
+        << ", Min: " << min_value
+        << ", Max: " << max_value
+        << ", Current: " << current_value
+        << ", Fixed: " << is_fixed;
     }
+
+    LOG("FitParams", pNOTICE) << "Parameter \'" << NameRegistry::Instance()->AsString(hyp_par)
+                              << "\' from the PhysHypothesis was not found in the FitParamList";
+    util::Die(-1);
+    return fparm; // This return statement will not be executed because util::Die(-1) terminates the program
   }
+}
+
+
+
 
   return fparm;
 }

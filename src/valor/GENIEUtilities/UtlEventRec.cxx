@@ -419,3 +419,218 @@ std::vector<double> valor::util::GetTrueKinematics(const genie::EventRecord* evr
       }
    }
 }
+//_________________________________________________________________________________
+conv::ReacMode_t valor::util::DetermineReactionModeRead(int nu_pdg, int iscc, int isnc, const genie::EventRecord * event, bool use_final_state)
+{
+  int  nupdg       = nu_pdg; //just for atmo v JUNO
+  bool is_nue      = (nupdg == genie::kPdgNuE);
+  bool is_numu     = (nupdg == genie::kPdgNuMu);
+  bool is_nuebar   = (nupdg == genie::kPdgAntiNuE);
+  bool is_numubar  = (nupdg == genie::kPdgAntiNuMu);
+
+  bool is_CC       = iscc; //just for atmo v JUNO
+  bool is_NC       = isnc; //just for atmo v JUNO
+  bool is_charm   = util::EventContainsQuarkFlavour(event, genie::kPdgCQuark);
+  bool is_strange = util::EventContainsQuarkFlavour(event, genie::kPdgSQuark);
+  bool is_QE       = event->Summary()->ProcInfo().IsQuasiElastic() && !is_strange && !is_charm;
+  bool is_MEC      = event->Summary()->ProcInfo().IsMEC();
+  bool is_NuEEl    = event->Summary()->ProcInfo().IsNuElectronElastic();
+  bool is_IMD      = event->Summary()->ProcInfo().IsInverseMuDecay();
+  bool is_IMDanh   = event->Summary()->ProcInfo().IsIMDAnnihilation();
+  
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,4,0)
+  bool is_Coherent = event->Summary()->ProcInfo().IsCoherentProduction();
+#else
+  bool is_Coherent  = event->Summary()->ProcInfo().IsCoherent();
+#endif
+
+  /*  if (is_NuEEl) {
+    LOG("UtlEventRec",pWARN)<<"Ignoring NuEEl event.";
+    return conv::kmUndefined;
+    }*/
+  
+  vector<int> primary_hadr_system;
+  vector<int> final_hadr_system;
+  
+  GetHadronicSystems(event,primary_hadr_system,final_hadr_system);
+  
+  // Set up variables for counting particles
+  int nP        = 0;
+  int nN        = 0;
+  int nPip      = 0;
+  int nPim      = 0;
+  int nPi0      = 0;
+  int nKp       = 0;
+  int nKm       = 0;
+  int nK0       = 0;
+  int nEM       = 0;
+  int nOtherHad = 0;
+  int nNucleus  = 0;
+  
+  std::vector<const genie::GHepParticle*> unknown_particles;
+  
+  const vector<int> & hadr_system = (use_final_state ? final_hadr_system : primary_hadr_system);
+  // We exclude states with the right number of pions but other mesons.
+  
+
+  
+  for (unsigned int ip = 0 ; ip < hadr_system.size(); ip++) {
+    const genie::GHepParticle * p = event->Particle(hadr_system[ip]);
+    int pdg = p->Pdg();
+    if      (pdg == genie::kPdgProton  || pdg == genie::kPdgAntiProton)                           { nP++;       }
+    else if (pdg == genie::kPdgNeutron || pdg == genie::kPdgAntiNeutron)                          { nN++;       }
+    else if (pdg == genie::kPdgPiP)                                                               { nPip++;     }
+    else if (pdg == genie::kPdgPiM)                                                               { nPim++;     }
+    else if (pdg == genie::kPdgPi0)                                                               { nPi0++;     }
+    else if (pdg == genie::kPdgKP)                                                                { nKp++;      }
+    else if (pdg == genie::kPdgKM)                                                                { nKm++;      }
+    else if (pdg == genie::kPdgK0    || pdg == genie::kPdgAntiK0)                                 { nK0++;      }
+    else if (pdg == genie::kPdgGamma || pdg == genie::kPdgElectron || pdg == genie::kPdgPositron) { nEM++;      }
+    else if (genie::pdg::IsHadron(pdg))                                                           { nOtherHad++;}
+    else if (genie::pdg::IsIon   (pdg))                                                           { nNucleus++; }
+    else { unknown_particles.push_back(p); }
+    
+  }
+  
+  if (unknown_particles.size()) {
+    std::ostringstream s;
+    for (unsigned int ip = 0 ; ip < unknown_particles.size() ; ip++) {
+      const genie::GHepParticle * p = unknown_particles[ip];
+      s<<*p<<std::endl;
+    }
+    LOG("UtlEventRec",pWARN)<<unknown_particles.size()<<" unidentified particles in event:\n"<<s.str();
+  }
+  
+  int nPiC = nPip+nPim;
+  int nK   = nKp+nKm+nK0;
+  
+  bool is_1piC     = (!is_Coherent) && (nPiC==1) && (nPi0==0) && (nK==0) && (nOtherHad==0);
+  bool is_1pi0     = (!is_Coherent) && (nPiC==0) && (nPi0==1) && (nK==0) && (nOtherHad==0); 
+  bool is_2piC     = (!is_Coherent) && (nPiC==2) && (nPi0==0) && (nK==0) && (nOtherHad==0); 
+  bool is_2pi0     = (!is_Coherent) && (nPiC==0) && (nPi0==2) && (nK==0) && (nOtherHad==0); 
+  bool is_1piC1pi0 = (!is_Coherent) && (nPiC==1) && (nPi0==1) && (nK==0) && (nOtherHad==0); 
+  
+  bool is_ccnuel   = (is_NuEEl && is_CC);
+  bool is_ncnuel   = (is_NuEEl && is_NC);
+  
+  vector<conv::ReacMode_t> modes;
+  
+  // First do exclusive modes
+  if(is_numu) {
+    if(is_CC) {
+      if (is_QE)       { modes.push_back(conv::kmNuMuCCQE    ); } // numu    CC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuMuCCMEC   ); } // numu    CC MEC
+      if (is_1piC)     { modes.push_back(conv::kmNuMuCC1piC  ); } // numu    CC 1 pi+/-
+      if (is_1pi0)     { modes.push_back(conv::kmNuMuCC1pi0  ); } // numu    CC 1 pi0
+      if (is_2piC)     { modes.push_back(conv::kmNuMuCC2piC  ); } // numu    CC 2 pi+/-
+      if (is_2pi0)     { modes.push_back(conv::kmNuMuCC2pi0  ); } // numu    CC 2 pi0
+      if (is_1piC1pi0) { modes.push_back(conv::kmNuMuCCpiCpi0); } // numu    CC 1 pi0 + 1 pi+/-
+      if (is_Coherent) { modes.push_back(conv::kmNuMuCCcoh   ); } // numu    CC coherent
+      if (is_IMD)      { modes.push_back(conv::kmNuMuCCIMD   ); } // numu    CC IMD
+    }
+    if(is_NC) {
+      if (is_1piC)     { modes.push_back(conv::kmNuMuNC1piC  ); } // numu    NC 1 pi+/-
+      if (is_1pi0)     { modes.push_back(conv::kmNuMuNC1pi0  ); } // numu    NC 1 pi0
+      if (is_Coherent) { modes.push_back(conv::kmNuMuNCcoh   ); } // numu    NC coherent
+    }
+    if (is_ccnuel) { modes.push_back(conv::kmNuMuCCELScat   ); } // numu + electron CC
+    if (is_ncnuel) { modes.push_back(conv::kmNuMuNCELScat   ); } // numu + electron NC
+  }
+
+  if(is_numubar) {
+    if(is_CC) {
+      if (is_QE)       { modes.push_back(conv::kmNuMuBarCCQE    ); } // numubar CC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuMuBarCCMEC   ); } // numubar CC MEC
+      if (is_1piC)     { modes.push_back(conv::kmNuMuBarCC1piC  ); } // numubar CC 1 pi+/-
+      if (is_1pi0)     { modes.push_back(conv::kmNuMuBarCC1pi0  ); } // numubar CC 1 pi0
+      if (is_2piC)     { modes.push_back(conv::kmNuMuBarCC2piC  ); } // numubar CC 2 pi+/-
+      if (is_2pi0)     { modes.push_back(conv::kmNuMuBarCC2pi0  ); } // numubar CC 2 pi0
+      if (is_1piC1pi0) { modes.push_back(conv::kmNuMuBarCCpiCpi0); } // numubar CC 1 pi0 + 1 pi+/-
+      if (is_Coherent) { modes.push_back(conv::kmNuMuBarCCcoh   ); } // numubar CC coherent
+    }
+    if(is_NC) {
+      if (is_1piC)     { modes.push_back(conv::kmNuMuBarNC1piC ); } // numubar NC 1 pi+/-
+      if (is_1pi0)     { modes.push_back(conv::kmNuMuBarNC1pi0 ); } // numubar NC 1 pi0
+      if (is_Coherent) { modes.push_back(conv::kmNuMuBarNCcoh  ); } // numubar NC coherent
+    }
+    if (is_ccnuel) { modes.push_back(conv::kmNuMuBarCCELScat   ); } // numubar + electron CC                                                 
+    if (is_ncnuel) { modes.push_back(conv::kmNuMuBarNCELScat   ); } // numubar + electron NC    
+  }
+
+  //
+  if(is_nue) {
+    if(is_CC) {
+      if (is_QE)       { modes.push_back(conv::kmNuECCQE       );}     // nue     CC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuECCMEC      );}     // nue     CC MEC
+      if (is_1piC)     { modes.push_back(conv::kmNuECC1piC     );}     // nue     CC 1 pi+/-
+      if (is_1pi0)     { modes.push_back(conv::kmNuECC1pi0     );}     // nue     CC 1 pi0
+      if (is_2piC)     { modes.push_back(conv::kmNuECC2piC     );}     // nue     CC 2 pi+/-
+      if (is_2pi0)     { modes.push_back(conv::kmNuECC2pi0     );}     // nue     CC 2 pi0
+      if (is_1piC1pi0) { modes.push_back(conv::kmNuECCpiCpi0   );}     // nue     CC 1 pi0 + 1 pi+/-
+      if (is_Coherent) { modes.push_back(conv::kmNuECCcoh      );}     // nue     CC coherent
+    }
+    if(is_NC) {
+      if (is_1piC)     { modes.push_back(conv::kmNuENC1piC     );}     // nue     NC 1 pi+/-
+      if (is_1pi0)     { modes.push_back(conv::kmNuENC1pi0     );}     // nue     NC 1 pi0
+      if (is_Coherent) { modes.push_back(conv::kmNuENCcoh      );}     // nue     NC coherent
+    }
+    if(is_NuEEl) { modes.push_back(conv::kmNuEELScat     );}     // nue + electron scattering (NC + CC + interference)
+  }
+  
+  //
+  if(is_nuebar) {
+    if(is_CC) {
+      if (is_QE)       { modes.push_back(conv::kmNuEBarCCQE    );}     // nuebar  CC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuEBarCCMEC   );}     // nuebar  CC MEC
+      if (is_1piC)     { modes.push_back(conv::kmNuEBarCC1piC  );}     // nuebar  CC 1 pi+/-
+      if (is_1pi0)     { modes.push_back(conv::kmNuEBarCC1pi0  );}     // nuebar  CC 1 pi0
+      if (is_2piC)     { modes.push_back(conv::kmNuEBarCC2piC  );}     // nuebar  CC 2 pi+/-
+      if (is_2pi0)     { modes.push_back(conv::kmNuEBarCC2pi0  );}     // nuebar  CC 2 pi0
+      if (is_1piC1pi0) { modes.push_back(conv::kmNuEBarCCpiCpi0);}     // nuebar  CC 1 pi0 + 1 pi+/-
+      if (is_Coherent) { modes.push_back(conv::kmNuEBarCCcoh   );}     // nuebar  CC coherent
+      if (is_IMDanh)   { modes.push_back(conv::kmNuEBarCCIMD   );}     // nuebar  CC IMD annihilation 
+    }
+    if(is_NC) {
+      if (is_1piC)     { modes.push_back(conv::kmNuEBarNC1piC );}     // nuebar  NC 1 pi+/-
+      if (is_1pi0)     { modes.push_back(conv::kmNuEBarNC1pi0 );}     // nuebar  NC 1 pi0
+      if (is_Coherent) { modes.push_back(conv::kmNuEBarNCcoh  );}     // nuebar  NC coherent
+    }
+    if(is_NuEEl) { modes.push_back(conv::kmNuEBarELScat     );}     // nuebar + electron scattering (NC + CC + interference)
+  }
+  
+  // If we've got one exclusive mode, we did well.
+  if (modes.size() == 1) {
+    return modes[0];
+  }
+  // Otherwise look for inclusive
+  else if (modes.size() == 0) {
+    if (is_numu) {
+      if (is_CC) {return conv::kmNuMuCCoth;}
+      if (is_NC) {return conv::kmNuMuNCoth;}
+    }
+    if (is_numubar) {
+      if (is_CC) {return conv::kmNuMuBarCCoth;}
+      if (is_NC) {return conv::kmNuMuBarNCoth;}
+    }
+    if (is_nue) {
+      if (is_CC) {return conv::kmNuECCoth;}
+      if (is_NC) {return conv::kmNuENCoth;}
+    }
+    if (is_nuebar) {
+      if (is_CC) {return conv::kmNuEBarCCoth;}
+      if (is_NC) {return conv::kmNuEBarNCoth;}
+    }
+  }
+  else {
+    std::ostringstream mode_names;
+    for (unsigned int ii = 0 ; ii < modes.size(); ii++) {
+      mode_names << "\n "<<util::AsString(modes[ii]);
+    }
+    LOG("UtlEventRec",pERROR)<<"Event filed into multiple exclusive modes: "
+      <<mode_names.str()
+      <<"\nFull record: "<<*event;
+      util::Die(-1);
+  }
+
+  return conv::kmUndefined;
+}

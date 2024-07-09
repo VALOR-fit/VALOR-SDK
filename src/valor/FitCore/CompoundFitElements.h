@@ -64,7 +64,7 @@ private:
   CompoundFitData  * fCompoundFitData;
   CompoundFitModel * fCompoundFitModel;
 
-  bool fDataFileGiven = false;
+  bool fDataFileGiven = true;
 };
 
 } // valor

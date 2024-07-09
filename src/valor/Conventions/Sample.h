@@ -86,7 +86,10 @@ typedef enum ESample
    ksNuMuCCoa06          , // numuCC-like, off-axis bin "06"
    ksNuMuCCoa07          , // numuCC-like, off-axis bin "07"
    ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
-   ksNuMuCCoa09            // numuCC-like, off-axis bin "09"
+   ksNuMuCCoa09          , // numuCC-like, off-axis bin "09"
+   // Atmospheric neutrino
+   ksNuMuBarCC           , // numubar CC inclusive
+   ksNuEBarCC            , // nuebar CC inclusive
 }
 Sample_t; 
 

@@ -39,9 +39,10 @@ if(b == conv::kbNuMI_FHC || b == conv::kbNuMI_RHC) {
       if (d == conv::kdINGRID ) return conv::kJPARCTgt2ND280;
   }
 
-  if(b == conv::kbAtmo_JUNO) {
+  if(b == conv::kbAtmo_JUNONuMu || b == conv::kbAtmo_JUNONuE || b == conv::kbAtmo_JUNONuMuBar || b == conv::kbAtmo_JUNONuEBar) {
     if (d == conv::kdAtmoJUNO) return conv::kAtmoJUNO;
   }
+  
   LOG("Baseline", pERROR)
      << "Undefined baseline for detector: " << util::AsString(d)
      << " in beam: " << util::AsString(b);
