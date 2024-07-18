@@ -44,7 +44,7 @@ string util::AsString(Detector_t d, Option_t * /*opt*/)
     case (kdNOvAFD   ) : name = "nova_fd";    break;
     case (kdNuStormND) : name = "nustorm_nd"; break;
     case (kdNuStormFD) : name = "nustorm_fd"; break;
-    case (kdAtmoJUNO ) : name = "Atmo_JUNO";  break;
+    case (kdJUNO ) : name = "JUNO";  break;
     default            : name = "--";
   }
 /*
@@ -82,7 +82,7 @@ string util::AsStringTeX(Detector_t d, bool root)
     case (kdNOvAFD   ) : name = "NO{#nu}A FD";          break;
     case (kdNuStormND) : name = "{#nu}Storm ND";        break;
     case (kdNuStormFD) : name = "{#nu}Storm FD";        break;
-    case (kdAtmoJUNO ) : name = "Atmo JUNO";            break;
+    case (kdJUNO ) : name = "JUNO";            break;
     default            : name = "--";
   }
   if(root) return name;
@@ -99,7 +99,7 @@ Detector_t util::DetectorFromInt(int d)
 {
 // Cast an integer to Detector_t, but with boundary check
 //            [first]                 [last]
-  if(d >= (int)kdDUNEND && d <= (int) kdNOvAFD) return (Detector_t)d;
+  if(d >= (int)kdDUNEND && d <= (int) kdJUNO) return (Detector_t)d;
   return kdUndefined;
 }
 //________________________________________________________________________________________
@@ -137,7 +137,7 @@ bool util::IsLongBaseline(Detector_t d)
     case (kdNOvAFD   ) : return true;
     case (kdNuStormND) : return false;
     case (kdNuStormFD) : return false;
-    case (kdAtmoJUNO ) : return true;
+    case (kdJUNO ) : return true;
     default: break;
   }
   LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);
@@ -162,7 +162,7 @@ bool util::IsShortBaseline(Detector_t d)
     case (kdNuTIT    ) : return true;
     case (kdNOvAND   ) : return true;
     case (kdNOvAFD   ) : return false;
-    case (kdAtmoJUNO ) : return false;
+    case (kdJUNO ) : return false;
     default: break;
   }
   LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);

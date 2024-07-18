@@ -49,14 +49,11 @@ typedef enum EBeamConf
    kbNuStorm_MuM,          // beam from a stored mu- beam
    kbNuStorm_MuPflash,     // neutrino flash from decays of injected mesons yielding stored mu+
    kbNuStorm_MuMflash,     // neutrino flash from decays of injected mesons yielding stored mu-
-   kbAtmo_JUNONuMu,        // NuMu Atmo neutrino flux at JUNO detector
-   kbAtmo_JUNONuE,         // NuE Atmo neutrino flux at JUNO detector
-   kbAtmo_JUNONuMuBar,     // NuMuBar Atmo neutrino flux at JUNO detector
-   kbAtmo_JUNONuEBar       // NuEBar Atmo neutrino flux at JUNO detector
+   kbAtmo_Jiangmen         // Atmo neutrino flux at Jiangmen
 }
 BeamConf_t;
 
-static const int kNBeamsDefined = 16;
+static const int kNBeamsDefined = 13;
 
 } // conv
 

@@ -49,7 +49,7 @@ typedef enum EDetector
    kdNOvAFD,          // NOvA far detector
    kdNuStormND,       // NuStorm near detector
    kdNuStormFD,       // NuStorm far detector
-   kdAtmoJUNO         // JUNO Atmo
+   kdJUNO         // JUNO Atmo
 }
 Detector_t;
 

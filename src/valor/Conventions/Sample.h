@@ -87,13 +87,17 @@ typedef enum ESample
    ksNuMuCCoa07          , // numuCC-like, off-axis bin "07"
    ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
    ksNuMuCCoa09          , // numuCC-like, off-axis bin "09"
-   // Atmospheric neutrino
-   ksNuMuBarCC           , // numubar CC inclusive
-   ksNuEBarCC            , // nuebar CC inclusive
+   // JUNO selections
+   ksJFCAtmoNuMuCC       , // JUNO Full contained Atmo numu CC
+   ksJFCAtmoNuMuBarCC    , // JUNO Full contained Atmo numubar CC
+   ksJFCAtmoNuECC        , // JUNO Full contained Atmo nue CC
+   ksJFCAtmoNuEBarCC     , // JUNO Full contained Atmo nuebar CC
+   ksJFCAtmoNC             // JUNO Full contained Atmospheric NC
+
 }
 Sample_t; 
 
-static const int kMaxNSamples = 49;
+static const int kMaxNSamples = 53;
 
 } // conv
 
