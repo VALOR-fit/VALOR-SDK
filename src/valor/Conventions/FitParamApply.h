@@ -105,8 +105,11 @@ namespace valor {
     static const SelecApplyMask_t ksApplyTo1RingMu         = (kApplyMaskOne << 32 ); // SuperK selections
     static const SelecApplyMask_t ksApplyTo1RingE          = (kApplyMaskOne << 33 ); // SuperK selections
     static const SelecApplyMask_t ksApplyToMultiRingE      = (kApplyMaskOne << 34 ); // SuperK selections
-    static const SelecApplyMask_t ksApplyToNuMuBarCC       = (kApplyMaskOne << 35 ); 
-    static const SelecApplyMask_t ksApplyToNuEBarCC        = (kApplyMaskOne << 36 ); 
+    //static const SelecApplyMask_t ksApplyToJFCAtmoNuMuCC   = (kApplyMaskOne << 35 ); // JUNO selections
+    static const SelecApplyMask_t ksApplyToJFCAtmoNuMuBarCC= (kApplyMaskOne << 35 ); // JUNO selections    
+    //static const SelecApplyMask_t ksApplyToJFCAtmoNuECC    = (kApplyMaskOne << 37 ); // JUNO selections
+    static const SelecApplyMask_t ksApplyToJFCAtmoNuEBarCC = (kApplyMaskOne << 36 ); // JUNO selections
+    //static const SelecApplyMask_t ksApplyToJFCAtmoNC       = (kApplyMaskOne << 39 ); // JUNO selections
     
 
     static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 ); // Reaction type
@@ -146,6 +149,7 @@ namespace valor {
     static const DetectorApplyMask_t kdApplyToICARUS          = (kApplyMaskOne << 4 );
     static const DetectorApplyMask_t kdApplyToND280           = (kApplyMaskOne << 5 );
     static const DetectorApplyMask_t kdApplyToSuperK          = (kApplyMaskOne << 6 );
+    static const DetectorApplyMask_t kdApplyToJUNO            = (kApplyMaskOne << 7 );
 
     // Nuclear Targets
     static const NuclearTargetApplyMask_t kntApplyToInclusive = (kApplyMaskOne << 0 ); // Nuclear targets.
@@ -235,6 +239,11 @@ namespace valor {
     extern const SelecApplyMask_t ksApplyToELikeRingAny;  // SuperK selections
     extern const SelecApplyMask_t ksApplyTo1RingAny;      // SuperK selections
     extern const SelecApplyMask_t ksApplyToAllRings;      // SuperK selections
+    extern const SelecApplyMask_t ksApplyToJFCAtmoNuMuCC;    // JUNO selections
+    extern const SelecApplyMask_t ksApplyToJFCAtmoNuMuBarCC; // JUNO selections
+    extern const SelecApplyMask_t ksApplyToJFCAtmoNuECC;     // JUNO selections
+    extern const SelecApplyMask_t ksApplyToJFCAtmoNuEBarCC;  // JUNO selections
+    extern const SelecApplyMask_t ksApplyToJFCAtmoNC;        // JUNO selections
     extern const SelecApplyMask_t ksApplyToLowRes;
     extern const SelecApplyMask_t ksApplyToHighRes;
     extern const SelecApplyMask_t ksApplyToNuBarCC;

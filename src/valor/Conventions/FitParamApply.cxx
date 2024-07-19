@@ -80,6 +80,8 @@ const DetectorApplyMask_t valor::conv::kdApplyToAllND  = kdApplyToDUNEND | kdApp
 const DetectorApplyMask_t valor::conv::kdApplyToAllT2K  = kdApplyToND280 | kdApplyToSuperK;
 const DetectorApplyMask_t valor::conv::kdApplyToAll    = kdApplyToAllDUNE | kdApplyToAllSBN | kdApplyToAllT2K;
 
+  
+
 
 
 // Samples
@@ -99,15 +101,25 @@ const SelecApplyMask_t valor::conv::ksApplyToAllNuMuCC = (
   ksApplyToNuMuCCWSoth | ksApplyToNuMuCCWS
 );
 
+// JUNO samples selection
+const SelecApplyMask_t valor::conv::ksApplyToJFCAtmoNuMuCC = (
+  ksApplyToNuMuCC | ksApplyToNuMuCC0pi1trk| ksApplyToNuMuCC0pi2trk | ksApplyToNuMuCC0piNtrk |
+  ksApplyToNuMuCC3trkDelta | ksApplyToNuMuCC1piC | ksApplyToNuMuCC2piC | ksApplyToNuMuCC1pi0 |
+  ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 |
+  ksApplyToNuMuCCWSoth | ksApplyToNuMuCCWS
+);
+
+const SelecApplyMask_t valor::conv::ksApplyToJFCAtmoNuECC = (ksApplyToNuECC0pi | ksApplyToNuECC1piC | ksApplyToNuECC1pi0 | ksApplyToNuECCoth);
+const SelecApplyMask_t valor::conv::ksApplyToJFCAtmoNC = ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
+
 
 const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ksApplyToMultiRingE;                    // SuperK selections
 const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu;                       // SuperK selections
 const SelecApplyMask_t valor::conv::ksApplyToAllRings     = ksApplyTo1RingE | ksApplyTo1RingMu | ksApplyToMultiRingE; // SuperK selections
 
 const SelecApplyMask_t valor::conv::ksApplyToLowRes = ksApplyToMuLikeLowRes | ksApplyToELikeLowRes;
-const SelecApplyMask_t valor::conv::ksApplyToNuBarCC = ksApplyToNuMuBarCC | ksApplyToNuEBarCC;
 const SelecApplyMask_t valor::conv::ksApplyToHighRes = ksApplyToMuLikeHighRes | ksApplyToELikeHighRes;
-const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes | ksApplyToAllRings | ksApplyToNuBarCC;
+const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes | ksApplyToAllRings;
 const SelecApplyMask_t valor::conv::ksApplyToAll = ksApplyToAllND | ksApplyToAllFD;
 const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
 const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
@@ -197,8 +209,6 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC          , "nuecc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS       , "numuccws") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToNC             , "nc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuBarCC      , "numubarcc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuEBarCC       , "nuebarcc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeHighRes  , "mulikehighres") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeLowRes   , "mulikelowres") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToELikeHighRes   , "elikehighres") );
@@ -215,6 +225,14 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToELikeRingAny   , "e-likerings") );
   fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingAny       , "1rany") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllRings       , "allrings") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNuMuCC     , "atmo_numucc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNuMuBarCC  , "atmo_numubarcc") );  
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNuECC      , "atmo_nuecc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNuEBarCC   , "atmo_nuebarcc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNC         , "atmo_nc") );
+
+
+
   for(auto const& pair : fSelecMaskToName) {
     fSelecNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
@@ -295,6 +313,7 @@ void valor::util::ApplyMaskNaming::Init(void)
   fDetectorMaskToName.insert( std::make_pair(kdApplyToICARUS    , "icarus") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToND280     , "nd280") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToSuperK    , "superk") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToJUNO      , "JUNO") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllT2K    , "allt2k") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllDUNE   , "alldune") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllSBN    , "allsbn") );
@@ -385,8 +404,6 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksNeutrinoElec    : return ksApplyToNuECC;     // ksApplyToNeutrinoElec
     case ksInvMuDecay      : return ksApplyToNuMuCCoth; // ksApplyToInvMuDecay
     case ksNuECCWS         : return ksApplyToNuECCWS;
-    case ksNuMuBarCC       : return ksApplyToNuMuBarCC;
-    case ksNuEBarCC        : return ksApplyToNuEBarCC;
     case ksNuMuLikeCChigh  : return ksApplyToMuLikeHighRes;
     case ksNuMuLikeCClow   : return ksApplyToMuLikeLowRes;
     case ksNuMuBarCChigh   : return ksApplyToMuLikeHighRes;
@@ -406,6 +423,11 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksNuMuCCoa05      : return ksApplyToNuMuCC;
     case ksNuMuCCoa06      : return ksApplyToNuMuCC;
     case ksNuMuCCoa07      : return ksApplyToNuMuCC;
+    case ksJFCAtmoNuMuCC      : return ksApplyToJFCAtmoNuMuCC;
+    case ksJFCAtmoNuMuBarCC   : return ksApplyToJFCAtmoNuMuBarCC;
+    case ksJFCAtmoNuECC       : return ksApplyToJFCAtmoNuECC;
+    case ksJFCAtmoNuEBarCC    : return ksApplyToJFCAtmoNuEBarCC;
+    case ksJFCAtmoNC          : return ksApplyToJFCAtmoNC;
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
       return 0;
@@ -427,6 +449,7 @@ const DetectorApplyMask_t valor::util::ApplyToDetector(conv::Detector_t d)
     case kdINGRID    : return 0;
     case kdNuPRISM   : return 0;
     case kdNuTIT     : return 0;
+    case kdJUNO      : return kdApplyToJUNO;
     default:
       LOG("ApplyMask",pWARN) << "No detector apply mask set for " << util::AsString(d) << ". Applying to none.";
       return 0;

@@ -39,8 +39,8 @@ if(b == conv::kbNuMI_FHC || b == conv::kbNuMI_RHC) {
       if (d == conv::kdINGRID ) return conv::kJPARCTgt2ND280;
   }
 
-  if(b == conv::kbAtmo_JUNONuMu || b == conv::kbAtmo_JUNONuE || b == conv::kbAtmo_JUNONuMuBar || b == conv::kbAtmo_JUNONuEBar) {
-    if (d == conv::kdAtmoJUNO) return conv::kAtmoJUNO;
+  if(b == conv::kbAtmo_Jiangmen) {
+    if (d == conv::kdJUNO) return conv::kAtmoJUNO;
   }
   
   LOG("Baseline", pERROR)
