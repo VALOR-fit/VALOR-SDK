@@ -16,7 +16,7 @@ void valor_interpreter()
     
     TString loadlibs = "#include \""+top_dir+"/root/valor_sdk_loadlibs.C\"";
     TString execute_loadlibs = TString::Format("*(int*)%p = valor_sdk_loadlibs();",&valor_libs_status);
-    
+
     gROOT->ProcessLine(loadincs.Data());
     gROOT->ProcessLine(execute_loadincs.Data());
     gROOT->ProcessLine(loadlibs.Data());

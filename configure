@@ -32,6 +32,8 @@ if(($match = grep(/--help/i, @ARGV)) > 0) {
   print "    log4cpp-lib       Path to log4cpp library                                     default: - (auto-detection enabled) \n";
   print "    gsl-inc           Path to GSL includes                                        default: - (auto-detection enabled) \n";
   print "    gsl-lib           Path to GSL library                                         default: - (auto-detection enabled) \n";
+  print "    lhapdf-inc        Path to LHAPDF includes                                     default: - (auto-detection enabled) \n";
+  print "    lhapdf-lib        Path to LHAPDF library                                      default: - (auto-detection enabled) \n";
   print "    compiler          Compiler to use (any of clang,g++)                          default: g++ \n";
   print "If the printout was too long then pipe it through a pager, eg: \n";
   print "./configure --help | more \n";
@@ -213,6 +215,13 @@ if($options=~m/--with-gsl-inc=(\S*)/i) {
   $opt_with_gsl_inc = $1;
 }
 
+if($options=~m/--with-lhapdf-lib=(\S*)/i) {
+  $opt_with_lhapdf_lib = $1;
+}
+if($options=~m/--with-lhapdf-inc=(\S*)/i) {
+  $opt_with_lhapdf_inc = $1;
+}
+
 # If they were not set explicitly above, get paths from ROOT
 if(! -d $opt_with_gsl_lib || ! -d  $opt_with_gsl_inc) {
   $root_config = `root-config --config`;
@@ -236,6 +245,36 @@ if(! -d $opt_with_gsl_inc && $auto_detect)  {
   print "Setting --with-gsl-inc=$opt_with_gsl_inc\n";
 }
 
+#
+# Always autodetect LHAPDF
+#
+
+my $opt_with_lhapdf_lib = "";
+my $opt_with_lhapdf_inc = "";
+
+if(! -d $opt_with_lhapdf_inc && $auto_detect)  {
+    print "\n*** Warning *** You didn't specify the LHAPDF include path \n";
+    print "Auto-detecting...\n";
+    $matched = auto_detect("LHAPDF.h");
+    if( $matched=~m/(\S*)\/LHAPDF\/LHAPDF.h/i ) {
+	$opt_with_lhapdf_inc = $1;
+    }
+    if ( ($opt_with_lhapdf_inc eq "/usr/include") or ($opt_with_lhapdf_inc eq "/include") ) {
+	$opt_with_lhapdf_inc = "";
+    }
+    print "Setting --with-lhapdf-inc=$opt_with_lhapdf_inc\n";
+}
+
+if(! -d $opt_with_lhapdf_lib && $auto_detect)  {
+  print "\n*** Warning *** You didn't specify the lhapdf library path \n";
+  print "Auto-detecting...\n";
+  $matched = auto_detect("libLHAPDF.*");
+  if( $matched=~m/(\S*)\/liblhapdf\S*/i ) {
+     $opt_with_lhapdf_lib = $1;
+  }
+  print "Setting --with-lhapdf-lib=$opt_with_lhapdf_lib\n";
+}
+
 print "\n";
 
 # Work out the GENIE version
@@ -257,10 +296,10 @@ if ($ENV{GENIE}) {
     if (defined($ENV{GENIE_FQ_DIR}) && is_file_in_dir("libGRwClc.so",$ENV{GENIE_FQ_DIR}."/lib")) {
       $rew_exists = 1;
     }
-    # Shouldn't be necessary
-    #~ if (defined($ENV{GENIE}) && is_file_in_dir("libGRwClc.so",$ENV{GENIE}."/lib")) {
-      #~ $rew_exists = 1;
-    #~ }
+    # Necessary for AL9
+    if (defined($ENV{GENIE}) && is_file_in_dir("libGRwClc.so",$ENV{GENIE}."/lib")) {
+      $rew_exists = 1;
+    }
   }
   else {
     $GENIE_VERSION = 2;
@@ -426,6 +465,8 @@ print MKCONF "OPT_WITH_MISC_LIBS=$opt_with_cxx_misc_libs\n";
 print MKCONF "OPT_ENABLE_GSL=$opt_enable_gsl\n";
 print MKCONF "OPT_WITH_GSL_INC=$opt_with_gsl_inc\n";
 print MKCONF "OPT_WITH_GSL_LIB=$opt_with_gsl_lib\n";
+print MKCONF "OPT_WITH_LHAPDF_INC=$opt_with_lhapdf_inc\n";
+print MKCONF "OPT_WITH_LHAPDF_LIB=$opt_with_lhapdf_lib\n";
 print MKCONF "OPT_WITH_LOG4CPP_INC=$opt_with_log4cpp_inc\n";
 print MKCONF "OPT_WITH_LOG4CPP_LIB=$opt_with_log4cpp_lib\n";
 print MKCONF "OPT_WITH_COMPILER=$opt_with_compiler\n";
