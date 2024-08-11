@@ -14,7 +14,7 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 #include "valor/Messenger/Messenger.h"
 #include "valor/Core/Likelihood.h"
-#include "valor/Core/LikelihoodGSL.h"
+#include "valor/Fitters/LikelihoodGSL.h"
 
 using namespace valor;
 using namespace valor::conv;

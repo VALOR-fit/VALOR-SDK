@@ -13,7 +13,7 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 #include "valor/Messenger/Messenger.h"
 #include "valor/Core/Likelihood.h"
-#include "valor/Core/LikelihoodMinuit.h"
+#include "valor/Fitters/LikelihoodMinuit.h"
 
 using namespace valor;
 using namespace valor::conv;
