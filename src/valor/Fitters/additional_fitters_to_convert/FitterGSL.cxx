@@ -20,7 +20,7 @@
 #include <TStopwatch.h>
 
 #include "valor/Conventions/Build.h"
-#include "valor/Core/FitterGSL.h" 
+#include "valor/Fitters/FitterGSL.h" 
 #include "valor/Core/FitInputs.h" 
 #include "valor/Core/FitParamList.h" 
 #include "valor/Core/FitDataABC.h" 

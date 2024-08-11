@@ -45,7 +45,7 @@
 #include "valor/Utilities/Rnd.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/Core/CompoundFitModel.h"
-#include "valor/Core/FitterMinuit2.h"
+#include "valor/Fitters/FitterMinuit2.h"
 #include "valor/Core/Likelihood.h"
 #include "valor/Fitters/LikelihoodMinuit2.h"
 #include "valor/Core/FitParamList.h"

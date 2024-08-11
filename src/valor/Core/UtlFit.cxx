@@ -26,8 +26,8 @@ ChangeLog:
 #include "valor/Core/Likelihood.h"
 #include "valor/Core/FitterABC.h"
 //#include "valor/Core/FitterGSL.h"
-#include "valor/Core/FitterMinuit.h"
-#include "valor/Core/FitterMinuit2.h"
+#include "valor/Fitters/FitterMinuit.h"
+#include "valor/Fitters/FitterMinuit2.h"
 #include "valor/Core/UtlFit.h"
 
 using namespace valor;
