@@ -42,10 +42,11 @@ and many other optiosn passed through the ctor
 and is a uniform interface that can be used with any fitter
 */
 
-   virtual bool DoTheFit (Likelihood * likelihood) = 0;
+  //virtual bool DoTheFit (Likelihood * likelihood) = 0;
+  virtual bool DoTheFit (void) = 0;
 
 
-   virtual const Registry & FitInfo(void) const = 0;
+  /*virtual const Registry & FitInfo(void) const = 0;*/
 /*
 the above replaces:
 

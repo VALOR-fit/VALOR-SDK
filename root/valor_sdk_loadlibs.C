@@ -43,6 +43,7 @@ int valor_sdk_loadlibs ()
   valor_lib_status = valor_lib_status || valor_load_lib("libValorUtil.so");
   valor_lib_status = valor_lib_status || valor_load_lib("libValorKBin.so");
   valor_lib_status = valor_lib_status || valor_load_lib("libValorFitElements.so");
+  valor_lib_status = valor_lib_status || valor_load_lib("libValorFitters.so");
   
   if (valor_lib_status) {
     std::cerr<<"Did not successfully load all libraries"<<std::endl;

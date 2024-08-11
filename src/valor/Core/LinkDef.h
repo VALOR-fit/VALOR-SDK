@@ -29,13 +29,7 @@
 #pragma link C++ class valor::CompoundFitModel+;
 
 #pragma link C++ class valor::Likelihood+;
-#pragma link C++ class valor::LikelihoodMinuit+;
-#pragma link C++ class valor::LikelihoodMinuit2+;
-#pragma link C++ class valor::LikelihoodGSL+;
-
 #pragma link C++ class valor::FitterABC+;
-#pragma link C++ class valor::FitterMinuit+;
-#pragma link C++ class valor::FitterMinuit2+;
 
 #pragma link C++ class std::vector<std::vector<float> >;
 

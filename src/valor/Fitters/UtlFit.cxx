@@ -25,10 +25,10 @@ ChangeLog:
 #include "valor/Core/FitParamList.h"
 #include "valor/Core/Likelihood.h"
 #include "valor/Core/FitterABC.h"
-//#include "valor/Core/FitterGSL.h"
+//#include "valor/FitCore/FitterGSL.h"
 #include "valor/Fitters/FitterMinuit.h"
 #include "valor/Fitters/FitterMinuit2.h"
-#include "valor/Core/UtlFit.h"
+#include "valor/Fitters/UtlFit.h"
 
 using namespace valor;
 

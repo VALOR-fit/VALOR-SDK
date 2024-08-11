@@ -55,7 +55,7 @@
 #include "valor/Core/FitDataABC.h"
 #include "valor/Core/Likelihood.h"
 #include "valor/Core/FitterABC.h"
-#include "valor/Core/UtlFit.h"
+#include "valor/Fitters/UtlFit.h"
 #include "valor/Core/CompoundFitElements.h"
 #include "valor/Core/UtlFitParamList.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"

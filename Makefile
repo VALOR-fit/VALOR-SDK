@@ -55,6 +55,7 @@ build-libs: | build-conventions   \
 		   build-core-fitter   \
 		   build-kinebinning   \
 		   build-fit-elements  \
+		   build-fitters       \
 		   build-testing       \
 		   FORCE
 
@@ -100,13 +101,18 @@ build-cmdline: | make-bin-lib-dir FORCE
 
 build-core-fitter: | make-bin-lib-dir FORCE
 	@echo " "
-	@echo "** Building FitCore package..."
-	$(MAKE) -C "${VALOR_FMWK}/src/valor/FitCore"
+	@echo "** Building Core package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Core"
 
 build-fit-elements: | make-bin-lib-dir FORCE
 	@echo " "
 	@echo "** Building FitElements package..."
 	$(MAKE) -C "${VALOR_FMWK}/src/valor/FitElements"
+
+build-fitters: | make-bin-lib-dir FORCE
+	@echo " "
+	@echo "** Building Fitters package..."
+	$(MAKE) -C "${VALOR_FMWK}/src/valor/Fitters"
 
 build-kinebinning: | make-bin-lib-dir FORCE
 	@echo " "
@@ -181,9 +187,10 @@ purge: FORCE
 	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Ntuple;
 	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Registry;
 	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/CmdLine;
-	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/FitCore;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Core;
 	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/KineBinning;
 	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/FitElements;
+	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Fitters;
 	$(MAKE) purge -C ${VALOR_FMWK}/src/valor/Testing;
 	cd ${VALOR_FMWK}
 
@@ -203,9 +210,10 @@ clean-files: FORCE
 	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Ntuple;
 	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Registry;
 	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/CmdLine;
-	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/FitCore;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Core;
 	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/KineBinning;
 	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/FitElements;
+	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Fitters;
 	$(MAKE) clean -C ${VALOR_FMWK}/src/valor/Testing;
 	cd $(VALOR_FMWK);\
         [ ! -d ./bin ] || rm -f ./bin/*;\
