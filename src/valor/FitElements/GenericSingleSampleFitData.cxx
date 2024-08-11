@@ -21,9 +21,9 @@
 #include "valor/Conventions/Names.h"
 #include "valor/FitElements/GenericSingleSampleFitData.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
-#include "valor/FitCore/FitModelABC.h"
-#include "valor/FitCore/FitParamList.h"
-#include "valor/FitCore/PhysHypothesis.h"
+#include "valor/Core/FitModelABC.h"
+#include "valor/Core/FitParamList.h"
+#include "valor/Core/PhysHypothesis.h"
 #include "valor/Utilities/Rnd.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlNumStat.h"
@@ -62,7 +62,7 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
 
   // Set various parameters from the associated GSSFM
   if(!fGSSFM){
-    LOG("GenericSingleSampleFitData",pNOTICE)
+    VLOG("GenericSingleSampleFitData",pNOTICE)
       << "The associated model has not been set prior to calling Read, why is this?";
   }
 
@@ -70,7 +70,7 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
   this->Book();
 
   // Set up the initial XML reader
-  LOG("GenericSingleSampleFitData", pNOTICE)
+  VLOG("GenericSingleSampleFitData", pNOTICE)
     << "Reading configuration from XML file [" << file << "]";
 
   // string file_fullpath = util::CompleteConfigPath(file);
@@ -80,7 +80,7 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
   TXMLEngine* xml = new TXMLEngine;
   XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
   if (xmldoc==0) {
-    LOG("GenericSingleSampleFitData",pERROR)
+    VLOG("GenericSingleSampleFitData",pERROR)
       << "Can not parse input XML file [" << ts_file << "]";
     delete xml;
     util::Die(1); return false;
@@ -91,12 +91,12 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
   // If use_dst=true, read the ROOT TTree and fill-in the VALOR data arrays.
   bool use_dst = util::XML2Bool(xml,root_node,"data/using_dst_format");
   if(use_dst) {
-    LOG("GenericSingleSampleFitData",pINFO)
+    VLOG("GenericSingleSampleFitData",pINFO)
       << "Populating VALOR data arrays from VALOR DSTs";
     string node_name = "data/dst/" + util::AsString(fBeam, "lowercase");
     TTree * data_dst = util::XML2TTree (xml,root_node,node_name);
     if (!data_dst) {
-      LOG("GenericSingleSampleFitData",pFATAL) << "Failed to read DST tree";
+      VLOG("GenericSingleSampleFitData",pFATAL) << "Failed to read DST tree";
       util::Die(-1); return false;
     }
     this->FillFromDST(data_dst);
@@ -106,11 +106,11 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
   // In this case, the data arrays are pre-binned so the binning can not change.
   // Make sure the arrays you read in correspond to the expected binning.
   else {
-    LOG("GenericSingleSampleFitData",pINFO)
+    VLOG("GenericSingleSampleFitData",pINFO)
       << "Reading stored VALOR data arrays";
     // -------------------------------------------------
     // TODO:
-    LOG("GenericSingleSampleFitData",pFATAL) << "Case not implemented yet";
+    VLOG("GenericSingleSampleFitData",pFATAL) << "Case not implemented yet";
     util::Die(-1); return false;
     // -------------------------------------------------
   }
@@ -119,27 +119,27 @@ bool GenericSingleSampleFitData::Read(string file, Option_t * /*opt*/)
   xml->FreeDoc(xmldoc);
   delete xml;
 
-  LOG("GenericSingleSampleFitData",pNOTICE) << "Done reading data";
+  VLOG("GenericSingleSampleFitData",pNOTICE) << "Done reading data";
 
   return true;
 }
 //________________________________________________________________________________________
 bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Option_t * write_opt)
 {
-  LOG("GenericSingleSampleFitData", pINFO)  
+  VLOG("GenericSingleSampleFitData", pINFO)  
     << "Writing results to input object array...";
-  LOG("GenericSingleSampleFitData", pDEBUG) 
+  VLOG("GenericSingleSampleFitData", pDEBUG) 
     << "tag = " << tag << ", write option = " << write_opt;
 
   string opt = (write_opt) ? write_opt : fDefVALORArrayFormat;
 
   if(opt.find("all") != string::npos) {
     opt = "data_vf,data_rf +slices +SB";
-    LOG("GenericSingleSampleFitData", pDEBUG) << "Write option replaced with = " << opt;
+    VLOG("GenericSingleSampleFitData", pDEBUG) << "Write option replaced with = " << opt;
   }
 
   if(!array) {
-    LOG("GenericSingleSampleFitData", pERROR) << "Null input object array.";
+    VLOG("GenericSingleSampleFitData", pERROR) << "Null input object array.";
     return false;
   }
 
@@ -155,14 +155,14 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
 
     // binning optimised for fit CPU performance
     if(fDataObNull)  {
-      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to write null data.";
+      VLOG("GenericSingleSampleFitData",pFATAL) << "Trying to write null data.";
       util::Die(-1) ; return false;
     }
     // Add data in VALOR array format
     if(opt.find("data_vf") != string::npos) {
       assert(fDataOb);
       fDataOb->SetName(TString::Format("%s_%s_%s",tag,"data_ob_vf",fName.c_str()).Data());
-      LOG("GenericSingleSampleFitData", pDEBUG) << "Adding: " << fDataOb->GetName();
+      VLOG("GenericSingleSampleFitData", pDEBUG) << "Adding: " << fDataOb->GetName();
       array->Add(fDataOb);
     }
 
@@ -191,7 +191,7 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
         }
       }
       else {
-        LOG("GenericSingleSampleFitData", pWARN)
+        VLOG("GenericSingleSampleFitData", pWARN)
           << "Tried writing data to ROOT format, but number of kine vars != 1 or 2 (" << fDataOb->GetName() << ")";
       }
 
@@ -219,7 +219,7 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
       if(opt.find("data_vf") != string::npos) {
         assert(fDataSb);
         fDataSb->SetName(TString::Format("%s_%s_%s",tag,"data_sb_vf",fName.c_str()));
-        LOG("GenericSingleSampleFitData", pDEBUG) << "Adding: " << fDataSb->GetName();
+        VLOG("GenericSingleSampleFitData", pDEBUG) << "Adding: " << fDataSb->GetName();
         array->Add(fDataSb);
       }//data_vf
 
@@ -248,7 +248,7 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
           }
         }
         else {
-          LOG("GenericSingleSampleFitData", pWARN)
+          VLOG("GenericSingleSampleFitData", pWARN)
             << "Tried writing data to ROOT format, but number of kine vars != 1 or 2 (" << fDataSb->GetName() << ")";
         }
 
@@ -272,7 +272,7 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
     }//+SB
   }//data_vf, data_rf
 
-  LOG("GenericSingleSampleFitData", pINFO)  << "Done!";
+  VLOG("GenericSingleSampleFitData", pINFO)  << "Done!";
 
   return true;
 }
@@ -280,7 +280,7 @@ bool GenericSingleSampleFitData::Write(TObjArray * array, const char * tag, Opti
 bool GenericSingleSampleFitData::Write(
     const char * filename, const char * tag, const char * write_opt, Option_t * file_opt)
 {
-  LOG("GenericSingleSampleFitData",pNOTICE) 
+  VLOG("GenericSingleSampleFitData",pNOTICE) 
     << "Writing results to file: [" << filename << "]";
 
   TObjArray * array = new TObjArray();
@@ -335,7 +335,7 @@ bool GenericSingleSampleFitData::Read(util::ToyStream* stream)
 long GenericSingleSampleFitData::StreamSize(Option_t* opt_in) const
 {
   if (!fBinning) {
-    LOG("GenericSingleSampleFitData", pERROR) << "Must call SetAssociatedModel() and SetFromModel() with FitModel "
+    VLOG("GenericSingleSampleFitData", pERROR) << "Must call SetAssociatedModel() and SetFromModel() with FitModel "
                                               << "before attempting to determine the toy size.";
     return false;
   }
@@ -358,14 +358,14 @@ long GenericSingleSampleFitData::StreamSize(Option_t* opt_in) const
 bool GenericSingleSampleFitData::Generate(
     FitModelABC * model_abc, const FitParamList & fp, bool fluctuate)
 {
-  LOG("GenericSingleSampleFitData",pINFO) 
+  VLOG("GenericSingleSampleFitData",pINFO) 
     << "Generating a toy-MC expt with the following params: " << fp;
-  LOG("GenericSingleSampleFitData",pINFO)
+  VLOG("GenericSingleSampleFitData",pINFO)
     << "Stat. fluctuations are turned-" << ((fluctuate)? "ON" : "OFF");
   
   bool ok = model_abc->Generate(fp,"+SB");
   if(!ok) {
-    LOG("GenericSingleSampleFitData",pERROR) 
+    VLOG("GenericSingleSampleFitData",pERROR) 
       << "Could not generate predictions with model: " << model_abc->Name()
       << " and input params: " << fp;
     return false;
@@ -377,14 +377,14 @@ bool GenericSingleSampleFitData::Generate(
 bool GenericSingleSampleFitData::Generate(
     FitModelABC * model_abc, const PhysHypothesis & ph, bool fluctuate)
 {
-  LOG("GenericSingleSampleFitData",pINFO) 
+  VLOG("GenericSingleSampleFitData",pINFO) 
     << "Generating a toy-MC expt with the following params: " << ph;
-  LOG("GenericSingleSampleFitData",pINFO)
+  VLOG("GenericSingleSampleFitData",pINFO)
     << "Stat. fluctuations are turned-" << ((fluctuate)? "ON" : "OFF");
 
   bool ok = model_abc->Generate(ph,"+SB");
   if(!ok) {
-    LOG("GenericSingleSampleFitData",pERROR) 
+    VLOG("GenericSingleSampleFitData",pERROR) 
       << "Could not generate predictions with model: " << model_abc->Name()
       << " with systematic tweaks: " << model_abc->Tweaks()
       << " and input params: " << ph;
@@ -401,7 +401,7 @@ bool GenericSingleSampleFitData::Generate(FitModelABC * model_abc, bool fluctuat
 
   // Set various parameters from the associated GSSFM
   if(!fGSSFM){
-    LOG("GenericSingleSampleFitData",pNOTICE)
+    VLOG("GenericSingleSampleFitData",pNOTICE)
       << "The associated model has not been set prior to calling Generate, why is this?";
     this->SetAssociatedModel(model_abc);
     this->SetFromModel();
@@ -425,7 +425,7 @@ bool GenericSingleSampleFitData::Generate(FitModelABC * model_abc, bool fluctuat
 
   this->Zero("all");
 #ifndef __VALOR_FMWK_PENALTY_ONLY__
-  LOG("GenericSingleSampleFitData",pINFO) 
+  VLOG("GenericSingleSampleFitData",pINFO) 
     << "Generating toy-MC for: " 
     << fName;
 
@@ -442,7 +442,7 @@ bool GenericSingleSampleFitData::Generate(FitModelABC * model_abc, bool fluctuat
       double ndata = (fluctuate) ? Rnd::Instance()->RndToyMCstat().Poisson(nmc) : nmc;
       fDataOb->GetArray()[ibin_ob] = ndata;
 
-      LOG("GenericSingleSampleFitData",pDEBUG)
+      VLOG("GenericSingleSampleFitData",pDEBUG)
         << "(reco_ob_idx = "<<ibin_ob
         << "): N_{MC} = " << nmc << ", N_{Data} = " << ndata;
     }//ibin_ob
@@ -460,7 +460,7 @@ bool GenericSingleSampleFitData::Generate(FitModelABC * model_abc, bool fluctuat
       double ndata = (fluctuate) ? Rnd::Instance()->RndToyMCstat().Poisson(nmc) : nmc;
       fDataSb->GetArray()[ibin_sb] = ndata;
 
-      LOG("GenericSingleSampleFitData",pDEBUG)
+      VLOG("GenericSingleSampleFitData",pDEBUG)
         << "(reco_sb_idx = "<<ibin_sb
         << "): N_{MC} = " << nmc << ", N_{Data} = " << ndata;
 
@@ -472,7 +472,7 @@ bool GenericSingleSampleFitData::Generate(FitModelABC * model_abc, bool fluctuat
   }
 #endif //__VALOR_FMWK_PENALTY_ONLY__
  
-   LOG("GenericSingleSampleFitData",pINFO) << fName << ": N_{Data} SB = " <<
+   VLOG("GenericSingleSampleFitData",pINFO) << fName << ": N_{Data} SB = " <<
       fDataSb->Integral() << " ; N_{Data} OB = " << fDataOb->Integral();
 
   return true;
@@ -531,9 +531,9 @@ double GenericSingleSampleFitData::GetFitStatistic(
   
   double S_rate_only = TMath::Max(0.,util::ChisqPoisson(tot_ndata, tot_nmc));
 
-  LOG("GenericSingleSampleFitData",pINFO)
+  VLOG("GenericSingleSampleFitData",pINFO)
     << fName<<" - Current fit statistic (rate+shape) = " << S;
-  LOG("GenericSingleSampleFitData",pINFO)
+  VLOG("GenericSingleSampleFitData",pINFO)
     << fName<<" - Current fit statistic (rate only) = " << S_rate_only
     << ", from N data = " << tot_ndata << ", N MC = " << tot_nmc;
   
@@ -552,7 +552,7 @@ double GenericSingleSampleFitData::GetFitStatistic(
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::Init(void)
 {
-  LOG("GenericSingleSampleFitData",pDEBUG) << "Initializing...";
+  VLOG("GenericSingleSampleFitData",pDEBUG) << "Initializing...";
 
   fName         = "none";
   fModelName    = "none";
@@ -578,7 +578,7 @@ void GenericSingleSampleFitData::Init(void)
 void GenericSingleSampleFitData::SetAssociatedModel(FitModelABC *model_abc)
 {
   fGSSFM = dynamic_cast<GenericSingleSampleFitModel*>(model_abc);
-  LOG("GenericSingleSampleFitData",pNOTICE) << " Set the model with name: " << fGSSFM->Name();
+  VLOG("GenericSingleSampleFitData",pNOTICE) << " Set the model with name: " << fGSSFM->Name();
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::SetFromModel(void)
@@ -588,12 +588,12 @@ void GenericSingleSampleFitData::SetFromModel(void)
   fPOT          = fGSSFM->GetPOT();
   fFiducialMass = fGSSFM->GetFiducialMass();
 
-  LOG("GenericSingleSampleFitData",pNOTICE) << " POT set from model : " << fPOT;
+  VLOG("GenericSingleSampleFitData",pNOTICE) << " POT set from model : " << fPOT;
 }
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::Book(void)
 {
-  LOG("GenericSingleSampleFitData",pDEBUG) << "Booking...";
+  VLOG("GenericSingleSampleFitData",pDEBUG) << "Booking...";
   assert(fBinning);
   assert(fGSSFM  );
 
@@ -616,7 +616,7 @@ void GenericSingleSampleFitData::Book(void)
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::Clean(void)
 {
-  LOG("GenericSingleSampleFitData",pDEBUG) << "Cleaning-up...";
+  VLOG("GenericSingleSampleFitData",pDEBUG) << "Cleaning-up...";
 
   if (!fDataObNull) {
     fDataObNull = true;
@@ -632,7 +632,7 @@ void GenericSingleSampleFitData::Clean(void)
 //________________________________________________________________________________________
 void GenericSingleSampleFitData::Zero(Option_t * opt)
 {
-  LOG("GenericSingleSampleFitData",pDEBUG) << "Zeroing-out (option: " << opt << ") ...";
+  VLOG("GenericSingleSampleFitData",pDEBUG) << "Zeroing-out (option: " << opt << ") ...";
 
   string option = (opt) ? opt : "all";
 
@@ -687,23 +687,23 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
   }
 
   if (any_bad_status) {
-    LOG("GenericSingleSampleFitData", pWARN)
+    VLOG("GenericSingleSampleFitData", pWARN)
       << "MiniDST branches not found";
     util::Die(-1);
   }
 
   if(bstat_wght) {
-    LOG("GenericSingleSampleFitData",pINFO)
+    VLOG("GenericSingleSampleFitData",pINFO)
       << fName<<" - No wght branch found.";
   }
 
   Long_t nev = t->GetEntries();
-  LOG("GenericSingleSampleFitData",pINFO)
+  VLOG("GenericSingleSampleFitData",pINFO)
     << "Input VALOR DST has " << nev << " entries";
 
   double tree_weight = t->GetWeight();
 
-  LOG("GenericSingleSampleFitData",pNOTICE)
+  VLOG("GenericSingleSampleFitData",pNOTICE)
     << "Input VALOR DST has weight "<<tree_weight;
 
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
@@ -715,7 +715,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
 
     if(iev%(nev/20)==0) {
       double pct = (100 * (double)(iev+1)) / (double)nev;
-      LOG("GenericSingleSampleFitData",pINFO)
+      VLOG("GenericSingleSampleFitData",pINFO)
         << "Reading "<< util::AsString(fBeam)
         <<" data DST: "<< TMath::Nint(pct) << "% done";
     }
@@ -723,14 +723,14 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     // Get sample index
     Sample_t s = util::SampleFromInt(sample);
     if(s == ksUndefined) {
-      LOG("GenericSingleSampleFitData",pWARN)
+      VLOG("GenericSingleSampleFitData",pWARN)
         << " ** Undefined sample ID used in data event: " << iev
         << " (value stored in DST: " << sample << ")";
       //util::Die(-1);return;
     }
     if(s != fSample) {
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-      LOG("GenericSingleSampleFitData",pDEBUG)
+      VLOG("GenericSingleSampleFitData",pDEBUG)
         << "Ignoring data event: " << iev
         << " (sample ID: " << s << " "<< util::AsString(s)
         << " not matching one used for configuring this dataset: "
@@ -741,7 +741,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     BeamConf_t b = util::BeamConfFromInt(beam);
     if(b != fBeam) {
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-      LOG("GenericSingleSampleFitData",pDEBUG)
+      VLOG("GenericSingleSampleFitData",pDEBUG)
         << "Ignoring data event: " << iev
         << " (beam ID: " << b << " "<< util::AsString(b)
         << " not matching one used for configuring this dataset: "
@@ -756,7 +756,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     for (conv::KineVar_t kv : reco_ob->KineVars()) {
       double val = kinematics.at(kv);
       if (val < reco_ob->Minimum(kv) || val > reco_ob->Maximum(kv)) {
-        LOG("GenericSingleSampleFitData",pWARN)
+        VLOG("GenericSingleSampleFitData",pWARN)
           << "MC event: " << iev << " has reco kinematic value outside range: "
           << util::AsString(kv) << " = " << val
           << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
@@ -783,7 +783,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     int reco_bin_sb = reco_sb->FindBin(reco_vars);
     int reco_bin_ob = reco_ob->FindBin(reco_vars);
 
-    LOG("GenericSingleSampleFitData",pDEBUG)
+    VLOG("GenericSingleSampleFitData",pDEBUG)
       << "Inserting to MC teplates --> MC event #" << iev
       << "\n sample       = " << s        << " (" << util::AsString(s) << ")"
       << "\n wght         = " << wght
@@ -850,32 +850,32 @@ void GenericSingleSampleFitData::OverwriteData(VALORArray* replacement_data_ob, 
 {
   if(replacement_data_ob) {
     if(fDataObNull) {
-      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite null Ob data arrays.";
+      VLOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite null Ob data arrays.";
       util::Die(-1);
     }
     if(fDataOb->GetSize() != replacement_data_ob->GetSize()) {
-      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite Ob data array with an array of a different size.";
+      VLOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite Ob data array with an array of a different size.";
       util::Die(-1);
     }
     fDataOb = new VALORArray(*replacement_data_ob);
     if(!fDataOb) {
-      LOG("GenericSingleSampleFitData",pFATAL) << "Could not overwrite Ob data array.";
+      VLOG("GenericSingleSampleFitData",pFATAL) << "Could not overwrite Ob data array.";
       util::Die(-1);
     }
   }
 
   if(replacement_data_sb) {
     if(fDataSbNull) {
-      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite null Sb data arrays.";
+      VLOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite null Sb data arrays.";
       util::Die(-1);
     }
     if(fDataSb->GetSize() != replacement_data_sb->GetSize()) {
-      LOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite Sb data array with an array of a different size.";
+      VLOG("GenericSingleSampleFitData",pFATAL) << "Trying to overwrite Sb data array with an array of a different size.";
       util::Die(-1);
     }
     fDataSb = new VALORArray(*replacement_data_sb);
     if(!fDataSb) {
-      LOG("GenericSingleSampleFitData",pFATAL) << "Could not overwrite Sb data array.";
+      VLOG("GenericSingleSampleFitData",pFATAL) << "Could not overwrite Sb data array.";
       util::Die(-1);
     }
   }

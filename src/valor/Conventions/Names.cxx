@@ -97,7 +97,7 @@ string valor::util::nm::DSetToken(string dataset, int i)
        }
     }
   }
-  LOG("DUNE",pWARN) 
+  VLOG("DUNE",pWARN) 
     << Form("Dataset name doesn't follow `detector%sbeam%ssample%sobservable' convention",
      delimiter.c_str(),delimiter.c_str(),delimiter.c_str());
 

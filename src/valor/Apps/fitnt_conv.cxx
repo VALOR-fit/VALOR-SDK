@@ -40,11 +40,11 @@
 // VALOR/SDK
 #include "valor/CmdLine/CmdLnArgParser.h"
 #include "valor/Messenger/Messenger.h"
-#include "valor/FitCore/PhysParamList.h"
-#include "valor/FitCore/FitParamList.h"
-#include "valor/FitCore/Likelihood.h"
-#include "valor/FitCore/UtlFitParamList.h"
-#include "valor/FitCore/CompoundFitElements.h"
+#include "valor/Core/PhysParamList.h"
+#include "valor/Core/FitParamList.h"
+#include "valor/Core/Likelihood.h"
+#include "valor/Core/UtlFitParamList.h"
+#include "valor/Core/CompoundFitElements.h"
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlSystem.h"
 #include "valor/Conventions/ParameterPool.h"
@@ -71,7 +71,7 @@ int main(int argc, char ** argv)
     return ConversionToStandardBareRootFormat();
   }
   else {
-    LOG("valor",pFATAL)
+    VLOG("valor",pFATAL)
       << "No output format selected. Exiting.";
   }
 
@@ -173,21 +173,21 @@ int ConversionToStandardBareRootFormat(void)
 
     fitnt->GetEntry(itoymc);
 
-    LOG("valor", pNOTICE)
+    VLOG("valor", pNOTICE)
        << "******************************************************* \n"
        << "Toy-MC experiment: # " << itoymc << "\n"
        << "******************************************************* \n";
 
-    LOG("valor", pNOTICE)
+    VLOG("valor", pNOTICE)
       << "\n >> Input parameter list: \n "
       << *true_params;
 
-    LOG("valor", pNOTICE)
+    VLOG("valor", pNOTICE)
       << "\n >> Best-fit parameter list: \n "
       << *best_fit_params;
 
     if (n_params_input!=best_fit_params->Size()) {
-      LOG("valor", pFATAL)
+      VLOG("valor", pFATAL)
         << "All FPLs given to this program must have the same parameters defined. Exiting.";
       exit(-1);
     }
@@ -222,7 +222,7 @@ int ConversionToStandardBareRootFormat(void)
     out_fitnt->Fill();
   }
 
-  LOG("valor", pNOTICE)
+  VLOG("valor", pNOTICE)
       << "*** Saving VALOR fit n-tuple conversion to: "
       << gOptOutFileName;
 
@@ -231,40 +231,40 @@ int ConversionToStandardBareRootFormat(void)
   out_metadata->Write();
   fout.Close();
 
-  LOG("valor", pNOTICE)  << "Done!";
+  VLOG("valor", pNOTICE)  << "Done!";
   return 0;
 }
 //___________________________________________________________________
 void GetCommandLineArgs(int argc, char ** argv)
 {
-  LOG("valor", pINFO) << "*** Parsing command line arguments";
+  VLOG("valor", pINFO) << "*** Parsing command line arguments";
 
   // Parse run options for this app
   CmdLnArgParser parser(argc,argv);
 
   // get output format
   if ( parser.OptionExists("format") ) {
-    LOG("valor", pINFO) << "Reading output format";
+    VLOG("valor", pINFO) << "Reading output format";
     gOptOutFormat = parser.ArgAsString("format");
   } else {
-    LOG("valor", pFATAL)
+    VLOG("valor", pFATAL)
        << "Unspecified output format - Exiting";
     exit(1);
   }
 
   // get input VALOR fit file name
   if ( parser.OptionExists("input") ) {
-    LOG("valor", pINFO) << "Reading input file";
+    VLOG("valor", pINFO) << "Reading input file";
     gOptInpFileName = parser.ArgAsString("input");
   } else {
-    LOG("valor", pFATAL)
+    VLOG("valor", pFATAL)
        << "Unspecified input filename - Exiting";
     exit(1);
   }
 
   // get output file name (or set default)
   if ( parser.OptionExists("output") ) {
-    LOG("valor", pINFO) << "Reading output file";
+    VLOG("valor", pINFO) << "Reading output file";
     gOptOutFileName = parser.ArgAsString("output");
   } else {
 
@@ -284,10 +284,10 @@ void GetCommandLineArgs(int argc, char ** argv)
 
   // get config file name
   if ( parser.OptionExists("config") ) {
-    LOG("valor", pINFO) << "Reading config file";
+    VLOG("valor", pINFO) << "Reading config file";
     gOptConfig = parser.ArgAsString("config");
   } else {
-    LOG("valor", pFATAL)
+    VLOG("valor", pFATAL)
       << "Unspecified config file name - Exiting";
     exit(1);
   }

@@ -154,11 +154,11 @@ bool valor::util::XML2Bool(
 {
 // Get the specified node content as a boolean
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
-    LOG("XML", pFATAL) 
+    VLOG("XML", pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
     util::Die(1); return false;
   }
@@ -176,7 +176,7 @@ bool valor::util::XML2Bool(
      content == "0"    || 
      content == "O") return false;
 
-  LOG("XML", pFATAL) 
+  VLOG("XML", pFATAL) 
       << "Could not interpret content (" << content 
       << ") found at node_path: " << node_path << " as a boolean!";
   util::Die(1);
@@ -188,11 +188,11 @@ int valor::util::XML2Int(
 {
 // Get the specified node content as a floating-point number
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
-    LOG("XML", pFATAL) 
+    VLOG("XML", pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
     util::Die(1); return -1;
   }
@@ -206,11 +206,11 @@ double valor::util::XML2Dbl(
 {
 // Get the specified node content as a floating-point number
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
-    LOG("XML", pFATAL) 
+    VLOG("XML", pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
     util::Die(1); return conv::kBadResult;
   }
@@ -234,11 +234,11 @@ vector<double> valor::util::XML2DblArray(
 // Get the specified node content as a vector floating-point number
 // The node content should be a comma-separed list of numbers
 
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
   vector<double> array;
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
-    LOG("XML",pFATAL) 
+    VLOG("XML",pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
     util::Die(1); return array;
   }
@@ -271,11 +271,11 @@ string valor::util::XML2String(
 {
 // Get the specified node content as a floating-point number
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
  
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
-    LOG("XML",pFATAL)
+    VLOG("XML",pFATAL)
        << "No node was found at input XML node node_path: " << node_path;
     util::Die(1); return "badstring";
   }
@@ -291,12 +291,12 @@ pair<double,double> valor::util::XML2DblDblPair(
 // Get the specified node content as a pair of floating-point numbers
 // The node content should be 2 comma-separed numbers
 
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   pair<double,double> pair;
   if(!found_node) {
-    LOG("XML",pFATAL) 
+    VLOG("XML",pFATAL) 
        << "No node was found at input XML node node_path: " << node_path;
     util::Die(1); return pair;
   }
@@ -307,7 +307,7 @@ pair<double,double> valor::util::XML2DblDblPair(
   
   vector<string> str_tokens = Tokens(content, ",");
   if(str_tokens.size() != 2) {
-    LOG("XML",pFATAL)
+    VLOG("XML",pFATAL)
       << "XML2DblDblPair cannot get exactly two values from: " << content;
     util::Die(1); return pair;
   }
@@ -356,7 +356,7 @@ string valor::util::XML2RootFileName(
   if(node_path != "") { path = node_path+"/"; }
   path += "filename";
   string filename = XML2String(xml_eng,top_node,path);
-  LOG("XML", pINFO) << "Filename: " << filename;
+  VLOG("XML", pINFO) << "Filename: " << filename;
   return filename;
 }
 //.....................................................................................................
@@ -367,7 +367,7 @@ string valor::util::XML2RootObjName (
   if(node_path != "") { path = node_path+"/"; }
   path += "objname";
   string objname = XML2String(xml_eng,top_node,path);
-  LOG("XML", pINFO) << "Object name: " << objname;
+  VLOG("XML", pINFO) << "Object name: " << objname;
   return objname;
 }
 //.....................................................................................................
@@ -378,7 +378,7 @@ string valor::util::XML2RootObjType (
   if(node_path != "") { path = node_path+"/"; }
   path += "objtype";
   string objtype = XML2String(xml_eng,top_node,path);
-  LOG("XML", pINFO) << "Object type: " << objtype;
+  VLOG("XML", pINFO) << "Object type: " << objtype;
   return objtype;
 }
 //____________________________________________________________________________________________________
@@ -401,7 +401,7 @@ string valor::util::XML2RootObjType (
 TFile * valor::util::XML2TFile(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir)
 {
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   string filename = XML2RootFileName(xml_eng,top_node,node_path);
 
@@ -414,11 +414,11 @@ TFile * valor::util::XML2TFile(
 
   TFile * file = new TFile(full_filename.Data(),"read");
   if(!file) {
-    LOG("XML",pFATAL) << "No file: " << full_filename << " found";
+    VLOG("XML",pFATAL) << "No file: " << full_filename << " found";
     util::Die(1); return 0;
   }
   if(file->IsZombie()) {
-    LOG("XML",pFATAL) << "File is a zombie: " << full_filename;
+    VLOG("XML",pFATAL) << "File is a zombie: " << full_filename;
     util::Die(1); return 0;
   }
 
@@ -430,7 +430,7 @@ TH1F * valor::util::XML2TH1F(
 {
 // Get a TH1F instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   string filename = XML2RootFileName(xml_eng,top_node,node_path);
   string objname  = XML2RootObjName (xml_eng,top_node,node_path);
@@ -445,7 +445,7 @@ TH1F * valor::util::XML2TH1F(
   TFile file(full_filename,"read");
   TH1F * h = (TH1F*)file.Get(objname.c_str());
   if(!h) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
     file.Close();
     util::Die(1); return 0;
   }
@@ -463,7 +463,7 @@ TGraph * valor::util::XML2TGraph(
 {
     // Get a TH1F instance from the info in the input XML config file
     //
-    LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+    VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
     
     string filename = XML2RootFileName(xml_eng,top_node,node_path);
     string objname  = XML2RootObjName (xml_eng,top_node,node_path);
@@ -478,7 +478,7 @@ TGraph * valor::util::XML2TGraph(
     TFile file(full_filename,"read");
     TGraph * h = (TGraph*)file.Get(objname.c_str());
     if(!h) {
-      LOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
+      VLOG("XML",pFATAL) << "No " << objname << " in " << full_filename;
       file.Close();
       util::Die(1); return 0;
     }
@@ -495,7 +495,7 @@ TH1D * valor::util::XML2TH1D(
 {
 // Get a TH1D instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   string filename = XML2RootFileName(xml_eng,top_node,node_path);
   string objname  = XML2RootObjName (xml_eng,top_node,node_path);
@@ -510,7 +510,7 @@ TH1D * valor::util::XML2TH1D(
   TFile file(full_filename,"read");
   TH1D * h = (TH1D*)file.Get(objname.c_str());
   if(!h) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
     util::Die(1); return 0;
   }
@@ -529,7 +529,7 @@ TH2D * valor::util::XML2TH2D(
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   string filename = XML2RootFileName(xml_eng,top_node,node_path);
   string objname  = XML2RootObjName (xml_eng,top_node,node_path);
@@ -544,7 +544,7 @@ TH2D * valor::util::XML2TH2D(
   TFile file(full_filename,"read");
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
     util::Die(1); return 0;
   }
@@ -563,7 +563,7 @@ TH3D * valor::util::XML2TH3D(
 {
     // Get a TH3D instance from the info in the input XML config file
     //
-    LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+    VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
     
     string filename = XML2RootFileName(xml_eng,top_node,node_path);
     string objname  = XML2RootObjName (xml_eng,top_node,node_path);
@@ -578,7 +578,7 @@ TH3D * valor::util::XML2TH3D(
     TFile file(full_filename,"read");
     TH3D * h2 = (TH3D*)file.Get(objname.c_str());
     if(!h2) {
-        LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+        VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
         file.Close();
         util::Die(1); return 0;
     }
@@ -597,7 +597,7 @@ TTree * valor::util::XML2TTree(
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   string filename = XML2RootFileName(xml_eng,top_node,node_path);
   string objname  = XML2RootObjName (xml_eng,top_node,node_path);
@@ -609,19 +609,19 @@ TTree * valor::util::XML2TTree(
 
   TString full_filename = "";
   if(filename.rfind("/",0) == 0){
-    LOG("XML", pNOTICE) << "File path starts with '/' therefore assume full path has been given: " << filename;
+    VLOG("XML", pNOTICE) << "File path starts with '/' therefore assume full path has been given: " << filename;
     full_filename = filename;
   }
   else{
-    LOG("XML", pNOTICE) << "File path doesn't start with '/' therefore assume full path has not been given: " << filename;
+    VLOG("XML", pNOTICE) << "File path doesn't start with '/' therefore assume full path has not been given: " << filename;
     full_filename = TString::Format("%s/%s", used_base_dir.c_str(), filename.c_str());
-    LOG("XML", pNOTICE) << "Full filename therefore: " << full_filename;
+    VLOG("XML", pNOTICE) << "Full filename therefore: " << full_filename;
   }
 
   TFile * file = new TFile(full_filename.Data(),"read");
   TTree * tree = (TTree*)file->Get(objname.c_str());
   if(!tree) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
 //  file.Close();
     util::Die(1); return 0;
   }
@@ -637,7 +637,7 @@ TVectorD * valor::util::XML2TVectorD(
 {
 // Get a TVectorD instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   string filename = XML2RootFileName(xml_eng,top_node,node_path);
   string objname  = XML2RootObjName (xml_eng,top_node,node_path);
@@ -652,7 +652,7 @@ TVectorD * valor::util::XML2TVectorD(
   TFile file(full_filename,"read");
   TVectorD * vec = (TVectorD*)file.Get(objname.c_str());
   if(!vec) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
     //return 0;
     util::Die(1); return 0;
@@ -684,7 +684,7 @@ TMatrixDSym * valor::util::XML2TMatrixDSym(
   TFile file(full_filename,"read");
   TMatrixDSym * matrix = (TMatrixDSym*)file.Get(objname.c_str());
   if(!matrix) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
     util::Die(1); return 0;
   }
@@ -718,7 +718,7 @@ TMatrixD * valor::util::XML2TMatrixD(
   TFile * file = new TFile(full_filename.Data(),"read"); 
   TMatrixD * matrix = (TMatrixD*) file->Get(objname.c_str());
   if(!matrix) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file->Close();
     util::Die(1); return 0;
   }
@@ -735,7 +735,7 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
 {
 // Get a TH2D instance from the info in the input XML config file
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   string filename = XML2RootFileName(xml_eng,top_node,node_path);
   string objname  = XML2RootObjName (xml_eng,top_node,node_path);
@@ -750,7 +750,7 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
   TFile file(full_filename.Data(),"read");
   TH2D * h2 = (TH2D*)file.Get(objname.c_str());
   if(!h2) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
     util::Die(1); return 0;
   }
@@ -762,7 +762,7 @@ TMatrixD * valor::util::XML2TH2D2TMatrixD(
   for(int i = 1; i <= nrows; i++) {
     for(int j = 1; j <= ncols; j++) {
       (*matrix)(i-1,j-1) = h2->GetBinContent(i,j);
-      LOG("XML",pDEBUG) << i << "\t" << j << "\t" << h2->GetBinContent(i,j);
+      VLOG("XML",pDEBUG) << i << "\t" << j << "\t" << h2->GetBinContent(i,j);
     }
   }
 #ifdef __show_xml_mesg_debug__
@@ -789,7 +789,7 @@ TSpline3 * valor::util::XML2TSpline3(
   TFile file(full_filename.Data(),"read"); 
   TSpline3 * spl = (TSpline3*) file.Get(objname.c_str());
   if(!spl) {
-    LOG("XML",pFATAL) << "No " << objname << " in " << filename;
+    VLOG("XML",pFATAL) << "No " << objname << " in " << filename;
     file.Close();
     util::Die(1); return 0;
   }
@@ -806,11 +806,11 @@ TAxis *  valor::util::XML2BinInfo(
 {
 //
 //
-  LOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {
-    LOG("XML",pFATAL) << "No node was found at input XML node node_path: " << node_path;
+    VLOG("XML",pFATAL) << "No node was found at input XML node node_path: " << node_path;
     util::Die(1); return 0;
   }
 
@@ -828,7 +828,7 @@ TAxis *  valor::util::XML2BinInfo(
       if(child_node_name == "max"  ) { max   = atof(TrimSpaces(content).c_str()); }
       child_node = xml_eng->GetNext(child_node);    
     }
-    LOG("XML",pINFO) 
+    VLOG("XML",pINFO) 
        << "nbins = " << nbins << ", range = (" << min << ", " << max << ")";
     assert(nbins>0 && min<max);
 
@@ -837,11 +837,11 @@ TAxis *  valor::util::XML2BinInfo(
   } 
   else   
   if(binsz == "variable") {
-    LOG("XML",pFATAL) << "Not handling variable size bins yet";
+    VLOG("XML",pFATAL) << "Not handling variable size bins yet";
     util::Die(1); return 0;
   }
   else {
-    LOG("XML",pFATAL) << "Invalid bin_size attribute";
+    VLOG("XML",pFATAL) << "Invalid bin_size attribute";
     util::Die(1); return 0;
   }
 

@@ -51,7 +51,7 @@ bool KBCubHcmbMondrian::Read(string file)
   
   FileStat_t dummy;
   if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-    LOG("Binning", pERROR) << "Binning file not found: " << file;
+    VLOG("Binning", pERROR) << "Binning file not found: " << file;
     util::Die(1); return false;
   }
 
@@ -59,7 +59,7 @@ bool KBCubHcmbMondrian::Read(string file)
   TXMLEngine* xml = new TXMLEngine;
   XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
   if (xmldoc==0) {
-    LOG("Binning",pERROR)
+    VLOG("Binning",pERROR)
         << "Can not parse input XML file [" << ts_file << "]";
     delete xml;
     util::Die(1); return false;
@@ -70,16 +70,16 @@ bool KBCubHcmbMondrian::Read(string file)
   string space = util::XML2String(xml,root_node,"space");
   fKineSpace = util::KineSpaceFromString(space);
   if(fKineSpace == conv::kspUndefined) {
-    LOG("Binning", pERROR)
+    VLOG("Binning", pERROR)
       << "Undefined kinematical space: " << space;
     return false;
   }
-  LOG("Binning", pNOTICE) 
+  VLOG("Binning", pNOTICE) 
     << "Kinematic space: " << util::AsString(fKineSpace);
 
   //
   fNDimensions = util::NDim(fKineSpace);
-  LOG("Binning", pNOTICE) 
+  VLOG("Binning", pNOTICE) 
      << "Number of dimensions = " << fNDimensions;
   fKineVars    = util::KineVar(fKineSpace);
   fKineVarToDim.reserve(conv::kNKineVarMax);
@@ -97,7 +97,7 @@ bool KBCubHcmbMondrian::Read(string file)
   //
   string type = util::XML2String(xml,root_node,"type");
   if(type != "mondrian") {
-    LOG("Binning", pERROR)
+    VLOG("Binning", pERROR)
       << "Input binning scheme [" << type << "] not `mondrian'";
     return false;
   }
@@ -105,22 +105,22 @@ bool KBCubHcmbMondrian::Read(string file)
   //
   int nbins = util::XML2Int(xml,root_node,"nbins");
   if(nbins <= 0) {
-    LOG("Binning", pERROR) << "Invalid number of bins";
+    VLOG("Binning", pERROR) << "Invalid number of bins";
     return false;
   }
   fNBins = (unsigned int) nbins;
-  LOG("Binning", pNOTICE) << "Number of bins = " << fNBins;
+  VLOG("Binning", pNOTICE) << "Number of bins = " << fNBins;
 
   fBinEdges .reserve(fNBins * fNDimensions * 2);
   fBinRanges = vector<vector<vector<double>>>(fNDimensions, vector<vector<double>>(fNBins, vector<double>(2)));
 
   unsigned int l = 0;
   for(unsigned int ibin = 0; ibin < fNBins; ibin++) {
-     LOG("Binning", pINFO) << "Reading edges of bin: " << ibin;
+     VLOG("Binning", pINFO) << "Reading edges of bin: " << ibin;
      vector<double> edges = util::XML2DblArray(
                  xml,root_node,Form("bin_%d",ibin));
      if(edges.size() != 2*fNDimensions) {
-         LOG("Binning", pERROR)
+         VLOG("Binning", pERROR)
            << edges.size() << " edges were specified for "
            << "a cuboid bin in " << fNDimensions << " dimensions";
          return false;
@@ -131,7 +131,7 @@ bool KBCubHcmbMondrian::Read(string file)
          double max = edges[k++];
          fBinEdges[l++] = min;
          fBinEdges[l++] = max;
-         LOG("Binning", pINFO) 
+         VLOG("Binning", pINFO) 
             << "\t Dimension: " << idim 
             << " -> [" << min << ", " << max << "]";
          if(ibin == 0) {
@@ -153,7 +153,7 @@ bool KBCubHcmbMondrian::Read(string file)
   for (unsigned int i = 0 ; i < this->NDimensions() ; i++) {
     binning_print<< "("<<this->Minimum(i)<<" < "<<util::AsString(this->KineVar(i))<<" < "<<this->Maximum(i)<<") ";
   }
-  LOG("Binning", pNOTICE) << binning_print.str();
+  VLOG("Binning", pNOTICE) << binning_print.str();
    
   xml->FreeDoc(xmldoc);
   delete xml;
@@ -310,11 +310,11 @@ VALORBinning* KBCubHcmbMondrian::Contract(conv::KineSpace_t ks) const
 double KBCubHcmbMondrian::BinMinimum(unsigned int bin, unsigned int dimension) const
 {
   if (bin >= fNBins) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
+    VLOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
     util::Die(-1) ; return conv::kBadResult;
   }
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
+    VLOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
     util::Die(-1) ; return conv::kBadResult;
   }
   unsigned int idx = (2 * fNDimensions * bin) + (2 * dimension);
@@ -324,11 +324,11 @@ double KBCubHcmbMondrian::BinMinimum(unsigned int bin, unsigned int dimension) c
 double KBCubHcmbMondrian::BinMaximum(unsigned int bin, unsigned int dimension) const
 {
   if (bin >= fNBins) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
+    VLOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
     util::Die(-1) ; return conv::kBadResult;
   }
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
+    VLOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
     util::Die(-1) ; return conv::kBadResult;
   }
   unsigned int idx = (2 * fNDimensions * bin) + (2 * dimension) + 1;
@@ -339,11 +339,11 @@ const vector<double> & KBCubHcmbMondrian::BinRange(
   unsigned int bin, unsigned int dimension) const
 {
   if (bin >= fNBins) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
+    VLOG("KBCubHcmbMondrian",pFATAL) << "Bad bin: "<<bin;
     util::Die(-1) ; return fBinRanges[0][0];
   }
   if (dimension >= fNDimensions) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
+    VLOG("KBCubHcmbMondrian",pFATAL) << "Bad dimension: "<<dimension;
     util::Die(-1) ; return fBinRanges[0][0];
   }
   return fBinRanges[dimension][bin];
@@ -419,13 +419,13 @@ unsigned int KBCubHcmbMondrian::FindBin(const vector<double> & xarr) const
     }
   }
   else {
-     LOG("Binning",pFATAL) << this->GetName()<< " needs array of dimension "<<fNDimensions <<" but got size "<<xarr.size();
+     VLOG("Binning",pFATAL) << this->GetName()<< " needs array of dimension "<<fNDimensions <<" but got size "<<xarr.size();
      util::Die(-1);
   }
 
-  LOG("Binning", pFATAL) << this->GetName()<< ": Mondrian binning doesn't span all space?";
+  VLOG("Binning", pFATAL) << this->GetName()<< ": Mondrian binning doesn't span all space?";
   for (size_t i = 0 ; i < fNDimensions ; i++ ) {
-     LOG("Binning",pFATAL) << util::AsString(fKineVars[i]) << "\t= "<<xarr[i];
+     VLOG("Binning",pFATAL) << util::AsString(fKineVars[i]) << "\t= "<<xarr[i];
   }
   util::Die(-1);
   return 0;
@@ -452,14 +452,14 @@ unsigned int KBCubHcmbMondrian::FindBin(const std::map<conv::KineVar_t, double> 
     }
   }
   else {
-    LOG("Binning",pFATAL) << this->GetName()<< " needs array of dimension "<<fNDimensions <<" but got size "<<xarr.size();
+    VLOG("Binning",pFATAL) << this->GetName()<< " needs array of dimension "<<fNDimensions <<" but got size "<<xarr.size();
     util::Die(-1);
   }
 
-  LOG("Binning", pFATAL) << this->GetName()<< ": Mondrian binning doesn't span all space?";
+  VLOG("Binning", pFATAL) << this->GetName()<< ": Mondrian binning doesn't span all space?";
   for (size_t i = 0 ; i < fNDimensions ; i++ ) {
     conv::KineVar_t kv = kvs[i];
-    LOG("Binning",pFATAL) << util::AsString(fKineVars[i]) << "\t= "<<xarr.at(kv);
+    VLOG("Binning",pFATAL) << util::AsString(fKineVars[i]) << "\t= "<<xarr.at(kv);
   }
   util::Die(-1);
   return 0;
@@ -488,7 +488,7 @@ unsigned int KBCubHcmbMondrian::MapFromLinearizedE2E(unsigned int e2e_lin_bin) c
 {
   std::map<unsigned int, unsigned int>::const_iterator it = fBinMondrianFromE2E.find(e2e_lin_bin);
   if (it == fBinMondrianFromE2E.end()) {
-    LOG("KBCubHcmbMondrian",pFATAL) << "Bad Edge2Edge linear bin: "<<e2e_lin_bin;
+    VLOG("KBCubHcmbMondrian",pFATAL) << "Bad Edge2Edge linear bin: "<<e2e_lin_bin;
     util::Die(-1) ; return 0;
   }
   return it->second;
@@ -531,7 +531,7 @@ TH2D* KBCubHcmbMondrian::ToTH2D(conv::KineVar_t kv1, conv::KineVar_t kv2) const
    {  // Get the dimensions for the specified kinematics
       if(kv1 == conv::kvUndefined || kv2 == conv::kvUndefined)
       {
-         LOG("KBCubHcmbMondrian", pERROR) << "Kinematic variables must be " <<
+         VLOG("KBCubHcmbMondrian", pERROR) << "Kinematic variables must be " <<
             "specified for Mondrian binnings with more than 2 dimensions.";
          util::Die(-1);
       }
@@ -572,7 +572,7 @@ TH2D* KBCubHcmbMondrian::ToTH2D(conv::KineVar_t kv1, conv::KineVar_t kv2) const
 TH2Poly * KBCubHcmbMondrian::ToTH2Poly(conv::KineVar_t kv1, conv::KineVar_t kv2) const
 {
   if (fNDimensions < 2) {
-    LOG("KBCubHcmbMondrian", pERROR) << "You can't turn a 1D hist into a TH2Poly";
+    VLOG("KBCubHcmbMondrian", pERROR) << "You can't turn a 1D hist into a TH2Poly";
     util::Die(-1); return nullptr;
   }
   
@@ -587,7 +587,7 @@ TH2Poly * KBCubHcmbMondrian::ToTH2Poly(conv::KineVar_t kv1, conv::KineVar_t kv2)
   }
   else if(!Contains(kv1) || !Contains(kv2))
   {
-    LOG("KBCubHcmbMondrian", pERROR) << "Can't make TH2Poly with dimensions "
+    VLOG("KBCubHcmbMondrian", pERROR) << "Can't make TH2Poly with dimensions "
       <<util::AsString(kv1)<<" - "<<util::AsString(kv2) <<" from binning in "<<util::AsString(fKineSpace);
     util::Die(-1);
   }

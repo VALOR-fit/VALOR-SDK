@@ -60,17 +60,17 @@
 // VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/FitCore/CorrelatedSystematics.h"
-#include "valor/FitCore/PhysParamList.h"
-#include "valor/FitCore/FitParamList.h"
-#include "valor/FitCore/FitModelABC.h"
-#include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/Likelihood.h"
-#include "valor/FitCore/FitterABC.h"
-#include "valor/FitCore/UtlFit.h"
-#include "valor/FitCore/CompoundFitElements.h"
-#include "valor/FitCore/UtlOscillation.h"
-#include "valor/FitCore/UtlFitParamList.h"
+#include "valor/Core/CorrelatedSystematics.h"
+#include "valor/Core/PhysParamList.h"
+#include "valor/Core/FitParamList.h"
+#include "valor/Core/FitModelABC.h"
+#include "valor/Core/FitDataABC.h"
+#include "valor/Core/Likelihood.h"
+#include "valor/Core/FitterABC.h"
+#include "valor/Core/UtlFit.h"
+#include "valor/Core/CompoundFitElements.h"
+#include "valor/Core/UtlOscillation.h"
+#include "valor/Core/UtlFitParamList.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -99,7 +99,7 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/make_table_systematic_effects.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
-  LOG("valor", pNOTICE) << arg;
+  VLOG("valor", pNOTICE) << arg;
 
   // Read the command line
   int ntoys                 = arg.GetInt("ntoys");
@@ -112,9 +112,9 @@ int main(int argc, char ** argv)
   bool rethrow_unphysical = arg.GetBool("rethrow-unphysical");
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  Messenger::Instance()->Configure(mesg_thresholds);
+  valor::Messenger::Instance()->Configure(mesg_thresholds);
 
-  LOG("valor",pINFO) << "Will rethrow unphysical toys";
+  VLOG("valor",pINFO) << "Will rethrow unphysical toys";
 
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
@@ -131,7 +131,7 @@ int main(int argc, char ** argv)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    VLOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -198,7 +198,7 @@ int main(int argc, char ** argv)
       TObjArray * matches = input_match.MatchS(argname.c_str());
 
       if (matches->GetEntries() != 2) {
-        LOG("valor",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
+        VLOG("valor",pFATAL) << "Cannot parse argument "<<argname<<" to get parameter name";
         util::Die(-1);
       }
       TObjString * tos_param_name = dynamic_cast<TObjString*>(matches->At(1));
@@ -207,7 +207,7 @@ int main(int argc, char ** argv)
 
       conv::PhysParamId_t param = nr->PhysParamFromString(param_name);
       if (param == conv::kPhypUndefined) {
-        LOG("valor",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
+        VLOG("valor",pFATAL) << "Cannot find parameter to fix from argument string "<<argname;
         util::Die(-1);
       }
 
@@ -234,7 +234,7 @@ int main(int argc, char ** argv)
          p == conv::kPhypDelta13     || p == conv::kPhypDelta15     || p == conv::kPhypDelta34     ||
          p == conv::kPhypDelta35     || p == conv::kPhypNSIepsMuTau || p == conv::kPhypMixingEE    ||
          p == conv::kPhypMixingMuMu  || p == conv::kPhypMixingMuE) {
-        LOG("valor", pWARN) << "Randomising sterile params may not work as intended";
+        VLOG("valor", pWARN) << "Randomising sterile params may not work as intended";
       }
     }
 
@@ -311,7 +311,7 @@ int main(int argc, char ** argv)
   streamer << "\\end{table}" << endl;
 
   output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak);
-  LOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
+  VLOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
 
   streamer.seekg(0, ifstream::end);
   long size = streamer.tellg();

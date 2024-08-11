@@ -54,34 +54,34 @@ std::string CmdLnArgParser::ArgAsString(char op) const
 
   while(argc>2)
   {
-    LOG("Parser", pDEBUG) << "Getting next argument in argument-list";
-    LOG("Parser", pDEBUG) << "Current argc = " << argc;
+    VLOG("Parser", pDEBUG) << "Getting next argument in argument-list";
+    VLOG("Parser", pDEBUG) << "Current argc = " << argc;
 
     if (argv[1][0] == '-') {      
-      LOG("Parser", pDEBUG) 
+      VLOG("Parser", pDEBUG) 
         << "Got char (argv[1][1]) following argv[1][0]='-' : " << argv[1][1];
 
       if (argv[1][1] == op) {
-        LOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
+        VLOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
 
         if (strlen(&argv[1][2]) ) {
           argument = &argv[1][2];
           //set = true;
-          LOG("Parser", pINFO) 
+          VLOG("Parser", pINFO) 
             << "Set opt = [" << op << "] to val = [" << argument << "] "<<" from "<<argv[1][2]<<"(args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
           
         }
         else if( (argc>2) && 
             !(argv[2][0]=='-' && isalpha(argv[2][1])) ) {
 
-          LOG("Parser", pDEBUG) 
+          VLOG("Parser", pDEBUG) 
             << "argc>2 and next arg not a '-' followed by an alpha char";
 
           argc--;
           argv++;
           argument = &argv[1][0];
           //set = true;
-          LOG("Parser", pINFO) 
+          VLOG("Parser", pINFO) 
             << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
         }
       }
@@ -89,7 +89,7 @@ std::string CmdLnArgParser::ArgAsString(char op) const
     argc--;
     argv++;
     if(argc>2) {
-      LOG("Parser", pDEBUG) << "Next argv[1][0] = " << argv[1][0];
+      VLOG("Parser", pDEBUG) << "Next argv[1][0] = " << argv[1][0];
     }
   }
 
@@ -185,7 +185,7 @@ unsigned int CmdLnArgParser::ArgAsUInt(char op) const
   if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
     double as_d = std::atof(argument.c_str());
     value = TMath::Nint(as_d);
-    if (as_d < 0) { LOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
+    if (as_d < 0) { VLOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
   }
   return value;
 }
@@ -201,7 +201,7 @@ vector<int> CmdLnArgParser::ArgAsIntTokens(char op, string delimeter) const
     if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
       double as_d = std::atof(argument.c_str());
       value = TMath::Nint(as_d);
-      if (as_d < 0) { LOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
+      if (as_d < 0) { VLOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
     }
     tokens.push_back(value);
   }
@@ -220,7 +220,7 @@ vector<unsigned int> CmdLnArgParser::ArgAsUIntTokens(char op, string delimeter) 
     if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
       double as_d = std::atof(argument.c_str());
       value = TMath::Nint(as_d);
-      if (as_d < 0) { LOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
+      if (as_d < 0) { VLOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
     }
     tokens.push_back(value);
   }
@@ -264,34 +264,34 @@ std::string CmdLnArgParser::ArgAsString(string op) const
 
   while(argc>2)
   {
-    LOG("Parser", pDEBUG) << "Getting next argument in argument-list";
-    LOG("Parser", pDEBUG) << "Current argc = " << argc;
+    VLOG("Parser", pDEBUG) << "Getting next argument in argument-list";
+    VLOG("Parser", pDEBUG) << "Current argc = " << argc;
 
     if (argv[1][0] == '-' && argv[1][1] == '-') {      
       //char * op_cur = strndup(argv[1]+2,strlen(argv[1]));
       const char * op_cur = &argv[1][2];
-      LOG("Parser", pDEBUG) 
+      VLOG("Parser", pDEBUG) 
         << "Got string following '--' : " << op_cur;
       if (strcmp(op.c_str(),op_cur)==0) {
-        LOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
+        VLOG("Parser", pDEBUG) << "Input option: " << op << " was matched";
 
         if (strlen(&argv[2][0]) ) {
           argument = &argv[2][0];
           //set = true;
-          LOG("Parser", pINFO) 
+          VLOG("Parser", pINFO) 
             << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
 
         }
         else if( (argc>2) && 
             !(argv[2][0]=='-' &&argv[2][1]=='-' && isalpha(argv[2][2])) ) {
-          LOG("Parser", pDEBUG) 
+          VLOG("Parser", pDEBUG) 
             << "argc>2 and next arg not a '--' followed by an alpha char";
 
           argc--;
           argv++;
           argument = &argv[1][0];
           //set = true;
-          LOG("Parser", pINFO) 
+          VLOG("Parser", pINFO) 
             << "Set opt = [" << op << "] to val = [" << argument << "] (args "<<fArgc-argc+1<<","<<fArgc-argc+2<<")";
         }
         fArgUsed[fArgc-argc+1] = true;
@@ -301,7 +301,7 @@ std::string CmdLnArgParser::ArgAsString(string op) const
     argc--;
     argv++;
     if(argc>2) {
-      LOG("Parser", pDEBUG) << "Next argv[1][0] = " << argv[1][0];
+      VLOG("Parser", pDEBUG) << "Next argv[1][0] = " << argv[1][0];
     }
   }
 
@@ -355,7 +355,7 @@ unsigned int CmdLnArgParser::ArgAsUInt(string op) const
   if (argument.find('e') != std::string::npos || argument.find('E') != std::string::npos) {
     double as_d = std::atof(argument.c_str());
     value = TMath::Nint(as_d);
-    if (as_d < 0) { LOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
+    if (as_d < 0) { VLOG("Parser",pWARN) << "Warning: unsigned int argument has value "<<as_d<<" converted to "<<value;}
   }
   return value;
 }
@@ -376,11 +376,11 @@ bool CmdLnArgParser::RecognisedAllArgs() const
   bool status = true;
   for (int iarg = 0 ; iarg < fArgc; iarg++) {
     if (!(fArgUsed[iarg])) {
-      LOG("Parser",pWARN) << "Argument not recognised "<<fArgv[iarg];
+      VLOG("Parser",pWARN) << "Argument not recognised "<<fArgv[iarg];
       status = false;
     }
     else {
-      LOG("Parser",pDEBUG) << "Argument recognised "<<fArgv[iarg];
+      VLOG("Parser",pDEBUG) << "Argument recognised "<<fArgv[iarg];
     }
   }
   return status;

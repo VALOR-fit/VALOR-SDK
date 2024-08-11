@@ -291,7 +291,7 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
   long double nmc   = nmc_db;
   if(nmc < conv::kSetNegEventsTo) {
     if (ndata>conv::kAVerySmallNum) {
-      LOG("UtlNumStat",pWARN)<<"Zero MC events in bin with data events - chisquare should be infinite."
+      VLOG("UtlNumStat",pWARN)<<"Zero MC events in bin with data events - chisquare should be infinite."
                              <<" MC: " << nmc_db
                              <<" Data:" << ndata_db;
     }
@@ -308,10 +308,10 @@ double valor::util::ChisqPoisson(double ndata_db, double nmc_db)
   }
 #ifdef VALOR_FMWK_LOW_LEVEL_MESG_ENABLED
   if (chisq<conv.kAVerySmallNum) {
-    LOG("UtlNumStat",pWARN)<<"Negative chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
+    VLOG("UtlNumStat",pWARN)<<"Negative chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
   }
 
-  LOG("UtlNumStat",pDEBUG)<<"Chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
+  VLOG("UtlNumStat",pDEBUG)<<"Chisquare ("<<chisq<<"), from "<<ndata<<" events in data and "<<nmc<<" events in MC.";
 #endif
 
   return TMath::Max(0.,chisq);
@@ -361,18 +361,18 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
     //~ int status = gsl_linalg_cholesky_decomp1(m); // Documentation says this one is best but doesn't appear on all systems.
     int status = gsl_linalg_cholesky_decomp(m);
     if (status != GSL_EDOM) {
-      LOG("UtlNumStat", pINFO) << "GSL successfully Cholesky decomposed matrix.";
+      VLOG("UtlNumStat", pINFO) << "GSL successfully Cholesky decomposed matrix.";
       success = true;
       break;
     }
   }
   
   if (!success) {
-    LOG("UtlNumStat", pFATAL) << "GSL failed to Cholesky decompose matrix.";
+    VLOG("UtlNumStat", pFATAL) << "GSL failed to Cholesky decompose matrix.";
     util::Die(1); return TMatrixD();
   }
   if (iattempt) {
-    LOG("UtlNumStat", pWARN) << "GSL had to increase diagonal elements by "<<100.*diag_increment<<iattempt<<"% to decompose.";
+    VLOG("UtlNumStat", pWARN) << "GSL had to increase diagonal elements by "<<100.*diag_increment<<iattempt<<"% to decompose.";
   }
   
   for (int i = 0 ; i < n; i++) {
@@ -399,12 +399,12 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 
      if(L(i,i) <= 0) {
        if( fabs(L(i,i))<conv::kASmallNum ){
-	 LOG("UtlNumStat", pWARN) << "Element: " << i << "," << i << " = " << L(i,i);
+	 VLOG("UtlNumStat", pWARN) << "Element: " << i << "," << i << " = " << L(i,i);
 	 L(i,i)=conv::kASmallNum;
-	 LOG("UtlNumStat", pWARN) << "Changed to "<<L(i,i);
+	 VLOG("UtlNumStat", pWARN) << "Changed to "<<L(i,i);
        }
        else{
-	 LOG("UtlNumStat", pERROR) << "Decomposed covariance matrix not positive-definite"
+	 VLOG("UtlNumStat", pERROR) << "Decomposed covariance matrix not positive-definite"
 				   << "L(" << i << "," << i << ") = " << L(i,i);
 	 util::Die(1);
        }
@@ -1173,7 +1173,7 @@ TMatrixD valor::util::CorrelationAndErrorToCovarianceMatrix(const TMatrixD & cor
 {
   int n = corr.GetNrows();
   if (n!=one_sigma.GetNrows()) {
-    LOG("UtlNumStat",pERROR)<<"Matrix and vector dimensions do not match.";
+    VLOG("UtlNumStat",pERROR)<<"Matrix and vector dimensions do not match.";
     util::Die(-1);
     return TMatrixD();
   }
@@ -1191,7 +1191,7 @@ TMatrixDSym valor::util::MatrixToSymMatrix(const TMatrixD & m)
   int n = m.GetNrows();
   TMatrixDSym out (n);
   if (n!=m.GetNcols()) {
-    LOG("UtlNumStat",pERROR)<<"Matrix is not square.";
+    VLOG("UtlNumStat",pERROR)<<"Matrix is not square.";
     util::Die(-1);
     return out;
   }
@@ -1208,7 +1208,7 @@ TMatrixDSym valor::util::MatrixToSymMatrix(const TMatrixD & m)
     }
   }
   if (bad) {
-    LOG("UtlNumStat",pERROR)<<"Matrix is not symmetric.";
+    VLOG("UtlNumStat",pERROR)<<"Matrix is not symmetric.";
     util::Die(-1);
   }
   return out;
@@ -1219,7 +1219,7 @@ TMatrixDSym valor::util::LowerTriangularMatrixToSymMatrix(const TMatrixD & m)
   int n = m.GetNrows();
   TMatrixDSym out (n);
   if (n!=m.GetNcols()) {
-    LOG("UtlNumStat",pERROR)<<"Matrix is not square.";
+    VLOG("UtlNumStat",pERROR)<<"Matrix is not square.";
     util::Die(-1);
     return out;
   }
@@ -1396,7 +1396,7 @@ bool valor::util::SplineIsFlat(const ROOT::Math::Interpolator * /*spl*/)
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl, Option_t * type)
 {
-  LOG("UtlNumStat",pINFO)<<"Converting spline to GSL: "<<spl.GetName();
+  VLOG("UtlNumStat",pINFO)<<"Converting spline to GSL: "<<spl.GetName();
   int n_knots = spl.GetNp();
   // Get spline type. Assume cubic if not specified
   TString type_ts(type);
@@ -1418,7 +1418,7 @@ ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl,
 ROOT::Math::Interpolator * valor::util::ConvertTSplineToGSL(const TSpline & spl,
   double xmin, double xmax, Option_t * type)
 {
-  LOG("UtlNumStat",pINFO)<<"Converting spline to GSL: "<<spl.GetName()<<" with padding knots.";
+  VLOG("UtlNumStat",pINFO)<<"Converting spline to GSL: "<<spl.GetName()<<" with padding knots.";
   int n_knots = spl.GetNp();
   // Get spline type. Assume cubic if not specified
   TString type_ts(type);
@@ -1463,7 +1463,7 @@ void valor::util::ReorderMatrixAndVector (TVectorD & sort_by, TMatrixD & matr, b
 {
   if ((sort_by.GetNoElements() != matr.GetNrows()) &&
       (sort_by.GetNoElements() != matr.GetNcols()) ) {
-    LOG("UtlNumStat",pWARN) << "Non-matching numbers of elements. Doing nothing.";
+    VLOG("UtlNumStat",pWARN) << "Non-matching numbers of elements. Doing nothing.";
     return;
   }
   TMatrixD matcopy(matr);

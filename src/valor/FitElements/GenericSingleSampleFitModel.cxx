@@ -129,10 +129,10 @@ string GenericSingleSampleFitModel::Name(void) const
 //________________________________________________________________________________________
 bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
 {
-  if (fDetector == conv::kdUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Detector"  << fDetector ; util::Die(-1); }
-  if (fBeam     == conv::kbUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Beam"      << fBeam     ; util::Die(-1); }
-  if (fSample   == conv::ksUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Sample"    << fSample   ; util::Die(-1); }
-  if (fKSp      == conv::kspUndefined) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad KineSpace" << fKSp      ; util::Die(-1); }
+  if (fDetector == conv::kdUndefined ) { VLOG("SingleSampleFitModelABC",pFATAL) << "Bad Detector"  << fDetector ; util::Die(-1); }
+  if (fBeam     == conv::kbUndefined ) { VLOG("SingleSampleFitModelABC",pFATAL) << "Bad Beam"      << fBeam     ; util::Die(-1); }
+  if (fSample   == conv::ksUndefined ) { VLOG("SingleSampleFitModelABC",pFATAL) << "Bad Sample"    << fSample   ; util::Die(-1); }
+  if (fKSp      == conv::kspUndefined) { VLOG("SingleSampleFitModelABC",pFATAL) << "Bad KineSpace" << fKSp      ; util::Die(-1); }
 
   fName = util::nm::MdlName(fDetector, fBeam, fSample, fKSp);
 
@@ -141,7 +141,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   bool skip_spline_read   = ts_opt.Contains("nosplines");
   bool skip_mc_read       = ts_opt.Contains("nomc");
   bool fixed_baseline     = ts_opt.Contains("fixedbaseline");
-  LOG("GenericSingleSampleFitModel",pDEBUG) << " Read options are: " << ts_opt << "\n"
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << " Read options are: " << ts_opt << "\n"
     << " Given these, this is how the following booleans are set: \n"
     << " Force  use DST:    " << force_use_dst << "\n"
     << " Skip spline read:  " << skip_spline_read << "\n"
@@ -152,7 +152,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
 #endif
 
   // Set up the initial XML reader
-  LOG("GenericSingleSampleFitModel", pNOTICE) 
+  VLOG("GenericSingleSampleFitModel", pNOTICE) 
     << "Reading configuration from XML file [" << file << "]";
 
   fConfigFileRead = util::CompleteConfigPath(file);
@@ -162,7 +162,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
   if (xmldoc==0) {
-    LOG("GenericSingleSampleFitModel",pERROR) << "Can not parse input XML file [" << ts_file << "]";
+    VLOG("GenericSingleSampleFitModel",pERROR) << "Can not parse input XML file [" << ts_file << "]";
     delete xml;
     util::Die(1); return false;
   }
@@ -186,11 +186,11 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
     if (binning_objstring) {
       binning_file = binning_objstring->String().Data();
     }
-    LOG("GenericSingleSampleFitModel",pNOTICE) << fName<< ": Reading binning from "<<binning_file;
+    VLOG("GenericSingleSampleFitModel",pNOTICE) << fName<< ": Reading binning from "<<binning_file;
   }
   else {
     binning_file = util::XML2String(xml,root_node,"default_binning");
-    LOG("GenericSingleSampleFitModel",pNOTICE) << fName<< ": No sample-specific binning in options \""<<opt<<"\" , falling back to default: "<<binning_file;
+    VLOG("GenericSingleSampleFitModel",pNOTICE) << fName<< ": No sample-specific binning in options \""<<opt<<"\" , falling back to default: "<<binning_file;
   }
   delete matches;
   if (fBinning) {delete fBinning;}
@@ -198,9 +198,9 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   fBinning->Read(binning_file);
 
   this->Book();
-  LOG("GenericSingleSampleFitModel",pINFO) << "Booked";
+  VLOG("GenericSingleSampleFitModel",pINFO) << "Booked";
   this->Zero();
-  LOG("GenericSingleSampleFitModel",pINFO) << "Zeroed";
+  VLOG("GenericSingleSampleFitModel",pINFO) << "Zeroed";
 
   //------------------------
   // TODO
@@ -211,14 +211,14 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   // Get the detector fiducial mass
   string name = "fiducial_mass";
   fFiducialMass = util::XML2Dbl(xml,root_node,name);
-  LOG("GenericSingleSampleFitModel",pINFO)
+  VLOG("GenericSingleSampleFitModel",pINFO)
     << "Fiducial mass = " << fFiducialMass*1000 << " tonnes";
 
   // Check whether or not we should apply the osc prob to ALL detectors (i.e. skipping the util::OscProbIsAppliedTo check)
   name = "force_apply_osc_prob_to_all_detectors";
   if(util::NodeExists(xml,root_node,name)) {
     fSkipOscProbApplyCheck = util::XML2Bool(xml,root_node,name);
-    LOG("GenericSingleSampleFitModel",pINFO)
+    VLOG("GenericSingleSampleFitModel",pINFO)
       << "Apply osc prob to all detectors (regardless of util::OscProbIsAppliedTo)? " << fSkipOscProbApplyCheck << " tonnes";
   }
   // Get assumed exposure for each beam configuration
@@ -231,7 +231,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
       string node_name = "data/exposure/" + util::AsString(fBeam, "lowercase");
       fPOT = util::XML2Dbl(xml,root_node,node_name);
     }
-    LOG("GenericSingleSampleFitModel",pNOTICE) 
+    VLOG("GenericSingleSampleFitModel",pNOTICE) 
       << "Beam config: " << util::AsString(fBeam) 
       << " -> Exposure = " << fPOT << " POT.";
   }
@@ -251,20 +251,20 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   }
   fUseMCDST = util::XML2Bool(xml,root_node,"mc/using_dst_format") || force_use_dst;
   if (skip_mc_read) {
-    LOG("GenericSingleSampleFitModel",pWARN) << "Skipping MC read.";
+    VLOG("GenericSingleSampleFitModel",pWARN) << "Skipping MC read.";
   }
   else if(fUseMCDST) {
-    LOG("GenericSingleSampleFitModel",pINFO) << "Filling in VALOR MC templates using VALOR DSTs";
+    VLOG("GenericSingleSampleFitModel",pINFO) << "Filling in VALOR MC templates using VALOR DSTs";
     string node_name = "mc/dst/" + util::AsString(fBeam, "lowercase");
     fMCDST = util::XML2TTree (xml,root_node,node_name);
     if (!fMCDST) {
-      LOG("GenericSingleSampleFitModel",pFATAL) << "Failed to read DST tree";
+      VLOG("GenericSingleSampleFitModel",pFATAL) << "Failed to read DST tree";
       util::Die(-1); return false;
     }
     this->FillFromDST(fMCDST);
   } 
   else {
-    LOG("GenericSingleSampleFitModel",pINFO) << "Using stored VALOR MC templates";
+    VLOG("GenericSingleSampleFitModel",pINFO) << "Using stored VALOR MC templates";
     string template_tag = util::XML2String(xml,root_node,"mc/template/tag");
     TFile * template_file = util::XML2TFile(xml,root_node,"mc/template");
 
@@ -279,7 +279,7 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
     if(m == kmUndefined) continue;
     n_events+=fMCTNomSb[imode]->Integral();
   }
-  LOG("GenericSingleSampleFitModel",pNOTICE) << "Untuned template contains "<<n_events<<" events.";
+  VLOG("GenericSingleSampleFitModel",pNOTICE) << "Untuned template contains "<<n_events<<" events.";
 
   // At the point the nominal MC templates are filled-in.
   // Apply any fixed tuning here, not on an event by event basis.
@@ -287,17 +287,17 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   this->ApplyTuning();
 
   // Print the tuned MC templates
-  LOG("GenericSingleSampleFitModel",pDEBUG)
+  VLOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAfter applying bin-by-bin tuning, the fMCTTunOb integrals for each mode are:";
   double fMCTTunOb_tot_integral = 0;
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
     if(m == kmUndefined) continue;
     fMCTTunOb_tot_integral += fMCTTunOb[imode]->Integral();
-    LOG("GenericSingleSampleFitModel",pDEBUG)
+    VLOG("GenericSingleSampleFitModel",pDEBUG)
       << "fMCTTunOb[" << util::AsString(m) << "] integral = " << fMCTTunOb[imode]->Integral();
   }
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTTunOb integral summed over all modes = " << fMCTTunOb_tot_integral;
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTTunOb integral summed over all modes = " << fMCTTunOb_tot_integral;
 
   // Release memory
   xml->FreeDoc(xmldoc);
@@ -324,14 +324,14 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   this->PreComputeLateralSystVectors(true);
 
 
-  LOG("GenericSingleSampleFitModel",pNOTICE) << "Done configuring DUNE/ND model... \n\n";
+  VLOG("GenericSingleSampleFitModel",pNOTICE) << "Done configuring DUNE/ND model... \n\n";
 
   return true;
 }
 //________________________________________________________________________________________
 bool GenericSingleSampleFitModel::Read(util::ToyStream* stream)
 {
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "Reading model from stream";
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "Reading model from stream";
 
   Option_t* read_opt = stream->GetVALORArrayFormat();
   string opt = (read_opt) ? read_opt : fDefVALORArrayFormat;
@@ -405,12 +405,12 @@ bool GenericSingleSampleFitModel::Read(util::ToyStream* stream)
 //________________________________________________________________________________________
 bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
 {
-  LOG("GenericSingleSampleFitModel",pINFO) << "Configuring the Response Function Library... \n";
+  VLOG("GenericSingleSampleFitModel",pINFO) << "Configuring the Response Function Library... \n";
   // And now get the RFL
   fRFL = new util::RFL(fBinning, fSplineParams);
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "Constructed the RFL \n";
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "Constructed the RFL \n";
   fRFL->Read(file, opt);
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "Read the RFL \n";
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "Read the RFL \n";
 
   bool null_warning = false;
 
@@ -450,7 +450,7 @@ bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
           if (param.GetType() == conv::kSystResponse) {
             const util::Interpolator * spl = fRFL->GetSpline(m,p,ispltrue,isplreco);
             if (spl == NULL) {
-              LOG("GenericSingleSampleFitModel",pINFO) << "Got null spline.\n";
+              VLOG("GenericSingleSampleFitModel",pINFO) << "Got null spline.\n";
               null_warning = true;
             }
             spl_as_int = reinterpret_cast<Long64_t>(spl);
@@ -461,10 +461,10 @@ bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
     }//itrue
   }//imode
   if (null_warning) {
-    LOG("GenericSingleSampleFitModel",pFATAL) << "Null splines found - giving up.";
+    VLOG("GenericSingleSampleFitModel",pFATAL) << "Null splines found - giving up.";
     util::Die(-1);return false;
   }
-  LOG("GenericSingleSampleFitModel",pINFO) << "Spline array filled... \n\n";
+  VLOG("GenericSingleSampleFitModel",pINFO) << "Spline array filled... \n\n";
   return true;
 }
 //________________________________________________________________________________________
@@ -474,13 +474,13 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
   // - Leave null for the fit
   // - Use "+SB" to generate finely-binned predictions too (for plotting or toy-MC generation)
 
-  //  LOG("GenericSingleSampleFitModel",pDEBUG)  
+  //  VLOG("GenericSingleSampleFitModel",pDEBUG)  
   //     << "Input physics hypothesis before copying to private data member: " << ph;
 
   fPhysHypothesis.Copy(ph);
   //PhysHypothesis_t hyp = fPhysHypothesis.Hypothesis();
 
-  LOG("GenericSingleSampleFitModel",pINFO)  
+  VLOG("GenericSingleSampleFitModel",pINFO)  
     << "Generating model predictions for the input hypothesis: " 
     << fPhysHypothesis;
 
@@ -490,36 +490,36 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
   this->ApplyPhysics(opt);      // `sys' MC templates --> `fin' MC templates
 
   // Print the final MC templates before oscillations
-  LOG("GenericSingleSampleFitModel",pDEBUG)
+  VLOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAfter applying systematics, the fMCTFinOb integrals for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<" and each mode are:";
   double fMCTFinOb_tot_integral = 0;
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
     if(m == kmUndefined) continue;
     fMCTFinOb_tot_integral += fMCTFinOb[imode]->Integral();
-    LOG("GenericSingleSampleFitModel",pDEBUG)
+    VLOG("GenericSingleSampleFitModel",pDEBUG)
       << "fMCTFinOb[" << util::AsString(m) << "] integral = " << fMCTFinOb[imode]->Integral();
   }
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTFinOb integral summed over all modes = " << fMCTFinOb_tot_integral;
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTFinOb integral summed over all modes = " << fMCTFinOb_tot_integral;
 
   this->ApplyOscProb(opt);      // `fin' MC templates --> `fin' MC templates
   this->UpdatePDFs(opt);        // `fin' MC templates --> p.d.f
 #endif //__VALOR_FMWK_PENALTY_ONLY__
 
   // Print the final MC templates
-  LOG("GenericSingleSampleFitModel",pDEBUG)
+  VLOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAt end of GSSFM::Generate, the fMCTFinOb integrals for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<" and each mode are:";
   fMCTFinOb_tot_integral = 0;
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
     if(m == kmUndefined) continue;
     fMCTFinOb_tot_integral += fMCTFinOb[imode]->Integral();
-    LOG("GenericSingleSampleFitModel",pDEBUG)
+    VLOG("GenericSingleSampleFitModel",pDEBUG)
       << "fMCTFinOb[" << util::AsString(m) << "] integral = " << fMCTFinOb[imode]->Integral();
   }
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTFinOb integral summed over all modes = " << fMCTFinOb_tot_integral;
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTFinOb integral summed over all modes = " << fMCTFinOb_tot_integral;
 
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "Done generating predictions";
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "Done generating predictions";
 
   return true;
 }
@@ -554,7 +554,7 @@ void GenericSingleSampleFitModel::TweakSystematic(
     fSystematics->SetCurrentValue(syst,twkdial);
   }
   else {
-    LOG("GenericSingleSampleFitModel",pWARN) << "No systematic model - not tweaking requested parameter: "
+    VLOG("GenericSingleSampleFitModel",pWARN) << "No systematic model - not tweaking requested parameter: "
       << util::NameRegistry::Instance()->AsString(syst);
   }
 }
@@ -586,7 +586,7 @@ void GenericSingleSampleFitModel::PrintSystematics(ostream & stream, Option_t * 
 //________________________________________________________________________________________
 bool GenericSingleSampleFitModel::Generate (const FitParamList & fp, Option_t * opt)
 {
-  //  LOG("GenericSingleSampleFitModel",pDEBUG)  
+  //  VLOG("GenericSingleSampleFitModel",pDEBUG)  
   //     << "Input fit parameter list before converting to a physics hypothesis: " << fp;
 
   if (fSystematics) {
@@ -631,9 +631,9 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
   //  sb    -> Simple binning (for plots)
 
 
-  LOG("GenericSingleSampleFitModel", pINFO)  << "Writing results to input object array...";
-  LOG("GenericSingleSampleFitModel", pINFO) << "tag = " << tag << ", write option = " << write_opt;
-  LOG("GenericSingleSampleFitModel", pINFO)  << "sample = " << util::AsString(fSample) << ", detector = "
+  VLOG("GenericSingleSampleFitModel", pINFO)  << "Writing results to input object array...";
+  VLOG("GenericSingleSampleFitModel", pINFO) << "tag = " << tag << ", write option = " << write_opt;
+  VLOG("GenericSingleSampleFitModel", pINFO)  << "sample = " << util::AsString(fSample) << ", detector = "
     << util::AsString(fDetector) << ", beam = " << util::AsString(fBeam);
 
   string opt = (write_opt) ? write_opt : fDefVALORArrayFormat;
@@ -652,11 +652,11 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
   bool write_pdfcs_rf = (opt.find("pdfcs_rf") != string::npos) || write_all;
 
   if(write_pdfc_rf) {
-    LOG("GenericSingleSampleFitModel",pWARN) << "The option pdfc_rf for optimised binning is not yet implemented.";
+    VLOG("GenericSingleSampleFitModel",pWARN) << "The option pdfc_rf for optimised binning is not yet implemented.";
   }
 
   if(!array) {
-    LOG("GenericSingleSampleFitModel",pERROR) << "Null input object array.";
+    VLOG("GenericSingleSampleFitModel",pERROR) << "Null input object array.";
     return false;
   }
 
@@ -682,10 +682,10 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       fMCTTunOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mcttun_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
       fMCTSysOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctsys_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
       fMCTFinOb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctfin_ob_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
-      LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTNomOb [imode]->GetName();
-      LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTTunOb [imode]->GetName();
-      LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTSysOb [imode]->GetName();
-      LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTFinOb [imode]->GetName();
+      VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTNomOb [imode]->GetName();
+      VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTTunOb [imode]->GetName();
+      VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTSysOb [imode]->GetName();
+      VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTFinOb [imode]->GetName();
       array -> Add ( fMCTNomOb [imode] ); 
       array -> Add ( fMCTTunOb [imode] ); 
       array -> Add ( fMCTSysOb [imode] ); 
@@ -697,10 +697,10 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         fMCTTunSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mcttun_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
         fMCTSysSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctsys_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
         fMCTFinSb [imode] -> SetName( TString::Format("%s_%s_%s_%s", tag, "mctfin_sb_vf", fName.c_str(),util::AsString(m).c_str()).Data() );
-        LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTNomSb [imode]->GetName();
-        LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTTunSb [imode]->GetName();
-        LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTSysSb [imode]->GetName();
-        LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTFinSb [imode]->GetName();
+        VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTNomSb [imode]->GetName();
+        VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTTunSb [imode]->GetName();
+        VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTSysSb [imode]->GetName();
+        VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fMCTFinSb [imode]->GetName();
         array -> Add ( fMCTNomSb [imode] ); 
         array -> Add ( fMCTTunSb [imode] ); 
         array -> Add ( fMCTSysSb [imode] ); 
@@ -725,7 +725,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       // in VALORArray format
       if (write_pdfc_vf) {
         fPDFCompOb [imode]->SetName(TString::Format("%s_%s_%s_%s",tag,"pdfc_ob_vf",fName.c_str(),util::AsString(m).c_str()).Data());
-        LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFCompOb[imode]->GetName();
+        VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFCompOb[imode]->GetName();
         array->Add(fPDFCompOb[imode]);
       }
 
@@ -734,7 +734,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         // in VALORArray format
         if (write_pdfc_vf) {
           fPDFCompSb[imode]->SetName(TString::Format("%s_%s_%s_%s",tag,"pdfc_sb_vf",fName.c_str(),util::AsString(m).c_str()));
-          LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFCompSb[imode]->GetName();
+          VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFCompSb[imode]->GetName();
           array->Add(fPDFCompSb[imode]);
         }
       }//+SB?
@@ -763,7 +763,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
             }
           }
           else {
-            LOG("GenericSingleSampleFitModel", pWARN)
+            VLOG("GenericSingleSampleFitModel", pWARN)
               << "Tried writing PDFC to ROOT format, but number of kine vars != 1 or 2 (" << fPDFTotOb->GetName() << ")";
           }
         }
@@ -781,7 +781,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
     // in VALORArray format
     if (write_pdft_vf) {
       fPDFTotOb->SetName(TString::Format("%s_%s_%s",tag,"pdft_ob_vf",fName.c_str()).Data());
-      LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFTotOb->GetName();
+      VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFTotOb->GetName();
       array->Add(fPDFTotOb);
     }
 
@@ -808,7 +808,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
         }
       }
       else {
-        LOG("GenericSingleSampleFitModel", pWARN)
+        VLOG("GenericSingleSampleFitModel", pWARN)
           << "Tried writing PDFT to ROOT format, but number of kine vars != 1 or 2 (" << fPDFTotOb->GetName() << ")";
       }
     }
@@ -817,7 +817,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
       // in VALORArray format
       if (write_pdft_vf) {
         fPDFTotSb->SetName(TString::Format("%s_%s_%s",tag,"pdft_sb_vf",fName.c_str()));
-        LOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFTotSb->GetName();
+        VLOG("GenericSingleSampleFitModel", pDEBUG) << "Adding: " << fPDFTotSb->GetName();
         array->Add(fPDFTotSb);
       }
 
@@ -844,7 +844,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
           }
         }
         else {
-          LOG("GenericSingleSampleFitModel", pWARN)
+          VLOG("GenericSingleSampleFitModel", pWARN)
             << "Tried writing PDFT to ROOT format, but number of kine vars != 1 or 2 (" << fPDFTotOb->GetName() << ")";
         }
       }
@@ -976,7 +976,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
 
   // Warn the user if SB is combined with universes
   if (write_sb && fApplyUniverseVariations) {
-    LOG("GenericSingleSampleFitModel", pWARN)
+    VLOG("GenericSingleSampleFitModel", pWARN)
       << "Wrote simple binning with universe variations on. Be aware these are applied only to OB";
   }
 
@@ -986,7 +986,7 @@ bool GenericSingleSampleFitModel::Write(TObjArray * array, const char * tag, Opt
 bool GenericSingleSampleFitModel::Write(
     const char * filename, const char * tag, Option_t * write_opt, Option_t * file_opt)
 {
-  LOG("GenericSingleSampleFitModel",pNOTICE) << "Writing results to file: [" << filename << "]";
+  VLOG("GenericSingleSampleFitModel",pNOTICE) << "Writing results to file: [" << filename << "]";
 
   TObjArray * array = new TObjArray();
   this->Write(array,tag,write_opt);
@@ -1003,7 +1003,7 @@ bool GenericSingleSampleFitModel::Write(
 bool GenericSingleSampleFitModel::Write(util::ToyStream* stream)
 {
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-  LOG("GenericSingleSampleFitModel",pINFO) << "Writing results to stream";
+  VLOG("GenericSingleSampleFitModel",pINFO) << "Writing results to stream";
 #endif
 
   Option_t* write_opt = stream->GetVALORArrayFormat();
@@ -1066,7 +1066,7 @@ bool GenericSingleSampleFitModel::Write(util::ToyStream* stream)
   {
     stream->Write(fPDFTotOb);
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-    LOG("GenericSingleSampleFitModel", pINFO) << "Sample integral: " <<
+    VLOG("GenericSingleSampleFitModel", pINFO) << "Sample integral: " <<
       fPDFTotOb->Integral();
 #endif
 
@@ -1160,7 +1160,7 @@ double GenericSingleSampleFitModel::GetFitStatisticPenalty (Option_t * /*opt*/) 
 
 void GenericSingleSampleFitModel::Init(void)
 {
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "Initializing...";
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "Initializing...";
 
   fName              = "none";
   fFiducialMass      = 0;
@@ -1187,7 +1187,7 @@ void GenericSingleSampleFitModel::Init(void)
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::Book(void)
 {
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "Booking "<<util::AsString(fBeam)<<" "<<util::AsString(fSample);
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "Booking "<<util::AsString(fBeam)<<" "<<util::AsString(fSample);
 
   const VALORBinning  * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning  * reco_sb = fBinning->RecoSmpBinning();
@@ -1254,7 +1254,7 @@ void GenericSingleSampleFitModel::Book(void)
     fNonEmptyBinsOb[imode] = std::vector<int>(n_reco_bins_ob * n_true_bins);
     fNonEmptyBinsSb[imode] = std::vector<int>(n_reco_bins_sb * n_true_bins);
 
-    LOG("GenericSingleSampleFitModel",pDEBUG) 
+    VLOG("GenericSingleSampleFitModel",pDEBUG) 
       << "Booking MC template (simple binning) for " 
       << "beam: "     << util::AsString(fBeam) 
       << ", sample: " << util::AsString(fSample)
@@ -1299,7 +1299,7 @@ void GenericSingleSampleFitModel::Book(void)
     // >> PDF total
     // should get here for at least one imode value
     if(fPDFTotNullSb) {              
-      LOG("GenericSingleSampleFitModel",pDEBUG) 
+      VLOG("GenericSingleSampleFitModel",pDEBUG) 
         << "Booking PDF (total / simple binning) for " 
         << "beam: "     << util::AsString(fBeam) 
         << ", sample: " << util::AsString(fSample);
@@ -1311,7 +1311,7 @@ void GenericSingleSampleFitModel::Book(void)
 
     // >> MC templates 
     // (Note order of variables: reco first, true later)
-    LOG("GenericSingleSampleFitModel",pDEBUG) 
+    VLOG("GenericSingleSampleFitModel",pDEBUG) 
       << "Booking MC template (opt binning) for " 
       << "beam: "     << util::AsString(fBeam) 
       << ", sample: " << util::AsString(fSample)
@@ -1358,7 +1358,7 @@ void GenericSingleSampleFitModel::Book(void)
     // >> PDF total
     // should get here for at least one imode value
     if(fPDFTotNullOb) {              
-      LOG("GenericSingleSampleFitModel",pDEBUG) 
+      VLOG("GenericSingleSampleFitModel",pDEBUG) 
         << "Booking PDF (total) for " 
         << "beam: "     << util::AsString(fBeam) 
         << ", sample: " << util::AsString(fSample);
@@ -1411,14 +1411,14 @@ void GenericSingleSampleFitModel::Book(void)
     const Parameter & param = ParameterPool::Instance()->GetParam(p);
     const std::string & param_name = param.GetName();
     if(!param.HasKinematicRange()) {
-      LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+      VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
         << " has no kinematic range. Cannot apply";
       util::Die(-1);
     }
 
     const std::vector<conv::KineVar_t> & kvs = param.GetKineVars();
     if(kvs.size() != 1) {
-      LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+      VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
         << " is applied to " << kvs.size() << " kinematic variables. Cannot apply";
       util::Die(-1);
     }
@@ -1480,14 +1480,14 @@ void GenericSingleSampleFitModel::BuildParamLists()
           case kSystNorm    :
             fNormParamsAppliedTo[imode].push_back(p);
             norm_params_set.insert(p);
-            LOG("GenericSingleSampleFitModel",pINFO) << "Will apply norm param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
+            VLOG("GenericSingleSampleFitModel",pINFO) << "Will apply norm param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
             // Check if the normalisations only depend on parameters we're actually binned in
 
             binning_kv.insert(binning_kv.end(),true_kv.begin(),true_kv.end());
 
             for (const KineVar_t & kv : param.GetKineVars() ) {
               if (std::find(binning_kv.begin(),binning_kv.end(),kv) == binning_kv.end()) {
-                LOG("GenericSingleSampleFitModel",pFATAL) << "Parameter "<<param.GetName()
+                VLOG("GenericSingleSampleFitModel",pFATAL) << "Parameter "<<param.GetName()
                   <<" is binned in "<<util::AsString(kv)<<" << but model "<<fName<<" is not";
                 util::Die(-1);
               }
@@ -1496,19 +1496,19 @@ void GenericSingleSampleFitModel::BuildParamLists()
           case kSystResponse:
             fSplineParamsAppliedTo[imode].push_back(p);
             spline_params_set.insert(p);
-            LOG("GenericSingleSampleFitModel",pINFO) << "Will apply spline param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
+            VLOG("GenericSingleSampleFitModel",pINFO) << "Will apply spline param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
             break;
           case kSystLateralPostOsc:
             // Handle post-oscillation lateral systematics after all templates have been filled
             lateral_post_osc_params_set.insert(p);
-            LOG("GenericSingleSampleFitModel",pINFO) << "Will apply lateral (post-osc) param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
+            VLOG("GenericSingleSampleFitModel",pINFO) << "Will apply lateral (post-osc) param ["<<param.GetName()<<"] to mode ["<<util::AsString(m)<<"]";
             break;
           case kSystUndefined:
           case kSystLateral:
-            LOG("GenericSingleSampleFitModel",pFATAL) << "Cannot handle parameter "<<param.GetName()<<" ("<<fName<<")";
+            VLOG("GenericSingleSampleFitModel",pFATAL) << "Cannot handle parameter "<<param.GetName()<<" ("<<fName<<")";
             util::Die(-1); return;
           case kSystSpecial:
-            LOG("GenericSingleSampleFitModel",pFATAL) << "Cannot handle parameter "<<param.GetName()<<" ("<<fName<<")";
+            VLOG("GenericSingleSampleFitModel",pFATAL) << "Cannot handle parameter "<<param.GetName()<<" ("<<fName<<")";
             util::Die(-1); return;
           case kSystDisabled:
             break;
@@ -1516,7 +1516,7 @@ void GenericSingleSampleFitModel::BuildParamLists()
       } // is applied
       else {
         if(param.GetType() == conv::kSystLateralPostOsc) {
-          LOG("GenericSingleSampleFitModel",pFATAL)
+          VLOG("GenericSingleSampleFitModel",pFATAL)
             << "Lateral post-oscillation parameters must be applied to all modes and targets. "
             <<param.GetName()<<" ("<<fName<<") is not applied to mode " << util::AsString(m);
           util::Die(-1); return;
@@ -1539,7 +1539,7 @@ void GenericSingleSampleFitModel::BuildParamLists()
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::Clean(void)
 {
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "Cleaning-up...";
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "Cleaning-up...";
 
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
 
@@ -1615,7 +1615,7 @@ void GenericSingleSampleFitModel::Clean(void)
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::Zero(void)
 {
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "Zeroing MC templates and/or PDFs...";
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "Zeroing MC templates and/or PDFs...";
 
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
 
@@ -1656,17 +1656,17 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   // Fill MC templates from the input VALOR/DUNE DST TTree
   // We use a single tree for all samples for a single beam configuration.
 
-  LOG("GenericSingleSampleFitModel",pDEBUG) 
+  VLOG("GenericSingleSampleFitModel",pDEBUG) 
     << "Filling-in MC templates for beam configuration: " << util::AsString(fBeam);
 
   if(!t) {
-    LOG("GenericSingleSampleFitModel",pFATAL)<<fName<<" Null DST";
+    VLOG("GenericSingleSampleFitModel",pFATAL)<<fName<<" Null DST";
     util::Die(-1) ; return;
   }
 
 
   Long_t nev = t->GetEntries();
-  LOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
+  VLOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
   
   // Get a list of all the kinematic variables we care about
   const std::vector<conv::KineVar_t> & kinevars = fBinning->KineVars();
@@ -1722,7 +1722,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   }
 
   if (any_bad_status) {
-    LOG("GenericSingleSampleFitModel",pWARN)<<"MiniDST branches not found - giving up";
+    VLOG("GenericSingleSampleFitModel",pWARN)<<"MiniDST branches not found - giving up";
     util::Die(-1);
   }
 
@@ -1757,14 +1757,14 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     branch_universes.emplace(variation_name,std::vector<float>(nuniv));
     bool bstat_univ   = t->SetBranchAddress(branch_name.c_str(),branch_universes[variation_name].data());
     if (bstat_univ_n || bstat_univ) {
-      LOG("GenericSingleSampleModel",pFATAL) << fName<<" Failed to load needed universe branch.";
+      VLOG("GenericSingleSampleModel",pFATAL) << fName<<" Failed to load needed universe branch.";
       util::Die(-1) ; return;
     }
   }
 
   double tree_weight = t->GetWeight();
 
-  LOG("GenericSingleSampleFitModel",pNOTICE) << "Input VALOR DST has weight "<<tree_weight;
+  VLOG("GenericSingleSampleFitModel",pNOTICE) << "Input VALOR DST has weight "<<tree_weight;
 
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
@@ -1775,13 +1775,13 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
     if(iev && iev%(nev/1000)==0) {
       double pct = (100 * (double)(iev+1)) / (double)nev;
-      LOG("GenericSingleSampleFitModel",pINFO) << "Reading "<< fName <<" MC DST: "<< TMath::Nint(pct) << "% done";
+      VLOG("GenericSingleSampleFitModel",pINFO) << "Reading "<< fName <<" MC DST: "<< TMath::Nint(pct) << "% done";
     }
 
     // Get sample index
     Sample_t s = util::SampleFromInt(sample);
     if(s == ksUndefined) {
-      LOG("GenericSingleSampleFitModel",pWARN) 
+      VLOG("GenericSingleSampleFitModel",pWARN) 
         << " ** Undefined sample ID used in MC event: " << iev
         << " (value stored in DST: " << sample << ")";
       //util::Die(-1);return;
@@ -1789,7 +1789,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
     //  ================ NOTE - HACKS ================
     if(s == ksNuMuCC2piC) {
-      LOG("HACK",pNOTICE) 
+      VLOG("HACK",pNOTICE) 
         << "MC event: " << iev << " belongs to sample: " << util::AsString(s) 
         << " not considered separately. Bundle in sample: " << util::AsString(ksNuMuCCoth);
       s = ksNuMuCCoth;
@@ -1797,7 +1797,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
 #ifdef FORCE_NC_INCLUSIVE
     if(util::IsNC(s)) {
-      LOG("HACK",pNOTICE) 
+      VLOG("HACK",pNOTICE) 
         << "MC event: " << iev << " belongs to NC sample: " << util::AsString(s) 
         << " Bundling it in sample: " << util::AsString(ksNC);
       s = ksNC;
@@ -1807,7 +1807,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     //  ==============================================
     if(s != fSample) {
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-      LOG("GenericSingleSampleFitModel",pDEBUG) 
+      VLOG("GenericSingleSampleFitModel",pDEBUG) 
         << "Ignoring MC event: " << iev 
         << " (sample ID: " << s << " "<< util::AsString(s) 
         << " not matching one used for configuring model: " 
@@ -1819,7 +1819,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     BeamConf_t b = util::BeamConfFromInt(beam);
     if(b != fBeam) {
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-      LOG("GenericSingleSampleFitModel",pDEBUG) 
+      VLOG("GenericSingleSampleFitModel",pDEBUG) 
         << "Ignoring MC event: " << iev 
         << " (beam ID: " << b << " "<< util::AsString(b) 
         << " not matching one used for configuring model: " 
@@ -1832,7 +1832,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     ReacMode_t m = util::ReacModeFromInt(reac_mode);
 
     if(m == kmUndefined) {
-      LOG("GenericSingleSampleFitModel",pWARN) 
+      VLOG("GenericSingleSampleFitModel",pWARN) 
         << " ** Undefined reaction mode ID used in MC event: " << iev
         << " (value stored in DST: " << reac_mode << "). Ignoring event.";
       continue;
@@ -1843,7 +1843,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       // For a given sample we should consider a complete list of
       // true reaction modes (otherwise there are true contributions to the
       // event sample which are not taken into account).
-      LOG("GenericSingleSampleFitModel",pFATAL) 
+      VLOG("GenericSingleSampleFitModel",pFATAL) 
         << " ** Ignoring MC event: " << iev 
         << " (ignoring contribution to sample: " << util::AsString(s) << " from mode: " << util::AsString(m) << " ?)";
       util::Die(-1);return;
@@ -1851,14 +1851,14 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
     bool is_null = fMCTNullOb[imode];
     if(is_null) {
-      LOG("GenericSingleSampleFitModel",pFATAL) 
+      VLOG("GenericSingleSampleFitModel",pFATAL) 
         << "** Null MC template for sample: " << util::AsString(s) 
         << ", mode: " << util::AsString(m);
       util::Die(-1);return;
     }
     bool is_null_sb = fMCTNullSb[imode];
     if(is_null_sb) {
-      LOG("GenericSingleSampleFitModel",pFATAL) 
+      VLOG("GenericSingleSampleFitModel",pFATAL) 
         << "** Null MC template (simple binning) for sample: " << util::AsString(s) 
         << ", mode: " << util::AsString(m) << " ??";
       util::Die(-1);return;
@@ -1875,7 +1875,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     for (conv::KineVar_t kv : true_sb->KineVars()) {
       double val = kinematics.at(kv);
       if (val < true_sb->Minimum(kv) || val > true_sb->Maximum(kv)) {
-        LOG("GenericSingleSampleFitModel",pWARN) 
+        VLOG("GenericSingleSampleFitModel",pWARN) 
           << "MC event: " << iev << " has true kinematic value outside range: "<<util::AsString(kv) << " = "<<val
           << ", range used: [" << true_sb->Minimum(kv) << ", " << true_sb->Maximum(kv) << "]";
         out_of_range = true;
@@ -1889,12 +1889,12 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         if(fSuppressOutOfBinningRangeWarning){
           // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
           // that they're all intrinsic nue so we don't care about them
-          SLOG("GenericSingleSampleFitModel",pDEBUG)
+          VSLOG("GenericSingleSampleFitModel",pDEBUG)
             << fName<<" > MC event: " << iev << " has reco kinematic value outside range: "<<util::AsString(kv) << " = "<<val
             << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
         }
         else {
-          SLOG("GenericSingleSampleFitModel", pWARN)
+          VSLOG("GenericSingleSampleFitModel", pWARN)
             << fName << " > MC event: " << iev << " has reco kinematic value outside range: " << util::AsString(kv)
             << " = " << val
             << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
@@ -1925,7 +1925,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     int reco_bin_sb = reco_sb->FindBin(reco_vars);
     int reco_bin_ob = reco_ob->FindBin(reco_vars);
 
-    LOG("GenericSingleSampleFitModel",pDEBUG) 
+    VLOG("GenericSingleSampleFitModel",pDEBUG) 
       << "Inserting to MC teplates --> MC event #" << iev 
       << "\n sample      = " << s        << " (" << util::AsString(s) << ")"
       << "\n beam        = " << beam     << " (" << util::AsString(b) << ")"
@@ -1984,7 +1984,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         }
         // Testing: If the product of the weights with the nominal rate is exactly the same as nominal, skip the event
         if(abs(product_weight-this_entry) < std::numeric_limits<float>::epsilon()) {
-          LOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
+          VLOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
                                                     << "\n Universe: " << universe_id
                                                     << "\n The product of the event weights is: " << product_weight
                                                     << "\n The nominal event rate is: " << this_entry 
@@ -2017,7 +2017,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         }
         // Testing: If the product of the weights with the nominal rate is exactly the same as nominal, skip the event
         if(abs(product_weight-this_entry) < std::numeric_limits<float>::epsilon()) {
-          LOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
+          VLOG("GenericSingleSampleFitModel",pDEBUG) << "\n In event: " << iev
                                                     << "\n Universe: " << universe_offset
                                                     << "\n The product of the event weights is: " << product_weight
                                                     << "\n The nominal event rate is: " << this_entry 
@@ -2091,17 +2091,17 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     }//modes
   }//universe
 
-  LOG("GenericSingleSampleFitModel",pDEBUG)
+  VLOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAfter filling MC templates from the input MC tree, the fMCTNomOb integrals for each mode are:";
   double fMCTNomOb_tot_integral = 0;
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
     if(m == kmUndefined) continue;
     fMCTNomOb_tot_integral += fMCTNomOb[imode]->Integral();
-    LOG("GenericSingleSampleFitModel",pDEBUG)
+    VLOG("GenericSingleSampleFitModel",pDEBUG)
       << "fMCTNomOb[" << util::AsString(m) << "] integral = " << fMCTNomOb[imode]->Integral();
   }
-  LOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTNomOb integral summed over all modes = " << fMCTNomOb_tot_integral;
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTNomOb integral summed over all modes = " << fMCTNomOb_tot_integral;
 
 }
 //________________________________________________________________________________________
@@ -2111,7 +2111,7 @@ void GenericSingleSampleFitModel::ReadTune(
     std::vector<TuningInfo> * hist_vec,
     Option_t * /*opt*/)
 {
-  LOG("GenericSingleSampleFitModel", pNOTICE)
+  VLOG("GenericSingleSampleFitModel", pNOTICE)
     << "Will apply tune with name [" << xmleng->GetAttr(top_node,"name") << "]";
 
   conv::ApplyMask_t tuning_apply_mask = util::ReadApplyMaskAll(xmleng, top_node);
@@ -2130,7 +2130,7 @@ void GenericSingleSampleFitModel::ReadTune(
     string curr_node_name = xmleng->GetNodeName(curr_node);
     if(xmleng->GetNodeContent(curr_node)) {
       string content = util::RemoveAllWhitespace(xmleng->GetNodeContent(curr_node));
-      LOG("GenericSingleSampleFitModel", pINFO) << curr_node_name << " --> " << content;
+      VLOG("GenericSingleSampleFitModel", pINFO) << curr_node_name << " --> " << content;
       if(curr_node_name == "filename"      ) { filename      = content; }
       if(curr_node_name == "objname"       ) { objname       = content; }
       if(curr_node_name == "objtype"       ) { objtype       = content; }
@@ -2145,7 +2145,7 @@ void GenericSingleSampleFitModel::ReadTune(
   for(string kv_string : kinevars_str_vec) {
     conv::KineVar_t kv = util::KineVarFromString(kv_string);
     if(kv == conv::kvUndefined) {
-      LOG("GenericSingleSampleFitModel", pFATAL) << "Could not convert input string [" << kv_string << "] to a kine var";
+      VLOG("GenericSingleSampleFitModel", pFATAL) << "Could not convert input string [" << kv_string << "] to a kine var";
       util::Die(-1);
     }
     kvs.push_back(kv);
@@ -2158,11 +2158,11 @@ void GenericSingleSampleFitModel::ReadTune(
   if(util::ToLowerCase(objtype) == "th1f") { tuning_hist = util::XML2TH1F(xmleng, top_node, ""); }
 
   if(!tuning_hist) {
-    LOG("GenericSingleSampleFitModel", pFATAL)
+    VLOG("GenericSingleSampleFitModel", pFATAL)
       << "Failed to read tuning hist in node named [" << xmleng->GetAttr(top_node,"name") << "]";
     util::Die(-1);
   }
-  LOG("GenericSingleSampleFitModel", pINFO)
+  VLOG("GenericSingleSampleFitModel", pINFO)
     << "Found tuning hist named [" << tuning_hist->GetName() << "]";
 
   // Add the tuning hist, apply mask and kine vars to the vector
@@ -2179,19 +2179,19 @@ double GenericSingleSampleFitModel::GetExternalWeight(std::map<KineVar_t,double>
   for(TuningInfo pairpair : fEventByEventTuningHists) {
     std::pair<conv::ApplyMask_t, std::vector<conv::KineVar_t> > apply_pair = pairpair.first;
     TH1* tuning_hist = pairpair.second;
-    if(!tuning_hist) { LOG("GenericSingleSampleFitModel", pERROR) << "Tuning apply hist not found!"; util::Die(-1); }
+    if(!tuning_hist) { VLOG("GenericSingleSampleFitModel", pERROR) << "Tuning apply hist not found!"; util::Die(-1); }
 
     conv::ApplyMask_t            tuning_apply_mask = apply_pair.first;
     std::vector<conv::KineVar_t> tuning_kine_vars  = apply_pair.second;
-    if(tuning_kine_vars.size() == 0) { LOG("GenericSingleSampleFitModel", pERROR) << "Tuning kine vars not found!" ; util::Die(-1); }
+    if(tuning_kine_vars.size() == 0) { VLOG("GenericSingleSampleFitModel", pERROR) << "Tuning kine vars not found!" ; util::Die(-1); }
     if((int)tuning_kine_vars.size() != tuning_hist->GetDimension()) {
-      LOG("GenericSingleSampleFitModel", pERROR) << "Tuning kine vars size not equal to the number of tuning hist dimensions!";
+      VLOG("GenericSingleSampleFitModel", pERROR) << "Tuning kine vars size not equal to the number of tuning hist dimensions!";
       util::Die(-1);
     }
 
     // Does this tuning hist apply to this event?
     bool do_apply = util::IsAppliedTo(tuning_apply_mask, fBeam, fSample, fDetector, m, nt);
-    LOG("GenericSingleSampleFitModel", pDEBUG) << "Apply tuning hist to event with: " << util::AsString(fBeam) << ", "
+    VLOG("GenericSingleSampleFitModel", pDEBUG) << "Apply tuning hist to event with: " << util::AsString(fBeam) << ", "
       << util::AsString(fSample) << ", " << util::AsString(m) << ", "
       << util::AsString(nt) << "? " << do_apply;
     if(!do_apply) { continue; }
@@ -2213,7 +2213,7 @@ double GenericSingleSampleFitModel::GetExternalWeight(std::map<KineVar_t,double>
         kinematics.at(tuning_kine_vars[1]),
         kinematics.at(tuning_kine_vars[2])); }
     if(tuning_hist->IsBinOverflow(global_bin) || tuning_hist->IsBinUnderflow(global_bin)) { continue; }
-    LOG("GenericSingleSampleFitModel", pDEBUG) << "Getting weight from tuning hist bin " << global_bin
+    VLOG("GenericSingleSampleFitModel", pDEBUG) << "Getting weight from tuning hist bin " << global_bin
       << " with content " << tuning_hist->GetBinContent(global_bin);
     wght_external *= tuning_hist->GetBinContent(global_bin);
   }
@@ -2231,7 +2231,7 @@ bool GenericSingleSampleFitModel::FillFromTemplateFile (TFile * f, string tag, d
   //~ Sample_t   s = fSample;
 
   if (desired_POT > 0) {
-    LOG("GenericSingleSampleFitModel",pNOTICE) << "Scaling POT template by "<<desired_POT * 1E-21 << " to get template for "<<desired_POT<<" POT.";
+    VLOG("GenericSingleSampleFitModel",pNOTICE) << "Scaling POT template by "<<desired_POT * 1E-21 << " to get template for "<<desired_POT<<" POT.";
   }
 
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
@@ -2258,7 +2258,7 @@ bool GenericSingleSampleFitModel::FillFromTemplateFile (TFile * f, string tag, d
     }
     else {
       success = false;
-      LOG("GenericSingleSampleFitModel",pERROR) << "Failed to read template "<<obj_name_ob;
+      VLOG("GenericSingleSampleFitModel",pERROR) << "Failed to read template "<<obj_name_ob;
     }
 
     TString obj_name_sb = TString::Format("%s_%s_%s", tag.c_str(), "mctnom_sb_vf", fName.c_str());
@@ -2282,7 +2282,7 @@ bool GenericSingleSampleFitModel::FillFromTemplateFile (TFile * f, string tag, d
     }
     else {
       success = false;
-      LOG("GenericSingleSampleFitModel",pERROR) << "Failed to read template "<<obj_name_sb;
+      VLOG("GenericSingleSampleFitModel",pERROR) << "Failed to read template "<<obj_name_sb;
     }
   } //imode
 
@@ -2302,7 +2302,7 @@ void GenericSingleSampleFitModel::ApplyTuning(Option_t * /*opt*/)
   // needed (see the notes within that function).
 
   if(fBinByBinTuningHists.size() > 0) {
-    LOG("GenericSingleSampleFitModel",pFATAL) << "Bin-by-bin tuning is not yet implemented.";
+    VLOG("GenericSingleSampleFitModel",pFATAL) << "Bin-by-bin tuning is not yet implemented.";
     util::Die(-1);
   }
 
@@ -2316,7 +2316,7 @@ void GenericSingleSampleFitModel::ApplyBinnedRatioTuningToTemplates (std::vector
   // TODO: just take in a single vector<TuningInfo>, and put in an operation type (multiply or divide) into the XML files
 
   if(numerator_vec.size() != denominator_vec.size()) {
-    LOG("GenericSingleSampleFitModel",pFATAL)
+    VLOG("GenericSingleSampleFitModel",pFATAL)
       << "Different number of tuning hists in the numerator and denominator vectors. This should not happen!";
     util::Die(-1);
   }
@@ -2361,24 +2361,24 @@ void GenericSingleSampleFitModel::ApplyBinnedRatioTuningToTemplates (std::vector
     }
     if(kinevar_mismatch) { continue; }
 
-    if(kvs_numerator.size() == 0) { LOG("GenericSingleSampleFitModel", pERROR) << "Tuning kine vars not found!" ; util::Die(-1); }
+    if(kvs_numerator.size() == 0) { VLOG("GenericSingleSampleFitModel", pERROR) << "Tuning kine vars not found!" ; util::Die(-1); }
     if((int)kvs_numerator.size() != hist_numerator->GetDimension()) {
-      LOG("GenericSingleSampleFitModel", pERROR) << "Tuning kine vars size not equal to the number of tuning hist dimensions!";
+      VLOG("GenericSingleSampleFitModel", pERROR) << "Tuning kine vars size not equal to the number of tuning hist dimensions!";
       util::Die(-1);
     }
     if(hist_denominator->GetDimension() != hist_numerator->GetDimension()) {
-      LOG("GenericSingleSampleFitModel", pERROR) << "Numerator and denominator hists should have the same number of dimensions!";
+      VLOG("GenericSingleSampleFitModel", pERROR) << "Numerator and denominator hists should have the same number of dimensions!";
       util::Die(-1);
     }
 
     // Apply the bin-by-bin tune
-    LOG("GenericSingleSampleFitModel",pDEBUG)
+    VLOG("GenericSingleSampleFitModel",pDEBUG)
       << "About to apply bin-by-bin tuning from hist " << hist_numerator->GetName() << ", and apply mask "
       << util::AsString(mask_numerator) << " to modes:";
     for(std::map<conv::ReacMode_t, bool>::iterator iter = apply_to_mode.begin(); iter != apply_to_mode.end(); ++iter) {
       conv::ReacMode_t map_mode = iter->first;
       bool map_apply = iter->second;
-      LOG("GenericSingleSampleFitModel", pDEBUG) << util::AsString(map_mode) << " : " << map_apply;
+      VLOG("GenericSingleSampleFitModel", pDEBUG) << util::AsString(map_mode) << " : " << map_apply;
     }
     this->ApplyBinnedRatioTuningToTemplates(hist_numerator, hist_denominator, apply_to_mode, kvs_numerator, templates_to_update, false);
     this->ApplyBinnedRatioTuningToTemplates(hist_numerator, hist_denominator, apply_to_mode, kvs_numerator, templates_to_update, true);
@@ -2442,7 +2442,7 @@ void GenericSingleSampleFitModel::ApplyBinnedRatioTuningToTemplates (TH1* numera
         double wght = wght_hist->GetBinContent(global_bin);
         if(wght < 0) continue;
         if(wght < conv::kASmallNum) wght = 1.;
-        LOG("GenericSingleSampleFitModel", pDEBUG) << "Getting ratio weight from tuning hist bin " << global_bin
+        VLOG("GenericSingleSampleFitModel", pDEBUG) << "Getting ratio weight from tuning hist bin " << global_bin
           << " with content " << wght
           << "; Applying to MCT bin ("<<ireco<<", "<<itrue<<") with old content = "
           << fMCTTunSb[imode]->GetEntry(ireco, itrue) << ", new content = "
@@ -2478,7 +2478,7 @@ void GenericSingleSampleFitModel::FluctuateMCStat(Option_t * option)
   // statistical error. If this is important, we ought to create a new set of templates
   // to hold this intermediate step going from the `tun' to the `sys' templates.
 
-  LOG("GenericSingleSampleFitModel",pINFO) 
+  VLOG("GenericSingleSampleFitModel",pINFO) 
     << "Applying MC statistic error (option: " 
     << ((option) ? option : "")
     << ")";
@@ -2566,7 +2566,7 @@ void GenericSingleSampleFitModel::FluctuateMCStat(Option_t * option)
 
 #else
 
-  LOG("GenericSingleSampleFitModel",pINFO) << "MC statistic error *not* applied";
+  VLOG("GenericSingleSampleFitModel",pINFO) << "MC statistic error *not* applied";
 
 #endif
 
@@ -2586,7 +2586,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
   // This method maps sys -> fin MC templates.
   // Applying correlated flux and cross-section systematics
 
-  LOG("GenericSingleSampleFitModel",pINFO) 
+  VLOG("GenericSingleSampleFitModel",pINFO) 
     << fName
     << " - Applying physics params (option: " 
     << ((option) ? option : "")
@@ -2610,7 +2610,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
   conv::PhysParamId_t debug_param  = util::NameRegistry::Instance()->PhysParamFromString("skdetfsi002");  // Or leave as conv::kPhypUndefined to look at all applied params
   bool debug_print_sum_over_true0  = true;    // If true, and we're looking at a single reco bin, print out the final bin content for the reco bin summed over all true bins.
   if(fSample == debug_sample && fBeam == debug_beam) {
-    LOG("GenericSingleSampleFitModel",pNOTICE)
+    VLOG("GenericSingleSampleFitModel",pNOTICE)
       << "Will print weights info for true var 0 = " << debug_true0 << ", reco var 0 = " << debug_reco0
       << ", reco var 1 = " << debug_reco1 << ", beam = " << util::AsString(debug_beam)
       << ", sample = " << util::AsString(debug_sample) << ", mode = " << util::AsString(debug_mode);
@@ -2636,11 +2636,11 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
     const std::vector<conv::KineVar_t> true_kinevars = util::KineVarTrue(true_ks);
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-    LOG("GenericSingleSampleFitModel",pDEBUG) 
+    VLOG("GenericSingleSampleFitModel",pDEBUG) 
       << "Handing templates for: " 
       << util::AsString(fBeam) << ", " << util::AsString(fSample) << ", " << util::AsString(m);
 
-    LOG("GenericSingleSampleFitModel",pDEBUG) 
+    VLOG("GenericSingleSampleFitModel",pDEBUG) 
       << "Initializing `fin' templates to the `sys' ones";
 #endif
     bool is_null = fMCTNullOb[imode];
@@ -2684,7 +2684,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       double debug_xsec_itrue = debug_xsec_true_binning->FindBin(debug_true_vals);
       if(debug_mode != conv::kmUndefined || imode == 0) {
         if (debug_true0 != -999) {
-          LOG("GenericSingleSampleFitModel", pNOTICE)
+          VLOG("GenericSingleSampleFitModel", pNOTICE)
             << std::fixed << std::setprecision(9)
             << "At the start of apply physics, bin content = "
             << templFinOb[debug_ireco][debug_itrue] << ", debug_itrue = " << debug_itrue
@@ -2692,7 +2692,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             << ", debug_xsec_ireco = " << debug_xsec_ireco;
         }
         else {
-          LOG("GenericSingleSampleFitModel", pNOTICE)
+          VLOG("GenericSingleSampleFitModel", pNOTICE)
             << std::fixed << std::setprecision(9)
             << "At the start of apply physics, bin content (with true bin 0) = "
             << templFinOb[debug_ireco][0]
@@ -2700,17 +2700,17 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             << ", debug_xsec_ireco = " << debug_xsec_ireco;
         }
       }
-      LOG("GenericSingleSampleFitModel",pNOTICE) << "list of norm params applied to mode ["<< util::AsString(m) << "]:";
+      VLOG("GenericSingleSampleFitModel",pNOTICE) << "list of norm params applied to mode ["<< util::AsString(m) << "]:";
       for(size_t ip = 0; ip < fNormParamsAppliedTo[imode].size(); ip++) {
         PhysParamId_t p = fNormParamsAppliedTo[imode][ip];
         if (p == kPhypUndefined          ) {continue;}
-        LOG("GenericSingleSampleFitModel",pNOTICE) << "  " << util::NameRegistry::Instance()->ParamAsString(p);
+        VLOG("GenericSingleSampleFitModel",pNOTICE) << "  " << util::NameRegistry::Instance()->ParamAsString(p);
       }
-      LOG("GenericSingleSampleFitModel",pNOTICE) << "list of spline params applied to mode ["<< util::AsString(m) << "]:";
+      VLOG("GenericSingleSampleFitModel",pNOTICE) << "list of spline params applied to mode ["<< util::AsString(m) << "]:";
       for(size_t ip = 0; ip < fSplineParamsAppliedTo[imode].size(); ip++) {
         PhysParamId_t p = fSplineParamsAppliedTo[imode][ip];
         if (p == kPhypUndefined          ) {continue;}
-        LOG("GenericSingleSampleFitModel",pNOTICE) << "  " << util::NameRegistry::Instance()->ParamAsString(p);
+        VLOG("GenericSingleSampleFitModel",pNOTICE) << "  " << util::NameRegistry::Instance()->ParamAsString(p);
       }
     }
 #endif
@@ -2724,7 +2724,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       const std::string & param_name = param.GetName();
 
       if (!fPhysHypothesis.Contains(p)) {
-        LOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
+        VLOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
         continue;
       }
 
@@ -2749,7 +2749,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         bool tweaked = TMath::Abs(f-1) > kASmallNum;    // TODO: put in the untuned value instead of 1
 #ifdef DEBUG_SINGLE_BIN
         if(fSample == debug_sample && fBeam == debug_beam && (m == debug_mode || debug_mode == conv::kmUndefined) && !tweaked && (debug_param == conv::kPhypUndefined || p == debug_param)) {
-          LOG("GenericSingleSampleFitModel",pNOTICE)
+          VLOG("GenericSingleSampleFitModel",pNOTICE)
             << "Skipping untweaked param [" << param_name
             << "] with hypothesis curr val = " << f;
         }
@@ -2777,11 +2777,11 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         }
 
         if(param_true_kv_size > true_kinevars.size()) {
-          LOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
+          VLOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
           util::Die(-1); break;
         }
         if(param_reco_kv_size > reco_kinevars.size()) {
-          LOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
+          VLOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
           util::Die(-1); break;
         }
 
@@ -2795,7 +2795,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           true1_min = pair1.first;
           true1_max = pair1.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-          LOG("GenericSingleSampleFitModel",pINFO)
+          VLOG("GenericSingleSampleFitModel",pINFO)
             << fName << ", " << util::AsString(m) << ": "
             << "Applying parameter: " << param_name << " with value = " << f
             << " in "  << util::AsString(true_kinevars[0]) << " bin range: [" << true1_min << ", " << true1_max << "]";
@@ -2809,7 +2809,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           true2_min = pair2.first;
           true2_max = pair2.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-          LOG("GenericSingleSampleFitModel",pINFO)
+          VLOG("GenericSingleSampleFitModel",pINFO)
             << fName << ", " << util::AsString(m) << ": "
             << "Applying parameter: " << param_name << " with value = " << f
             << " in "  << util::AsString(true_kinevars[0]) << " bin range: [" << true1_min << ", " << true1_max << "]"
@@ -2817,7 +2817,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
         }
         else if (apply_true_ndims > 2) {
-          LOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
+          VLOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
           util::Die(-1); break;
         }
 
@@ -2827,7 +2827,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           reco1_min = pair1.first;
           reco1_max = pair1.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-          LOG("GenericSingleSampleFitModel",pINFO)
+          VLOG("GenericSingleSampleFitModel",pINFO)
             << fName << ", " << util::AsString(m) << ": "
             << "Applying parameter: " << param_name << " with value = " << f
             << " in "  << util::AsString(reco_kinevars[0]) << " bin range: [" << reco1_min << ", " << reco1_max << "]";
@@ -2841,7 +2841,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           reco2_min = pair2.first;
           reco2_max = pair2.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-          LOG("GenericSingleSampleFitModel",pINFO)
+          VLOG("GenericSingleSampleFitModel",pINFO)
             << fName << ", " << util::AsString(m) << ": "
             << "Applying parameter: " << param_name << " with value = " << f
             << " in "  << util::AsString(reco_kinevars[0]) << " bin range: [" << reco1_min << ", " << reco1_max << "]"
@@ -2849,7 +2849,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
         }
         else if (apply_reco_ndims > 2) {
-          LOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
+          VLOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
           util::Die(-1); break;
         }
 
@@ -2889,7 +2889,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             if(fSample == debug_sample && fBeam == debug_beam && (m == debug_mode || debug_mode == conv::kmUndefined) && ireco == debug_ireco && itrue == debug_itrue  && (debug_param == conv::kPhypUndefined || p == debug_param)) {
               unsigned int use_debug_itrue = debug_itrue;
               if(debug_true0 == -999) { use_debug_itrue = itrue; }
-              LOG("GenericSingleSampleFitModel",pNOTICE)
+              VLOG("GenericSingleSampleFitModel",pNOTICE)
                 << std::fixed << std::setprecision(9)
                 << "Skipping untweaked param [" << param_name
                 << "] with curr val = " << f << ", effective tweak = " << effective_tweak
@@ -2902,7 +2902,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           double & val = templFinOb[ireco][itrue];
           val *= effective_tweak;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-          LOG("GenericSingleSampleFitModel",pDEBUG) 
+          VLOG("GenericSingleSampleFitModel",pDEBUG) 
             << "MCT[" << imode << "] = " 
             << val/f << " --> " << val;
 #endif
@@ -2910,7 +2910,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           if(fSample == debug_sample && fBeam == debug_beam && (m == debug_mode || debug_mode == conv::kmUndefined) && ireco == debug_ireco && (itrue == debug_itrue || debug_true0 == -999) && (debug_param == conv::kPhypUndefined || p == debug_param)) {
             unsigned int use_debug_itrue = debug_itrue;
             if(debug_true0 == -999) { use_debug_itrue = itrue; }
-            LOG("GenericSingleSampleFitModel",pNOTICE)
+            VLOG("GenericSingleSampleFitModel",pNOTICE)
               << std::fixed << std::setprecision(9)
               << "Applying norm param with kinematic dependence [" << param_name
               << "] with curr val = " << f << ", effective tweak = " << effective_tweak
@@ -2927,7 +2927,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       else {
         double noEt = 1 ;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-        LOG("GenericSingleSampleFitModel",pINFO)
+        VLOG("GenericSingleSampleFitModel",pINFO)
           << fName <<": "
           << "Applying parameter: " << param_name << " with value = " << f << " to whole mode "<<util::AsString(m);
 #endif
@@ -2955,7 +2955,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         }
 #ifdef DEBUG_SINGLE_BIN
         if(fSample == debug_sample && fBeam == debug_beam && (m == debug_mode || debug_mode == conv::kmUndefined) && (debug_param == conv::kPhypUndefined || p == debug_param)) {
-          LOG("GenericSingleSampleFitModel",pNOTICE)
+          VLOG("GenericSingleSampleFitModel",pNOTICE)
             << std::fixed << std::setprecision(9)
             << "Applying norm param with NO kinematic dependence [" << param_name
             << "] with curr val = " << noEt
@@ -2974,7 +2974,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       const std::string & param_name = param.GetName();
 
       if (!fPhysHypothesis.Contains(p)) {
-        LOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
+        VLOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
         continue;
       }
 
@@ -2984,7 +2984,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       double f = fPhysHypothesis.CurrValue(p);
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-      LOG("GenericSingleSampleFitModel",pDEBUG) 
+      VLOG("GenericSingleSampleFitModel",pDEBUG) 
         << "Applying parameter: " << param_name << " with value = " << f
         << " using splines.";
 #endif
@@ -2993,12 +2993,12 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         untuned = fSystematics->UntunedValue(p);
       }
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-      LOG("GenericSingleSampleFitModel",pINFO) << "Untuned value for parameter " << param_name << " = " << untuned;
+      VLOG("GenericSingleSampleFitModel",pINFO) << "Untuned value for parameter " << param_name << " = " << untuned;
 #endif
        
       const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
       if(spline_eval_type == conv::kSplEvalUndefined) {
-        LOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
+        VLOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
         util::Die(-1);
       }
       VALORArrayBin splbin;
@@ -3017,7 +3017,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         ULong64_t spl_addr = fRFPtr[imode]->GetEntry(splbin);
         const util::Interpolator * spl = reinterpret_cast<util::Interpolator*>(spl_addr);
         if (spl==util::RFL::kNoSplineRequired) {
-          LOG("GenericSingleSampleFitModel",pERROR)
+          VLOG("GenericSingleSampleFitModel",pERROR)
             <<"Got no spline required for bin expecting spline."
             <<param_name<<", "<<util::AsString(fBeam)<<", "
             <<util::AsString(fSample)<<","<<util::AsString(m);
@@ -3033,7 +3033,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           }
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-          LOG("GenericSingleSampleFitModel", pDEBUG)
+          VLOG("GenericSingleSampleFitModel", pDEBUG)
             << "Got response = " << response << " for param = " << param_name
             << ", itrue = " << itrue << ", ireco = " << ireco << ", untuned = " << untuned
             << ", current = " << f << ", from spline with name [" << spl->GetName()
@@ -3041,7 +3041,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
 
           if (response<0) {
-            LOG("GenericSingleSampleFitModel",pINFO)
+            VLOG("GenericSingleSampleFitModel",pINFO)
               <<"Negative response from spline (OB) "//<<spl->GetName()
               <<" evaluated at "<<f<<" with result "<<response
               <<". Using " << fRFL->GetForceNegWghtTo() << " instead.";
@@ -3057,7 +3057,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           if(debug_true0 == -999) {
             use_debug_itrue = itrue;
           }
-          LOG("GenericSingleSampleFitModel",pNOTICE)
+          VLOG("GenericSingleSampleFitModel",pNOTICE)
             << std::fixed << std::setprecision(5)
             << "Applying spline param [" << param_name
             << "] to true kv#0 bin centred on " << true_sb->BinCentre(use_debug_itrue, 0) << "GeV. Param val = " << f << ", generated val = " << untuned
@@ -3083,7 +3083,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         debug_sum_over_true_bins      += templFinOb[ireco][itrue];
         debug_sum_over_true_bins_init += fMCTNomOb[imode]->GetEntry(ireco,itrue);
       }
-      LOG("GenericSingleSampleFitModel",pNOTICE)
+      VLOG("GenericSingleSampleFitModel",pNOTICE)
         << std::fixed << std::setprecision(5)
         << "Before & after applying all params, new reco bin content summed over all Etrue bins (for mode "
         << util::AsString(m) <<") = " << debug_sum_over_true_bins_init << " --> " << debug_sum_over_true_bins;
@@ -3095,7 +3095,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
     // Same again but for simple binning
     if(update_mct_sb) {
       if (!imode) {
-        LOG("GenericSingleSampleFitModel",pINFO) << "Updating simple binning templates for "<<fName<<".";
+        VLOG("GenericSingleSampleFitModel",pINFO) << "Updating simple binning templates for "<<fName<<".";
       }
 
       if(fMCTNullSb[imode]) {continue;}
@@ -3115,7 +3115,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         const std::string & param_name = param.GetName();
 
         if (!fPhysHypothesis.Contains(p)) {
-          LOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
+          VLOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
           continue;
         }
 
@@ -3165,11 +3165,11 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           }
 
           if(param_true_kv_size > true_kinevars.size()) {
-            LOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
+            VLOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
             util::Die(-1); break;
           }
           if(param_reco_kv_size > reco_kinevars.size()) {
-            LOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
+            VLOG("GenericSingleSampleFitModel",pWARN) << "Parameter is applied to more true kvs than is in the true binning";
             util::Die(-1); break;
           }
 
@@ -3183,7 +3183,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             true1_min = pair1.first;
             true1_max = pair1.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel",pINFO)
+            VLOG("GenericSingleSampleFitModel",pINFO)
               << fName << ", " << util::AsString(m) << ": "
               << "Applying parameter: " << param_name << " with value = " << f
               << " in "  << util::AsString(true_kinevars[0]) << " bin range: [" << true1_min << ", " << true1_max << "]";
@@ -3197,7 +3197,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             true2_min = pair2.first;
             true2_max = pair2.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel",pINFO)
+            VLOG("GenericSingleSampleFitModel",pINFO)
               << fName << ", " << util::AsString(m) << ": "
               << "Applying parameter: " << param_name << " with value = " << f
               << " in "  << util::AsString(true_kinevars[0]) << " bin range: [" << true1_min << ", " << true1_max << "]"
@@ -3205,7 +3205,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
           }
           else if (apply_true_ndims > 2) {
-            LOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
+            VLOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
             util::Die(-1); break;
           }
 
@@ -3215,7 +3215,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             reco1_min = pair1.first;
             reco1_max = pair1.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel",pINFO)
+            VLOG("GenericSingleSampleFitModel",pINFO)
               << fName << ", " << util::AsString(m) << ": "
               << "Applying parameter: " << param_name << " with value = " << f
               << " in "  << util::AsString(reco_kinevars[0]) << " bin range: [" << reco1_min << ", " << reco1_max << "]";
@@ -3229,7 +3229,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             reco2_min = pair2.first;
             reco2_max = pair2.second;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel",pINFO)
+            VLOG("GenericSingleSampleFitModel",pINFO)
               << fName << ", " << util::AsString(m) << ": "
               << "Applying parameter: " << param_name << " with value = " << f
               << " in "  << util::AsString(reco_kinevars[0]) << " bin range: [" << reco1_min << ", " << reco1_max << "]"
@@ -3237,7 +3237,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
           }
           else if (apply_reco_ndims > 2) {
-            LOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
+            VLOG("GenericSingleSampleFitModel",pWARN) << "Unsupported true kinespace "<<util::AsString(true_ks);
             util::Die(-1); break;
           }
 
@@ -3279,7 +3279,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             double & val = templFinSb[ireco][itrue];
             val *= effective_tweak;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel",pDEBUG)
+            VLOG("GenericSingleSampleFitModel",pDEBUG)
               << "MCT[" << imode << "] = "
               << val/f << " --> " << val;
 #endif
@@ -3344,7 +3344,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         const std::string & param_name = param.GetName();
 
         if (!fPhysHypothesis.Contains(p)) {
-          LOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
+          VLOG("GenericSingleSampleFitModel",pINFO) << "Skipping parameter not defined in PhysHypothesis "<<param_name;
           continue;
         }
 
@@ -3354,7 +3354,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         double f = fPhysHypothesis.CurrValue(p);
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-        LOG("GenericSingleSampleFitModel",pDEBUG)
+        VLOG("GenericSingleSampleFitModel",pDEBUG)
           << "Applying parameter: " << param_name << " with value = " << f
           << " using splines.";
 #endif
@@ -3365,7 +3365,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 
         const conv::SplEvalType_t & spline_eval_type = fRFL->GetSplineEvalType();
         if(spline_eval_type == conv::kSplEvalUndefined) {
-          LOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
+          VLOG("GenericSingleSampleFitModel",pFATAL) << "Spline evaluation type not defined for model " << this->Name();
           util::Die(-1);
         }
         VALORArrayBin splbin;
@@ -3384,7 +3384,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           ULong64_t spl_addr = fRFPtr[imode]->GetEntry(splbin);
           const util::Interpolator * spl = reinterpret_cast<util::Interpolator*>(spl_addr);
           if (spl==util::RFL::kNoSplineRequired) {
-            LOG("GenericSingleSampleFitModel",pERROR)
+            VLOG("GenericSingleSampleFitModel",pERROR)
               <<"Got no spline required for bin expecting spline."
               <<param_name<<", "<<util::AsString(fBeam)<<", "
               <<util::AsString(fSample)<<","<<util::AsString(m);
@@ -3400,7 +3400,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             }
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel", pDEBUG)
+            VLOG("GenericSingleSampleFitModel", pDEBUG)
               << "Got response = " << response << " for param = " << param_name
               << ", itrue = " << itrue << ", ireco = " << ireco << ", untuned = " << untuned
               << ", current = " << f << ", from spline with name [" << spl->GetName()
@@ -3408,7 +3408,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
 #endif
 
             if (response<0) {
-              LOG("GenericSingleSampleFitModel",pINFO)
+              VLOG("GenericSingleSampleFitModel",pINFO)
                 <<"Negative response from spline (SB) "//<<spl->GetName()
                 <<" evaluated at "<<f<<" with result "<<response
                 <<". Using " << fRFL->GetForceNegWghtTo() << " instead.";
@@ -3438,7 +3438,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           if(it != fUniversesToRead.end())
             universe_offset = std::distance(fUniversesToRead.begin(), it);
           else{
-            LOG("GenericSingleSampleFitModel",pFATAL) << " Can't find universe ID: " << universe_id << " in list of universes to read.";
+            VLOG("GenericSingleSampleFitModel",pFATAL) << " Can't find universe ID: " << universe_id << " in list of universes to read.";
             util::Die(-1);
           }
         }
@@ -3449,7 +3449,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
             double & val = templFinOb[ireco][itrue];
             val *= wght;
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-            LOG("GenericSingleSampleFitModel",pINFO) << "\n Parameter name and ID: " << universe_id << ", " << name
+            VLOG("GenericSingleSampleFitModel",pINFO) << "\n Parameter name and ID: " << universe_id << ", " << name
                                                       << "\n Universe offset: " << universe_offset << " weight: " << wght << " new value: " << val;
 #endif
           } // true
@@ -3458,7 +3458,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
     }
   }//imode
   if (update_mct_sb) {
-    LOG("GenericSingleSampleFitModel",pINFO) << "Simple binning update completed.";
+    VLOG("GenericSingleSampleFitModel",pINFO) << "Simple binning update completed.";
   }
 }
 //________________________________________________________________________________________
@@ -3469,7 +3469,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
   // from fin to fin templates                       
   // a la SuperKMC
 
-  LOG("GenericSingleSampleFitModel",pINFO)
+  VLOG("GenericSingleSampleFitModel",pINFO)
     << "Applying oscillation probabilities (option: "
     << ((option) ? option : "")
     << ")";
@@ -3567,7 +3567,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     }
     //unknown                                                                                                                    
     else {
-      LOG("GenericSingleSampleFitModel",pFATAL) << "**  GenericSingleSampleFitModel >> Can't handle choice of "
+      VLOG("GenericSingleSampleFitModel",pFATAL) << "**  GenericSingleSampleFitModel >> Can't handle choice of "
         << "\n oscillation mixing params: " << util::AsString(omp)
         << "\n and independent squared mass-splittings: " << util::AsString(dmsqscheme);
       util::Die(-1);return;
@@ -3861,7 +3861,7 @@ valor::PhysParamList valor::GenericSingleSampleFitModel::OneSigmaErrors(Option_t
 //________________________________________________________________________________________
 void valor::GenericSingleSampleFitModel::UpdateObservableBinningFromSimple(Option_t * /*opt*/)
 {
-  LOG("GenericSingleSampleFitModel",pNOTICE)<<"Updating observable binning from simple: "<<fName;
+  VLOG("GenericSingleSampleFitModel",pNOTICE)<<"Updating observable binning from simple: "<<fName;
 
 
   const VALORBinning * reco_ob        = fBinning->RecoOptBinning();
@@ -3995,12 +3995,12 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
 {
   double orig_pdf_integral = pdf->Integral();
   if(orig_pdf_integral < conv::kASmallNum) {
-    LOG("Lateral",pINFO) << "No need to apply lateral parameter to empty PDF " << pdf->GetName();
+    VLOG("Lateral",pINFO) << "No need to apply lateral parameter to empty PDF " << pdf->GetName();
     return;
   }
 
   if (!fPhysHypothesis.Contains(p)) {
-    LOG("Lateral",pINFO) << "Skipping lateral parameter not defined in PhysHypothesis: "
+    VLOG("Lateral",pINFO) << "Skipping lateral parameter not defined in PhysHypothesis: "
       << util::NameRegistry::Instance()->ParamAsString(p);
     return;
   }
@@ -4008,20 +4008,20 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
   const Parameter & param = ParameterPool::Instance()->GetParam(p);
   const std::string & param_name = param.GetName();
   if(!param.HasKinematicRange()) {
-    LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+    VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
       << " has no kinematic range. Cannot apply";
     util::Die(-1);
   }
 
   const std::vector<conv::KineVar_t> & kvs = param.GetKineVars();
   if(kvs.size() != 1) {
-    LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+    VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
       << " is applied to " << kvs.size() << " kinematic variables. Cannot apply";
     util::Die(-1);
   }
   const conv::KineVar_t & kv = kvs[0];
   if(!util::IsReco(kv)) {
-    LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+    VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
       << " is applied to " << util::AsString(kv)
       << ", but only reco kinevars can be applied";
     util::Die(-1);
@@ -4029,7 +4029,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
 
   const VALORBinning * recoBinning = simple_binning ? fBinning->RecoSmpBinning() : fBinning->RecoOptBinning();
   if(!recoBinning->Contains(kv)) {
-    LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+    VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
       << " is applied to " << util::AsString(kv)
       << ", but this kine var is not in the binning scheme";
     util::Die(-1);
@@ -4050,7 +4050,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
   if(!tweaked) return;
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-  LOG("Lateral",pDEBUG) << "Applying lateral systematic parameter: " << param_name
+  VLOG("Lateral",pDEBUG) << "Applying lateral systematic parameter: " << param_name
     << "to PDF [" << pdf->GetName() << "] "
     << " with kine var " << util::AsString(kv) << " and scale = " << scale;
 #endif
@@ -4153,7 +4153,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
       }
 
       if(factor <= 0.0) {
-        LOG("Lateral",pWARN) << "Got a factor <= 0 for ibin_s = " << ibin_s << ", ibin_u = "
+        VLOG("Lateral",pWARN) << "Got a factor <= 0 for ibin_s = " << ibin_s << ", ibin_u = "
           << ibin_u << ". This shouldn't happen!";
         continue;
       }
@@ -4162,7 +4162,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
       new_events_per_bin[ibin_u] += pdfArr[glob_bin_s] * factor;
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-      LOG("Lateral", pDEBUG)
+      VLOG("Lateral", pDEBUG)
         << "scaled bin "    << ibin_s << " [" << bin_min_s << ", " << bin_max_s << "]; "
         << "un-scaled bin " << ibin_u << " [" << bin_min_u << ", " << bin_max_u << "]; "
         << "factor = " << factor << "; old Nevents = " << pdfArr[glob_bin_s] << "; new Nevents = " << new_events_per_bin[ibin_u];
@@ -4177,7 +4177,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
   }
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-  LOG("Lateral", pDEBUG) << "PDF contents before and after applying lateral systematic:";
+  VLOG("Lateral", pDEBUG) << "PDF contents before and after applying lateral systematic:";
 #endif
 
   int ibin_u = -1;
@@ -4190,7 +4190,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
     pdfArr[ibin] += new_events_per_bin[ibin_u];
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-    LOG("Lateral", pDEBUG)
+    VLOG("Lateral", pDEBUG)
       << "bin " << ibin << " [" << recoBinning->BinMinimum(ibin, kv) << ", " << recoBinning->BinMaximum(ibin, kv) << "]"
       << "; old content = " << old_events_per_bin[ibin] << "; new content = " << pdfArr[ibin];
 #endif
@@ -4200,7 +4200,7 @@ void GenericSingleSampleFitModel::ApplyLateralSystematic(VALORArray * pdf, conv:
   // Lateral systematics should just migrate events between bins, while keeping the total number of events constant.
   // Check that we haven't changed the total number of events
   if ( fabs((pdf->Integral()/orig_pdf_integral)-1) > conv::kASmallNum ) {
-    LOG("Lateral", pFATAL) << std::fixed << std::setprecision(9)
+    VLOG("Lateral", pFATAL) << std::fixed << std::setprecision(9)
       << "Failed normalisation check after applying lateral systematic for PDF"
       << pdf->GetName() << ". Original integral = " << orig_pdf_integral
       << ", new integral = " << pdf->Integral();
@@ -4215,7 +4215,7 @@ void GenericSingleSampleFitModel::ReadExtTuningHistsAll(TXMLEngine* xmleng_mc, X
     XMLNodePointer_t tuning_group_node = xmleng_mc->GetChild(tuning_node);            // <tuning_group>
     // Loop over all tuning group nodes
     while(tuning_group_node) {
-      LOG("GenericSingleSampleFitModel", pINFO)
+      VLOG("GenericSingleSampleFitModel", pINFO)
         << "Reading tuning group named [" << xmleng_mc->GetAttr(tuning_group_node, "name") << "]";
 
       // Work out the type of tuning to apply and therefore how to treat the input tuning hists
@@ -4232,7 +4232,7 @@ void GenericSingleSampleFitModel::ReadExtTuningHistsAll(TXMLEngine* xmleng_mc, X
         param_set_str = util::ToLowerCase(util::RemoveAllWhitespace(param_set_str));
       }
       else {
-        LOG("GenericSingleSampleFitModel", pFATAL)
+        VLOG("GenericSingleSampleFitModel", pFATAL)
           << "Can not parse input tuning type [" << tuning_type << "] for tuning group ["
           << xmleng_mc->GetAttr(tuning_group_node, "name") << "]";
         util::Die(-1);
@@ -4246,7 +4246,7 @@ void GenericSingleSampleFitModel::ReadExtTuningHistsAll(TXMLEngine* xmleng_mc, X
       TXMLEngine* xmleng = new TXMLEngine;
       XMLDocPointer_t xmldoc = xmleng->ParseFile(ts_file.Data());
       if (xmldoc==0) {
-        LOG("GenericSingleSampleFitModel", pERROR)
+        VLOG("GenericSingleSampleFitModel", pERROR)
           << "Can not parse input tuning XML file [" << file << "]";
         util::Die(1);
       }
@@ -4268,7 +4268,7 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
 {
   int hndim = hist_to_reweight->GetDimension();
   if(hndim != (int)kvs.size()) {
-    LOG("FitParams",pERROR)
+    VLOG("FitParams",pERROR)
       << "Tried to reweight a hist with " << hist_to_reweight->GetDimension() << " dimensions, but "
       << kvs.size() << " were input.";
     util::Die(-1);
@@ -4279,12 +4279,12 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
   for (PhysParamId_t p : param_set) {
     param_set_output_str += "\n  " + util::NameRegistry::Instance()->ParamAsString(p);
   }
-  LOG("FitParams",pDEBUG) << "Reweighting hist " << hist_to_reweight->GetName()
+  VLOG("FitParams",pDEBUG) << "Reweighting hist " << hist_to_reweight->GetName()
     << " with the curr or init vals of the following params: " << param_set_output_str;
   for (PhysParamId_t p : param_set) {
     if(!util::IsSystematic(p)) { continue; }
     if(!ParameterPool::Instance()->IsParamInPool(p)) {
-      LOG("FitParams",pWARN)
+      VLOG("FitParams",pWARN)
         << "Skipping parameter " << util::NameRegistry::Instance()->ParamAsString(p)
         << ", as it was not in the ParameterPool";
       continue;
@@ -4293,7 +4293,7 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
 
     // Check that this parameter has matching kinevars
     if(!param.HasKinematicRange()) {
-      LOG("FitParams",pWARN)
+      VLOG("FitParams",pWARN)
         << "Skipping parameter " << util::NameRegistry::Instance()->ParamAsString(p)
         << ", as it has no kinematic dependence";
       continue;
@@ -4307,7 +4307,7 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
         }
       }
       if(!found) {
-        LOG("FitParams",pERROR)
+        VLOG("FitParams",pERROR)
           << "Parameter " << util::NameRegistry::Instance()->ParamAsString(p)
           << " could not be applied, as all of its applied kine vars don't match the input kinevars";
         util::Die(-1);
@@ -4343,7 +4343,7 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
         for (int ibiny = bin_low_y; ibiny <= bin_high_y; ibiny++) {
           if(kvs.size() > 2) {
             // TODO: Put in 3D hist reweighting if needed
-            LOG("FitParams",pFATAL)
+            VLOG("FitParams",pFATAL)
               << "Reweighting a 3D hist is not yet supported.";
             util::Die(-1);
           }
@@ -4427,14 +4427,14 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
     const Parameter & param = ParameterPool::Instance()->GetParam(p);
     const std::string & param_name = param.GetName();
     if(!param.HasKinematicRange()) {
-      LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+      VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
         << " has no kinematic range. Cannot apply";
       util::Die(-1);
     }
 
     const std::vector<conv::KineVar_t> & kvs = param.GetKineVars();
     if(kvs.size() != 1) {
-      LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+      VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
         << " is applied to " << kvs.size() << " kinematic variables. Cannot apply";
       util::Die(-1);
     }
@@ -4444,14 +4444,14 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
 
 
     if(!util::IsReco(kv)) {
-      LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+      VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
         << " is applied to " << util::AsString(kv)
         << ", but only reco kinevars can be applied";
       util::Die(-1);
     }
 
     if(!recoBinning->Contains(kv)) {
-      LOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
+      VLOG("Lateral",pFATAL) << "Lateral systematic parameter " << param_name
         << " is applied to " << util::AsString(kv)
         << ", but this kine var is not in the binning scheme";
       util::Die(-1);
@@ -4532,7 +4532,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
         (*unscaled_bin_to_global_bin)[iedge_u-1 - n_up_edges_added] = ireco;
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-        LOG("Lateral", pDEBUG) << "ireco = " << ireco << "; scaled bin = " << iedge_s-1 - n_up_edges_added
+        VLOG("Lateral", pDEBUG) << "ireco = " << ireco << "; scaled bin = " << iedge_s-1 - n_up_edges_added
           << "; un-scaled bin = " << iedge_u-1 - n_up_edges_added
           << "; iedge_u = " << iedge_u-1 << "; iedge_s = " << iedge_s-1
           << "; un-scaled edge = " << (*unscaled_bin_edges)[iedge_u-1]
@@ -4552,7 +4552,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
           end_bins_it++;
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-          LOG("Lateral", pDEBUG) << "un-scaled bin = " << iedge_u-2 - (n_up_edges_added-1)
+          VLOG("Lateral", pDEBUG) << "un-scaled bin = " << iedge_u-2 - (n_up_edges_added-1)
             << "; iedge_u = " << iedge_u-2 << "; iedge_s = " << iedge_s-1
             << "; un-scaled edge = " << (*unscaled_bin_edges)[iedge_u-2]
             << "; scaled edge = "    << (*scaled_bin_edges)[iedge_s-1]
@@ -4565,18 +4565,18 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
     // Check edges
     for(unsigned int iedge = 0 ; iedge < (*unscaled_bin_edges).size() ; iedge++) {
       if(iedge == 0 && fabs((*unscaled_bin_edges)[0]) > conv::kASmallNum) {
-        LOG("Lateral", pFATAL)
+        VLOG("Lateral", pFATAL)
           << "Tried to apply a lateral systematic when the first reco bin edge != 0. Currently there's no underflow bin to support this, it needs putting in.";
         util::Die(-1);
       }
       if((*unscaled_bin_edges)[iedge] == conv::kBadResult) {
-        LOG("Lateral", pFATAL) << "Un-scaled bin edge for index " << iedge << " not set.";
+        VLOG("Lateral", pFATAL) << "Un-scaled bin edge for index " << iedge << " not set.";
         util::Die(-1);
       }
     }
     for(unsigned int iedge = 0 ; iedge < (*scaled_bin_edges).size() ; iedge++) {
       if((*scaled_bin_edges)[iedge] == conv::kBadResult) {
-        LOG("Lateral", pFATAL) << "Scaled bin edge for index " << iedge << " not set.";
+        VLOG("Lateral", pFATAL) << "Scaled bin edge for index " << iedge << " not set.";
         util::Die(-1);
       }
     }
@@ -4584,13 +4584,13 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
     // Check bins
     for(unsigned int ibin = 0 ; ibin < nbins ; ibin++) {
       if((*scaled_bin_to_global_bin)[ibin] == bad_bin_number) {
-        LOG("Lateral", pFATAL) << "Scaled bin to global bin vector: index " << ibin << " not set.";
+        VLOG("Lateral", pFATAL) << "Scaled bin to global bin vector: index " << ibin << " not set.";
         util::Die(-1);
       }
     }
     for(unsigned int ibin = 0 ; ibin < nbins + *n_overflow_bins ; ibin++) {
       if((*unscaled_bin_to_global_bin)[ibin] == bad_bin_number) {
-        LOG("Lateral", pFATAL) << "Un-scaled bin to global bin vector: index " << ibin << " not set.";
+        VLOG("Lateral", pFATAL) << "Un-scaled bin to global bin vector: index " << ibin << " not set.";
         util::Die(-1);
       }
     }
@@ -4632,7 +4632,7 @@ void GenericSingleSampleFitModel::PreComputeLateralSystVectors(bool use_simple_b
           }
 
 #ifdef VALOR_EXPT_LOW_LEVEL_MESG_ENABLED
-          LOG("Lateral", pDEBUG)
+          VLOG("Lateral", pDEBUG)
             << "scaled bin "    << ibin_s << " [" << bin_min_s << ", " << bin_max_s << "]; "
             << "un-scaled bin " << ibin_u << " [" << bin_min_u << ", " << bin_max_u << "]; "
             << "For unapplied kv ["<<util::AsString(unapplied_binning_kv)<<"], val s = "
@@ -4658,9 +4658,9 @@ void GenericSingleSampleFitModel::SetSystematicVariationIDToApply(const std::str
   else{
     std::vector<unsigned int>::iterator it = std::find(fUniversesToRead.begin(), fUniversesToRead.end(), id);
     if(it !=  fUniversesToRead.end())
-      LOG("GenericSingleSampleFitModel",pINFO) << " Found the chosen universe id " << id << " in the list of universes to read ";
+      VLOG("GenericSingleSampleFitModel",pINFO) << " Found the chosen universe id " << id << " in the list of universes to read ";
     else{
-      LOG("GenericSingleSampleFitModel",pERROR) << " Couldn't find the chosen universe id " << id << " in the list of universes to read ";
+      VLOG("GenericSingleSampleFitModel",pERROR) << " Couldn't find the chosen universe id " << id << " in the list of universes to read ";
       util::Die(-1);
     }
   }
@@ -4682,7 +4682,7 @@ void GenericSingleSampleFitModel::SetUniversesToRead(const std::vector<unsigned 
 //________________________________________________________________________________________
 void GenericSingleSampleFitModel::SetUniverseParameterToRead(const std::string & param_name)
 {
-  LOG("GenericSingleSampleFitModel",pDEBUG) << " Saving parameter: " << param_name;
+  VLOG("GenericSingleSampleFitModel",pDEBUG) << " Saving parameter: " << param_name;
   fUniverseParametersToSave.push_back(param_name);
 }
 //________________________________________________________________________________________

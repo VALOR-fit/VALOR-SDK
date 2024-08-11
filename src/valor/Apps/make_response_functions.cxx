@@ -57,9 +57,9 @@
 #include "valor/Utilities/SingleSampleKineBinning.h"
 #include "valor/Utilities/RFL.h"
 #include "valor/Utilities/KinematicBin.h"
-#include "valor/FitCore/CompoundFitElements.h"
+#include "valor/Core/CompoundFitElements.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
-#include "valor/FitCore/UtlFitParamList.h"
+#include "valor/Core/UtlFitParamList.h"
 
 using std::string;
 using genie::EventRecord;

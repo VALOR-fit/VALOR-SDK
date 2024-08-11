@@ -155,7 +155,7 @@ void valor::util::NotifySlack (std::string message, std::string channel, std::st
   request = request.ReplaceAll("[CHANNEL]" ,channel .c_str());
   request = request.ReplaceAll("[USERNAME]",username.c_str());
   request = request.ReplaceAll("[TOKEN]"   ,__VALOR_SLACK_TOKEN__);
-  LOG("UtlPrint",pNOTICE)<<"Notifying slack: "<<"\n"<<request;
+  VLOG("UtlPrint",pNOTICE)<<"Notifying slack: "<<"\n"<<request;
   system(request.Data());
 }
 #else

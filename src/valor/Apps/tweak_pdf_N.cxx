@@ -49,17 +49,17 @@
 // VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/FitCore/CorrelatedSystematics.h"
-#include "valor/FitCore/PhysParamList.h"
-#include "valor/FitCore/FitParamList.h"
-#include "valor/FitCore/FitModelABC.h"
-#include "valor/FitCore/FitDataABC.h"
-//#include "valor/FitCore/Likelihood.h"
-#include "valor/FitCore/FitterABC.h"
-#include "valor/FitCore/UtlFit.h"
-#include "valor/FitCore/CompoundFitElements.h"
-#include "valor/FitCore/SingleSampleFitModelABC.h"
-#include "valor/FitCore/UtlFitParamList.h"
+#include "valor/Core/CorrelatedSystematics.h"
+#include "valor/Core/PhysParamList.h"
+#include "valor/Core/FitParamList.h"
+#include "valor/Core/FitModelABC.h"
+#include "valor/Core/FitDataABC.h"
+//#include "valor/Core/Likelihood.h"
+#include "valor/Core/FitterABC.h"
+#include "valor/Core/UtlFit.h"
+#include "valor/Core/CompoundFitElements.h"
+#include "valor/Core/SingleSampleFitModelABC.h"
+#include "valor/Core/UtlFitParamList.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -87,7 +87,7 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/tweak_pdf_N.arg:$VALOR_FMWK/config/apps/seeds.arg");
-  LOG("valor", pNOTICE) << arg;
+  VLOG("valor", pNOTICE) << arg;
 
   // Read the command line
   int ntoys               = arg.GetInt("ntoys");
@@ -115,7 +115,7 @@ int main(int argc, char ** argv)
   int prior_fit_number = arg.GetInt("prior-fit-number");
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  Messenger::Instance()->Configure(mesg_thresholds);
+  valor::Messenger::Instance()->Configure(mesg_thresholds);
 
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
@@ -130,7 +130,7 @@ int main(int argc, char ** argv)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    VLOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -279,18 +279,18 @@ int main(int argc, char ** argv)
           double curr_val = twk_pdf[imodel][itoy]->GetBinContent(ebin);
           if(mean){
             if(mean_val<std::numeric_limits<double>::epsilon()){
-              LOG("valor",pERROR) << " Trying to divide by a mean value of 0, reverting to nominal";
+              VLOG("valor",pERROR) << " Trying to divide by a mean value of 0, reverting to nominal";
               sumsq += TMath::Power(curr_val-nom_val,2.);
-              LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+              VLOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
             }
             else{
               sumsq += TMath::Power(curr_val-mean_val,2.);
-              LOG("valor",pINFO) << " Calculating the standard deviation using the mean";
+              VLOG("valor",pINFO) << " Calculating the standard deviation using the mean";
             }
           }
           else{
             sumsq += TMath::Power(curr_val-nom_val,2.);
-            LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+            VLOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
           }
        }//itoy
        one_sigma = TMath::Sqrt(sumsq/static_cast<double>(ntoys));
@@ -309,7 +309,7 @@ int main(int argc, char ** argv)
   if (output_rootfile!="-" && output_rootfile!="none") {
     output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak);
     outfile = new TFile(output_rootfile.c_str(),"RECREATE");
-    LOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
+    VLOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
   }
 
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {

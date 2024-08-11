@@ -41,14 +41,14 @@ double util::ConvertOscParamToUsedScheme(PhysParamId_t p, double val, std::strin
     if(!val_scheme_name.empty()) { input_scheme = util::MixingTypeFromString(val_scheme_name); }
     else { input_scheme = Opt::Instance()->gOscMixingParamChoice; }
     if(input_scheme == kNuMixUndefined) {
-      LOG("Parameter", pERROR) << "Could not parse the input mixing scheme \'" << val_scheme_name << "\'";
+      VLOG("Parameter", pERROR) << "Could not parse the input mixing scheme \'" << val_scheme_name << "\'";
       exit(1);
     }
 
     if(!target_scheme_name.empty()) { output_scheme = util::MixingTypeFromString(target_scheme_name); }
     else { output_scheme = Opt::Instance()->gOscMixingParamChoice; }
     if(output_scheme == kNuMixUndefined) {
-      LOG("Parameter", pERROR) << "Could not parse the output mixing scheme \'" << val_scheme_name << "\'";
+      VLOG("Parameter", pERROR) << "Could not parse the output mixing scheme \'" << val_scheme_name << "\'";
       exit(1);
     }
 
@@ -58,7 +58,7 @@ double util::ConvertOscParamToUsedScheme(PhysParamId_t p, double val, std::strin
       if     (input_scheme == kNuMixSinsqTheta  && output_scheme == kNuMixSinsq2Theta) { converted_val = util::SingleAngleToDoubleAngle(val); }
       else if(input_scheme == kNuMixSinsq2Theta && output_scheme == kNuMixSinsqTheta ) { converted_val = util::DoubleAngleToSingleAngle(val); }
       else {
-        LOG("Parameter", pERROR) << "Unsupported mixing scheme conversion: " << val_scheme_name << " --> " << target_scheme_name;
+        VLOG("Parameter", pERROR) << "Unsupported mixing scheme conversion: " << val_scheme_name << " --> " << target_scheme_name;
         exit(1);
       }
     }
@@ -76,14 +76,14 @@ double util::ConvertOscParamToUsedScheme(PhysParamId_t p, double val, std::strin
     if(!val_scheme_name.empty()) { input_scheme = util::CPVChoiceFromString(val_scheme_name); }
     else { input_scheme = Opt::Instance()->gOscDeltaCP; }
     if(input_scheme == kNuDeltaCPUndefined) {
-      LOG("Parameter", pERROR) << "Could not parse the input CPV scheme \'" << val_scheme_name << "\'";
+      VLOG("Parameter", pERROR) << "Could not parse the input CPV scheme \'" << val_scheme_name << "\'";
       exit(1);
     }
 
     if(!target_scheme_name.empty()) { output_scheme = util::CPVChoiceFromString(target_scheme_name); }
     else { output_scheme = Opt::Instance()->gOscDeltaCP; }
     if(output_scheme == kNuDeltaCPUndefined) {
-      LOG("Parameter", pERROR) << "Could not parse the output CPV scheme \'" << val_scheme_name << "\'";
+      VLOG("Parameter", pERROR) << "Could not parse the output CPV scheme \'" << val_scheme_name << "\'";
       exit(1);
     }
 
@@ -93,13 +93,13 @@ double util::ConvertOscParamToUsedScheme(PhysParamId_t p, double val, std::strin
       if     (input_scheme == kNuDeltaCPPhase && output_scheme == kNuDeltaCPSin  ) { converted_val = TMath::Sin(val);  }
       else if(input_scheme == kNuDeltaCPSin   && output_scheme == kNuDeltaCPPhase) { converted_val = TMath::ASin(val); }
       else {
-        LOG("Parameter", pERROR) << "Unsupported CPV scheme conversion: " << val_scheme_name << " --> " << target_scheme_name;
+        VLOG("Parameter", pERROR) << "Unsupported CPV scheme conversion: " << val_scheme_name << " --> " << target_scheme_name;
         exit(1);
       }
     }
   }
   else {
-    LOG("Parameter", pERROR) << "Could not parse osc param \'"
+    VLOG("Parameter", pERROR) << "Could not parse osc param \'"
                              << util::NameRegistry::Instance()->ParamAsStringVerySimple(p) << "\'";
     exit(1);
   }

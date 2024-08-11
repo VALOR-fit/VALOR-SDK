@@ -99,14 +99,14 @@ TH1D* Make1DHistogram(const VALORArray& v,
       bool use_simple, conv::ReacMode_t m)
 {
   if (util::NDim(ks)!=1) {
-    LOG("UtlBinning",pWARN) << "Requested kinespace "<<util::AsString(ks)<<" is not 1D";
+    VLOG("UtlBinning",pWARN) << "Requested kinespace "<<util::AsString(ks)<<" is not 1D";
     return nullptr;
   }
   const conv::KineVar_t target_kv = util::KineVar(ks)[0];
   const bool targetIsReco = util::IsPureReco(ks);
   
   if (!targetIsReco && m==conv::kmUndefined && b.TrueSmpBinningSingle() == nullptr) {
-    LOG("UtlBinning",pWARN) << "Cannot contract to truth without a specified reaction mode.";
+    VLOG("UtlBinning",pWARN) << "Cannot contract to truth without a specified reaction mode.";
     return nullptr;
   }
   // Get the binning and associated kinematic variables for the VALORArray
@@ -133,14 +133,14 @@ TH1D* Make1DHistogram(const VALORArray& v,
     if(tmpb_reco) { oldNDim += tmpb_reco->NDimensions(); }
   }
   if(oldNDim != v.GetNDim()){
-    LOG("UtlBinning",pNOTICE) << " Old number of dimensions counted: " << oldNDim 
+    VLOG("UtlBinning",pNOTICE) << " Old number of dimensions counted: " << oldNDim 
                               << " does not match the number of dimensions in the VALORArray " << v.GetNDim()
                               << "\n Using the number from the array";
     oldNDim = v.GetNDim();
   }
   origBinning = dynamic_cast<const KBCubHcmbEdge2Edge*>(tmpb);
   if (!origBinning) {
-    LOG("UtlBinning", pWARN) << tmpb->GetName()<<" is not a KBCubHcmbEdge2Edge, so will skip this";
+    VLOG("UtlBinning", pWARN) << tmpb->GetName()<<" is not a KBCubHcmbEdge2Edge, so will skip this";
     return nullptr;
   }
   
@@ -148,7 +148,7 @@ TH1D* Make1DHistogram(const VALORArray& v,
   
   if(std::find(myKv.begin(), myKv.end(), target_kv) == myKv.end()) { 
     // Mismatch in variables
-    LOG("UtlBinning", pERROR) << "Kinematic variable " <<
+    VLOG("UtlBinning", pERROR) << "Kinematic variable " <<
        util::AsString(target_kv) << " not found in template kinematic space " <<
        util::AsString(origBinning->KineSpace());
     util::Die(-1);
@@ -169,19 +169,19 @@ TH1D* Make1DHistogram(const VALORArray& v,
       targetV = Contract(v,newBinning,recoBinning,trueBinning);
   }
   else {
-    LOG("UtlBinning",pINFO) << "Only 1 dimension, therefore keeping the binning scheme";
+    VLOG("UtlBinning",pINFO) << "Only 1 dimension, therefore keeping the binning scheme";
     newBinning = origBinning;
     targetV = &v;
   }
 
   if(targetV->GetNDim() != 1) {
-    LOG("UtlBinning",pFATAL) << "After contracting [" << v.GetName() << "] to kine space [" << util::AsString(ks)
+    VLOG("UtlBinning",pFATAL) << "After contracting [" << v.GetName() << "] to kine space [" << util::AsString(ks)
                              << "], the target array had " << targetV->GetNDim() << " dimensions. Expected 1.";
     util::Die(-1);
   }
 
   if(targetV->GetSize() != (int)newBinning->NBins()) {
-    LOG("UtlBinning",pFATAL) << "After contracting [" << v.GetName() << "] to kine space [" << util::AsString(ks)
+    VLOG("UtlBinning",pFATAL) << "After contracting [" << v.GetName() << "] to kine space [" << util::AsString(ks)
                              << "], the target array had " << targetV->GetSize() << " bins. Expected "
                              << (int)newBinning->NBins();
     util::Die(-1);
@@ -196,7 +196,7 @@ TH1D* Make1DHistogram(const VALORArray& v,
   double histo_int = histo->Integral();
   double diff = std::abs(arr_int - histo_int);
   if (std::abs(arr_int)>conv::kASmallNum && diff/arr_int > conv::kASmallNum) {
-    LOG("UtlBinning",pFATAL) << "Histogram contents don't match VALORArray contents ("
+    VLOG("UtlBinning",pFATAL) << "Histogram contents don't match VALORArray contents ("
        <<v.GetName()<<" "<<util::AsString(ks)<<")\n"
        << "Array = "<<v.Integral()<< " ; Histogram = "<<histo->Integral()
        << "; Ratio = "<<histo->Integral() / v.Integral()
@@ -216,7 +216,7 @@ TH2D* Make2DHistogram(const VALORArray& v,
       const VALORBinning* recoBinning, const std::vector<conv::KineVar_t>& ks)
 {
   if (!recoBinning) {
-    LOG("UtlBinning", pERROR) << "The input VALORBinning was invalid.";
+    VLOG("UtlBinning", pERROR) << "The input VALORBinning was invalid.";
     util::Die(-1);
   }
   const std::vector<conv::KineVar_t>& recoKv = recoBinning->KineVars();
@@ -225,7 +225,7 @@ TH2D* Make2DHistogram(const VALORArray& v,
   // (This should use the contraction method in the future)
   if(ks.size() != recoKv.size())
   {
-     LOG("UtlBinning", pERROR) << "Expected " << recoKv.size() <<
+     VLOG("UtlBinning", pERROR) << "Expected " << recoKv.size() <<
         " kinematic variables to plot, found " << ks.size();
      util::Die(-1);
   }
@@ -233,7 +233,7 @@ TH2D* Make2DHistogram(const VALORArray& v,
   {
      if(std::find(recoKv.begin(), recoKv.end(), kv) == recoKv.end())
      {  // Mismatch in variables
-        LOG("UtlBinning", pERROR) << "Kinematic variable " <<
+        VLOG("UtlBinning", pERROR) << "Kinematic variable " <<
            util::AsString(kv) << " not found in template kinematic space " <<
            util::AsString(recoBinning->KineSpace());
         util::Die(-1);
@@ -253,7 +253,7 @@ TH2D* Make2DHistogram(const VALORArray& v,
   TH2D* histo = Remap2D(events, recoBinning);
   
   if (std::fabs(v.Integral() - histo->Integral()) > conv::kASmallNum) {
-    LOG("UtlBinning",pFATAL) << "Histogram contents don't match VALORArray contents ("<<v.GetName()<<")";
+    VLOG("UtlBinning",pFATAL) << "Histogram contents don't match VALORArray contents ("<<v.GetName()<<")";
     util::Die(-1);
   }
 
@@ -267,7 +267,7 @@ VALORArray* Contract(const VALORArray& v,
 {
 
   if(!targetBinning) {
-    LOG("UtlBinning", pFATAL) << "Input target binning was null";
+    VLOG("UtlBinning", pFATAL) << "Input target binning was null";
     util::Die(-1); return nullptr;
   }
 
@@ -277,13 +277,13 @@ VALORArray* Contract(const VALORArray& v,
 //  // ASSUMPTION: The VALORArray has either one or two dimensions, where all reco binning is condensed
 //  //             into one dimension and all true is condensed into the other.
 //  if(has_reco && has_true && v.GetNDim() != 2) {
-//    LOG("UtlBinning", pFATAL) << "Both reco and true binnings were input, but the input VALORArray ["
+//    VLOG("UtlBinning", pFATAL) << "Both reco and true binnings were input, but the input VALORArray ["
 //                              << v.GetName()<<"] has "<<v.GetNDim()<<" dimensions - expected two, i.e. (reco,true)";
 //    util::Die(-1); return nullptr;
 //  }
 
   if (v.GetNDim() > 2) {
-    LOG("UtlBinning", pFATAL) << v.GetName()<<" has "<<v.GetNDim()<<" dimensions - expected either (reco) or (reco,true)";
+    VLOG("UtlBinning", pFATAL) << v.GetName()<<" has "<<v.GetNDim()<<" dimensions - expected either (reco) or (reco,true)";
     util::Die(-1); return nullptr;
   }
   else {
@@ -325,12 +325,12 @@ VALORArray* Contract(const VALORArray& v,
 
     if(n_matches != (unsigned int)v.GetNDim()) {
       if(v.GetNDim() == 1) {
-        LOG("UtlBinning", pFATAL) << v.GetName() << " has " << v.GetSize(0) << " dimensions - expecting "
+        VLOG("UtlBinning", pFATAL) << v.GetName() << " has " << v.GetSize(0) << " dimensions - expecting "
                                   << currentRecoBinning->NBins() << " (from reco) or "
                                   << currentTrueBinning->NBins() << " (from true)";
       }
       else {
-        LOG("UtlBinning", pFATAL) << v.GetName() << " has (" << v.GetSize(0) << ", "
+        VLOG("UtlBinning", pFATAL) << v.GetName() << " has (" << v.GetSize(0) << ", "
                                   << v.GetSize(1) << ") dimensions - expecting "
                                   << currentRecoBinning->NBins() << " (from reco) and "
                                   << currentTrueBinning->NBins() << " (from true)";
@@ -351,11 +351,11 @@ VALORArray* Contract(const VALORArray& v,
     if (isTrue) {
       targetIsPureReco = false;
       if(!has_true) {
-        LOG("UtlBinning",pFATAL) << "Tried to contract to a new binning containing true kine vars, but the original true binning does not exist.";
+        VLOG("UtlBinning",pFATAL) << "Tried to contract to a new binning containing true kine vars, but the original true binning does not exist.";
         util::Die(-1); return nullptr;
       }
       if (!currentTrueBinning->Contains(kv)) {
-        LOG("UtlBinning",pFATAL) << currentTrueBinning->GetName() << " does not contain " << util::AsString(kv);
+        VLOG("UtlBinning",pFATAL) << currentTrueBinning->GetName() << " does not contain " << util::AsString(kv);
         util::Die(-1); return nullptr;
       }
       kinevar_indices.push_back(currentTrueBinning->Dimension(kv));
@@ -363,11 +363,11 @@ VALORArray* Contract(const VALORArray& v,
     else {
       targetIsPureTrue = false;
       if(!has_reco) {
-        LOG("UtlBinning",pFATAL) << "Tried to contract to a new binning containing reco kine vars, but the original reco binning does not exist.";
+        VLOG("UtlBinning",pFATAL) << "Tried to contract to a new binning containing reco kine vars, but the original reco binning does not exist.";
         util::Die(-1); return nullptr;
       }
       if (!currentRecoBinning->Contains(kv)) {
-        LOG("UtlBinning",pFATAL) << currentRecoBinning->GetName() << " does not contain " << util::AsString(kv);
+        VLOG("UtlBinning",pFATAL) << currentRecoBinning->GetName() << " does not contain " << util::AsString(kv);
         util::Die(-1); return nullptr;
       }
       kinevar_indices.push_back(currentRecoBinning->Dimension(kv));
@@ -375,7 +375,7 @@ VALORArray* Contract(const VALORArray& v,
   }
   
   if (!(targetIsPureTrue || targetIsPureReco)) {
-    LOG("UtilBinning",pFATAL) << "Target binning must be pure true or reco.";
+    VLOG("UtilBinning",pFATAL) << "Target binning must be pure true or reco.";
     util::Die(-1); return nullptr;
   }
   
@@ -431,17 +431,17 @@ VALORArray* Contract(const VALORArray& v,
   } // is pure reco?
   
   if (std::fabs(v.Integral() / targetV->Integral() - 1.0 ) > conv::kASmallNum) {
-    LOG("UtlBinning",pFATAL) << "Contracted contents don't match input array contents ("<<v.GetName()<<")";
-    LOG("UtlBinning",pFATAL) << std::fixed << std::setprecision(11)
+    VLOG("UtlBinning",pFATAL) << "Contracted contents don't match input array contents ("<<v.GetName()<<")";
+    VLOG("UtlBinning",pFATAL) << std::fixed << std::setprecision(11)
                              << "Old = "<<v.Integral()<< " ; New = "<<targetV->Integral()
                              <<" ; Contracted kinespace = "<< util::AsString(util::KineSpaceFromKineVars(target_kvs));
-    LOG("UtlBinning",pFATAL) << "\n\ncurrentRecoBinning:"; currentRecoBinning->Print(std::cout);
-    LOG("UtlBinning",pFATAL) << "\n\ncurrentTrueBinning:"; currentTrueBinning->Print(std::cout);
-    LOG("UtlBinning",pFATAL) << "\n\ntargetBinning:"; targetBinning->Print(std::cout);
-    LOG("UtlBinning",pFATAL) << "\n\nold VArray dims:"; v.PrintDimensions(std::cout);
-    LOG("UtlBinning",pFATAL) << "\n\nold VArray content:"; v.PrintEntries(std::cout << std::fixed << std::setprecision(11));
-    LOG("UtlBinning",pFATAL) << "\n\nnew VArray dims:"; targetV->PrintDimensions(std::cout);
-    LOG("UtlBinning",pFATAL) << "\n\nnew VArray content:"; targetV->PrintEntries(std::cout << std::fixed << std::setprecision(11));
+    VLOG("UtlBinning",pFATAL) << "\n\ncurrentRecoBinning:"; currentRecoBinning->Print(std::cout);
+    VLOG("UtlBinning",pFATAL) << "\n\ncurrentTrueBinning:"; currentTrueBinning->Print(std::cout);
+    VLOG("UtlBinning",pFATAL) << "\n\ntargetBinning:"; targetBinning->Print(std::cout);
+    VLOG("UtlBinning",pFATAL) << "\n\nold VArray dims:"; v.PrintDimensions(std::cout);
+    VLOG("UtlBinning",pFATAL) << "\n\nold VArray content:"; v.PrintEntries(std::cout << std::fixed << std::setprecision(11));
+    VLOG("UtlBinning",pFATAL) << "\n\nnew VArray dims:"; targetV->PrintDimensions(std::cout);
+    VLOG("UtlBinning",pFATAL) << "\n\nnew VArray content:"; targetV->PrintEntries(std::cout << std::fixed << std::setprecision(11));
     util::Die(-1);
   }
     

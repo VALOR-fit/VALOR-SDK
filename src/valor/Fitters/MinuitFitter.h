@@ -27,13 +27,13 @@
 #include <TMinuit.h>
 #include <TString.h>
 
-#include "valor/FitCore/FitterABC_new.h"
+#include "valor/Core/FitterABC.h"
 
 namespace valor {
 
 class Likelihood;
 
-class MinuitFitter: public FitterABC_new
+class MinuitFitter: public FitterABC
 {
 public:
    MinuitFitter();

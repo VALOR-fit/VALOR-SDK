@@ -50,16 +50,16 @@
 #include "valor/Conventions/ParameterPool.h"
 #include "valor/Conventions/SystType.h"
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/FitCore/CorrelatedSystematics.h"
-#include "valor/FitCore/PhysParamList.h"
-#include "valor/FitCore/FitParamList.h"
-#include "valor/FitCore/FitModelABC.h"
-#include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/FitterABC.h"
-#include "valor/FitCore/UtlFit.h"
-#include "valor/FitCore/CompoundFitElements.h"
+#include "valor/Core/CorrelatedSystematics.h"
+#include "valor/Core/PhysParamList.h"
+#include "valor/Core/FitParamList.h"
+#include "valor/Core/FitModelABC.h"
+#include "valor/Core/FitDataABC.h"
+#include "valor/Core/FitterABC.h"
+#include "valor/Core/UtlFit.h"
+#include "valor/Core/CompoundFitElements.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
-#include "valor/FitCore/UtlFitParamList.h"
+#include "valor/Core/UtlFitParamList.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -92,7 +92,7 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/tweak_pdf_sigma_var.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
-  LOG("valor", pNOTICE) << arg;
+  VLOG("valor", pNOTICE) << arg;
 
   // Read the command line
   int n_threads           = arg.GetInt("nthreads");
@@ -116,7 +116,7 @@ int main(int argc, char ** argv)
   int prior_fit_number = arg.GetInt("prior-fit-number");
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  Messenger::Instance()->Configure(mesg_thresholds);
+  valor::Messenger::Instance()->Configure(mesg_thresholds);
 
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
@@ -131,7 +131,7 @@ int main(int argc, char ** argv)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    VLOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -166,7 +166,7 @@ int main(int argc, char ** argv)
   TFile * outfile = NULL;
   output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak) + "_" + util::AsString(kv) + ".root";
   outfile = new TFile(output_rootfile.c_str(),"RECREATE");
-  LOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
+  VLOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
 
   const CorrelatedSystematics * syst = cm->GetSystematics();
   FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
@@ -185,7 +185,7 @@ int main(int argc, char ** argv)
     if(!util::IsSystematic(p)) { continue; }
     if(ParameterPool::Instance()->GetParam(p).GetType() == conv::kSystDisabled) { continue; }
     if(!syst->Contains(p)) {
-      LOG("valor_dune", pFATAL) << "Could not get the 1 sigma error for param \'"
+      VLOG("valor_dune", pFATAL) << "Could not get the 1 sigma error for param \'"
                                 << util::NameRegistry::Instance()->ParamAsString(p) << "\'";
       util::Die(-1);
     }
@@ -200,7 +200,7 @@ int main(int argc, char ** argv)
     // Apply any special cases here (e.g. to force the tweaks to a certain value)
     SpecialCaseTweak(p, fp, tweak_p1, tweak_m1, tweak_p3, tweak_m3);
 
-    LOG("valor", pNOTICE)
+    VLOG("valor", pNOTICE)
       << "Tweak systematic parameter: "  << util::NameRegistry::Instance()->ParamAsString(p)
       << "\n  Nominal value = "          << bestfit
       << "\n  sigma error = "            << sigma_err
@@ -222,7 +222,7 @@ int main(int argc, char ** argv)
   outfile->Close();
   delete outfile;
 
-  LOG("valor",pNOTICE)<<"Finished writing to file: "<<output_rootfile;
+  VLOG("valor",pNOTICE)<<"Finished writing to file: "<<output_rootfile;
   std::cout << "Done!" << std::endl;
 }
 //________________________________________________________________________________________

@@ -73,8 +73,8 @@
 
 /*! \def ENDL  \brief A shortcut for log4cpp's CategoryStream::ENDLINE or std manipulators*/
 
-#ifdef __VALOR_FMWK_USES_LOG4CPP_VERSION__
-  #if __VALOR_FMWK_USES_LOG4CPP_VERSION__==0
+#ifdef __VALOR_FMWK_USES_VLOG4CPP_VERSION__
+  #if __VALOR_FMWK_USES_VLOG4CPP_VERSION__==0
     #define ENDL log4cpp::CategoryStream::ENDLINE
   #else
     #define ENDL std::endl
@@ -89,26 +89,28 @@
          appending a short string (using the __FUNCTION__ and __LINE__ macros)
          with information for the calling method [produces short message].
 */
+/*
 #ifndef SLOG
 #define SLOG(stream, priority) \
            (*valor::Messenger::Instance())(stream) \
                << priority << "[s] <" \
                << __FUNCTION__ << " (" << __LINE__ << ")> : "
 #endif
-
+*/
 /*!
   \def   LOG(stream, priority)
   \brief A macro that returns the requested log4cpp::Category
          appending a string (using the __FILE__, __FUNCTION__ and __LINE__ macros)
          with information for the calling method [produces normal messages].
 */
+/*
 #ifndef LOG
 #define LOG(stream, priority) \
            (*valor::Messenger::Instance())(stream) \
                << priority << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 #endif
-
+*/
 // Copies of the above two functions with "V" in front (for VALORLog).
 // Can be used to prevent collisisons with GENIE logging in programs built against both.
 #define VSLOG(stream, priority) \
@@ -121,44 +123,44 @@
                << __FUNCTION__ << " (" << __LINE__ << ")> : "
                
 
-#ifndef LOG_FATAL //  This one will be used to assume all others below are already defined
+#ifndef VLOG_FATAL //  This one will be used to assume all others below are already defined
 
-#define LOG_FATAL(stream) \
+#define VLOG_FATAL(stream) \
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::FATAL << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
-#define LOG_ALERT(stream) \
+#define VLOG_ALERT(stream) \
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::ALERT << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
-#define LOG_CRIT(stream) \
+#define VLOG_CRIT(stream) \
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::CRIT << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
-#define LOG_ERROR(stream) \
+#define VLOG_ERROR(stream) \
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::ERROR << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
-#define LOG_WARN(stream) \
+#define VLOG_WARN(stream) \
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::WARN << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
-#define LOG_NOTICE(stream) \
+#define VLOG_NOTICE(stream) \
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::NOTICE << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
-#define LOG_INFO(stream) \
+#define VLOG_INFO(stream) \
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::INFO << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
-#define LOG_DEBUG(stream) \
+#define VLOG_DEBUG(stream) \
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::DEBUG << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
@@ -169,7 +171,7 @@
          appending a string (using the __PRETTY_FUNCTION__ and __LINE__ macros)
          with information for the calling method [produces long messages].
 */
-
+/*
 #define LLOG(stream, priority) \
            (*valor::Messenger::Instance())(stream) \
                << priority << "[l] <" \
@@ -214,16 +216,17 @@
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::DEBUG << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
-
+*/
 /*!
   \def   BLOG(stream, priority)
   \brief A macro that returns the requested log4cpp::Category appending no 
          additional information
 */
-
+/*
 #define BLOG(stream, priority) \
 	  (*valor::Messenger::Instance())(stream) << priority
        
+*/
 #endif // Our check for LOG_FATAL, to make sure we don't collide with GENIE
 
 namespace valor {

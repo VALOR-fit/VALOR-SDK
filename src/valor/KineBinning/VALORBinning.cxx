@@ -50,7 +50,7 @@ VALORBinning::~VALORBinning()
 const int & VALORBinning::Dimension(conv::KineVar_t kv) const
 {
   if (fKineVarToDim[kv] < 0 ) {
-    LOG("VALORBinning",pFATAL) << "Bad KineVar: "<<util::AsString(kv) << " ("<<kv<<")"<< " in "<<util::AsString(fKineSpace);
+    VLOG("VALORBinning",pFATAL) << "Bad KineVar: "<<util::AsString(kv) << " ("<<kv<<")"<< " in "<<util::AsString(fKineSpace);
     util::Die(-1) ;
     static const int zero = 0;
     return zero;
@@ -162,7 +162,7 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
   
   FileStat_t dummy;
   if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-    LOG("VALORBinning", pERROR) << "Binning file not found: " << xml_file;
+    VLOG("VALORBinning", pERROR) << "Binning file not found: " << xml_file;
     util::Die(1); return nullptr;
   }
 
@@ -170,7 +170,7 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
   if (xmldoc==0) {
-    LOG("VALORBinning",pERROR) 
+    VLOG("VALORBinning",pERROR) 
         << "Can not parse input XML file [" << ts_file << "]";
     delete xml;
     util::Die(1); return nullptr;
@@ -186,13 +186,13 @@ VALORBinning * VALORBinning::BinningFromFile(const std::string & xml_file, bool 
     binning = new KBCubHcmbMondrian;
   }
   else {
-    LOG("VALORBinning",pFATAL) << "Unable to initialise binning type "<<type<<" in xml file "<<xml_file;
+    VLOG("VALORBinning",pFATAL) << "Unable to initialise binning type "<<type<<" in xml file "<<xml_file;
     util::Die(-1) ; return nullptr;
   }
   if (read_now) {
     bool success = binning->Read(xml_file);
     if (!success) {
-      LOG("VALORBinning",pFATAL) << "Failed to read binning from file "<<xml_file;
+      VLOG("VALORBinning",pFATAL) << "Failed to read binning from file "<<xml_file;
       util::Die(-1) ; return nullptr;
     }
   }
@@ -204,7 +204,7 @@ int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, const std::ma
   // Check that the input current bin number is sensible. Allow current_bin = -1 for the start of the iteration,
   // as we immediately increment it
   if(current_bin < -1 || current_bin >= (int)NBins()) {
-    LOG("KBCubHcmbMondrian", pERROR) << "Invalid input current bin number [" << current_bin << "]";
+    VLOG("KBCubHcmbMondrian", pERROR) << "Invalid input current bin number [" << current_bin << "]";
     util::Die(-1);
   }
 
@@ -214,14 +214,14 @@ int VALORBinning::GetNextBin (int current_bin, conv::KineVar_t kv, const std::ma
     conv::KineVar_t kv_fixed = iter->first;
     if(this->Contains(kv_fixed)) { n_dims_match++; }
     if(kv_fixed == kv) {
-      LOG("KBCubHcmbMondrian", pERROR) << "The kine var that we're getting the next bin of [" << util::AsString(kv)
+      VLOG("KBCubHcmbMondrian", pERROR) << "The kine var that we're getting the next bin of [" << util::AsString(kv)
                                        << "] is also present in the fixed kine var map!";
       util::Die(-1);
     }
   }
   if(this->Contains(kv)) { n_dims_match++; }
   if(n_dims_match != NDimensions()) {
-    LOG("KBCubHcmbMondrian", pERROR) << "The input kine vars don't match ALL of the binning kine vars";
+    VLOG("KBCubHcmbMondrian", pERROR) << "The input kine vars don't match ALL of the binning kine vars";
     util::Die(-1);
   }
 

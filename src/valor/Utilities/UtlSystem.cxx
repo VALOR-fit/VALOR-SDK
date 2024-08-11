@@ -91,7 +91,7 @@ std::string valor::util::CompleteConfigPath(std::string config_file)
 {
   TString ts_file = util::RemoveAllWhitespace(config_file.c_str());
   if (ts_file.Length()==0) {
-    LOG("UtlSystem",pERROR) << "Passed empty string to read as config path.";
+    VLOG("UtlSystem",pERROR) << "Passed empty string to read as config path.";
     util::Die(-1) ; return "";
   }
   gSystem->ExpandPathName(ts_file);
@@ -104,7 +104,7 @@ std::string valor::util::CompleteConfigPath(std::string config_file)
     // If not, try the config folder
     ts_file = TString::Format("%s%s",Env::Instance()->TopLevelConfDir().c_str(),ts_file.Data());
     if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-      LOG("UtlSystem",pERROR) << "Config file not found: "<<config_file;
+      VLOG("UtlSystem",pERROR) << "Config file not found: "<<config_file;
       util::Die(1); 
     }
   }
