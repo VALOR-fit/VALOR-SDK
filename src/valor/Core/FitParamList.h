@@ -37,7 +37,11 @@
 
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Conventions/PhysHypothesisId.h"
+#include "valor/Conventions/Parameter.h"
+#include "valor/Conventions/ParameterPool.h"
 #include "valor/Conventions/Build.h"
+#include "valor/Core/PhysHypothesis.h"
+#include "valor/Utilities/UtlStr.h"
 
 using std::string;
 using std::map;
@@ -45,12 +49,14 @@ using std::map;
 namespace valor {
 
   class PhysParamList;
+  class PhysHypothesis;
 
   class FitParamList: public TNamed {
 
   public:
     FitParamList();
     FitParamList(int nparams);
+    FitParamList(const PhysHypothesis & hyp, Option_t * param_opt = "");
     FitParamList(const FitParamList & plst);
     ~FitParamList();
 
@@ -340,6 +346,9 @@ namespace valor {
 
     // Returns the first open slot in list - returns conv::kBadResult otherwise.
     int FirstEmptyEntry();
+
+    // Finds the number of physics parameters from a physics hypothesis and options
+    int CountParameters(const PhysHypothesis & hyp, Option_t * param_opt) const;
 
     // Various functions called by NamedParameterList(name)
 

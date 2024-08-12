@@ -71,11 +71,133 @@ TNamed()
   this->Copy(plst);
 }
 //________________________________________________________________________________________
+FitParamList::FitParamList( const PhysHypothesis & hyp, Option_t * param_opt) :
+  FitParamList( this->CountParameters( hyp, param_opt ) )
+{
+
+  // Create a FitParamList object, adding all physics + nuisance params from the instance of ParameterPool.
+  string param_list_opt = ((param_opt) ? param_opt : "NONE");
+
+  VLOG("Core", pDEBUG)
+    << "Instantiating a fit parameter list object from the ParameterPool with option(s): " << param_list_opt;
+
+  //get the extra options here:
+  bool no_osc                 = (param_list_opt.find("no-osc-params"    ) != string::npos);
+  bool fix_osc_params         = (param_list_opt.find("fix-osc-params"   ) != string::npos);
+  bool cons_osc_params        = (param_list_opt.find("cons-osc-params"  ) != string::npos);
+  bool cons_atm_params        = (param_list_opt.find("cons-atm-params"  ) != string::npos);
+  bool cons_solar_params      = (param_list_opt.find("cons-solar-params") != string::npos);
+  bool cons_theta13           = (param_list_opt.find("cons-theta13"     ) != string::npos);
+  bool fix_all                = (param_list_opt.find("fix-all"          ) != string::npos);
+  bool fix_detector_params    = (param_list_opt.find("fix-det-syst"     ) != string::npos);
+  bool fix_nd_detector_params = (param_list_opt.find("fix-nd-det-syst"  ) != string::npos);
+  bool fix_fd_detector_params = (param_list_opt.find("fix-fd-det-syst"  ) != string::npos);
+  bool fix_flux_params        = (param_list_opt.find("fix-flux-syst"    ) != string::npos);
+  bool fix_nd_flux_params     = (param_list_opt.find("fix-nd-flux-syst" ) != string::npos);
+  bool fix_fd_flux_params     = (param_list_opt.find("fix-fd-flux-syst" ) != string::npos);
+  bool fix_int_params         = (param_list_opt.find("fix-int-syst"     ) != string::npos);
+  bool fix_mec_params         = (param_list_opt.find("fix-mec-syst"     ) != string::npos);
+  bool fix_fsi_params         = (param_list_opt.find("fix-fsi-syst"     ) != string::npos);
+  bool only_nd                = (param_list_opt.find("only-nd"          ) != string::npos);
+  bool fix_sterile_MuE        = (param_list_opt.find("fix-sterile-MuE"  ) != string::npos);
+  bool fix_sterile_MuMu       = (param_list_opt.find("fix-sterile-MuMu" ) != string::npos);
+  bool fix_sterile_params     = (param_list_opt.find("fix-sterile-params" ) != string::npos);
+
+  const std::vector<Parameter> & pool_params = ParameterPool::Instance()->GetParams();
+
+  // Add parameters from the pool
+  int ipc = 0; //counter with no gaps, in case of `kPhypUndefined' params
+  for(const Parameter& param : pool_params) {
+    PhysParamId_t p = param.GetID();
+    if(p == kPhypUndefined) {
+      VLOG("Core", pFATAL) << "Found an undefined parameter in the ParameterPool";
+      util::Die(-1);
+    }
+
+    // Skip parameters if needed
+    if(!hyp.Contains(p) && !util::IsSystematic(p)) { continue; }  // The pool could contain many osc params taken from a defaults file, but we might not want them all in the FPL
+    if(no_osc  && !util::IsSystematic(p))          { continue; }
+    if(only_nd && !param.SearchCategories("ND"))   { continue; }
+
+    double      init = param.GetInitValue();
+    double      min  = param.GetLimits().first;
+    double      max  = param.GetLimits().second;
+    double      step = param.GetStepSize();
+    bool        fix  = param.IsFixed();
+    bool        nuis = param.IsNuisance();
+    bool        marg = param.DoMarginalise();
+    double      curr = init;
+    std::string name = "";
+    if(!util::IsSystematic(p)) { name = param.GetNameLong(); }
+    else                       { name = param.GetName();     }
+
+    if(  (fix_sterile_MuE && p== kPhypMixingMuE)||
+         (fix_sterile_MuMu && p== kPhypMixingMuMu) ||
+	 (fix_sterile_params && (  p== kPhypMixingMuE || p== kPhypMixingMuMu) ) ){
+
+       fix = true;
+
+    }
+
+
+
+    // Fix parameters as necessary
+    if(( fix_all                                                                                          ) ||
+       ( fix_osc_params         && !util::IsSystematic(p)                                                 ) ||
+       ( fix_detector_params    && param.SearchCategories("det")                                          ) ||
+       ( fix_nd_detector_params && param.SearchCategories("det") && param.SearchCategories("ND")          ) ||
+       ( fix_fd_detector_params && param.SearchCategories("det") && param.SearchCategories("FD")          ) ||
+       ( fix_flux_params        && param.SearchCategories("flux")                                         ) ||
+       ( fix_nd_flux_params     && param.SearchCategories("ND") && param.SearchCategories("flux")         ) ||
+       ( fix_fd_flux_params     && param.SearchCategories("FD") && param.SearchCategories("flux")         ) ||
+       ( fix_int_params         && param.SearchCategories("int")                                          ) ||
+       ( fix_mec_params         && (util::ToLowerCase(param.GetName()).find("mec")  != std::string::npos ||
+                                    util::ToLowerCase(param.GetName()).find("2p2h") != std::string::npos) ) ||
+       ( fix_fsi_params         && param.SearchCategories("FSI")                                          )
+      ) {
+      fix = true;
+    }
+
+    // Constrain osc params as necessary
+    if(( cons_osc_params   && !util::IsSystematic(p)   ) ||
+       ( cons_solar_params && p == conv::kPhypMixing12 ) ||
+       ( cons_solar_params && p == conv::kPhypDm12sq   ) ||
+       ( cons_atm_params   && p == conv::kPhypMixing23 ) ||
+       ( cons_atm_params   && p == conv::kPhypDm23sq   ) ||
+       ( cons_theta13      && p == conv::kPhypMixing13 )
+      ) {
+      nuis = true;
+    }
+  } // for( const Parameter & param : pool_params )
+  
+}
+//________________________________________________________________________________________
 FitParamList::~FitParamList()
 {
   this->CleanUp();
 }
+//________________________________________________________________________________________
+int FitParamList::CountParameters(const PhysHypothesis & hyp, Option_t * param_opt) const
+{
+  string param_list_opt = ((param_opt) ? param_opt : "NONE");
 
+  const std::vector<Parameter> & pool_params = ParameterPool::Instance()->GetParams();
+
+  // couple of options needed
+  bool no_osc                 = (param_list_opt.find("no-osc-params"    ) != string::npos);
+  bool only_nd                = (param_list_opt.find("only-nd"          ) != string::npos);
+
+  // Set the number of parameters based on the parameters and the above options
+  size_t nparams_syst = ParameterPool::Instance()->GetNumSystParams();
+  size_t nparams_osc  = ParameterPool::Instance()->GetNumOscParams ();
+  for(const Parameter& param : pool_params) {
+    if(!util::IsSystematic(param.GetID()) && ( !hyp.Contains(param.GetID()) || no_osc )) { nparams_osc--;  }
+    if(only_nd && !param.SearchCategories("ND"))   { nparams_syst--; }
+  }
+  size_t nparams = nparams_syst + nparams_osc;
+
+  return static_cast<int>(nparams);
+}
 //________________________________________________________________________________________
 bool FitParamList::AddParam (int ip, PhysParamId_t p,
                              double init, double min, double max, double step, bool fix, bool nuis, string name)

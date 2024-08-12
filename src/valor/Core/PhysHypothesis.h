@@ -28,6 +28,7 @@
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Conventions/Detector.h"
+#include "valor/Core/PhysParamList.h"
 #include "valor/Core/FitParamList.h"
 
 using std::ostream;
@@ -35,6 +36,9 @@ using std::string;
 using std::map;
 
 namespace valor {
+
+  class FitParamList;
+  class PhysParamList;
 
 class PhysHypothesis
 {
