@@ -70,7 +70,7 @@
 #include "valor/Fitters/UtlFit.h"
 #include "valor/Core/CompoundFitElements.h"
 #include "valor/Core/UtlOscillation.h"
-#include "valor/Core/UtlFitParamList.h"
+//#include "valor/Core/UtlFitParamList.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -181,7 +181,8 @@ int main(int argc, char ** argv)
     cout << "\t" << util::NameRegistry::Instance()->ParamAsStringVerySimple(pair.first) << endl;
   }
 
-  FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+  //FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+  FitParamList * fp = new FitParamList(hypname, fplopt.c_str());
   util::oscillation::SetParameterPriors(arg, *fp);
 
   // Generate pdfs
@@ -241,7 +242,8 @@ int main(int argc, char ** argv)
     fp->FromPhysParamList(model->Tweaks(),"current-silent");
 
     // Check that the parameter values are physical. Rethrow if they aren't
-    if (!util::AllWithinLimits(*fp) && rethrow_unphysical) {
+    //if (!util::AllWithinLimits(*fp) && rethrow_unphysical) {
+    if (!fp->AllWithinLimits() && rethrow_unphysical) {
       itoy--;
       continue;
     }

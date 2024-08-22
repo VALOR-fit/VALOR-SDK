@@ -57,7 +57,7 @@
 #include "valor/Core/FitterABC.h"
 #include "valor/Fitters/UtlFit.h"
 #include "valor/Core/CompoundFitElements.h"
-#include "valor/Core/UtlFitParamList.h"
+//#include "valor/Core/UtlFitParamList.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
@@ -139,7 +139,8 @@ int main(int argc, char ** argv)
   FitParamList *fp = 0;
 
   // If we have not been asked to generate the FD prediction from fit result
-  if(!generate_fd) fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+  //if(!generate_fd) fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+  if(!generate_fd) fp = new FitParamList(hypname, fplopt.c_str());
   // If we have, get the FPL from the fit result output file
   else {
     // Get FitParamList from the fit result file

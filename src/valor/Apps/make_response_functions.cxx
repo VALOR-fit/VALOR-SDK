@@ -59,7 +59,7 @@
 #include "valor/Utilities/KinematicBin.h"
 #include "valor/Core/CompoundFitElements.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
-#include "valor/Core/UtlFitParamList.h"
+//#include "valor/Core/UtlFitParamList.h"
 
 using std::string;
 using genie::EventRecord;

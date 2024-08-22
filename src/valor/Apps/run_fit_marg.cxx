@@ -61,7 +61,7 @@
 #include "valor/Core/CompoundFitElements.h"
 #include "valor/Core/Marginalisation.h"
 #include "valor/Core/UtlOscillation.h"
-#include "valor/Core/UtlFitParamList.h"
+//#include "valor/Core/UtlFitParamList.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -187,7 +187,8 @@ void Fit(CmdLnArgList& arg)
          util::Die(-1);
       }
 
-      FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+      //FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+      FitParamList * fpl = new FitParamList(hypname, fplopt.c_str());
 
       // Set the priors
       util::oscillation::SetParameterPriors(arg, *fpl);
@@ -203,7 +204,8 @@ void Fit(CmdLnArgList& arg)
    }
    else if(read_data_from_binary) {
       // First generate a dummy fake data toy to be overwritten (so that the data arrays can be initialised)
-      FitParamList* fpl_void = util::GetFitParameterList("void", "");
+      //FitParamList* fpl_void = util::GetFitParameterList("void", "");
+      FitParamList * fpl_void = new FitParamList(std::string("void"), "");
       data->Generate(model, *fpl_void, with_stat_fluct);
 
       // Fit to data read from an input binary toy file

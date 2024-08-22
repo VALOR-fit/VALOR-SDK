@@ -2122,6 +2122,27 @@ bool FitParamList::IsComplete()
   return true;
 }
 //________________________________________________________________________________________
+bool FitParamList::AllWithinLimits(void) const
+{
+  for (int ip = 0 ; ip < fNParams; ip++)
+  {
+    PhysParamId_t p = this->WhichParam(ip);
+    if(!ParameterPool::Instance()->IsParamInPool(p)) {
+      VLOG("Core", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
+			   << "\' was in the FPL but not the ParameterPool";
+      util::Die(-1);
+    }
+
+    const Parameter & param = ParameterPool::Instance()->GetParam(p);
+
+    double value = this->CurrValueByIndex(ip);
+    if (not param.IsWithinLimits(value)) {
+      return false;
+    } // die
+  } // loop over params
+  return true;
+}
+//________________________________________________________________________________________
 int FitParamList::FirstEmptyEntry()
 {
   for (int ip = 0 ; ip < fNParams; ip++)

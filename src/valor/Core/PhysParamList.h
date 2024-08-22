@@ -63,6 +63,9 @@ public:
    // Get the contents of another PPL.
    void CopyFrom(const PhysParamList & ppl); // Wipes current contents
    void MergeFrom(const PhysParamList & ppl, Option_t * opt = 0); // Keeps current contents
+
+   // Check if all the parameters are within limits
+   bool AllWithinLimits( void ) const;
    
    // Copy to other formats
    TVectorD AsTVector(const CorrelatedSystematics * ordering);

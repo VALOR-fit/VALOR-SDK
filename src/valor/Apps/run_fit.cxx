@@ -74,7 +74,7 @@
 #include "valor/Core/CompoundFitElements.h"
 #include "valor/Fitters/UtlFit.h"
 #include "valor/Core/UtlOscillation.h"
-#include "valor/Core/UtlFitParamList.h"
+//#include "valor/Core/UtlFitParamList.h"
 #include "valor/Oscillation/SimpleOsc.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/NameRegistry.h"
@@ -208,7 +208,8 @@ int main(int argc, char ** argv)
 
     // Get the specified fit parameter list (specifies which parameters are floated/fixed,
     // parameter limits, initial values etc).
-    FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+    //FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+    FitParamList * fp = new FitParamList(hypname, fplopt.c_str());
 
     if(fp == 0){ // Make sure that worked
       VLOG("valor",pFATAL) << "FitParamList not filled";
@@ -265,7 +266,8 @@ int main(int argc, char ** argv)
     }
 
     // Check parameter name, maybe rethrow
-    if (!util::AllWithinLimits(*fp)) {
+    //if (!util::AllWithinLimits(*fp)) {
+    if (!fp->AllWithinLimits()) {
       VLOG("valor", pNOTICE) << "At least one parameter thrown outside expected limits.";
       if (rethrow_unphysical) {
         VLOG("valor", pNOTICE) << "Regenerating...";

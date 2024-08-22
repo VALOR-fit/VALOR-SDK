@@ -216,6 +216,9 @@ namespace valor {
     // Check if this FPL is complete and ready to be used
     bool IsComplete();
 
+    // Check all the parameters are within their limits
+    bool AllWithinLimits(void) const;
+
     TMatrixDSym *       GetCovMatrix(void)       { return fCovMatrix; }
     const TMatrixDSym * GetCovMatrix(void) const { return fCovMatrix; }
 

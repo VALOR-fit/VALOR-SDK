@@ -59,7 +59,7 @@
 #include "valor/Fitters/UtlFit.h"
 #include "valor/Core/CompoundFitElements.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
-#include "valor/Core/UtlFitParamList.h"
+//#include "valor/Core/UtlFitParamList.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -169,7 +169,8 @@ int main(int argc, char ** argv)
   VLOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
 
   const CorrelatedSystematics * syst = cm->GetSystematics();
-  FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+  //FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+  FitParamList * fp = new FitParamList(hypname, fplopt.c_str());
 
   if (fp->Exists(conv::kPhypMixing12)) { fp->Update(conv::kPhypMixing12,mixing12); }
   if (fp->Exists(conv::kPhypMixing13)) { fp->Update(conv::kPhypMixing13,mixing13); }

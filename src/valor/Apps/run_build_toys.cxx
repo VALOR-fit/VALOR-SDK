@@ -74,7 +74,7 @@
 #include "valor/Fitters/UtlFit.h"
 #include "valor/Core/UtlOscillation.h"
 #include "valor/Core/ToyBuilder.h"
-#include "valor/Core/UtlFitParamList.h"
+//#include "valor/Core/UtlFitParamList.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -167,7 +167,8 @@ void BuildToys(CmdLnArgList& arg)
    CompoundFitElements * elements = new CompoundFitElements();
    elements->Read(util::CompleteConfigPath(arg.GetString("config")));
 
-   FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+   //FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+   FitParamList * fpl = new FitParamList(hypname, fplopt.c_str());
    // Set the priors
    util::oscillation::SetParameterPriors(arg, *fpl);
    // Fix or set marginalisation flag for oscillation parameters

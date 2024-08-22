@@ -172,3 +172,22 @@ TVectorD PhysParamList::AsTVector(const CorrelatedSystematics * ordering)
   return vec;
 }
 //________________________________________________________________________________________
+bool PhysParamList::AllWithinLimits(void) const
+{
+  for (int iparam = 0 ; iparam < conv::knppmax; iparam++) {
+    PhysParamId_t p = PhysParamId_t(iparam);
+    if (not this->Contains(p)) continue;
+    if(!ParameterPool::Instance()->IsParamInPool(p)) {
+      VLOG("Core", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
+			   << "\' was in the PhysParamList but not the ParameterPool";
+      util::Die(-1);
+    }
+    const Parameter & param = ParameterPool::Instance()->GetParam(p);
+    double value = this->Value(p);
+    if (not param.IsWithinLimits(value)) {
+      return false;
+    }
+  }
+  return true;
+}
+//________________________________________________________________________________________
