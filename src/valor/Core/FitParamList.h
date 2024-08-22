@@ -41,6 +41,7 @@
 #include "valor/Conventions/ParameterPool.h"
 #include "valor/Conventions/Build.h"
 #include "valor/Core/PhysHypothesis.h"
+#include "valor/Utilities/NameRegistry.h"
 #include "valor/Utilities/UtlStr.h"
 
 using std::string;
@@ -51,12 +52,17 @@ namespace valor {
   class PhysParamList;
   class PhysHypothesis;
 
+  namespace util {
+    class NameRegistry;
+  }
+
   class FitParamList: public TNamed {
 
   public:
     FitParamList();
     FitParamList(int nparams);
     FitParamList(const PhysHypothesis & hyp, Option_t * param_opt = "");
+    FitParamList(const std::string hypothesis_name, Option_t * param_opt = "");
     FitParamList(const FitParamList & plst);
     ~FitParamList();
 

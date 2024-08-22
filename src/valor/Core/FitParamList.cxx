@@ -167,9 +167,39 @@ FitParamList::FitParamList( const PhysHypothesis & hyp, Option_t * param_opt) :
        ( cons_theta13      && p == conv::kPhypMixing13 )
       ) {
       nuis = true;
+
+      // Check we're not going behind physical region
+      min = param.GetNearestPhysicalValue(min);
+      max = param.GetNearestPhysicalValue(max);
+
+      this->AddParam(ipc, p, init, min, max, step, fix, nuis);
+      this->Update(p, curr);
+      this->SetDoMarg(p, marg);
+      ipc++;
     }
   } // for( const Parameter & param : pool_params )
+
+  if(!this->IsComplete()) {
+    VLOG("Core",pERROR)<<"Fit parameter list is not complete";
+    this->Print();
+    util::Die(-1);
+  }
+
+  // Finally, check that all of the params in the PhysHypothesis are in the FPL
+  for(conv::PhysParamId_t hyp_par : hyp.GetParams()) {
+    if(!this->Exists(hyp_par)) {
+      VLOG("Core",pERROR) << "Parameter \'" << util::NameRegistry::Instance()->AsString(hyp_par)
+			  << "\' from the PhysHypothesis was not found in the FitParamList";
+      this->Print();
+      util::Die(-1);
+    }
+  } // check FPL completeness
   
+}
+//________________________________________________________________________________________
+FitParamList::FitParamList(const std::string hypothesis_name, Option_t * param_opt) :
+  FitParamList( PhysHypothesis( hypothesis_name ), param_opt )
+{
 }
 //________________________________________________________________________________________
 FitParamList::~FitParamList()
