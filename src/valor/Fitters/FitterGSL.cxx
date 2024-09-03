@@ -1,7 +1,7 @@
 //____________________________________________________________________________ 
 /*
 
- >> ChangeLog:
+ >> ChangeLog: 3/Sept/2024: Add modern Likelihood dependencies
 
 */ 
 //____________________________________________________________________________
@@ -115,8 +115,7 @@ void FitterGSL::Init(LikelihoodGSL * lkhd, Option_t * option)
   fNFreeFitParams = fit_params.GetNumberFreeParameters();
 
   if (fOption.Contains("LevMarq") ){ 
-    //fFitMethodFunc = fFitInputs->AsFitMethodFunction();
-    std::cerr << "FitterGSL.cxx:: RETHERE and implement this" << std::endl;
+    fFitMethodFunc = fLikelihood->AsFitMethodFunction();
   }
   else{
     fFunc = fLikelihood->AsFunctor(); 
@@ -144,17 +143,13 @@ bool FitterGSL::DoTheFit(void)
   fFitTime = 0;
 
   if (fOption.Contains("LevMarq") ){
-    /*
     ROOT::Fit::Fitter fitter;
-    fFitInputs->FitParams().SetTo(&fitter);
-    //fitter.Config().MinimizerOptions().SetPrintLevel(1);
+    fLikelihood->Kernel()->FitParams().SetTo(&fitter);
     fitter.Config().MinimizerOptions().SetMinimizerType("GSLMultiFit");
     
-    fitter.FitFCN(*fFitMethodFunc,0,fFitInputs->GetNPoints(),true);
+    fitter.FitFCN(*fFitMethodFunc,0,fLikelihood->Kernel()->GetNPoints(),true);
     ROOT::Fit::FitResult result = fitter.Result();
     result.Print(std::cout);
-    */
-    std::cerr << "FitterGSL.cxx: RETHERE implement LevMarq" << std::endl;
   }
   else{
     if(!fMinimizer) return false;

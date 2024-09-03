@@ -33,6 +33,27 @@ class LikelihoodGSL;
 //____________________________________________________________________________
 //
 //
+class FitMethodFunc: public ROOT::Math::FitMethodFunction
+{
+public:
+  FitMethodFunc( int dim, int npoints, LikelihoodGSL * lkhd_gsl );
+  ~FitMethodFunc();
+  double operator() (const double * x) const;
+  ROOT::Math::IMultiGenFunction * Clone(void) const;
+  double DataElement( const double * x, unsigned int i, double * g = 0,
+		      double * h = 0, bool fullHessian = false ) const;
+
+  virtual ROOT::Math::BasicFitMethodFunction<
+    ROOT::Math::IBaseFunctionMultiDim >::Type_t Type(void) const;
+
+private:
+  virtual double DoEval(const double * x) const;
+  mutable LikelihoodGSL * fLikelihood;
+};
+//____________________________________________________________________________
+//____________________________________________________________________________
+//
+//
 class FitFunctor: public ROOT::Math::IMultiGenFunction
 {
 public:
@@ -63,6 +84,8 @@ public :
 
   // Return likelihood object as a IMultiGenFunction
   ROOT::Math::IMultiGenFunction * AsFunctor(void);
+  // Return likelihood object as a FitMethodFunction
+  ROOT::Math::FitMethodFunction * AsFitMethodFunction(void);
 
 private:
 
