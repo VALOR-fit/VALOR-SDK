@@ -15,6 +15,7 @@
 
 #pragma link C++ class valor::FitterMinuit+;
 #pragma link C++ class valor::FitterMinuit2+;
+#pragma link C++ class valor::FitterGSL+;
 
 #pragma link C++ class valor::LikelihoodMinuit+;
 #pragma link C++ class valor::LikelihoodMinuit2+;

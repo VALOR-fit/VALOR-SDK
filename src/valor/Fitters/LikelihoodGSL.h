@@ -23,6 +23,7 @@
 #include <HFitInterface.h>
 
 #include "valor/Core/FitParamList.h"
+#include "valor/Core/Likelihood.h"
 
 namespace valor {
 
