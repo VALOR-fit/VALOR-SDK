@@ -78,8 +78,8 @@ FitParamList::FitParamList( const PhysHypothesis & hyp, Option_t * param_opt) :
   // Create a FitParamList object, adding all physics + nuisance params from the instance of ParameterPool.
   string param_list_opt = ((param_opt) ? param_opt : "NONE");
 
-  VLOG("Core", pDEBUG)
-    << "Instantiating a fit parameter list object from the ParameterPool with option(s): " << param_list_opt;
+  //VLOG("Core", pDEBUG)
+  //  << "Instantiating a fit parameter list object from the ParameterPool with option(s): " << param_list_opt;
 
   //get the extra options here:
   bool no_osc                 = (param_list_opt.find("no-osc-params"    ) != string::npos);
@@ -109,6 +109,7 @@ FitParamList::FitParamList( const PhysHypothesis & hyp, Option_t * param_opt) :
   int ipc = 0; //counter with no gaps, in case of `kPhypUndefined' params
   for(const Parameter& param : pool_params) {
     PhysParamId_t p = param.GetID();
+    VLOG( "Core", pFATAL ) << "The string of this param is " << util::RawParamAsStringRaw(p);
     if(p == kPhypUndefined) {
       VLOG("Core", pFATAL) << "Found an undefined parameter in the ParameterPool";
       util::Die(-1);
@@ -167,16 +168,16 @@ FitParamList::FitParamList( const PhysHypothesis & hyp, Option_t * param_opt) :
        ( cons_theta13      && p == conv::kPhypMixing13 )
       ) {
       nuis = true;
-
-      // Check we're not going behind physical region
-      min = param.GetNearestPhysicalValue(min);
-      max = param.GetNearestPhysicalValue(max);
-
-      this->AddParam(ipc, p, init, min, max, step, fix, nuis);
-      this->Update(p, curr);
-      this->SetDoMarg(p, marg);
-      ipc++;
     }
+
+    // Check we're not going behind physical region
+    min = param.GetNearestPhysicalValue(min);
+    max = param.GetNearestPhysicalValue(max);
+
+    this->AddParam(ipc, p, init, min, max, step, fix, nuis);
+    this->Update(p, curr);
+    this->SetDoMarg(p, marg);
+    ipc++;
   } // for( const Parameter & param : pool_params )
 
   if(!this->IsComplete()) {
@@ -232,6 +233,16 @@ int FitParamList::CountParameters(const PhysHypothesis & hyp, Option_t * param_o
 bool FitParamList::AddParam (int ip, PhysParamId_t p,
                              double init, double min, double max, double step, bool fix, bool nuis, string name)
 {
+
+  /*
+  VLOG( "Core", pDEBUG ) << "Adding param with index " << ip
+			 << " and name " << util::RawParamAsStringRaw(p)
+			 << "\nmin, max = " << min << ", " << max
+			 << "\nstep = " << step
+			 << "\nfix, nuis = " << (int)fix << ", " << (int)nuis
+			 << "\nname = " << name;
+  */
+  
   if (ip < 0) {
     ip = this->FirstEmptyEntry();
   }
@@ -1855,6 +1866,8 @@ void FitParamList::Copy(const FitParamList & plst)
 //________________________________________________________________________________________
 void FitParamList::Init(int nparams)
 {
+  VLOG( "Core", pDEBUG ) << "Initialising FPL with " << nparams << " parameters...";
+
   fIdMap.clear();
   
   fParListName = "";
@@ -2117,7 +2130,11 @@ bool FitParamList::IsComplete()
   for (int ip = 0 ; ip < fNParams; ip++)
   {
     PhysParamId_t p = this->WhichParam(ip);
-    if (p==conv::kPhypUndefined) {return false;}
+    if (p==conv::kPhypUndefined) {
+      VLOG( "Core", pERROR ) << "PARAMETER WITH INDEX " << ip
+			     << " AND NAME " << util::RawParamAsStringRaw(p) << " IS UNDEFINED.";
+      return false;
+    }
   }
   return true;
 }
