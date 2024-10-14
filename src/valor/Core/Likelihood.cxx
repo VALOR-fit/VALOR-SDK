@@ -42,6 +42,7 @@ Likelihood::Likelihood(
 fObs(o),
 fExp(e),
 fFitParams(fpar),
+fNDim(fpar->GetNumberParameters()),
 fIncludePenaltySyst(true),
 fIncludePenaltyHyp (true)
 {
@@ -56,6 +57,7 @@ Likelihood::~Likelihood()
 void Likelihood::UpdateParamList(FitParamList * fpar)
 {
   fFitParams = fpar;
+  fNDim = fpar->GetNumberParameters();
 }
 //____________________________________________________________________________
 FitDataABC & Likelihood::Observation(void)

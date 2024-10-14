@@ -9,10 +9,10 @@
 #define __show_fit_init_info__
 //#define __show_fit_cov_matrix_debug__
 #define __show_fit_result__
-#define __show_fit_steps__
-//~ #define __show_fit_steps_debug__
+//#define __show_fit_steps__
+//#define __show_fit_steps_debug__
 #define __show_fit_cpu_time__
-#define __give_fitter_covariance_matrix__
+//#define __give_fitter_covariance_matrix__
 
 #include <cassert>
 #include <cstdlib>
@@ -211,26 +211,99 @@ bool FitterMinuit2::Configure(const Registry & conf)
 //____________________________________________________________________________
 void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
 {
-  VLOG("Minuit2",pDEBUG)<<"Constructing prior covariance matrix";
-
   const FitParamList & fp = fLikelihood->FitParams();
   int num_of_params      = fp.GetNumberParameters();
   int num_of_free_params = fp.GetNumberFreeParameters();
   fCovMtrx.ResizeTo(num_of_free_params,num_of_free_params);
   const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fLikelihood->Expectation());
+
   if (cm) {
     const TMatrixD & full_cov = cm->GetSystematics()->CovMatrix();
+
+#ifdef __show_fit_cov_matrix_debug__
+    cout << "FitterMinuit2/FillPriorCovMatrix >> FPL cov matrix:" << endl;
+    cout << "===================================" << endl;
+
+    for( unsigned int i = 0; i < full_cov.GetNrows(); i++ ) {
+      for( unsigned int j = 0; j < full_cov.GetNrows(); j++ ) cout << full_cov(i,j) << " ";
+      cout << endl;
+    }
+#endif    
+
+    /*
+     * Check the full matrix. It will consist of the full cov matrix of the nuisance params,
+     * expanded by a unit matrix for the fit params.
+     * If any of the params is not free ignore it completely.
+     */
+
+    int inuis = -1, ifree = 0;
+    for( int i = 0 ; i < num_of_params ; i++ ) {
+
+      // If the parameter is fixed, do not bother giving it any prior as it makes no sense.
+      // We're not varying fixed parameters.
+      // However, do track if it is a nuisance parameter, as we will want to check full_cov at the right location.
+
+      if( fp.IsNuisanceByIndex( i ) ) inuis++;
+
+      if( fp.IsFixedByIndex( i ) ) continue; // do nothing else
+
+      // This parameter is now guaranteed non-fixed.
+      
+      // If it is physical, set unit row
+      if( ! fp.IsNuisanceByIndex( i ) ) {
+	int jfree = -1;
+	for( int j = 0 ; j < num_of_params ; j++ ) {
+	  if( fp.IsFixedByIndex( j ) ) continue;
+	  
+	  jfree++;
+	  if( ifree == jfree ) fCovMtrx[ ifree ][ jfree ] = 1.0;
+	  else fCovMtrx[ ifree ][ jfree ] = 0.0;
+	}
+      } else {
+	// This parameter is both non-fixed and nuisance. Ask the prior covariance what to use.
+	int jnuis = -1, jfree = 0;
+	for( int j = 0 ; j < num_of_params ; j++ ) {
+
+	  if( fp.IsNuisanceByIndex( j ) ) jnuis++;
+	  else {
+	    // Enforce this element of fCovMtrx to be zero as no prior on cross phys with nuisance
+	    fCovMtrx[ ifree ][ jfree ] = 0.0;
+	  }
+
+	  if( fp.IsFixedByIndex( j ) ) continue;
+
+	  if( fp.IsNuisanceByIndex( j ) ) { // dealt with phys a loop ago
+	    fCovMtrx[ ifree ][ jfree ] = full_cov( inuis, jnuis );
+	  }
+	  jfree++;
+	} // loop over j \in [0, num_of_params)
+      }
+      ifree++;
+    } // loop over i \in [0, num_of_params)
+    
+    /*
     int ifree = 0;
     for (int i = 0 ; i < num_of_params ; i++) {
-      if (fp.IsFixedByIndex(i)) {continue;}
+      if (fp.IsFixedByIndex(i)) {
+	for( int j = 0; j < num_of_params ; j++ ) {
+	  if( j == i ) fCovMtrx[i][j] = 1.0;
+	  else fCovMtrx[i][j] = 0.0;
+	}
+	continue;
+      }
       int jfree = 0;
       for (int j = 0 ; j < num_of_params ; j++) {
-        if (fp.IsFixedByIndex(j)) {continue;}
-        fCovMtrx[ifree][jfree] = full_cov[i][j];
+        if (fp.IsFixedByIndex(j)) {
+	  if( j == i ) fCovMtrx[i][j] = 1.0;
+	  else fCovMtrx[i][j] = 0.0;
+	  continue;
+	}
+        fCovMtrx[i][j] = full_cov[ifree][jfree];
         jfree++;
       }
       ifree++;
     }
+    */
   }
   else {
     assert(!"Not supporting creating prior cov matrix without CFM model yet");
@@ -263,6 +336,7 @@ bool FitterMinuit2::DoTheFit(void)
 //____________________________________________________________________________
 bool FitterMinuit2::RunOnce(void)
 {
+  
   FitParamList & fp = fLikelihood->FitParams();
   // a few arrays to store parameters
   unsigned int nfreeparams = (unsigned int)fp.GetNumberFreeParameters();
@@ -275,26 +349,53 @@ bool FitterMinuit2::RunOnce(void)
   vector<double> err_minosplus;
   vector<double> err_minosminus;
 
+  VLOG( "Minuit2", pFATAL ) << "About to run once, with " << nfreeparams
+			    << " free parameters and " << nparams << " params total";
+
   // Set fitter strategy
   // In general, low values of level mean fewer function calls and high values mean more reliable minimization.
   // Currently allowed values are 0 (low), 1 (default), and 2 (high).
   ROOT::Minuit2::MnStrategy strategy(fStr);
 
+  // Note: We should not give the fitter a covariance matrix as the Likelihood object the fitter minimises already knows about correlations! Keeping this code for now but consider this DEPRECATED.
 #ifdef __give_fitter_covariance_matrix__
+  
   // We have a TMatrixD covariance matrix, need to translate it into
   // the Minuit2::MnUserCovariance
+  // Be careful to iterate over all parameters, including fixed ones.
   this->FillPriorCovMatrix();
-  ROOT::Minuit2::MnUserCovariance input_cov(nfreeparams);
-  for(unsigned int i = 0; i < nfreeparams; i++) {
-    for(unsigned int j = 0; j < nfreeparams; j++) {
-      input_cov(i,j) = fCovMtrx(i,j);
+  ROOT::Minuit2::MnUserCovariance input_cov(nparams);
+  unsigned int ifree = 0;
+  for(unsigned int i = 0; i < nparams; i++) {
+    if( fp.IsFixedByIndex( i ) ) { // fixed, add unit row
+      for( unsigned int j = 0; j < nparams; j++ ) {
+	if( i == j ) input_cov( i, j ) = 1.0;
+	else input_cov( i, j ) = 0.0;
+      }
+    } else { // free, read fCovMtrx
+      int jfree = 0;
+      for( unsigned int j = 0; j < nparams; j++ ) {
+	if( fp.IsFixedByIndex( j ) ) continue;
+	input_cov( i, j ) = fCovMtrx[ifree][jfree];
+	jfree++;
+      }
+      ifree++;
     }
-  }
+    cout << endl;
+  } // loop over i always
+  
 #ifdef __show_fit_cov_matrix_debug__
   cout << "FitterMinuit2/RunOnce >> Input covariance matrix:" << endl;
-  cout << input_cov << endl;
+  cout << "===================================" << endl;
+  unsigned int nMatDim = 0.5 * ( -1.0 + std::sqrt( 1.0 + 8.0 * input_cov.size() ) );
+
+  for( unsigned int i = 0; i < nMatDim ; i++ ) {
+    for( unsigned int j = 0; j < nMatDim ; j++ ) cout << input_cov(i,j) << " ";
+    cout << endl;
+  }
 #endif
-#endif
+#endif // if give cov mtx
+
 
   // Get the fitter & pass it the inputs
 #ifdef __show_fit_steps__
@@ -304,9 +405,12 @@ bool FitterMinuit2::RunOnce(void)
   ROOT::Minuit2::MnApplication * mnapp = NULL;
   LikelihoodMinuit2 likelihood_minuit2(fLikelihood);
   if (!fUseFumili) {
+    // Note: We should not give the fitter a covariance matrix as the Likelihood object the fitter minimises already knows about correlations! Keeping this code for now but consider this DEPRECATED.
 #ifdef __give_fitter_covariance_matrix__
+    VLOG( "Minuit2", pFATAL ) << "Running Migrad WITH INPUT COVARIANCE.";
     mnapp = new ROOT::Minuit2::MnMigrad(likelihood_minuit2, fUserParams, input_cov);
 #else
+    VLOG( "Minuit2", pFATAL ) << "Running Migrad WITHOUT INPUT COVARIANCE.";
     mnapp = new ROOT::Minuit2::MnMigrad(likelihood_minuit2, fUserParams);
 #endif
   }
@@ -339,7 +443,7 @@ bool FitterMinuit2::RunOnce(void)
   fMigradErrStatusCode = bestfit.UserState().CovarianceStatus();
 
   if (fMigradMinStatusCode <2) {
-    VLOG("FitterMinuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
+    VLOG("Minuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
   }
 
   // Done! Copy current --> best-fit values
@@ -364,6 +468,7 @@ bool FitterMinuit2::RunOnce(void)
   // migrad covariance
   if(bestfit.HasCovariance()) {
     ROOT::Minuit2::MnUserCovariance cov_migrad(bestfit.UserState().Covariance());
+    int nCovRows = 0.5 * ( -1.0 + std::sqrt( 1.0 + 8.0 * cov_migrad.size() ) );
     this->CopyCovarianceToFPL(cov_migrad);
   }
 
@@ -378,7 +483,7 @@ bool FitterMinuit2::RunOnce(void)
 
   if (fCalcHesseErrors) {
     //Get Hesse errors
-    VLOG("FitterMinuit2",pINFO) << "Getting Hesse errors...";
+    VLOG("Minuit2",pINFO) << "Getting Hesse errors...";
     // argument is strategy
     ROOT::Minuit2::MnHesse hesse(2);
     // perform hesse error calculation
@@ -401,7 +506,7 @@ bool FitterMinuit2::RunOnce(void)
   } //hesse
 
   if (fCalcMinosErrors) {
-    VLOG("FitterMinuit2",pINFO) << "Getting Minos errors...";
+    VLOG("Minuit2",pINFO) << "Getting Minos errors...";
     //Get Minos Errors
     ROOT::Minuit2::MnMinos minos(likelihood_minuit2,bestfit);
     fMinosErrStatusCode = 0;  // Need to work out proper error code.
@@ -439,6 +544,54 @@ bool FitterMinuit2::RunOnce(void)
   if (fCalcMinosErrors) {
     cout << "FitterMinuit2/RunOnce >> minos status code = " << fMinosErrStatusCode << endl;
   }
+#ifdef __show_fit_cov_matrix_debug__
+  // Get the postfit covariance matrix and show it
+  cout << "Showing the postfit covariance matrix" << endl;
+  cout << "=======================" << endl;
+  const CompoundFitModel * postfit_cm = dynamic_cast<CompoundFitModel*>(&fLikelihood->Expectation());
+  TMatrixD postfit_CovMtrx;
+  int num_of_params = fp.GetNumberParameters();
+  postfit_CovMtrx.ResizeTo( num_of_params, num_of_params );
+  if( postfit_cm ) {
+
+    /*
+      Similarly to the input covariance in this->FillPriorCovMatrix(), we build the full covariance.
+      But here we do introduce the fixed parameters (obviously as unit matrix)
+      and the other parameters are read in directly from the CFModel.
+     */
+
+    const TMatrixD & pf_full_cov = postfit_cm->GetSystematics()->CovMatrix();
+    int inuis = -1;
+    for( int i = 0 ; i < num_of_params ; i++ ) {
+      // If it is physical, set unit row
+      if( ! fp.IsNuisanceByIndex( i ) ) {
+	for( int j = 0 ; j < num_of_params ; j++ ) {
+	  if( i == j ) postfit_CovMtrx[ i ][ j ] = 1.0;
+	  else postfit_CovMtrx[ i ][ j ] = 0.0;
+	}
+      } else {
+	// This parameter is nuisance. Ask the covariance what to use.
+	inuis++;
+	int jnuis = -1;
+	for( int j = 0 ; j < num_of_params ; j++ ) {
+
+	  if( fp.IsNuisanceByIndex( j ) ) {
+	    jnuis++;
+	    postfit_CovMtrx[ i ][ j ] = pf_full_cov( inuis, jnuis );
+	  }
+	  else {
+	    postfit_CovMtrx[ i ][ j ] = 0.0;
+	  }
+	} // loop over j \in [0, num_of_params)
+      }
+    } // loop over i \in [0, num_of_params)
+    
+    for( unsigned int i = 0; i < num_of_params ; i++ ) {
+      for( unsigned int j = 0; j < num_of_params ; j++ ) cout << postfit_CovMtrx[i][j] << " ";
+      cout << endl;
+    }
+  } // if postfit_cm
+#endif
 #endif
 
 #ifdef __show_fit_steps__
@@ -496,7 +649,7 @@ void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & 
       ifree++;
     }
   }
-  // Copy prior errors along diagonal for unfixed
+  // Copy prior errors along diagonal for fixed
   const CompoundFitModel * cm = dynamic_cast<CompoundFitModel*>(&fLikelihood->Expectation());
   if (cm) {
     for (int i = 0; i < num_of_params; i++) {
@@ -504,6 +657,7 @@ void FitterMinuit2::CopyCovarianceToFPL(const ROOT::Minuit2::MnUserCovariance & 
       PhysParamId_t p = fp.WhichParam(i);
       cov[i][i] = cm->GetSystematics()->CovMatrixElement(p,p);
     }
+    cout << endl;
   }
   fp.SetCovMatrix(cov);
   return;
