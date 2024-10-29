@@ -8,7 +8,8 @@
 #
 
 # first check if spack is setup
-if [[ $(command -v spack) == "" ]] ; then echo "Loading spack" ; source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh ; fi
+#if [[ $(command -v spack) == "" ]] ; then echo "Loading spack" ; source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh ; fi
+if [[ $(command -v spack) == "" ]] ; then echo "Loading spack" ; source /cvmfs/larsoft.opensciencegrid.org/spack-v0.22.0-fermi/setup-env.sh ; fi
 
 # Setup LArSoft. We no longer have a convenient way to setup all dependencies immediately.
 # The AL9 `spack load` framework changes some of these variables. Manually check if we've loaded them inside our env
@@ -25,29 +26,32 @@ if [ -z "$SETUP_GCC" ] ; then
     export SETUP_GCC="1" ; fi
 
 GSL_VERSION=2.7.1
+GSL_HASH=bllsf2k
 retExp=$(spack find --loaded | grep gsl@${GSL_VERSION})
 retVal=$?
 if [[ ${retVal} == 0 ]] ; then export SETUP_GSL="1" ; fi
 
 if [ -z "$SETUP_GSL" ] ; then
     echo "Loading gsl version ${GSL_VERSION}..."
-    spack load gsl@${GSL_VERSION}
+    spack load gsl@${GSL_VERSION}%gcc@11.4.1/${GSL_HASH} # yes, gcc at 11.4.1 is not a typo
     export SETUP_GSL="1" ; fi
 
 retExp=$(spack find --loaded | grep log4cpp)
 retVal=$?
 if [[ ${retVal} == 0 ]] ; then export SETUP_LOG4CPP="1" ; fi
 
+LOG4CPP_VERSION=1.1.3
+LOG4CPP_HASH=qgox7co
 if [ -z "$SETUP_LOG4CPP" ] ; then
     echo "Loading log4cpp..."
-    spack load log4cpp
+    spack load log4cpp@${LOG4CPP_VERSION}%gcc@12.2.0/${LOG4CPP_HASH}
     export SETUP_LOG4CPP="1" ; fi
 
 retExp=$(spack find --loaded | grep lhapdf)
 retVal=$?
 if [[ ${retVal} == 0 ]] ; then export SETUP_LHAPDF="1" ; fi
 
-LHAPDF_VERSION=6.5.3
+LHAPDF_VERSION=6.5.4
 if [ -z "$SETUP_LHAPDF" ] ; then
     echo "Loading lhapdf version ${LHAPDF_VERSION}..."
     spack load lhapdf@${LHAPDF_VERSION}
@@ -71,14 +75,16 @@ export LD_LIBRARY_PATH=${LHAPDF_LIB}:${LD_LIBRARY_PATH}
 
 # Now we can get genie
 
-GENIE_VERSION=3.04.00
+GENIE_VERSION=3.04.02
+GENIE_HASH=gpts2zp
 retExp=$(spack find --loaded | grep genie@${GENIE_VERSION})
 retVal=$?
 if [[ ${retVal} == 0 ]] ; then export SETUP_GENIE="1" ; fi
 
 if [ -z "$SETUP_GENIE" ] ; then
     echo "Loading genie version ${GENIE_VERSION}..."
-    spack load genie@3.04.00%gcc@12.2.0/timnunj
+    #spack load genie@3.04.00%gcc@12.2.0/timnunj
+    spack load genie@${GENIE_VERSION}%gcc@12.2.0/${GENIE_HASH}
     export SETUP_GENIE="1"
 fi
 
