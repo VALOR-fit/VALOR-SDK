@@ -234,7 +234,6 @@ bool util::IsCC(Sample_t s)
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
-    
     case (ksNuECCoa00     ) : // intentional fallthrough
     case (ksNuECCoa01     ) :
     case (ksNuECCoa02     ) :
@@ -374,7 +373,6 @@ bool util::IsNC(Sample_t s)
     case (ksNuECCoa05      ) :
     case (ksNuECCoa06      ) :
     case (ksNuECCoa07      ) : return false; break;
-
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) :
     case (ksNC1pi0         ) :
@@ -484,7 +482,7 @@ bool util::IsMuLike(Sample_t s)
     case (ksNuECCoa07      ) : return false; break;
 
   }
-  LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
+  VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
 }
 //________________________________________________________________________________________
@@ -550,7 +548,7 @@ bool util::IsELike(Sample_t s)
     case (ksNuECCoa06      ) :
     case (ksNuECCoa07      ) : return true; break;
   }
-  LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
+  VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
 }
 //________________________________________________________________________________________

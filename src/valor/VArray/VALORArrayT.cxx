@@ -131,7 +131,7 @@ template<typename numtype> void VALORArrayT<numtype>::Reshape(int nd, const Int_
     new_size *= dimensions[i];
   }
   if (new_size != fSize) {
-    LOG("VALORArray",pWARN) << "Failed to reshape VALORArray with size "<<fSize<<" to size "<<new_size;
+    VLOG("VALORArray",pWARN) << "Failed to reshape VALORArray with size "<<fSize<<" to size "<<new_size;
     return;
   }
   fNDim = nd;
@@ -207,13 +207,13 @@ template<typename numtype> int VALORArrayT<numtype>::
   int indices[6] = {ind1,ind2,ind3,ind4,ind5,ind6};
   for (int i = 0 ; i < fNDim; i++) {
     if (indices[i]<0 || indices[i]>=fDimensions[i]) {
-      LOG("VALORArray",pFATAL) <<fName<<" bad index "<<indices[i]<< " for dimension "<<i<<" ("<<fNames[i]<<"), max = "<<fDimensions[i];
+      VLOG("VALORArray",pFATAL) <<fName<<" bad index "<<indices[i]<< " for dimension "<<i<<" ("<<fNames[i]<<"), max = "<<fDimensions[i];
       util::Die(-1) ; return 0;
     }
   }
   for (int i = fNDim ; i < 6 ; i++) {
     if (indices[i]!=-1) {
-      LOG("VALORArray",pFATAL) <<fName<<" bad index "<<indices[i]<< " for dimension "<<i<<" ("<<fNames[i]<<"), max = "<<fDimensions[i];
+      VLOG("VALORArray",pFATAL) <<fName<<" bad index "<<indices[i]<< " for dimension "<<i<<" ("<<fNames[i]<<"), max = "<<fDimensions[i];
       util::Die(-1) ; return 0;
     }
     assert(fIncrement[i]==0);
@@ -419,7 +419,7 @@ template<typename numtype> VALORArrayT<numtype> VALORArrayT<numtype>::
   GetSlice(int dimension, int min_bin, int max_bin) const
 {
   if (fNDim < 2) {
-    LOG("VALORArray",pFATAL) << "Trying to slice array without enough dimensions "<<fName;
+    VLOG("VALORArray",pFATAL) << "Trying to slice array without enough dimensions "<<fName;
     util::Die(-1); return VALORArrayT();
   }
   // Find out dimensions of new array
@@ -703,7 +703,7 @@ template<typename numtype> void VALORArrayT<numtype>::
    if(fArray) { delete fArray; }    // Delete any existing stored memory before making a new array
    this->Construct(n_dim, dimensions);
 
-   LOG("VALORArrayT", pDEBUG) << "Reading " << this->GetName() << " " <<
+   VLOG("VALORArrayT", pDEBUG) << "Reading " << this->GetName() << " " <<
       fDimensions[0] << " " << fDimensions[1] << " (" << fSize << ")";
    stream.read((char*)fArray, fSize * sizeof(numtype));
 }
@@ -711,7 +711,7 @@ template<typename numtype> void VALORArrayT<numtype>::
 template<typename numtype> void VALORArrayT<numtype>::
    WriteStream(std::fstream& stream)
 {
-   LOG("VALORArrayT", pDEBUG) << "Writing " << this->GetName() << " " <<
+   VLOG("VALORArrayT", pDEBUG) << "Writing " << this->GetName() << " " <<
       fDimensions[0] << " " << fDimensions[1] << "( " << fSize << ")";
    stream.write((char*)&fNDim, sizeof(int));
    stream.write((char*)fDimensions, 6 * sizeof(int));

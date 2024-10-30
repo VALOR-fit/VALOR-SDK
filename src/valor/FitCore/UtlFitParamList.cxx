@@ -66,7 +66,7 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   // Create a FitParamList object, adding all physics + nuisance params from the instance of ParameterPool.
   string param_list_opt = ((param_opt) ? param_opt : "NONE");
 
-  LOG("FitParams", pDEBUG)
+  VLOG("FitParams", pDEBUG)
     << "Instantiating a fit parameter list object from the ParameterPool with option(s): " << param_list_opt;
 
   //get the extra options here:
@@ -109,7 +109,7 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   for(const Parameter& param : pool_params) {
     PhysParamId_t p = param.GetID();
     if(p == kPhypUndefined) {
-      LOG("FitParams", pFATAL) << "Found an undefined parameter in the ParameterPool";
+      VLOG("FitParams", pFATAL) << "Found an undefined parameter in the ParameterPool";
       util::Die(-1);
     }
 
@@ -179,7 +179,7 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   } // loop over Parameters
 
   if(!fparm->IsComplete()) {
-    LOG("FitParams",pERROR)<<"Fit parameter list is not complete";
+    VLOG("FitParams",pERROR)<<"Fit parameter list is not complete";
     fparm->Print();
     util::Die(-1); return fparm;
   }
@@ -187,7 +187,7 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   // Finally, check that all of the params in the PhysHypothesis are in the FPL
   for(conv::PhysParamId_t hyp_par : hyp.GetParams()) {
     if(!fparm->Exists(hyp_par)) {
-      LOG("FitParams",pERROR)<<"Parameter \'" << NameRegistry::Instance()->AsString(hyp_par)
+      VLOG("FitParams",pERROR)<<"Parameter \'" << NameRegistry::Instance()->AsString(hyp_par)
                              << "\' from the PhysHypothesis was not found in the FitParamList";
       fparm->Print();
       util::Die(-1); return fparm;
@@ -212,7 +212,7 @@ bool util::AllWithinLimits(const FitParamList & fparm)
   for (int iparam = 0 ; iparam < fparm.Size(); iparam++) {
     PhysParamId_t p = fparm.WhichParam(iparam);
     if(!ParameterPool::Instance()->IsParamInPool(p)) {
-      LOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
+      VLOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
                                << "\' was in the FPL but not the ParameterPool";
       util::Die(-1);
     }
@@ -232,7 +232,7 @@ bool util::AllWithinLimits(const valor::PhysParamList & pparm)
     PhysParamId_t p = PhysParamId_t(iparam);
     if (not pparm.Contains(p)) continue;
     if(!ParameterPool::Instance()->IsParamInPool(p)) {
-      LOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
+      VLOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
                                << "\' was in the PhysParamList but not the ParameterPool";
       util::Die(-1);
     }

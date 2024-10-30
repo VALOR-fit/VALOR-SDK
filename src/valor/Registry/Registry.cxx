@@ -45,7 +45,7 @@ namespace valor {
       item_content << (i?",":"")<<item[i];
     }
     item_content<<"]";
-    LOG("Reg", pINFO)
+    VLOG("Reg", pINFO)
        << "Set item [" << itemtype << "]: key = "
        << key << " --> value = "<<item_content.str();
     bool lock = r->ItemIsLocked(key); // store, could be true but inhibited
@@ -57,7 +57,7 @@ namespace valor {
  template<class T> void SetRegistryItem(Registry * r, RgKey key, T item)
  {
     string itemtype = typeid(item).name();
-    LOG("Reg", pINFO)
+    VLOG("Reg", pINFO)
        << "Set item [" << itemtype << "]: key = "
        << key << " --> value = " << item;
     bool lock = r->ItemIsLocked(key); // store, could be true but inhibited
@@ -208,7 +208,7 @@ void Registry::OverrideGlobalDef(RgKey key)
      RgIMapConstIter entry = fRegistry.find(key);
      entry->second->SetLocal(true);
   } else {
-     LOG("Reg", pWARN)
+     VLOG("Reg", pWARN)
         << "*** Can't give 'local' status to  non-existem item [" 
         << key << "]"; 
   }
@@ -220,7 +220,7 @@ void Registry::LinkToGlobalDef(RgKey key)
      RgIMapConstIter entry = fRegistry.find(key);
      entry->second->SetLocal(false);
   } else {
-     LOG("Reg", pWARN)
+     VLOG("Reg", pWARN)
         << "*** Can't give 'global' status to  non-existem item [" 
         << key << "]"; 
   }
@@ -242,7 +242,7 @@ void Registry::LockItem(RgKey key)
      RgIMapConstIter entry = fRegistry.find(key);
      entry->second->Lock();
   } else {
-     LOG("Reg", pWARN)
+     VLOG("Reg", pWARN)
            << "*** Can't lock non-existem item [" << key << "]";
   }
 }
@@ -253,7 +253,7 @@ void Registry::UnLockItem(RgKey key)
      RgIMapConstIter entry = fRegistry.find(key);
      entry->second->UnLock();
   } else {
-    LOG("Reg", pWARN)
+    VLOG("Reg", pWARN)
        << "*** Can't unlock non-existem item [" << key << "]";
   }
 }
@@ -276,7 +276,7 @@ void Registry::Set(RgIMapPair entry)
     this->DeleteEntry(key);
     fRegistry.insert(entry);
   } else {
-     LOG("Reg", pWARN)
+     VLOG("Reg", pWARN)
        << "*** Registry item [" << key << "] can not be set";
   }
 }
@@ -378,7 +378,7 @@ void Registry::Get(RgKey key, RgH1F & item) const
   item = ri->Data();
 
   if(!item) {
-    LOG("Reg", pWARN) << "Returned NULL ptr for TH1F param = " << key;
+    VLOG("Reg", pWARN) << "Returned NULL ptr for TH1F param = " << key;
   }
 }
 //____________________________________________________________________________
@@ -390,7 +390,7 @@ void Registry::Get(RgKey key, RgH2F & item) const
   item = ri->Data();
 
   if(!item) {
-    LOG("Reg", pWARN) << "Returned NULL ptr for TH2F param = " << key;
+    VLOG("Reg", pWARN) << "Returned NULL ptr for TH2F param = " << key;
   }
 }
 //____________________________________________________________________________
@@ -402,7 +402,7 @@ void Registry::Get(RgKey key, RgTree & item) const
   item = ri->Data();
 
   if(!item) {
-    LOG("Reg", pWARN) << "Returned NULL ptr for TTree param = " << key;
+    VLOG("Reg", pWARN) << "Returned NULL ptr for TTree param = " << key;
   }
 }
 //____________________________________________________________________________
@@ -414,7 +414,7 @@ void Registry::Get(RgKey key, RgObject & item) const
   item = ri->Data();
 
   if(!item) {
-    LOG("Reg", pWARN) << "Returned NULL ptr for TObject param = " << key;
+    VLOG("Reg", pWARN) << "Returned NULL ptr for TObject param = " << key;
   }
 }
 //____________________________________________________________________________
@@ -527,7 +527,7 @@ RgIMapConstIter Registry::SafeFind(RgKey key) const
   if (entry!=fRegistry.end()) {
     return entry;
   }
-  LOG("Reg", pFATAL)
+  VLOG("Reg", pFATAL)
        << "*** Key: " << key
        << " does not exist in registry: " << this->Name();
   exit(1);    
@@ -562,7 +562,7 @@ void Registry::SetName(string name)
 {
   if(! fIsReadOnly) fName = name;
   else {
-     LOG("Reg", pWARN)
+     VLOG("Reg", pWARN)
         << "*** Registry is locked - Can not change its name";
   }
 }
@@ -575,8 +575,8 @@ string Registry::Name(void) const
 void Registry::AssertExistence(RgKey key0) const
 {
   if ( ! this->Exists(key0) ) {
-     LOG("Reg", pERROR) << (*this);
-     LOG("Reg", pFATAL)
+     VLOG("Reg", pERROR) << (*this);
+     VLOG("Reg", pFATAL)
         << "*** Key: " << key0
         << " does not exist in registry: " << this->Name();
      exit(1);    
@@ -630,7 +630,7 @@ void Registry::Print(ostream & stream) const
         ritem->Print(stream);
         stream << endl;
      } else {
-        LOG("Reg", pERROR) << "Null RegistryItemI with key = " << key;
+        VLOG("Reg", pERROR) << "Null RegistryItemI with key = " << key;
      }
    }// registry iterator
 }
@@ -639,11 +639,11 @@ void Registry::Copy(const Registry & registry)
 {
 // Copies the input registry
 //
-  LOG("Reg", pINFO) 
+  VLOG("Reg", pINFO) 
      << "Copying registry " << registry.Name() << " to " << this->Name();
 
   if(this->IsLocked()) {
-   LOG("Reg", pWARN) << "Registry is locked. Can't copy input entries!";
+   VLOG("Reg", pWARN) << "Registry is locked. Can't copy input entries!";
    return;
   }
 
@@ -660,11 +660,11 @@ void Registry::Append(const Registry & registry, RgKey prefix)
 {
 // Appends the input registry entries (& their locks)
 
-  LOG("Reg", pINFO) 
+  VLOG("Reg", pINFO) 
      << "Appending registry " << registry.Name() << " to " << this->Name();
 
   if(this->IsLocked()) {
-   LOG("Reg", pWARN) << "Registry is locked. Can't copy input entries!";
+   VLOG("Reg", pWARN) << "Registry is locked. Can't copy input entries!";
    return;
   }
 
@@ -683,7 +683,7 @@ void Registry::Append(const Registry & registry, RgKey prefix)
      RgType_t type  = ri->TypeInfo();
      string   stype = RgType::AsString(type);
 
-     LOG("Reg", pINFO)
+     VLOG("Reg", pINFO)
          << "Copying [" << stype << "] item named = " 
          << name << " as " << new_name;
 
@@ -702,20 +702,20 @@ void Registry::Append(const Registry & registry, RgKey prefix)
            RgH1F histo = registry.GetH1F(name);
            if(histo) {
                RgH1F chisto = new TH1F(*histo);
-               LOG("Reg", pDEBUG) << chisto->GetName();
+               VLOG("Reg", pDEBUG) << chisto->GetName();
                cri = new RegistryItem<RgH1F>(chisto,ilk);
            } else {
-             LOG("Reg", pERROR)
+             VLOG("Reg", pERROR)
                << "Null TH1F with key = " << name << " - not copied";
            }
      } else if (type == kRgH2F) {
            RgH2F histo = registry.GetH2F(name);
            if(histo) {
                RgH2F chisto = new TH2F(*histo);
-               LOG("Reg", pDEBUG) << chisto->GetName();
+               VLOG("Reg", pDEBUG) << chisto->GetName();
                cri = new RegistryItem<RgH2F>(chisto,ilk);
            } else {
-             LOG("Reg", pERROR)
+             VLOG("Reg", pERROR)
                << "Null TH2F with key = " << name << " - not copied";
            }
      } else if (type == kRgTree) {
@@ -723,20 +723,20 @@ void Registry::Append(const Registry & registry, RgKey prefix)
            if(tree) {
                //TTree * ctree = new TTree(*tree);
                TTree * ctree = tree->CopyTree("1");
-               LOG("Reg", pDEBUG) << ctree->GetName();
+               VLOG("Reg", pDEBUG) << ctree->GetName();
                cri = new RegistryItem<RgTree>(ctree,ilk);
            } else {
-             LOG("Reg", pERROR)
+             VLOG("Reg", pERROR)
                << "Null TTree with key = " << name << " - not copied";
            }
      } else if (type == kRgObject) {
            RgObject obj = registry.GetObject(name);
            if(obj) {
              TObject * cobj = obj->Clone();
-             LOG("Reg", pDEBUG) << cobj->GetName();
+             VLOG("Reg", pDEBUG) << cobj->GetName();
              cri = new RegistryItem<RgObject>(cobj,ilk);
            } else {
-             LOG("Reg", pERROR)
+             VLOG("Reg", pERROR)
                << "Null TObject with key = " << name << " - not copied";
            }
      } else {}
@@ -785,12 +785,12 @@ void Registry::Clear(bool force)
 {
 // clean all registry entries
 
-  //~ LOG("Reg", pINFO) 
+  //~ VLOG("Reg", pINFO) 
       //~ << "Cleaning-up [force unlock = " << ((force)?"true":"false")
       //~ << "] registry: " << this->Name();
   if(!force) {
    if(this->IsLocked()) {
-      LOG("Reg", pWARN) << "Registry is locked. Can't clear its entries";
+      VLOG("Reg", pWARN) << "Registry is locked. Can't clear its entries";
       return;
     }
   }
@@ -799,7 +799,7 @@ void Registry::Clear(bool force)
      RgKey           name = rit->first;
      RegistryItemI * item = rit->second;
      if(!item) {
-       LOG("Reg", pWARN) << "Item with key = " << name << " is null!";
+       VLOG("Reg", pWARN) << "Item with key = " << name << " is null!";
      }
      delete item;
      item = 0;

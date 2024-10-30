@@ -34,7 +34,7 @@ string util::AsString(KineSpace_t ks)
     case (kspNone)             : return "None";                   break;
 
   default :
-     LOG("KineSpace",pERROR) 
+     VLOG("KineSpace",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return "";
@@ -58,7 +58,7 @@ string util::AsStringTeX(KineSpace_t ks, bool root)
     case (kspNone)             : name = "None";                                           break;
 
   default :
-     LOG("KineSpace",pERROR) 
+     VLOG("KineSpace",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
 
@@ -85,7 +85,7 @@ bool util::IsPureReco(KineSpace_t ks)
     case (kspNone)             : return false; //Not sure this is the case
 
   default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return false;
@@ -107,7 +107,7 @@ bool util::IsPureTrue(KineSpace_t ks)
     case (kspNone)             : return true;  //Not sure this is the case
 
     default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return false;
@@ -129,7 +129,7 @@ bool util::IsMixedRecoTrue(KineSpace_t ks)
     case (kspNone)             : return false; //Not sure this is the case
 
     default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return false;
@@ -150,7 +150,7 @@ int util::NDim(KineSpace_t ks)
     case (kspErecoEvis)        : return 2;
     case (kspNone)             : return 0;
     default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return 0;
@@ -172,7 +172,7 @@ int util::NDimReco(KineSpace_t ks)
     case (kspNone)             : return 0;
 
     default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return 0;
@@ -194,7 +194,7 @@ int util::NDimTrue(KineSpace_t ks)
     case (kspNone)             : return 0;
 
    default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return 0;
@@ -216,7 +216,7 @@ conv::KineSpace_t util::SubSpaceReco(conv::KineSpace_t ks)
     case (kspNone)             : return kspUndefined;
 
   default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return kspUndefined;
@@ -238,7 +238,7 @@ conv::KineSpace_t util::SubSpaceTrue(conv::KineSpace_t ks)
     case (kspNone)             : return kspNone;
 
     default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
   return kspUndefined;
@@ -270,7 +270,7 @@ std::vector<valor::conv::KineVar_t> util::KineVarSubset(conv::KineSpace_t origin
    }
    
    if (in_target_but_not_original.size()) {
-     LOG("KineSpace",pFATAL) << "Phase space "<<util::AsString(target)<<" is not a string subset of "<<util::AsString(original);
+     VLOG("KineSpace",pFATAL) << "Phase space "<<util::AsString(target)<<" is not a string subset of "<<util::AsString(original);
      util::Die(-1); return std::vector<KineVar_t>();
    }
    
@@ -319,7 +319,7 @@ vector<KineVar_t> util::KineVar(conv::KineSpace_t ks)
       vv.push_back(kvEvis);
       break;
     default:
-     LOG("KineVar",pERROR) 
+     VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
 
@@ -367,7 +367,7 @@ vector<KineVar_t> util::KineVarReco(conv::KineSpace_t ks)
       break;
 
     default:
-      LOG("KineVar",pERROR) 
+      VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
 
@@ -403,7 +403,7 @@ vector<KineVar_t> util::KineVarTrue(conv::KineSpace_t ks)
     case (kspErecoEvis):
       break;
      default:
-      LOG("KineVar",pERROR) 
+      VLOG("KineVar",pERROR) 
         << "Unrecognized kinematic space: " << ks;
   }
 

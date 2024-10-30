@@ -50,7 +50,7 @@ string util::Pdg2String(int pdg_code)
      case ( kPdgNuMuBar  ) : return "numubar";  break;
      case ( kPdgNuTauBar ) : return "nutaubar"; break;
      case ( kPdgCosmic   ) : return "cosmic";   break;
-     case ( kPdgDirt     ) : return "dirt";   break;
+     case ( kPdgDirt     ) : return "dirt";     break;
      default               : return "";
   }
   return "";

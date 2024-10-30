@@ -226,11 +226,11 @@ void FitParamList::SetCovMatrix(TMatrixDSym & covmatrix, unsigned int start_at)
   TMatrixDSym & m = *fCovMatrix;
   int tot_rows = m.GetNrows()-start_at;
   if (tot_rows < 0) {
-    LOG("FitParmList",pERROR) << "Can't start at row "<<start_at<<" in a "<<m.GetNrows()<<" matrix.";
+    VLOG("FitParmList",pERROR) << "Can't start at row "<<start_at<<" in a "<<m.GetNrows()<<" matrix.";
     util::Die(-1) ; return;
   }
   if (tot_rows!=covmatrix.GetNrows()) {
-    LOG("FitParmList",pERROR) << "Cov matrix given has "<<covmatrix.GetNrows()
+    VLOG("FitParmList",pERROR) << "Cov matrix given has "<<covmatrix.GetNrows()
       <<" elements but FPL needs "<<tot_rows<<" elements.";
     util::Die(-1) ; return;
   }
@@ -549,7 +549,7 @@ TVectorD FitParamList::AsTVector(Option_t * option) const
   else if ( opt.Contains("current")  ) { values = fCurrValue    ; }
   else if ( opt.Contains("best-fit") ) { values = fBestFitValue ; }
   else {
-    LOG("FitParamList",pERROR) << "Option string invalid. Returning empty string";
+    VLOG("FitParamList",pERROR) << "Option string invalid. Returning empty string";
     return TVectorD();
   }
   return TVectorD(fNParams,values);
@@ -581,7 +581,7 @@ void FitParamList::FromPhysParamList(valor::PhysParamList pl, Option_t * option,
     }
     else {
       if (!silently_pass_missing_parameters) {
-        LOG("FitParamList",pWARN) << "Skipping parameter not found in PhysParamList: " <<
+        VLOG("FitParamList",pWARN) << "Skipping parameter not found in PhysParamList: " <<
            util::NameRegistry::Instance()->AsString(p);
       }
     }
@@ -2048,7 +2048,7 @@ void FitParamList::SetPriorScheme(valor::conv::PhysParamId_t p, string scheme_na
     fPriorScheme[this->Id(p)] = scheme;
   }
   else {
-    LOG("Parameter", pERROR) << "The prior for parameter \'" << util::NameRegistry::Instance()->AsString(p)
+    VLOG("Parameter", pERROR) << "The prior for parameter \'" << util::NameRegistry::Instance()->AsString(p)
                              << "\' has the angle/dmsq/phase scheme set to an invalid value: " << scheme_name;
     util::Die(-1);
   }
@@ -2061,7 +2061,7 @@ string FitParamList::GetPriorSchemeName(valor::conv::PhysParamId_t p) const
   else if(util::IsMassSplitting(p)) { return util::DmsqSchemeAsStringSimple((conv::NuOscDmsqScheme_t) scheme_int); }
   else if(util::IsPhase        (p)) { return util::CPVChoiceAsStringSimple ((conv::NuOscDeltaCP_t)    scheme_int); }
   else {
-    LOG("Parameter", pERROR) << "Could not get the prior scheme name for parameter \'"
+    VLOG("Parameter", pERROR) << "Could not get the prior scheme name for parameter \'"
                                 << util::NameRegistry::Instance()->AsString(p);
     util::Die(-1); return "Unknown prior";
   }

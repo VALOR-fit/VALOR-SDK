@@ -1,0 +1,32 @@
+# argument                           |   type         |  require?   |   default
+# .......................................................................................................
+# SBN flux params
+input-horncurrent_FluxUnisim         |   double       |  optional   |   0
+input-expskin_FluxUnisim             |   double       |  optional   |   0
+input-nucleoninexsec_FluxUnisim      |   double       |  optional   |   0
+input-nucleonqexsec_FluxUnisim       |   double       |  optional   |   0
+input-nucleontotxsec_FluxUnisim      |   double       |  optional   |   0
+input-pioninexsec_FluxUnisim         |   double       |  optional   |   0
+input-pionqexsec_FluxUnisim          |   double       |  optional   |   0
+input-piontotxsec_FluxUnisim         |   double       |  optional   |   0
+input-pot_norm                       |   double       |  optional   |   1
+
+fix-horncurrent_FluxUnisim           |   boolean      |  optional   |   false
+fix-expskin_FluxUnisim               |   boolean      |  optional   |   false
+fix-nucleoninexsec_FluxUnisim        |   boolean      |  optional   |   false
+fix-nucleonqexsec_FluxUnisim         |   boolean      |  optional   |   false
+fix-nucleontotxsec_FluxUnisim        |   boolean      |  optional   |   false
+fix-pioninexsec_FluxUnisim           |   boolean      |  optional   |   false
+fix-pionqexsec_FluxUnisim            |   boolean      |  optional   |   false
+fix-piontotxsec_FluxUnisim           |   boolean      |  optional   |   false
+fix-pot_norm                         |   boolean      |  optional   |   false
+
+fix-at-horncurrent_FluxUnisim        |   double       |  optional   |   0
+fix-at-expskin_FluxUnisim            |   double       |  optional   |   0
+fix-at-nucleoninexsec_FluxUnisim     |   double       |  optional   |   0
+fix-at-nucleonqexsec_FluxUnisim      |   double       |  optional   |   0
+fix-at-nucleontotxsec_FluxUnisim     |   double       |  optional   |   0
+fix-at-pioninexsec_FluxUnisim        |   double       |  optional   |   0
+fix-at-pionqexsec_FluxUnisim         |   double       |  optional   |   0
+fix-at-piontotxsec_FluxUnisim        |   double       |  optional   |   0
+fix-at-pot_norm                      |   double       |  optional   |   1

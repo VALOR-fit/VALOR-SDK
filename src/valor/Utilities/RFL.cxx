@@ -182,7 +182,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
   unsigned long n_modes = fModes.size();
   fSplineBlockSize = n_modes * fNParams * fNBinsTrue * fNBinsReco;
     
-  LOG("RFL",pDEBUG) << "Spline binning for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<"\n"
+  VLOG("RFL",pDEBUG) << "Spline binning for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<"\n"
    <<std::setw(7)<<fModes.size()<<" modes.\n"
    <<std::setw(7)<<fNParams<<" parameters with splines.\n"
    <<std::setw(7)<<fNBinsTrue<<" true bins.\n"
@@ -202,14 +202,14 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
     // If not, try the config folder
     ts_file = TString::Format("%s/%s",Env::Instance()->TopLevelConfDir().c_str(),ts_file.Data());
     if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-      LOG("RFL",pERROR) << "Config file not found: "<<ts_file;
+      VLOG("RFL",pERROR) << "Config file not found: "<<ts_file;
       util::Die(1); return false;
     }
   }
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
   if (xmldoc==0) {
-    LOG("RFL",pERROR) << "Can not parse input XML file [" << ts_file << "]";
+    VLOG("RFL",pERROR) << "Can not parse input XML file [" << ts_file << "]";
     delete xml;
     util::Die(1); return false;
   }
@@ -217,7 +217,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
   
   string folder = util::XML2String(xml,root_node,"splines/folder");
   if (!folder.size()) {
-    LOG("RFL",pFATAL) << "Failed to read spline folder from XML.";
+    VLOG("RFL",pFATAL) << "Failed to read spline folder from XML.";
     util::Die(-1); return false;
   }
   
@@ -229,11 +229,11 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
   if (util::NodeExists(xml,root_node,"splines/stored_as") && util::NodeExists(xml,root_node,"splines/array_pattern")) {
     spl_stored_as     = util::XML2String(xml,root_node,"splines/stored_as");
     spl_array_pattern = util::XML2String(xml,root_node,"splines/array_pattern");
-    LOG("RFL",pDEBUG) << "Splines stored as: [" << spl_stored_as << "]";
-    LOG("RFL",pDEBUG) << "Splines array pattern: [" << spl_array_pattern << "]";
+    VLOG("RFL",pDEBUG) << "Splines stored as: [" << spl_stored_as << "]";
+    VLOG("RFL",pDEBUG) << "Splines array pattern: [" << spl_array_pattern << "]";
   }
   else {
-    LOG("RFL",pDEBUG) << "Reading individually stored splines.";
+    VLOG("RFL",pDEBUG) << "Reading individually stored splines.";
   }
 
 
@@ -244,29 +244,29 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
   }
   else {
     fSplineWghtMethod = conv::kSplEvalCurrVal;
-    LOG("RFL",pWARN) << "Spline evaluation method not specified, defaulting to ["
+    VLOG("RFL",pWARN) << "Spline evaluation method not specified, defaulting to ["
                      << util::AsString(fSplineWghtMethod) << "]";
   }
-  LOG("RFL",pDEBUG) << "Spline evaluation method: [" << util::AsString(fSplineWghtMethod) << "]";
+  VLOG("RFL",pDEBUG) << "Spline evaluation method: [" << util::AsString(fSplineWghtMethod) << "]";
 
   if (util::NodeExists(xml,root_node,"splines/allow_negative")) {
     fAllowNegativeSplines = util::XML2Bool(xml,root_node,"splines/allow_negative");
-    LOG("RFL",pDEBUG) << "Allowing splines to go negative? " << fAllowNegativeSplines;
+    VLOG("RFL",pDEBUG) << "Allowing splines to go negative? " << fAllowNegativeSplines;
     if (util::NodeExists(xml,root_node,"splines/set_neg_wght_to")) {
       fForceNegWghtToExists = true;
       fForceNegWghtTo = util::XML2Dbl(xml,root_node,"splines/set_neg_wght_to");
-      LOG("RFL",pDEBUG) << "  ..but forcing negative weights to " << fForceNegWghtTo;
+      VLOG("RFL",pDEBUG) << "  ..but forcing negative weights to " << fForceNegWghtTo;
     }
   }
 
   if (util::NodeExists(xml,root_node,"splines/within_limits")) {
     use_spline_limits = util::XML2Bool(xml,root_node,"splines/within_limits");
-    LOG("RFL",pDEBUG) << "Forcing splines to stay within their limits? " << use_spline_limits;
+    VLOG("RFL",pDEBUG) << "Forcing splines to stay within their limits? " << use_spline_limits;
   }
 
   if (util::NodeExists(xml,root_node,"splines/sort_knot_order")) {
     reorder_out_of_order_splines = util::XML2Bool(xml,root_node,"splines/sort_knot_order");
-    LOG("RFL",pDEBUG) << "Reorder out-of-order splines? " << reorder_out_of_order_splines;
+    VLOG("RFL",pDEBUG) << "Reorder out-of-order splines? " << reorder_out_of_order_splines;
   }
 
   if (util::NodeExists(xml,root_node,"splines/type")) {
@@ -281,14 +281,14 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
     else if(type_str == "tspline3")       { fSplineType = Interpolator::Type::kTSpline3;        }
     else if(type_str == "tspline5")       { fSplineType = Interpolator::Type::kTSpline5;        }
     else {
-     LOG("RFL",pFATAL) << "Did not recognise spline type [" << type_str << "]";
+     VLOG("RFL",pFATAL) << "Did not recognise spline type [" << type_str << "]";
      util::Die(-1); return false;
     }
   }
-  LOG("RFL",pDEBUG) << "Spline are of type: [" << util::AsString(fSplineType) << "]";
+  VLOG("RFL",pDEBUG) << "Spline are of type: [" << util::AsString(fSplineType) << "]";
 
   if (!spl_file_pattern.size()) {
-    LOG("RFL",pFATAL) << "Failed to open spline filename pattern from XML.";
+    VLOG("RFL",pFATAL) << "Failed to open spline filename pattern from XML.";
     util::Die(-1); return false;
   }
   
@@ -305,7 +305,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
     TString base_dir = Env::Instance()->TopLevelDataDir().c_str();
     
     TFile * spline_file = new TFile((base_dir+"/"+folder.c_str()+"/"+filename).Data());
-    LOG("RFL",pINFO) << "Will read splines from file "<<spline_file->GetName();
+    VLOG("RFL",pINFO) << "Will read splines from file "<<spline_file->GetName();
     spline_files.push_back(spline_file);
   }
 
@@ -340,11 +340,11 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
         array_name = array_name.ReplaceAll("[MODE]" , util::AsString(m).c_str());
         for (unsigned int ifile = 0; ifile < spline_files.size(); ifile++) {
           TFile *spline_file = spline_files[ifile];
-          LOG("RFL", pDEBUG) << "Searching for spline array [" << array_name << "] in file ["
+          VLOG("RFL", pDEBUG) << "Searching for spline array [" << array_name << "] in file ["
                                  << spline_file->GetName() << "]...";
           spline_array = static_cast<TObjArray*>(spline_file->Get(array_name.Data()));
           if (spline_array) {
-            LOG("RFL",pDEBUG)<<"   ...found";
+            VLOG("RFL",pDEBUG)<<"   ...found";
             break;
           }
         }
@@ -356,7 +356,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
           
           const UInt_t spline_index = SplineIndex(imode,ip,itrue,ireco);
           if (spline_index >= fSplineBlockSize) {
-            LOG("RFL",pFATAL) << "Bad spline index "<<spline_index; 
+            VLOG("RFL",pFATAL) << "Bad spline index "<<spline_index; 
             util::Die(-1); return false;
           }
           
@@ -369,17 +369,17 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
                 TString array_name = spl_array_pattern.c_str();
                 array_name = array_name.ReplaceAll("[PARAM]", util::NameRegistry::Instance()->AsString(p).c_str());
                 array_name = array_name.ReplaceAll("[MODE]" , util::AsString(m).c_str());
-                LOG("RFL",pFATAL) << "Could not find spline array [" << array_name << "]";
+                VLOG("RFL",pFATAL) << "Could not find spline array [" << array_name << "]";
                 util::Die(-1);
               }
               int in_idx = itrue * n_bins_reco + ireco;
               spline_obj = static_cast<TSpline3*>(spline_array->At(in_idx));
               if (!spline_obj) {
-                LOG("RFL",pWARN)<<"Expected a spline at index: "<<in_idx<<" of array "<<spline_array->GetName()
+                VLOG("RFL",pWARN)<<"Expected a spline at index: "<<in_idx<<" of array "<<spline_array->GetName()
                                     << ", but could not find it";
               }
               else {
-                LOG("RFL", pDEBUG) << "Found spline named [" << spline_obj->GetName() << "] at itrue = "
+                VLOG("RFL", pDEBUG) << "Found spline named [" << spline_obj->GetName() << "] at itrue = "
                                    << itrue << ", ireco = " << ireco << ", mode = " << util::AsString(m)
                                    << ", param = " << NameRegistry::Instance()->AsString(p)
                                    <<  ", in array named [" << spline_array->GetName() << "]";
@@ -389,11 +389,11 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
               // Splines are stored individually in the TFiles
               for (unsigned int ifile = 0; ifile < spline_files.size(); ifile++) {
                 TFile *spline_file = spline_files[ifile];
-                LOG("RFL", pDEBUG) << "Searching for spline [" << spl_name << "] in file ["
+                VLOG("RFL", pDEBUG) << "Searching for spline [" << spl_name << "] in file ["
                                        << spline_file->GetName() << "]...";
                 spline_obj = spline_file->Get(spl_name.Data());
                 if (spline_obj) {
-                  LOG("RFL",pDEBUG)<<"   ...found";
+                  VLOG("RFL",pDEBUG)<<"   ...found";
                   break;
                 }
               }
@@ -419,7 +419,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
               bool use_valor_spline = true;
               if(!fAllowNegativeSplines) {
                 if (this->CheckForNegativeValues(valor_spline)) {
-                  LOG("RFL",pWARN)<<"Spline has negative values: "<<spl_name<<" - using flat spline instead.";
+                  VLOG("RFL",pWARN)<<"Spline has negative values: "<<spl_name<<" - using flat spline instead.";
                   delete valor_spline;
                   fSplines[spline_index] = kFlatSpline;
                   n_splines_neg++;
@@ -433,7 +433,7 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
               }
             }
             else {
-              LOG("RFL",pWARN)<<"Spline not found: "<<spl_name;
+              VLOG("RFL",pWARN)<<"Spline not found: "<<spl_name;
 #ifdef USE_FLAT_SPLINE_FOR_MISSING
               fSplines[spline_index] = kFlatSpline;
 #else
@@ -457,16 +457,16 @@ bool valor::util::RFL::Read(std::string config_file, Option_t * /*option*/)
     delete spline_file;
   }
   
-  LOG("RFL",pINFO)<<"Read "<<n_splines_read<<" splines, of which "<<n_splines_flat<<" were flat.";
+  VLOG("RFL",pINFO)<<"Read "<<n_splines_read<<" splines, of which "<<n_splines_flat<<" were flat.";
   if (n_splines_neg) {
-    LOG("RFL",pWARN) << "Skipped "<<n_splines_neg<<" splines due to negative values. Fix this!";
+    VLOG("RFL",pWARN) << "Skipped "<<n_splines_neg<<" splines due to negative values. Fix this!";
   }
 
   if (n_splines_missing) {
 #ifdef USE_FLAT_SPLINE_FOR_MISSING
-    LOG("RFL",pERROR) << "Missing "<<n_splines_missing<<" splines of "<<n_splines_expected<<" expected. Continuing.";
+    VLOG("RFL",pERROR) << "Missing "<<n_splines_missing<<" splines of "<<n_splines_expected<<" expected. Continuing.";
 #else
-    LOG("RFL",pFATAL) << "Missing "<<n_splines_missing<<" splines of "<<n_splines_expected<<" expected. Exiting.";
+    VLOG("RFL",pFATAL) << "Missing "<<n_splines_missing<<" splines of "<<n_splines_expected<<" expected. Exiting.";
     util::Die(-1);return false;
 #endif
   }
@@ -502,7 +502,7 @@ std::pair<int,int> valor::util::RFL::GetBin(const util::KinematicPoint & kp, con
 int valor::util::RFL::Param2Idx(conv::PhysParamId_t p) const
 {
   if (p < 0 || p > conv::knppmax) {
-    LOG("RFL",pFATAL) << "Parameter out of range "<<p<<"\t"<<util::NameRegistry::Instance()->AsString(p).c_str();
+    VLOG("RFL",pFATAL) << "Parameter out of range "<<p<<"\t"<<util::NameRegistry::Instance()->AsString(p).c_str();
   }
   return fParam2Idx[p];
 }
@@ -558,7 +558,7 @@ void valor::util::RFL::SortSpline(TSpline3 * spline, bool sort_spline)
       }
     }
     else {
-      LOG("RFL",pWARN) << "Spline [" << spline->GetName()
+      VLOG("RFL",pWARN) << "Spline [" << spline->GetName()
                            << "] has knots that are out-of-order and the option to sort them was not specified";
     }
   }

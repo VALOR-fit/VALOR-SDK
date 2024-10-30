@@ -87,7 +87,7 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/tweak_pdf_N.arg:$VALOR_FMWK/config/apps/seeds.arg");
-  LOG("valor", pNOTICE) << arg;
+  VLOG("valor", pNOTICE) << arg;
 
   // Read the command line
   int ntoys               = arg.GetInt("ntoys");
@@ -130,7 +130,7 @@ int main(int argc, char ** argv)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    VLOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -190,12 +190,21 @@ int main(int argc, char ** argv)
     // (toy-MC #-1 is special: default)
     FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
-    if (fp->Exists(conv::kPhypMixing12)) { fp->Update(conv::kPhypMixing12,mixing12); }
-    if (fp->Exists(conv::kPhypMixing13)) { fp->Update(conv::kPhypMixing13,mixing13); }
-    if (fp->Exists(conv::kPhypMixing23)) { fp->Update(conv::kPhypMixing23,mixing23); }
-    if (fp->Exists(conv::kPhypDm12sq  )) { fp->Update(conv::kPhypDm12sq  ,dm12sq  ); }
-    if (fp->Exists(conv::kPhypDm23sq  )) { fp->Update(conv::kPhypDm23sq  ,dm23sq  ); }
-    if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
+    if(hypname == "eff_sterile_osc"){
+        fp->Update(conv::kPhypDm41sq,   100);
+        fp->Update(conv::kPhypMixingMuMu, 0);
+        fp->Update(conv::kPhypMixingMuE,  1);
+        fp->Update(conv::kPhypMixingEE,   0);
+    }
+    else{
+
+      if (fp->Exists(conv::kPhypMixing12)) { fp->Update(conv::kPhypMixing12,mixing12); }
+      if (fp->Exists(conv::kPhypMixing13)) { fp->Update(conv::kPhypMixing13,mixing13); }
+      if (fp->Exists(conv::kPhypMixing23)) { fp->Update(conv::kPhypMixing23,mixing23); }
+      if (fp->Exists(conv::kPhypDm12sq  )) { fp->Update(conv::kPhypDm12sq  ,dm12sq  ); }
+      if (fp->Exists(conv::kPhypDm23sq  )) { fp->Update(conv::kPhypDm23sq  ,dm23sq  ); }
+      if (fp->Exists(conv::kPhypCPV     )) { fp->Update(conv::kPhypCPV     ,deltacp ); }
+    }
 
     model->ResetSystematics(*fp, "all");
     
@@ -270,18 +279,18 @@ int main(int argc, char ** argv)
           double curr_val = twk_pdf[imodel][itoy]->GetBinContent(ebin);
           if(mean){
             if(mean_val<std::numeric_limits<double>::epsilon()){
-              LOG("valor",pERROR) << " Trying to divide by a mean value of 0, reverting to nominal";
+              VLOG("valor",pERROR) << " Trying to divide by a mean value of 0, reverting to nominal";
               sumsq += TMath::Power(curr_val-nom_val,2.);
-              LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+              VLOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
             }
             else{
               sumsq += TMath::Power(curr_val-mean_val,2.);
-              LOG("valor",pINFO) << " Calculating the standard deviation using the mean";
+              VLOG("valor",pINFO) << " Calculating the standard deviation using the mean";
             }
           }
           else{
             sumsq += TMath::Power(curr_val-nom_val,2.);
-            LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+            VLOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
           }
        }//itoy
        one_sigma = TMath::Sqrt(sumsq/static_cast<double>(ntoys));
@@ -300,7 +309,7 @@ int main(int argc, char ** argv)
   if (output_rootfile!="-" && output_rootfile!="none") {
     output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak);
     outfile = new TFile(output_rootfile.c_str(),"RECREATE");
-    LOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
+    VLOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
   }
 
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {

@@ -31,7 +31,7 @@ StdFitNtp::~StdFitNtp()
 //________________________________________________________________________________________
 void StdFitNtp::Create(const char* file_name, const char* ntp_name, const char* ntp_label)
 {
-  LOG("Ntp", pDEBUG) << "Creating standard VALOR fit n-tuple...";
+  VLOG("Ntp", pDEBUG) << "Creating standard VALOR fit n-tuple...";
 
   if(file_name) {
     fOutFile = new TFile(file_name, "recreate");
@@ -81,7 +81,7 @@ void StdFitNtp::Save(void)
 //________________________________________________________________________________________
 void StdFitNtp::Init(void)
 {
-  LOG("Ntp", pDEBUG) << "Initializing...";
+  VLOG("Ntp", pDEBUG) << "Initializing...";
 
   fOutFile         = 0;
   fVTree           = 0;
@@ -93,7 +93,7 @@ void StdFitNtp::Init(void)
 //________________________________________________________________________________________
 void StdFitNtp::Clean(void)
 {
-  LOG("Ntp", pDEBUG) << "Cleaning-up...";
+  VLOG("Ntp", pDEBUG) << "Cleaning-up...";
 
   if (fOutFile) {
      fOutFile->Close();

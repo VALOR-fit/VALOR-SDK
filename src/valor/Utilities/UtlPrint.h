@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 
+#include "TString.h"
 #include "TVector.h"
 #include "TMatrixD.h"
 #include "valor/Conventions/PhysParamId.h"

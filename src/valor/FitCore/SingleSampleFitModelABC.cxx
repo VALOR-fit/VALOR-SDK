@@ -38,10 +38,10 @@ void SingleSampleFitModelABC::Configure(
   fSample   = s;
   fKSp      = k;
 
-  if (fDetector == conv::kdUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Detector"  << fDetector ; util::Die(-1); }
-  if (fBeam     == conv::kbUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Beam"      << fBeam     ; util::Die(-1); }
-  if (fSample   == conv::ksUndefined ) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad Sample"    << fSample   ; util::Die(-1); }
-  if (fKSp      == conv::kspUndefined) { LOG("SingleSampleFitModelABC",pFATAL) << "Bad KineSpace" << fKSp      ; util::Die(-1); }
+  if (fDetector == conv::kdUndefined ) { VLOG("SingleSampleFitModelABC",pFATAL) << "Bad Detector"  << fDetector ; util::Die(-1); }
+  if (fBeam     == conv::kbUndefined ) { VLOG("SingleSampleFitModelABC",pFATAL) << "Bad Beam"      << fBeam     ; util::Die(-1); }
+  if (fSample   == conv::ksUndefined ) { VLOG("SingleSampleFitModelABC",pFATAL) << "Bad Sample"    << fSample   ; util::Die(-1); }
+  if (fKSp      == conv::kspUndefined) { VLOG("SingleSampleFitModelABC",pFATAL) << "Bad KineSpace" << fKSp      ; util::Die(-1); }
 
 }
 //________________________________________________________________________________________

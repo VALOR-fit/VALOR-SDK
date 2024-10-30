@@ -56,7 +56,7 @@ void PhysParams::Read(const string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("PhysParams", pERROR) << "Config file not found: " << filename;
+      VLOG("PhysParams", pERROR) << "Config file not found: " << filename;
       util::Die(1);
    }
 
@@ -65,7 +65,7 @@ void PhysParams::Read(const string& filename)
    XMLDocPointer_t xmlDoc = xml->ParseFile(fullFilename.c_str());
    if(xmlDoc == 0)
    {
-      LOG("PhysParams", pERROR) << "Cannot parse XML file [" << fullFilename <<
+      VLOG("PhysParams", pERROR) << "Cannot parse XML file [" << fullFilename <<
          "]";
       delete xml;
       util::Die(1);
@@ -95,7 +95,7 @@ void PhysParams::Select(const string& filename)
    // Check that the config file exists.
    if(fullFilename.empty())
    {  // File not found
-      LOG("PhysParams", pERROR) << "Config file not found: " << filename;
+      VLOG("PhysParams", pERROR) << "Config file not found: " << filename;
       util::Die(1);
    }
 
@@ -104,7 +104,7 @@ void PhysParams::Select(const string& filename)
    XMLDocPointer_t xmlDoc = xml->ParseFile(fullFilename.c_str());
    if(xmlDoc == 0)
    {
-      LOG("PhysParams", pERROR) << "Cannot parse XML file [" << fullFilename <<
+      VLOG("PhysParams", pERROR) << "Cannot parse XML file [" << fullFilename <<
          "]";
       delete xml;
       util::Die(1);
@@ -282,7 +282,7 @@ void PhysParams::AddParameter(const string& param)
    {  // The element already exists and so was not inserted
       // Attempts to insert parameters already present suggests a problem in the
       // XML specification
-      LOG("PhysParams", pERROR) << "Duplicate parameter: " << param;
+      VLOG("PhysParams", pERROR) << "Duplicate parameter: " << param;
       util::Die(-1);
    }
 }
@@ -434,7 +434,7 @@ void PhysParams::StrictCheck(const std::string& param, const std::string& value)
 {
    if(_parameters.find(param) == _parameters.end())
    {
-      LOG("PhysParams", pERROR) << "Cannot get " << value << ". " <<
+      VLOG("PhysParams", pERROR) << "Cannot get " << value << ". " <<
          "No such parameter: " << param;
       util::Die(-1);
    }

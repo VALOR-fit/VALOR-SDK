@@ -79,7 +79,7 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(file.c_str());
   if (xmldoc==0) {
-    LOG("CompoundFitData",pERROR) << "Can not parse input XML file [" << file << "]";
+    VLOG("CompoundFitData",pERROR) << "Can not parse input XML file [" << file << "]";
     delete xml;
     util::Die(1); return false;
   }
@@ -97,7 +97,7 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
     // Use factory class to get proper data
     TClass * curr_class = TClass::GetClass(class_name.c_str());
     if (!curr_class) {
-      LOG("CompoundFitData",pERROR) << "Cannot find class "<<class_name;
+      VLOG("CompoundFitData",pERROR) << "Cannot find class "<<class_name;
       status = false;
       continue;
     }
@@ -105,7 +105,7 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
     FitDataABC * curr_data = static_cast<FitDataABC*>(curr_obj);
     
     if (!curr_data) {
-      LOG("CompoundFitData",pERROR) << "Failed to properly turn class "<<class_name;
+      VLOG("CompoundFitData",pERROR) << "Failed to properly turn class "<<class_name;
       status = false;
       continue;
     }
@@ -117,7 +117,7 @@ bool CompoundFitData::Read(string file, Option_t * /*opt*/)
   }
   
   if (not status) {
-    LOG("CompoundFitData",pFATAL) << "Failed to properly read all data.";
+    VLOG("CompoundFitData",pFATAL) << "Failed to properly read all data.";
     util::Die(-1);
   }
   
@@ -244,7 +244,7 @@ double CompoundFitData::GetFitStatistic (FitModelABC * model, const PhysHypothes
   for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
     statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt, likelihood_components);
   }
-  LOG("CompoundFitData",pINFO) << fName<<" - statistic (ph) = "<<statistic;
+  VLOG("CompoundFitData",pINFO) << fName<<" - statistic (ph) = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
@@ -257,7 +257,7 @@ double CompoundFitData::GetFitStatistic (FitModelABC * model, const FitParamList
   for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
     statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt, likelihood_components);
   }
-  LOG("CompoundFitData",pINFO) << fName<<" - statistic (fp) = "<<statistic;
+  VLOG("CompoundFitData",pINFO) << fName<<" - statistic (fp) = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
@@ -269,7 +269,7 @@ double CompoundFitData::GetFitStatistic (FitModelABC * model, Option_t * opt, st
   for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
     statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt, likelihood_components);
   }
-  LOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
+  VLOG("CompoundFitData",pINFO) << fName<<" - statistic = "<<statistic;
   return statistic;
 }
 //________________________________________________________________________________________
@@ -279,13 +279,13 @@ int CompoundFitData::NumOfBins(Option_t * /*opt*/) const
   for (std::vector<FitDataABC*>::const_iterator it = fSubData.begin(); it != fSubData.end(); ++it) {
     nbins += (*it)->NumOfBins();
   }
-  LOG("CompoundFitData",pDEBUG) << fName<<" - number of bins = "<<nbins;
+  VLOG("CompoundFitData",pDEBUG) << fName<<" - number of bins = "<<nbins;
   return nbins;
 }
 //________________________________________________________________________________________
 bool CompoundFitData::Write (const char * filename, const char * tag, Option_t * write_opt, Option_t * file_opt)
 {
-  LOG("CompoundFitData",pNOTICE) << "Writing results to file: [" << filename << "]";
+  VLOG("CompoundFitData",pNOTICE) << "Writing results to file: [" << filename << "]";
 
   TObjArray * array = new TObjArray();
   bool status = this->Write(array,tag,write_opt);

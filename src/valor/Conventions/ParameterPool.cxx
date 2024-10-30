@@ -45,14 +45,14 @@ void ParameterPool::ReadXML(std::string xml_path)
   TXMLEngine* xmleng = new TXMLEngine;
   XMLDocPointer_t xmldoc = xmleng->ParseFile(param_file_full.c_str());
   if (xmldoc==0) {
-    LOG("ParameterPool",pFATAL)<< "Can not parse input XML file [" << param_file_full << "]";
+    VLOG("ParameterPool",pFATAL)<< "Can not parse input XML file [" << param_file_full << "]";
     util::Die(1);
   }
   XMLNodePointer_t root_node = xmleng->DocGetRootElement(xmldoc);
   
   std::string root_node_name = xmleng->GetNodeName(root_node);
   if (strcmp(root_node_name.c_str(),"param_list")!=0) {
-    LOG("ParameterPool",pFATAL)<< "root node in XML file "<<param_file_full<<" is "<<root_node_name<<", expected param_list";
+    VLOG("ParameterPool",pFATAL)<< "root node in XML file "<<param_file_full<<" is "<<root_node_name<<", expected param_list";
     util::Die(-1);
   }
 
@@ -88,7 +88,7 @@ void ParameterPool::ReadXML(std::string xml_path)
       this->CheckSchemes(xmleng, curr_node);
     }
     else {
-      LOG("ParameterPool",pWARN)<< "Found a node, " << curr_node_name << ", which does not correspond to a parameter";
+      VLOG("ParameterPool",pWARN)<< "Found a node, " << curr_node_name << ", which does not correspond to a parameter";
     }
 
     curr_node = xmleng->GetNext(curr_node);
@@ -112,7 +112,7 @@ void ParameterPool::CheckSchemes(TXMLEngine* xmleng, XMLNodePointer_t root_node)
       std::string scheme_name = util::XML2String(xmleng, root_node, scheme_node_name);
       conv::NuOscMixParam_t scheme = util::MixingTypeFromString(scheme_name);
       if(scheme != Opt::Instance()->gOscMixingParamChoice) {
-        LOG("ParameterPool",pFATAL) << "An input parameter list was specified with mixing angle scheme \'"
+        VLOG("ParameterPool",pFATAL) << "An input parameter list was specified with mixing angle scheme \'"
                                     << util::AsString(scheme)
                                     << "\', but this did not match the scheme set in Opt::Instance \'"
                                     << util::AsString(Opt::Instance()->gOscMixingParamChoice) << "\'";
@@ -133,7 +133,7 @@ void ParameterPool::CheckSchemes(TXMLEngine* xmleng, XMLNodePointer_t root_node)
         opt_scheme = conv::kNuDmsq12andAbs23;
       }
       if(scheme != opt_scheme) {
-        LOG("ParameterPool",pFATAL) << "An input parameter list was specified with Dmsq scheme \'"
+        VLOG("ParameterPool",pFATAL) << "An input parameter list was specified with Dmsq scheme \'"
                                     << util::AsString(scheme)
                                     << "\', but this did not match the scheme set in Opt::Instance \'"
                                     << util::AsString(Opt::Instance()->gOscDmsqScheme) << "\'";
@@ -147,7 +147,7 @@ void ParameterPool::CheckSchemes(TXMLEngine* xmleng, XMLNodePointer_t root_node)
       std::string scheme_name = util::XML2String(xmleng, root_node, scheme_node_name);
       conv::NuOscDeltaCP_t scheme = util::CPVChoiceFromString(scheme_name);
       if(scheme != Opt::Instance()->gOscDeltaCP) {
-        LOG("ParameterPool",pFATAL) << "An input parameter list was specified with phase scheme \'"
+        VLOG("ParameterPool",pFATAL) << "An input parameter list was specified with phase scheme \'"
                                     << util::AsString(scheme)
                                     << "\', but this did not match the scheme set in Opt::Instance \'"
                                     << util::AsString(Opt::Instance()->gOscDeltaCP) << "\'";
@@ -158,14 +158,14 @@ void ParameterPool::CheckSchemes(TXMLEngine* xmleng, XMLNodePointer_t root_node)
       }
     }
     else {
-      LOG("ParameterPool",pFATAL) << "Did not recognise scheme node named \'" << scheme_node_name << "\'";
+      VLOG("ParameterPool",pFATAL) << "Did not recognise scheme node named \'" << scheme_node_name << "\'";
       exit(-1);
     }
     scheme_node = xmleng->GetNext(scheme_node);
   }
 
   if(!(checked_mixing && checked_Dmsq && checked_phase)) {
-    LOG("ParameterPool",pFATAL)
+    VLOG("ParameterPool",pFATAL)
       << "The mixing angle, Dmsq, and phase schemes must all be specified in the parameter config file";
     exit(-1);
   }
@@ -204,7 +204,7 @@ void valor::ParameterPool::CheckForCollisions() const
   for (const Parameter & p : fParams) {
     std::string name = p.GetName();
     if (names.count(name)) {
-      LOG("ParameterPool",pFATAL) << "Duplicated parameter name: "<<name;
+      VLOG("ParameterPool",pFATAL) << "Duplicated parameter name: "<<name;
       exit(-1);
     }
     conv::PhysParamId_t param_id = p.GetID();
@@ -234,7 +234,7 @@ const Parameter & ParameterPool::ParamFromString(std::string str) const
       return p;
     }
   }
-  LOG("ParameterPool",pFATAL) << "No parameter named [" << str << "] in the ParameterPool";
+  VLOG("ParameterPool",pFATAL) << "No parameter named [" << str << "] in the ParameterPool";
   exit(-1);
 }
 //________________________________________________________________________________________
@@ -276,17 +276,17 @@ unsigned int ParameterPool::CountNonSpecialParams(void) const
 void ParameterPool::UpdateParam(Parameter& to_update, const Parameter& update_from)
 {
   if(to_update.GetID() != update_from.GetID()) {
-    LOG("ParameterPool",pFATAL) << "Tried to update parameter [" << to_update.GetName() << "] from parameter ["
+    VLOG("ParameterPool",pFATAL) << "Tried to update parameter [" << to_update.GetName() << "] from parameter ["
                                 << update_from.GetName() << "], but the PhysParamId's did not match";
     exit(-1);
   }
   if(to_update.GetName() != update_from.GetName()) {
-    LOG("ParameterPool",pFATAL) << "Tried to update parameter [" << to_update.GetName() << "] from parameter ["
+    VLOG("ParameterPool",pFATAL) << "Tried to update parameter [" << to_update.GetName() << "] from parameter ["
                                 << update_from.GetName() << "], but the simple names did not match";
     exit(-1);
   }
   if(to_update.GetType() != update_from.GetType()) {
-    LOG("ParameterPool",pFATAL) << "Tried to update parameter [" << to_update.GetName() << "] from parameter ["
+    VLOG("ParameterPool",pFATAL) << "Tried to update parameter [" << to_update.GetName() << "] from parameter ["
                                 << update_from.GetName() << "], but the types did not match";
     exit(-1);
   }

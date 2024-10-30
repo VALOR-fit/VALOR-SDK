@@ -10,7 +10,7 @@
 module load gsl
 module load nixpkgs/16.09
 module load gcc/5.4.0
-module load root/6.08.02
+module load root/6.14.04
 module load python/2.7
 module load scipy-stack
 

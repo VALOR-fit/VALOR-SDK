@@ -36,7 +36,7 @@ namespace valor {
     static const unsigned long kApplyMaskOne     = 1ul;
     static const int nbitsBeamApplyMask          = 2;
     static const int nbitsFlavApplyMask          = 6;
-    static const int nbitsSelecApplyMask         = 35;
+    static const int nbitsSelecApplyMask         = 38;
     static const int nbitsReacTypeApplyMask      = 29;
     static const int nbitsDetectorApplyMask      = 7;
     static const int nbitsNuclearTargetApplyMask = 7;
@@ -105,6 +105,9 @@ namespace valor {
     static const SelecApplyMask_t ksApplyTo1RingMu         = (kApplyMaskOne << 32 ); // SuperK selections
     static const SelecApplyMask_t ksApplyTo1RingE          = (kApplyMaskOne << 33 ); // SuperK selections
     static const SelecApplyMask_t ksApplyToMultiRingE      = (kApplyMaskOne << 34 ); // SuperK selections
+    static const SelecApplyMask_t ksApplyToNuMuOA00        = (kApplyMaskOne << 35 );
+    static const SelecApplyMask_t ksApplyToNuMuOA01        = (kApplyMaskOne << 36 );
+    static const SelecApplyMask_t ksApplyToNuMuOA02        = (kApplyMaskOne << 37 );
 
     static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 ); // Reaction type
     static const ReacTypeApplyMask_t ktApplyToCCMEC        = (kApplyMaskOne <<  1 );
@@ -208,6 +211,7 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllButELScat;
     extern const ReacTypeApplyMask_t ktApplyToAllWithFSI;
     extern const ReacTypeApplyMask_t ktApplyToAllButCosmic;
+    extern const ReacTypeApplyMask_t ktApplyToPiAndOth;
 
     extern const ReacTypeApplyMask_t ktApplyToT2KLegCCoth;
     extern const ReacTypeApplyMask_t ktApplyToCCDISMpi;
@@ -234,6 +238,9 @@ namespace valor {
     extern const SelecApplyMask_t ksApplyToAllRings;      // SuperK selections
     extern const SelecApplyMask_t ksApplyToLowRes;
     extern const SelecApplyMask_t ksApplyToHighRes;
+    extern const SelecApplyMask_t ksApplyToInnerNuMuPRISM3;
+    extern const SelecApplyMask_t ksApplyToAllNuMuPRISM3;
+    extern const SelecApplyMask_t ksApplyToOuterNuMuPRISM3;
 
 
 

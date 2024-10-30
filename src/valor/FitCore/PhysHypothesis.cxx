@@ -82,7 +82,7 @@ double PhysHypothesis::CurrValue(PhysParamId_t p) const
 {
   map<int,double>::const_iterator it = fParams.find(p);
   if(it == fParams.end()) {
-    LOG("PhysHypothesis",pFATAL) << "PhysHypothesis does not contain parameter: "
+    VLOG("PhysHypothesis",pFATAL) << "PhysHypothesis does not contain parameter: "
       <<"("<<p<<") "<<util::NameRegistry::Instance()->AsString(p);
     util::Die(-1); return conv::kBadResult;
   } 
@@ -212,7 +212,7 @@ void PhysHypothesis::Init(PhysHypothesis_t h)
   
   if ( (fHypothesis != kHypUndefined && fHypothesis != kHypVoid) 
        && fParams.size()==0) {
-    LOG("PhysHypothesis",pFATAL) << "Warning - failed to initalise hypothesis "<<util::AsString(fHypothesis);
+    VLOG("PhysHypothesis",pFATAL) << "Warning - failed to initalise hypothesis "<<util::AsString(fHypothesis);
     util::Die(-1) ; return;
   }
 

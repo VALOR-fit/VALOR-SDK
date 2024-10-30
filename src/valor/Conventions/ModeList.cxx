@@ -51,7 +51,7 @@ void ModeList::Init(std::string modelist_file, std::string coarse_modelist_file)
     string content(util::RemoveAllWhitespace(nc));
     conv::ReacMode_t mode = util::ReacModeFromString(content);
     if (mode==conv::kmUndefined) {
-      LOG("ModeList",pFATAL) << "Got undefined mode from string "<<content;
+      VLOG("ModeList",pFATAL) << "Got undefined mode from string "<<content;
       util::Die(-1); return;
     }
     fModes.push_back(mode);
@@ -74,7 +74,7 @@ void ModeList::Init(std::string modelist_file, std::string coarse_modelist_file)
     {
       string coarse_mode_name = xml_coarse_mode->GetNodeName(coarse_mode_node);
       if(coarse_mode_name != "coarse_mode") {
-        LOG("ModeList",pFATAL) << "Found a node, \'" << coarse_mode_name
+        VLOG("ModeList",pFATAL) << "Found a node, \'" << coarse_mode_name
                                << "\', which does not correspond to a coarse mode";
         util::Die(-1); return;
       }
@@ -86,13 +86,13 @@ void ModeList::Init(std::string modelist_file, std::string coarse_modelist_file)
         name = util::XML2String(xml_coarse_mode, coarse_mode_node, "name");
         mode = util::CoarseModeFromString(name);
         if (mode==conv::kmcUndefined) {
-          LOG("ModeList",pFATAL) << "Got undefined coarse mode from string "<<name;
+          VLOG("ModeList",pFATAL) << "Got undefined coarse mode from string "<<name;
           util::Die(-1); return;
         }
         fModesCoarse.push_back(mode);
       }
       else {
-        LOG("ModeList", pFATAL) << "No name node was found for a coarse mode";
+        VLOG("ModeList", pFATAL) << "No name node was found for a coarse mode";
         util::Die(-1); return;
       }
 
@@ -103,7 +103,7 @@ void ModeList::Init(std::string modelist_file, std::string coarse_modelist_file)
       }
       else {
         fModesCoarseLineCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, fDefLineCol));
-        LOG("ModeList", pINFO) << "No line_col node was found for \'" << name << "\', setting to \'" << fDefLineCol <<"\'";
+        VLOG("ModeList", pINFO) << "No line_col node was found for \'" << name << "\', setting to \'" << fDefLineCol <<"\'";
       }
 
       // Coarse mode fill colour
@@ -114,7 +114,7 @@ void ModeList::Init(std::string modelist_file, std::string coarse_modelist_file)
       else {
         int use_fill_col = fDefFillCol + fModesCoarse.size() - 1;
         fModesCoarseFillCol.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, use_fill_col));
-        LOG("ModeList", pINFO) << "No fill_col node was found for \'" << name << "\', setting to \'" << use_fill_col <<"\'";
+        VLOG("ModeList", pINFO) << "No fill_col node was found for \'" << name << "\', setting to \'" << use_fill_col <<"\'";
       }
 
       // Coarse mode fill style
@@ -124,7 +124,7 @@ void ModeList::Init(std::string modelist_file, std::string coarse_modelist_file)
       }
       else {
         fModesCoarseFillSty.insert(std::pair<conv::ReacModeCoarse_t, int>(mode, fDefFillSty));
-        LOG("ModeList", pINFO) << "No fill_sty node was found for \'" << name << "\', setting to \'" << fDefFillSty <<"\'";
+        VLOG("ModeList", pINFO) << "No fill_sty node was found for \'" << name << "\', setting to \'" << fDefFillSty <<"\'";
       }
 
       coarse_mode_node = xml_coarse_mode->GetNext(coarse_mode_node);
@@ -155,7 +155,7 @@ int ModeList::GetCoarseModeLineCol(conv::ReacModeCoarse_t mc) const
     val = fModesCoarseLineCol.at(mc);
   }
   catch(...) {
-    LOG("ModeList", pWARN) << "Could not get the line colour for coarse mode \'" << util::AsString(mc)
+    VLOG("ModeList", pWARN) << "Could not get the line colour for coarse mode \'" << util::AsString(mc)
                            << "\', instead returning " << fDefLineCol;
     val = fDefLineCol;
   }
@@ -169,7 +169,7 @@ int ModeList::GetCoarseModeFillCol(conv::ReacModeCoarse_t mc) const
     val = fModesCoarseFillCol.at(mc);
   }
   catch(...) {
-    LOG("ModeList", pWARN) << "Could not get the fill colour for coarse mode \'" << util::AsString(mc)
+    VLOG("ModeList", pWARN) << "Could not get the fill colour for coarse mode \'" << util::AsString(mc)
                            << "\', instead returning " << fDefFillCol;
     val = fDefFillCol;
   }
@@ -183,7 +183,7 @@ int ModeList::GetCoarseModeFillSty(conv::ReacModeCoarse_t mc) const
     val = fModesCoarseFillSty.at(mc);
   }
   catch(...) {
-    LOG("ModeList", pWARN) << "Could not get the fill style for coarse mode \'" << util::AsString(mc)
+    VLOG("ModeList", pWARN) << "Could not get the fill style for coarse mode \'" << util::AsString(mc)
                            << "\', instead returning " << fDefFillSty;
     val = fDefFillSty;
   }

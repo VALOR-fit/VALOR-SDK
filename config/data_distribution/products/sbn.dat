@@ -10,10 +10,6 @@
   sbn_numu_inclusive                 | dsts          | 2020a1    | RJ    | LIV1   | sbn_numu_disapp_2020a1_03c1_1, sbn_numu_disapp_2020a1_03c2_1, sbn_numu_disapp_2020a1_03c3_1
   sbn_numu_exclusive_1               | dsts          | 2020a1    | RJ    | LIV1   | sbn_numu_disapp_exclusive_1_2020a1_03c1_1, sbn_numu_disapp_exclusive_1_2020a1_03c2_1, sbn_numu_disapp_exclusive_1_2020a1_03c3_1
 
-  sbn_numu_inclusive                 | prior_errors  | 02b1_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02b1_2
-  sbn_numu_inclusive                 | prior_errors  | 02b2_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02b2_2
-  sbn_numu_inclusive                 | prior_errors  | 02c1_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02c1_2
-  sbn_numu_inclusive                 | prior_errors  | 02c2_2    | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_02c2_2
   sbn_numu_inclusive                 | prior_errors  | 03a1      | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_03a1_1
   sbn_numu_inclusive                 | prior_errors  | 03b1      | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_03b1_1
   sbn_numu_inclusive                 | prior_errors  | 03c1      | RJ    | LIV1   | sbn_numu_disapp_2019b3_2_03c1_1, sbn_numu_disapp_2020a1_03c1_1
@@ -43,6 +39,13 @@
   sbn_numu_inclusive                 | universes     | 2019b3    | RJ    | LIV1   | 
   sbn_numu_inclusive                 | universes     | 2020a1    | RJ    | LIV1   | 
     
-  sbn_nue_inclusive                  | dsts          | 2020a1    | TH    | LIV1   | sbn_nue_app_2020a1_03c1_1, sbn_nue_disapp_2020a1_03c1_1
+ 
+  sbn_numu_inclusive                 | dsts          | 2020a1    | TH    | LIV1   | sbn_numu_disapp_2020a1_03d1_1
+  sbn_numu_inclusive                 | prior_errors  | 03d1      | TH    | LIV1   | sbn_numu_disapp_2020a1_03d1_1
+  sbn_numu_inclusive                 | responses     | 03d1      | TH    | LIV1   | sbn_numu_disapp_2020a1_03d1_1
+
+  sbn_nue_inclusive                  | dsts          | 2020a1    | TH    | LIV1   | sbn_nue_app_2020a1_03c1_1, sbn_nue_disapp_2020a1_03c1_1, sbn_nue_app_2020a1_03d1_1, sbn_nue_disapp_2020a1_03d1_1
   sbn_nue_inclusive                  | prior_errors  | 03c1      | TH    | LIV1   | sbn_nue_app_2020a1_03c1_1, sbn_nue_disapp_2020a1_03c1_1
   sbn_nue_inclusive                  | responses     | 03c1      | TH    | LIV1   | sbn_nue_app_2020a1_03c1_1, sbn_nue_disapp_2020a1_03c1_1 
+  sbn_nue_inclusive                  | prior_errors  | 03d1      | TH    | LIV1   | sbn_nue_app_2020a1_03d1_1, sbn_nue_disapp_2020a1_03d1_1
+  sbn_nue_inclusive                  | responses     | 03d1      | TH    | LIV1   | sbn_nue_app_2020a1_03d1_1, sbn_nue_disapp_2020a1_03d1_1 

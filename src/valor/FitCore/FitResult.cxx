@@ -142,7 +142,7 @@ double FitResult::GetParam2BestFit()
 {
    if(!this->_isFit2D)
    {
-      LOG("FitResult", pERROR) << "Requested the second parameter from a 1D " <<
+      VLOG("FitResult", pERROR) << "Requested the second parameter from a 1D " <<
          "FitResult";
       exit(1);
    }
@@ -164,13 +164,13 @@ TH1D* FitResult::GetChi2Surface1D()
 {
    if(this->_isFit2D)
    {
-      LOG("FitResult", pERROR) << "Requested a 1D chi2 surface from a 2D " <<
+      VLOG("FitResult", pERROR) << "Requested a 1D chi2 surface from a 2D " <<
          "FitResult";
       exit(1);
    }
    else if(this->_chi2_1D == nullptr)
    {
-      LOG("FitResult", pERROR) << "Requested a chi2 surface, but none was " <<
+      VLOG("FitResult", pERROR) << "Requested a chi2 surface, but none was " <<
          "provided on initialisation of the FitResult";
    }
 
@@ -181,13 +181,13 @@ TH1D* FitResult::GetLikelihoodSurface1D()
 {
    if(this->_isFit2D)
    {
-      LOG("FitResult", pERROR) << "Requested a 1D likelihood surface from a " <<
+      VLOG("FitResult", pERROR) << "Requested a 1D likelihood surface from a " <<
          "2D FitResult";
       exit(1);
    }
    else if(this->_likelihood_1D == nullptr)
    {
-      LOG("FitResult", pERROR) << "Requested a likelihood surface, but none " <<
+      VLOG("FitResult", pERROR) << "Requested a likelihood surface, but none " <<
          "was provided on initialisation of the FitResult";
    }
 
@@ -198,13 +198,13 @@ TH2D* FitResult::GetChi2Surface2D()
 {
    if(!this->_isFit2D)
    {
-      LOG("FitResult", pERROR) << "Requested a 2D chi2 surface from a 1D " <<
+      VLOG("FitResult", pERROR) << "Requested a 2D chi2 surface from a 1D " <<
          "FitResult";
       exit(1);
    }
    else if(this->_chi2_2D == nullptr)
    {
-      LOG("FitResult", pERROR) << "Requested a chi2 surface, but none was " <<
+      VLOG("FitResult", pERROR) << "Requested a chi2 surface, but none was " <<
          "provided on initialisation of the FitResult";
    }
 
@@ -216,13 +216,13 @@ TH2D* FitResult::GetLikelihoodSurface2D()
 {
    if(!this->_isFit2D)
    {
-      LOG("FitResult", pERROR) << "Requested a 2D likelihood surface from a " <<
+      VLOG("FitResult", pERROR) << "Requested a 2D likelihood surface from a " <<
          "1D FitResult";
       exit(1);
    }
    else if(this->_likelihood_2D == nullptr)
    {
-      LOG("FitResult", pERROR) << "Requested a likelihood surface, but none " <<
+      VLOG("FitResult", pERROR) << "Requested a likelihood surface, but none " <<
          "was provided on initialisation of the FitResult";
    }
 

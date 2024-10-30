@@ -150,7 +150,7 @@ void PhysParamList::MergeFrom(const PhysParamList & ppl, Option_t * opt)
     double        v = it->second;
     if (!no_warning) {
       if (this->Contains(p)) {
-        LOG("PhysParamList",pWARN) << "Warning, replacing parameter "<<util::NameRegistry::Instance()->AsString(p)<<" during merge. Old value "<<this->Value(p)<<", new value "<<v;
+        VLOG("PhysParamList",pWARN) << "Warning, replacing parameter "<<util::NameRegistry::Instance()->AsString(p)<<" during merge. Old value "<<this->Value(p)<<", new value "<<v;
       }
     }
     this->SetValue(p,v);
@@ -160,7 +160,7 @@ void PhysParamList::MergeFrom(const PhysParamList & ppl, Option_t * opt)
 TVectorD PhysParamList::AsTVector(const CorrelatedSystematics * ordering)
 {
   if (!ordering) {
-    LOG("PhysParamList",pFATAL) << "CorrelatedSystematics is null.";
+    VLOG("PhysParamList",pFATAL) << "CorrelatedSystematics is null.";
     util::Die(-1);
   }
   int npar = ordering->Size();
