@@ -44,7 +44,7 @@ LOG4CPP_VERSION=1.1.3
 LOG4CPP_HASH=qgox7co
 if [ -z "$SETUP_LOG4CPP" ] ; then
     echo "Loading log4cpp..."
-    spack load log4cpp@${LOG4CPP_VERSION}%gcc@12.2.0/${LOG4CPP_HASH}
+    spack load log4cpp@${LOG4CPP_VERSION}%gcc@${GCC_VERSION}/${LOG4CPP_HASH}
     export SETUP_LOG4CPP="1" ; fi
 
 retExp=$(spack find --loaded | grep lhapdf)
@@ -72,6 +72,20 @@ spack find --loaded -p lhapdf | tail -n 1 > ./tmp.txt
 LHAPDF_DIR=$(awk '{print $2}' tmp.txt) ; rm -f ./tmp.txt
 LHAPDF_LIB=${LHAPDF_DIR}/lib
 export LD_LIBRARY_PATH=${LHAPDF_LIB}:${LD_LIBRARY_PATH}
+
+# Looks like we also need ROOT
+ROOT_VERSION=6.28.12
+ROOT_HASH=2bvceek #hljl7gy
+if [ -z "$SETUP_ROOT" ] ; then
+    echo "Loading ROOT version ${ROOT_VERSION}/${ROOT_HASH}..."
+    spack load root@${ROOT_VERSION}/${ROOT_HASH}
+    export SETUP_ROOT="1" ; fi
+
+# Setup gcc include paths after this, it is a very finicky thing
+spack find --loaded -p gcc | tail -n 1 > ./tmp.txt
+CPLUS_DIR=$(awk '{print $2}' tmp.txt) ; rm -f ./tmp.txt
+CPLUS_INC=${CPLUS_DIR}/include
+export CPLUS_INCLUDE_PATH=${CPLUS_INC}:${CPLUS_INC}/c++/${GCC_VERSION}
 
 # Now we can get genie
 
