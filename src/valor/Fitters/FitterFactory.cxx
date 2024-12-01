@@ -12,7 +12,7 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 #include <TROOT.h>
 #include <TClass.h>
 
-#include "valor/FitCore/FitterABC_new.h"
+#include "valor/Core/FitterABC.h"
 #include "valor/Fitters/FitterFactory.h"
 #include "valor/Messenger/Messenger.h"
 
@@ -41,9 +41,9 @@ FitterFactory::~FitterFactory()
 // Clean up and report on the concrete algorithms  used in this instance.
 // Don't clutter output if exiting in err.
 
-  map<string, FitterABC_new *>::iterator iter;
+  map<string, FitterABC *>::iterator iter;
   for(iter = fFitterPool.begin(); iter != fFitterPool.end(); ++iter) {
-    FitterABC_new * fitter = iter->second;
+    FitterABC * fitter = iter->second;
     if(fitter) {
       delete fitter;
       fitter = 0;
@@ -63,9 +63,9 @@ FitterFactory * FitterFactory::Instance()
   return fgInstance;
 }
 //____________________________________________________________________________
-FitterABC_new * FitterFactory::GetFitter (string name)
+FitterABC * FitterFactory::GetFitter (string name)
 {
-  map<string, FitterABC_new *>::const_iterator iter = fFitterPool.find(name);
+  map<string, FitterABC *>::const_iterator iter = fFitterPool.find(name);
   bool found = (iter != fFitterPool.end());
   if(!found) {
      VLOG("FitterFactory", pERROR) << "Fitter: " << name << " was not found!";
@@ -76,7 +76,7 @@ FitterABC_new * FitterFactory::GetFitter (string name)
 //____________________________________________________________________________
 bool FitterFactory::AddFitter(string name, string implementation) 
 {
-  map<string, FitterABC_new *>::const_iterator iter = fFitterPool.find(name);
+  map<string, FitterABC *>::const_iterator iter = fFitterPool.find(name);
   bool found = (iter != fFitterPool.end());
   if(found) {
      VLOG("FitterFactory", pWARN) << "Fitter: " << name << " already exists";
@@ -95,13 +95,13 @@ bool FitterFactory::AddFitter(string name, string implementation)
        return false;
   }
   void * base = tclass->New();
-  FitterABC_new * fitter = (FitterABC_new *) (base);
+  FitterABC * fitter = (FitterABC *) (base);
   if(!fitter) {
       VLOG("FitterFactory", pERROR) << "Null fitter";
       return false;
   }
 
-  pair<string, FitterABC_new *> pair(name, fitter);
+  pair<string, FitterABC *> pair(name, fitter);
   fFitterPool.insert(pair);
   return true;
 }
@@ -111,10 +111,10 @@ void FitterFactory::Print(ostream & stream) const
   string frame(100,'.');
 
   stream << endl;
-  map<string, FitterABC_new *>::const_iterator iter;
+  map<string, FitterABC *>::const_iterator iter;
   for(iter = fFitterPool.begin(); iter != fFitterPool.end(); ++iter) {
     const string name = iter->first;
-    const FitterABC_new * fitter = iter->second;
+    const FitterABC * fitter = iter->second;
     stream << frame << endl;
     stream << "Fitter: " << name << endl;
     stream << "Config:";

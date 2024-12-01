@@ -10,8 +10,8 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 #include <TTree.h>
 #include <TObjArray.h>
 
-#include "valor/FitCore/FitParamList.h"
-#include "valor/FitCore/PhysParamList.h"
+#include "valor/Core/FitParamList.h"
+#include "valor/Core/PhysParamList.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/Ntuple/StdFitNtp.h"
 

@@ -49,15 +49,15 @@
 // VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/FitCore/PhysParamList.h"
-#include "valor/FitCore/FitParamList.h"
-#include "valor/FitCore/FitModelABC.h"
-#include "valor/FitCore/FitDataABC.h"
-#include "valor/FitCore/Likelihood.h"
-#include "valor/FitCore/FitterABC.h"
-#include "valor/FitCore/UtlFit.h"
-#include "valor/FitCore/CompoundFitElements.h"
-#include "valor/FitCore/UtlFitParamList.h"
+#include "valor/Core/PhysParamList.h"
+#include "valor/Core/FitParamList.h"
+#include "valor/Core/FitModelABC.h"
+#include "valor/Core/FitDataABC.h"
+#include "valor/Core/Likelihood.h"
+#include "valor/Core/FitterABC.h"
+#include "valor/Fitters/UtlFit.h"
+#include "valor/Core/CompoundFitElements.h"
+//#include "valor/Core/UtlFitParamList.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
@@ -105,7 +105,7 @@ int main(int argc, char ** argv)
     readopt += " forcedst";
   }
   
-  Messenger::Instance()->Configure(util::CompleteConfigPath(mesg_thresholds));
+  valor::Messenger::Instance()->Configure(util::CompleteConfigPath(mesg_thresholds));
 
   bool generate_fd = arg.GetBool("generate-fd-pred");
   if(generate_fd){
@@ -139,7 +139,8 @@ int main(int argc, char ** argv)
   FitParamList *fp = 0;
 
   // If we have not been asked to generate the FD prediction from fit result
-  if(!generate_fd) fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+  //if(!generate_fd) fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
+  if(!generate_fd) fp = new FitParamList(hypname, fplopt.c_str());
   // If we have, get the FPL from the fit result output file
   else {
     // Get FitParamList from the fit result file

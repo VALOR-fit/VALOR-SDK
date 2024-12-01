@@ -20,10 +20,10 @@
 #include <TStopwatch.h>
 
 #include "valor/Conventions/Build.h"
-#include "valor/FitCore/FitterGSL.h" 
-#include "valor/FitCore/FitInputs.h" 
-#include "valor/FitCore/FitParamList.h" 
-#include "valor/FitCore/FitDataABC.h" 
+#include "valor/Fitters/FitterGSL.h" 
+#include "valor/Core/FitInputs.h" 
+#include "valor/Core/FitParamList.h" 
+#include "valor/Core/FitDataABC.h" 
 
 #ifdef __VALOR_FMWK_GSL_ENABLED__
 #include <Math/GSLMinimizer.h>

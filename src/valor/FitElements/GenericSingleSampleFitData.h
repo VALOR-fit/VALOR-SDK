@@ -32,7 +32,7 @@
 #include "valor/Conventions/BeamConf.h"
 #include "valor/Conventions/Sample.h"
 #include "valor/Conventions/Detector.h"
-#include "valor/FitCore/SingleSampleFitDataABC.h"
+#include "valor/Core/SingleSampleFitDataABC.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/VArray/VALORArray.h"
 #include "valor/Utilities/SingleSampleKineBinning.h"
