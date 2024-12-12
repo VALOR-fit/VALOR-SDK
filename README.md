@@ -32,29 +32,30 @@ For more information, see https://www.overleaf.com/read/ygmrxrjtmwyv
 
 ## Copyright
 
-Copyright (c) 2010-2023, The VALOR Fitting Group. **All Rights Reserved.**
-
-## Authors
+Copyright (c) 2010-2025, The VALOR Fitting Group. **All Rights Reserved.**
 
 * **Costas Andreopoulos**, *University of Liverpool*
-* **Maria Antonova**, *IFIC Valencia*
+* **Yaoqi Cao**, *University of Warwick*
 * **Thomas Dealtry**, *Lancaster University*
+* **Ziou He**, *University of Warwick*
 * **Rhiannon Jones**, *University of Sheffield*
-* **Tereza Kroupova**, *University of Pennsylvania*
-* **Jaiden Parlone**, *University of Liverpool*
+* **Komninos-John Plows**, *University of Liverpool*
 * **Davide Sgalaberna**, *ETHZ*
 * **Beth Slater**, *University of Liverpool*
 
 Past authors:
 
+* **Maria Antonova**, *IFIC Valencia*
 * **Dom Barker**, *University of Sheffield*
 * **Chistopher Barry**, *University of Liverpool*
 * **Francis Bench**, *University of Liverpool*
 * **Andrew Chappell**, *University of Warwick*
-* **Steve Dennis**, *University of Warwick & STFC/RAL; University of Liverpool; Universirt of Cambridge*
+* **Steve Dennis**, *University of Warwick & STFC/RAL; University of Liverpool; University of Cambridge*
 * **Lorena Escudero**, *University of Cambridge; IFIC Valencia*
 * **Nick Grant**, *STFC/RAL; Lancaster University; University of Warwick*
 * **Thomas Ham**, *University of Liverpool*
+* **Tereza Kroupova**, *University of Pennsylvania*
+* **Jaiden Parlone**, *University of Liverpool*
 * **Raj Shah**, *University of Oxford & STFC/RAL*
 
 ## Contact
