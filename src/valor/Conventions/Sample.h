@@ -88,11 +88,11 @@ typedef enum ESample
    ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
    ksNuMuCCoa09          , // numuCC-like, off-axis bin "09"
    // JUNO selections
-   ksJFCAtmoNuMuCC       , // JUNO Full contained Atmo numu CC
-   ksJFCAtmoNuMuBarCC    , // JUNO Full contained Atmo numubar CC
-   ksJFCAtmoNuECC        , // JUNO Full contained Atmo nue CC
-   ksJFCAtmoNuEBarCC     , // JUNO Full contained Atmo nuebar CC
-   ksJFCAtmoNC             // JUNO Full contained Atmospheric NC
+   ksJFCAtmoNuMuCC       = 49, // JUNO Full contained Atmo numu CC
+   ksJFCAtmoNuMuBarCC    = 50, // JUNO Full contained Atmo numubar CC
+   ksJFCAtmoNuECC        = 51, // JUNO Full contained Atmo nue CC
+   ksJFCAtmoNuEBarCC     = 52, // JUNO Full contained Atmo nuebar CC
+   ksJFCAtmoNC           = 53  // JUNO Full contained Atmospheric NC
 
 }
 Sample_t; 
