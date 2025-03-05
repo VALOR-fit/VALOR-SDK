@@ -29,6 +29,7 @@ string util::AsString(KineVar_t kv)
     case (kvEreco     ) : return "Ereco";     break;
     case (kvEvis      ) : return "Evis";      break;
     case (kvYreco     ) : return "yreco";     break;
+    case (kvThetatrue ) : return "Thetatrue"; break;
     case (kvThetareco ) : return "Thetareco"; break;
     case (kvq0reco    ) : return "q0reco";    break;
     case (kvmodqreco  ) : return "|q|reco";   break;
@@ -47,7 +48,8 @@ string util::DSTBranchName(KineVar_t kv)
     case (kvEreco     ) : return "enu_reco";     break;
     case (kvEvis      ) : return "E_vis";      break;
     case (kvYreco     ) : return "y_reco";     break;
-    case (kvThetareco ) : return "Theta_reco"; break;
+    case (kvThetatrue ) : return "costh_true"; break;
+    case (kvThetareco ) : return "costh_reco"; break;
     case (kvq0reco    ) : return "q0_reco";    break;
     case (kvmodqreco  ) : return "modq_reco";   break;
     default : 
@@ -67,6 +69,7 @@ string util::AsStringTeX(KineVar_t kv, bool root)
     case (kvEreco     ) : name = "E_{reco} (GeV)";                break;
     case (kvEvis      ) : name = "E_{vis} (GeV)";                 break;
     case (kvYreco     ) : name = "y_{reco}";                      break;
+    case (kvThetatrue ) : name = "\theta_{true}";                 break;
     case (kvThetareco ) : name = "\theta_{reco}";                 break;
     case (kvq0reco    ) : name = "q_{0 reco}";                    break;
     case (kvmodqreco  ) : name = "|\\overrightarrow{q}|_{reco}";  break;
@@ -91,6 +94,7 @@ bool util::IsReco(KineVar_t kv)
   switch(kv) {
     case (kvEtrue     ) : return false;
     case (kvQ2true    ) : return false;
+    case (kvThetatrue ) : return false;
     case (kvEreco     ) : return true;
     case (kvEvis      ) : return true;
     case (kvYreco     ) : return true;
@@ -130,7 +134,8 @@ std::pair<double,double> util::PhysicalLimits(KineVar_t kv)
     case (kvEreco     ) : return std::make_pair(0.  , kALargeNum);
     case (kvEvis      ) : return std::make_pair(0.  , kALargeNum);
     case (kvYreco     ) : return std::make_pair(0.  , 1.        );
-    case (kvThetareco ) : return std::make_pair(0.  , 360.      );
+    case (kvThetatrue ) : return std::make_pair(-1.  , 1.      );
+    case (kvThetareco ) : return std::make_pair(-1.  , 1.      );
     case (kvq0reco    ) : return std::make_pair(0.  , kALargeNum);
     case (kvmodqreco  ) : return std::make_pair(0.  , kALargeNum);
     default:

@@ -22,7 +22,7 @@ TGT = adaptive_mcmc \
       tweak_pdf_sigma_var \
       write_pdf \
       make_response_functions 
-     # run_tests \
+     #run_tests \
       batch_tests 
 
 #      run_tests \ # Need to check why these are borking

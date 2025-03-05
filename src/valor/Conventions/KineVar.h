@@ -36,6 +36,7 @@ typedef enum EKineVar
    kvEreco,           // reconstructed neutrino energy
    kvEvis,            // visible neutrino energy
    kvYreco,           // reconstructed inelasticity (y)
+   kvThetatrue,       // true lepton angle
    kvThetareco,       // reconstructed lepton angle
    kvq0reco,          // reconstructed 1st component of the 4-momentum
    kvmodqreco         // reconstructed magnitude of the 3-momentum
