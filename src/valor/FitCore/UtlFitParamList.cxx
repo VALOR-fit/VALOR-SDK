@@ -66,7 +66,7 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   // Create a FitParamList object, adding all physics + nuisance params from the instance of ParameterPool.
   string param_list_opt = ((param_opt) ? param_opt : "NONE");
 
-  LOG("FitParams", pDEBUG)
+  VLOG("FitParams", pDEBUG)
     << "Instantiating a fit parameter list object from the ParameterPool with option(s): " << param_list_opt;
 
   //get the extra options here:
@@ -109,7 +109,7 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   for(const Parameter& param : pool_params) {
     PhysParamId_t p = param.GetID();
     if(p == kPhypUndefined) {
-      LOG("FitParams", pFATAL) << "Found an undefined parameter in the ParameterPool";
+      VLOG("FitParams", pFATAL) << "Found an undefined parameter in the ParameterPool";
       util::Die(-1);
     }
 
@@ -179,17 +179,17 @@ FitParamList * util::GetFitParameterList(const PhysHypothesis& hyp, Option_t * p
   } // loop over Parameters
 
   if(!fparm->IsComplete()) {
-    LOG("FitParams",pERROR)<<"Fit parameter list is not complete";
+    VLOG("FitParams",pERROR)<<"Fit parameter list is not complete";
     fparm->Print();
     util::Die(-1); return fparm;
   }
 
 // Finally, check that all of the params in the PhysHypothesis are in the FPL
-LOG("FitParams", pNOTICE) << "Checking if all parameters in PhysHypothesis are in the FitParamList:";
+VLOG("FitParams", pNOTICE) << "Checking if all parameters in PhysHypothesis are in the FitParamList:";
 for(conv::PhysParamId_t hyp_par : hyp.GetParams()) {
   if(!fparm->Exists(hyp_par)) {
     // Print the current FitParamList before logging the error
-    LOG("FitParams", pNOTICE) << "Current FitParamList parameters:";
+    VLOG("FitParams", pNOTICE) << "Current FitParamList parameters:";
     for (int i = 0; i < fparm->Size(); ++i) { // Use Size() to get the number of parameters
       conv::PhysParamId_t param_id = fparm->WhichParam(i); // Use WhichParam(i) to get the parameter ID by index
       std::string param_name = NameRegistry::Instance()->AsString(param_id);
@@ -199,7 +199,7 @@ for(conv::PhysParamId_t hyp_par : hyp.GetParams()) {
       double current_value = fparm->CurrValue(param_id); // Use CurrValue(param_id) to get the current value
       bool is_fixed = fparm->IsFixed(param_id);
 
-      LOG("FitParams", pNOTICE)
+      VLOG("FitParams", pNOTICE)
         << "Param: " << param_name
         << ", Init: " << init_value
         << ", Min: " << min_value
@@ -208,7 +208,7 @@ for(conv::PhysParamId_t hyp_par : hyp.GetParams()) {
         << ", Fixed: " << is_fixed;
     }
 
-    LOG("FitParams", pNOTICE) << "Parameter \'" << NameRegistry::Instance()->AsString(hyp_par)
+    VLOG("FitParams", pNOTICE) << "Parameter \'" << NameRegistry::Instance()->AsString(hyp_par)
                               << "\' from the PhysHypothesis was not found in the FitParamList";
     util::Die(-1);
     return fparm; // This return statement will not be executed because util::Die(-1) terminates the program
@@ -236,7 +236,7 @@ bool util::AllWithinLimits(const FitParamList & fparm)
   for (int iparam = 0 ; iparam < fparm.Size(); iparam++) {
     PhysParamId_t p = fparm.WhichParam(iparam);
     if(!ParameterPool::Instance()->IsParamInPool(p)) {
-      LOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
+      VLOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
                                << "\' was in the FPL but not the ParameterPool";
       util::Die(-1);
     }
@@ -256,7 +256,7 @@ bool util::AllWithinLimits(const valor::PhysParamList & pparm)
     PhysParamId_t p = PhysParamId_t(iparam);
     if (not pparm.Contains(p)) continue;
     if(!ParameterPool::Instance()->IsParamInPool(p)) {
-      LOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
+      VLOG("FitParams", pFATAL) << "The parameter \'" << util::NameRegistry::Instance()->ParamAsString(p)
                                << "\' was in the PhysParamList but not the ParameterPool";
       util::Die(-1);
     }

@@ -97,20 +97,20 @@ void FitterMinuit2::Init(void)
 //____________________________________________________________________________
 void FitterMinuit2::Init(Likelihood * lkhd, Option_t * option)
 {
-  LOG("Minuit2", pINFO) << "Fitter initialization...";
+  VLOG("Minuit2", pINFO) << "Fitter initialization...";
 
   this->Init();
 
   fLikelihood = lkhd;
   if(!fLikelihood) {
-     LOG("Minuit2", pFATAL) << "** Null fit inputs!";
+     VLOG("Minuit2", pFATAL) << "** Null fit inputs!";
      exit(1);
   }
 
   FitParamList & fit_params = fLikelihood->FitParams();
   int param_list_size = fit_params.Size();
 
-  LOG("Minuit2", pINFO) << "Fit parameter list size = " << param_list_size;
+  VLOG("Minuit2", pINFO) << "Fit parameter list size = " << param_list_size;
 
   fOption = option;
 
@@ -128,7 +128,7 @@ void FitterMinuit2::Init(Likelihood * lkhd, Option_t * option)
 
   // set params
   fit_params.SetTo(fUserParams);
-  LOG("Minuit2", pINFO) << fUserParams;
+  VLOG("Minuit2", pINFO) << fUserParams;
 
   // Parse a tolerance out of the fitter option
   if(fOption.Contains("tolerance",TString::kIgnoreCase)) {
@@ -146,11 +146,11 @@ void FitterMinuit2::Init(Likelihood * lkhd, Option_t * option)
     delete matches;
 
     if (tolerance > conv::kAVerySmallNum) {
-      LOG("Minuit2", pINFO) << "Set tolerance to "<<tolerance;
+      VLOG("Minuit2", pINFO) << "Set tolerance to "<<tolerance;
       this->SetTol(tolerance);
     }
     else {
-      LOG("Minuit2",pWARN)
+      VLOG("Minuit2",pWARN)
        << "Failed to parse valid single tolerance from option string "<<fOption;
     }
   }
@@ -172,11 +172,11 @@ void FitterMinuit2::Init(Likelihood * lkhd, Option_t * option)
 
     if (maxcalls > conv::kAVerySmallNum) {
       int ncalls = TMath::Nint(maxcalls);
-      LOG("Minuit2", pINFO) << "Set max number of calls to "<<ncalls;
+      VLOG("Minuit2", pINFO) << "Set max number of calls to "<<ncalls;
       this->SetMaxCalls(ncalls);
     }
     else {
-      LOG("Minuit2",pWARN) << "Failed to parse valid single max number of calls from option string "<<fOption;
+      VLOG("Minuit2",pWARN) << "Failed to parse valid single max number of calls from option string "<<fOption;
     }
   }
 
@@ -187,7 +187,7 @@ void FitterMinuit2::Init(Likelihood * lkhd, Option_t * option)
   assert(fNFitBins > 0);
   assert(n_free_params >= 0);
 
-  LOG("Minuit2", pINFO)
+  VLOG("Minuit2", pINFO)
        << "NDoF = " << this->NDOF()
        << " (Number of bins = " << this->NBinsInFit()
        //~ << ", Number of total parameters = " << fit_params->Size() <<
@@ -197,7 +197,7 @@ void FitterMinuit2::Init(Likelihood * lkhd, Option_t * option)
 //____________________________________________________________________________
 bool FitterMinuit2::Configure(const Registry & conf)
 {
-  LOG("Minuit", pINFO) << "Fitter configuration: " << conf;
+  VLOG("Minuit", pINFO) << "Fitter configuration: " << conf;
 
   //
   //
@@ -211,7 +211,7 @@ bool FitterMinuit2::Configure(const Registry & conf)
 //____________________________________________________________________________
 void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
 {
-  LOG("Minuit2",pDEBUG)<<"Constructing prior covariance matrix";
+  VLOG("Minuit2",pDEBUG)<<"Constructing prior covariance matrix";
 
   const FitParamList & fp = fLikelihood->FitParams();
   int num_of_params      = fp.GetNumberParameters();
@@ -235,7 +235,7 @@ void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
   else {
     assert(!"Not supporting creating prior cov matrix without CFM model yet");
   }
-  //~ LOG("Minuit2",pDEBUG)<<fCovMtrx;
+  //~ VLOG("Minuit2",pDEBUG)<<fCovMtrx;
 }
 //____________________________________________________________________________
 bool FitterMinuit2::DoTheFit(void)
@@ -339,7 +339,7 @@ bool FitterMinuit2::RunOnce(void)
   fMigradErrStatusCode = bestfit.UserState().CovarianceStatus();
 
   if (fMigradMinStatusCode <2) {
-    LOG("FitterMinuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
+    VLOG("FitterMinuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
   }
 
   // Done! Copy current --> best-fit values
@@ -378,7 +378,7 @@ bool FitterMinuit2::RunOnce(void)
 
   if (fCalcHesseErrors) {
     //Get Hesse errors
-    LOG("FitterMinuit2",pINFO) << "Getting Hesse errors...";
+    VLOG("FitterMinuit2",pINFO) << "Getting Hesse errors...";
     // argument is strategy
     ROOT::Minuit2::MnHesse hesse(2);
     // perform hesse error calculation
@@ -401,7 +401,7 @@ bool FitterMinuit2::RunOnce(void)
   } //hesse
 
   if (fCalcMinosErrors) {
-    LOG("FitterMinuit2",pINFO) << "Getting Minos errors...";
+    VLOG("FitterMinuit2",pINFO) << "Getting Minos errors...";
     //Get Minos Errors
     ROOT::Minuit2::MnMinos minos(likelihood_minuit2,bestfit);
     fMinosErrStatusCode = 0;  // Need to work out proper error code.

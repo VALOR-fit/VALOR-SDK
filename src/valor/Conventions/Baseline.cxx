@@ -43,7 +43,7 @@ if(b == conv::kbNuMI_FHC || b == conv::kbNuMI_RHC) {
     if (d == conv::kdJUNO) return conv::kAtmoJUNO;
   }
   
-  LOG("Baseline", pERROR)
+  VLOG("Baseline", pERROR)
      << "Undefined baseline for detector: " << util::AsString(d)
      << " in beam: " << util::AsString(b);
 

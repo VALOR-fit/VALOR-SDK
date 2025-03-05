@@ -123,7 +123,7 @@ double valor::util::RandomiseParametersByAcceptance(
     }
   }
 
-  LOG("UtlFit",pERROR)<<"Failed to properly randomise the parameters";
+  VLOG("UtlFit",pERROR)<<"Failed to properly randomise the parameters";
 
   return conv::kBadResult;
 }
@@ -220,17 +220,17 @@ bool valor::util::AttemptMCMCStep(Likelihood & lkhd,
     //~ if (step_prob > rand_prob) {
     if (delta_chisq < rand_chisq) {
       n_attempts_output = i_attempt+1;
-      LOG("UtlFit",pINFO)<<"Made a step after "<<n_attempts_output<<" attempts. "
+      VLOG("UtlFit",pINFO)<<"Made a step after "<<n_attempts_output<<" attempts. "
         <<"Delta chisq was "<<Form("%.2lg",delta_chisq)<<", random chisq was "<<rand_chisq;
-      LOG("UtlFit",pDEBUG)<<"Step chisq = "<<step_chisq<<", prev chisq = "<<current_chisq << ", stepped chisq = "<<step_chisq;
+      VLOG("UtlFit",pDEBUG)<<"Step chisq = "<<step_chisq<<", prev chisq = "<<current_chisq << ", stepped chisq = "<<step_chisq;
       current_chisq = step_chisq;
-      LOG("UtlFit",pDEBUG)<<fp;
+      VLOG("UtlFit",pDEBUG)<<fp;
       return true;
     }
-    LOG("UtlFit",pDEBUG)<<"Step not made - delta chisq was "<<Form("%.2lg",delta_chisq)<<", random chisq was "<<rand_chisq;
+    VLOG("UtlFit",pDEBUG)<<"Step not made - delta chisq was "<<Form("%.2lg",delta_chisq)<<", random chisq was "<<rand_chisq;
   }
 
-  LOG("UtlFit",pERROR)<<"Failed to successfully make a step";
+  VLOG("UtlFit",pERROR)<<"Failed to successfully make a step";
   for (int ip = 0 ; ip < npar; ip++) {
     fp.SetCurrentValueByIndex(ip,start_values[ip]);
   }

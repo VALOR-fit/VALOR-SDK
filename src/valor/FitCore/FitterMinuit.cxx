@@ -86,23 +86,23 @@ void FitterMinuit::Init(void)
 //____________________________________________________________________________
 void FitterMinuit::Init(Likelihood * lkhd, Option_t * option)
 {
-  LOG("Minuit", pINFO) << "Fitter initialization...";
+  VLOG("Minuit", pINFO) << "Fitter initialization...";
 
   this->Init();
 
   fLikelihood = lkhd;
   if(!fLikelihood) {
-     LOG("Minuit", pFATAL) << "** Null fit inputs!";
+     VLOG("Minuit", pFATAL) << "** Null fit inputs!";
      exit(1);
   }
 
   FitParamList & fit_params = fLikelihood->FitParams();
   int param_list_size = fit_params.Size();
 
-  LOG("Minuit", pINFO) << "Fit parameter list size = " << param_list_size;
+  VLOG("Minuit", pINFO) << "Fit parameter list size = " << param_list_size;
 
   fOption = option;
-  LOG("Minuit", pINFO) << "Parsed fitter options: " << option;
+  VLOG("Minuit", pINFO) << "Parsed fitter options: " << option;
 
   // calc HESSE or MINOS errors after fit
   fCalcHesseErrors  = fOption.Contains("hesse");
@@ -141,11 +141,11 @@ void FitterMinuit::Init(Likelihood * lkhd, Option_t * option)
     delete matches;
 
     if (tolerance > conv::kAVerySmallNum) {
-      LOG("Minuit", pINFO) << "Set tolerance to "<<tolerance;
+      VLOG("Minuit", pINFO) << "Set tolerance to "<<tolerance;
       this->SetTol(tolerance);
     }
     else {
-      LOG("Minuit",pWARN) << "Failed to parse valid single tolerance from option string "<<fOption;
+      VLOG("Minuit",pWARN) << "Failed to parse valid single tolerance from option string "<<fOption;
     }
   }
 
@@ -166,11 +166,11 @@ void FitterMinuit::Init(Likelihood * lkhd, Option_t * option)
 
     if (maxcalls > conv::kAVerySmallNum) {
       int ncalls = TMath::Nint(maxcalls);
-      LOG("Minuit", pINFO) << "Set max number of calls to "<<ncalls;
+      VLOG("Minuit", pINFO) << "Set max number of calls to "<<ncalls;
       this->SetMaxCalls(ncalls);
     }
     else {
-      LOG("Minuit",pWARN) << "Failed to parse valid single max number of calls from option string "<<fOption;
+      VLOG("Minuit",pWARN) << "Failed to parse valid single max number of calls from option string "<<fOption;
     }
   }
 
@@ -197,14 +197,14 @@ void FitterMinuit::Init(Likelihood * lkhd, Option_t * option)
   fNFitBins       = lkhd->Observation().NumOfBins();
   fNFreeFitParams = lkhd->FitParams().GetNumberFreeParameters();
   if(fNFitBins <= 0) {
-      LOG("Minuit", pFATAL) << "Number of fit bins  = " << fNFitBins;
+      VLOG("Minuit", pFATAL) << "Number of fit bins  = " << fNFitBins;
       util::Die(-1);
       return;
   }
   assert(fNFitBins > 0);
   assert(fNFreeFitParams >= 0);
 
-  LOG("Minuit", pINFO)
+  VLOG("Minuit", pINFO)
        << "NDoF = " << this->NDOF()
        << " (Number of bins = " << this->NBinsInFit()
        << ", Number of free parameters = " << this->NFitParams() << ")";
@@ -213,7 +213,7 @@ void FitterMinuit::Init(Likelihood * lkhd, Option_t * option)
 //____________________________________________________________________________
 bool FitterMinuit::Configure(const Registry & conf)
 {
-  LOG("Minuit", pINFO) << "Fitter configuration: " << conf;
+  VLOG("Minuit", pINFO) << "Fitter configuration: " << conf;
 
   //
   //
@@ -266,10 +266,10 @@ bool FitterMinuit::DoTheFit(void)
   fFitTries = 1;
 
   if(fMigradMinStatusCode == 4) {
-    LOG("Minuit", pWARN) << "Fit failed to converge...";
+    VLOG("Minuit", pWARN) << "Fit failed to converge...";
     if( fOption.Contains("with_simplex_fallback") ) 
     {
-       LOG("Minuit", pWARN) << "Trying SIMPLEX";
+       VLOG("Minuit", pWARN) << "Trying SIMPLEX";
        this->RunOnce(true);
        fFitTries++;
     }
@@ -281,11 +281,11 @@ bool FitterMinuit::DoTheFit(void)
 
   std::map<std::string, double> likelihood_contributions;
 
-  LOG("Minuit", pINFO)
+  VLOG("Minuit", pINFO)
     << "Fit performed in " << fFitTime
     << " sec after " << fFitTries << " attempts."
     << " Used " <<gMinuit->fNfcn << " calls.";
-  LOG("Minuit", pINFO)
+  VLOG("Minuit", pINFO)
     << "Best-fit statistic: " << fit_params.GetBestFitStatistic();
 
   // copy fit time and bestfit statistic and status codes
@@ -315,7 +315,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 
   // Get the fitter
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Getting the fitter...";
+  VLOG("Minuit", pINFO) << "Getting the fitter...";
 #endif
   TVirtualFitter * fitter = TVirtualFitter::GetFitter();
 
@@ -325,7 +325,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 
   // Pass fit inputs (data, pdf) to MINUIT
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Passing fit inputs (data & pdf)...";
+  VLOG("Minuit", pINFO) << "Passing fit inputs (data & pdf)...";
 #endif
   LikelihoodMinuit lkhd_minuit(fLikelihood);
   gMinuit->SetObjectFit(&lkhd_minuit);
@@ -334,7 +334,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
 
   // Run MINUIT's minimization step
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Running " << ((use_simplex) ? "SIMPLEX..." : "MIGRAD... ") << TTimeStamp().AsString();
+  VLOG("Minuit", pINFO) << "Running " << ((use_simplex) ? "SIMPLEX..." : "MIGRAD... ") << TTimeStamp().AsString();
 #endif
   Double_t arglist[100];
   arglist[0] = fMaxNumCalls;
@@ -377,7 +377,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   // Print fit result
 #ifdef __show_fit_result__
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Printing MIGRAD fit results...";
+  VLOG("Minuit", pINFO) << "Printing MIGRAD fit results...";
 #endif
   fitter->ExecuteCommand("SHOW FCNVALUE",&fcntemp,0);
   Double_t aminn = 0;
@@ -439,7 +439,7 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   // Calculate HESSE or MINOS errors
   if(fCalcHesseErrors) {
 #ifdef __show_fit_steps__
-    LOG("Minuit", pINFO) << "Running HESSE...";
+    VLOG("Minuit", pINFO) << "Running HESSE...";
 #endif
     fitter->ExecuteCommand("HESSE",arglist, 1);
 
@@ -457,19 +457,19 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   //else
   if(fCalcMinosErrors) {
 #ifdef __show_fit_steps__
-    LOG("Minuit", pINFO) << "Running MINOS...";
+    VLOG("Minuit", pINFO) << "Running MINOS...";
 #endif
     fMinosErrStatusCode = fitter->ExecuteCommand("MINOS",arglist, 1);
   }
   // Get error matrix status
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Getting error matrix status...";
+  VLOG("Minuit", pINFO) << "Getting error matrix status...";
 #endif
   errMatrixStatus = fitter->GetStats(ha, edm, errdef, nvpar, nparx);
 
   // Get errors
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Getting errors...";
+  VLOG("Minuit", pINFO) << "Getting errors...";
 #endif
 
   if(fCalcMinosErrors) {
@@ -484,17 +484,17 @@ bool FitterMinuit::RunOnce(bool use_simplex)
   if(fCalcHesseErrors) {
 #ifdef __show_fit_result__
 #ifdef __show_fit_steps__
-    LOG("Minuit", pINFO) << "Printing HESSE fit results...";
+    VLOG("Minuit", pINFO) << "Printing HESSE fit results...";
 #endif
     Double_t amin = 0;
     fitter->PrintResults(3,amin);
   //fitter->PrintResults(1,amin); // prints limits
   }
-  LOG("Minuit", pINFO) << "Final error matrix status = " << errMatrixStatus;
+  VLOG("Minuit", pINFO) << "Final error matrix status = " << errMatrixStatus;
 #endif
 
 #ifdef __show_fit_steps__
-  LOG("Minuit", pINFO) << "Done";
+  VLOG("Minuit", pINFO) << "Done";
 #endif
 
   return true;//(fMigradErrStatusCode == 3);

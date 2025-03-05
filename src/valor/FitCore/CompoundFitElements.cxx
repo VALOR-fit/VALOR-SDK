@@ -69,14 +69,14 @@ bool CompoundFitElements::Read(string xmlfile, Option_t * opt)
   
   vector<const CorrelatedSystematics*> syst_objects;
 
-  LOG("CompoundFitElements", pNOTICE) 
+  VLOG("CompoundFitElements", pNOTICE) 
     << "Reading compound fit setup from XML file [" << xmlfile << "]";
 
   // Parse the input XML configuration file
   TXMLEngine* xmleng = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xmleng->ParseFile(xmlfile.c_str());
   if (xmldoc==0) {
-    LOG("CompoundFitElements", pERROR) 
+    VLOG("CompoundFitElements", pERROR) 
       << "Can not parse input XML file [" << xmlfile << "]";
     util::Die(1); return false;
   }
@@ -89,7 +89,7 @@ bool CompoundFitElements::Read(string xmlfile, Option_t * opt)
     if(!strcmp(curr_node_name.c_str(),"parameter_definitions")) {
       bool success = this->ReadParameterList(xmleng,curr_node,opt);
       if (!success) {
-        LOG("CompoundFitElements", pERROR) 
+        VLOG("CompoundFitElements", pERROR) 
             << "Failed to read parameter list. Exiting.";
         util::Die(1); return false;
       }
@@ -104,7 +104,7 @@ bool CompoundFitElements::Read(string xmlfile, Option_t * opt)
     if (curr_node_name == "systematics") {
       const char * syst_name_cstr = xmleng->GetAttr(curr_node,"name");
       string syst_list_name = (syst_name_cstr ? syst_name_cstr : "NoNameFoundInXML");
-      LOG("CompoundFitElements", pNOTICE) << "Found systematic list named: " << syst_list_name;
+      VLOG("CompoundFitElements", pNOTICE) << "Found systematic list named: " << syst_list_name;
 
       // Read the systematics
       XMLNodePointer_t group_node = xmleng->GetChild(curr_node);
@@ -118,7 +118,7 @@ bool CompoundFitElements::Read(string xmlfile, Option_t * opt)
   }
 
   if (syst_objects.size() == 0 ) {
-    LOG("CompoundFitElements", pNOTICE) << "No systematics found in config file.";
+    VLOG("CompoundFitElements", pNOTICE) << "No systematics found in config file.";
   }
 
   // The compound fit model must have the syst conf set before it's read
@@ -132,17 +132,17 @@ bool CompoundFitElements::Read(string xmlfile, Option_t * opt)
     if(curr_node_name == "element_list") {
        const char * list_name_cstr = xmleng->GetAttr(curr_node,"name");
        string list_name = (list_name_cstr ? list_name_cstr : "NoNameFoundInXML");
-       LOG("CompoundFitElements", pNOTICE) << "Found element list named: " << list_name;
+       VLOG("CompoundFitElements", pNOTICE) << "Found element list named: " << list_name;
        bool success = this->ReadElementList(xmleng,curr_node,opt);
        if (!success) {
-         LOG("CompoundFitElements", pERROR) 
+         VLOG("CompoundFitElements", pERROR) 
             << "Failed to read all elements in list. Exiting.";
             util::Die(1); return false;
        }
        fCompoundFitData ->SetName(list_name);
        fCompoundFitModel->SetName(list_name);
        
-       LOG("CompoundFitElements", pNOTICE) << "Created model with "<<fCompoundFitModel->GetNSubModels()<<" submodels.";
+       VLOG("CompoundFitElements", pNOTICE) << "Created model with "<<fCompoundFitModel->GetNSubModels()<<" submodels.";
     }
     
     curr_node = xmleng->GetNext(curr_node);
@@ -161,7 +161,7 @@ bool CompoundFitElements::ReadElementList(TXMLEngine* xmleng, XMLNodePointer_t t
       string curr_node_name = xmleng->GetNodeName(curr_node);
       if(curr_node_name == "element") {
         string element_name = xmleng->GetAttr(curr_node,"name");
-        LOG("CompoundFitElements", pNOTICE) << "Found element named: " << element_name;	
+        VLOG("CompoundFitElements", pNOTICE) << "Found element named: " << element_name;	
         bool ok = this->ReadElement(xmleng,curr_node, opt);
         if(!ok) return false;
       }
@@ -187,7 +187,7 @@ bool CompoundFitElements::ReadElement(TXMLEngine* xmleng, XMLNodePointer_t top_n
       string curr_node_name = xmleng->GetNodeName(curr_node);
       if(xmleng->GetNodeContent(curr_node)) {
         string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
-        LOG("CompoundFitElements", pNOTICE) << curr_node_name << " --> " << content;
+        VLOG("CompoundFitElements", pNOTICE) << curr_node_name << " --> " << content;
         if(curr_node_name == "detector"   ) { detector_name   = content; }
         if(curr_node_name == "beam"       ) { beam_name       = content; }
         if(curr_node_name == "sample"     ) { sample_name     = content; }
@@ -208,19 +208,19 @@ bool CompoundFitElements::ReadElement(TXMLEngine* xmleng, XMLNodePointer_t top_n
 
   bool success = true;
   if (detector   == conv::kdUndefined ) {
-    LOG("CompoundFitElements",pERROR)<<"Unknown detector: "<<detector_name;
+    VLOG("CompoundFitElements",pERROR)<<"Unknown detector: "<<detector_name;
     success = false;
   }
   if (beam       == conv::kbUndefined ) {
-    LOG("CompoundFitElements",pERROR)<<"Unknown beam conf: "<<beam_name;
+    VLOG("CompoundFitElements",pERROR)<<"Unknown beam conf: "<<beam_name;
     success = false;
   }
   if (sample     == conv::ksUndefined ) {
-    LOG("CompoundFitElements",pERROR)<<"Unknown sample: "<<sample_name;
+    VLOG("CompoundFitElements",pERROR)<<"Unknown sample: "<<sample_name;
     success = false;
   }
   if (observable == conv::kspUndefined) {
-    LOG("CompoundFitElements",pERROR)<<"Unknown observable: "<<observable_name;
+    VLOG("CompoundFitElements",pERROR)<<"Unknown observable: "<<observable_name;
     success = false;
   }
   
@@ -253,7 +253,7 @@ CorrelatedSystematics * CompoundFitElements::ReadSystematicGroup (
 {
   const char * syst_name_cstr = xmleng->GetAttr(top_node,"name");
   string syst_list_name = (syst_name_cstr ? syst_name_cstr : "NoNameFoundInXML");
-  LOG("CompoundFitElements", pNOTICE) << "Reading systematics group: "<<syst_list_name;
+  VLOG("CompoundFitElements", pNOTICE) << "Reading systematics group: "<<syst_list_name;
   
   CorrelatedSystematics * syst = new CorrelatedSystematics;
   syst->SetXMLNodeName("");
@@ -268,7 +268,7 @@ bool CompoundFitElements::ReadParameterList (
   while(curr_node) {
     std::string curr_node_name = xmleng->GetNodeName(curr_node);
     if(!strcmp(curr_node_name.c_str(),"filename")) {
-      LOG("CompoundFitElements", pNOTICE)
+      VLOG("CompoundFitElements", pNOTICE)
         << "Reading parameter list named \'" << xmleng->GetAttr(curr_node, "desc") << "\' into the parameter pool";
       string content = util::TrimSpaces(xmleng->GetNodeContent(curr_node));
       ParameterPool::MutableInstance()->ReadXML(content);
@@ -310,14 +310,14 @@ FitDataABC * CompoundFitElements::AdoptFitData(
   s_dataset->SetAssociatedModel(model_abc);
   s_dataset->SetFromModel();
   if(fDataFileGiven){
-    LOG("CompoundFitElements", pNOTICE)
+    VLOG("CompoundFitElements", pNOTICE)
       << "Data file given so will Read it. Will be overwritten if Generate is called later";
     s_dataset->Read(config_file, opt);
   }
   else{
-    LOG("CompoundFitElements", pNOTICE)
+    VLOG("CompoundFitElements", pNOTICE)
       << "No data file given so cannot Read, will have to Generate";
-    //LOG("CompoundFitElements", pFATAL)
+    //VLOG("CompoundFitElements", pFATAL)
     //  << "Need to write GSSFM association and Generate does not currently work yet, please pass data file to read instead";
     //util::Die(1);
   }
@@ -342,17 +342,17 @@ FitModelABC * CompoundFitElements::AdoptFitModel(
 //________________________________________________________________________________________
 void * CompoundFitElements::InstantiateUsingDictionaryRegistration(string class_name)
 {
-  LOG("CompoundFitElements", pDEBUG) 
+  VLOG("CompoundFitElements", pDEBUG) 
      << "Getting class: " << class_name;
   TClass * tclass = TClass::GetClass(class_name.c_str());
   if(!tclass) {
-     LOG("CompoundFitElements", pERROR) 
+     VLOG("CompoundFitElements", pERROR) 
          << "Failed getting class = " << class_name;
      return 0;
   }
   void * vbase = tclass->New();
   if(!vbase) {
-     LOG("CompoundFitElements", pERROR) 
+     VLOG("CompoundFitElements", pERROR) 
          << "Failed instantiating class = " << class_name;
      return 0;
   }

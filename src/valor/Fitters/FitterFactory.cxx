@@ -68,7 +68,7 @@ FitterABC_new * FitterFactory::GetFitter (string name)
   map<string, FitterABC_new *>::const_iterator iter = fFitterPool.find(name);
   bool found = (iter != fFitterPool.end());
   if(!found) {
-     LOG("FitterFactory", pERROR) << "Fitter: " << name << " was not found!";
+     VLOG("FitterFactory", pERROR) << "Fitter: " << name << " was not found!";
      return 0;
   }
   return iter->second;
@@ -79,17 +79,17 @@ bool FitterFactory::AddFitter(string name, string implementation)
   map<string, FitterABC_new *>::const_iterator iter = fFitterPool.find(name);
   bool found = (iter != fFitterPool.end());
   if(found) {
-     LOG("FitterFactory", pWARN) << "Fitter: " << name << " already exists";
+     VLOG("FitterFactory", pWARN) << "Fitter: " << name << " already exists";
      return false;
   } 
   
-  LOG("FitterFactory", pDEBUG) 
+  VLOG("FitterFactory", pDEBUG) 
       << "Instantiating fitter: " << name
       << " with the following implementation: " << implementation;
 
   TClass * tclass = TClass::GetClass(implementation.c_str());
   if(!tclass) {
-       LOG("FitterFactory", pERROR) 
+       VLOG("FitterFactory", pERROR) 
            << "Failed instantiating fitter: " << name
            << " with the following implementation: " << implementation;
        return false;
@@ -97,7 +97,7 @@ bool FitterFactory::AddFitter(string name, string implementation)
   void * base = tclass->New();
   FitterABC_new * fitter = (FitterABC_new *) (base);
   if(!fitter) {
-      LOG("FitterFactory", pERROR) << "Null fitter";
+      VLOG("FitterFactory", pERROR) << "Null fitter";
       return false;
   }
 

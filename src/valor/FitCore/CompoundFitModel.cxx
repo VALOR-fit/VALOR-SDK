@@ -71,7 +71,7 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
   TXMLEngine* xml = new TXMLEngine;   
   XMLDocPointer_t xmldoc = xml->ParseFile(file.c_str());
   if (xmldoc==0) {
-    LOG("CompoundFitModel",pERROR) << "Can not parse input XML file [" << file << "]";
+    VLOG("CompoundFitModel",pERROR) << "Can not parse input XML file [" << file << "]";
     delete xml;
     util::Die(1); return false;
   }
@@ -89,7 +89,7 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
     // Use factory class to get proper model
     TClass * curr_class = TClass::GetClass(class_name.c_str());
     if (!curr_class) {
-      LOG("CompoundFitModel",pERROR) << "Cannot find class "<<class_name;
+      VLOG("CompoundFitModel",pERROR) << "Cannot find class "<<class_name;
       status = false;
       continue;
     }
@@ -97,7 +97,7 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
     FitModelABC * curr_model = static_cast<FitModelABC*>(curr_obj);
     
     if (!curr_model) {
-      LOG("CompoundFitModel",pERROR) << "Failed to properly turn class "<<class_name;
+      VLOG("CompoundFitModel",pERROR) << "Failed to properly turn class "<<class_name;
       status = false;
       continue;
     }
@@ -110,7 +110,7 @@ bool CompoundFitModel::Read(string file, Option_t * opt)
   
   if (not status) { util::Die(-1); }
   
-  LOG("CompoundFitModel",pNOTICE) << "Created fit model from "<<fSubModels.size()<<" submodels.";
+  VLOG("CompoundFitModel",pNOTICE) << "Created fit model from "<<fSubModels.size()<<" submodels.";
   
   return status;
 }
@@ -223,7 +223,7 @@ void CompoundFitModel::TweakSystematic (string syst_name, double twkdial, Option
 {
   PhysParamId_t syst = util::NameRegistry::Instance()->PhysParamFromString(syst_name);
   if(syst == conv::kPhypUndefined) {
-    LOG("CompoundFitModel",pERROR) << "Could not recognise parameter with name \'" << syst_name << "\'";
+    VLOG("CompoundFitModel",pERROR) << "Could not recognise parameter with name \'" << syst_name << "\'";
     util::Die(-1);
   }
   this->TweakSystematic(syst,twkdial,opt);
@@ -305,7 +305,7 @@ bool CompoundFitModel::Write (TObjArray* collection, const char * tag, Option_t 
 //________________________________________________________________________________________
 bool CompoundFitModel::Write (const char * filename, const char * tag, Option_t * write_opt, Option_t * file_opt)
 {
-  LOG("CompoundFitModel",pNOTICE) << "Writing results to file: [" << filename << "]";
+  VLOG("CompoundFitModel",pNOTICE) << "Writing results to file: [" << filename << "]";
 
   TObjArray * array = new TObjArray();
   bool status = this->Write(array,tag,write_opt);
@@ -334,7 +334,7 @@ double CompoundFitModel::GetFitStatisticPenalty(Option_t * opt) const
   if (fSystematics) {
     return fSystematics->FitStatisticPenalty(opt);
   }
-  LOG("CompoundFitModel",pNOTICE) << "No global covariance defined. Using submodel covariances for fit statistic penalty - may be wrong.";
+  VLOG("CompoundFitModel",pNOTICE) << "No global covariance defined. Using submodel covariances for fit statistic penalty - may be wrong.";
   double fitstat = 0;
   for (std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
     fitstat+= (*it)->GetFitStatisticPenalty(opt);

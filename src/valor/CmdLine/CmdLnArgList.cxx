@@ -37,7 +37,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
 {
   CmdLnArgParser parser(argc,argv);
 
-  LOG("CmdLnArgList",pINFO)
+  VLOG("CmdLnArgList",pINFO)
     << "Reading command-line argument specs from: " << arg_spec_files;
     
   bool failure = false;
@@ -50,7 +50,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
     fv = util::Tokens(arg_spec_files, ":"); // there are many
   }
 
-  LOG("CmdLnArgList",pNOTICE)
+  VLOG("CmdLnArgList",pNOTICE)
     << fv.size() << " argument specs files were specified";
 
   // loop over arg spec files
@@ -58,7 +58,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
   for( ; fvit != fv.end(); ++fvit) {
     // get filename
     string filename = *fvit;
-    LOG("CmdLnArgList",pNOTICE)
+    VLOG("CmdLnArgList",pNOTICE)
       << "Reading command-line argument specs from file: " << filename;
     // replace $BLAH (if any) with gSystem->Getenv("BLAH")
     if(filename.find("$") != string::npos) {
@@ -66,24 +66,24 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       size_t end    = filename.find("/", start);
       size_t length = end-start-1;
       string env_var = filename.substr(start+1,length);
-      LOG("CmdLnArgList",pNOTICE)
+      VLOG("CmdLnArgList",pNOTICE)
         << "Looking up env. var: " << env_var;
       const char * env_var_value =  gSystem->Getenv(env_var.c_str());
       if(!env_var_value) {
-        LOG("CmdLnArgList",pERROR)
+        VLOG("CmdLnArgList",pERROR)
           << "Undefined env. var: " << env_var;
         failure = true ; continue;;
       }
       string str_env_var_value = env_var_value;
       filename.replace(start,length+1,str_env_var_value);
-      LOG("CmdLnArgList",pNOTICE)
+      VLOG("CmdLnArgList",pNOTICE)
         << "Actually, reading command-line argument specs from file: " << filename;
     }
     // open file
     ifstream file;     
     file.open(filename.c_str());
     if (! file.is_open() ) {
-      LOG("CmdLnArgList",pERROR) << "Could not open file: "<<filename;
+      VLOG("CmdLnArgList",pERROR) << "Could not open file: "<<filename;
       continue;
     }
     // read file one line at a time
@@ -91,7 +91,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       string line = "";
       std::getline(file,line);
       line = util::TrimSpaces(line);
-      LOG("CmdLnArgList",pDEBUG) << "Read line: " << line;
+      VLOG("CmdLnArgList",pDEBUG) << "Read line: " << line;
       if(line[0] == '#') {
         // comment line, continue
         continue;
@@ -99,7 +99,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       if(line.size() == 0) {         
         continue;
       }
-      LOG("CmdLnArgList",pDEBUG) 
+      VLOG("CmdLnArgList",pDEBUG) 
         << "Line: [" << line << "]";
 
       // tokenize using | as delimeter
@@ -109,7 +109,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       string type     = util::TrimSpaces(line_tokens[1]);
       string required = util::TrimSpaces(line_tokens[2]);
       string deflt    = util::TrimSpaces(line_tokens[3]);
-      LOG("CmdLnArgList",pINFO) 
+      VLOG("CmdLnArgList",pINFO) 
         << "Argument: " << argument
         << " -> type: " << type
         << ", required: " << required
@@ -134,7 +134,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
                         is_blnlst;
                      
       if (!valid_type) {
-        LOG("CmdLnArgList",pFATAL) 
+        VLOG("CmdLnArgList",pFATAL) 
           << "Argument: " << argument
           << " has unrecognised type: " << type;
         failure = true;
@@ -151,14 +151,14 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
 
         // Mandatory argument not found
         if(is_mandatory && !is_found) {
-          LOG("CmdLnArgList",pERROR) 
+          VLOG("CmdLnArgList",pERROR) 
             << "Mandatory argument: " << argument
             << " was not found!";
           failure = true ; continue;
         }
         // Optional argument not found, but no default either
         if(is_optional && !is_found && no_deflt) {
-          LOG("CmdLnArgList",pERROR) 
+          VLOG("CmdLnArgList",pERROR) 
             << "Optional argument: " << argument
             << " wasn't set and has no default value specified!";
           failure = true ; continue;
@@ -228,7 +228,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       if(is_bln && !is_blnlst) {
         // can not be mandatory argument - see comments in header file
         if(is_mandatory) {
-          LOG("CmdLnArgList",pERROR) 
+          VLOG("CmdLnArgList",pERROR) 
             << "Argument: " << argument
             << " can not be mandatory!";
           failure = true ; continue;
@@ -249,7 +249,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
         // Error conditions 
 
         if(boolarglist.size() <= 1) {
-          LOG("CmdLnArgList",pERROR) 
+          VLOG("CmdLnArgList",pERROR) 
             << "Input: " << argument
             << " does not contain a list of multiple boolean arguments!";
           failure = true ; continue;
@@ -263,20 +263,20 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
         // More than one found (whether optional or mandatory) or
         // none found (if optional)
         if(is_mandatory && nfound==0) {
-          LOG("CmdLnArgList",pERROR) 
+          VLOG("CmdLnArgList",pERROR) 
             << "Mandatory argument from list: " << argument
             << " was not found!";
           failure = true ; continue;
         }
         if(nfound>1) {
-          LOG("CmdLnArgList",pERROR) 
+          VLOG("CmdLnArgList",pERROR) 
             << "Multiple argument from list: " << argument
             << " were not found but only one is expected!";
           failure = true ; continue;
         }
         // Optional argument not found, but no default either
         if(is_optional && nfound==0 && no_deflt) {
-          LOG("CmdLnArgList",pERROR) 
+          VLOG("CmdLnArgList",pERROR) 
             << "None of the arguments in list: " << argument
             << " was set, but no default value was specified either!";
           failure = true ; continue;
@@ -318,7 +318,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
   }
 
   if (!parser.RecognisedAllArgs()) {
-    LOG("CmdLnArgList",pFATAL) << "Did not recognise all command line arguments";
+    VLOG("CmdLnArgList",pFATAL) << "Did not recognise all command line arguments";
     util::Die(-1);
     return false;
   }

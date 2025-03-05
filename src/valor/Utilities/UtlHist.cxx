@@ -271,7 +271,7 @@ TObjArray valor::util::GetHistsFromCanvas(TVirtualPad * canv, const char * name)
         output.Add(h);
       }
       else {
-        LOG("UtlHist",pWARN) << "Did not get valid histogram from object matching "<<name;
+        VLOG("UtlHist",pWARN) << "Did not get valid histogram from object matching "<<name;
       }
     }
   }

@@ -32,7 +32,7 @@ string util::AsString(NuclearTarget_t nt)
     case (kntCalcium  ) : name = "Calcium";   break;
     case (kntOther    ) : name = "Other";     break;      
     default : 
-     LOG("NuclearTarget",pERROR) 
+     VLOG("NuclearTarget",pERROR) 
         << "Unrecognized nuclear target " << nt;
   }
   return name;
@@ -50,7 +50,7 @@ string util::AsStringTeX(NuclearTarget_t nt, bool root)
     case (kntCalcium  ) : name = "Calcium";   break;
     case (kntOther    ) : name = "Other";     break;      
     default : 
-     LOG("NuclearTarget",pERROR) 
+     VLOG("NuclearTarget",pERROR) 
         << "Unrecognized nuclear target " << nt;
   }
 

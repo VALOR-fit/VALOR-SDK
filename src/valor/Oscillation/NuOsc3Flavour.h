@@ -21,6 +21,7 @@
 #include <iostream>
 #include <math.h>
 #include <complex>
+#include <unordered_map>
 
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/OscChannelId.h"
@@ -43,6 +44,7 @@ public:
 
   void SetBaseline      (double length);
   void SetDensity       (double density);
+  void SetDensity       (double density, double ZOverA);
   void SetMassHierarchy (valor::conv::NuMassHierarchy_t h); 
   void SetOscParameters (double sinsq2theta12, /* sin^2(2*theta_{12}) */
                          double sinsq2theta13, /* sin^2(2*theta_{13}) */
@@ -119,6 +121,11 @@ public:
  double CalcVacuumOscProbPDG   (int nu_start, int nu_end, double energy);
  double CalcMatterOscProb      (int nu_start, int nu_end, double energy);
  double Calc2FlavMatterOscProb (int nu_start, int nu_end, double energy, int index);
+ double CalcEarthMatterOscProb (int nu_start, int nu_end, double energy, double costh);
+
+  // Calculate the array that gives you the osc probabilities
+  std::vector< std::pair< double, double > > CalcMatterOscSpace      (int nu_start, int nu_end, double energy);
+  std::vector< std::pair< double, double > > Calc2FlavMatterOscSpace (int nu_start, int nu_end, double energy, int index);
  
  // Calculate all matter probabilities at once.
  // Osc_probs_out should point to a block of memory nflav*nflav
@@ -185,7 +192,29 @@ private:
 
  bool useEquations12;
  int nFlavourIndex;
- 
+
+  // Layers of the Earth
+  std::vector< valor::conv::EarthLayer_t > earth_layers =
+    { valor::conv::kEarthInnerCore, valor::conv::kEarthOuterCore, valor::conv::kEarthLowerMantle, valor::conv::kEarthUpperMantle, valor::conv::kEarthAtmosphere };
+
+  // Helper method to get the range of costheta, for a detector on the Earth's surface,
+  // that would lead to a neutrino at this costheta traversing layers of the Earth.
+  // Theta is the opening angle between the neutrino incidence and the axis connecting Earth centre
+  // to detector.
+  std::unordered_map<valor::conv::EarthLayer_t, double> ComputeMinLengthToLayers() const;
+  std::unordered_map<valor::conv::EarthLayer_t, double> fCosThetaLimit;
+
+  // Simple calculator for baseline given production height and cos(theta)
+  double CalculateBaseline( double cosTheta, double prodHeight ) const;
+
+  // Method to get the trajectory of a neutrino through the Earth
+  std::vector<std::pair<valor::conv::EarthLayer_t, double>>
+  DefinePath( double cosTheta, double prodHeight ) const;
+
+  // Member variable - what is the current flavour state of the neutrino?
+  // Used to track propagation through the Earth
+  std::vector<std::pair<double, double>> fCurrentFlavourState;
+  
 };
 
 }//end of namespace valor

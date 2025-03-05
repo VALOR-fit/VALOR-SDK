@@ -49,6 +49,11 @@ void NuOsc3Flavour::Init()
 
   // set default density 
   this->SetDensity(kCrustDensityT2K);
+
+  // Get the limits at which you traverse layers of the Earth
+  fCosThetaLimit = this->ComputeMinLengthToLayers();
+  // And initialise the current flavour state
+  fCurrentFlavourState = { std::make_pair<double, double>(0,0), std::make_pair<double, double>(0,0), std::make_pair<double, double>(0,0) };
 }
 //________________________________________________________________________________________
 void NuOsc3Flavour::SetBaseline(double length)
@@ -66,9 +71,16 @@ void NuOsc3Flavour::SetDensity(double density)
   fNe = density * kNA * 0.5;
 }
 //________________________________________________________________________________________
+void NuOsc3Flavour::SetDensity(double density, double ZOverA)
+{
+// Overloaded method to accept Z/A ratio
+
+  fNe = density * kNA * ZOverA;
+}
+//________________________________________________________________________________________
 void NuOsc3Flavour::SetMassHierarchy(NuMassHierarchy_t h)
 {
-  //LOG("NuOsc3Flavour",pINFO) << "Mass hierarchy selected: " << util::AsString(h);
+  //VLOG("NuOsc3Flavour",pINFO) << "Mass hierarchy selected: " << util::AsString(h);
 
   if(h==kNmhUndefined){
     cerr << "NuOsc3Flavour::SetMassHierarchy" << endl;
@@ -1580,37 +1592,50 @@ double NuOsc3Flavour::CalcVacuumOscProbPDG(int nu_start, int nu_end, double ener
   return oscProb;
 }
 //________________________________________________________________________________________
-double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
+std::vector<std::pair<double, double>> NuOsc3Flavour::CalcMatterOscSpace(int nu_start, int nu_end, double energy)
 {
 // This method calculates the 3-flavour oscillation probabilities in constant 
 // density matter.
 // The neutrino codes are the PDG ones and the neutrino energy is in GeV.
 //
+// Edited March 2025 by J. Plows - return the final flavour space (real & im parts) and split
+//                                 out the final probability
 
+
+  // Pair is (re, im)
+  std::vector< std::pair<double, double> > ret_vec;
+  
   OscChannelId_t osch = util::GetOscChannel(nu_start, nu_end);
 
   if(osch == kOscUndefined) {
     cerr << "NuOsc3Flavour: Not allowing (neutrino = " << nu_start << ") --> "
          << "(neutrino = " << nu_end << ") oscillations" << endl;
-    return 0.;
+    //return 0.;
+    ret_vec.emplace_back( std::make_pair<double, double>( 0.0, 0.0 ) );
+    return ret_vec;
   }
-
-  double oscProb = 0.;
 
   //if all 3 mixing angles are small, take it that there are no oscillations
   if(nFlavourIndex == 0)
     {
-    if(osch == kOscNuE2NuE || osch == kOscNuMu2NuMu || osch == kOscNuTau2NuTau 
-      || osch == kOscNuEBar2NuEBar || osch == kOscNuMuBar2NuMuBar || osch == kOscNuTauBar2NuTauBar)
-      return 1.0;
-    else
-      return 0.0;
+      if(osch == kOscNuE2NuE || osch == kOscNuMu2NuMu || osch == kOscNuTau2NuTau 
+	 || osch == kOscNuEBar2NuEBar || osch == kOscNuMuBar2NuMuBar || osch == kOscNuTauBar2NuTauBar)
+	{
+	  ret_vec.emplace_back( std::make_pair<double, double>( 1.0, 0.0 ) ); // CHECK THIS IS OKAY - should be prob = 1.0
+	  return ret_vec;
+	}
+      else {
+	ret_vec.emplace_back( std::make_pair<double, double>( 0.0, 0.0 ) );
+	return ret_vec;
+	//return 0.0;
+      }
     }
   else if(nFlavourIndex > 0)
     {
     //if 2 mixing angles are small, treat it as a 2-flavour calculation
-    oscProb = this->Calc2FlavMatterOscProb(nu_start, nu_end, energy, nFlavourIndex);
-    return oscProb;
+    //oscProb = this->Calc2FlavMatterOscProb(nu_start, nu_end, energy, nFlavourIndex);
+    //return oscProb;
+      return this->Calc2FlavMatterOscSpace( nu_start, nu_end, energy, nFlavourIndex );
     }
 
   // The mass squared matrix has diagonal elements 0, dmsq12, dmsq13; 
@@ -2002,20 +2027,24 @@ double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
     initialFlavourState[i][im] = 0.0;
  }
 
- // The neutrino is formed in a definite flavour state
- if(nu_start == kPdgNuE || nu_start == kPdgNuEBar)
- {
-    initialFlavourState[0][re] = 1.0;
- }
- else 
- if(nu_start == kPdgNuMu || nu_start == kPdgNuMuBar)
- {
-    initialFlavourState[1][re] = 1.0;
- }
- else 
- if(nu_start == kPdgNuTau || nu_start == kPdgNuTauBar)
- {
-    initialFlavourState[2][re] = 1.0;
+ if( ( std::pow( fCurrentFlavourState[0].first, 2.0 ) + std::pow( fCurrentFlavourState[0].second, 2.0 ) == 0.0 ) &&
+     ( std::pow( fCurrentFlavourState[1].first, 2.0 ) + std::pow( fCurrentFlavourState[1].second, 2.0 ) == 0.0 ) &&
+     ( std::pow( fCurrentFlavourState[2].first, 2.0 ) + std::pow( fCurrentFlavourState[2].second, 2.0 ) == 0.0 ) ) {
+   // The neutrino is formed in a definite flavour state
+   if(nu_start == kPdgNuE || nu_start == kPdgNuEBar) {
+     initialFlavourState[0][re] = 1.0;
+   } else if(nu_start == kPdgNuMu || nu_start == kPdgNuMuBar) {
+     initialFlavourState[1][re] = 1.0;
+   } else if(nu_start == kPdgNuTau || nu_start == kPdgNuTauBar) {
+     initialFlavourState[2][re] = 1.0;
+   }
+ } else { // There was an input flavour state, initialise to that
+   initialFlavourState[0][re] = fCurrentFlavourState[0].first;
+   initialFlavourState[0][im] = fCurrentFlavourState[0].second;
+   initialFlavourState[1][re] = fCurrentFlavourState[1].first;
+   initialFlavourState[1][im] = fCurrentFlavourState[1].second;
+   initialFlavourState[2][re] = fCurrentFlavourState[2].first;
+   initialFlavourState[2][im] = fCurrentFlavourState[2].second;
  }
 
  double initialMassState[3][2];
@@ -2075,72 +2104,96 @@ double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
 	                       + UMatter[i][j][im] * finalMassState[j][re];
     }
  }
+}
+//________________________________________________________________________________________
+double NuOsc3Flavour::CalcMatterOscProb( int nu_start, int nu_end, double energy )
+{
 
- // Each component of finalFlavourState is the amplitude for the neutrino to interact 
+  std::vector< std::pair<double, double> > finalFlavourState = this->CalcMatterOscSpace( nu_start, nu_end, energy );
+  double oscProb = 0.0;
+  
+  // Each component of finalFlavourState is the amplitude for the neutrino to interact 
  // in the far detector as that flavour.
  // The oscillation probabilities are the moduli squared of the amplitudes
  if(nu_end == kPdgNuE || nu_end == kPdgNuEBar)
  {
-    oscProb = finalFlavourState[0][re]*finalFlavourState[0][re] + 
-              finalFlavourState[0][im]*finalFlavourState[0][im];
+    oscProb = finalFlavourState[0].first*finalFlavourState[0].first + 
+              finalFlavourState[0].second*finalFlavourState[0].second;
  }
  else 
  if(nu_end == kPdgNuMu || nu_end == kPdgNuMuBar)
  {
-    oscProb = finalFlavourState[1][re]*finalFlavourState[1][re] + 
-              finalFlavourState[1][im]*finalFlavourState[1][im];
+    oscProb = finalFlavourState[1].first*finalFlavourState[1].first + 
+              finalFlavourState[1].second*finalFlavourState[1].second;
  }
  else 
  if(nu_end == kPdgNuTau || nu_end == kPdgNuTauBar)
  {
-    oscProb = finalFlavourState[2][re]*finalFlavourState[2][re] + 
-              finalFlavourState[2][im]*finalFlavourState[2][im];
+    oscProb = finalFlavourState[2].first*finalFlavourState[2].first + 
+              finalFlavourState[2].second*finalFlavourState[2].second;
  }
 
  return oscProb;
 }
 //________________________________________________________________________________________
-double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double energy, int index)
+std::vector<std::pair<double, double>> NuOsc3Flavour::Calc2FlavMatterOscSpace(int nu_start, int nu_end, double energy, int index)
 {
-  //this method calculates the oscillation probabilities in constant density matter
+    //this method calculates the oscillation probabilities in constant density matter
   //when the input oscillation parameters mean it is effectively a 2-flavour calculation
   //index gives the 2 flavours that are used in the calculation (12, 13 or 23)
   //energy is in GeV
+
+  std::vector< std::pair<double, double> > ret_vec;
 
   OscChannelId_t osch = util::GetOscChannel(nu_start, nu_end);
 
   if(osch == kOscUndefined) {
     cerr << "NuOsc3Flavour: Not allowing (neutrino = " << nu_start << ") --> "
          << "(neutrino = " << nu_end << ") oscillations" << endl;
-    return 0.;
+    ret_vec.emplace_back( std::make_pair<double, double>( 0.0, 0.0 ) );
+    return ret_vec;
+    //return 0.;
   }
 
   if(index == 12)
     {
-    if(osch == kOscNuTau2NuTau || osch == kOscNuTauBar2NuTauBar)
-      return 1.0;
-    else if(osch == kOscNuTau2NuE || osch == kOscNuTau2NuMu || osch == kOscNuTauBar2NuEBar || osch == kOscNuTauBar2NuMuBar
-      || osch == kOscNuE2NuTau || osch == kOscNuMu2NuTau || osch == kOscNuEBar2NuTauBar || osch == kOscNuMuBar2NuTauBar)
-      return 0.0;  
+      if(osch == kOscNuTau2NuTau || osch == kOscNuTauBar2NuTauBar) {
+	ret_vec.emplace_back( std::make_pair<double, double>( 1.0, 0.0 ) );
+	return ret_vec;
+	//return 1.0;
+      } else if(osch == kOscNuTau2NuE || osch == kOscNuTau2NuMu || osch == kOscNuTauBar2NuEBar || osch == kOscNuTauBar2NuMuBar
+		|| osch == kOscNuE2NuTau || osch == kOscNuMu2NuTau || osch == kOscNuEBar2NuTauBar || osch == kOscNuMuBar2NuTauBar) {
+	ret_vec.emplace_back( std::make_pair<double, double>( 0.0, 0.0 ) );
+	return ret_vec;
+	//return 0.0;
+      }
     }
   else if(index == 13)
     {
-    if(osch == kOscNuMu2NuMu || osch == kOscNuMuBar2NuMuBar)
-      return 1.0;
-    else if(osch == kOscNuMu2NuE || osch == kOscNuMu2NuTau || osch == kOscNuMuBar2NuEBar || osch == kOscNuMuBar2NuTauBar
-           || osch == kOscNuE2NuMu || osch == kOscNuTau2NuMu || osch == kOscNuEBar2NuMuBar || osch == kOscNuTauBar2NuMuBar)
-      return 0.0;
+      if(osch == kOscNuMu2NuMu || osch == kOscNuMuBar2NuMuBar) {
+	ret_vec.emplace_back( std::make_pair<double, double>( 0.0, 0.0 ) );
+	return ret_vec;
+	//return 1.0;
+      } else if(osch == kOscNuMu2NuE || osch == kOscNuMu2NuTau || osch == kOscNuMuBar2NuEBar || osch == kOscNuMuBar2NuTauBar
+		|| osch == kOscNuE2NuMu || osch == kOscNuTau2NuMu || osch == kOscNuEBar2NuMuBar || osch == kOscNuTauBar2NuMuBar) {
+	ret_vec.emplace_back( std::make_pair<double, double>( 0.0, 0.0 ) );
+	return ret_vec;
+	//return 0.0;
+      }
     }
   else if(index == 23)
     {
-    if(osch == kOscNuE2NuE || osch == kOscNuEBar2NuEBar)
-      return 1.0;
-    else if(osch == kOscNuE2NuMu || osch == kOscNuE2NuTau || osch == kOscNuEBar2NuMuBar || osch == kOscNuEBar2NuTauBar
-	   || osch == kOscNuMu2NuE || osch == kOscNuTau2NuE ||osch == kOscNuMuBar2NuEBar || osch == kOscNuTauBar2NuEBar)
-      return 0.0;
+      if(osch == kOscNuE2NuE || osch == kOscNuEBar2NuEBar) {
+	ret_vec.emplace_back( std::make_pair<double, double>( 1.0, 0.0 ) );
+	return ret_vec;
+	//return 1.0;
+      } else if(osch == kOscNuE2NuMu || osch == kOscNuE2NuTau || osch == kOscNuEBar2NuMuBar || osch == kOscNuEBar2NuTauBar
+		|| osch == kOscNuMu2NuE || osch == kOscNuTau2NuE ||osch == kOscNuMuBar2NuEBar || osch == kOscNuTauBar2NuEBar) {
+	ret_vec.emplace_back( std::make_pair<double, double>( 0.0, 0.0 ) );
+	return ret_vec;
+	//return 0.0;
+      }
     }  
-  
-  double oscProb = 0.0;
 
   //the mass squared matrix has diagonal elements 0, dmsq12, dmsq13; all off-diagonal elements are zero
   //UMassUdagger is the product of the PMNS matrix, the mass squared matrix, and the dagger of the PMNS matrix 
@@ -2335,28 +2388,41 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
       }
     }
 
+  ret_vec = {
+    std::make_pair<double, double>( std::move(finalFlavourState[0][re]), std::move(finalFlavourState[0][im]) ),
+    std::make_pair<double, double>( std::move(finalFlavourState[1][re]), std::move(finalFlavourState[1][im]) ) };
+
+  return ret_vec;
+}
+//________________________________________________________________________________________
+double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double energy, int index)
+{
+
+  std::vector<std::pair<double, double>> finalFlavourState = this->Calc2FlavMatterOscSpace(nu_start, nu_end, energy, index);
+  double oscProb = 0.0;
+
   //each component of finalFlavourState is the amplitude for the neutrino to interact in the far detector as that flavour 
   //the oscillation probabilities are the moduli squared of the amplitudes
   if(index == 12)
     {
     if(nu_end == kPdgNuE || nu_end == kPdgNuEBar)
-      oscProb = finalFlavourState[0][re]*finalFlavourState[0][re] + finalFlavourState[0][im]*finalFlavourState[0][im];
+      oscProb = finalFlavourState[0].first*finalFlavourState[0].first + finalFlavourState[0].second*finalFlavourState[0].second;
     else if(nu_end == kPdgNuMu || nu_end == kPdgNuMuBar)
-      oscProb = finalFlavourState[1][re]*finalFlavourState[1][re] + finalFlavourState[1][im]*finalFlavourState[1][im];
+      oscProb = finalFlavourState[1].first*finalFlavourState[1].first + finalFlavourState[1].second*finalFlavourState[1].second;
     }
   else if(index == 13)
     {
     if(nu_end == kPdgNuE || nu_end == kPdgNuEBar)
-      oscProb = finalFlavourState[0][re]*finalFlavourState[0][re] + finalFlavourState[0][im]*finalFlavourState[0][im];
+      oscProb = finalFlavourState[0].first*finalFlavourState[0].first + finalFlavourState[0].second*finalFlavourState[0].second;
     else if(nu_end == kPdgNuTau || nu_end == kPdgNuTauBar)
-      oscProb = finalFlavourState[1][re]*finalFlavourState[1][re] + finalFlavourState[1][im]*finalFlavourState[1][im];
+      oscProb = finalFlavourState[1].first*finalFlavourState[1].first + finalFlavourState[1].second*finalFlavourState[1].second;
     }
   else if(index == 23)
     {
     if(nu_end == kPdgNuMu || nu_end == kPdgNuMuBar)
-      oscProb = finalFlavourState[0][re]*finalFlavourState[0][re] + finalFlavourState[0][im]*finalFlavourState[0][im];
+      oscProb = finalFlavourState[0].first*finalFlavourState[0].first + finalFlavourState[0].second*finalFlavourState[0].second;
     else if(nu_end == kPdgNuTau || nu_end == kPdgNuTauBar)
-      oscProb = finalFlavourState[1][re]*finalFlavourState[1][re] + finalFlavourState[1][im]*finalFlavourState[1][im];
+      oscProb = finalFlavourState[1].first*finalFlavourState[1].first + finalFlavourState[1].second*finalFlavourState[1].second;
     }
 
   return oscProb;
@@ -2824,6 +2890,148 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
   } //i_initflav
 
   return;
+}
+//_________________________________________________________
+double NuOsc3Flavour::CalcEarthMatterOscProb( int nu_start, int nu_end, double energy, double costh )
+{
+  /*!
+   *  This function calculates probabilities of oscillation, moving through the Earth,
+   *  assuming the Earth is made of 4 layers of constant density.
+   *  There is an explicit dependency on costh so that the correct path length through each layer
+   *  is obtained.
+   *
+   *  Ziou He, March 2025
+   */
+
+  double outputFlavourState[3][2];
+  for(int i=0; i<3; i++){
+    outputFlavourState[i][re]=0.0;  outputFlavourState[i][im]=0.0;
+  }
+
+  // First, calculate the path the neutrino has taken
+  const double template_prodHeight = 15.0; // km
+  std::vector< std::pair<valor::conv::EarthLayer_t, double> > nu_path = this->DefinePath( costh, template_prodHeight );
+
+  // For each element in the prod height, calculate the associated probability then cast back to flavour basis for the next loop
+  for( std::vector< std::pair< valor::conv::EarthLayer_t,
+	 double > >::iterator it_path = nu_path.begin(); it_path != nu_path.end(); ++it_path ) {
+    valor::conv::EarthLayer_t layer = (*it_path).first;
+    double baseline = (*it_path).second;
+    double density  = valor::conv::kEarthLayeredDensity[static_cast<int>(layer)];
+    double number_density  = valor::conv::kEarthLayeredZOverA[static_cast<int>(layer)] * this->GetDensity();
+
+    this->SetBaseline(baseline);
+    this->SetDensity(density, number_density);
+
+    fCurrentFlavourState = this->CalcMatterOscSpace( nu_start, nu_end, energy );
+    
+  } // loop over path segments
+
+  // Which is a final outputFlavourState...
+  for( int i = 0; i < 3; i++ ){
+    outputFlavourState[i][re] = fCurrentFlavourState[i].first;
+    outputFlavourState[i][im] = fCurrentFlavourState[i].second;
+  }
+
+  // and get the final probability
+  double oscProb = 0.0;
+  
+  // Each component of outputFlavourState is the amplitude for the neutrino to interact 
+  // in the far detector as that flavour.
+  // The oscillation probabilities are the moduli squared of the amplitudes
+  if(nu_end == kPdgNuE || nu_end == kPdgNuEBar)
+    {
+      oscProb = outputFlavourState[0][re]*outputFlavourState[0][re] + 
+	outputFlavourState[0][im]*outputFlavourState[0][im];
+    }
+  else 
+    if(nu_end == kPdgNuMu || nu_end == kPdgNuMuBar)
+      {
+	oscProb = outputFlavourState[1][re]*outputFlavourState[1][re] + 
+	  outputFlavourState[1][im]*outputFlavourState[1][im];
+      }
+    else 
+      if(nu_end == kPdgNuTau || nu_end == kPdgNuTauBar)
+	{
+	  oscProb = outputFlavourState[2][re]*outputFlavourState[2][re] + 
+	    outputFlavourState[2][im]*outputFlavourState[2][im];
+	}
+
+  return oscProb;
+}
+//_________________________________________________________
+std::unordered_map<valor::conv::EarthLayer_t, double> NuOsc3Flavour::ComputeMinLengthToLayers() const
+{
+  std::unordered_map<valor::conv::EarthLayer_t, double> cosLimit;
+  
+  std::vector< valor::conv::EarthLayer_t >::const_iterator it_layers = earth_layers.begin();
+  const double REarth = valor::conv::kEarthLayeredRadius[ valor::conv::kEarthUpperMantle ];
+  
+  for( ; it_layers != earth_layers.end()-1 ; ++it_layers ) {
+    int idx = static_cast<int>(*it_layers);
+    double x = -1.0 * std::sqrt( 1.0 - std::pow( valor::conv::kEarthLayeredRadius[idx] / REarth , 2.0 ) );
+    cosLimit[ *it_layers ] = x;
+  }
+  // and the final thing is zero
+  cosLimit[ valor::conv::kEarthAtmosphere ] = 0.0;
+}
+//_________________________________________________________
+double NuOsc3Flavour::CalculateBaseline( double cosTheta, double prodHeight ) const
+{
+  const double REarth = valor::conv::kEarthLayeredRadius[ valor::conv::kEarthUpperMantle ];
+  double rbig = REarth + prodHeight;
+  return std::sqrt( rbig*rbig - (REarth*REarth)*(1.0-cosTheta*cosTheta) ) - cosTheta * REarth;
+}
+//_________________________________________________________
+std::vector<std::pair<valor::conv::EarthLayer_t, double>>
+NuOsc3Flavour::DefinePath( double cosTheta, double prodHeight ) const
+{
+  std::vector< std::pair< valor::conv::EarthLayer_t, double > > ret_vec;
+
+  double baseline = this->CalculateBaseline( cosTheta, prodHeight );
+  ret_vec.emplace_back( std::make_pair< valor::conv::EarthLayer_t, double >( std::move(valor::conv::kEarthAtmosphere), std::move(baseline) ) );
+  // If cos(theta) > 0 (neutrino coming from above), it only saw atmo
+  if( cosTheta > 0 ) return ret_vec;
+
+  // Otherwise, use the cos(theta) and production height to estimate locations
+  // Because layers are concentric circles, a neutrino will always spend the same distance
+  // "moving towards the Earth" as "moving away from the Earth", inside a layer.
+
+  valor::conv::EarthLayer_t curr_layer = static_cast<valor::conv::EarthLayer_t>( static_cast<int>(valor::conv::kEarthAtmosphere) - 1);
+  double current_cosTheta = fCosThetaLimit.at( curr_layer );
+
+  const double REarth = valor::conv::kEarthLayeredRadius[ valor::conv::kEarthUpperMantle ];
+  std::vector< valor::conv::EarthLayer_t > done_layers;
+  std::vector< double > traversed_lengths;
+  while( current_cosTheta > cosTheta ) { // This layer is traversed
+    valor::conv::EarthLayer_t next_layer = static_cast<valor::conv::EarthLayer_t>( static_cast<int>(curr_layer)-1);
+
+    double baseline = 0.0;
+    if ( next_layer == valor::conv::kEarthUnknown ) { // The inner-most layer has no substructure
+      baseline = 2.0 * REarth * cosTheta;
+    } else {
+      double crossThis = 2.0 * std::sqrt( kEarthLayeredRadius[curr_layer] * kEarthLayeredRadius[curr_layer] - REarth * REarth * (1.0 - cosTheta * cosTheta) );
+      double crossNext = 2.0 * std::sqrt( kEarthLayeredRadius[next_layer] * kEarthLayeredRadius[next_layer] - REarth * REarth * (1.0 - cosTheta * cosTheta) );
+      baseline = 0.5 * ( crossThis - crossNext );
+    }
+
+    done_layers.emplace_back( curr_layer );
+    traversed_lengths.emplace_back( baseline );
+  }
+
+  // Loop over the vectors once ("going into the Earth"), and once backwards ("going out of the Earth")
+  int ivec = 0;
+  while( ivec < done_layers.size() ) {
+    ret_vec.emplace_back( std::make_pair< valor::conv::EarthLayer_t, double >( std::move(done_layers[ivec]), std::move(traversed_lengths[ivec]) ) );
+    ivec++;
+  }
+  ivec--; ivec--; // one past the last entry, don't want innermost substructure
+  while( ivec >= 0 ) {
+    ret_vec.emplace_back( std::make_pair< valor::conv::EarthLayer_t, double >( std::move(done_layers[ivec]), std::move(traversed_lengths[ivec]) ) );
+    ivec--;
+  }
+
+  return ret_vec;
 }
 //_________________________________________________________
 conv::NuMassHierarchy_t NuOsc3Flavour::GetMassHierarchy(void) const

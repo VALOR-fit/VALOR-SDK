@@ -68,12 +68,12 @@ SingleSampleKineBinning::~SingleSampleKineBinning(void)
 bool SingleSampleKineBinning::Read(string file)
 {
   if(fBeamConf == conv::kbUndefined) {
-    LOG("SampleBinning", pERROR) << "Can not read binning for undefined beam";
+    VLOG("SampleBinning", pERROR) << "Can not read binning for undefined beam";
     util::Die(1); 
     return false;
   }
   if(fSample == conv::ksUndefined) {
-    LOG("SampleBinning", pERROR) << "Can not read binning for undefined sample";
+    VLOG("SampleBinning", pERROR) << "Can not read binning for undefined sample";
     util::Die(1); 
     return false;
   }
@@ -95,7 +95,7 @@ bool SingleSampleKineBinning::Read(string file)
     ts_file = TString::Format("%s/%s",
        Env::Instance()->TopLevelConfDir().c_str(),ts_file.Data());
     if (gSystem->GetPathInfo(ts_file.Data(), dummy)) {
-      LOG("SampleBinning", pERROR) << "Binning file not found: " << file;
+      VLOG("SampleBinning", pERROR) << "Binning file not found: " << file;
       util::Die(1); 
       return false;
     }
@@ -105,7 +105,7 @@ bool SingleSampleKineBinning::Read(string file)
   TXMLEngine* xml = new TXMLEngine;
   XMLDocPointer_t xmldoc = xml->ParseFile(ts_file.Data());
   if (xmldoc==0) {
-    LOG("SampleBinning",pERROR)
+    VLOG("SampleBinning",pERROR)
         << "Can not parse input XML file [" << ts_file << "]";
     delete xml;
     util::Die(1); 
@@ -118,12 +118,12 @@ bool SingleSampleKineBinning::Read(string file)
   //
 
   if(! util::NodeExists(xml,root_node,"reco_optimized")) {
-     LOG("SampleBinning", pERROR)
+     VLOG("SampleBinning", pERROR)
         << "<reco_optimized> node not found in file: " << file;
      return false;
   }
   string reco_opt_binning_file = util::XML2String(xml,root_node,"reco_optimized");
-  LOG("SampleBinning", pNOTICE)
+  VLOG("SampleBinning", pNOTICE)
     << "\n ** Reading optimized reco binning ** " 
     << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample)
     << "\n    From file: " << reco_opt_binning_file;
@@ -131,7 +131,7 @@ bool SingleSampleKineBinning::Read(string file)
   fRecoOptimizedBinning = VALORBinning::BinningFromFile(reco_opt_binning_file,false);
   bool read_ok = fRecoOptimizedBinning->Read(reco_opt_binning_file);
   if(!read_ok) {
-     LOG("SampleBinning", pERROR)
+     VLOG("SampleBinning", pERROR)
        << "Could not read optimized reco binning from: " << reco_opt_binning_file;
      return false;
   }
@@ -145,12 +145,12 @@ bool SingleSampleKineBinning::Read(string file)
   //
 
   if(! util::NodeExists(xml,root_node,"reco_simple")) {
-     LOG("SampleBinning", pERROR)
+     VLOG("SampleBinning", pERROR)
         << "<reco_simple> node not found in file: " << file;
      return false;
   }
   string reco_smp_binning_file = util::XML2String(xml,root_node,"reco_simple");
-  LOG("SampleBinning", pINFO)
+  VLOG("SampleBinning", pINFO)
     << "\n ** Reading simple reco binning ** " 
     << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample)
     << "\n    From file: " << reco_smp_binning_file;
@@ -159,7 +159,7 @@ bool SingleSampleKineBinning::Read(string file)
   fRecoSimpleBinning->SetName("reco_simple");
   read_ok = fRecoSimpleBinning->Read(reco_smp_binning_file);
   if(!read_ok) {
-     LOG("SampleBinning", pINFO)
+     VLOG("SampleBinning", pINFO)
        << "Could not read simple reco binning from: " << reco_smp_binning_file;
      return false;
   }
@@ -170,13 +170,13 @@ bool SingleSampleKineBinning::Read(string file)
 
   // Check reco and true have the dimensions and limits
   if (fRecoSimpleBinning->KineSpace() != fRecoOptimizedBinning->KineSpace()) {
-    LOG("SampleBinning",pERROR)<<"Simple and Optimized binnings do not have the kinematic dimensions.";
+    VLOG("SampleBinning",pERROR)<<"Simple and Optimized binnings do not have the kinematic dimensions.";
     return false;
   }
   for (unsigned int idim = 0 ; idim < fRecoSimpleBinning->NDimensions(); idim++) {
     if (std::fabs(fRecoSimpleBinning->Maximum(idim)-fRecoOptimizedBinning->Maximum(idim)) > conv::kASmallNum || 
         std::fabs(fRecoSimpleBinning->Minimum(idim)-fRecoOptimizedBinning->Minimum(idim)) > conv::kASmallNum ) {
-      LOG("SampleBinning",pERROR)<<"Simple and Optimized binnings do not have the same total range.";
+      VLOG("SampleBinning",pERROR)<<"Simple and Optimized binnings do not have the same total range.";
       return false;
     }
   }
@@ -188,13 +188,13 @@ bool SingleSampleKineBinning::Read(string file)
 
   bool def_true_smp_exists = util::NodeExists(xml,root_node,"true_simple/default");
   if(! def_true_smp_exists) {
-     LOG("SampleBinning", pWARN)
+     VLOG("SampleBinning", pWARN)
         << "<true_simple><default> node not found in file: " << file << "\n"
         << " ** Binning must be specified for every single reaction mode";
   }
   if(def_true_smp_exists) {
      string def_true_smp_binning_file = util::XML2String(xml,root_node,"true_simple/default");
-     LOG("SampleBinning", pINFO)
+     VLOG("SampleBinning", pINFO)
         << "\n ** Reading `default' simple true binning ** " 
         << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample)
         << "\n    From file: " << def_true_smp_binning_file;
@@ -202,7 +202,7 @@ bool SingleSampleKineBinning::Read(string file)
      def_true_smp_binning->SetName("true_simple (default)");
      read_ok = def_true_smp_binning->Read(def_true_smp_binning_file);
      if(!read_ok) {
-        LOG("SampleBinning", pINFO)
+        VLOG("SampleBinning", pINFO)
           << "Could not read default simple true binning from: " << def_true_smp_binning_file;
         return false;
      }
@@ -229,14 +229,14 @@ bool SingleSampleKineBinning::Read(string file)
     bool mode_true_smp_exists = util::NodeExists(xml,root_node,node_path);
     if(mode_true_smp_exists) {
       string mode_true_smp_binning_file = util::XML2String(xml,root_node,node_path);
-      LOG("SampleBinning", pINFO)
+      VLOG("SampleBinning", pINFO)
         << "\n ** Overriding default / Reading simple true binning ** " 
         << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample) << " / mode: " <<  util::AsString(m)
         << "\n    From file: " << mode_true_smp_binning_file;
       VALORBinning * mode_true_smp_binning = VALORBinning::BinningFromFile(mode_true_smp_binning_file,false);;
       read_ok = mode_true_smp_binning->Read(mode_true_smp_binning_file);
       if(!read_ok) {
-         LOG("SampleBinning", pINFO)
+         VLOG("SampleBinning", pINFO)
             << "Could not read simple true binning from: " << mode_true_smp_binning_file;
          return false;
       }
@@ -255,12 +255,12 @@ bool SingleSampleKineBinning::Read(string file)
   //
 
   if(! util::NodeExists(xml,root_node,"xsec_reco")) {
-     LOG("SampleBinning", pERROR)
+     VLOG("SampleBinning", pERROR)
         << "<xsec_reco> node not found in file: " << file;
      return false;
   }
   string xsec_reco_binning_file = util::XML2String(xml,root_node,"xsec_reco");
-  LOG("SampleBinning", pINFO)
+  VLOG("SampleBinning", pINFO)
     << "\n ** Reading xsec reconstructed binning ** " 
     << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample)
     << "\n    From file: " << xsec_reco_binning_file;
@@ -269,7 +269,7 @@ bool SingleSampleKineBinning::Read(string file)
   read_ok = fXsecRecoBinning->Read(xsec_reco_binning_file);
   fXsecRecoBinning->SetName("xsec_reco");
   if(!read_ok) {
-     LOG("SampleBinning", pNOTICE)
+     VLOG("SampleBinning", pNOTICE)
        << "Could not read xsec reco binning from: " << xsec_reco_binning_file<<", falling back on optimized.";
        
      // FALL BACK ON OPTIMIZED BINNING
@@ -284,13 +284,13 @@ bool SingleSampleKineBinning::Read(string file)
   if (xsec_true_binning_exists) {
     bool def_xsec_true_exists = util::NodeExists(xml,root_node,"xsec_true/default");
     if(! def_xsec_true_exists) {
-       LOG("SampleBinning", pWARN)
+       VLOG("SampleBinning", pWARN)
           << "<xsec_true><default> node not found in file: " << file << "\n"
           << " ** Binning must be specified for every single reaction mode";
     }
     if(def_xsec_true_exists) {
        string def_xsec_true_binning_file = util::XML2String(xml,root_node,"xsec_true/default");
-       LOG("SampleBinning", pINFO)
+       VLOG("SampleBinning", pINFO)
           << "\n ** Reading `default' xsec true binning ** " 
           << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample)
           << "\n    From file: " << def_xsec_true_binning_file;
@@ -298,7 +298,7 @@ bool SingleSampleKineBinning::Read(string file)
        def_xsec_true_binning->SetName("xsec_true (default)");
        read_ok = def_xsec_true_binning->Read(def_xsec_true_binning_file);
        if(!read_ok) {
-          LOG("SampleBinning", pINFO)
+          VLOG("SampleBinning", pINFO)
             << "Could not read default xsec true binning from: " << def_xsec_true_binning_file;
           return false;
        }
@@ -347,14 +347,14 @@ bool SingleSampleKineBinning::Read(string file)
         }
       }
       if(mode_xsec_true_exists) {
-        LOG("SampleBinning", pINFO)
+        VLOG("SampleBinning", pINFO)
           << "\n ** Overriding default / Reading xsec true binning ** " 
           << "\n    For beam: " << util::AsString(fBeamConf) << " / sample: " << util::AsString(fSample) << " / mode: " <<  util::AsString(m)
           << "\n    From file: " << mode_xsec_true_binning_file;
         VALORBinning * mode_xsec_true_binning = VALORBinning::BinningFromFile(mode_xsec_true_binning_file,false);
         read_ok = mode_xsec_true_binning->Read(mode_xsec_true_binning_file);
         if(!read_ok) {
-           LOG("SampleBinning", pINFO)
+           VLOG("SampleBinning", pINFO)
               << "Could not read xsec true binning from: " << mode_xsec_true_binning_file;
            return false;
         }
@@ -366,7 +366,7 @@ bool SingleSampleKineBinning::Read(string file)
     }
   } // xsec binning specified independently
   else {
-     LOG("SampleBinning", pNOTICE)
+     VLOG("SampleBinning", pNOTICE)
        << "No xsec true binning specified. Using default true binning for xsec model.";
     fXsecTrueBinningUnique = fTrueSimpleBinningUnique;
     fXsecTrueBinningSingle = fTrueSimpleBinningSingle;
@@ -393,24 +393,24 @@ bool SingleSampleKineBinning::Read(string file)
 
   // Check that there're more bins in the simple binning scheme than the optimised
   if (fRecoOptimizedBinning->NBins() > fRecoSimpleBinning->NBins()) {
-    LOG("SampleBinning",pFATAL) << "Fewer simple reco fit bins ("<<fRecoSimpleBinning->NBins()
+    VLOG("SampleBinning",pFATAL) << "Fewer simple reco fit bins ("<<fRecoSimpleBinning->NBins()
                                 <<") than optimised fit bins ("<<fRecoOptimizedBinning->NBins()<<"). You did something wrong.";
     util::Die(-1); return false;
   }
   // Check xsec bins
   if (fXsecRecoBinning->NBins() > fRecoSimpleBinning->NBins()) {
-    LOG("SampleBinning",pFATAL) << "Fewer simple reco fit bins ("<<fRecoSimpleBinning->NBins()
+    VLOG("SampleBinning",pFATAL) << "Fewer simple reco fit bins ("<<fRecoSimpleBinning->NBins()
                                 <<") than reco xsec bins ("<<fXsecRecoBinning->NBins()<<"). You did something wrong.";
     util::Die(-1); return false;
   }
   if (fXsecTrueBinningSingle->NBins() > fTrueSimpleBinningSingle->NBins()) {
-    LOG("SampleBinning",pFATAL) << "Fewer simple true fit bins ("<<fTrueSimpleBinningSingle->NBins()
+    VLOG("SampleBinning",pFATAL) << "Fewer simple true fit bins ("<<fTrueSimpleBinningSingle->NBins()
                                 <<") than true xsec bins ("<<fXsecTrueBinningSingle->NBins()<<"). You did something wrong.";
     util::Die(-1); return false;
   }
   for (size_t im = 0 ; im <  fReactionModes.size(); im++) {
     if (fXsecTrueBinning[im]->NBins() > fTrueSimpleBinning[im]->NBins()) {
-      LOG("SampleBinning",pFATAL) << "Fewer true fit bins ("<<fTrueSimpleBinning[im]->NBins()
+      VLOG("SampleBinning",pFATAL) << "Fewer true fit bins ("<<fTrueSimpleBinning[im]->NBins()
                                   <<") than true xsec bins ("<<fXsecTrueBinning[im]->NBins()
                                   <<") for mode " << util::AsString(fReactionModes[im])
                                   << ". You did something wrong.";
@@ -542,7 +542,7 @@ void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinn
         }
       }
       if(!min_matches) {
-        LOG("SampleBinning",pFATAL) << "The optimised lower bin edge " << bin_min_opt
+        VLOG("SampleBinning",pFATAL) << "The optimised lower bin edge " << bin_min_opt
                                     << " for kinevar = " << util::AsString(kv_opt)
                                     << " does not lie on a simple bin edge for binning comparison: \'"
                                     << description << "\'";
@@ -562,7 +562,7 @@ void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinn
         }
       }
       if(!max_matches) {
-        LOG("SampleBinning",pFATAL) << "The optimised upper bin edge " << bin_min_opt
+        VLOG("SampleBinning",pFATAL) << "The optimised upper bin edge " << bin_min_opt
                                     << " for kinevar = " << util::AsString(kv_opt)
                                     << " does not lie on a simple bin edge for binning comparison \'"
                                     << description << "\'";

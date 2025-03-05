@@ -57,7 +57,7 @@ void PlotStyle::UpdateStyleOf(TObject * plot) const
     if ( fMarkerSize >= 0) {am->SetMarkerSize (fMarkerSize);}
   }
   if (!al && !af && !am) {
-    LOG("PlotStyle",pWARN)<<"Did not update any styles";
+    VLOG("PlotStyle",pWARN)<<"Did not update any styles";
   }
 }
 //________________________________________________________________________________________

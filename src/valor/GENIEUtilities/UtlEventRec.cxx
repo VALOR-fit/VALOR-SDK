@@ -64,7 +64,7 @@ bool valor::util::GetHadronicSystems(const genie::EventRecord * event, vector<in
   // (after the intranuclear rescattering step)
   //
 
-  LOG("UtlEventRec", pDEBUG) << "Extracting final state hadronic system";
+  VLOG("UtlEventRec", pDEBUG) << "Extracting final state hadronic system";
 
   while( (p = (genie::GHepParticle *) piter.Next()) && study_hadsyst)
   {
@@ -110,7 +110,7 @@ bool valor::util::GetHadronicSystems(const genie::EventRecord * event, vector<in
   // 'identical' with the final  state hadronic system
   //
 
-  LOG("UtlEventRec", pDEBUG) << "Extracting primary hadronic system";
+  VLOG("UtlEventRec", pDEBUG) << "Extracting primary hadronic system";
 
   ip = -1;
   TObjArrayIter piter_prim(event);
@@ -197,7 +197,7 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
 #endif
 
   /*  if (is_NuEEl) {
-    LOG("UtlEventRec",pWARN)<<"Ignoring NuEEl event.";
+    VLOG("UtlEventRec",pWARN)<<"Ignoring NuEEl event.";
     return conv::kmUndefined;
     }*/
   
@@ -250,7 +250,7 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
       const genie::GHepParticle * p = unknown_particles[ip];
       s<<*p<<std::endl;
     }
-    LOG("UtlEventRec",pWARN)<<unknown_particles.size()<<" unidentified particles in event:\n"<<s.str();
+    VLOG("UtlEventRec",pWARN)<<unknown_particles.size()<<" unidentified particles in event:\n"<<s.str();
   }
   
   int nPiC = nPip+nPim;
@@ -378,7 +378,7 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
     for (unsigned int ii = 0 ; ii < modes.size(); ii++) {
       mode_names << "\n "<<util::AsString(modes[ii]);
     }
-    LOG("UtlEventRec",pERROR)<<"Event filed into multiple exclusive modes: "
+    VLOG("UtlEventRec",pERROR)<<"Event filed into multiple exclusive modes: "
       <<mode_names.str()
       <<"\nFull record: "<<*event;
       util::Die(-1);
@@ -445,7 +445,7 @@ conv::ReacMode_t valor::util::DetermineReactionModeRead(int nu_pdg, int iscc, in
 #endif
 
   /*  if (is_NuEEl) {
-    LOG("UtlEventRec",pWARN)<<"Ignoring NuEEl event.";
+    VLOG("UtlEventRec",pWARN)<<"Ignoring NuEEl event.";
     return conv::kmUndefined;
     }*/
   
@@ -498,7 +498,7 @@ conv::ReacMode_t valor::util::DetermineReactionModeRead(int nu_pdg, int iscc, in
       const genie::GHepParticle * p = unknown_particles[ip];
       s<<*p<<std::endl;
     }
-    LOG("UtlEventRec",pWARN)<<unknown_particles.size()<<" unidentified particles in event:\n"<<s.str();
+    VLOG("UtlEventRec",pWARN)<<unknown_particles.size()<<" unidentified particles in event:\n"<<s.str();
   }
   
   int nPiC = nPip+nPim;
@@ -626,7 +626,7 @@ conv::ReacMode_t valor::util::DetermineReactionModeRead(int nu_pdg, int iscc, in
     for (unsigned int ii = 0 ; ii < modes.size(); ii++) {
       mode_names << "\n "<<util::AsString(modes[ii]);
     }
-    LOG("UtlEventRec",pERROR)<<"Event filed into multiple exclusive modes: "
+    VLOG("UtlEventRec",pERROR)<<"Event filed into multiple exclusive modes: "
       <<mode_names.str()
       <<"\nFull record: "<<*event;
       util::Die(-1);

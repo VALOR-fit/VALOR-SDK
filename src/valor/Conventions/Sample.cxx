@@ -461,7 +461,7 @@ bool util::IsMuLike(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
   }
-  LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
+  VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
 }
 //________________________________________________________________________________________
@@ -523,7 +523,7 @@ bool util::IsELike(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return false; break; 
   }
-  LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
+  VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
 }
 //________________________________________________________________________________________

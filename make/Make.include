@@ -70,6 +70,10 @@ ifdef GENIE_FQ_DIR
   GINCLUDES += -I$(GENIE_FQ_DIR)/include/GENIE/
 endif
 
+# more hacks for AL9
+ # add the GENIE includes to path specially
+ GINCLUDES += -I$(GENIE)/include/GENIE/
+
 # LHAPDF
 ifeq ($(strip $(GOPT_ENABLE_LHAPDF6)),YES)
 LHAPDF_INCLUDES  += -I$(GOPT_WITH_LHAPDF6_INC)

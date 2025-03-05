@@ -26,7 +26,7 @@ valor::util::ToyStream::ToyStream(const string file_name, const string read_or_w
   fFileName         = file_name;
 
   if(valor_array_format.empty()) {
-    LOG("ToyStream",pFATAL) << "Tried to setup a ToyStream object for \'" << fFileName
+    VLOG("ToyStream",pFATAL) << "Tried to setup a ToyStream object for \'" << fFileName
                             << "\', but did not specify a non-empty VALORArray format";
     util::Die(-1);
   }
@@ -38,7 +38,7 @@ valor::util::ToyStream::ToyStream(const string file_name, const string read_or_w
     fStream = new std::fstream(file_name, std::ios::binary | std::ios::in);
 
     if(this->FileIsEmpty()) {
-      LOG("ToyStream",pFATAL) << "Tried to read toys from file \'" << fFileName << "\', but it was empty";
+      VLOG("ToyStream",pFATAL) << "Tried to read toys from file \'" << fFileName << "\', but it was empty";
       util::Die(-1);
     }
 
@@ -47,13 +47,13 @@ valor::util::ToyStream::ToyStream(const string file_name, const string read_or_w
     const string read_validation_string = this->ReadValidationString();
 
     if(read_validation_string != fValidationString) {
-      LOG("ToyStream",pFATAL) << "Tried to read toys from file \'" << fFileName
+      VLOG("ToyStream",pFATAL) << "Tried to read toys from file \'" << fFileName
                               << "\', but the constructed validation string \n\'" << fValidationString
                               << "\'\ndid not match the stored validation string \n\'" << read_validation_string << "\'";
       util::Die(-1);
     }
 
-    LOG("ToyStream",pINFO) << "Reading toys from file \'" << file_name << "\' with valid validation string \'"
+    VLOG("ToyStream",pINFO) << "Reading toys from file \'" << file_name << "\' with valid validation string \'"
                              << fValidationString << "\'";
   }
   else if(read_or_write == "write") {
@@ -61,22 +61,22 @@ valor::util::ToyStream::ToyStream(const string file_name, const string read_or_w
     fStream = new std::fstream(file_name, std::ios::binary | std::ios::out | std::ios::trunc);
 
     if(!this->FileIsEmpty()) {
-      LOG("ToyStream",pFATAL) << "Tried to write toys to file \'" << fFileName << "\', but it was NOT empty";
+      VLOG("ToyStream",pFATAL) << "Tried to write toys to file \'" << fFileName << "\', but it was NOT empty";
       util::Die(-1);
     }
 
-    LOG("ToyStream",pINFO) << "Writing toys to file \'" << file_name << "\' with validation string \'"
+    VLOG("ToyStream",pINFO) << "Writing toys to file \'" << file_name << "\' with validation string \'"
                              << fValidationString << "\'";
     this->WriteValidationString();
   }
   else {
-    LOG("ToyStream",pFATAL) << "ToyStream must be constructed with read_or_write set to either \'read\' or \'write\'. "
+    VLOG("ToyStream",pFATAL) << "ToyStream must be constructed with read_or_write set to either \'read\' or \'write\'. "
                             << "Instead got \'" << read_or_write << "\'";
     util::Die(-1);
   }
 
   if(!fStream->good()) {
-    LOG("ToyStream",pFATAL) << "Could not open toy file \'" << fFileName << "\'";
+    VLOG("ToyStream",pFATAL) << "Could not open toy file \'" << fFileName << "\'";
     util::Die(-1);
   }
 
@@ -157,7 +157,7 @@ void valor::util::ToyStream::Write(VALORArray* va)
   // Check status of stream AFTER we try to write, as std::fstream allows write()
   // to be called even if you can't write to the file and it won't throw an error
   if(fStream->fail()) {   // Does not check end-of-file bit
-    LOG("ToyStream",pFATAL) << "Could not write to toy file \'" << fFileName << "\'";
+    VLOG("ToyStream",pFATAL) << "Could not write to toy file \'" << fFileName << "\'";
     util::Die(-1);
   }
 }
@@ -166,7 +166,7 @@ void valor::util::ToyStream::Read(VALORArray* va)
 {
   fStream->peek();
   if(!fStream->good()) {   // Checks end-of-file bit
-    LOG("ToyStream",pFATAL) << "Could not read from toy file \'" << fFileName << "\'";
+    VLOG("ToyStream",pFATAL) << "Could not read from toy file \'" << fFileName << "\'";
     util::Die(-1);
   }
 
@@ -175,7 +175,7 @@ void valor::util::ToyStream::Read(VALORArray* va)
   // Check status of stream AFTER we try to read, as std::fstream allows read()
   // to be called even if you can't read from the file and it won't throw an error
   if(fStream->fail()) {   // Does not check end-of-file bit
-    LOG("ToyStream",pFATAL) << "Could not read from toy file \'" << fFileName << "\'";
+    VLOG("ToyStream",pFATAL) << "Could not read from toy file \'" << fFileName << "\'";
     util::Die(-1);
   }
 }
@@ -187,7 +187,7 @@ void valor::util::ToyStream::SetPositionToToy(unsigned int toy_index)
   // Get the length of the validation string, which we need to skip over
   const size_t len_validation_string = ReadValidationStringSize();
   if(len_validation_string == -1) {
-    LOG("ToyStream",pFATAL) << "Could not get the validation string size";
+    VLOG("ToyStream",pFATAL) << "Could not get the validation string size";
     util::Die(-1);
   }
 
@@ -199,7 +199,7 @@ void valor::util::ToyStream::SetPositionToToy(unsigned int toy_index)
   // Check that we're at a valid position in the file
   fStream->peek();
   if(!fStream->good()) {
-    LOG("ToyStream",pFATAL) << "Tried to set the ToyStream to the position of toy #" << toy_index
+    VLOG("ToyStream",pFATAL) << "Tried to set the ToyStream to the position of toy #" << toy_index
                             << ", but there are not this many toys stored";
     util::Die(-1);
   }
@@ -209,7 +209,7 @@ Option_t* valor::util::ToyStream::GetVALORArrayFormat(void) const
 {
   if(fVALORArrayFormat.empty()) {
     // Needed for checks like opt = (format) ? format : "some_string"
-    LOG("ToyStream",pWARN) << "The VALORArray format string is empty, this shouldn't happen!";
+    VLOG("ToyStream",pWARN) << "The VALORArray format string is empty, this shouldn't happen!";
     return nullptr;
   }
 

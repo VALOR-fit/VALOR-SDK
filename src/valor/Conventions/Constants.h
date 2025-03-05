@@ -16,6 +16,8 @@
 #ifndef constants_h
 #define constants_h
 
+#include <utility>
+#include <vector>
 #include "valor/Conventions/Build.h"
 
 namespace valor {
@@ -482,6 +484,21 @@ static const double kMuonMassGeV     = 105.658 / 1000.;
 static const double kNeutronMassGeV  = 939.565 / 1000.;
 static const double kProtonMassGeV   = 938.272 / 1000.;
 static const double kDeltaMassGeV    = 1232.0  / 1000.;
+
+  // Parametrising the layers of the Earth: radius [km], density [g/cm3], Z/A ratio
+  static const std::vector<double> kEarthLayeredRadius  = { 1220.0, 3480.0, 5701.0, 6371.0, 100000.0 };
+  static const std::vector<double> kEarthLayeredDensity = { 13.0, 11.3, 5.0, 3.3, 0.0 };
+  static const std::vector<double> kEarthLayeredZOverA  = { 0.468, 0.468, 0.497, 0.497, 0.497 };
+
+  // An enum to put in earth layer enums
+  typedef enum tEarthLayer {
+    kEarthUnknown = -1,
+    kEarthInnerCore = 0,
+    kEarthOuterCore = 1,
+    kEarthLowerMantle = 2,
+    kEarthUpperMantle = 3,
+    kEarthAtmosphere = 4
+  } EarthLayer_t;
 
 } // conv
 } // valor
