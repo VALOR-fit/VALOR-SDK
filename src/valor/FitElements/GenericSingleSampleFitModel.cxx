@@ -1891,11 +1891,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     double ext_wght = GetExternalWeight(kinematics, m, conv::kntInclusive);
 
     // Find the appropriate bins
-    LOG("GenericSingleSampleFitModel", pFATAL) << "First invocation loading...";
+    VLOG("GenericSingleSampleFitModel", pFATAL) << "First invocation loading...";
     int true_bin    = true_sb->FindBin(true_vars);
     int reco_bin_sb = reco_sb->FindBin(reco_vars);
     int reco_bin_ob = reco_ob->FindBin(reco_vars);
-    LOG("GenericSingleSampleFitModel", pFATAL) << "First invocation DONE...";
+    VLOG("GenericSingleSampleFitModel", pFATAL) << "First invocation DONE...";
 
     VLOG("GenericSingleSampleFitModel",pDEBUG) 
   << "Inserting to MC templates --> MC event #" << iev 
@@ -2175,14 +2175,14 @@ double GenericSingleSampleFitModel::GetExternalWeight(std::map<KineVar_t,double>
     // Get the weight from the tuning hist
     // Assume that the order of kine vars in tuning_kine_vars corresponds to the relevant dimension of the tuning hist
     int global_bin = 0;
-    LOG("GenericSingleSampleFitModel", pFATAL) << "Tuning invocation loading...";
+    VLOG("GenericSingleSampleFitModel", pFATAL) << "Tuning invocation loading...";
     if     (tuning_kine_vars.size() == 1) { global_bin = tuning_hist->FindBin(kinematics.at(tuning_kine_vars[0])); }
     else if(tuning_kine_vars.size() == 2) { global_bin = tuning_hist->FindBin(kinematics.at(tuning_kine_vars[0]),
         kinematics.at(tuning_kine_vars[1])); }
     else if(tuning_kine_vars.size() == 3) { global_bin = tuning_hist->FindBin(kinematics.at(tuning_kine_vars[0]),
         kinematics.at(tuning_kine_vars[1]),
         kinematics.at(tuning_kine_vars[2])); }
-        LOG("GenericSingleSampleFitModel", pFATAL) << "Tuning invocation DONE...";  
+        VLOG("GenericSingleSampleFitModel", pFATAL) << "Tuning invocation DONE...";  
     if(tuning_hist->IsBinOverflow(global_bin) || tuning_hist->IsBinUnderflow(global_bin)) { continue; }
     VLOG("GenericSingleSampleFitModel", pDEBUG) << "Getting weight from tuning hist bin " << global_bin
       << " with content " << tuning_hist->GetBinContent(global_bin);
@@ -2403,14 +2403,14 @@ void GenericSingleSampleFitModel::ApplyBinnedRatioTuningToTemplates (TH1* numera
         // Get the weight from the ratio hist
         // Assume that the order of kine vars in tuning_kine_vars corresponds to the relevant dimension of the tuning hist
         int global_bin = 0;
-        LOG("GenericSingleSampleFitModel", pFATAL) << "Weight invocation loading...";
+        VLOG("GenericSingleSampleFitModel", pFATAL) << "Weight invocation loading...";
         if     (tuning_kine_vars.size() == 1) { global_bin = wght_hist->FindBin(mct_bin_centers[0]); }
         else if(tuning_kine_vars.size() == 2) { global_bin = wght_hist->FindBin(mct_bin_centers[0],
             mct_bin_centers[1]); }
         else if(tuning_kine_vars.size() == 3) { global_bin = wght_hist->FindBin(mct_bin_centers[0],
             mct_bin_centers[1],
             mct_bin_centers[2]); }
-            LOG("GenericSingleSampleFitModel", pFATAL) << "Weight invocation DONE...";
+            VLOG("GenericSingleSampleFitModel", pFATAL) << "Weight invocation DONE...";
         if(wght_hist->IsBinOverflow(global_bin) || wght_hist->IsBinUnderflow(global_bin)) { continue; }
         double wght = wght_hist->GetBinContent(global_bin);
         if(wght < 0) continue;
@@ -2526,9 +2526,9 @@ void GenericSingleSampleFitModel::FluctuateMCStat(Option_t * option)
           fMCTTunSb[imode]->SetEntry(valf,ireco,itrue);
 
           std::vector<double> reco_vars = reco_sb->BinCentre(ireco);
-          LOG("GenericSingleSampleFitModel", pFATAL) << "Reco invocation loading...";
+          VLOG("GenericSingleSampleFitModel", pFATAL) << "Reco invocation loading...";
           int ireco_ob = reco_ob->FindBin(reco_vars);
-          LOG("GenericSingleSampleFitModel", pFATAL) << "Reco invocation DONE...";
+          VLOG("GenericSingleSampleFitModel", pFATAL) << "Reco invocation DONE...";
           double valf_ob = fMCTTunOb[imode]->GetEntry(ireco_ob,itrue);
           valf_ob += valf;
           fMCTTunOb[imode]->SetEntry(valf_ob,ireco_ob,itrue);
@@ -2655,10 +2655,10 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
       else {
         debug_itrue = 0;
       }
-      LOG("GenericSingleSampleFitModel", pFATAL) << "Debug-xsec invocation loading...";
+      VLOG("GenericSingleSampleFitModel", pFATAL) << "Debug-xsec invocation loading...";
       double debug_xsec_ireco = debug_xsec_reco_binning->FindBin(debug_xsec_reco_vals);
       double debug_xsec_itrue = debug_xsec_true_binning->FindBin(debug_true_vals);
-      LOG("GenericSingleSampleFitModel", pFATAL) << "Debug-xsec invocation DONE...";
+      VLOG("GenericSingleSampleFitModel", pFATAL) << "Debug-xsec invocation DONE...";
       if(debug_mode != conv::kmUndefined || imode == 0) {
         if (debug_true0 != -999) {
           VLOG("GenericSingleSampleFitModel", pNOTICE)
@@ -4302,10 +4302,10 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
 
     // Get the bins this parameter applies to. Here I've assumed that the order of kinevars in kvs matches the order of
     // dimensions in the input hist
-    LOG("GenericSingleSampleFitModel", pFATAL) << "RW invocation loading...";
+    VLOG("GenericSingleSampleFitModel", pFATAL) << "RW invocation loading...";
     int bin_low_glob  = hist_to_reweight->FindBin(param.GetKineRange(kvs[0]).first  + conv::kASmallNum);  // + kASmallNum because searching for the right bin can go wrong if we search using the bin edges
     int bin_high_glob = hist_to_reweight->FindBin(param.GetKineRange(kvs[0]).second - conv::kASmallNum);
-    LOG("GenericSingleSampleFitModel", pFATAL) << "RW invocation DONE...";
+    VLOG("GenericSingleSampleFitModel", pFATAL) << "RW invocation DONE...";
     int bin_low_x  = -1;
     int bin_high_x = -1;
     int dummy = -1;
@@ -4313,10 +4313,10 @@ void GenericSingleSampleFitModel::ReweightHistUsingParamSet(TH1* hist_to_reweigh
     hist_to_reweight->GetBinXYZ(bin_high_glob, bin_high_x, dummy, dummy);
     for (int ibinx = bin_low_x; ibinx <= bin_high_x; ibinx++) {
       if(kvs.size() > 1) {
-        LOG("GenericSingleSampleFitModel", pFATAL) << "Many-D invocation loading...";
+        VLOG("GenericSingleSampleFitModel", pFATAL) << "Many-D invocation loading...";
         bin_low_glob  = hist_to_reweight->FindBin(param.GetKineRange(kvs[0]).first,  param.GetKineRange(kvs[1]).first);
         bin_high_glob = hist_to_reweight->FindBin(param.GetKineRange(kvs[0]).second, param.GetKineRange(kvs[1]).second);
-        LOG("GenericSingleSampleFitModel", pFATAL) << "Many-D invocation DONE...";
+        VLOG("GenericSingleSampleFitModel", pFATAL) << "Many-D invocation DONE...";
         int bin_low_y  = -1;
         int bin_high_y = -1;
         hist_to_reweight->GetBinXYZ(bin_low_glob , dummy, bin_low_y,  dummy);

@@ -463,14 +463,10 @@ conv::ReacMode_t valor::util::DetermineReactionModeRead(int nu_pdg, int iscc, in
   
   std::vector<const genie::GHepParticle*> unknown_particles;
   
-  const vector<int> & hadr_system = (use_final_state ? final_hadr_system : primary_hadr_system);
+  // const vector<int> & hadr_system = (use_final_state ? final_hadr_system : primary_hadr_system);
   // We exclude states with the right number of pions but other mesons.
-  
-  // Set up variables for counting particles
-  int nP = 0, nN = 0, nPip = 0, nPim = 0, nPi0 = 0;
-  int nKp = 0, nKm = 0, nK0 = 0, nEM = 0, nOtherHad = 0, nNucleus = 0;
 
-  std::vector<const genie::GHepParticle*> unknown_particles;
+  // std::vector<const genie::GHepParticle*> unknown_particles;
   const std::vector<int>& hadr_system = (use_final_state ? final_hadr_system : primary_hadr_system);
 
   for (unsigned int ip = 0; ip < hadr_system.size(); ip++) {

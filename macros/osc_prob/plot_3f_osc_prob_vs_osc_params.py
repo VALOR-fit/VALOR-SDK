@@ -71,7 +71,7 @@ def main():
     fout = ROOT.TFile(tag_root, "recreate")
 
     for iparam, param_name in enumerate(param_ranges.keys()):
-        print "Varying param", param_name
+        print ("Varying param", param_name)
 
         canv = ROOT.TCanvas(param_name, param_name, 800, 800)
 
