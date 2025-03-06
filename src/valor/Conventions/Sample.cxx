@@ -78,6 +78,7 @@ string util::AsString(Sample_t s)
     case (ksJFCAtmoNuECC    )  : return "JFC_nueCC";        break;
     case (ksJFCAtmoNuEBarCC )  : return "JFC_nuebarCC" ;    break;
     case (ksJFCAtmoNC )        : return "JFC_NC" ;          break;
+    case (ksJFCAtmoCC )        : return "JFC_CC" ;          break;
     default                  : return "--";
   }
   return "";
@@ -141,7 +142,8 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksJFCAtmoNuMuBarCC) : name = "JUNO Full contained Atmo #bar{#nu}_{#mu} CC"; break;
     case (ksJFCAtmoNuECC   ) : name = "JUNO Full contained Atmo #nu_{#e} CC";  break;
     case (ksJFCAtmoNuEBarCC) : name = "JUNO Full contained Atmo #bar{#nu}_{e} CC"; break;
-    case (ksJFCAtmoNC      ) : name = "JUNO Full contained Atmo NC";          break;    
+    case (ksJFCAtmoNC      ) : name = "JUNO Full contained Atmo NC";          break;
+    case (ksJFCAtmoCC      ) : name = "JUNO Full contained Atmo CC";          break;    
     default                  : name = "--";
   }
 
@@ -167,6 +169,7 @@ bool util::IsFar(Sample_t s)
     case (ksJFCAtmoNuECC       ) :
     case (ksJFCAtmoNuEBarCC    ) :
     case (ksJFCAtmoNC          ) :
+    case (ksJFCAtmoCC          ) :
     case (ksNuEBarCClow        ) :
     case (ksNuEBarCChigh       ) :  return true; break;
     case (ks1Rmu               ) : // intentional fallthrough
@@ -222,6 +225,7 @@ bool util::IsCC(Sample_t s)
     case (ksNC1pi0         ) :
     case (ksNCoth          ) :
     case (ksJFCAtmoNC      ) :
+    case (ksJFCAtmoCC      ) :
     case (ksNC             ) : return false; break;
 
     case (ks1Rmu           ) : // intentional fallthrough
@@ -337,6 +341,7 @@ bool util::IsNC(Sample_t s)
     case (ksJFCAtmoNuMuBarCC ) :
     case (ksJFCAtmoNuECC   ) :
     case (ksJFCAtmoNuEBarCC) :
+    case (ksJFCAtmoCC      ) :
     case (ksNuMuBarCClow   ) :
     case (ksNuMuBarCChigh  ) :
     case (ksNuELikeCClow   ) :
@@ -373,7 +378,7 @@ Sample_t util::SampleFromInt(int s)
 {
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
-  if((s >= (int)ksNuMuCC && s <= (int) ksJFCAtmoNC)) //RHC
+  if((s >= (int)ksNuMuCC && s < (int) ksOnePastEnd)) //RHC
     return (Sample_t)s;
   return ksUndefined;
 }
@@ -449,6 +454,8 @@ bool util::IsMuLike(Sample_t s)
     case (ksJFCAtmoNuMuBarCC ):return true  ;
     case (ksJFCAtmoNuECC   ) : return false ;
     case (ksJFCAtmoNuEBarCC) : return false ;
+    case (ksJFCAtmoNC) : return false ;
+    case (ksJFCAtmoCC) : return false ;
     
     case (ksNuMuCCoa00     ) : // intentional fallthrough
     case (ksNuMuCCoa01     ) :
@@ -505,6 +512,8 @@ bool util::IsELike(Sample_t s)
     case (ksJFCAtmoNuMuBarCC ):return false ;
     case (ksJFCAtmoNuECC   ) : return true  ;
     case (ksJFCAtmoNuEBarCC) : return true  ;
+    case (ksJFCAtmoNC      ) : return false ;
+    case (ksJFCAtmoCC      ) : return false ;
     case (ksNuELikeCChigh  ) : return true  ;
     case (ksNuELikeCClow   ) : return true  ;
     case (ksNuEBarCChigh   ) : return true  ;

@@ -92,12 +92,14 @@ typedef enum ESample
    ksJFCAtmoNuMuBarCC    = 50, // JUNO Full contained Atmo numubar CC
    ksJFCAtmoNuECC        = 51, // JUNO Full contained Atmo nue CC
    ksJFCAtmoNuEBarCC     = 52, // JUNO Full contained Atmo nuebar CC
-   ksJFCAtmoNC           = 53  // JUNO Full contained Atmospheric NC
+   ksJFCAtmoNC           = 53, // JUNO Full contained Atmospheric NC
+   ksJFCAtmoCC           = 54, // JUNO Full contained Atmospheric CC
+   ksOnePastEnd          // boundary checks
 
 }
 Sample_t; 
 
-static const int kMaxNSamples = 53;
+  static const int kMaxNSamples = static_cast<int>( ksOnePastEnd ) - 1;
 
 } // conv
 
