@@ -32,7 +32,7 @@
 #include "valor/Conventions/BeamConf.h"
 #include "valor/Conventions/Sample.h"
 #include "valor/Conventions/Detector.h"
-#include "valor/Core/SingleSampleFitDataABC.h"
+#include "valor/FitCore/SingleSampleFitDataABC.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/VArray/VALORArray.h"
 #include "valor/Utilities/SingleSampleKineBinning.h"
@@ -93,6 +93,7 @@ private:
   void Clean (void);
   void Zero  (Option_t * opt);
   void FillFromDST  (TTree * t); // <----- NOTE: Some code duplication with GSSFM - eliminate in future
+  void FillFromVArray (VALORArray * a);
 
   // Name of this VALOR fit dataset (see Conventions/Names.h)
   string fName;

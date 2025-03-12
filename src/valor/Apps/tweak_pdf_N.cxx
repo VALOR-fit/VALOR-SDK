@@ -49,17 +49,17 @@
 // VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/Core/CorrelatedSystematics.h"
-#include "valor/Core/PhysParamList.h"
-#include "valor/Core/FitParamList.h"
-#include "valor/Core/FitModelABC.h"
-#include "valor/Core/FitDataABC.h"
-//#include "valor/Core/Likelihood.h"
-#include "valor/Core/FitterABC.h"
-#include "valor/Fitters/UtlFit.h"
-#include "valor/Core/CompoundFitElements.h"
-#include "valor/Core/SingleSampleFitModelABC.h"
-//#include "valor/Core/UtlFitParamList.h"
+#include "valor/FitCore/CorrelatedSystematics.h"
+#include "valor/FitCore/PhysParamList.h"
+#include "valor/FitCore/FitParamList.h"
+#include "valor/FitCore/FitModelABC.h"
+#include "valor/FitCore/FitDataABC.h"
+//#include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/FitterABC.h"
+#include "valor/FitCore/UtlFit.h"
+#include "valor/FitCore/CompoundFitElements.h"
+#include "valor/FitCore/SingleSampleFitModelABC.h"
+#include "valor/FitCore/UtlFitParamList.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -115,7 +115,7 @@ int main(int argc, char ** argv)
   int prior_fit_number = arg.GetInt("prior-fit-number");
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  valor::Messenger::Instance()->Configure(mesg_thresholds);
+  Messenger::Instance()->Configure(mesg_thresholds);
 
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
@@ -188,8 +188,7 @@ int main(int argc, char ** argv)
     cout << "** Toy-MC: #" << itoy << endl;
 
     // (toy-MC #-1 is special: default)
-    //FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-    FitParamList * fp = new FitParamList(hypname, fplopt.c_str());
+    FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
     if(hypname == "eff_sterile_osc"){
         fp->Update(conv::kPhypDm41sq,   100);

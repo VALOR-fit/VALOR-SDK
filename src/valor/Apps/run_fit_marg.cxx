@@ -51,17 +51,17 @@
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/Conventions/KineSpace.h"
 #include "valor/Conventions/Opt.h"
-#include "valor/Core/PhysParamList.h"
-#include "valor/Core/FitParamList.h"
-#include "valor/Core/FitModelABC.h"
-#include "valor/Core/FitDataABC.h"
-#include "valor/Core/Likelihood.h"
-#include "valor/Core/FitterABC.h"
-#include "valor/Fitters/UtlFit.h"
-#include "valor/Core/CompoundFitElements.h"
-#include "valor/Core/Marginalisation.h"
-#include "valor/Core/UtlOscillation.h"
-//#include "valor/Core/UtlFitParamList.h"
+#include "valor/FitCore/PhysParamList.h"
+#include "valor/FitCore/FitParamList.h"
+#include "valor/FitCore/FitModelABC.h"
+#include "valor/FitCore/FitDataABC.h"
+#include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/FitterABC.h"
+#include "valor/FitCore/UtlFit.h"
+#include "valor/FitCore/CompoundFitElements.h"
+#include "valor/FitCore/Marginalisation.h"
+#include "valor/FitCore/UtlOscillation.h"
+#include "valor/FitCore/UtlFitParamList.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -187,8 +187,7 @@ void Fit(CmdLnArgList& arg)
          util::Die(-1);
       }
 
-      //FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-      FitParamList * fpl = new FitParamList(hypname, fplopt.c_str());
+      FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
       // Set the priors
       util::oscillation::SetParameterPriors(arg, *fpl);
@@ -204,8 +203,7 @@ void Fit(CmdLnArgList& arg)
    }
    else if(read_data_from_binary) {
       // First generate a dummy fake data toy to be overwritten (so that the data arrays can be initialised)
-      //FitParamList* fpl_void = util::GetFitParameterList("void", "");
-      FitParamList * fpl_void = new FitParamList(std::string("void"), "");
+      FitParamList* fpl_void = util::GetFitParameterList("void", "");
       data->Generate(model, *fpl_void, with_stat_fluct);
 
       // Fit to data read from an input binary toy file
@@ -351,7 +349,7 @@ void Fit(CmdLnArgList& arg)
 
 void Init(CmdLnArgList& arg)
 {
-   valor::Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
+   Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
 
    Opt::Instance()->gMassHierarchyAssumed = ( (arg.GetBool("inverted"))     ? conv::kNmhInverted      : conv::kNmhNormal);
    Opt::Instance()->gOscMixingParamChoice = ( (arg.GetBool("sinsq2theta"))  ? conv::kNuMixSinsq2Theta : conv::kNuMixSinsqTheta);

@@ -32,6 +32,7 @@
 #include <TH3D.h>
 #include <TSpline.h>
 #include <TGraph.h>
+#include <valor/VArray/VALORArrayT.h>
 
 class TGraph;
 class TH1;
@@ -75,6 +76,7 @@ namespace util {
   int              XML2Int           (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   double           XML2Dbl           (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   vector<double>   XML2DblArray      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
+  VALORArray       XML2VArray        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   string           XML2String        (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   pair<double,double> XML2DblDblPair (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
 
@@ -94,7 +96,7 @@ namespace util {
   TMatrixD *       XML2TMatrixD      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TMatrixD *       XML2TH2D2TMatrixD (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
   TSpline3 *       XML2TSpline3      (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string base_dir = "<env>");
-
+  vector<double>   XML2BinLowEdges   (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string binning_scheme);
   TAxis *          XML2BinInfo       (TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path);
   
 } // util

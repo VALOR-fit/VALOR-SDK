@@ -44,11 +44,15 @@ typedef enum EBeamConf
    kbNuMI_FHC,             // forward horn current beam @ FNAL/NuMI 
    kbNuMI_RHC,             // reverse horn current beam @ FNAL/NuMI 
    kbBNB_FHC,              // forward horn current beam @ FNAL/Booster
-   kbBNB_RHC               // reverse horn current beam @ FNAL/Booster
+   kbBNB_RHC,              // reverse horn current beam @ FNAL/Booster
+   kbJUNO_Atmo,            // JUNO, atmospheric
+   //
+   kbOnePastEnd            // Used for boundary checks
 } 
 BeamConf_t;
 
-static const int kNBeamsDefined = 8;
+static const int kNBeamsDefined = static_cast<int>( kbOnePastEnd );
+static const int kNBeamTypesDefined = 3; /* FHC, RHC, atmo */
 
 } // conv
 

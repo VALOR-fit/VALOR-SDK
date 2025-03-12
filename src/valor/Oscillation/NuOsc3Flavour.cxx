@@ -68,7 +68,7 @@ void NuOsc3Flavour::SetDensity(double density)
 //________________________________________________________________________________________
 void NuOsc3Flavour::SetMassHierarchy(NuMassHierarchy_t h)
 {
-  //VLOG("NuOsc3Flavour",pINFO) << "Mass hierarchy selected: " << util::AsString(h);
+  //LOG("NuOsc3Flavour",pINFO) << "Mass hierarchy selected: " << util::AsString(h);
 
   if(h==kNmhUndefined){
     cerr << "NuOsc3Flavour::SetMassHierarchy" << endl;

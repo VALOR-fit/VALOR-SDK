@@ -31,6 +31,7 @@ namespace conv {
 // ...........................................................................
 // Define samples
 //
+// TODO: This needs to be cleaned up
 typedef enum ESample
 {
    //2016b near detector selections
@@ -86,11 +87,20 @@ typedef enum ESample
    ksNuMuCCoa06          , // numuCC-like, off-axis bin "06"
    ksNuMuCCoa07          , // numuCC-like, off-axis bin "07"
    ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
-   ksNuMuCCoa09            // numuCC-like, off-axis bin "09"
+   ksNuMuCCoa09          , // numuCC-like, off-axis bin "09"
+   // JUNO selections - all currently fully-contained events
+   ksJUNO_FC_CC          , // CC inclusive FC. Split into subsamples
+   ksJUNO_FC_CC_Numu     , // CC numu-like FC
+   ksJUNO_FC_CC_Numubar  , // CC numbar-like FC
+   ksJUNO_FC_CC_Nue      , // CC nue-like FC
+   ksJUNO_FC_CC_Nuebar   , // CC nuebar-like FC
+   ksJUNO_FC_NC          , // NC inclusive FC
+   //
+   ksOnePastEnd            // used for boundary checks
 }
 Sample_t; 
 
-static const int kMaxNSamples = 49;
+  static const int kMaxNSamples = static_cast<int>( ksOnePastEnd );
 
 } // conv
 

@@ -73,8 +73,8 @@
 
 /*! \def ENDL  \brief A shortcut for log4cpp's CategoryStream::ENDLINE or std manipulators*/
 
-#ifdef __VALOR_FMWK_USES_VLOG4CPP_VERSION__
-  #if __VALOR_FMWK_USES_VLOG4CPP_VERSION__==0
+#ifdef __VALOR_FMWK_USES_LOG4CPP_VERSION__
+  #if __VALOR_FMWK_USES_LOG4CPP_VERSION__==0
     #define ENDL log4cpp::CategoryStream::ENDLINE
   #else
     #define ENDL std::endl
@@ -82,6 +82,8 @@
 #else
   #define ENDL std::endl
 #endif
+
+// Switch off SLOG and LOG in AL9 because of an include conflict somewhere...
 
 /*!
   \def   SLOG(stream, priority)
@@ -97,6 +99,7 @@
                << __FUNCTION__ << " (" << __LINE__ << ")> : "
 #endif
 */
+
 /*!
   \def   LOG(stream, priority)
   \brief A macro that returns the requested log4cpp::Category
@@ -111,6 +114,9 @@
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 #endif
 */
+
+
+
 // Copies of the above two functions with "V" in front (for VALORLog).
 // Can be used to prevent collisisons with GENIE logging in programs built against both.
 #define VSLOG(stream, priority) \
@@ -165,13 +171,18 @@
                << log4cpp::Priority::DEBUG << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 
+#define VBLOG(stream, priority) \
+	  (*valor::Messenger::Instance())(stream) << priority
+
+#else // GENIE does #define these...
+
 /*!
   \def   LLOG(stream, priority)
   \brief A macro that returns the requested log4cpp::Category
          appending a string (using the __PRETTY_FUNCTION__ and __LINE__ macros)
          with information for the calling method [produces long messages].
 */
-/*
+
 #define LLOG(stream, priority) \
            (*valor::Messenger::Instance())(stream) \
                << priority << "[l] <" \
@@ -216,18 +227,17 @@
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::DEBUG << "[l] <" \
                << __PRETTY_FUNCTION__ << " (" << __LINE__ << ")> : "
-*/
+
 /*!
   \def   BLOG(stream, priority)
   \brief A macro that returns the requested log4cpp::Category appending no 
          additional information
 */
-/*
+
 #define BLOG(stream, priority) \
 	  (*valor::Messenger::Instance())(stream) << priority
        
-*/
-#endif // Our check for LOG_FATAL, to make sure we don't collide with GENIE
+#endif // Our check for VLOG_FATAL, to make sure we don't collide with GENIE
 
 namespace valor {
 

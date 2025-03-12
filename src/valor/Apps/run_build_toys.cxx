@@ -62,19 +62,19 @@
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/Conventions/KineSpace.h"
 #include "valor/Conventions/Opt.h"
-#include "valor/Core/PhysParamList.h"
-#include "valor/Core/FitParamList.h"
-#include "valor/Core/CompoundFitElements.h"
-#include "valor/Core/CompoundFitData.h"
-#include "valor/Core/CompoundFitModel.h"
-#include "valor/Core/FitModelABC.h"
-#include "valor/Core/FitDataABC.h"
-#include "valor/Core/Likelihood.h"
-#include "valor/Core/FitterABC.h"
-#include "valor/Fitters/UtlFit.h"
-#include "valor/Core/UtlOscillation.h"
-#include "valor/Core/ToyBuilder.h"
-//#include "valor/Core/UtlFitParamList.h"
+#include "valor/FitCore/PhysParamList.h"
+#include "valor/FitCore/FitParamList.h"
+#include "valor/FitCore/CompoundFitElements.h"
+#include "valor/FitCore/CompoundFitData.h"
+#include "valor/FitCore/CompoundFitModel.h"
+#include "valor/FitCore/FitModelABC.h"
+#include "valor/FitCore/FitDataABC.h"
+#include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/FitterABC.h"
+#include "valor/FitCore/UtlFit.h"
+#include "valor/FitCore/UtlOscillation.h"
+#include "valor/FitCore/ToyBuilder.h"
+#include "valor/FitCore/UtlFitParamList.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -167,8 +167,7 @@ void BuildToys(CmdLnArgList& arg)
    CompoundFitElements * elements = new CompoundFitElements();
    elements->Read(util::CompleteConfigPath(arg.GetString("config")));
 
-   //FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-   FitParamList * fpl = new FitParamList(hypname, fplopt.c_str());
+   FitParamList* fpl = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
    // Set the priors
    util::oscillation::SetParameterPriors(arg, *fpl);
    // Fix or set marginalisation flag for oscillation parameters
@@ -235,7 +234,7 @@ void BuildToys(CmdLnArgList& arg)
 
 void Init(CmdLnArgList& arg)
 {
-   valor::Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
+   Messenger::Instance()->Configure(util::CompleteConfigPath(arg.GetString("mesg-thresholds")));
 
    Opt::Instance()->gMassHierarchyAssumed = ( (arg.GetBool("inverted"))     ? conv::kNmhInverted      : conv::kNmhNormal);
    Opt::Instance()->gOscMixingParamChoice = ( (arg.GetBool("sinsq2theta"))  ? conv::kNuMixSinsq2Theta : conv::kNuMixSinsqTheta);

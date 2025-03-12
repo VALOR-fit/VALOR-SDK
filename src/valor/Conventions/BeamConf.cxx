@@ -29,7 +29,8 @@ string util::AsString(BeamConf_t b, Option_t * opt)
     case (kbNuMI_FHC   ) : name = "NUMI_FHC";    break;
     case (kbNuMI_RHC   ) : name = "NUMI_RHC";    break; 
     case (kbBNB_FHC    ) : name = "BNB_FHC";     break;
-    case (kbBNB_RHC    ) : name = "BNB_RHC";     break; 
+    case (kbBNB_RHC    ) : name = "BNB_RHC";     break;
+    case (kbJUNO_Atmo  ) : name = "JUNO";        break;
     default : name = "--";  
   }
 
@@ -51,14 +52,14 @@ BeamConf_t util::BeamConfFromInt(int b)
 {
 // Cast an integer to BeamConf_t, but with boundary check
 //            [first]              [last]
-  if(b >= (int)kbLBNF_FHC && b <= (int) kbBNB_RHC) return (BeamConf_t)b;
+  if(b >= (int)kbLBNF_FHC && b < (int) kbOnePastEnd) return (BeamConf_t)b;
   return kbUndefined;
 }
 //________________________________________________________________________________________
 BeamConf_t util::BeamConfFromString(string beam)
 {
   string lc_beam = util::ToLowerCase(beam);
-  for (int i = 0 ; i <= (int)kbBNB_RHC ; i++ ) {
+  for (int i = 0 ; i < (int)kbOnePastEnd ; i++ ) {
     BeamConf_t s = (BeamConf_t)i;
     string this_beam = util::ToLowerCase(util::AsString(s));
     if(lc_beam==this_beam && this_beam!="--") {

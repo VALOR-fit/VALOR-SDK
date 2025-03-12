@@ -64,17 +64,17 @@
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/ParameterPool.h"
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/Core/CorrelatedSystematics.h"
-#include "valor/Core/PhysParamList.h"
-#include "valor/Core/FitParamList.h"
-#include "valor/Core/FitModelABC.h"
-#include "valor/Core/FitDataABC.h"
-#include "valor/Core/Likelihood.h"
-#include "valor/Core/FitterABC.h"
-#include "valor/Core/CompoundFitElements.h"
-#include "valor/Fitters/UtlFit.h"
-#include "valor/Core/UtlOscillation.h"
-//#include "valor/Core/UtlFitParamList.h"
+#include "valor/FitCore/CorrelatedSystematics.h"
+#include "valor/FitCore/PhysParamList.h"
+#include "valor/FitCore/FitParamList.h"
+#include "valor/FitCore/FitModelABC.h"
+#include "valor/FitCore/FitDataABC.h"
+#include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/FitterABC.h"
+#include "valor/FitCore/CompoundFitElements.h"
+#include "valor/FitCore/UtlFit.h"
+#include "valor/FitCore/UtlOscillation.h"
+#include "valor/FitCore/UtlFitParamList.h"
 #include "valor/Oscillation/SimpleOsc.h"
 #include "valor/Utilities/OscParamValues.h"
 #include "valor/Utilities/NameRegistry.h"
@@ -142,7 +142,7 @@ int main(int argc, char ** argv)
   }
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  valor::Messenger::Instance()->Configure(mesg_thresholds);
+  Messenger::Instance()->Configure(mesg_thresholds);
 
   // Set up the thread pool
   if(n_threads>0) {//without n-cores specified, use as many as the host has
@@ -208,8 +208,7 @@ int main(int argc, char ** argv)
 
     // Get the specified fit parameter list (specifies which parameters are floated/fixed,
     // parameter limits, initial values etc).
-    //FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-    FitParamList * fp = new FitParamList(hypname, fplopt.c_str());
+    FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
 
     if(fp == 0){ // Make sure that worked
       VLOG("valor",pFATAL) << "FitParamList not filled";
@@ -245,7 +244,6 @@ int main(int argc, char ** argv)
         }
         model->RandomizeSystematics(param_map, *fp);
       }
-
     }
 
     PhysParamList tweaks = model->Tweaks();
@@ -267,8 +265,7 @@ int main(int argc, char ** argv)
     }
 
     // Check parameter name, maybe rethrow
-    //if (!util::AllWithinLimits(*fp)) {
-    if (!fp->AllWithinLimits()) {
+    if (!util::AllWithinLimits(*fp)) {
       VLOG("valor", pNOTICE) << "At least one parameter thrown outside expected limits.";
       if (rethrow_unphysical) {
         VLOG("valor", pNOTICE) << "Regenerating...";

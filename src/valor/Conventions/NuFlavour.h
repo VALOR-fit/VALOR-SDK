@@ -26,18 +26,19 @@ namespace conv {
 typedef enum ENuFlavour
 {   
    kNuFlavourUndefined = -1,
-   kNuE,
    kNuMu,
-   kNuTau,
-   kNuEBar,
    kNuMuBar,
+   kNuE,
+   kNuEBar,
+   kNuTau,
    kNuTauBar,
    kCosmic,
    kDirt,
+   kFlavourOnePastEnd
 } 
 NuFlavour_t;
 
-static const int kNNuFlavour = 7;
+  static const int kNNuFlavour = static_cast<int>(kFlavourOnePastEnd);
 
 } // conv
 

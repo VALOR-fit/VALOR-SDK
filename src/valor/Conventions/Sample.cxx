@@ -73,6 +73,12 @@ string util::AsString(Sample_t s)
     case (ksNuMuCCoa07     ) : return "numuCCinclOA07";  break;
     case (ksNuMuCCoa08     ) : return "numuCCinclOA08";  break;
     case (ksNuMuCCoa09     ) : return "numuCCinclOA09";  break;
+    case (ksJUNO_FC_CC     ) : return "CCincl_fc";       break;
+    case (ksJUNO_FC_CC_Numu) : return "numuCC_fc";       break;
+    case (ksJUNO_FC_CC_Numubar) : return "numubarCC_fc"; break;
+    case (ksJUNO_FC_CC_Nue)  : return "nueCC_fc";        break;
+    case (ksJUNO_FC_CC_Nuebar)  : return "nuebarCC_fc";  break;
+    case (ksJUNO_FC_NC     ) : return "NCincl_fc";       break;
     default                  : return "--";
   }
   return "";
@@ -132,6 +138,12 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksNuMuCCoa07     ) : name = "#nu_{#mu} CC incl., off-axis bin 07";  break;
     case (ksNuMuCCoa08     ) : name = "#nu_{#mu} CC incl., off-axis bin 08";  break;
     case (ksNuMuCCoa09     ) : name = "#nu_{#mu} CC incl., off-axis bin 09";  break;
+    case (ksJUNO_FC_CC     ) : name = "Fully contained CC inclusive";         break;
+    case (ksJUNO_FC_CC_Numu) : name = "Fully contained #nu_{#mu} CC incl." ;  break;
+    case (ksJUNO_FC_CC_Numubar) : name = "Fully contained #bar{#nu}_{#mu} CC incl."; break;
+    case (ksJUNO_FC_CC_Nue)  : name =  "Fully contained #nu_{e} CC incl."  ;  break;
+    case (ksJUNO_FC_CC_Nuebar)  : name = "Fully contained #bar{#nu}_{e} CC incl.";   break;
+    case (ksJUNO_FC_NC     ) : name = "Fully contained NC inclusive";         break;
     default                  : name = "--";
   }
 
@@ -219,6 +231,15 @@ bool util::IsCC(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
 
+    case (ksJUNO_FC_CC        ) :
+    case (ksJUNO_FC_CC_Numu   ) :
+    case (ksJUNO_FC_CC_Numubar) :
+    case (ksJUNO_FC_CC_Nue    ) :
+    case (ksJUNO_FC_CC_Nuebar ) : return true; break;
+
+    case (ksJUNO_FC_NC): return false; break;
+
+
     case (ksUndefined      ) : return false;
   }
   return false;
@@ -280,6 +301,8 @@ bool util::IsCCQELike(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return false; break;
 
+    // No JUNO samples as of now are CCQE-like, return false
+
     return false; break;
     default: return false;
   }
@@ -340,6 +363,14 @@ bool util::IsNC(Sample_t s)
     case (ksNCoth          ) :
     case (ksNC             ) : return true;
 
+    case (ksJUNO_FC_CC        ) :
+    case (ksJUNO_FC_CC_Numu   ) :
+    case (ksJUNO_FC_CC_Numubar) :
+    case (ksJUNO_FC_CC_Nue    ) :
+    case (ksJUNO_FC_CC_Nuebar ) : return false; break;
+
+    case (ksJUNO_FC_NC): return true; break;
+
     case (ksUndefined      ) : return false;
   }
   return false;
@@ -349,7 +380,7 @@ Sample_t util::SampleFromInt(int s)
 {
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
-  if((s >= (int)ksNuMuCC && s <= (int) ksNuMuCCoa09)) //RHC
+  if((s >= (int)ksNuMuCC && s < (int) ksOnePastEnd)) //RHC
     return (Sample_t)s;
   return ksUndefined;
 }
@@ -432,6 +463,13 @@ bool util::IsMuLike(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
 
+    case (ksJUNO_FC_CC_Numu   ) :
+    case (ksJUNO_FC_CC_Numubar) : return true ; break;
+    case (ksJUNO_FC_CC        ) :
+    case (ksJUNO_FC_CC_Nue    ) :
+    case (ksJUNO_FC_CC_Nuebar ) :
+    case (ksJUNO_FC_NC        ) : return false ; break;
+
   }
   VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
@@ -489,7 +527,14 @@ bool util::IsELike(Sample_t s)
     case (ksNuMuCCoa06     ) :
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
-    case (ksNuMuCCoa09     ) : return false; break;      
+    case (ksNuMuCCoa09     ) : return false; break;
+
+    case (ksJUNO_FC_CC_Nue    ) :
+    case (ksJUNO_FC_CC_Nuebar ) : return true ; break;
+    case (ksJUNO_FC_CC        ) :
+    case (ksJUNO_FC_CC_Numu   ) :
+    case (ksJUNO_FC_CC_Numubar) :
+  case (ksJUNO_FC_NC        ) : return false ; break;
   }
   VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;

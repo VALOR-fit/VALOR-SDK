@@ -29,7 +29,7 @@ using std::ostream;
 
 namespace valor {
 
-class FitterABC;
+class FitterABC_new;
 class FitterFactory;
 
 ostream & operator << (ostream & stream, const valor::FitterFactory & ff);
@@ -44,7 +44,7 @@ public:
   bool AddFitter(string name, string implementation);
 
   //
-  FitterABC * GetFitter (string name);
+  FitterABC_new * GetFitter (string name);
 
   // Print available fitters and their configuration
   void Print(ostream & stream) const;
@@ -60,7 +60,7 @@ private:
   static FitterFactory * fgInstance;
 
   // name -> fitter map
-  map<string, FitterABC *> fFitterPool;
+  map<string, FitterABC_new *> fFitterPool;
 
   //! singleton cleaner
   struct Cleaner {

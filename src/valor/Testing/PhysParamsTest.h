@@ -22,7 +22,7 @@
 
 // VALOR/SDK
 #include "valor/Testing/Test.h"
-#include "valor/Core/PhysParams.h"
+#include "valor/FitCore/PhysParams.h"
 
 namespace valor
 {

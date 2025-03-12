@@ -34,12 +34,12 @@ namespace valor {
   namespace conv {
 
     static const unsigned long kApplyMaskOne     = 1ul;
-    static const int nbitsBeamApplyMask          = 2;
-    static const int nbitsFlavApplyMask          = 6;
-    static const int nbitsSelecApplyMask         = 35;
-    static const int nbitsReacTypeApplyMask      = 29;
-    static const int nbitsDetectorApplyMask      = 7;
-    static const int nbitsNuclearTargetApplyMask = 7;
+    static const int nbitsBeamApplyMask          = kNBeamTypesDefined; // 3
+    static const int nbitsFlavApplyMask          = kNNuFlavour; // 8
+    static const int nbitsSelecApplyMask         = kMaxNSamples; // 38 
+    static const int nbitsReacTypeApplyMask      = kNReacType; // 27
+    static const int nbitsDetectorApplyMask      = kNDetectorsDefined; // 14
+    static const int nbitsNuclearTargetApplyMask = kNNuclearTarget; // 7
 
     typedef std::bitset<nbitsBeamApplyMask>           BeamApplyMask_t;
     typedef std::bitset<nbitsFlavApplyMask>           FlavApplyMask_t;
@@ -60,53 +60,95 @@ namespace valor {
       NuclearTargetApplyMask_t target;
     } ApplyMask_t;
 
-    static const BeamApplyMask_t kbApplyToFHC         = (kApplyMaskOne <<  0 ); // Current
-    static const BeamApplyMask_t kbApplyToRHC         = (kApplyMaskOne <<  1 );
+    /*
+     * We will apply the following convention: 
+     * All bits in a bitset, as per C++ standard, are organised with LSB on the RIGHT.
+     * LSB is index 0, etc. Each bit index corresponds to that entry in the appropriate enum.
+     */
 
-    static const FlavApplyMask_t kfApplyToNuMu            = (kApplyMaskOne << 0 ); // True flavour
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Beam type
+    static const BeamApplyMask_t kbApplyToFHC         = (kApplyMaskOne <<  0 );
+    static const BeamApplyMask_t kbApplyToRHC         = (kApplyMaskOne <<  1 );
+    static const BeamApplyMask_t kbApplyToAtmo        = (kApplyMaskOne <<  2 );
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Neutrino (true) flavour
+    static const FlavApplyMask_t kfApplyToNuMu            = (kApplyMaskOne << 0 );
     static const FlavApplyMask_t kfApplyToNuMuBar         = (kApplyMaskOne << 1 );
     static const FlavApplyMask_t kfApplyToNuE             = (kApplyMaskOne << 2 );
     static const FlavApplyMask_t kfApplyToNuEBar          = (kApplyMaskOne << 3 );
-    static const FlavApplyMask_t kfApplyToCosmic          = (kApplyMaskOne << 4 );
-    static const FlavApplyMask_t kfApplyToDirt            = (kApplyMaskOne << 5 );
+    static const FlavApplyMask_t kfApplyToNuTau           = (kApplyMaskOne << 4 );
+    static const FlavApplyMask_t kfApplyToNuTauBar        = (kApplyMaskOne << 5 );
+    static const FlavApplyMask_t kfApplyToCosmic          = (kApplyMaskOne << 6 );
+    static const FlavApplyMask_t kfApplyToDirt            = (kApplyMaskOne << 7 );
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Sample
 
-    static const SelecApplyMask_t ksApplyToNuMuCC          = (kApplyMaskOne <<  0 ); // Sample
+    // 2016b, near detector selections
+    static const SelecApplyMask_t ksApplyToNuMuCC          = (kApplyMaskOne <<  0 ); 
     static const SelecApplyMask_t ksApplyToNuMuCC0pi1trk   = (kApplyMaskOne <<  1 );
     static const SelecApplyMask_t ksApplyToNuMuCC0pi2trk   = (kApplyMaskOne <<  2 );
-    static const SelecApplyMask_t ksApplyToNuMuCC0piNtrk   = (kApplyMaskOne <<  3 );
-    static const SelecApplyMask_t ksApplyToNuMuCC3trkDelta = (kApplyMaskOne <<  4 );
-    static const SelecApplyMask_t ksApplyToNuMuCC1piC      = (kApplyMaskOne <<  5 );
-    static const SelecApplyMask_t ksApplyToNuMuCC2piC      = (kApplyMaskOne <<  6 );
-    static const SelecApplyMask_t ksApplyToNuMuCC1pi0      = (kApplyMaskOne <<  7 );
-    static const SelecApplyMask_t ksApplyToNuMuCC1piC1pi0  = (kApplyMaskOne <<  8 );
-    static const SelecApplyMask_t ksApplyToNuMuCCoth       = (kApplyMaskOne <<  9 );
-    static const SelecApplyMask_t ksApplyToNuMuCCWS0pi     = (kApplyMaskOne << 10 );
-    static const SelecApplyMask_t ksApplyToNuMuCCWS1piC    = (kApplyMaskOne << 11 );
-    static const SelecApplyMask_t ksApplyToNuMuCCWS1pi0    = (kApplyMaskOne << 12 );
-    static const SelecApplyMask_t ksApplyToNuMuCCWSoth     = (kApplyMaskOne << 13 );
-    static const SelecApplyMask_t ksApplyToNuECC0pi        = (kApplyMaskOne << 14 );
-    static const SelecApplyMask_t ksApplyToNuECC1piC       = (kApplyMaskOne << 15 );
-    static const SelecApplyMask_t ksApplyToNuECC1pi0       = (kApplyMaskOne << 16 );
-    static const SelecApplyMask_t ksApplyToNuECCoth        = (kApplyMaskOne << 17 );
-    static const SelecApplyMask_t ksApplyToNC0pi           = (kApplyMaskOne << 18 );
-    static const SelecApplyMask_t ksApplyToNC1piC          = (kApplyMaskOne << 19 );
-    static const SelecApplyMask_t ksApplyToNC1pi0          = (kApplyMaskOne << 20 );
-    static const SelecApplyMask_t ksApplyToNCoth           = (kApplyMaskOne << 21 );
-    static const SelecApplyMask_t ksApplyToNeutrinoElec    = (kApplyMaskOne << 22 );
-    static const SelecApplyMask_t ksApplyToInvMuDecay      = (kApplyMaskOne << 23 );
-    static const SelecApplyMask_t ksApplyToNuECCWS         = (kApplyMaskOne << 24 );
-    static const SelecApplyMask_t ksApplyToNuECC           = (kApplyMaskOne << 25 );
-    static const SelecApplyMask_t ksApplyToNuMuCCWS        = (kApplyMaskOne << 26 );
-    static const SelecApplyMask_t ksApplyToNC              = (kApplyMaskOne << 27 );
-    static const SelecApplyMask_t ksApplyToMuLikeHighRes   = (kApplyMaskOne << 28 );
-    static const SelecApplyMask_t ksApplyToMuLikeLowRes    = (kApplyMaskOne << 29 );
-    static const SelecApplyMask_t ksApplyToELikeHighRes    = (kApplyMaskOne << 30 );
-    static const SelecApplyMask_t ksApplyToELikeLowRes     = (kApplyMaskOne << 31 );
-    static const SelecApplyMask_t ksApplyTo1RingMu         = (kApplyMaskOne << 32 ); // SuperK selections
-    static const SelecApplyMask_t ksApplyTo1RingE          = (kApplyMaskOne << 33 ); // SuperK selections
-    static const SelecApplyMask_t ksApplyToMultiRingE      = (kApplyMaskOne << 34 ); // SuperK selections
+    static const SelecApplyMask_t ksApplyToNuMuCC1piC      = (kApplyMaskOne <<  3 );
+    static const SelecApplyMask_t ksApplyToNuMuCC2piC      = (kApplyMaskOne <<  4 );
+    static const SelecApplyMask_t ksApplyToNuMuCC1pi0      = (kApplyMaskOne <<  5 );
+    static const SelecApplyMask_t ksApplyToNuMuCC1piC1pi0  = (kApplyMaskOne <<  6 );
+    static const SelecApplyMask_t ksApplyToNuMuCCoth       = (kApplyMaskOne <<  7 );
+    static const SelecApplyMask_t ksApplyToNuECC           = (kApplyMaskOne <<  8 );
+    static const SelecApplyMask_t ksApplyToNuMuCCWS        = (kApplyMaskOne <<  9 );
+    static const SelecApplyMask_t ksApplyToNC              = (kApplyMaskOne << 10 );
+    static const SelecApplyMask_t ksApplyToNuMuCC0piNtrk   = (kApplyMaskOne << 11 );
+    static const SelecApplyMask_t ksApplyToNuMuCC3trkDelta = (kApplyMaskOne << 12 );
+    static const SelecApplyMask_t ksApplyToNuMuCCWS0pi     = (kApplyMaskOne << 13 );
+    static const SelecApplyMask_t ksApplyToNuMuCCWS1piC    = (kApplyMaskOne << 14 );
+    static const SelecApplyMask_t ksApplyToNuMuCCWS1pi0    = (kApplyMaskOne << 15 );
+    static const SelecApplyMask_t ksApplyToNuMuCCWSoth     = (kApplyMaskOne << 16 );
+    static const SelecApplyMask_t ksApplyToNuECC0pi        = (kApplyMaskOne << 17 );
+    static const SelecApplyMask_t ksApplyToNuECC1piC       = (kApplyMaskOne << 18 );
+    static const SelecApplyMask_t ksApplyToNuECC1pi0       = (kApplyMaskOne << 19 );
+    static const SelecApplyMask_t ksApplyToNuECCoth        = (kApplyMaskOne << 20 );
+    static const SelecApplyMask_t ksApplyToNC0pi           = (kApplyMaskOne << 21 );
+    static const SelecApplyMask_t ksApplyToNC1piC          = (kApplyMaskOne << 22 );
+    static const SelecApplyMask_t ksApplyToNC1pi0          = (kApplyMaskOne << 23 );
+    static const SelecApplyMask_t ksApplyToNCoth           = (kApplyMaskOne << 24 );
+    static const SelecApplyMask_t ksApplyToNeutrinoElec    = (kApplyMaskOne << 25 );
+    static const SelecApplyMask_t ksApplyToInvMuDecay      = (kApplyMaskOne << 26 );
+    static const SelecApplyMask_t ksApplyToNuECCWS         = (kApplyMaskOne << 27 );
+    
+    // 2016b, far detector selections
+    static const SelecApplyMask_t ksApplyToMuLikeHighRes      = (kApplyMaskOne << 28 );
+    static const SelecApplyMask_t ksApplyToMuLikeLowRes       = (kApplyMaskOne << 29 );
+    static const SelecApplyMask_t ksApplyToELikeHighRes       = (kApplyMaskOne << 30 );
+    static const SelecApplyMask_t ksApplyToELikeLowRes        = (kApplyMaskOne << 31 );
+    static const SelecApplyMask_t ksApplyToMuBarLikeHighRes   = (kApplyMaskOne << 32 );
+    static const SelecApplyMask_t ksApplyToMuBarLikeLowRes    = (kApplyMaskOne << 33 );
+    static const SelecApplyMask_t ksApplyToEBarLikeHighRes    = (kApplyMaskOne << 34 );
+    static const SelecApplyMask_t ksApplyToEBarLikeLowRes     = (kApplyMaskOne << 35 );
+    // SuperK selections
+    static const SelecApplyMask_t ksApplyTo1RingMu            = (kApplyMaskOne << 36 );
+    static const SelecApplyMask_t ksApplyTo1RingE             = (kApplyMaskOne << 37 );
+    static const SelecApplyMask_t ksApplyToMultiRingE         = (kApplyMaskOne << 38 );
 
-    static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 ); // Reaction type
+    // PRISM selections
+    static const SelecApplyMask_t ksApplyToNuMuCCoa00         = (kApplyMaskOne << 39);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa01         = (kApplyMaskOne << 40);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa02         = (kApplyMaskOne << 41);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa03         = (kApplyMaskOne << 42);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa04         = (kApplyMaskOne << 43);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa05         = (kApplyMaskOne << 44);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa06         = (kApplyMaskOne << 45);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa07         = (kApplyMaskOne << 46);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa08         = (kApplyMaskOne << 47);
+    static const SelecApplyMask_t ksApplyToNuMuCCoa09         = (kApplyMaskOne << 48);
+    
+    // JUNO selections
+    static const SelecApplyMask_t ksApplyToJUNO_FC_CC_Numu        = (kApplyMaskOne << 49 );
+    static const SelecApplyMask_t ksApplyToJUNO_FC_CC_Numubar     = (kApplyMaskOne << 50 );
+    static const SelecApplyMask_t ksApplyToJUNO_FC_CC_Nue         = (kApplyMaskOne << 51 );
+    static const SelecApplyMask_t ksApplyToJUNO_FC_CC_Nuebar      = (kApplyMaskOne << 52 );
+    static const SelecApplyMask_t ksApplyToJUNO_FC_NC             = (kApplyMaskOne << 53 );
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Reaction type
+    static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 );
     static const ReacTypeApplyMask_t ktApplyToCCMEC        = (kApplyMaskOne <<  1 );
     static const ReacTypeApplyMask_t ktApplyToCC1piC       = (kApplyMaskOne <<  2 );
     static const ReacTypeApplyMask_t ktApplyToCC1pi0       = (kApplyMaskOne <<  3 );
@@ -131,21 +173,29 @@ namespace valor {
     static const ReacTypeApplyMask_t ktApplyToNC1Gamma     = (kApplyMaskOne << 22 );
     static const ReacTypeApplyMask_t ktApplyToNCELScat     = (kApplyMaskOne << 23 );
     static const ReacTypeApplyMask_t ktApplyToNCoth        = (kApplyMaskOne << 24 );
-    static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 25 ); //only for nue: CC + NC + interference
-    static const ReacTypeApplyMask_t ktApplyToOther        = (kApplyMaskOne << 26 ); //only for nue: CC + NC + interference
-    static const ReacTypeApplyMask_t ktApplyToCosmic       = (kApplyMaskOne << 27 ); //only for nue: CC + NC + interference
-    static const ReacTypeApplyMask_t ktApplyToDirt         = (kApplyMaskOne << 28 ); //only for nue: CC + NC + interference
-
-    static const DetectorApplyMask_t kdApplyToDUNEND          = (kApplyMaskOne << 0 ); // Dectectors
-    static const DetectorApplyMask_t kdApplyToDUNEFD          = (kApplyMaskOne << 1 );
-    static const DetectorApplyMask_t kdApplyToSBND            = (kApplyMaskOne << 2 );
-    static const DetectorApplyMask_t kdApplyToMicroBooNE      = (kApplyMaskOne << 3 );
-    static const DetectorApplyMask_t kdApplyToICARUS          = (kApplyMaskOne << 4 );
-    static const DetectorApplyMask_t kdApplyToND280           = (kApplyMaskOne << 5 );
-    static const DetectorApplyMask_t kdApplyToSuperK          = (kApplyMaskOne << 6 );
-
+    static const ReacTypeApplyMask_t ktApplyToNuEELScat    = (kApplyMaskOne << 25 );
+    static const ReacTypeApplyMask_t ktApplyToOther        = (kApplyMaskOne << 26 );
+    static const ReacTypeApplyMask_t ktApplyToCosmic       = (kApplyMaskOne << 27 );
+    static const ReacTypeApplyMask_t ktApplyToDirt         = (kApplyMaskOne << 28 );
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Detectors
+    static const DetectorApplyMask_t kdApplyToDUNEND          = (kApplyMaskOne <<  0 );
+    static const DetectorApplyMask_t kdApplyToDUNEFD          = (kApplyMaskOne <<  1 );
+    static const DetectorApplyMask_t kdApplyToSBND            = (kApplyMaskOne <<  2 );
+    static const DetectorApplyMask_t kdApplyToMicroBooNE      = (kApplyMaskOne <<  3 );
+    static const DetectorApplyMask_t kdApplyToICARUS          = (kApplyMaskOne <<  4 );
+    static const DetectorApplyMask_t kdApplyToSuperK          = (kApplyMaskOne <<  5 );
+    static const DetectorApplyMask_t kdApplyToHyperK          = (kApplyMaskOne <<  6 );
+    static const DetectorApplyMask_t kdApplyToND280           = (kApplyMaskOne <<  7 );
+    static const DetectorApplyMask_t kdApplyToINGRID          = (kApplyMaskOne <<  8 );
+    static const DetectorApplyMask_t kdApplyToNuPRISM         = (kApplyMaskOne <<  9 );
+    static const DetectorApplyMask_t kdApplyToNuTIT           = (kApplyMaskOne << 10 );
+    static const DetectorApplyMask_t kdApplyToNOvAND          = (kApplyMaskOne << 11 );
+    static const DetectorApplyMask_t kdApplyToNOvAFD          = (kApplyMaskOne << 12 );
+    static const DetectorApplyMask_t kdApplyToJUNO            = (kApplyMaskOne << 13 );
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Nuclear Targets
-    static const NuclearTargetApplyMask_t kntApplyToInclusive = (kApplyMaskOne << 0 ); // Nuclear targets.
+    static const NuclearTargetApplyMask_t kntApplyToInclusive = (kApplyMaskOne << 0 );
     static const NuclearTargetApplyMask_t kntApplyToOther     = (kApplyMaskOne << 1 );
     static const NuclearTargetApplyMask_t kntApplyToHydrogen  = (kApplyMaskOne << 2 );
     static const NuclearTargetApplyMask_t kntApplyToCarbon    = (kApplyMaskOne << 3 );
@@ -154,22 +204,57 @@ namespace valor {
     static const NuclearTargetApplyMask_t kntApplyToCalcium   = (kApplyMaskOne << 6 );
 
 
-
-
-
-
-
-    extern const BeamApplyMask_t kbApplyToAll;
-
+    // The following section describes superpositions of selections - i.e. more than 1 bit is 1
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Beam
+    extern const BeamApplyMask_t kbApplyToAll; // 111
+    extern const BeamApplyMask_t kbApplyToAccel; // FHC and RHC, 011
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Nu flavour
-    extern const FlavApplyMask_t kfApplyToNuAny; // NuAny means any non-barred. If it's not written that it applies to osc or unosc flavour, it is for unosc.
-    extern const FlavApplyMask_t kfApplyToNuBarAny;
-    extern const FlavApplyMask_t kfApplyToNuEAny;
-    extern const FlavApplyMask_t kfApplyToNuMuAny;
-    extern const FlavApplyMask_t kfApplyToAllCosmic;
-    extern const FlavApplyMask_t kfApplyToAllDirt;
-    extern const FlavApplyMask_t kfApplyToAll;
+    // NuAny means any non-barred.
+    // If it's not written that it applies to osc or unosc flavour, it is for unosc.
+    
+    extern const FlavApplyMask_t kfApplyToNuAny;     // 00010101, numu + nue + nutau
+    extern const FlavApplyMask_t kfApplyToNuBarAny;  // 00101010, numubar + nuebar + nutaubar
+    extern const FlavApplyMask_t kfApplyToNuEAny;    // 00001100, nue + nuebar
+    extern const FlavApplyMask_t kfApplyToNuMuAny;   // 00000011, numu + numubar
+    extern const FlavApplyMask_t kfApplyToNuTauAny;  // 00110000, nutau + nutaubar
+    extern const FlavApplyMask_t kfApplyToAll;       // 00111111, all but cosmic and dirt
+    extern const FlavApplyMask_t kfApplyToAllCosmic; // 01111111, all but dirt
+    extern const FlavApplyMask_t kfApplyToAllDirt;   // 11111111, all incl. dirt
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Samples
 
+    extern const SelecApplyMask_t ksApplyToMuBarLikeHighRes;
+    extern const SelecApplyMask_t ksApplyToEBarLikeHighRes;
+    extern const SelecApplyMask_t ksApplyToMuBarLikeLowRes;
+    extern const SelecApplyMask_t ksApplyToEBarLikeLowRes;
+
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa00;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa01;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa02;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa03;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa04;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa05;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa06;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa07;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa08;
+    extern const SelecApplyMask_t ksApplyToNuMuCCoa09;
+    
+    extern const SelecApplyMask_t ksApplyToAllND;
+    extern const SelecApplyMask_t ksApplyToAllFD;
+    extern const SelecApplyMask_t ksApplyToAll;
+    extern const SelecApplyMask_t ksApplyToAllNC;
+    extern const SelecApplyMask_t ksApplyToAllNuMuCC;
+    extern const SelecApplyMask_t ksApplyToAllNuECC;
+    extern const SelecApplyMask_t ksApplyToELikeRingAny;  // SuperK selections
+    extern const SelecApplyMask_t ksApplyTo1RingAny;      // SuperK selections
+    extern const SelecApplyMask_t ksApplyToAllRings;      // SuperK selections
+    extern const SelecApplyMask_t ksApplyToLowRes;
+    extern const SelecApplyMask_t ksApplyToHighRes;
+    extern const SelecApplyMask_t ksApplyToAllJUNO;
+    extern const SelecApplyMask_t ksApplyToAllJUNOCC;
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Reaction type
     extern const ReacTypeApplyMask_t ktApplyToCCQELike;
     extern const ReacTypeApplyMask_t ktApplyToAllCCELScat; // nu + e CC elastic scattering (inverse muon/tau decay) and nue+e
@@ -196,8 +281,6 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAll2pi;
     extern const ReacTypeApplyMask_t ktApplyToAlln0pi;
     extern const ReacTypeApplyMask_t ktApplyToAllNonRes;
-    extern const ReacTypeApplyMask_t ktApplyToAllCosmic;
-    extern const ReacTypeApplyMask_t ktApplyToAllDirt;
 
     extern const ReacTypeApplyMask_t ktApplyToAll;
     extern const ReacTypeApplyMask_t ktApplyToAllPlusCosmic;
@@ -212,7 +295,7 @@ namespace valor {
 
     extern const ReacTypeApplyMask_t ktApplyToT2KLegCCoth;
     extern const ReacTypeApplyMask_t ktApplyToCCDISMpi;
-
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Detectors
     extern const DetectorApplyMask_t kdApplyToAllDUNE;
     extern const DetectorApplyMask_t kdApplyToAllSBN;
@@ -220,23 +303,7 @@ namespace valor {
     extern const DetectorApplyMask_t kdApplyToAllT2K;
     extern const DetectorApplyMask_t kdApplyToAllND;
     extern const DetectorApplyMask_t kdApplyToAll;
-
-
-    // Samples
-    extern const SelecApplyMask_t ksApplyToAllND;
-    extern const SelecApplyMask_t ksApplyToAllFD;
-    extern const SelecApplyMask_t ksApplyToAll;
-    extern const SelecApplyMask_t ksApplyToAllNC;
-    extern const SelecApplyMask_t ksApplyToAllNuMuCC;
-    extern const SelecApplyMask_t ksApplyToAllNuECC;
-    extern const SelecApplyMask_t ksApplyToELikeRingAny;  // SuperK selections
-    extern const SelecApplyMask_t ksApplyTo1RingAny;      // SuperK selections
-    extern const SelecApplyMask_t ksApplyToAllRings;      // SuperK selections
-    extern const SelecApplyMask_t ksApplyToLowRes;
-    extern const SelecApplyMask_t ksApplyToHighRes;
-
-
-
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Targets
     extern const NuclearTargetApplyMask_t kntApplyToAll;
 

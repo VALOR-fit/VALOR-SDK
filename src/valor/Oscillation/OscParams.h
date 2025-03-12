@@ -19,8 +19,8 @@
 #define _valor_osc_params_h_
 
 #include "valor/Conventions/NuMassHierarchy.h"
-#include "valor/Core/PhysHypothesis.h"
-#include "valor/Core/FitParamList.h"
+#include "valor/FitCore/PhysHypothesis.h"
+#include "valor/FitCore/FitParamList.h"
 
 #include "TH2D.h"
 #include "TH1D.h"

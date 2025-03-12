@@ -228,6 +228,48 @@ double valor::util::XML2Dbl(
   return value;
 }
 //____________________________________________________________________________________________________
+VALORArray valor::util::XML2VArray(
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
+{
+  VLOG("XML", pNOTICE) << "Reading info at XML node node_path: " << node_path;
+  VALORArray * array;
+  int bin = 0;
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
+  if(!found_node) {
+    VLOG("XML",pFATAL)
+       << "No node was found at input XML node node_path: " << node_path;
+    util::Die(1); return * array;
+  }
+  const char * nc = xml_eng->GetNodeContent(found_node);
+  if (not nc) return * array;
+  
+  string content = TrimSpaces(nc);
+  
+  vector<string> str_tokens = Tokens(content, ",");
+  vector<string>::const_iterator str_tokens_iter = str_tokens.begin();
+  for( ; str_tokens_iter != str_tokens.end(); ++str_tokens_iter) {
+     string token = TrimSpaces(*str_tokens_iter);
+     if (not token.size() ) continue;
+     if(util::ToLowerCase(token) == "inf"){
+   //    array.push_back(max_limits.second);
+       array->SetEntry(max_limits.second,bin);
+       bin++;
+     }
+     else if(util::ToLowerCase(token) == "-inf"){
+//       array.push_back(max_limits.first);
+       array->SetEntry(max_limits.first,bin);
+       bin++;
+     }
+     else{
+//       array.push_back( atof(token.c_str()) );
+       array->SetEntry(atof(token.c_str()),bin);
+       bin++;
+     }
+  }
+
+  return * array;
+}
+//____________________________________________________________________________________________________
 vector<double> valor::util::XML2DblArray(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
@@ -801,12 +843,91 @@ TSpline3 * valor::util::XML2TSpline3(
   return spl_copy;
 }
 //____________________________________________________________________________________________________
+vector<double> valor::util::XML2BinLowEdges(
+  TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path, string binning_scheme)
+{
+  //config/data
+  VLOG("XML", pNOTICE) << "Reading info at XML node node_path: " << node_path;
+  XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
+  if(!found_node) {
+    VLOG("XML",pFATAL) << "No node was found at input XML node node_path: " << node_path;
+    util::Die(1);
+  }
+  //get binning xml config path
+  string binning_file = util::XML2String(xml_eng,top_node,node_path);
+  TString ts_binning = util::CompleteConfigPath(binning_file).c_str();
+  
+  //get binning scheme
+  string bin_scheme = util::XML2String(xml_eng,top_node,binning_scheme);
+  
+  // Parse the binning XML configuration file
+  TXMLEngine* xml_bin = new TXMLEngine;
+  XMLDocPointer_t xmlbindoc = xml_bin->ParseFile(ts_binning.Data());
+  if (xmlbindoc==0) {
+    VLOG("XML",pERROR)
+      << "Can not parse input XML file [" << ts_binning << "]";
+    delete xmlbindoc;
+    util::Die(1);
+  }
+
+  XMLNodePointer_t root_bin_node = xml_bin->DocGetRootElement(xmlbindoc);
+  if(root_bin_node==0){
+    VLOG("XML",pERROR) 
+      << "no root_bin_node";
+    util::Die(1);
+  }
+  //find relevant node in binning file containing xml containing bin edges (binning/e2e/*.xml)
+  if(! util::NodeExists(xml_bin,root_bin_node,bin_scheme)) {
+    VLOG("XML", pERROR)
+      << "selected binning scheme node not found in file: " << ts_binning;
+    util::Die(1);
+  } 
+  string chosen_binning_file = util::XML2String(xml_bin,root_bin_node,bin_scheme);
+  TString ts_chosen = util::CompleteConfigPath(chosen_binning_file).c_str();
+  // Parse the chosen binning XML configuration file
+  TXMLEngine* xml_chosen = new TXMLEngine;
+  XMLDocPointer_t xmlchosendoc = xml_chosen->ParseFile(ts_chosen.Data());
+  if (xmlchosendoc==0) {
+    VLOG("XML",pERROR)
+      << "Can not parse input XML file [" << chosen_binning_file << "]";
+    delete xmlchosendoc;
+    util::Die(1);
+  }
+
+  XMLNodePointer_t root_chosen_node = xml_chosen->DocGetRootElement(xmlchosendoc);
+  if(root_chosen_node==0){
+    VLOG("XML",pERROR)
+      << "no root_chosen_node";
+    util::Die(1);
+  }
+  VLOG("XML", pNOTICE) << "Reading binning edges for " << bin_scheme;
+  //check if using reco or true binning scheme and find relevant bin edges
+  vector<double> array_edges;
+  bool ifreco = bin_scheme.find("reco") != std::string::npos;
+  bool iftrue = bin_scheme.find("true") != std::string::npos;
+  if(ifreco){
+    array_edges = util::XML2DblArray(xml_chosen,root_chosen_node,"Ereco_binning/bin_edges");
+  }else if(iftrue){
+    array_edges = util::XML2DblArray(xml_chosen,root_chosen_node,"Etrue_binning/bin_edges");
+  }else {
+    VLOG("XML",pERROR)
+      << "can't find bin edges for chosen binning scheme";
+    util::Die(1);
+  }
+  array_edges.pop_back();
+  vector<double> low_edges;
+  for(int i = 0; i < array_edges.size();i++){
+    low_edges.push_back(array_edges[i]);
+  }
+  return low_edges;
+}
+//____________________________________________________________________________________________________
 TAxis *  valor::util::XML2BinInfo(
   TXMLEngine * xml_eng, XMLNodePointer_t top_node, string node_path)
 {
 //
 //
-  VLOG("XML", pINFO) << "Reading info at XML node node_path: " << node_path;
+  VLOG("XML", pNOTICE) << "Reading info at XML node node_path: " << node_path;
 
   XMLNodePointer_t found_node = FindNode(xml_eng,top_node,node_path);
   if(!found_node) {

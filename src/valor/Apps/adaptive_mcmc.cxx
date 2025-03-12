@@ -48,15 +48,15 @@
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/Core/PhysParamList.h"
-#include "valor/Core/FitParamList.h"
-#include "valor/Core/FitModelABC.h"
-#include "valor/Core/FitDataABC.h"
-#include "valor/Core/Likelihood.h"
-#include "valor/Core/FitterABC.h"
-#include "valor/Fitters/UtlFit.h"
-//#include "valor/Core/UtlFitParamList.h"
-#include "valor/Core/CompoundFitElements.h"
+#include "valor/FitCore/PhysParamList.h"
+#include "valor/FitCore/FitParamList.h"
+#include "valor/FitCore/FitModelABC.h"
+#include "valor/FitCore/FitDataABC.h"
+#include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/FitterABC.h"
+#include "valor/FitCore/UtlFit.h"
+#include "valor/FitCore/UtlFitParamList.h"
+#include "valor/FitCore/CompoundFitElements.h"
 #include "valor/Utilities/UtlNumStat.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -81,7 +81,7 @@ int main(int argc, char ** argv)
   VLOG("valor", pNOTICE) << arg;
 
   std::string thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  valor::Messenger::Instance()->Configure(thresholds);
+  Messenger::Instance()->Configure(thresholds);
 
   string input_filename        = arg.GetString("input");
   string output_filename       = arg.GetString("output");

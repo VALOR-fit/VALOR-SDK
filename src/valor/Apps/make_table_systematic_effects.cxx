@@ -60,17 +60,17 @@
 // VALOR/SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
-#include "valor/Core/CorrelatedSystematics.h"
-#include "valor/Core/PhysParamList.h"
-#include "valor/Core/FitParamList.h"
-#include "valor/Core/FitModelABC.h"
-#include "valor/Core/FitDataABC.h"
-#include "valor/Core/Likelihood.h"
-#include "valor/Core/FitterABC.h"
-#include "valor/Fitters/UtlFit.h"
-#include "valor/Core/CompoundFitElements.h"
-#include "valor/Core/UtlOscillation.h"
-//#include "valor/Core/UtlFitParamList.h"
+#include "valor/FitCore/CorrelatedSystematics.h"
+#include "valor/FitCore/PhysParamList.h"
+#include "valor/FitCore/FitParamList.h"
+#include "valor/FitCore/FitModelABC.h"
+#include "valor/FitCore/FitDataABC.h"
+#include "valor/FitCore/Likelihood.h"
+#include "valor/FitCore/FitterABC.h"
+#include "valor/FitCore/UtlFit.h"
+#include "valor/FitCore/CompoundFitElements.h"
+#include "valor/FitCore/UtlOscillation.h"
+#include "valor/FitCore/UtlFitParamList.h"
 #include "valor/FitElements/GenericSingleSampleFitModel.h"
 #include "valor/Utilities/UtlStyle.h"
 #include "valor/Utilities/UtlStr.h"
@@ -112,7 +112,7 @@ int main(int argc, char ** argv)
   bool rethrow_unphysical = arg.GetBool("rethrow-unphysical");
 
   std::string mesg_thresholds = util::CompleteConfigPath(arg.GetString("mesg-thresholds"));
-  valor::Messenger::Instance()->Configure(mesg_thresholds);
+  Messenger::Instance()->Configure(mesg_thresholds);
 
   VLOG("valor",pINFO) << "Will rethrow unphysical toys";
 
@@ -181,8 +181,7 @@ int main(int argc, char ** argv)
     cout << "\t" << util::NameRegistry::Instance()->ParamAsStringVerySimple(pair.first) << endl;
   }
 
-  //FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-  FitParamList * fp = new FitParamList(hypname, fplopt.c_str());
+  FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
   util::oscillation::SetParameterPriors(arg, *fp);
 
   // Generate pdfs
@@ -242,8 +241,7 @@ int main(int argc, char ** argv)
     fp->FromPhysParamList(model->Tweaks(),"current-silent");
 
     // Check that the parameter values are physical. Rethrow if they aren't
-    //if (!util::AllWithinLimits(*fp) && rethrow_unphysical) {
-    if (!fp->AllWithinLimits() && rethrow_unphysical) {
+    if (!util::AllWithinLimits(*fp) && rethrow_unphysical) {
       itoy--;
       continue;
     }

@@ -15,7 +15,7 @@ ChangeLog:
 #include "valor/Conventions/PhysParamId.h"
 #include "valor/Conventions/PhysHypothesisId.h"
 #include "valor/Conventions/Constants.h"
-#include "valor/Core/PhysHypothesis.h"
+#include "valor/FitCore/PhysHypothesis.h"
 #include "valor/Utilities/Env.h"
 #include "valor/Utilities/UtlXML.h"
 

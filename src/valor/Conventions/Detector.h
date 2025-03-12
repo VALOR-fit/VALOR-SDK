@@ -27,28 +27,52 @@ using std::string;
 namespace valor {
 namespace conv {
 
-static const int kNDetectorsDefined = 15;
+  // TODO - This enum contains each phase of each detector as a separate entity.
+typedef enum EDetectorPhase
+{
+   kdphUndefined = -1, 
+   kdphDUNEND,          // Generic DUNE near detector
+   kdphDUNEFD1ph,       // Single-phase LArTPC DUNE far detector
+   kdphDUNEFD2ph,       // Double-phase LArTPC DUNE far detector
+   kdphSBND,            // SBN near detector 
+   kdphSBNuBooNE,       // MicroBooNE detector in SBN
+   kdphSBNICARUS,       // Refurshished ICARUS detector in SBN
+   kdphSuperK,          // Super-Kamiokande
+   kdphHyperK,          // Hyper-Kamiokande
+   kdphND280,           // ND280
+   kdphND280Up,         // Upgraded ND280
+   kdphINGRID,          // INGRID
+   kdphNuPRISM,         // NuPRISM
+   kdphNuTIT,           // appropriate shorter name for TITUS
+   kdphNOvAND,          // NOvA near detector
+   kdphNOvAFD,          // NOvA far detector
+   kdphJUNO,            // JUNO
+} DetectorPhase_t;
 
+  // TODO - It is probably best to define unique labels for a detector that may have multiple
+  // phases of life. So this enum will not be sequential, per se.
 typedef enum EDetector
 {
-   kdUndefined = -1, 
-   kdDUNEND,          // Generic DUNE near detector
-   kdDUNEFD1ph,       // Single-phase LArTPC DUNE far detector
-   kdDUNEFD2ph,       // Double-phase LArTPC DUNE far detector
-   kdSBND,            // SBN near detector 
-   kdSBNuBooNE,       // MicroBooNE detector in SBN
-   kdSBNICARUS,       // Refurshished ICARUS detector in SBN
-   kdSuperK,          // Super-Kamiokande
-   kdHyperK,          // Hyper-Kamiokande
-   kdND280,           // ND280
-   kdND280Up,         // Upgraded ND280
-   kdINGRID,          // INGRID
-   kdNuPRISM,         // NuPRISM
-   kdNuTIT,           // appropriate shorter name for TITUS
-   kdNOvAND,          // NOvA near detector
-   kdNOvAFD           // NOvA far detector
-} 
-Detector_t; 
+  kdUndefined = -1,
+  kdDUNEND    = static_cast<int>( kdphDUNEND ),     //  0
+  kdDUNEFD    = static_cast<int>( kdphDUNEFD2ph ),  //  1
+  kdSBND      = static_cast<int>( kdphSBND ),       //  2
+  kdSBNuBooNE = static_cast<int>( kdphSBNuBooNE ),  //  3
+  kdSBNICARUS = static_cast<int>( kdphSBNICARUS ),  //  4
+  kdSuperK    = static_cast<int>( kdphSuperK ),     //  5
+  kdHyperK    = static_cast<int>( kdphHyperK ),     //  6
+  kdND280     = static_cast<int>( kdphND280Up ),    //  7
+  kdINGRID    = static_cast<int>( kdphINGRID ),     //  8
+  kdNuPRISM   = static_cast<int>( kdphNuPRISM ),    //  9
+  kdNuTIT     = static_cast<int>( kdphNuTIT ),      // 10
+  kdNOvAND    = static_cast<int>( kdphNOvAND ),     // 11
+  kdNOvAFD    = static_cast<int>( kdphNOvAFD ),     // 12
+  kdJUNO      = static_cast<int>( kdphJUNO ),        // 13
+  kdOnePastEnd = static_cast<int>( kdJUNO ) + 1
+} Detector_t; 
+
+// I really don't have an elegant way to count the above...
+  static const int kNDetectorsDefined = 14;
 
 } // conv
 
@@ -65,6 +89,7 @@ namespace util {
   conv::Detector_t DetectorFromString (string b);
   bool             IsLongBaseline     (conv::Detector_t d);
   bool             IsShortBaseline    (conv::Detector_t d);
+  bool             IsAtmospheric      (conv::Detector_t d);
   
 } // util
 

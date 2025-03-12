@@ -35,8 +35,8 @@
 #include "valor/Conventions/FitParamGroup.h"
 #include "valor/Conventions/ReacMode.h"
 #include "valor/Conventions/KineVar.h"
-#include "valor/Core/CorrelatedSystematics.h"
-#include "valor/Core/PhysHypothesis.h"
+#include "valor/FitCore/CorrelatedSystematics.h"
+#include "valor/FitCore/PhysHypothesis.h"
 
 using std::string;
 

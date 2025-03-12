@@ -25,8 +25,8 @@
 #include <Minuit2/FunctionMinimum.h>
 
 //#include "valor/Conventions.h"
-#include "valor/Core/FitterABC.h"
-#include "valor/Core/FitInputs.h"
+#include "valor/FitCore/FitterABC.h"
+#include "valor/FitCore/FitInputs.h"
 
 namespace valor {
 

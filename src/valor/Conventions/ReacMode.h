@@ -27,8 +27,6 @@
 namespace valor {
 namespace conv {
 
-static const int kNReacModes = 204; //excluding undefined and other
-
 typedef enum EReacMode 
 {
    kmUndefined = -1, 
@@ -237,9 +235,12 @@ typedef enum EReacMode
    kmNuEBarToNuTauBarCCoth,          // nuebar to nutaubar    CC other
    kmCosmic,                         //  first non-neutrino induced - all above here will pass IsNeutrinoAny
    kmDirt,                           // non-neutrino induced, dirt 
-   kmOther                           // other, eg contributions from interactions outside the fiducial etc
+   kmOther,                           // other, eg contributions from interactions outside the fiducial etc
+   kmOnePastEnd
 } 
- ReacMode_t; 
+ ReacMode_t;
+
+  static const int kNReacModes = static_cast<int>(kmOnePastEnd)-1; //excluding undefined and other
 
 // Same as above but not broken down by nu flavour
 // careful: now there is a difference in the nu + e elastic scattering 
@@ -274,11 +275,12 @@ typedef enum EReacType
   kmtELScat,      // nue + e elastic scattering (nue, NC + CC + interference) 
   kmtCosmic,      // cosmic
   kmtDirt,        // dirt
-  kmtOther        // misc
+  kmtOther,       // misc
+  kmtOnePastEnd
 }
 ReacType_t;
 
-static const int kNReacType = 28;
+  static const int kNReacType = static_cast<int>(kmtOnePastEnd) - 1;
 
 // Map the reaction modes to their type
 static const ReacType_t kReacModeToType[kNReacModes] =
