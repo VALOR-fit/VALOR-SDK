@@ -420,206 +420,151 @@ std::vector<double> valor::util::GetTrueKinematics(const genie::EventRecord* evr
    }
 }
 //_________________________________________________________________________________
-conv::ReacMode_t valor::util::DetermineReactionModeRead(int nu_pdg, int iscc, int isnc, const genie::EventRecord * event, bool use_final_state) {
-  int nupdg = nu_pdg; // just for atmo v JUNO
-  bool is_nue = (nupdg == genie::kPdgNuE);
-  bool is_numu = (nupdg == genie::kPdgNuMu);
-  bool is_nuebar = (nupdg == genie::kPdgAntiNuE);
-  bool is_numubar = (nupdg == genie::kPdgAntiNuMu);
+conv::ReacMode_t valor::util::DetermineReactionModeReadJuno(
+  int nu_pdg, int iscc, int isnc, 
+  int nP, int nN, int nPip, int nPim, int nPi0,
+  int nKp, int nKm, int nK0, int nEM, int nOtherHad, int nNucleus,
+  bool is_charm, bool is_strange, bool is_QE, bool is_MEC,
+  bool is_NuEEl, bool is_IMD, bool is_IMDAnnihilation, bool is_Coherent)
+{
 
-  bool is_CC = iscc; // just for atmo v JUNO
-  bool is_NC = isnc; // just for atmo v JUNO
-  bool is_charm = util::EventContainsQuarkFlavour(event, genie::kPdgCQuark);
-  bool is_strange = util::EventContainsQuarkFlavour(event, genie::kPdgSQuark);
-  bool is_QE = event->Summary()->ProcInfo().IsQuasiElastic() && !is_strange && !is_charm;
-  bool is_MEC = event->Summary()->ProcInfo().IsMEC();
-  bool is_NuEEl = event->Summary()->ProcInfo().IsNuElectronElastic();
-  bool is_IMD = event->Summary()->ProcInfo().IsInverseMuDecay();
-  bool is_IMDanh = event->Summary()->ProcInfo().IsIMDAnnihilation();
+  bool is_nue    = (nu_pdg == genie::kPdgNuE);
+  bool is_numu   = (nu_pdg == genie::kPdgNuMu);
+  bool is_nuebar = (nu_pdg == genie::kPdgAntiNuE);
+  bool is_numubar= (nu_pdg == genie::kPdgAntiNuMu);
+  
 
-#if __GENIE_RELEASE_CODE__ >= GRELCODE(3, 4, 0)
-  bool is_Coherent = event->Summary()->ProcInfo().IsCoherentProduction();
-#else
-  bool is_Coherent = event->Summary()->ProcInfo().IsCoherent();
-#endif
-
-  std::vector<int> primary_hadr_system;
-  std::vector<int> final_hadr_system;
-  GetHadronicSystems(event, primary_hadr_system, final_hadr_system);
-
-  // Set up variables for counting particles
-  int nP = 0, nN = 0, nPip = 0, nPim = 0, nPi0 = 0;
-  int nKp = 0, nKm = 0, nK0 = 0, nEM = 0, nOtherHad = 0, nNucleus = 0;
-
-  std::vector<const genie::GHepParticle*> unknown_particles;
-  const std::vector<int>& hadr_system = (use_final_state ? final_hadr_system : primary_hadr_system);
-
-  for (unsigned int ip = 0; ip < hadr_system.size(); ip++) {
-    const genie::GHepParticle* p = event->Particle(hadr_system[ip]);
-    int pdg = p->Pdg();
-    if (pdg == genie::kPdgProton || pdg == genie::kPdgAntiProton) {
-      nP++;
-    } else if (pdg == genie::kPdgNeutron || pdg == genie::kPdgAntiNeutron) {
-      nN++;
-    } else if (pdg == genie::kPdgPiP) {
-      nPip++;
-    } else if (pdg == genie::kPdgPiM) {
-      nPim++;
-    } else if (pdg == genie::kPdgPi0) {
-      nPi0++;
-    } else if (pdg == genie::kPdgKP) {
-      nKp++;
-    } else if (pdg == genie::kPdgKM) {
-      nKm++;
-    } else if (pdg == genie::kPdgK0 || pdg == genie::kPdgAntiK0) {
-      nK0++;
-    } else if (pdg == genie::kPdgGamma || pdg == genie::kPdgElectron || pdg == genie::kPdgPositron) {
-      nEM++;
-    } else if (genie::pdg::IsHadron(pdg)) {
-      nOtherHad++;
-    } else if (genie::pdg::IsIon(pdg)) {
-      nNucleus++;
-    } else {
-      unknown_particles.push_back(p);
-    }
-  }
-
-  if (unknown_particles.size()) {
-    std::ostringstream s;
-    for (unsigned int ip = 0; ip < unknown_particles.size(); ip++) {
-      const genie::GHepParticle* p = unknown_particles[ip];
-      s << *p << std::endl;
-    }
-    LOG("UtlEventRec", pWARN) << unknown_particles.size() << " unidentified particles in event:\n" << s.str();
-  }
-
+  bool is_CC = (iscc != 0);
+  bool is_NC = (isnc != 0);
+  
   int nPiC = nPip + nPim;
   int nK = nKp + nKm + nK0;
-
-  bool is_1piC = (!is_Coherent) && (nPiC == 1) && (nPi0 == 0) && (nK == 0) && (nOtherHad == 0);
-  bool is_1pi0 = (!is_Coherent) && (nPiC == 0) && (nPi0 == 1) && (nK == 0) && (nOtherHad == 0);
-  bool is_2piC = (!is_Coherent) && (nPiC == 2) && (nPi0 == 0) && (nK == 0) && (nOtherHad == 0);
-  bool is_2pi0 = (!is_Coherent) && (nPiC == 0) && (nPi0 == 2) && (nK == 0) && (nOtherHad == 0);
-  bool is_1piC1pi0 = (!is_Coherent) && (nPiC == 1) && (nPi0 == 1) && (nK == 0) && (nOtherHad == 0);
-
+  
+  bool is_1piC    = (!is_Coherent) && (nPiC == 1) && (nPi0 == 0) && (nK == 0) && (nOtherHad == 0);
+  bool is_1pi0    = (!is_Coherent) && (nPiC == 0) && (nPi0 == 1) && (nK == 0) && (nOtherHad == 0);
+  bool is_2piC    = (!is_Coherent) && (nPiC == 2) && (nPi0 == 0) && (nK == 0) && (nOtherHad == 0);
+  bool is_2pi0    = (!is_Coherent) && (nPiC == 0) && (nPi0 == 2) && (nK == 0) && (nOtherHad == 0);
+  bool is_1piC1pi0= (!is_Coherent) && (nPiC == 1) && (nPi0 == 1) && (nK == 0) && (nOtherHad == 0);
   bool is_ccnuel = (is_NuEEl && is_CC);
   bool is_ncnuel = (is_NuEEl && is_NC);
-
+  
   std::vector<conv::ReacMode_t> modes;
-
-  // First do exclusive modes
+  
   if (is_numu) {
-    if (is_CC) {
-      if (is_QE) { modes.push_back(conv::kmNuMuCCQE); }
-      if (is_MEC) { modes.push_back(conv::kmNuMuCCMEC); }
-      if (is_1piC) { modes.push_back(conv::kmNuMuCC1piC); }
-      if (is_1pi0) { modes.push_back(conv::kmNuMuCC1pi0); }
-      if (is_2piC) { modes.push_back(conv::kmNuMuCC2piC); }
-      if (is_2pi0) { modes.push_back(conv::kmNuMuCC2pi0); }
-      if (is_1piC1pi0) { modes.push_back(conv::kmNuMuCCpiCpi0); }
-      if (is_Coherent) { modes.push_back(conv::kmNuMuCCcoh); }
-      if (is_IMD) { modes.push_back(conv::kmNuMuCCIMD); }
-    }
-    if (is_NC) {
-      if (is_1piC) { modes.push_back(conv::kmNuMuNC1piC); }
-      if (is_1pi0) { modes.push_back(conv::kmNuMuNC1pi0); }
-      if (is_Coherent) { modes.push_back(conv::kmNuMuNCcoh); }
-    }
-    if (is_ccnuel) { modes.push_back(conv::kmNuMuCCELScat); }
-    if (is_ncnuel) { modes.push_back(conv::kmNuMuNCELScat); }
+      if (is_CC) {
+          if (is_QE) { modes.push_back(conv::kmNuMuCCQE); }
+          if (is_MEC) { modes.push_back(conv::kmNuMuCCMEC); }
+          if (is_1piC) { modes.push_back(conv::kmNuMuCC1piC); }
+          if (is_1pi0) { modes.push_back(conv::kmNuMuCC1pi0); }
+          if (is_2piC) { modes.push_back(conv::kmNuMuCC2piC); }
+          if (is_2pi0) { modes.push_back(conv::kmNuMuCC2pi0); }
+          if (is_1piC1pi0) { modes.push_back(conv::kmNuMuCCpiCpi0); }
+          if (is_Coherent) { modes.push_back(conv::kmNuMuCCcoh); }
+          if (is_IMD) { modes.push_back(conv::kmNuMuCCIMD); }
+      }
+      if (is_NC) {
+          if (is_1piC) { modes.push_back(conv::kmNuMuNC1piC); }
+          if (is_1pi0) { modes.push_back(conv::kmNuMuNC1pi0); }
+          if (is_Coherent) { modes.push_back(conv::kmNuMuNCcoh); }
+      }
+      if (is_ccnuel) { modes.push_back(conv::kmNuMuCCELScat); }
+      if (is_ncnuel) { modes.push_back(conv::kmNuMuNCELScat); }
   }
+  
 
   if (is_numubar) {
-    if (is_CC) {
-      if (is_QE) { modes.push_back(conv::kmNuMuBarCCQE); }
-      if (is_MEC) { modes.push_back(conv::kmNuMuBarCCMEC); }
-      if (is_1piC) { modes.push_back(conv::kmNuMuBarCC1piC); }
-      if (is_1pi0) { modes.push_back(conv::kmNuMuBarCC1pi0); }
-      if (is_2piC) { modes.push_back(conv::kmNuMuBarCC2piC); }
-      if (is_2pi0) { modes.push_back(conv::kmNuMuBarCC2pi0); }
-      if (is_1piC1pi0) { modes.push_back(conv::kmNuMuBarCCpiCpi0); }
-      if (is_Coherent) { modes.push_back(conv::kmNuMuBarCCcoh); }
-    }
-    if (is_NC) {
-      if (is_1piC) { modes.push_back(conv::kmNuMuBarNC1piC); }
-      if (is_1pi0) { modes.push_back(conv::kmNuMuBarNC1pi0); }
-      if (is_Coherent) { modes.push_back(conv::kmNuMuBarNCcoh); }
-    }
-    if (is_ccnuel) { modes.push_back(conv::kmNuMuBarCCELScat); }
-    if (is_ncnuel) { modes.push_back(conv::kmNuMuBarNCELScat); }
+      if (is_CC) {
+          if (is_QE) { modes.push_back(conv::kmNuMuBarCCQE); }
+          if (is_MEC) { modes.push_back(conv::kmNuMuBarCCMEC); }
+          if (is_1piC) { modes.push_back(conv::kmNuMuBarCC1piC); }
+          if (is_1pi0) { modes.push_back(conv::kmNuMuBarCC1pi0); }
+          if (is_2piC) { modes.push_back(conv::kmNuMuBarCC2piC); }
+          if (is_2pi0) { modes.push_back(conv::kmNuMuBarCC2pi0); }
+          if (is_1piC1pi0) { modes.push_back(conv::kmNuMuBarCCpiCpi0); }
+          if (is_Coherent) { modes.push_back(conv::kmNuMuBarCCcoh); }
+      }
+      if (is_NC) {
+          if (is_1piC) { modes.push_back(conv::kmNuMuBarNC1piC); }
+          if (is_1pi0) { modes.push_back(conv::kmNuMuBarNC1pi0); }
+          if (is_Coherent) { modes.push_back(conv::kmNuMuBarNCcoh); }
+      }
+      if (is_ccnuel) { modes.push_back(conv::kmNuMuBarCCELScat); }
+      if (is_ncnuel) { modes.push_back(conv::kmNuMuBarNCELScat); }
   }
+  
 
   if (is_nue) {
-    if (is_CC) {
-      if (is_QE) { modes.push_back(conv::kmNuECCQE); }
-      if (is_MEC) { modes.push_back(conv::kmNuECCMEC); }
-      if (is_1piC) { modes.push_back(conv::kmNuECC1piC); }
-      if (is_1pi0) { modes.push_back(conv::kmNuECC1pi0); }
-      if (is_2piC) { modes.push_back(conv::kmNuECC2piC); }
-      if (is_2pi0) { modes.push_back(conv::kmNuECC2pi0); }
-      if (is_1piC1pi0) { modes.push_back(conv::kmNuECCpiCpi0); }
-      if (is_Coherent) { modes.push_back(conv::kmNuECCcoh); }
-    }
-    if (is_NC) {
-      if (is_1piC) { modes.push_back(conv::kmNuENC1piC); }
-      if (is_1pi0) { modes.push_back(conv::kmNuENC1pi0); }
-      if (is_Coherent) { modes.push_back(conv::kmNuENCcoh); }
-    }
-    if (is_NuEEl) { modes.push_back(conv::kmNuEELScat); }
+      if (is_CC) {
+          if (is_QE) { modes.push_back(conv::kmNuECCQE); }
+          if (is_MEC) { modes.push_back(conv::kmNuECCMEC); }
+          if (is_1piC) { modes.push_back(conv::kmNuECC1piC); }
+          if (is_1pi0) { modes.push_back(conv::kmNuECC1pi0); }
+          if (is_2piC) { modes.push_back(conv::kmNuECC2piC); }
+          if (is_2pi0) { modes.push_back(conv::kmNuECC2pi0); }
+          if (is_1piC1pi0) { modes.push_back(conv::kmNuECCpiCpi0); }
+          if (is_Coherent) { modes.push_back(conv::kmNuECCcoh); }
+      }
+      if (is_NC) {
+          if (is_1piC) { modes.push_back(conv::kmNuENC1piC); }
+          if (is_1pi0) { modes.push_back(conv::kmNuENC1pi0); }
+          if (is_Coherent) { modes.push_back(conv::kmNuENCcoh); }
+      }
+      if (is_NuEEl) { modes.push_back(conv::kmNuEELScat); }
   }
+  
 
   if (is_nuebar) {
-    if (is_CC) {
-      if (is_QE) { modes.push_back(conv::kmNuEBarCCQE); }
-      if (is_MEC) { modes.push_back(conv::kmNuEBarCCMEC); }
-      if (is_1piC) { modes.push_back(conv::kmNuEBarCC1piC); }
-      if (is_1pi0) { modes.push_back(conv::kmNuEBarCC1pi0); }
-      if (is_2piC) { modes.push_back(conv::kmNuEBarCC2piC); }
-      if (is_2pi0) { modes.push_back(conv::kmNuEBarCC2pi0); }
-      if (is_1piC1pi0) { modes.push_back(conv::kmNuEBarCCpiCpi0); }
-      if (is_Coherent) { modes.push_back(conv::kmNuEBarCCcoh); }
-      if (is_IMDanh) { modes.push_back(conv::kmNuEBarCCIMD); }
-    }
-    if (is_NC) {
-      if (is_1piC) { modes.push_back(conv::kmNuEBarNC1piC); }
-      if (is_1pi0) { modes.push_back(conv::kmNuEBarNC1pi0); }
-      if (is_Coherent) { modes.push_back(conv::kmNuEBarNCcoh); }
-    }
-    if (is_NuEEl) { modes.push_back(conv::kmNuEBarELScat); }
+      if (is_CC) {
+          if (is_QE) { modes.push_back(conv::kmNuEBarCCQE); }
+          if (is_MEC) { modes.push_back(conv::kmNuEBarCCMEC); }
+          if (is_1piC) { modes.push_back(conv::kmNuEBarCC1piC); }
+          if (is_1pi0) { modes.push_back(conv::kmNuEBarCC1pi0); }
+          if (is_2piC) { modes.push_back(conv::kmNuEBarCC2piC); }
+          if (is_2pi0) { modes.push_back(conv::kmNuEBarCC2pi0); }
+          if (is_1piC1pi0) { modes.push_back(conv::kmNuEBarCCpiCpi0); }
+          if (is_Coherent) { modes.push_back(conv::kmNuEBarCCcoh); }
+          if (is_IMDAnnihilation) { modes.push_back(conv::kmNuEBarCCIMD); }
+      }
+      if (is_NC) {
+          if (is_1piC) { modes.push_back(conv::kmNuEBarNC1piC); }
+          if (is_1pi0) { modes.push_back(conv::kmNuEBarNC1pi0); }
+          if (is_Coherent) { modes.push_back(conv::kmNuEBarNCcoh); }
+      }
+      if (is_NuEEl) { modes.push_back(conv::kmNuEBarELScat); }
   }
+  
 
-  // If we've got one exclusive mode, we did well.
   if (modes.size() == 1) {
-    return modes[0];
+      return modes[0];
   }
-  // Otherwise look for inclusive
   else if (modes.size() == 0) {
-    if (is_numu) {
-      if (is_CC) { return conv::kmNuMuCCoth; }
-      if (is_NC) { return conv::kmNuMuNCoth; }
-    }
-    if (is_numubar) {
-      if (is_CC) { return conv::kmNuMuBarCCoth; }
-      if (is_NC) { return conv::kmNuMuBarNCoth; }
-    }
-    if (is_nue) {
-      if (is_CC) { return conv::kmNuECCoth; }
-      if (is_NC) { return conv::kmNuENCoth; }
-    }
-    if (is_nuebar) {
-      if (is_CC) { return conv::kmNuEBarCCoth; }
-      if (is_NC) { return conv::kmNuEBarNCoth; }
-    }
-  } else {
-    std::ostringstream mode_names;
-    for (unsigned int ii = 0; ii < modes.size(); ii++) {
-      mode_names << "\n " << util::AsString(modes[ii]);
-    }
-    LOG("UtlEventRec", pERROR) << "Event filed into multiple exclusive modes: "
-                               << mode_names.str()
-                               << "\nFull record: " << *event;
-    util::Die(-1);
+      if (is_numu) {
+          if (is_CC) { return conv::kmNuMuCCoth; }
+          if (is_NC) { return conv::kmNuMuNCoth; }
+      }
+      if (is_numubar) {
+          if (is_CC) { return conv::kmNuMuBarCCoth; }
+          if (is_NC) { return conv::kmNuMuBarNCoth; }
+      }
+      if (is_nue) {
+          if (is_CC) { return conv::kmNuECCoth; }
+          if (is_NC) { return conv::kmNuENCoth; }
+      }
+      if (is_nuebar) {
+          if (is_CC) { return conv::kmNuEBarCCoth; }
+          if (is_NC) { return conv::kmNuEBarNCoth; }
+      }
   }
-
+  else {
+      std::ostringstream mode_names;
+      for (unsigned int ii = 0; ii < modes.size(); ii++) {
+          mode_names << "\n " << util::AsString(modes[ii]);
+      }
+      LOG("UtlEventRec", pERROR) << "Event filed into multiple exclusive modes: "
+                                 << mode_names.str()
+                                 << "\nFull record: " << nu_pdg;
+      util::Die(-1);
+  }
+  
   return conv::kmUndefined;
 }

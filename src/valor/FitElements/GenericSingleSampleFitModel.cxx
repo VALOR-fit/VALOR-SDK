@@ -1891,11 +1891,9 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     double ext_wght = GetExternalWeight(kinematics, m, conv::kntInclusive);
 
     // Find the appropriate bins
-    LOG("GenericSingleSampleFitModel", pFATAL) << "First invocation loading...";
     int true_bin    = true_sb->FindBin(true_vars);
     int reco_bin_sb = reco_sb->FindBin(reco_vars);
     int reco_bin_ob = reco_ob->FindBin(reco_vars);
-    LOG("GenericSingleSampleFitModel", pFATAL) << "First invocation DONE...";
 
     LOG("GenericSingleSampleFitModel",pDEBUG) 
   << "Inserting to MC templates --> MC event #" << iev 
