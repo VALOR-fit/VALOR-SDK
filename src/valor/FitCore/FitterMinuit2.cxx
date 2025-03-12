@@ -211,7 +211,7 @@ bool FitterMinuit2::Configure(const Registry & conf)
 //____________________________________________________________________________
 void FitterMinuit2::FillPriorCovMatrix(Option_t * /*opt*/)
 {
-  LOG("Minuit2",pDEBUG)<<"Constructing prior covariance matrix";
+  VLOG("Minuit2",pDEBUG)<<"Constructing prior covariance matrix";
 
   const FitParamList & fp = fLikelihood->FitParams();
   int num_of_params      = fp.GetNumberParameters();
@@ -339,7 +339,7 @@ bool FitterMinuit2::RunOnce(void)
   fMigradErrStatusCode = bestfit.UserState().CovarianceStatus();
 
   if (fMigradMinStatusCode <2) {
-    LOG("FitterMinuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
+    VLOG("FitterMinuit2",pWARN) << "Bad MINUIT fit status: "<<fMigradMinStatusCode;
   }
 
   // Done! Copy current --> best-fit values
@@ -378,7 +378,7 @@ bool FitterMinuit2::RunOnce(void)
 
   if (fCalcHesseErrors) {
     //Get Hesse errors
-    LOG("FitterMinuit2",pINFO) << "Getting Hesse errors...";
+    VLOG("FitterMinuit2",pINFO) << "Getting Hesse errors...";
     // argument is strategy
     ROOT::Minuit2::MnHesse hesse(2);
     // perform hesse error calculation
@@ -401,7 +401,7 @@ bool FitterMinuit2::RunOnce(void)
   } //hesse
 
   if (fCalcMinosErrors) {
-    LOG("FitterMinuit2",pINFO) << "Getting Minos errors...";
+    VLOG("FitterMinuit2",pINFO) << "Getting Minos errors...";
     //Get Minos Errors
     ROOT::Minuit2::MnMinos minos(likelihood_minuit2,bestfit);
     fMinosErrStatusCode = 0;  // Need to work out proper error code.

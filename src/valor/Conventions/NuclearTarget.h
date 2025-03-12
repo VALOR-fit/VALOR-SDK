@@ -23,8 +23,6 @@
 namespace valor {
 namespace conv {
 
-static const int kNNuclearTarget = 7;
-
 typedef enum ENuclearTarget
 { // Note that a specific name refers to only a single isotope, eg C12, Ar40 etc
   kntUndefined = -1, 
@@ -35,8 +33,11 @@ typedef enum ENuclearTarget
   kntOxygen,
   kntArgon,
   kntCalcium,
+  kntOnePastEnd
 }
-NuclearTarget_t; 
+NuclearTarget_t;
+
+  static const int kNNuclearTarget = static_cast<int>(kntOnePastEnd);
 
 static const int kNuclearTargetPDG [conv::kNNuclearTarget] = {
   /* kntInclusive */ -2             ,

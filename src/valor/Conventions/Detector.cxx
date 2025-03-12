@@ -28,24 +28,23 @@ string util::AsString(Detector_t d, Option_t * /*opt*/)
 
   switch(d) {
     case (kdDUNEND   ) : name = "dune_nd";    break;
-    case (kdDUNEFD1ph) : name = "dune_fd1ph"; break;
-    case (kdDUNEFD2ph) : name = "dune_fd2ph"; break;
+      //case (kdDUNEFD1ph) : name = "dune_fd1ph"; break;
+      //case (kdDUNEFD2ph) : name = "dune_fd2ph"; break;
+    case (kdDUNEFD   ) : name = "dune_fd"; break;
     case (kdSBND     ) : name = "sbn_nd";     break;
     case (kdSBNuBooNE) : name = "sbn_uboone"; break;
     case (kdSBNICARUS) : name = "sbn_icarus"; break;
     case (kdSuperK   ) : name = "superk";     break;
-    case (kdHyperK   ) : name = "hyperk";     break;
-    case (kdND280    ) : name = "nd280";      break;
-    case (kdND280Up  ) : name = "nd280up";    break;
-    case (kdINGRID   ) : name = "ingrid";     break;
-    case (kdNuPRISM  ) : name = "nuprism";    break;
+    case (kdHyperK   ) : name = "hyperk";     break; 
+    case (kdND280    ) : name = "nd280";      break; 
+      //case (kdND280Up  ) : name = "nd280up";    break; 
+    case (kdINGRID   ) : name = "ingrid";     break; 
+    case (kdNuPRISM  ) : name = "nuprism";    break; 
     case (kdNuTIT    ) : name = "titus";      break;
     case (kdNOvAND   ) : name = "nova_nd";    break;
     case (kdNOvAFD   ) : name = "nova_fd";    break;
-    case (kdNuStormND) : name = "nustorm_nd"; break;
-    case (kdNuStormFD) : name = "nustorm_fd"; break;
-    case (kdJUNO ) : name = "JUNO";  break;
-    default            : name = "--";
+    case (kdJUNO     ) : name = "juno";       break;
+    default            : name = "--";  
   }
 /*
   if(opt) {
@@ -66,24 +65,25 @@ string util::AsStringTeX(Detector_t d, bool root)
 
   switch(d) {
     case (kdDUNEND   ) : name = "DUNE ND";              break;
-    case (kdDUNEFD1ph) : name = "DUNE FD Single Phase"; break;
-    case (kdDUNEFD2ph) : name = "DUNE FD Dual Phase";   break;
-    case (kdSBND     ) : name = "SBN-ND";               break;
-    case (kdSBNuBooNE) : name = "SBN-#muBooNE";         break;
-    case (kdSBNICARUS) : name = "SBN-ICARUS";           break;
+      //case (kdDUNEFD1ph) : name = "DUNE FD Single Phase"; break;
+      //case (kdDUNEFD2ph) : name = "DUNE FD Dual Phase";   break;
+    case (kdDUNEFD   ) : name = "DUNE FD";   break;
+    case (kdSBND     ) : name = "SBND";               break;
+    case (kdSBNuBooNE) : name = "#muBooNE";         break;
+    case (kdSBNICARUS) : name = "ICARUS";           break;
     case (kdSuperK   ) : name = "Super-K";              break;
-    case (kdHyperK   ) : name = "Hyper-K";              break;
-    case (kdND280    ) : name = "ND280";                break;
-    case (kdND280Up  ) : name = "ND280 Upgrade";        break;
-    case (kdINGRID   ) : name = "INGRID";               break;
-    case (kdNuPRISM  ) : name = "#nu Prism";            break;
+    case (kdHyperK   ) : name = "Hyper-K";              break; 
+    case (kdND280    ) : name = "ND280";                break; 
+      //case (kdND280Up  ) : name = "ND280 Upgrade";        break; 
+    case (kdINGRID   ) : name = "INGRID";               break; 
+    case (kdNuPRISM  ) : name = "#nu Prism";            break; 
     case (kdNuTIT    ) : name = "TITUS";                break;
     case (kdNOvAND   ) : name = "NO{#nu}A ND";          break;
     case (kdNOvAFD   ) : name = "NO{#nu}A FD";          break;
-    case (kdNuStormND) : name = "{#nu}Storm ND";        break;
-    case (kdNuStormFD) : name = "{#nu}Storm FD";        break;
-    case (kdJUNO ) : name = "JUNO";            break;
-    default            : name = "--";
+      //case (kdNuStormND) : name = "{#nu}Storm ND";        break;
+      //case (kdNuStormFD) : name = "{#nu}Storm FD";        break;
+    case (kdJUNO     ) : name = "JUNO";                 break;
+    default            : name = "--";  
   }
   if(root) return name;
 
@@ -99,7 +99,7 @@ Detector_t util::DetectorFromInt(int d)
 {
 // Cast an integer to Detector_t, but with boundary check
 //            [first]                 [last]
-  if(d >= (int)kdDUNEND && d <= (int) kdJUNO) return (Detector_t)d;
+  if(d >= (int)kdDUNEND && d < (int) kdOnePastEnd) return (Detector_t)d;
   return kdUndefined;
 }
 //________________________________________________________________________________________
@@ -121,23 +121,22 @@ bool util::IsLongBaseline(Detector_t d)
 {
   switch(d) {
     case (kdDUNEND   ) : return false;
-    case (kdDUNEFD1ph) : return true;
-    case (kdDUNEFD2ph) : return true;
+      //case (kdDUNEFD1ph) : return true;
+      //case (kdDUNEFD2ph) : return true;
+    case (kdDUNEFD   ) : return true;
     case (kdSBND     ) : return false;
     case (kdSBNuBooNE) : return false;
     case (kdSBNICARUS) : return false;
     case (kdSuperK   ) : return true;
     case (kdHyperK   ) : return true;
     case (kdND280    ) : return false;
-    case (kdND280Up  ) : return false;
+      //case (kdND280Up  ) : return false;
     case (kdINGRID   ) : return false;
     case (kdNuPRISM  ) : return false;
     case (kdNuTIT    ) : return false;
     case (kdNOvAND   ) : return false;
     case (kdNOvAFD   ) : return true;
-    case (kdNuStormND) : return false;
-    case (kdNuStormFD) : return false;
-    case (kdJUNO ) : return true;
+    case (kdJUNO     ) : return false;
     default: break;
   }
   LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);
@@ -148,21 +147,48 @@ bool util::IsShortBaseline(Detector_t d)
 {
   switch(d) {
     case (kdDUNEND   ) : return true;
-    case (kdDUNEFD1ph) : return false;
-    case (kdDUNEFD2ph) : return false;
+      //case (kdDUNEFD1ph) : return false;
+      //case (kdDUNEFD2ph) : return false;
+    case (kdDUNEFD   ) : return false;
     case (kdSBND     ) : return true;
     case (kdSBNuBooNE) : return true;
     case (kdSBNICARUS) : return true;
     case (kdSuperK   ) : return false;
     case (kdHyperK   ) : return false;
     case (kdND280    ) : return true;
-    case (kdND280Up  ) : return true;
+      //case (kdND280Up  ) : return true;
     case (kdINGRID   ) : return true;
     case (kdNuPRISM  ) : return true; // well, probably
     case (kdNuTIT    ) : return true;
     case (kdNOvAND   ) : return true;
     case (kdNOvAFD   ) : return false;
-    case (kdJUNO ) : return false;
+    case (kdJUNO     ) : return false;
+    default: break;
+  }
+  VLOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);
+  return false;
+}
+//________________________________________________________________________________________
+bool util::IsAtmospheric(Detector_t d)
+{
+  switch(d) {
+    case (kdDUNEND   ) : return false;
+      //case (kdDUNEFD1ph) : return false;
+      //case (kdDUNEFD2ph) : return false;
+  case (kdDUNEFD   ) : return false;
+    case (kdSBND     ) : return false;
+    case (kdSBNuBooNE) : return false;
+    case (kdSBNICARUS) : return false;
+    case (kdSuperK   ) : return true;
+    case (kdHyperK   ) : return true;
+    case (kdND280    ) : return false;
+      //case (kdND280Up  ) : return false;
+    case (kdINGRID   ) : return false;
+    case (kdNuPRISM  ) : return false;
+    case (kdNuTIT    ) : return false;
+    case (kdNOvAND   ) : return false;
+    case (kdNOvAFD   ) : return false;
+    case (kdJUNO     ) : return true;
     default: break;
   }
   LOG("FitInputs", pWARN) << "Unrecognised detector \'" << d << "\'"<<" - "<<util::AsString(d);

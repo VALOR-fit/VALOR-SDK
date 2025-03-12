@@ -62,7 +62,6 @@
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/Conventions/KineSpace.h"
 #include "valor/Conventions/Opt.h"
-#include "valor/Conventions/Constants.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/FitCore/FitParamList.h"
 #include "valor/FitCore/CompoundFitElements.h"

@@ -17,18 +17,21 @@ using namespace valor;
 using namespace valor::conv;
 
 // Groups of systematics
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Beam
-const BeamApplyMask_t valor::conv::kbApplyToAll = kbApplyToFHC | kbApplyToRHC;
-
+const BeamApplyMask_t valor::conv::kbApplyToAll   = kbApplyToFHC | kbApplyToRHC | kbApplyToAtmo;
+const BeamApplyMask_t valor::conv::kbApplyToAccel = kbApplyToFHC | kbApplyToRHC;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Nu flavour
-const FlavApplyMask_t valor::conv::kfApplyToNuAny     = kfApplyToNuMu    | kfApplyToNuE   ; // NuAny means any non-barred
-const FlavApplyMask_t valor::conv::kfApplyToNuBarAny  = kfApplyToNuMuBar | kfApplyToNuEBar;
-const FlavApplyMask_t valor::conv::kfApplyToNuEAny    = kfApplyToNuE     | kfApplyToNuEBar;
-const FlavApplyMask_t valor::conv::kfApplyToNuMuAny   = kfApplyToNuMu    | kfApplyToNuMuBar;
-const FlavApplyMask_t valor::conv::kfApplyToAll       = kfApplyToNuAny   | kfApplyToNuBarAny;
-const FlavApplyMask_t valor::conv::kfApplyToAllCosmic = kfApplyToAll     | kfApplyToCosmic;
-const FlavApplyMask_t valor::conv::kfApplyToAllDirt   = kfApplyToAllCosmic     | kfApplyToDirt;
-
+const FlavApplyMask_t valor::conv::kfApplyToNuAny     = kfApplyToNuMu    | kfApplyToNuE    | kfApplyToNuTau   ;
+const FlavApplyMask_t valor::conv::kfApplyToNuBarAny  = kfApplyToNuMuBar | kfApplyToNuEBar | kfApplyToNuTauBar;
+const FlavApplyMask_t valor::conv::kfApplyToNuEAny    = kfApplyToNuE       | kfApplyToNuEBar;
+const FlavApplyMask_t valor::conv::kfApplyToNuMuAny   = kfApplyToNuMu      | kfApplyToNuMuBar;
+const FlavApplyMask_t valor::conv::kfApplyToNuTauAny  = kfApplyToNuTau     | kfApplyToNuTauBar;
+const FlavApplyMask_t valor::conv::kfApplyToAll       = kfApplyToNuAny     | kfApplyToNuBarAny;
+const FlavApplyMask_t valor::conv::kfApplyToAllCosmic = kfApplyToAll       | kfApplyToCosmic;
+const FlavApplyMask_t valor::conv::kfApplyToAllDirt   = kfApplyToAllCosmic | kfApplyToDirt;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Reaction type
 const ReacTypeApplyMask_t valor::conv::ktApplyToT2KLegCCoth = ktApplyToCCDIS    | ktApplyToCCMpi    |  ktApplyToCCmisc;
 const ReacTypeApplyMask_t valor::conv::ktApplyToCCDISMpi    = ktApplyToCCDIS    | ktApplyToCCMpi;
@@ -117,6 +120,8 @@ const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ks
 const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu;                       // SuperK selections
 const SelecApplyMask_t valor::conv::ksApplyToAllRings     = ksApplyTo1RingE | ksApplyTo1RingMu | ksApplyToMultiRingE; // SuperK selections
 
+
+
 const SelecApplyMask_t valor::conv::ksApplyToLowRes = ksApplyToMuLikeLowRes | ksApplyToELikeLowRes;
 const SelecApplyMask_t valor::conv::ksApplyToHighRes = ksApplyToMuLikeHighRes | ksApplyToELikeHighRes;
 const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes | ksApplyToAllRings;
@@ -124,6 +129,9 @@ const SelecApplyMask_t valor::conv::ksApplyToAll = ksApplyToAllND | ksApplyToAll
 const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
 const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
 
+// JUNO selections
+const SelecApplyMask_t valor::conv::ksApplyToAllJUNO = ksApplyToJUNO_FC_CC_Numu | ksApplyToJUNO_FC_CC_Numubar | ksApplyToJUNO_FC_CC_Nue | ksApplyToJUNO_FC_CC_Nuebar | ksApplyToJUNO_FC_NC;
+const SelecApplyMask_t valor::conv::ksApplyToAllJUNOCC = ksApplyToJUNO_FC_CC_Numu | ksApplyToJUNO_FC_CC_Numubar | ksApplyToJUNO_FC_CC_Nue | ksApplyToJUNO_FC_CC_Nuebar;
 
 // Targets
 const NuclearTargetApplyMask_t valor::conv::kntApplyToAll = (
@@ -156,19 +164,23 @@ valor::util::ApplyMaskNaming * valor::util::ApplyMaskNaming::MutableInstance()
 //________________________________________________________________________________________
 void valor::util::ApplyMaskNaming::Init(void)
 {
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Beam Mask names
   fBeamMaskToName.insert( std::make_pair(kbApplyToFHC, "fhc") );
   fBeamMaskToName.insert( std::make_pair(kbApplyToRHC, "rhc") );
+  fBeamMaskToName.insert( std::make_pair(kbApplyToAtmo, "atmo") );
   fBeamMaskToName.insert( std::make_pair(kbApplyToAll, "all") );
   for(auto const& pair : fBeamMaskToName) {
     fBeamNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
-
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Flavour mask names
   fFlavMaskToName.insert( std::make_pair(kfApplyToNuMu      , "numu") );
   fFlavMaskToName.insert( std::make_pair(kfApplyToNuMuBar   , "numubar") );
   fFlavMaskToName.insert( std::make_pair(kfApplyToNuE       , "nue") );
   fFlavMaskToName.insert( std::make_pair(kfApplyToNuEBar    , "nuebar") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuTau     , "nutau") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToNuTauBar  , "nutaubar") );
   fFlavMaskToName.insert( std::make_pair(kfApplyToNuAny     , "nuany") );
   fFlavMaskToName.insert( std::make_pair(kfApplyToNuBarAny  , "nubarany") );
   fFlavMaskToName.insert( std::make_pair(kfApplyToNuEAny    , "nueany") );
@@ -179,64 +191,90 @@ void valor::util::ApplyMaskNaming::Init(void)
   for(auto const& pair : fFlavMaskToName) {
     fFlavNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
-
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Selection mask names
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC         , "numucc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0pi1trk  , "numucc0pi1trk") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0pi2trk  , "numucc0pi2trk") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0piNtrk  , "numucc0pintrk") );
+  // 2016b, near detector selections
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC         , "numucc"         ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0pi1trk  , "numucc0pi1trk"  ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0pi2trk  , "numucc0pi2trk"  ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1piC     , "numucc1pic"     ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC2piC     , "numucc2pic"     ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1pi0     , "numucc1pi0"     ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1piC1pi0 , "numucc1pic1pi0" ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoth      , "numuccoth"      ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC          , "nuecc"          ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS       , "numuccws"       ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNC             , "nc"             ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0piNtrk  , "numucc0pintrk"  ) );
   fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC3trkDelta, "numucc3trkdelta") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1piC     , "numucc1pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC2piC     , "numucc2pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1pi0     , "numucc1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1piC1pi0 , "numucc1pic1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoth      , "numuccoth") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS0pi    , "numuccws0pi") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS1piC   , "numuccws1pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS1pi0   , "numuccws1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWSoth    , "numuccwsoth") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC0pi       , "nuecc0pi") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC1piC      , "nuecc1pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC1pi0      , "nuecc1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECCoth       , "nueccoth") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNC0pi          , "nc0pi") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNC1piC         , "nc1pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNC1pi0         , "nc1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNCoth          , "ncoth") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNeutrinoElec   , "neutrinoelec") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToInvMuDecay     , "invmudecay") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECCWS        , "nueccws") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC          , "nuecc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS       , "numuccws") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNC             , "nc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeHighRes  , "mulikehighres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeLowRes   , "mulikelowres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeHighRes   , "elikehighres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeLowRes    , "elikelowres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllND          , "allnd") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllFD          , "allfd") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAll            , "all") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNC          , "allnc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuMuCC      , "allnumucc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuECC       , "allnuecc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu        , "1rmu") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE         , "1re") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE     , "multire") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS0pi    , "numuccws0pi"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS1piC   , "numuccws1pic"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS1pi0   , "numuccws1pi0"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWSoth    , "numuccwsoth"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC0pi       , "nuecc0pi"       ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC1piC      , "nuecc1pic"      ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC1pi0      , "nuecc1pi0"      ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECCoth       , "nueccoth"       ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNC0pi          , "nc0pi"          ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNC1piC         , "nc1pic"         ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNC1pi0         , "nc1pi0"         ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNCoth          , "ncoth"          ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNeutrinoElec   , "neutrinoelec"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToInvMuDecay     , "invmudecay"     ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECCWS        , "nueccws"        ) );
+  
+  // 2016b, far detector selections
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeHighRes   , "mulikehighres"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeLowRes    , "mulikelowres"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMuBarLikeHighRes, "mubarlikehighres") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMuBarLikeLowRes , "mubarlikelowres" ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeHighRes    , "elikehighres"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeLowRes     , "elikelowres"     ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToEBarLikeHighRes , "ebarlikehighres" ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToEBarLikeLowRes  , "ebarlikelowres"  ) );
+
+  // SuperK selections
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu   , "1rmu"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE    , "1re"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE, "multire") );
+
+  // PRISM selections
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa00, "prism-numucc-oa00") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa01, "prism-numucc-oa01") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa02, "prism-numucc-oa02") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa03, "prism-numucc-oa03") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa04, "prism-numucc-oa04") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa05, "prism-numucc-oa05") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa06, "prism-numucc-oa06") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa07, "prism-numucc-oa07") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa08, "prism-numucc-oa08") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoa09, "prism-numucc-oa09") );
+
+  // JUNO selections
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_CC_Numu   , "juno-fc-numucc"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_CC_Numubar, "juno-fc-numubarcc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_CC_Nue    , "juno-fc-nuecc"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_CC_Nuebar , "juno-fc-nuebarcc" ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_NC        , "juno-fc-ncincl"   ) );
+
+  // Compound selections
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllND          , "allnd"      ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllFD          , "allfd"      ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAll            , "all"        ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNC          , "allnc"      ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuMuCC      , "allnumucc"  ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuECC       , "allnuecc"   ) );
   fSelecMaskToName.insert( std::make_pair(ksApplyToELikeRingAny   , "e-likerings") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingAny       , "1rany") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllRings       , "allrings") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNuMuCC     , "atmo_numucc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNuMuBarCC  , "atmo_numubarcc") );  
-  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNuECC      , "atmo_nuecc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNuEBarCC   , "atmo_nuebarcc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToJFCAtmoNC         , "atmo_nc") );
-
-
-
+  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingAny       , "1rany"      ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllRings       , "allrings"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToLowRes         , "lowres"     ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToHighRes        , "highres"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllJUNO        , "alljuno"    ) );
+  
   for(auto const& pair : fSelecMaskToName) {
     fSelecNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
-
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Reaction type mask names
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCQE         , "ccqe") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCMEC        , "ccmec") );
@@ -250,10 +288,8 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCELScat     , "ccelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCDIS        , "ccdis") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCMpi        , "ccmpi") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCDISMpi     , "ccdismpi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCmisc       , "ccmisc") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCoth        , "ccoth") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToT2KLegCCoth  , "t2klegccoth") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCEL         , "ncel") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCMEC        , "ncmec") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNC1piC       , "nc1pic") );
@@ -266,8 +302,10 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCELScat     , "ncelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCoth        , "ncoth") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNuEELScat    , "nueelscat") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToOther        , "other") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCosmic       , "cosmic") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToDirt         , "dirt") );
+
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCQELike     , "ccqelike") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCCELScat  , "allccelscat") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC1pi     , "allcc1pi") );
@@ -301,23 +339,33 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllWithFSI   , "allwithfsi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCosmic , "allbutcosmic") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToPiAndOth     , "piandoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToT2KLegCCoth  , "t2klegccoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCDISMpi     , "ccdismpi") );
+  
   for(auto const& pair : fReacTypeMaskToName) {
     fReacTypeNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Detector mask names
   fDetectorMaskToName.insert( std::make_pair(kdApplyToDUNEND    , "dunend") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToDUNEFD    , "dunefd") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToSBND      , "sbnd") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToMicroBooNE, "microboone") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToICARUS    , "icarus") );
-  fDetectorMaskToName.insert( std::make_pair(kdApplyToND280     , "nd280") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToSuperK    , "superk") );
-  fDetectorMaskToName.insert( std::make_pair(kdApplyToJUNO      , "JUNO") );
-  fDetectorMaskToName.insert( std::make_pair(kdApplyToAllT2K    , "allt2k") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToHyperK    , "hyperk") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToND280     , "nd280") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToINGRID    , "ingrid") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToNuPRISM   , "prism") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToNuTIT     , "nutit") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToNOvAND    , "novand") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToNOvAFD    , "novafd") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToJUNO      , "juno") );
+
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllDUNE   , "alldune") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllSBN    , "allsbn") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllSBN2Det, "allsbn2det") );
+  fDetectorMaskToName.insert( std::make_pair(kdApplyToAllT2K    , "allt2k") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAllND     , "allnd") );
   fDetectorMaskToName.insert( std::make_pair(kdApplyToAll       , "all") );
   for(auto const& pair : fDetectorMaskToName) {
@@ -367,6 +415,7 @@ const BeamApplyMask_t valor::util::ApplyToBeamMode(BeamConf_t b)
     case kbNuMI_RHC  : return kbApplyToRHC;
     case kbBNB_FHC   : return kbApplyToFHC;
     case kbBNB_RHC   : return kbApplyToRHC;
+    case kbJUNO_Atmo : return kbApplyToAtmo;
     default:
       LOG("ApplyMask",pWARN) << "No beam apply mask set for " << util::AsString(b) << ". Applying to none.";
       return 0;
@@ -423,11 +472,13 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksNuMuCCoa05      : return ksApplyToNuMuCC;
     case ksNuMuCCoa06      : return ksApplyToNuMuCC;
     case ksNuMuCCoa07      : return ksApplyToNuMuCC;
-    case ksJFCAtmoNuMuCC      : return ksApplyToJFCAtmoNuMuCC;
-    case ksJFCAtmoNuMuBarCC   : return ksApplyToJFCAtmoNuMuBarCC;
-    case ksJFCAtmoNuECC       : return ksApplyToJFCAtmoNuECC;
-    case ksJFCAtmoNuEBarCC    : return ksApplyToJFCAtmoNuEBarCC;
-    case ksJFCAtmoNC          : return ksApplyToJFCAtmoNC;
+
+    case ksJUNO_FC_CC_Numu   : return ksApplyToJUNO_FC_CC_Numu;
+    case ksJUNO_FC_CC_Numubar: return ksApplyToJUNO_FC_CC_Numubar;
+    case ksJUNO_FC_CC_Nue    : return ksApplyToJUNO_FC_CC_Nue;
+    case ksJUNO_FC_CC_Nuebar : return ksApplyToJUNO_FC_CC_Nuebar;
+    case ksJUNO_FC_NC        : return ksApplyToJUNO_FC_NC;
+      
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
       return 0;
@@ -438,17 +489,18 @@ const DetectorApplyMask_t valor::util::ApplyToDetector(conv::Detector_t d)
 {
   switch (d) {
     case kdDUNEND    : return kdApplyToDUNEND;
-    case kdDUNEFD1ph : return kdApplyToDUNEFD;
-    case kdDUNEFD2ph : return kdApplyToDUNEFD;
+    case kdDUNEFD    : return kdApplyToDUNEFD;
     case kdSBND      : return kdApplyToSBND;
     case kdSBNuBooNE : return kdApplyToMicroBooNE;
     case kdSBNICARUS : return kdApplyToICARUS;
     case kdSuperK    : return kdApplyToSuperK;
+    case kdHyperK    : return kdApplyToHyperK;
     case kdND280     : return kdApplyToND280;
-    case kdND280Up   : return 0;
-    case kdINGRID    : return 0;
-    case kdNuPRISM   : return 0;
-    case kdNuTIT     : return 0;
+    case kdINGRID    : return kdApplyToINGRID;
+    case kdNuPRISM   : return kdApplyToNuPRISM;
+    case kdNuTIT     : return kdApplyToNuTIT;
+    case kdNOvAND    : return kdApplyToNOvAND;
+    case kdNOvAFD    : return kdApplyToNOvAFD;
     case kdJUNO      : return kdApplyToJUNO;
     default:
       LOG("ApplyMask",pWARN) << "No detector apply mask set for " << util::AsString(d) << ". Applying to none.";

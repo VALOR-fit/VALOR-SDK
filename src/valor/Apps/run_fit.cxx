@@ -213,10 +213,12 @@ int main(int argc, char ** argv)
     // Reset output tree variables
     ntp.Reset();
 
-    // Get the specified fit parameter list (defines floated/fixed parameters, limits, etc.)
+    // Get the specified fit parameter list (specifies which parameters are floated/fixed,
+    // parameter limits, initial values etc).
     FitParamList * fp = util::GetFitParameterList(hypname.c_str(), fplopt.c_str());
-    if (fp == 0) {
-      LOG("valor", pFATAL) << "FitParamList not filled";
+
+    if(fp == 0){ // Make sure that worked
+      VLOG("valor",pFATAL) << "FitParamList not filled";
       util::Die(-1);
     }
 
@@ -258,9 +260,9 @@ int main(int argc, char ** argv)
       util::Die(-1);
     }
 
-    // Check if parameters are within limits
+    // Check parameter name, maybe rethrow
     if (!util::AllWithinLimits(*fp)) {
-      LOG("valor", pNOTICE) << "At least one parameter thrown outside expected limits.";
+      VLOG("valor", pNOTICE) << "At least one parameter thrown outside expected limits.";
       if (rethrow_unphysical) {
         LOG("valor", pNOTICE) << "Regenerating...";
         itoymc--;

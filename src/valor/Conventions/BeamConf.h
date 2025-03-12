@@ -45,15 +45,14 @@ typedef enum EBeamConf
    kbNuMI_RHC,             // reverse horn current beam @ FNAL/NuMI
    kbBNB_FHC,              // forward horn current beam @ FNAL/Booster
    kbBNB_RHC,              // reverse horn current beam @ FNAL/Booster
-   kbNuStorm_MuP,          // beam from a stored mu+ beam
-   kbNuStorm_MuM,          // beam from a stored mu- beam
-   kbNuStorm_MuPflash,     // neutrino flash from decays of injected mesons yielding stored mu+
-   kbNuStorm_MuMflash,     // neutrino flash from decays of injected mesons yielding stored mu-
-   kbAtmo_Jiangmen         // Atmo neutrino flux at Jiangmen
-}
+   kbJUNO_Atmo,            // JUNO, atmospheric
+   //
+   kbOnePastEnd            // Used for boundary checks
+} 
 BeamConf_t;
 
-static const int kNBeamsDefined = 13;
+static const int kNBeamsDefined = static_cast<int>( kbOnePastEnd );
+static const int kNBeamTypesDefined = 3; /* FHC, RHC, atmo */
 
 } // conv
 

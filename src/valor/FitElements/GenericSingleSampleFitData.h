@@ -93,6 +93,7 @@ private:
   void Clean (void);
   void Zero  (Option_t * opt);
   void FillFromDST  (TTree * t); // <----- NOTE: Some code duplication with GSSFM - eliminate in future
+  void FillFromVArray (VALORArray * a);
 
   // Name of this VALOR fit dataset (see Conventions/Names.h)
   string fName;

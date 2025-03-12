@@ -83,6 +83,8 @@
   #define ENDL std::endl
 #endif
 
+// Switch off SLOG and LOG in AL9 because of an include conflict somewhere...
+
 /*!
   \def   SLOG(stream, priority)
   \brief A macro that returns the requested log4cpp::Category
@@ -95,6 +97,7 @@
                << priority << "[s] <" \
                << __FUNCTION__ << " (" << __LINE__ << ")> : "
 #endif
+*/
 
 /*!
   \def   LOG(stream, priority)
@@ -108,6 +111,9 @@
                << priority << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 #endif
+*/
+
+
 
 // Copies of the above two functions with "V" in front (for VALORLog).
 // Can be used to prevent collisisons with GENIE logging in programs built against both.
@@ -162,6 +168,11 @@
           (*valor::Messenger::Instance())(stream) \
                << log4cpp::Priority::DEBUG << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
+
+#define VBLOG(stream, priority) \
+	  (*valor::Messenger::Instance())(stream) << priority
+
+#else // GENIE does #define these...
 
 /*!
   \def   LLOG(stream, priority)
@@ -224,7 +235,7 @@
 #define BLOG(stream, priority) \
 	  (*valor::Messenger::Instance())(stream) << priority
        
-#endif // Our check for LOG_FATAL, to make sure we don't collide with GENIE
+#endif // Our check for VLOG_FATAL, to make sure we don't collide with GENIE
 
 namespace valor {
 

@@ -19,6 +19,7 @@ TGT = adaptive_mcmc \
       run_fit \
       run_fit_marg \
       tweak_pdf_N \
+      tweak_pdf_N_ratio \
       tweak_pdf_sigma_var \
       write_pdf \
       make_response_functions 
@@ -80,6 +81,16 @@ ifeq ("YES","$(OPT_ENABLE_GENIE)")
 	$(LD) $(LDFLAGS) tweak_pdf_N.o $(LIBRARIES) -o $(VALOR_FMWK)/bin/valor-tweak_pdf_N
 else
 	@echo "Skipping tweak_pdf_N due to no GENIE"
+endif
+
+# Randomly throw the pdf t o make envelopes sig/bkg ratio
+# 
+tweak_pdf_N_ratio: FORCE
+ifeq ("YES","$(OPT_ENABLE_GENIE)")
+	$(CXX) $(CXXFLAGS) -c tweak_pdf_N_ratio.cxx $(GINCLUDES)
+	$(LD) $(LDFLAGS) tweak_pdf_N_ratio.o $(GLIBRARIES) $(VALOR_GLIBRARIES) -o $(VALOR_FMWK)/bin/valor-tweak_pdf_N_ratio
+else
+	@echo "Skipping tweak_pdf_N_ratio due to no GENIE"
 endif
 
 # Make +/- 1 and 3 sigma variations for each param
