@@ -145,7 +145,10 @@ namespace valor {
     static const SelecApplyMask_t ksApplyToJUNO_FC_CC_Numubar     = (kApplyMaskOne << 50 );
     static const SelecApplyMask_t ksApplyToJUNO_FC_CC_Nue         = (kApplyMaskOne << 51 );
     static const SelecApplyMask_t ksApplyToJUNO_FC_CC_Nuebar      = (kApplyMaskOne << 52 );
-    static const SelecApplyMask_t ksApplyToJUNO_FC_NC             = (kApplyMaskOne << 53 );
+    static const SelecApplyMask_t ksApplyToJUNO_FC_NC_Numu        = (kApplyMaskOne << 53 );
+    static const SelecApplyMask_t ksApplyToJUNO_FC_NC_Numubar     = (kApplyMaskOne << 54 );
+    static const SelecApplyMask_t ksApplyToJUNO_FC_NC_Nue         = (kApplyMaskOne << 55 );
+    static const SelecApplyMask_t ksApplyToJUNO_FC_NC_Nuebar      = (kApplyMaskOne << 56 );
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Reaction type
     static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 );
@@ -254,6 +257,7 @@ namespace valor {
     extern const SelecApplyMask_t ksApplyToHighRes;
     extern const SelecApplyMask_t ksApplyToAllJUNO;
     extern const SelecApplyMask_t ksApplyToAllJUNOCC;
+    extern const SelecApplyMask_t ksApplyToAllJUNONC;
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Reaction type
     extern const ReacTypeApplyMask_t ktApplyToCCQELike;
