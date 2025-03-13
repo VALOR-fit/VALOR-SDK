@@ -130,8 +130,9 @@ const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApply
 const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
 
 // JUNO selections
-const SelecApplyMask_t valor::conv::ksApplyToAllJUNO = ksApplyToJUNO_FC_CC_Numu | ksApplyToJUNO_FC_CC_Numubar | ksApplyToJUNO_FC_CC_Nue | ksApplyToJUNO_FC_CC_Nuebar | ksApplyToJUNO_FC_NC;
 const SelecApplyMask_t valor::conv::ksApplyToAllJUNOCC = ksApplyToJUNO_FC_CC_Numu | ksApplyToJUNO_FC_CC_Numubar | ksApplyToJUNO_FC_CC_Nue | ksApplyToJUNO_FC_CC_Nuebar;
+const SelecApplyMask_t valor::conv::ksApplyToAllJUNONC = ksApplyToJUNO_FC_NC_Numu | ksApplyToJUNO_FC_NC_Numubar | ksApplyToJUNO_FC_NC_Nue | ksApplyToJUNO_FC_NC_Nuebar;
+const SelecApplyMask_t valor::conv::ksApplyToAllJUNO = ksApplyToAllJUNOCC | ksApplyToAllJUNONC;
 
 // Targets
 const NuclearTargetApplyMask_t valor::conv::kntApplyToAll = (
@@ -255,7 +256,10 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_CC_Numubar, "juno-fc-numubarcc") );
   fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_CC_Nue    , "juno-fc-nuecc"    ) );
   fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_CC_Nuebar , "juno-fc-nuebarcc" ) );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_NC        , "juno-fc-ncincl"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_NC_Numu   , "juno-fc-numunc"   ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_NC_Numubar, "juno-fc-numubarnc") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_NC_Nue    , "juno-fc-nuenc"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToJUNO_FC_NC_Nuebar , "juno-fc-nuebarnc" ) );
 
   // Compound selections
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllND          , "allnd"      ) );
@@ -270,6 +274,8 @@ void valor::util::ApplyMaskNaming::Init(void)
   fSelecMaskToName.insert( std::make_pair(ksApplyToLowRes         , "lowres"     ) );
   fSelecMaskToName.insert( std::make_pair(ksApplyToHighRes        , "highres"    ) );
   fSelecMaskToName.insert( std::make_pair(ksApplyToAllJUNO        , "alljuno"    ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllJUNOCC      , "alljunocc"  ) );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToAllJUNONC      , "alljunonc"  ) );
   
   for(auto const& pair : fSelecMaskToName) {
     fSelecNameToMask.insert( std::make_pair(pair.second, pair.first) );
@@ -477,7 +483,10 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksJUNO_FC_CC_Numubar: return ksApplyToJUNO_FC_CC_Numubar;
     case ksJUNO_FC_CC_Nue    : return ksApplyToJUNO_FC_CC_Nue;
     case ksJUNO_FC_CC_Nuebar : return ksApplyToJUNO_FC_CC_Nuebar;
-    case ksJUNO_FC_NC        : return ksApplyToJUNO_FC_NC;
+    case ksJUNO_FC_NC_Numu   : return ksApplyToJUNO_FC_NC_Numu;
+    case ksJUNO_FC_NC_Numubar: return ksApplyToJUNO_FC_NC_Numubar;
+    case ksJUNO_FC_NC_Nue    : return ksApplyToJUNO_FC_NC_Nue;
+    case ksJUNO_FC_NC_Nuebar : return ksApplyToJUNO_FC_NC_Nuebar;
       
     default:
       LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";

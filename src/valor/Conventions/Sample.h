@@ -65,36 +65,40 @@ typedef enum ESample
    ksInvMuDecay      = 26, // Inverse muon decay (nuebar + e -> mu + numubar or numu + e -> mu + nue)
    ksNuECCWS         = 27, // wrong sign nue CC inclusive
    //2016b far detector selections
-   ksNuMuLikeCChigh      , // numu-like (for the moment both numu and numubar), high resolution (CCQE-like)
-   ksNuMuLikeCClow       , // numu-like (for the moment both numu and numubar), low resolution (nonCCQE-like)
-   ksNuMuBarCChigh       , // numubar, high resolution (CCQE-like)   - CURRENTLY UNUSED
-   ksNuMuBarCClow        , // numubar, low resolution (nonCCQE-like) - CURRENTLY UNUSED
-   ksNuELikeCChigh       , // nue-like (for the moment both nue and nuebar), high resolution (CCQE-like)
-   ksNuELikeCClow        , // nue-like (for the moment both nue and nuebar), low resolution (nonCCQE-like)
-   ksNuEBarCChigh        , // nuebar, high resolution (CCQE-like)    - CURRENTLY UNUSED
-   ksNuEBarCClow         , // nuebar, low resolution (nonCCQE-like)  - CURRENTLY UNUSED
+   ksNuMuLikeCChigh  = 28, // numu-like (for the moment both numu and numubar), high resolution (CCQE-like)
+   ksNuMuLikeCClow   = 29, // numu-like (for the moment both numu and numubar), low resolution (nonCCQE-like)
+   ksNuMuBarCChigh   = 30, // numubar, high resolution (CCQE-like)   - CURRENTLY UNUSED
+   ksNuMuBarCClow    = 31, // numubar, low resolution (nonCCQE-like) - CURRENTLY UNUSED
+   ksNuELikeCChigh   = 32, // nue-like (for the moment both nue and nuebar), high resolution (CCQE-like)
+   ksNuELikeCClow    = 33, // nue-like (for the moment both nue and nuebar), low resolution (nonCCQE-like)
+   ksNuEBarCChigh    = 34, // nuebar, high resolution (CCQE-like)    - CURRENTLY UNUSED
+   ksNuEBarCClow     = 35, // nuebar, low resolution (nonCCQE-like)  - CURRENTLY UNUSED
    // SuperK selections
-   ks1Rmu                , // Single-ring muon-like
-   ks1Re                 , // Single-ring electron-like
-   ksMultiRe             , // Multi-ring electron-like
+   ks1Rmu            = 36, // Single-ring muon-like
+   ks1Re             = 37, // Single-ring electron-like
+   ksMultiRe         = 38, // Multi-ring electron-like
    // PRISM selections
-   ksNuMuCCoa00          , // numuCC-like, off-axis bin "00" (arbitrary definition of off-axis bin: specified by range of off-axis angles in input DST)
-   ksNuMuCCoa01          , // numuCC-like, off-axis bin "01"
-   ksNuMuCCoa02          , // numuCC-like, off-axis bin "02"
-   ksNuMuCCoa03          , // numuCC-like, off-axis bin "03"
-   ksNuMuCCoa04          , // numuCC-like, off-axis bin "04"
-   ksNuMuCCoa05          , // numuCC-like, off-axis bin "05"
-   ksNuMuCCoa06          , // numuCC-like, off-axis bin "06"
-   ksNuMuCCoa07          , // numuCC-like, off-axis bin "07"
-   ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
-   ksNuMuCCoa09          , // numuCC-like, off-axis bin "09"
+   ksNuMuCCoa00      = 39, // numuCC-like, off-axis bin "00" (arbitrary definition of off-axis bin: specified by range of off-axis angles in input DST)
+   ksNuMuCCoa01      = 40, // numuCC-like, off-axis bin "01"
+   ksNuMuCCoa02      = 41, // numuCC-like, off-axis bin "02"
+   ksNuMuCCoa03      = 42, // numuCC-like, off-axis bin "03"
+   ksNuMuCCoa04      = 43, // numuCC-like, off-axis bin "04"
+   ksNuMuCCoa05      = 44, // numuCC-like, off-axis bin "05"
+   ksNuMuCCoa06      = 45, // numuCC-like, off-axis bin "06"
+   ksNuMuCCoa07      = 46, // numuCC-like, off-axis bin "07"
+   ksNuMuCCoa08      = 47, // numuCC-like, off-axis bin "08"
+   ksNuMuCCoa09      = 48, // numuCC-like, off-axis bin "09"
    // JUNO selections - all currently fully-contained events
-   ksJUNO_FC_CC          , // CC inclusive FC. Split into subsamples
-   ksJUNO_FC_CC_Numu     , // CC numu-like FC
-   ksJUNO_FC_CC_Numubar  , // CC numbar-like FC
-   ksJUNO_FC_CC_Nue      , // CC nue-like FC
-   ksJUNO_FC_CC_Nuebar   , // CC nuebar-like FC
-   ksJUNO_FC_NC          , // NC inclusive FC
+   ksJUNO_FC_CC         = 49 , // CC inclusive FC. Split into subsamples
+   ksJUNO_FC_CC_Numu    = 50 , // CC numu-like FC
+   ksJUNO_FC_CC_Numubar = 51 , // CC numbar-like FC
+   ksJUNO_FC_CC_Nue     = 52 , // CC nue-like FC
+   ksJUNO_FC_CC_Nuebar  = 53 , // CC nuebar-like FC
+   ksJUNO_FC_NC         = 54 , // NC inclusive FC. Split into subsamples
+   ksJUNO_FC_NC_Numu    = 55 , // NC numu-like FC
+   ksJUNO_FC_NC_Numubar = 56 , // NC numbar-like FC
+   ksJUNO_FC_NC_Nue     = 57 , // NC nue-like FC
+   ksJUNO_FC_NC_Nuebar  = 58 , // NC nuebar-like FC
    //
    ksOnePastEnd            // used for boundary checks
 }

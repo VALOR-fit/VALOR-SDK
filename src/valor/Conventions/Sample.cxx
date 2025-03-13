@@ -79,6 +79,10 @@ string util::AsString(Sample_t s)
     case (ksJUNO_FC_CC_Nue)  : return "nueCC_fc";        break;
     case (ksJUNO_FC_CC_Nuebar)  : return "nuebarCC_fc";  break;
     case (ksJUNO_FC_NC     ) : return "NCincl_fc";       break;
+    case (ksJUNO_FC_NC_Numu) : return "numuNC_fc";       break;
+    case (ksJUNO_FC_NC_Numubar) : return "numubarNC_fc"; break;
+    case (ksJUNO_FC_NC_Nue)  : return "nueNC_fc";        break;
+    case (ksJUNO_FC_NC_Nuebar)  : return "nuebarNC_fc";  break;
     default                  : return "--";
   }
   return "";
@@ -144,6 +148,10 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksJUNO_FC_CC_Nue)  : name =  "Fully contained #nu_{e} CC incl."  ;  break;
     case (ksJUNO_FC_CC_Nuebar)  : name = "Fully contained #bar{#nu}_{e} CC incl.";   break;
     case (ksJUNO_FC_NC     ) : name = "Fully contained NC inclusive";         break;
+    case (ksJUNO_FC_NC_Numu) : name = "Fully contained #nu_{#mu} NC incl." ;  break;
+    case (ksJUNO_FC_NC_Numubar) : name = "Fully contained #bar{#nu}_{#mu} NC incl."; break;
+    case (ksJUNO_FC_NC_Nue)  : name =  "Fully contained #nu_{e} NC incl."  ;  break;
+    case (ksJUNO_FC_NC_Nuebar)  : name = "Fully contained #bar{#nu}_{e} NC incl.";   break;
     default                  : name = "--";
   }
 
@@ -247,7 +255,11 @@ bool util::IsCC(Sample_t s)
     case (ksJUNO_FC_CC_Nue    ) :
     case (ksJUNO_FC_CC_Nuebar ) : return true; break;
 
-    case (ksJUNO_FC_NC): return false; break;
+    case (ksJUNO_FC_NC        ) :
+    case (ksJUNO_FC_NC_Numu   ) :
+    case (ksJUNO_FC_NC_Numubar) :
+    case (ksJUNO_FC_NC_Nue    ) :
+    case (ksJUNO_FC_NC_Nuebar ) : return false; break;
 
 
     case (ksUndefined      ) : return false;
@@ -383,7 +395,11 @@ bool util::IsNC(Sample_t s)
     case (ksJUNO_FC_CC_Nue    ) :
     case (ksJUNO_FC_CC_Nuebar ) : return false; break;
 
-    case (ksJUNO_FC_NC): return true; break;
+    case (ksJUNO_FC_NC        ) :
+    case (ksJUNO_FC_NC_Numu   ) :
+    case (ksJUNO_FC_NC_Numubar) :
+    case (ksJUNO_FC_NC_Nue    ) :
+    case (ksJUNO_FC_NC_Nuebar ) : return true; break;
 
     case (ksUndefined      ) : return false;
   }
@@ -483,11 +499,16 @@ bool util::IsMuLike(Sample_t s)
     case (ksNuMuCCoa09     ) : return true; break;
 
     case (ksJUNO_FC_CC_Numu   ) :
-    case (ksJUNO_FC_CC_Numubar) : return true ; break;
+    case (ksJUNO_FC_CC_Numubar) :
+    case (ksJUNO_FC_NC_Numu   ) :
+    case (ksJUNO_FC_NC_Numubar) : return true ; break;
+    
     case (ksJUNO_FC_CC        ) :
     case (ksJUNO_FC_CC_Nue    ) :
     case (ksJUNO_FC_CC_Nuebar ) :
-    case (ksJUNO_FC_NC        ) : return false ; break;
+    case (ksJUNO_FC_NC        ) :
+    case (ksJUNO_FC_NC_Nue    ) :
+    case (ksJUNO_FC_NC_Nuebar ) : return false ; break;
 
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
@@ -553,11 +574,16 @@ bool util::IsELike(Sample_t s)
     case (ksNuMuCCoa09     ) : return false; break;
 
     case (ksJUNO_FC_CC_Nue    ) :
-    case (ksJUNO_FC_CC_Nuebar ) : return true ; break;
+    case (ksJUNO_FC_CC_Nuebar ) :
+    case (ksJUNO_FC_NC_Nue    ) :
+    case (ksJUNO_FC_NC_Nuebar ) : return true ; break;
+    
     case (ksJUNO_FC_CC        ) :
     case (ksJUNO_FC_CC_Numu   ) :
     case (ksJUNO_FC_CC_Numubar) :
-  case (ksJUNO_FC_NC        ) : return false ; break;
+    case (ksJUNO_FC_NC        ) :
+    case (ksJUNO_FC_NC_Numu   ) :
+    case (ksJUNO_FC_NC_Numubar) : return false ; break;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
