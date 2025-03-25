@@ -598,6 +598,10 @@ string util::AsString (
     out << mixparam << "23_" << TString::Format("%.3f",mix23) << ",dm23sq_" << TString::Format("%.5f",dm23sq) << "eV2";
   }
   
+  if( hyp == valor::conv::kHypVoid)
+  {
+    out << "No Oscillation";
+  }
   return out.str();
 }
 //

@@ -8,6 +8,7 @@ fit-param-opt                        |   string       |  optional   |   NONE
 param-values-option                  |   string       |  optional   |   randomize-all;prefit-errors
 fitter                               |   string       |  optional   |   minuit
 config                               |   string       |  mandatory  |   -
+config-datasetB                      |   string       |  mandatory  |   -
 mesg-thresholds                      |   string       |  optional   |   verbosity.xml
 nthreads                             |   integer      |  optional   |   -1
 #
