@@ -54,6 +54,25 @@ namespace valor {
     r->Set(config_entry);
  }
  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ template<> void SetRegistryItem(Registry * r, RgKey key, RgStrVec item)
+ {
+    string itemtype = typeid(item).name();
+    
+    ostringstream item_content;
+    item_content << "[";
+    for (size_t i = 0 ; i < item.size() ; i++) {
+      item_content << (i?",":"")<<item[i];
+    }
+    item_content<<"]";
+    VLOG("Reg", pINFO)
+       << "Set item [" << itemtype << "]: key = "
+       << key << " --> value = "<<item_content.str();
+    bool lock = r->ItemIsLocked(key); // store, could be true but inhibited
+    RegistryItem<RgStrVec> * reg_item = new RegistryItem<RgStrVec>(item,lock);
+    RgIMapPair config_entry(key, reg_item);
+    r->Set(config_entry);
+ }
+ //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  template<class T> void SetRegistryItem(Registry * r, RgKey key, T item)
  {
     string itemtype = typeid(item).name();
@@ -332,6 +351,11 @@ void Registry::Set(RgKey key, RgDblVec item)
   SetRegistryItem(this, key, item); // call templated set method
 }
 //____________________________________________________________________________
+void Registry::Set(RgKey key, RgStrVec item)
+{
+  SetRegistryItem(this, key, item); // call templated set method
+}
+//____________________________________________________________________________
 void Registry::Get(RgKey key, const RegistryItemI * & item) const
 {
   RgIMapConstIter entry = this->SafeFind(key);
@@ -426,6 +450,14 @@ void Registry::Get(RgKey key, RgDblVec & item) const
   item = ri->Data();
 }
 //____________________________________________________________________________
+void Registry::Get(RgKey key, RgStrVec & item) const
+{
+  RgIMapConstIter entry = this->SafeFind(key);
+  RegistryItemI * rib = entry->second;
+  RegistryItem<RgStrVec> * ri = dynamic_cast<RegistryItem<RgStrVec>*> (rib);
+  item = ri->Data();
+}
+//____________________________________________________________________________
 RgBool Registry::GetBool(RgKey key) const
 {
   RgBool value;
@@ -497,6 +529,13 @@ RgObject Registry::GetObject(RgKey key) const
 RgDblVec Registry::GetDoubleVec(RgKey key) const
 {
   RgDblVec value;
+  this->Get(key, value);
+  return value;
+}
+//____________________________________________________________________________
+RgStrVec Registry::GetStringVec(RgKey key) const
+{
+  RgStrVec value;
   this->Get(key, value);
   return value;
 }
@@ -698,6 +737,8 @@ void Registry::Append(const Registry & registry, RgKey prefix)
            cri = new RegistryItem<RgStr> (registry.GetString(name),ilk);
      else if (type == kRgDblVec)
            cri = new RegistryItem<RgDblVec> (registry.GetDoubleVec(name),ilk);
+     else if (type == kRgStrVec)
+           cri = new RegistryItem<RgStrVec> (registry.GetStringVec(name),ilk);
      else if (type == kRgH1F) {
            RgH1F histo = registry.GetH1F(name);
            if(histo) {

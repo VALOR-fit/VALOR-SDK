@@ -38,5 +38,6 @@ typedef TH2F       * RgH2F;
 typedef TTree      * RgTree;
 typedef TObject    * RgObject;
 typedef std::vector<double> RgDblVec;
+typedef std::vector<std::string> RgStrVec;
 
 #endif // _valor_registry_item_type_def_h_

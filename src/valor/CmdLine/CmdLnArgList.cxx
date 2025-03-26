@@ -118,6 +118,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       bool is_int       = (type == "integer");
       bool is_dbl       = (type == "double");
       bool is_dblvec    = (type == "doublevec");
+      bool is_strvec    = (type == "stringvec");
       bool is_str       = (type == "string");
       bool is_bln       = (type == "boolean");
       bool is_blnlst    = (type == "boolean_list");
@@ -131,6 +132,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
                         is_str   ||
                         is_bln   ||
                         is_dblvec||
+                        is_strvec||
                         is_blnlst;
                      
       if (!valid_type) {
@@ -145,7 +147,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
       // Handle integer,double,string inputs
       //
 
-      if(is_int || is_dbl || is_dblvec || is_str) {
+      if(is_int || is_dbl || is_dblvec || is_strvec || is_str) {
 
         // Error conditions 
 
@@ -214,6 +216,21 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
             if(is_optional) { // not found but has a given default
               string sval = deflt;
               this->Set(argument,sval);
+            }
+          }
+        }
+        if (is_strvec) {
+          if (is_found) {
+            std::vector<string> v = parser.ArgAsStringTokens(argument,",");
+            this->Set(argument,v);
+          }
+          else {
+            if (is_optional) {
+              vector<string> vst = util::Tokens(deflt,",");
+              std::vector<string> v;
+              for (const string & s : vst) {
+                v.push_back(s.c_str());
+              }
             }
           }
         }
