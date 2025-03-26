@@ -107,6 +107,7 @@ public:
   void   Set (RgKey key, RgTree   item);
   void   Set (RgKey key, RgObject item);
   void   Set (RgKey key, RgDblVec item);
+  void   Set (RgKey key, RgStrVec item);
 
   void   Get (RgKey key, const RegistryItemI * & item) const;
   void   Get (RgKey key, RgBool   & item) const;
@@ -117,6 +118,7 @@ public:
   void   Get (RgKey key, RgH2F    & item) const;
   void   Get (RgKey key, RgTree   & item) const;
   void   Get (RgKey key, RgObject & item) const;
+  void   Get (RgKey key, RgStrVec & item) const;
   void   Get (RgKey key, RgDblVec & item) const;
 
   RgBool   GetBool      (RgKey key) const;
@@ -128,6 +130,7 @@ public:
   RgTree   GetTree      (RgKey key) const;
   RgObject GetObject    (RgKey key) const;
   RgDblVec GetDoubleVec (RgKey key) const;
+  RgStrVec GetStringVec (RgKey key) const;
   RgBool   GetBoolDef   (RgKey key, RgBool def_opt, bool set_def=true);
   RgInt    GetIntDef    (RgKey key, RgInt  def_opt, bool set_def=true);
   RgDbl    GetDoubleDef (RgKey key, RgDbl  def_opt, bool set_def=true);

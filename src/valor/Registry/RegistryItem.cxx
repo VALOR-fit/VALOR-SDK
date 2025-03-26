@@ -37,6 +37,8 @@ template ostream & operator <<
                (ostream & stream, const RegistryItem<RgObject> & r);
 template ostream & operator << 
                (ostream & stream, const RegistryItem<RgDblVec> & r);
+template ostream & operator << 
+               (ostream & stream, const RegistryItem<RgStrVec> & r);
 //____________________________________________________________________________
 template <typename T>
    ostream & operator << (ostream & stream, const RegistryItem<T> & rec)
@@ -131,6 +133,11 @@ template<> RgType_t RegistryItem<RgDblVec>::TypeInfo(void) const
   return kRgDblVec; 
 }
 //____________________________________________________________________________
+template<> RgType_t RegistryItem<RgStrVec>::TypeInfo(void) const 
+{ 
+  return kRgStrVec; 
+}
+//____________________________________________________________________________
 template<typename T> void RegistryItem<T>::Print(ostream & stream) const
 {
   stream << ((fIsLocked) ? "[  locked]" : "[unlocked]") 
@@ -198,6 +205,19 @@ template<> void RegistryItem<RgDblVec>::Print(ostream & stream) const
   stream<<"]";
 }
 //____________________________________________________________________________
+template<> void RegistryItem<RgStrVec>::Print(ostream & stream) const
+{
+  stream << ((fIsLocked) ? "[  locked]" : "[unlocked]") 
+         << " "
+         << ((fIsLocal)  ? "[l]" : "[g]") 
+         << " : "
+         << "[";
+  for (size_t i = 0 ; i < fItem.size() ; i++) {
+    stream << (i?",":"")<<fItem[i];
+  }
+  stream<<"]";
+}
+//____________________________________________________________________________
 
 // Declare all template specializations.
 // They need to be added at the end of the implementation file as described at
@@ -214,6 +234,7 @@ template class RegistryItem<RgH2F>;
 template class RegistryItem<RgTree>;
 template class RegistryItem<RgObject>;
 template class RegistryItem<RgDblVec>;
+template class RegistryItem<RgStrVec>;
 
 //____________________________________________________________________________
 
