@@ -46,7 +46,7 @@
 #include "TObjArray.h"
 #include "TString.h"
 #include "TSystem.h"
-// VALOR/SDK
+// VALOR-SDK
 #include "valor/Conventions/Opt.h"
 #include "valor/CmdLine/CmdLnArgList.h"
 #include "valor/FitCore/CorrelatedSystematics.h"

@@ -40,7 +40,7 @@ if(b == conv::kbNuMI_FHC || b == conv::kbNuMI_RHC) {
       if (d == conv::kdINGRID ) return conv::kJPARCTgt2ND280;
   }
 
-  if(b == conv::kbAtmo_Jiangmen) {
+  if(b == conv::kbJUNO_Atmo) {
     if (d == conv::kdJUNO) return conv::kAtmoJUNO;
   }
   

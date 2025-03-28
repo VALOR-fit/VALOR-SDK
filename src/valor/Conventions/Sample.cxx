@@ -172,11 +172,6 @@ bool util::IsFar(Sample_t s)
     case (ksNuMuBarCChigh      ) :
     case (ksNuELikeCClow       ) :
     case (ksNuELikeCChigh      ) :
-    case (ksJFCAtmoNuMuCC      ) :
-    case (ksJFCAtmoNuMuBarCC   ) :
-    case (ksJFCAtmoNuECC       ) :
-    case (ksJFCAtmoNuEBarCC    ) :
-    case (ksJFCAtmoNC          ) :
     case (ksNuEBarCClow        ) :
     case (ksNuEBarCChigh       ) :  return true; break;
     case (ks1Rmu               ) : // intentional fallthrough
@@ -213,10 +208,6 @@ bool util::IsCC(Sample_t s)
     case (ksNuMuCC2piC     ) :
     case (ksNuECC          ) :
     case (ksNuMuCCWS       ) :
-    case (ksJFCAtmoNuMuCC  ) :
-    case (ksJFCAtmoNuMuBarCC ) :
-    case (ksJFCAtmoNuECC   ) :
-    case (ksJFCAtmoNuEBarCC) :
     case (ksNuMuLikeCClow  ) :
     case (ksNuMuLikeCChigh ) :
     case (ksNuMuBarCClow   ) :
@@ -231,7 +222,6 @@ bool util::IsCC(Sample_t s)
     case (ksNC1piC         ) :
     case (ksNC1pi0         ) :
     case (ksNCoth          ) :
-    case (ksJFCAtmoNC      ) :
     case (ksNC             ) : return false; break;
 
     case (ks1Rmu           ) : // intentional fallthrough
@@ -283,6 +273,7 @@ bool util::IsCCQELike(Sample_t s)
     case (ksNuMuBarCChigh  ) :
     case (ksNuELikeCChigh  ) :
     case (ksNuEBarCChigh   ) : return true; break;
+
     case (ksNuMuCC         ) : // intentional fallthrough
     case (ksNuMuCC1piC     ) :
     case (ksNuMuCC1pi0     ) :
@@ -358,10 +349,6 @@ bool util::IsNC(Sample_t s)
     case (ksNuMuCCWS       ) :
     case (ksNuMuLikeCClow  ) :
     case (ksNuMuLikeCChigh ) :
-    case (ksJFCAtmoNuMuCC  ) :
-    case (ksJFCAtmoNuMuBarCC ) :
-    case (ksJFCAtmoNuECC   ) :
-    case (ksJFCAtmoNuEBarCC) :
     case (ksNuMuBarCClow   ) :
     case (ksNuMuBarCChigh  ) :
     case (ksNuELikeCClow   ) :
@@ -386,7 +373,6 @@ bool util::IsNC(Sample_t s)
     case (ksNC1piC         ) :
     case (ksNC1pi0         ) :
     case (ksNCoth          ) :
-    case (ksJFCAtmoNC      ) :
     case (ksNC             ) : return true;
 
     case (ksJUNO_FC_CC        ) :
@@ -482,11 +468,6 @@ bool util::IsMuLike(Sample_t s)
     case (ks1Rmu           ) : return true  ;
     case (ks1Re            ) : return false ;
     case (ksMultiRe        ) : return false ;
-    case (ksJFCAtmoNuMuCC  ) : return true  ;
-    case (ksJFCAtmoNuMuBarCC ):return true  ;
-    case (ksJFCAtmoNuECC   ) : return false ;
-    case (ksJFCAtmoNuEBarCC) : return false ;
-    
     case (ksNuMuCCoa00     ) : // intentional fallthrough
     case (ksNuMuCCoa01     ) :
     case (ksNuMuCCoa02     ) :
@@ -511,7 +492,7 @@ bool util::IsMuLike(Sample_t s)
     case (ksJUNO_FC_NC_Nuebar ) : return false ; break;
 
   }
-  LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
+  VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
 }
 //________________________________________________________________________________________
@@ -551,10 +532,6 @@ bool util::IsELike(Sample_t s)
     case (ksNuMuLikeCClow  ) : return false ;
     case (ksNuMuBarCChigh  ) : return false ;
     case (ksNuMuBarCClow   ) : return false ;
-    case (ksJFCAtmoNuMuCC  ) : return false ;
-    case (ksJFCAtmoNuMuBarCC ):return false ;
-    case (ksJFCAtmoNuECC   ) : return true  ;
-    case (ksJFCAtmoNuEBarCC) : return true  ;
     case (ksNuELikeCChigh  ) : return true  ;
     case (ksNuELikeCClow   ) : return true  ;
     case (ksNuEBarCChigh   ) : return true  ;
@@ -585,7 +562,7 @@ bool util::IsELike(Sample_t s)
     case (ksJUNO_FC_NC_Numu   ) :
     case (ksJUNO_FC_NC_Numubar) : return false ; break;
   }
-  LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
+  VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
 }
 //________________________________________________________________________________________

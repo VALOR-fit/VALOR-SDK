@@ -83,8 +83,6 @@ const DetectorApplyMask_t valor::conv::kdApplyToAllND  = kdApplyToDUNEND | kdApp
 const DetectorApplyMask_t valor::conv::kdApplyToAllT2K  = kdApplyToND280 | kdApplyToSuperK;
 const DetectorApplyMask_t valor::conv::kdApplyToAll    = kdApplyToAllDUNE | kdApplyToAllSBN | kdApplyToAllT2K;
 
-  
-
 
 
 // Samples
@@ -103,17 +101,6 @@ const SelecApplyMask_t valor::conv::ksApplyToAllNuMuCC = (
   ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 |
   ksApplyToNuMuCCWSoth | ksApplyToNuMuCCWS
 );
-
-// JUNO samples selection
-const SelecApplyMask_t valor::conv::ksApplyToJFCAtmoNuMuCC = (
-  ksApplyToNuMuCC | ksApplyToNuMuCC0pi1trk| ksApplyToNuMuCC0pi2trk | ksApplyToNuMuCC0piNtrk |
-  ksApplyToNuMuCC3trkDelta | ksApplyToNuMuCC1piC | ksApplyToNuMuCC2piC | ksApplyToNuMuCC1pi0 |
-  ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 |
-  ksApplyToNuMuCCWSoth | ksApplyToNuMuCCWS
-);
-
-const SelecApplyMask_t valor::conv::ksApplyToJFCAtmoNuECC = (ksApplyToNuECC0pi | ksApplyToNuECC1piC | ksApplyToNuECC1pi0 | ksApplyToNuECCoth);
-const SelecApplyMask_t valor::conv::ksApplyToJFCAtmoNC = ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
 
 
 const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ksApplyToMultiRingE;                    // SuperK selections
@@ -423,7 +410,7 @@ const BeamApplyMask_t valor::util::ApplyToBeamMode(BeamConf_t b)
     case kbBNB_RHC   : return kbApplyToRHC;
     case kbJUNO_Atmo : return kbApplyToAtmo;
     default:
-      LOG("ApplyMask",pWARN) << "No beam apply mask set for " << util::AsString(b) << ". Applying to none.";
+      VLOG("ApplyMask",pWARN) << "No beam apply mask set for " << util::AsString(b) << ". Applying to none.";
       return 0;
   }
 }
@@ -489,7 +476,7 @@ const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
     case ksJUNO_FC_NC_Nuebar : return ksApplyToJUNO_FC_NC_Nuebar;
       
     default:
-      LOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
+      VLOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
       return 0;
   }
 }
@@ -512,7 +499,7 @@ const DetectorApplyMask_t valor::util::ApplyToDetector(conv::Detector_t d)
     case kdNOvAFD    : return kdApplyToNOvAFD;
     case kdJUNO      : return kdApplyToJUNO;
     default:
-      LOG("ApplyMask",pWARN) << "No detector apply mask set for " << util::AsString(d) << ". Applying to none.";
+      VLOG("ApplyMask",pWARN) << "No detector apply mask set for " << util::AsString(d) << ". Applying to none.";
       return 0;
   }
 }
@@ -529,7 +516,7 @@ const FlavApplyMask_t valor::util::ApplyToFlavour(conv::NuFlavour_t f)
     case kCosmic   : return kfApplyToCosmic;
     case kDirt     : return kfApplyToDirt;
     default:
-      LOG("ApplyMask",pWARN) << "No flavour apply mask set for " << util::AsString(f) << ". Applying to none.";
+      VLOG("ApplyMask",pWARN) << "No flavour apply mask set for " << util::AsString(f) << ". Applying to none.";
       return 0;
   }
 }
@@ -567,7 +554,7 @@ const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t)
     case kmtCosmic   : return ktApplyToCosmic;
     case kmtDirt     : return ktApplyToDirt;
     default:
-      LOG("ApplyMask",pWARN) << "No reac type apply mask set for " << util::AsString(t) << ". Applying to none.";
+      VLOG("ApplyMask",pWARN) << "No reac type apply mask set for " << util::AsString(t) << ". Applying to none.";
       return 0;
   }
 }
@@ -583,7 +570,7 @@ const NuclearTargetApplyMask_t valor::util::ApplyToNuclearTarget(conv::NuclearTa
     case kntArgon     : return kntApplyToArgon;
     case kntCalcium   : return kntApplyToCalcium;
     default:
-      LOG("ApplyMask",pWARN) << "No nuclear target apply mask set for " << util::AsString(nt) << ". Applying to none.";
+      VLOG("ApplyMask",pWARN) << "No nuclear target apply mask set for " << util::AsString(nt) << ". Applying to none.";
       return 0;
   }
 }
@@ -621,7 +608,7 @@ conv::DetectorApplyMask_t valor::util::ReadDetectorApplyMask(TXMLEngine* xmleng,
       mask = util::DetectorMaskFromString(util::ToLowerCase(trimmed_content));
     }
     catch (const std::out_of_range& oor) {
-      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+      VLOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
                                << "\' (from user input \'" << content
                                << "\') was not recognised - threw an out of range error: " << oor.what();
       util::Die(1);
@@ -641,7 +628,7 @@ conv::BeamApplyMask_t valor::util::ReadBeamApplyMask(TXMLEngine* xmleng, XMLNode
       mask = util::BeamMaskFromString(util::ToLowerCase(trimmed_content));
     }
     catch (const std::out_of_range& oor) {
-      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+      VLOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
                                << "\' (from user input \'" << content
                                << "\') was not recognised - threw an out of range error: " << oor.what();
       util::Die(1);
@@ -661,7 +648,7 @@ conv::FlavApplyMask_t valor::util::ReadFlavApplyMask(TXMLEngine* xmleng, XMLNode
       mask = util::FlavMaskFromString(trimmed_content);
     }
     catch (const std::out_of_range& oor) {
-      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+      VLOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
                                << "\' (from user input \'" << content
                                << "\') was not recognised - threw an out of range error: " << oor.what();
       util::Die(1);
@@ -681,7 +668,7 @@ conv::SelecApplyMask_t valor::util::ReadSelecApplyMask(TXMLEngine* xmleng, XMLNo
       mask = util::SelecMaskFromString(util::ToLowerCase(trimmed_content));
     }
     catch (const std::out_of_range& oor) {
-      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+      VLOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
                                << "\' (from user input \'" << content
                                << "\') was not recognised - threw an out of range error: " << oor.what();
       util::Die(1);
@@ -702,7 +689,7 @@ conv::ReacTypeApplyMask_t valor::util::ReadReacTypeApplyMask(TXMLEngine* xmleng,
       mask = util::ReacTypeMaskFromString(util::ToLowerCase(reac_type_str));
     }
     catch (const std::out_of_range& oor) {
-      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+      VLOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
                                << "\' (from user input \'" << content
                                << "\') was not recognised - threw an out of range error: " << oor.what();
       util::Die(1);
@@ -722,7 +709,7 @@ conv::NuclearTargetApplyMask_t valor::util::ReadNuclearTargetApplyMask(TXMLEngin
       mask = util::NuclearTargetMaskFromString(util::ToLowerCase(trimmed_content));
     }
     catch (const std::out_of_range& oor) {
-      LOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
+      VLOG("ApplyMask", pFATAL) << "When reading node '" << node_name << "' apply mask name \'" << trimmed_content
                                << "\' (from user input \'" << content
                                << "\') was not recognised - threw an out of range error: " << oor.what();
       util::Die(1);

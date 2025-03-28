@@ -19,12 +19,12 @@ TGT = adaptive_mcmc \
       run_fit \
       run_fit_marg \
       tweak_pdf_N \
-      tweak_pdf_N_ratio \
       tweak_pdf_sigma_var \
       write_pdf \
       make_response_functions 
-     #run_tests \
+      #run_tests \
       batch_tests 
+
 
 #      run_tests \ # Need to check why these are borking
 #      batch_tests \
@@ -184,6 +184,7 @@ clean: FORCE
 	$(RM) $(VALOR_FMWK)/bin/valor-run_fit
 	$(RM) $(VALOR_FMWK)/bin/valor-write_pdf
 	$(RM) $(VALOR_FMWK)/bin/valor-tweak_pdf_N
+	$(RM) $(VALOR_FMWK)/bin/valor-tweak_pdf_ratio
 	$(RM) $(VALOR_FMWK)/bin/valor-tweak_pdf_sigma_var
 	$(RM) $(VALOR_FMWK)/bin/valor-fitnt_conv
 	$(RM) $(VALOR_FMWK)/bin/valor-adaptive_mcmc
@@ -199,6 +200,7 @@ distclean: FORCE
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-run_fit
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-write_pdf
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-weak_pdf_N
+	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-weak_pdf_ratio
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-tweak_pdf_sigma_var
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-fitnt_conv
 	$(RM) $(VALOR_FMWK_INSTALLATION_PATH)/bin/valor-adaptive_mcmc

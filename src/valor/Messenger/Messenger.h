@@ -40,7 +40,7 @@
     #include "log4cpp/BasicLayout.hh"
     #include "log4cpp/SimpleLayout.hh"
     #include "log4cpp/Priority.hh"
-    #undef throw /* reset */
+    #undef throw 
 #endif
 
 #include "log4cpp/Category.hh"
@@ -97,7 +97,7 @@
                << priority << "[s] <" \
                << __FUNCTION__ << " (" << __LINE__ << ")> : "
 #endif
-*/
+
 
 /*!
   \def   LOG(stream, priority)
@@ -111,7 +111,7 @@
                << priority << "[n] <" \
                << __FILE__ << "::" << __FUNCTION__ << " (" << __LINE__ << ")> : "
 #endif
-*/
+
 
 
 
