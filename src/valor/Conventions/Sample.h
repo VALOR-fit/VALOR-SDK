@@ -86,11 +86,20 @@ typedef enum ESample
    ksNuMuCCoa06          , // numuCC-like, off-axis bin "06"
    ksNuMuCCoa07          , // numuCC-like, off-axis bin "07"
    ksNuMuCCoa08          , // numuCC-like, off-axis bin "08"
-   ksNuMuCCoa09            // numuCC-like, off-axis bin "09"
+   ksNuMuCCoa09          , // numuCC-like, off-axis bin "09"
+   // SBND exclusive selections
+   ksNuMuCC0p0pi         , // numuCC 0proton 0pion
+   ksNuMuCC1p0pi         , // numuCC 1proton 0pion
+   ksNuMuCCNp0pi         , // numuCC Nproton 0pion
+   ksNuMuCC1pi           , // numuCC 1ChargedPion (any number of protons)
+   ksNuMuCCOther           // numuCC Others
+   
+   
+   
 }
 Sample_t; 
 
-static const int kMaxNSamples = 49;
+static const int kMaxNSamples = 54;
 
 } // conv
 

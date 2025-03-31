@@ -36,7 +36,7 @@ namespace valor {
     static const unsigned long kApplyMaskOne     = 1ul;
     static const int nbitsBeamApplyMask          = 2;
     static const int nbitsFlavApplyMask          = 6;
-    static const int nbitsSelecApplyMask         = 35;
+    static const int nbitsSelecApplyMask         = 40;
     static const int nbitsReacTypeApplyMask      = 29;
     static const int nbitsDetectorApplyMask      = 7;
     static const int nbitsNuclearTargetApplyMask = 7;
@@ -105,6 +105,11 @@ namespace valor {
     static const SelecApplyMask_t ksApplyTo1RingMu         = (kApplyMaskOne << 32 ); // SuperK selections
     static const SelecApplyMask_t ksApplyTo1RingE          = (kApplyMaskOne << 33 ); // SuperK selections
     static const SelecApplyMask_t ksApplyToMultiRingE      = (kApplyMaskOne << 34 ); // SuperK selections
+    static const SelecApplyMask_t ksApplyToNuMuCC0p0pi     = (kApplyMaskOne << 35 ); // SBND exclusive topologies
+    static const SelecApplyMask_t ksApplyToNuMuCC1p0pi     = (kApplyMaskOne << 36 );
+    static const SelecApplyMask_t ksApplyToNuMuCCNp0pi     = (kApplyMaskOne << 37 );
+    static const SelecApplyMask_t ksApplyToNuMuCC1pi       = (kApplyMaskOne << 38 );
+    static const SelecApplyMask_t ksApplyToNuMuCCOther     = (kApplyMaskOne << 39 );
 
     static const ReacTypeApplyMask_t ktApplyToCCQE         = (kApplyMaskOne <<  0 ); // Reaction type
     static const ReacTypeApplyMask_t ktApplyToCCMEC        = (kApplyMaskOne <<  1 );

@@ -73,6 +73,11 @@ string util::AsString(Sample_t s)
     case (ksNuMuCCoa07     ) : return "numuCCinclOA07";  break;
     case (ksNuMuCCoa08     ) : return "numuCCinclOA08";  break;
     case (ksNuMuCCoa09     ) : return "numuCCinclOA09";  break;
+    case (ksNuMuCC0p0pi    ) : return "numuCC0p0pi";     break;
+    case (ksNuMuCC1p0pi    ) : return "numuCC1p0pi";     break;
+    case (ksNuMuCCNp0pi    ) : return "numuCCNp0pi";     break;
+    case (ksNuMuCC1pi      ) : return "numuCC1pi";       break;
+    case (ksNuMuCCOther    ) : return "numuCCOther";     break;
     default                  : return "--";
   }
   return "";
@@ -132,6 +137,11 @@ string util::AsStringTeX(Sample_t s, bool root)
     case (ksNuMuCCoa07     ) : name = "#nu_{#mu} CC incl., off-axis bin 07";  break;
     case (ksNuMuCCoa08     ) : name = "#nu_{#mu} CC incl., off-axis bin 08";  break;
     case (ksNuMuCCoa09     ) : name = "#nu_{#mu} CC incl., off-axis bin 09";  break;
+    case (ksNuMuCC0p0pi    ) : name = "#nu_{#mu} CC excl., 0p0pi";            break;
+    case (ksNuMuCC1p0pi    ) : name = "#nu_{#mu} CC excl., 1p0pi";            break;
+    case (ksNuMuCCNp0pi    ) : name = "#nu_{#mu} CC excl., Np0pi";            break;
+    case (ksNuMuCC1pi      ) : name = "#nu_{#mu} CC excl., 1pi";              break;
+    case (ksNuMuCCOther    ) : name = "#nu_{#mu} CC excl., Other";            break;
     default                  : name = "--";
   }
 
@@ -219,6 +229,12 @@ bool util::IsCC(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
 
+    case (ksNuMuCC0p0pi    ) : // intentional fallthrough
+    case (ksNuMuCC1p0pi    ) :
+    case (ksNuMuCCNp0pi    ) :
+    case (ksNuMuCC1pi      ) :
+    case (ksNuMuCCOther    ) : return true; break;
+    
     case (ksUndefined      ) : return false;
   }
   return false;
@@ -280,6 +296,12 @@ bool util::IsCCQELike(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return false; break;
 
+    case (ksNuMuCC0p0pi    ) : // intentional fallthrough
+    case (ksNuMuCC1p0pi    ) :
+    case (ksNuMuCCNp0pi    ) :
+    case (ksNuMuCC1pi      ) :
+    case (ksNuMuCCOther    ) : return true; break;
+
     return false; break;
     default: return false;
   }
@@ -334,6 +356,12 @@ bool util::IsNC(Sample_t s)
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return false; break;
 
+    case (ksNuMuCC0p0pi    ) : // intentional fallthrough
+    case (ksNuMuCC1p0pi    ) :
+    case (ksNuMuCCNp0pi    ) :
+    case (ksNuMuCC1pi      ) :
+    case (ksNuMuCCOther    ) : return true; break;
+
     case (ksNC0pi          ) : // intentional fallthrough
     case (ksNC1piC         ) :
     case (ksNC1pi0         ) :
@@ -349,7 +377,8 @@ Sample_t util::SampleFromInt(int s)
 {
 // Cast an integer to Sample_t, but with boundary check
 //             [first]                  [last]
-  if((s >= (int)ksNuMuCC && s <= (int) ksNuMuCCoa09)) //RHC
+  //if((s >= (int)ksNuMuCC && s <= (int) ksNuMuCCoa09)) //RHC 
+  if((s >= (int)ksNuMuCC && s <= (int) ksNuMuCCOther))
     return (Sample_t)s;
   return ksUndefined;
 }
@@ -431,6 +460,11 @@ bool util::IsMuLike(Sample_t s)
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
     case (ksNuMuCCoa09     ) : return true; break;
+    case (ksNuMuCC0p0pi    ) : // intentional fallthrough
+    case (ksNuMuCC1p0pi    ) :
+    case (ksNuMuCCNp0pi    ) :
+    case (ksNuMuCC1pi      ) :
+    case (ksNuMuCCOther    ) : return true; break;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
@@ -488,7 +522,12 @@ bool util::IsELike(Sample_t s)
     case (ksNuMuCCoa06     ) :
     case (ksNuMuCCoa07     ) :
     case (ksNuMuCCoa08     ) :
-    case (ksNuMuCCoa09     ) : return false; break; 
+    case (ksNuMuCCoa09     ) : return false; break;
+    case (ksNuMuCC0p0pi    ) : // intentional fallthrough
+    case (ksNuMuCC1p0pi    ) :
+    case (ksNuMuCCNp0pi    ) :
+    case (ksNuMuCC1pi      ) :
+    case (ksNuMuCCOther    ) : return true; break;
   }
   LOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;
