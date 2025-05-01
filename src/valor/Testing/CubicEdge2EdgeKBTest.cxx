@@ -81,7 +81,7 @@ void CubicEdge2EdgeKBTest::Setup()
 
    ModeList ml(util::CompleteConfigPath("modelists/UnOscLowE.xml"));
 
-   _binning = new SingleSampleKineBinning(conv::kdDUNEFD, conv::kbLBNF_FHC,
+   _binning = new SingleSampleKineBinning(conv::kdDUNEND, conv::kbLBNF_FHC,
         conv::ksNuMuCC,ml.Modes());
    _binning->Read(fullFilename);
 }

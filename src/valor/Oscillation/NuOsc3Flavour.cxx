@@ -2362,7 +2362,7 @@ double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double en
   return oscProb;
 }
 //________________________________________________________________________________________
- void NuOsc3Flavour::CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs[3][3])
+void NuOsc3Flavour::CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs[3][3])
 {
 // This method calculates the 3-flavour oscillation probabilities in constant 
 // density matter.

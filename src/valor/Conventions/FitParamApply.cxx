@@ -408,7 +408,7 @@ const BeamApplyMask_t valor::util::ApplyToBeamMode(BeamConf_t b)
     case kbNuMI_RHC  : return kbApplyToRHC;
     case kbBNB_FHC   : return kbApplyToFHC;
     case kbBNB_RHC   : return kbApplyToRHC;
-    case kbJUNO_Atmo : return kbApplyToAtmo;
+    case kbAtmo_Jiangmen : return kbApplyToAtmo;
     default:
       VLOG("ApplyMask",pWARN) << "No beam apply mask set for " << util::AsString(b) << ". Applying to none.";
       return 0;
@@ -485,7 +485,6 @@ const DetectorApplyMask_t valor::util::ApplyToDetector(conv::Detector_t d)
 {
   switch (d) {
     case kdDUNEND    : return kdApplyToDUNEND;
-    case kdDUNEFD    : return kdApplyToDUNEFD;
     case kdSBND      : return kdApplyToSBND;
     case kdSBNuBooNE : return kdApplyToMicroBooNE;
     case kdSBNICARUS : return kdApplyToICARUS;
