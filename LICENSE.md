@@ -1,6 +1,6 @@
 # VALOR Restrictive Academic Research License (v1.1)
 
-Copyright © 2010-2025, VALOR.
+Copyright © 2010-2025, The VALOR group.
 
 Permission is granted to view the source code in this repository for the sole purpose of academic understanding and reproducibility by individuals directly collaborating with the copyright holder in scientific research.
 
