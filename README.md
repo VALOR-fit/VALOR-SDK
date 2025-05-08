@@ -32,7 +32,9 @@ For more information, see https://www.overleaf.com/read/ygmrxrjtmwyv
 
 ## Copyright
 
-Copyright (c) 2010-2023, The VALOR Fitting Group. **All Rights Reserved.**
+Copyright (c) 2010-2025, The VALOR Group.
+
+The VALOR SDK is made available under the **VALOR Restrictive Academic Research License** available [here](LICENSE.md).
 
 ## Authors
 
