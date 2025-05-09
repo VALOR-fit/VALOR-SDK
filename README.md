@@ -1,70 +1,62 @@
 # The VALOR Software Development Kit (VALOR-SDK)
 
-The VALOR-SDK repository contains the core, expertiment-agnostic software modules enabling the implementation of the **VALOR neutrino oscillation analyses** on sereval experiments. 
-
-<pre>
-   oooooo     oooo       .o.       ooooo          .oooooo.   ooooooooo.         
-    `888.     .8'       .888.      `888'         d8P'  `Y8b  `888   `Y88.       
-     `888.   .8'       .8"888.      888         888      888  888   .d88'       
-      `888. .8'       .8' `888.     888         888      888  888ooo88P'        
-       `888.8'       .88ooo8888.    888         888      888  888`88b.          
-        `888'       .8'     `888.   888       o `88b    d88'  888  `88b.        
-         `8'       o88o     o8888o o888ooooood8  `Y8bood8P'  o888o  o888o     
-
-   Software Development Kit                     https://valor.pp.rl.ac.uk
-</pre>
-
+![VALOR](./data/banner/valor_nu_small_transparent.png)
 
 ## Overview
 
-The VALOR-SDK is a **highly-abstracted** and experiment-agnostic neutrino oscillation analysis used in several experiments. 
-Experiment-specific VALOR analyses are built on top of the VALOR-SDK almost entirely via XML configuration files that specify:
-- A list event samples to be included in the fit (each a specific combination of beam configuration, detector, and observed topology).
-- The reconstructed kinematical distribution (variables and binning scheme) which is fit for each sample.
-- The list of contributions, or **modes** (typically, corresponding to different generator-level MC-truth interaction modes) which are explicitly kept track of for each fit distribution. An appropriately chosen selection of modes enables the correct application of all specified systematics and physics hypotheses.
-- The MC-truth kinematical distribution (variables and binning scheme) associated with each single reconstructed bin in the contribution of every mode to each fit reconstructed distribution. An appropriately chosen selection of MC-truth kinematical variables enables the correct application of all specified systematics and physics hypotheses.Together multi-dimensional distribution, for each mode of every sample, that spans both reconstructed and MC-truth kinematical variables is referred to as a MC template.
-- The systematic parameters to be included in the fit.
-- The prior errors for systematic parameters as well as input correlations between systematic parameters.
-- A specification of how each systematic parameter affects a kinematical bin in each MC template (for each mode of every fit sample).
-- A physics hypothesis (e.g. 3-flavour oscillations, 3+1 oscillations, etc) and a list of the parameters of interest, their ranges and external constraints, if any.
+The VALOR-SDK is a **highly abstracted**, experiment-agnostic neutrino oscillation analysis framework used across multiple experiments.
 
+Experiment-specific VALOR analyses are built on top of the VALOR-SDK, primarily through XML configuration files. These define:
+- **Event samples:** A list of samples to be included in the fit, each corresponding to a specific combination of beam configuration, detector, and observed topology.
+- **Reconstructed kinematics:** The variables and binning scheme for each sample’s reconstructed distribution to be fit.
+- **Contribution modes:** A list of **modes**—typically generator-level MC truth interaction channels—tracked separately for each fit distribution. A carefully chosen set of modes ensures proper application of systematic uncertainties and physics hypotheses.
+- **MC-truth distributions:** For each mode in each sample, the MC-truth kinematic variables and binning are specified for every reconstructed bin. These enable systematics and physics hypotheses to be applied correctly. The combined multi-dimensional distribution, spanning both reconstructed and MC-truth variables for each mode in every sample, is referred to as an **MC template**.
+- **Systematic parameters:**** The list of systematics to include in the fit.
+- **Systematic priors and correlations:**** The prior uncertainties and input correlations between systematic parameters.
+- **Systematic impacts:** A detailed specification of how each systematic parameter modifies kinematic bins in the MC templates for each mode and sample.
+- **Physics hypotheses:** The chosen oscillation framework (e.g., three-flavour, 3+1 sterile, etc.), the parameters of interest, their fit ranges, and any external constraints.
+ 
 For more information, see https://www.overleaf.com/read/ygmrxrjtmwyv
 
-## Copyright
+## Copyright 
 
 Copyright (c) 2010-2025, The VALOR Group.
 
-The VALOR SDK is made available under the **VALOR Restrictive Academic Research License** available [here](LICENSE.md).
+The VALOR SDK is made available under the **VALOR Restrictive Academic Research License**. 
+The license provides limited rights. Please make sure you read the full text [here](LICENSE.md).
 
 ## Authors
 
 * **Costas Andreopoulos**, *University of Liverpool*
-* **Maria Antonova**, *IFIC Valencia*
+* **Yaoqi Cao**, *University of Warwick*
 * **Thomas Dealtry**, *Lancaster University*
+* **Ziou He**, *University of Warwick*
 * **Rhiannon Jones**, *University of Sheffield*
-* **Tereza Kroupova**, *University of Pennsylvania*
-* **Jaiden Parlone**, *University of Liverpool*
+* **Komninos-John Plows**, *University of Liverpool*
 * **Davide Sgalaberna**, *ETHZ*
 * **Beth Slater**, *University of Liverpool*
 
 Past authors:
 
+* **Maria Antonova**, *IFIC Valencia*
 * **Dom Barker**, *University of Sheffield*
 * **Chistopher Barry**, *University of Liverpool*
 * **Francis Bench**, *University of Liverpool*
 * **Andrew Chappell**, *University of Warwick*
-* **Steve Dennis**, *University of Warwick & STFC/RAL; University of Liverpool; Universirt of Cambridge*
+* **Steve Dennis**, *University of Warwick & STFC/RAL; University of Liverpool; University of Cambridge*
 * **Lorena Escudero**, *University of Cambridge; IFIC Valencia*
 * **Nick Grant**, *STFC/RAL; Lancaster University; University of Warwick*
 * **Thomas Ham**, *University of Liverpool*
+* **Tereza Kroupova**, *University of Pennsylvania*
+* **Jaiden Parlone**, *University of Liverpool*
 * **Raj Shah**, *University of Oxford & STFC/RAL*
 
 ## Contact
 
-Professor **Costas Andreopoulos** < c.andreopoulos \at cern.ch >
- 
-**University of Liverpool** | Dept. of Physics <br>
-*Oliver Lodge Lab 316, Liverpool L69 7ZE, UK* | *Tel: +44-(0)1517-943201* <br>
-
+Professor **Costas Andreopoulos** <br />
+**University of Liverpool**, Department of Physics <br />
+*Oliver Lodge Lab 316, Liverpool L69 7ZE, UK* <br />
+*E-Mail*: < c.andreopoulos \at cern.ch > <br />
+*Tel*: +44-1517-943201 (office) | +44-7540-847333 (mobile)
 
 
