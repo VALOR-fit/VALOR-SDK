@@ -51,14 +51,13 @@ rights to access or view this code.
 
 All rights not expressly granted herein are reserved by the copyright holder.
 
-
+---
 
 For inquiries or permission requests, please contact:
 
-Professor Costas Andreopoulos < c.andreopoulos \at cern.ch >
-
-University of Liverpool | Dept. of Physics
-Oliver Lodge Lab 316, Liverpool L69 7ZE, UK 
-
-Tel: +44-(0)1517-943201
+Professor **Costas Andreopoulos** <br />
+University of Liverpool, Department of Physics <br />
+*Oliver Lodge Lab 316, Liverpool L69 7ZE, UK* <br />
+E-Mail: < c.andreopoulos \at cern.ch > <br />
+Tel.: +44 1517 943201 (Office) | +44 7540 847333 (UK cell) | +30 6974 635088‬ (GR cell)
 
