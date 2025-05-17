@@ -4,7 +4,7 @@
 
 ## Overview
 
-The VALOR-SDK is a **highly abstracted**, experiment-agnostic neutrino oscillation analysis framework used across multiple experiments.
+The VALOR-SDK is a **highly abstracted**, powerful and experiment-agnostic analysis framework for neutrino oscillation studies and BSM searches in use across a range of neutrino experiments.
 
 Experiment-specific VALOR analyses are built on top of the VALOR-SDK, primarily through XML configuration files. These define:
 - **Event samples:** A list of samples to be included in the fit, each corresponding to a specific combination of beam configuration, detector, and observed topology.
