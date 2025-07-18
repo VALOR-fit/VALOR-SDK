@@ -938,7 +938,7 @@ void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor:
   //VLOG("CorrelatedSystematics",pNOTICE) << "fpl_cov:";
   //fpl_cov.Print();
   TMatrixDSymEigen eig_mtx(fpl_cov);
-  VLOG("CorrelatedSystematics", pFATAL) << "Min eigenvalue at start is " << eig_mtx.GetEigenValues().Min();
+  VLOG("CorrelatedSystematics", pNOTICE) << "Min eigenvalue at start is " << eig_mtx.GetEigenValues().Min();
   for (unsigned int i = 0 ; i < fNSystParameters ; i++) {
     PhysParamId_t p = fSystParameters[i];
     if (fpl.Exists(p)) {

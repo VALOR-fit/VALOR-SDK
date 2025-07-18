@@ -346,11 +346,11 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
   // Disable the error handler so we don't get messages when we're checking the validity
   gsl_error_handler_t * old_error_handler = gsl_set_error_handler_off ();
   
-  bool is_correlated = false;
+  //bool is_correlated = false;
   for (int i = 0; i < ncols; i++) {
 	  if(gsl_matrix_get(m, i, i) < 0.0) VLOG("UtlNumStat", pNOTICE) << "gsl_matrix_get(m, i, i) = gsl_matrix_get("<<m<<", "<<i<<", " << i <<") = " << gsl_matrix_get(m, i, i); 
   }
-  for (int i = 0; i < ncols - 3; i++) {
+  /*for (int i = 0; i < ncols - 3; i++) {
     bool row_correlated = false;
     for (int j = ncols - 3; j < ncols; j++) {
       //row_correlated = row_correlated || ( gsl_matrix_get(m, i, j) != 0.0 ); // maybe you can change to abs() >= 0.01 * abs(gsl_matrix_get(m, i, i)) for weak but nonzero correlations
@@ -359,7 +359,7 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
     is_correlated = is_correlated || row_correlated;
     if(is_correlated) break;
   }
-  std::cout << "is correlated ? " << (int) is_correlated << std::endl;
+  std::cout << "is correlated ? " << (int) is_correlated << std::endl;*/
   int iattempt = 0;
   bool success = false;
   // Try to decompose the matrix, increasing the diagonal by 0.1% until it's appropriately pos-def
