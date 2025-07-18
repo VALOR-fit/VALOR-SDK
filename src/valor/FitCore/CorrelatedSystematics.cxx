@@ -935,6 +935,10 @@ void CorrelatedSystematics::UpdateFrom(const valor::PhysParamList  & ppl)
 void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor::FitParamList  & fpl)
 {
   const TMatrixDSym & fpl_cov = *(fpl.GetCovMatrix());
+  //VLOG("CorrelatedSystematics",pNOTICE) << "fpl_cov:";
+  //fpl_cov.Print();
+  TMatrixDSymEigen eig_mtx(fpl_cov);
+  VLOG("CorrelatedSystematics", pFATAL) << "Min eigenvalue at start is " << eig_mtx.GetEigenValues().Min();
   for (unsigned int i = 0 ; i < fNSystParameters ; i++) {
     PhysParamId_t p = fSystParameters[i];
     if (fpl.Exists(p)) {
@@ -949,6 +953,8 @@ void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor:
           double matrix_entry = fpl_cov(ifpl,jfpl);
           (*fCovMtrx)(i,j) = matrix_entry;
           (*fCovMtrx)(j,i) = matrix_entry;
+	  eig_mtx = TMatrixDSymEigen(fpl_cov); // update
+          //VLOG("CorrelatedSystematics", pFATAL) << "Min eigenvalue at i = " << i << ", j = " << j << " is " << eig_mtx.GetEigenValues().Min();
         }
       }
     }
@@ -957,7 +963,11 @@ void CorrelatedSystematics::UpdateCentralValuesAndCovarianceFromFPL(const valor:
         << "Unable to update syst parameter " << NameRegistry::Instance()->AsString(p) << " from FPL.";
     }
   }
-  
+  //TMatrixDSymEigen eig_mtx(fpl_cov);
+  TVectorD eig_vec = eig_mtx.GetEigenValues();
+  for(int i = 0; i < fNSystParameters ; i++) {
+    if(eig_vec[i] < 0) VLOG("CorrelatedSystematics",pNOTICE) << "Eigenvalue < 0 at systindex = " << i << " eigenvalue = " << eig_vec[i];
+  }
   // Do Cholesky decomposition
   VLOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
   this->CholeskyDecomposeMatrix();

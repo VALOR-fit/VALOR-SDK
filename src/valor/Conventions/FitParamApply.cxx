@@ -28,6 +28,8 @@ const FlavApplyMask_t valor::conv::kfApplyToNuMuAny   = kfApplyToNuMu    | kfApp
 const FlavApplyMask_t valor::conv::kfApplyToAll       = kfApplyToNuAny   | kfApplyToNuBarAny;
 const FlavApplyMask_t valor::conv::kfApplyToAllCosmic = kfApplyToAll     | kfApplyToCosmic;
 const FlavApplyMask_t valor::conv::kfApplyToAllDirt   = kfApplyToAllCosmic     | kfApplyToDirt;
+const FlavApplyMask_t valor::conv::kfApplyToAllButNuMuBar = kfApplyToNuMu   | kfApplyToNuEAny;
+const FlavApplyMask_t valor::conv::kfApplyToAllButNuEBar = kfApplyToNuMuAny   | kfApplyToNuE;
 
 // Reaction type
 const ReacTypeApplyMask_t valor::conv::ktApplyToT2KLegCCoth = ktApplyToCCDIS    | ktApplyToCCMpi    |  ktApplyToCCmisc;
@@ -72,6 +74,19 @@ const ReacTypeApplyMask_t valor::conv::ktApplyToAllWithPiFSI = ktApplyToAll   & 
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllButCosmic = ktApplyToAll   & (~ktApplyToCosmic);
 //const ReacTypeApplyMask_t valor::conv::ktApplyToAllButNuECC = (ktApplyToAll)    & (~ksApplyToNuECC0pi) & (~ksApplyToNuECC1piC) & (~ksApplyToNuECC1pi0) & (~ksApplyToNuECCoth);
 const ReacTypeApplyMask_t valor::conv::ktApplyToPiAndOth  = ktApplyToCCoth | ktApplyToNCoth | ktApplyToAll1pi | ktApplyToAllCC2pi | ktApplyToNC2piC | ktApplyToNC2pi0;
+const ReacTypeApplyMask_t valor::conv::ktApplyToBodekYang                = ktApplyToAllCCn0pi | ktApplyToNC1piC | ktApplyToNC2piC | ktApplyToNCoth | ktApplyToNCpiCpi0; //Group 1
+const ReacTypeApplyMask_t valor::conv::ktApplyToFSIN                     = ktApplyToAlln0pi | ktApplyToCCQELike | ktApplyToNCELScat; //Group 3
+const ReacTypeApplyMask_t valor::conv::ktApplyToAlln0piPlusCCQELike      = ktApplyToAlln0pi | ktApplyToCCQELike; //Group 4
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC1piPlusCCoth        = ktApplyToAllCC1pi | ktApplyToCCoth; //Group 5 
+const ReacTypeApplyMask_t valor::conv::ktApplyToAlln0piButCCoth          = ktApplyToAllCCNonRes | ktApplyToAllNCn0pi; //Group 6
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC2piPlusCCoth        = ktApplyToAllCC2pi | ktApplyToCCoth; //Group 7
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC2piBut2pi0PlusCCoth = ktApplyToCC2piC | ktApplyToCCoth | ktApplyToCCpiCpi0; //Group 8
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC2piBut2pi0          = ktApplyToCC2piC | ktApplyToCCpiCpi0; //Group 9
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC1piPlusNCoth        = ktApplyToAllNC1pi | ktApplyToNCoth; //Group 10
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC2piPlusNCoth        = ktApplyToAllNC2pi | ktApplyToNCoth; //Group 11
+const ReacTypeApplyMask_t valor::conv::ktApplyToCCpiCpi0PlusCCoth        = ktApplyToCCoth | ktApplyToCCpiCpi0; //Group 12
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllNC2piBut2pi0          = ktApplyToNC2piC | ktApplyToNCpiCpi0; //Group 13
+
 
 // Detectors
 const DetectorApplyMask_t valor::conv::kdApplyToAllDUNE = kdApplyToDUNEND | kdApplyToDUNEFD;
@@ -168,6 +183,8 @@ void valor::util::ApplyMaskNaming::Init(void)
   fFlavMaskToName.insert( std::make_pair(kfApplyToAll       , "all") );
   fFlavMaskToName.insert( std::make_pair(kfApplyToAllCosmic , "allcosmic") );
   fFlavMaskToName.insert( std::make_pair(kfApplyToAllDirt   , "alldirt") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToAllButNuMuBar , "allbutnumubar") );
+  fFlavMaskToName.insert( std::make_pair(kfApplyToAllButNuEBar , "allbutnuebar") );
   for(auto const& pair : fFlavMaskToName) {
     fFlavNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
@@ -292,6 +309,18 @@ void valor::util::ApplyMaskNaming::Init(void)
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllWithFSI   , "allwithfsi") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllButCosmic , "allbutcosmic") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToPiAndOth     , "piandoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToBodekYang               , "bodekyang") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToFSIN                    , "fsin") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAlln0piPlusCCQELike     , "allcc1piplusccqelike") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC1piPlusCCoth	      , "allcc1piplusccoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAlln0piButCCoth	      , "alln0pibutccoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC2piPlusCCoth	      , "allcc2piplusccoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC2piBut2pi0PlusCCoth, "allcc2pibut2pi0plusccoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllCC2piBut2pi0	      , "allcc2pibut2pi0") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNC1piPlusNCoth	      , "allnc1piplusncoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNC2piPlusNCoth       , "allnc2piplusncoth") );	
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCpiCpi0PlusCCoth	      , "ccpiccpi0plusccoth") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToAllNC2piBut2pi0         , "allnc2pibut2pi0") );
   for(auto const& pair : fReacTypeMaskToName) {
     fReacTypeNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }

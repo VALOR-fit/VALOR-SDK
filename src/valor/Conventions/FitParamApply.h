@@ -172,6 +172,8 @@ namespace valor {
     extern const FlavApplyMask_t kfApplyToAllCosmic;
     extern const FlavApplyMask_t kfApplyToAllDirt;
     extern const FlavApplyMask_t kfApplyToAll;
+    extern const FlavApplyMask_t kfApplyToAllButNuMuBar;
+    extern const FlavApplyMask_t kfApplyToAllButNuEBar;
 
     // Reaction type
     extern const ReacTypeApplyMask_t ktApplyToCCQELike;
@@ -212,6 +214,18 @@ namespace valor {
     extern const ReacTypeApplyMask_t ktApplyToAllWithFSI;
     extern const ReacTypeApplyMask_t ktApplyToAllButCosmic;
     extern const ReacTypeApplyMask_t ktApplyToPiAndOth;
+    extern const ReacTypeApplyMask_t ktApplyToBodekYang;
+    extern const ReacTypeApplyMask_t ktApplyToFSIN;
+    extern const ReacTypeApplyMask_t ktApplyToAlln0piPlusCCQELike;
+    extern const ReacTypeApplyMask_t ktApplyToAllCC1piPlusCCoth;
+    extern const ReacTypeApplyMask_t ktApplyToAlln0piButCCoth;
+    extern const ReacTypeApplyMask_t ktApplyToAllCC2piPlusCCoth;
+    extern const ReacTypeApplyMask_t ktApplyToAllCC2piBut2pi0PlusCCoth;
+    extern const ReacTypeApplyMask_t ktApplyToAllCC2piBut2pi0;
+    extern const ReacTypeApplyMask_t ktApplyToAllNC1piPlusNCoth;
+    extern const ReacTypeApplyMask_t ktApplyToAllNC2piPlusNCoth;
+    extern const ReacTypeApplyMask_t ktApplyToCCpiCpi0PlusCCoth;
+    extern const ReacTypeApplyMask_t ktApplyToAllNC2piBut2pi0;
 
     extern const ReacTypeApplyMask_t ktApplyToT2KLegCCoth;
     extern const ReacTypeApplyMask_t ktApplyToCCDISMpi;

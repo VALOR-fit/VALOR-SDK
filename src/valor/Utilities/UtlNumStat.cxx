@@ -339,13 +339,27 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
 #ifdef GSL_CHOLESKY
 
   const double diag_increment = 1E-3; // If we're not pos-def, try increasing the diagonal by multiples of this factor
-  const int max_increment_attempts = 1000; // Try increasing the diagonal this many times maximum
+  const int max_increment_attempts = 10000; // Try increasing the diagonal this many times maximum
   
   gsl_matrix * m = gsl_matrix_alloc(nrows,ncols);
   
   // Disable the error handler so we don't get messages when we're checking the validity
   gsl_error_handler_t * old_error_handler = gsl_set_error_handler_off ();
   
+  bool is_correlated = false;
+  for (int i = 0; i < ncols; i++) {
+	  if(gsl_matrix_get(m, i, i) < 0.0) VLOG("UtlNumStat", pNOTICE) << "gsl_matrix_get(m, i, i) = gsl_matrix_get("<<m<<", "<<i<<", " << i <<") = " << gsl_matrix_get(m, i, i); 
+  }
+  for (int i = 0; i < ncols - 3; i++) {
+    bool row_correlated = false;
+    for (int j = ncols - 3; j < ncols; j++) {
+      //row_correlated = row_correlated || ( gsl_matrix_get(m, i, j) != 0.0 ); // maybe you can change to abs() >= 0.01 * abs(gsl_matrix_get(m, i, i)) for weak but nonzero correlations
+      row_correlated = row_correlated || (abs(gsl_matrix_get(m, i, j)) >= abs(gsl_matrix_get(m, i, i))*0.01);// //maybe you can change to abs() >= 0.01 * abs(gsl_matrix_get(m, i, i)) for weak but nonzero correlations
+    }
+    is_correlated = is_correlated || row_correlated;
+    if(is_correlated) break;
+  }
+  std::cout << "is correlated ? " << (int) is_correlated << std::endl;
   int iattempt = 0;
   bool success = false;
   // Try to decompose the matrix, increasing the diagonal by 0.1% until it's appropriately pos-def
@@ -354,10 +368,25 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
     if (iattempt) {
       double factor = 1.+(double)iattempt*diag_increment;
       for (int ielem = 0 ; ielem < n; ielem++) {
-        double new_val = cov_matrix(ielem,ielem)*factor;
+        //double new_val = cov_matrix(ielem,ielem)*factor;
+	double new_val = cov_matrix(ielem, ielem) + (factor - 1) * std::abs(cov_matrix (ielem, ielem));
         gsl_matrix_set(m,ielem,ielem,new_val);
       }
-    }
+      gsl_matrix * ngsl = gsl_matrix_alloc(nrows, ncols); // copy matrix for safety
+      gsl_matrix_memcpy(ngsl, m);
+
+      gsl_vector * eval = gsl_vector_alloc(ncols); // to receive eigenvalues
+      gsl_eigen_symm_workspace * wksp = gsl_eigen_symm_alloc(ncols);
+      gsl_eigen_symm(ngsl, eval, wksp); // now we have eigenvalues unsorted in vector eval
+
+      double eigMin = gsl_vector_min(eval); // only care about smallest
+      VLOG("UtlNumStat", pDEBUG) << "iatt = " << iattempt << " eig_min = " << eigMin;
+
+      // I free you from bondage
+      gsl_matrix_free(ngsl);
+      gsl_eigen_symm_free(wksp);
+      gsl_vector_free(eval);
+    } // end iattempt loop
     //~ int status = gsl_linalg_cholesky_decomp1(m); // Documentation says this one is best but doesn't appear on all systems.
     int status = gsl_linalg_cholesky_decomp(m);
     if (status != GSL_EDOM) {
@@ -372,7 +401,7 @@ TMatrixD valor::util::CholeskyDecomposition(const TMatrixD& cov_matrix)
     util::Die(1); return TMatrixD();
   }
   if (iattempt) {
-    VLOG("UtlNumStat", pWARN) << "GSL had to increase diagonal elements by "<<100.*diag_increment<<iattempt<<"% to decompose.";
+    VLOG("UtlNumStat", pWARN) << "GSL had to increase diagonal elements by "<<100.*diag_increment*iattempt<<"% to decompose.";
   }
   
   for (int i = 0 ; i < n; i++) {

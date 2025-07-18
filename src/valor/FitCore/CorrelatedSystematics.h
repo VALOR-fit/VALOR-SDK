@@ -26,6 +26,7 @@
 #include <TMatrixD.h>
 #include <TVectorD.h>
 #include <TMatrixTSym.h>
+#include "TMatrixDSymEigen.h"
 #include <TXMLEngine.h>
 
 #include "valor/Conventions/PhysParamId.h"
