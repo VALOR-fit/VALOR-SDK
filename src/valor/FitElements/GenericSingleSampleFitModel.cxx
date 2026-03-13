@@ -1792,8 +1792,8 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     if(s == ksNuMuCC2piC) {
       VLOG("HACK",pNOTICE) 
         << "MC event: " << iev << " belongs to sample: " << util::AsString(s) 
-        << " not considered separately. Bundle in sample: " << util::AsString(ksNuMuCCoth);
-      s = ksNuMuCCoth;
+        << " not considered separately. Bundle in sample: " << util::AsString(ksNearNuMuCC_Other);
+      s = ksNearNuMuCC_Other;
     }
 
 #ifdef FORCE_NC_INCLUSIVE

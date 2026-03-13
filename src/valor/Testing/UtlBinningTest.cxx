@@ -127,8 +127,10 @@ void UtlBinningTest::Setup()
 
    ModeList ml(util::CompleteConfigPath("modelists/UnOscLowE.xml"));
 
-   _binning = new SingleSampleKineBinning(conv::kdDUNEFD1ph, conv::kbLBNF_FHC,
-        conv::ksNuMuCC,ml.Modes());
+   //_binning = new SingleSampleKineBinning(conv::kdDUNEFD1ph, conv::kbLBNF_FHC,
+   //     conv::ksNuMuCC,ml.Modes());
+   _binning = new SingleSampleKineBinning(conv::kdSBND, conv::kbBNB_FHC,
+					  conv::ksNearNuMuCC, ml.Modes());
    _binning->Read(fullFilename);
 
    const VALORBinning& recoOptBinning = *(_binning->RecoOptBinning());

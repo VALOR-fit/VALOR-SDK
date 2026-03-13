@@ -31,10 +31,10 @@ namespace conv {
 // ...........................................................................
 // Define samples
 //
-typedef enum ESample
+typedef enum ESampleOld
 {
    //2016b near detector selections
-   ksUndefined       = -1,
+   ksOldUndefined       = -1,
    ksNuMuCC          =  0, // numu CC inclusive - disabled in 2016b, split in subsamples
    ksNuMuCC0pi1trk   =  1, // numu CC 0 pions - 1 track (mu)
    ksNuMuCC0pi2trk   =  2, // numu CC 0 pions - 2 tracks (mu + proton)
@@ -94,11 +94,82 @@ typedef enum ESample
    ksNuECCoa04           , // nueCC-like, off-axis bin "04"
    ksNuECCoa05           , // nueCC-like, off-axis bin "05"
    ksNuECCoa06           , // nueCC-like, off-axis bin "06"
-   ksNuECCoa07             // nueCC-like, off-axis bin "07"
+   ksNuECCoa07           , // nueCC-like, off-axis bin "07"
 }
-Sample_t; 
+SampleOld_t; 
 
-static const int kMaxNSamples = 57;
+// I define new samples.
+// Each is going to have up to 8 OAA bins + an inclusive
+// Far detector samples don't have off axis bins.
+typedef enum ESample {
+  ksUndefined       = -1,
+  ksNearNuMuCC      = 0, // numu CC inclusive
+  ksNearNuMuCCOAA1  = 1, // 0th OAA bin
+  ksNearNuMuCCOAA2  = 2, // 1st OAA bin
+  ksNearNuMuCCOAA3  = 3, // 2nd OAA bin
+  ksNearNuMuCCOAA4  = 4, // 3rd OAA bin
+  ksNearNuMuCCOAA5  = 5, // 4th OAA bin
+  ksNearNuMuCCOAA6  = 6, // 5th OAA bin
+  ksNearNuMuCCOAA7  = 7, // 6th OAA bin
+  ksNearNuMuCCOAA8  = 8, // 7th OAA bin
+  ksNearNuMuCCOAA9  = 9, // 8th OAA bin
+  ksNearNuMuCC_0p0pi      = 10, // numu CC, 0p0pi final state
+  ksNearNuMuCC_0p0piOAA1  = 11, 
+  ksNearNuMuCC_0p0piOAA2  = 12, 
+  ksNearNuMuCC_0p0piOAA3  = 13, 
+  ksNearNuMuCC_0p0piOAA4  = 14, 
+  ksNearNuMuCC_0p0piOAA5  = 15, 
+  ksNearNuMuCC_0p0piOAA6  = 16, 
+  ksNearNuMuCC_0p0piOAA7  = 17, 
+  ksNearNuMuCC_0p0piOAA8  = 18, 
+  ksNearNuMuCC_0p0piOAA9  = 19, 
+  ksNearNuMuCC_1p0pi      = 20, // numu CC, 1p0pi final state
+  ksNearNuMuCC_1p0piOAA1  = 21, 
+  ksNearNuMuCC_1p0piOAA2  = 22, 
+  ksNearNuMuCC_1p0piOAA3  = 23, 
+  ksNearNuMuCC_1p0piOAA4  = 24, 
+  ksNearNuMuCC_1p0piOAA5  = 25, 
+  ksNearNuMuCC_1p0piOAA6  = 26, 
+  ksNearNuMuCC_1p0piOAA7  = 27, 
+  ksNearNuMuCC_1p0piOAA8  = 28, 
+  ksNearNuMuCC_1p0piOAA9  = 29, 
+  ksNearNuMuCC_Np0pi      = 30, // numu CC, Np0pi final state
+  ksNearNuMuCC_Np0piOAA1  = 31, 
+  ksNearNuMuCC_Np0piOAA2  = 32, 
+  ksNearNuMuCC_Np0piOAA3  = 33, 
+  ksNearNuMuCC_Np0piOAA4  = 34, 
+  ksNearNuMuCC_Np0piOAA5  = 35, 
+  ksNearNuMuCC_Np0piOAA6  = 36, 
+  ksNearNuMuCC_Np0piOAA7  = 37, 
+  ksNearNuMuCC_Np0piOAA8  = 38, 
+  ksNearNuMuCC_Np0piOAA9  = 39, 
+  ksNearNuMuCC_1pi      = 40, // numu CC, 1pi final state
+  ksNearNuMuCC_1piOAA1  = 41, 
+  ksNearNuMuCC_1piOAA2  = 42, 
+  ksNearNuMuCC_1piOAA3  = 43, 
+  ksNearNuMuCC_1piOAA4  = 44, 
+  ksNearNuMuCC_1piOAA5  = 45, 
+  ksNearNuMuCC_1piOAA6  = 46, 
+  ksNearNuMuCC_1piOAA7  = 47, 
+  ksNearNuMuCC_1piOAA8  = 48, 
+  ksNearNuMuCC_1piOAA9  = 49, 
+  ksNearNuMuCC_Other      = 50, // numu CC, Other final state
+  ksNearNuMuCC_OtherOAA1  = 51, 
+  ksNearNuMuCC_OtherOAA2  = 52, 
+  ksNearNuMuCC_OtherOAA3  = 53, 
+  ksNearNuMuCC_OtherOAA4  = 54, 
+  ksNearNuMuCC_OtherOAA5  = 55, 
+  ksNearNuMuCC_OtherOAA6  = 56, 
+  ksNearNuMuCC_OtherOAA7  = 57, 
+  ksNearNuMuCC_OtherOAA8  = 58, 
+  ksNearNuMuCC_OtherOAA9  = 59, 
+  ksFarNuMuCC     = 60,
+  ksFarNuMuCC_0pi = 61,
+  ksFarNuMuCC_1pi = 62,
+  ksFarNuMuCC_Npi = 63,
+} Sample_t;
+
+static const int kMaxNSamples = 65;
 
 } // conv
 

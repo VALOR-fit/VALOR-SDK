@@ -84,38 +84,69 @@ const DetectorApplyMask_t valor::conv::kdApplyToAll    = kdApplyToAllDUNE | kdAp
 
 
 // Samples
-const SelecApplyMask_t valor::conv::ksApplyToAllND = (
-  ksApplyToNuMuCC | ksApplyToNuMuCC0pi1trk| ksApplyToNuMuCC0pi2trk | ksApplyToNuMuCC0piNtrk |
-  ksApplyToNuMuCC3trkDelta | ksApplyToNuMuCC1piC | ksApplyToNuMuCC2piC | ksApplyToNuMuCC1pi0 |
-  ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 |
-  ksApplyToNuMuCCWSoth | ksApplyToNuECC0pi | ksApplyToNuECC1piC | ksApplyToNuECC1pi0 | ksApplyToNuECCoth |
-  ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth | ksApplyToNeutrinoElec | ksApplyToInvMuDecay |
-  ksApplyToNuECCWS | ksApplyToNuECC | ksApplyToNuMuCCWS | ksApplyToNC | ksApplyToNuMuOA00 | ksApplyToNuMuOA01 | ksApplyToNuMuOA02
-);
+const SelecApplyMask_t valor::conv::ksApplyToAllND = 
+  ( ksApplyToNearNuMuCC     | 
+    ksApplyToNearNuMuCCOAA1 | ksApplyToNearNuMuCCOAA2 | ksApplyToNearNuMuCCOAA3 | 
+    ksApplyToNearNuMuCCOAA4 | ksApplyToNearNuMuCCOAA5 | ksApplyToNearNuMuCCOAA6 | 
+    ksApplyToNearNuMuCCOAA7 | ksApplyToNearNuMuCCOAA8 | ksApplyToNearNuMuCCOAA9 |
+    ksApplyToNearNuMuCC_0p0pi     | 
+    ksApplyToNearNuMuCC_0p0piOAA1 | ksApplyToNearNuMuCC_0p0piOAA2 | ksApplyToNearNuMuCC_0p0piOAA3 | 
+    ksApplyToNearNuMuCC_0p0piOAA4 | ksApplyToNearNuMuCC_0p0piOAA5 | ksApplyToNearNuMuCC_0p0piOAA6 | 
+    ksApplyToNearNuMuCC_0p0piOAA7 | ksApplyToNearNuMuCC_0p0piOAA8 | ksApplyToNearNuMuCC_0p0piOAA9 |
+    ksApplyToNearNuMuCC_1p0pi     | 
+    ksApplyToNearNuMuCC_1p0piOAA1 | ksApplyToNearNuMuCC_1p0piOAA2 | ksApplyToNearNuMuCC_1p0piOAA3 | 
+    ksApplyToNearNuMuCC_1p0piOAA4 | ksApplyToNearNuMuCC_1p0piOAA5 | ksApplyToNearNuMuCC_1p0piOAA6 | 
+    ksApplyToNearNuMuCC_1p0piOAA7 | ksApplyToNearNuMuCC_1p0piOAA8 | ksApplyToNearNuMuCC_1p0piOAA9 |
+    ksApplyToNearNuMuCC_Np0pi     | 
+    ksApplyToNearNuMuCC_Np0piOAA1 | ksApplyToNearNuMuCC_Np0piOAA2 | ksApplyToNearNuMuCC_Np0piOAA3 | 
+    ksApplyToNearNuMuCC_Np0piOAA4 | ksApplyToNearNuMuCC_Np0piOAA5 | ksApplyToNearNuMuCC_Np0piOAA6 | 
+    ksApplyToNearNuMuCC_Np0piOAA7 | ksApplyToNearNuMuCC_Np0piOAA8 | ksApplyToNearNuMuCC_Np0piOAA9 |
+    ksApplyToNearNuMuCC_1pi     | 
+    ksApplyToNearNuMuCC_1piOAA1 | ksApplyToNearNuMuCC_1piOAA2 | ksApplyToNearNuMuCC_1piOAA3 | 
+    ksApplyToNearNuMuCC_1piOAA4 | ksApplyToNearNuMuCC_1piOAA5 | ksApplyToNearNuMuCC_1piOAA6 | 
+    ksApplyToNearNuMuCC_1piOAA7 | ksApplyToNearNuMuCC_1piOAA8 | ksApplyToNearNuMuCC_1piOAA9 |
+    ksApplyToNearNuMuCC_Other     | 
+    ksApplyToNearNuMuCC_OtherOAA1 | ksApplyToNearNuMuCC_OtherOAA2 | ksApplyToNearNuMuCC_OtherOAA3 | 
+    ksApplyToNearNuMuCC_OtherOAA4 | ksApplyToNearNuMuCC_OtherOAA5 | ksApplyToNearNuMuCC_OtherOAA6 | 
+    ksApplyToNearNuMuCC_OtherOAA7 | ksApplyToNearNuMuCC_OtherOAA8 | ksApplyToNearNuMuCC_OtherOAA9
+    );
 
-const SelecApplyMask_t valor::conv::ksApplyToAllNuMuCC = (
-  ksApplyToNuMuCC | ksApplyToNuMuCC0pi1trk| ksApplyToNuMuCC0pi2trk | ksApplyToNuMuCC0piNtrk |
-  ksApplyToNuMuCC3trkDelta | ksApplyToNuMuCC1piC | ksApplyToNuMuCC2piC | ksApplyToNuMuCC1pi0 |
-  ksApplyToNuMuCC1piC1pi0 | ksApplyToNuMuCCoth | ksApplyToNuMuCCWS0pi | ksApplyToNuMuCCWS1piC | ksApplyToNuMuCCWS1pi0 |
-  ksApplyToNuMuCCWSoth | ksApplyToNuMuCCWS | ksApplyToNuMuOA00 | ksApplyToNuMuOA01 | ksApplyToNuMuOA02
-);
+const SelecApplyMask_t valor::conv::ksApplyToAllNuMuCC = 
+  ( ksApplyToNearNuMuCC     | 
+    ksApplyToNearNuMuCCOAA1 | ksApplyToNearNuMuCCOAA2 | ksApplyToNearNuMuCCOAA3 | 
+    ksApplyToNearNuMuCCOAA4 | ksApplyToNearNuMuCCOAA5 | ksApplyToNearNuMuCCOAA6 | 
+    ksApplyToNearNuMuCCOAA7 | ksApplyToNearNuMuCCOAA8 | ksApplyToNearNuMuCCOAA9 |
+    ksApplyToNearNuMuCC_0p0pi     | 
+    ksApplyToNearNuMuCC_0p0piOAA1 | ksApplyToNearNuMuCC_0p0piOAA2 | ksApplyToNearNuMuCC_0p0piOAA3 | 
+    ksApplyToNearNuMuCC_0p0piOAA4 | ksApplyToNearNuMuCC_0p0piOAA5 | ksApplyToNearNuMuCC_0p0piOAA6 | 
+    ksApplyToNearNuMuCC_0p0piOAA7 | ksApplyToNearNuMuCC_0p0piOAA8 | ksApplyToNearNuMuCC_0p0piOAA9 |
+    ksApplyToNearNuMuCC_1p0pi     | 
+    ksApplyToNearNuMuCC_1p0piOAA1 | ksApplyToNearNuMuCC_1p0piOAA2 | ksApplyToNearNuMuCC_1p0piOAA3 | 
+    ksApplyToNearNuMuCC_1p0piOAA4 | ksApplyToNearNuMuCC_1p0piOAA5 | ksApplyToNearNuMuCC_1p0piOAA6 | 
+    ksApplyToNearNuMuCC_1p0piOAA7 | ksApplyToNearNuMuCC_1p0piOAA8 | ksApplyToNearNuMuCC_1p0piOAA9 |
+    ksApplyToNearNuMuCC_Np0pi     | 
+    ksApplyToNearNuMuCC_Np0piOAA1 | ksApplyToNearNuMuCC_Np0piOAA2 | ksApplyToNearNuMuCC_Np0piOAA3 | 
+    ksApplyToNearNuMuCC_Np0piOAA4 | ksApplyToNearNuMuCC_Np0piOAA5 | ksApplyToNearNuMuCC_Np0piOAA6 | 
+    ksApplyToNearNuMuCC_Np0piOAA7 | ksApplyToNearNuMuCC_Np0piOAA8 | ksApplyToNearNuMuCC_Np0piOAA9 |
+    ksApplyToNearNuMuCC_1pi     | 
+    ksApplyToNearNuMuCC_1piOAA1 | ksApplyToNearNuMuCC_1piOAA2 | ksApplyToNearNuMuCC_1piOAA3 | 
+    ksApplyToNearNuMuCC_1piOAA4 | ksApplyToNearNuMuCC_1piOAA5 | ksApplyToNearNuMuCC_1piOAA6 | 
+    ksApplyToNearNuMuCC_1piOAA7 | ksApplyToNearNuMuCC_1piOAA8 | ksApplyToNearNuMuCC_1piOAA9 |
+    ksApplyToNearNuMuCC_Other     | 
+    ksApplyToNearNuMuCC_OtherOAA1 | ksApplyToNearNuMuCC_OtherOAA2 | ksApplyToNearNuMuCC_OtherOAA3 | 
+    ksApplyToNearNuMuCC_OtherOAA4 | ksApplyToNearNuMuCC_OtherOAA5 | ksApplyToNearNuMuCC_OtherOAA6 | 
+    ksApplyToNearNuMuCC_OtherOAA7 | ksApplyToNearNuMuCC_OtherOAA8 | ksApplyToNearNuMuCC_OtherOAA9 |
+    ksApplyToFarNuMuCC     |
+    ksApplyToFarNuMuCC_0pi | ksApplyToFarNuMuCC_1pi | ksApplyToFarNuMuCC_Npi
+    );
 
 
-const SelecApplyMask_t valor::conv::ksApplyToELikeRingAny = ksApplyTo1RingE | ksApplyToMultiRingE;                    // SuperK selections
-const SelecApplyMask_t valor::conv::ksApplyTo1RingAny     = ksApplyTo1RingE | ksApplyTo1RingMu;                       // SuperK selections
-const SelecApplyMask_t valor::conv::ksApplyToAllRings     = ksApplyTo1RingE | ksApplyTo1RingMu | ksApplyToMultiRingE; // SuperK selections
+const SelecApplyMask_t valor::conv::ksApplyToAllFD = 
+  ( ksApplyToFarNuMuCC     |
+    ksApplyToFarNuMuCC_0pi | ksApplyToFarNuMuCC_1pi | ksApplyToFarNuMuCC_Npi
+    );
 
-const SelecApplyMask_t valor::conv::ksApplyToLowRes = ksApplyToMuLikeLowRes | ksApplyToELikeLowRes;
-const SelecApplyMask_t valor::conv::ksApplyToHighRes = ksApplyToMuLikeHighRes | ksApplyToELikeHighRes;
-const SelecApplyMask_t valor::conv::ksApplyToAllFD = ksApplyToLowRes | ksApplyToHighRes | ksApplyToAllRings;
 const SelecApplyMask_t valor::conv::ksApplyToAll = ksApplyToAllND | ksApplyToAllFD;
-const SelecApplyMask_t valor::conv::ksApplyToAllNC =  ( ksApplyToNC0pi | ksApplyToNC1piC | ksApplyToNC1pi0 | ksApplyToNCoth );
-const SelecApplyMask_t valor::conv::ksApplyToAllNuECC =  (ksApplyToNuECC0pi      | ksApplyToNuECC1piC    | ksApplyToNuECC1pi0      | ksApplyToNuECCoth);
-const SelecApplyMask_t valor::conv::ksApplyToAllButNuECC = (ksApplyToAllND | ksApplyToAllFD)    & (~ksApplyToNuECC0pi) & (~ksApplyToNuECC1piC) & (~ksApplyToNuECC1pi0) & (~ksApplyToNuECCoth);
-const SelecApplyMask_t valor::conv::ksApplyToInnerNuMuPRISM3 = ksApplyToNuMuOA00 | ksApplyToNuMuOA01;
-const SelecApplyMask_t valor::conv::ksApplyToAllNuMuPRISM3 = ksApplyToNuMuOA00 | ksApplyToNuMuOA01 | ksApplyToNuMuOA02;
-const SelecApplyMask_t valor::conv::ksApplyToOuterNuMuPRISM3 = ksApplyToNuMuOA01 | ksApplyToNuMuOA02;
-
 
 // Targets
 const NuclearTargetApplyMask_t valor::conv::kntApplyToAll = (
@@ -173,57 +204,70 @@ void valor::util::ApplyMaskNaming::Init(void)
   }
 
   // Selection mask names
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC         , "numucc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0pi1trk  , "numucc0pi1trk") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0pi2trk  , "numucc0pi2trk") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC0piNtrk  , "numucc0pintrk") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC3trkDelta, "numucc3trkdelta") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1piC     , "numucc1pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC2piC     , "numucc2pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1pi0     , "numucc1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCC1piC1pi0 , "numucc1pic1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCoth      , "numuccoth") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS0pi    , "numuccws0pi") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS1piC   , "numuccws1pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS1pi0   , "numuccws1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWSoth    , "numuccwsoth") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC0pi       , "nuecc0pi") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC1piC      , "nuecc1pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC1pi0      , "nuecc1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECCoth       , "nueccoth") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNC0pi          , "nc0pi") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNC1piC         , "nc1pic") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNC1pi0         , "nc1pi0") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNCoth          , "ncoth") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNeutrinoElec   , "neutrinoelec") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToInvMuDecay     , "invmudecay") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECCWS        , "nueccws") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuECC          , "nuecc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuCCWS       , "numuccws") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNC             , "nc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeHighRes  , "mulikehighres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToMuLikeLowRes   , "mulikelowres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeHighRes   , "elikehighres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeLowRes    , "elikelowres") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllND          , "allnd") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllFD          , "allfd") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAll            , "all") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNC          , "allnc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuMuCC      , "allnumucc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuECC       , "allnuecc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllButNuECC    , "allbutnuecc") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingMu        , "1rmu") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingE         , "1re") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToMultiRingE     , "multire") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToELikeRingAny   , "e-likerings") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyTo1RingAny       , "1rany") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllRings       , "allrings") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuOA00       , "numuoa00") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuOA01       , "numuoa01") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToNuMuOA02       , "numuoa02") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToInnerNuMuPRISM3, "innernumuprism3") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToAllNuMuPRISM3  , "allnumuprism3") );
-  fSelecMaskToName.insert( std::make_pair(ksApplyToOuterNuMuPRISM3, "outernumuprism3") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC    , "numucc_nd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA1, "numucc_nd_oaa1") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA2, "numucc_nd_oaa2") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA3, "numucc_nd_oaa3") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA4, "numucc_nd_oaa4") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA5, "numucc_nd_oaa5") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA6, "numucc_nd_oaa6") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA7, "numucc_nd_oaa7") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA8, "numucc_nd_oaa8") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCCOAA9, "numucc_nd_oaa9") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0pi    , "numucc_0p0pi_nd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA1, "numucc_0p0pi_nd_oaa1") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA2, "numucc_0p0pi_nd_oaa2") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA3, "numucc_0p0pi_nd_oaa3") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA4, "numucc_0p0pi_nd_oaa4") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA5, "numucc_0p0pi_nd_oaa5") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA6, "numucc_0p0pi_nd_oaa6") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA7, "numucc_0p0pi_nd_oaa7") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA8, "numucc_0p0pi_nd_oaa8") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_0p0piOAA9, "numucc_0p0pi_nd_oaa9") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0pi    , "numucc_1p0pi_nd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA1, "numucc_1p0pi_nd_oaa1") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA2, "numucc_1p0pi_nd_oaa2") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA3, "numucc_1p0pi_nd_oaa3") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA4, "numucc_1p0pi_nd_oaa4") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA5, "numucc_1p0pi_nd_oaa5") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA6, "numucc_1p0pi_nd_oaa6") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA7, "numucc_1p0pi_nd_oaa7") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA8, "numucc_1p0pi_nd_oaa8") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1p0piOAA9, "numucc_1p0pi_nd_oaa9") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0pi    , "numucc_Np0pi_nd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA1, "numucc_Np0pi_nd_oaa1") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA2, "numucc_Np0pi_nd_oaa2") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA3, "numucc_Np0pi_nd_oaa3") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA4, "numucc_Np0pi_nd_oaa4") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA5, "numucc_Np0pi_nd_oaa5") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA6, "numucc_Np0pi_nd_oaa6") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA7, "numucc_Np0pi_nd_oaa7") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA8, "numucc_Np0pi_nd_oaa8") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Np0piOAA9, "numucc_Np0pi_nd_oaa9") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1pi    , "numucc_1pi_nd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA1, "numucc_1pi_nd_oaa1") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA2, "numucc_1pi_nd_oaa2") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA3, "numucc_1pi_nd_oaa3") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA4, "numucc_1pi_nd_oaa4") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA5, "numucc_1pi_nd_oaa5") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA6, "numucc_1pi_nd_oaa6") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA7, "numucc_1pi_nd_oaa7") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA8, "numucc_1pi_nd_oaa8") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_1piOAA9, "numucc_1pi_nd_oaa9") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_Other    , "numucc_other_nd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA1, "numucc_other_nd_oaa1") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA2, "numucc_other_nd_oaa2") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA3, "numucc_other_nd_oaa3") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA4, "numucc_other_nd_oaa4") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA5, "numucc_other_nd_oaa5") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA6, "numucc_other_nd_oaa6") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA7, "numucc_other_nd_oaa7") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA8, "numucc_other_nd_oaa8") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToNearNuMuCC_OtherOAA9, "numucc_other_nd_oaa9") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToFarNuMuCC, "numucc_fd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToFarNuMuCC_0pi, "numucc_0pi_fd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToFarNuMuCC_1pi, "numucc_1pi_fd") );
+  fSelecMaskToName.insert( std::make_pair(ksApplyToFarNuMuCC_Npi, "numucc_Npi_fd") );
   for(auto const& pair : fSelecMaskToName) {
     fSelecNameToMask.insert( std::make_pair(pair.second, pair.first) );
   }
@@ -366,64 +410,69 @@ const BeamApplyMask_t valor::util::ApplyToBeamMode(BeamConf_t b)
 const SelecApplyMask_t valor::util::ApplyToSample(conv::Sample_t s)
 {
   switch (s) {
-    case ksNuMuCC          : return ksApplyToNuMuCC;
-    case ksNuMuCC0pi1trk   : return ksApplyToNuMuCC0pi1trk;
-    case ksNuMuCC0pi2trk   : return ksApplyToNuMuCC0pi2trk;
-    case ksNuMuCC1piC      : return ksApplyToNuMuCC1piC;
-    case ksNuMuCC2piC      : return ksApplyToNuMuCC2piC;
-    case ksNuMuCC1pi0      : return ksApplyToNuMuCC1pi0;
-    case ksNuMuCC1piC1pi0  : return ksApplyToNuMuCC1piC1pi0;
-    case ksNuMuCCoth       : return ksApplyToNuMuCCoth;
-    case ksNuECC           : return ksApplyToNuECC;
-    case ksNuMuCCWS        : return ksApplyToNuMuCCWS;
-    case ksNC              : return ksApplyToNC;
-    case ksNuMuCC0piNtrk   : return ksApplyToNuMuCC0piNtrk;
-    case ksNuMuCC3trkDelta : return ksApplyToNuMuCC3trkDelta;
-    case ksNuMuCCWS0pi     : return ksApplyToNuMuCCWS0pi;
-    case ksNuMuCCWS1piC    : return ksApplyToNuMuCCWS1piC;
-    case ksNuMuCCWS1pi0    : return ksApplyToNuMuCCWS1pi0;
-    case ksNuMuCCWSoth     : return ksApplyToNuMuCCWSoth;
-    case ksNuECC0pi        : return ksApplyToNuECC0pi;
-    case ksNuECC1piC       : return ksApplyToNuECC1piC;
-    case ksNuECC1pi0       : return ksApplyToNuECC1pi0;
-    case ksNuECCoth        : return ksApplyToNuECCoth;
-    case ksNC0pi           : return ksApplyToNC0pi;
-    case ksNC1piC          : return ksApplyToNC1piC;
-    case ksNC1pi0          : return ksApplyToNC1pi0;
-    case ksNCoth           : return ksApplyToNCoth;
-    case ksNeutrinoElec    : return ksApplyToNuECC;     // ksApplyToNeutrinoElec
-    case ksInvMuDecay      : return ksApplyToNuMuCCoth; // ksApplyToInvMuDecay
-    case ksNuECCWS         : return ksApplyToNuECCWS;
-    case ksNuMuLikeCChigh  : return ksApplyToMuLikeHighRes;
-    case ksNuMuLikeCClow   : return ksApplyToMuLikeLowRes;
-    case ksNuMuBarCChigh   : return ksApplyToMuLikeHighRes;
-    case ksNuMuBarCClow    : return ksApplyToMuLikeLowRes;
-    case ksNuELikeCChigh   : return ksApplyToELikeHighRes;
-    case ksNuELikeCClow    : return ksApplyToELikeLowRes;
-    case ksNuEBarCChigh    : return ksApplyToELikeHighRes;
-    case ksNuEBarCClow     : return ksApplyToELikeLowRes;
-    case ks1Rmu            : return ksApplyTo1RingMu;
-    case ks1Re             : return ksApplyTo1RingE;
-    case ksMultiRe         : return ksApplyToMultiRingE;
-    case ksNuMuCCoa00      : return ksApplyToNuMuOA00;
-    case ksNuMuCCoa01      : return ksApplyToNuMuOA01;
-    case ksNuMuCCoa02      : return ksApplyToNuMuOA02;
-    case ksNuMuCCoa03      : return ksApplyToNuMuCC;
-    case ksNuMuCCoa04      : return ksApplyToNuMuCC;
-    case ksNuMuCCoa05      : return ksApplyToNuMuCC;
-    case ksNuMuCCoa06      : return ksApplyToNuMuCC;
-    case ksNuMuCCoa07      : return ksApplyToNuMuCC;
-    case ksNuECCoa00       : return ksApplyToNuECC;
-    case ksNuECCoa01       : return ksApplyToNuECC;
-    case ksNuECCoa02       : return ksApplyToNuECC;
-    case ksNuECCoa03       : return ksApplyToNuECC;
-    case ksNuECCoa04       : return ksApplyToNuECC;
-    case ksNuECCoa05       : return ksApplyToNuECC;
-    case ksNuECCoa06       : return ksApplyToNuECC;
-    case ksNuECCoa07       : return ksApplyToNuECC;
-    default:
-      VLOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
-      return 0;
+  case ksNearNuMuCC     : return ksApplyToNearNuMuCC;
+  case ksNearNuMuCCOAA1 : return ksApplyToNearNuMuCCOAA1;
+  case ksNearNuMuCCOAA2 : return ksApplyToNearNuMuCCOAA2;
+  case ksNearNuMuCCOAA3 : return ksApplyToNearNuMuCCOAA3;
+  case ksNearNuMuCCOAA4 : return ksApplyToNearNuMuCCOAA4;
+  case ksNearNuMuCCOAA5 : return ksApplyToNearNuMuCCOAA5;
+  case ksNearNuMuCCOAA6 : return ksApplyToNearNuMuCCOAA6;
+  case ksNearNuMuCCOAA7 : return ksApplyToNearNuMuCCOAA7;
+  case ksNearNuMuCCOAA8 : return ksApplyToNearNuMuCCOAA8;
+  case ksNearNuMuCCOAA9 : return ksApplyToNearNuMuCCOAA9;
+  case ksNearNuMuCC_0p0pi     : return ksApplyToNearNuMuCC_0p0pi;
+  case ksNearNuMuCC_0p0piOAA1 : return ksApplyToNearNuMuCC_0p0piOAA1;
+  case ksNearNuMuCC_0p0piOAA2 : return ksApplyToNearNuMuCC_0p0piOAA2;
+  case ksNearNuMuCC_0p0piOAA3 : return ksApplyToNearNuMuCC_0p0piOAA3;
+  case ksNearNuMuCC_0p0piOAA4 : return ksApplyToNearNuMuCC_0p0piOAA4;
+  case ksNearNuMuCC_0p0piOAA5 : return ksApplyToNearNuMuCC_0p0piOAA5;
+  case ksNearNuMuCC_0p0piOAA6 : return ksApplyToNearNuMuCC_0p0piOAA6;
+  case ksNearNuMuCC_0p0piOAA7 : return ksApplyToNearNuMuCC_0p0piOAA7;
+  case ksNearNuMuCC_0p0piOAA8 : return ksApplyToNearNuMuCC_0p0piOAA8;
+  case ksNearNuMuCC_0p0piOAA9 : return ksApplyToNearNuMuCC_0p0piOAA9;
+  case ksNearNuMuCC_1p0pi     : return ksApplyToNearNuMuCC_1p0pi;
+  case ksNearNuMuCC_1p0piOAA1 : return ksApplyToNearNuMuCC_1p0piOAA1;
+  case ksNearNuMuCC_1p0piOAA2 : return ksApplyToNearNuMuCC_1p0piOAA2;
+  case ksNearNuMuCC_1p0piOAA3 : return ksApplyToNearNuMuCC_1p0piOAA3;
+  case ksNearNuMuCC_1p0piOAA4 : return ksApplyToNearNuMuCC_1p0piOAA4;
+  case ksNearNuMuCC_1p0piOAA5 : return ksApplyToNearNuMuCC_1p0piOAA5;
+  case ksNearNuMuCC_1p0piOAA6 : return ksApplyToNearNuMuCC_1p0piOAA6;
+  case ksNearNuMuCC_1p0piOAA7 : return ksApplyToNearNuMuCC_1p0piOAA7;
+  case ksNearNuMuCC_1p0piOAA8 : return ksApplyToNearNuMuCC_1p0piOAA8;
+  case ksNearNuMuCC_1p0piOAA9 : return ksApplyToNearNuMuCC_1p0piOAA9;
+  case ksNearNuMuCC_Np0pi     : return ksApplyToNearNuMuCC_Np0pi;
+  case ksNearNuMuCC_Np0piOAA1 : return ksApplyToNearNuMuCC_Np0piOAA1;
+  case ksNearNuMuCC_Np0piOAA2 : return ksApplyToNearNuMuCC_Np0piOAA2;
+  case ksNearNuMuCC_Np0piOAA3 : return ksApplyToNearNuMuCC_Np0piOAA3;
+  case ksNearNuMuCC_Np0piOAA4 : return ksApplyToNearNuMuCC_Np0piOAA4;
+  case ksNearNuMuCC_Np0piOAA5 : return ksApplyToNearNuMuCC_Np0piOAA5;
+  case ksNearNuMuCC_Np0piOAA6 : return ksApplyToNearNuMuCC_Np0piOAA6;
+  case ksNearNuMuCC_Np0piOAA7 : return ksApplyToNearNuMuCC_Np0piOAA7;
+  case ksNearNuMuCC_Np0piOAA8 : return ksApplyToNearNuMuCC_Np0piOAA8;
+  case ksNearNuMuCC_Np0piOAA9 : return ksApplyToNearNuMuCC_Np0piOAA9;
+  case ksNearNuMuCC_1pi     : return ksApplyToNearNuMuCC_1pi;
+  case ksNearNuMuCC_1piOAA1 : return ksApplyToNearNuMuCC_1piOAA1;
+  case ksNearNuMuCC_1piOAA2 : return ksApplyToNearNuMuCC_1piOAA2;
+  case ksNearNuMuCC_1piOAA3 : return ksApplyToNearNuMuCC_1piOAA3;
+  case ksNearNuMuCC_1piOAA4 : return ksApplyToNearNuMuCC_1piOAA4;
+  case ksNearNuMuCC_1piOAA5 : return ksApplyToNearNuMuCC_1piOAA5;
+  case ksNearNuMuCC_1piOAA6 : return ksApplyToNearNuMuCC_1piOAA6;
+  case ksNearNuMuCC_1piOAA7 : return ksApplyToNearNuMuCC_1piOAA7;
+  case ksNearNuMuCC_1piOAA8 : return ksApplyToNearNuMuCC_1piOAA8;
+  case ksNearNuMuCC_1piOAA9 : return ksApplyToNearNuMuCC_1piOAA9;
+  case ksNearNuMuCC_Other     : return ksApplyToNearNuMuCC_Other;
+  case ksNearNuMuCC_OtherOAA1 : return ksApplyToNearNuMuCC_OtherOAA1;
+  case ksNearNuMuCC_OtherOAA2 : return ksApplyToNearNuMuCC_OtherOAA2;
+  case ksNearNuMuCC_OtherOAA3 : return ksApplyToNearNuMuCC_OtherOAA3;
+  case ksNearNuMuCC_OtherOAA4 : return ksApplyToNearNuMuCC_OtherOAA4;
+  case ksNearNuMuCC_OtherOAA5 : return ksApplyToNearNuMuCC_OtherOAA5;
+  case ksNearNuMuCC_OtherOAA6 : return ksApplyToNearNuMuCC_OtherOAA6;
+  case ksNearNuMuCC_OtherOAA7 : return ksApplyToNearNuMuCC_OtherOAA7;
+  case ksNearNuMuCC_OtherOAA8 : return ksApplyToNearNuMuCC_OtherOAA8;
+  case ksNearNuMuCC_OtherOAA9 : return ksApplyToNearNuMuCC_OtherOAA9;
+  default:
+    VLOG("ApplyMask",pWARN) << "No selection apply mask set for " << util::AsString(s) << ". Applying to none.";
+    return 0;
   }
 }
 //________________________________________________________________________________________
