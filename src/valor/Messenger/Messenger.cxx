@@ -59,9 +59,9 @@ Messenger * Messenger::Instance()
         appender->setLayout(new log4cpp::BasicLayout());
       }
 
-      MSG.setAdditivity(false);
       MSG.addAppender(appender);
     }
+    MSG.setAdditivity(false);
   }
   return fInstance;
 }

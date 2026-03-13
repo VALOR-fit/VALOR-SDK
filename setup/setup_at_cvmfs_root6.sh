@@ -13,7 +13,7 @@
 # The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
 if [ -z "$SETUP_GENIE" ] ; then
   . /cvmfs/larsoft.opensciencegrid.org/products/setup && retval="$?"
-  setup genie v3_00_06c -q e17:prof
+  setup genie v3_04_02 -q e26:prof
 fi
 
 if [ -z "$VALOR_FMWK" ]; then

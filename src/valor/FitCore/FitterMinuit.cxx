@@ -249,7 +249,6 @@ bool FitterMinuit::DoTheFit(void)
   // set minimization function
   fitter->SetFCN(FitFunc);
 
-
   // And we're ready.
 
   // reset fit time, bestfit statistic and status codes in
@@ -260,6 +259,7 @@ bool FitterMinuit::DoTheFit(void)
 
   // Run the fitter once - we have the option here to check the status code
   // and if the fitter failed, re-seed the fitter and try again
+  VLOG("Minuit", pFATAL) << "FOO - We're ready! Running once";
   bool ok = this->RunOnce(false);
 
   // 4: migrad not converged

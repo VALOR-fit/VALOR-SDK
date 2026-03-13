@@ -2547,6 +2547,7 @@ void GenericSingleSampleFitModel::FluctuateMCStat(Option_t * option)
 
       // Start by fluctuation the templates using the simple binning.
       // Then map each simple bin to an optimized bin and add to its contents. 
+      VLOG("valor", pFATAL) << "FLUCUTATING BINS NOW";
       for(int itrue = 0; itrue < n_true_bins; itrue++) {
         for(int ireco = 0; ireco < n_reco_bins; ireco++) {
           double val  = fMCTTunSb[imode]->GetEntry(ireco,itrue);

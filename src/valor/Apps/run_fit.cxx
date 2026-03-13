@@ -88,6 +88,8 @@
 #include "valor/Messenger/Messenger.h"
 #include "valor/Ntuple/StdFitNtp.h"
 
+#include <cmath>
+
 using namespace std;
 using namespace valor;
 using namespace valor::conv;
@@ -453,18 +455,60 @@ int main(int argc, char ** argv)
     // This will be central values unless start-at-true is defined.
     fp->ResetCurrToInitValues();
 
+    // Check!
+    VLOG("valor", pFATAL) << "FPL:" << *fp;
+
     // Get fitter
     VLOG("valor", pNOTICE) << "Preparing the fitter";
     Likelihood * likelihood = new Likelihood(data,model,fp);
     FitterABC * fitter = util::GetFitter(likelihood, fittername.c_str());
 
     // Do the fit
+
+    // NOT running the statistic, just building a grid.
+    const int npoints_x = 700;
+    const int npoints_y = 700;
+    const double xmin = 1.0e-6; const double xmax = 1.0e+0; // sin2
+    const double ymin = 1.0e-4; const double ymax = 1.0e+2; // dm2
+
+    double xpoints[npoints_x] = {0.0}; double ypoints[npoints_y] = {0.0};
+    for( int i = 0; i < npoints_x; i++ ){
+      const double dlog = std::log10(xmax) - std::log10(xmin);
+      double rat = static_cast<double>(i) / static_cast<double>(npoints_x-1);
+      double newlog = rat * dlog + std::log10(xmin);
+      double curr_val = std::pow(10.0, newlog);
+      xpoints[i] = curr_val;
+    }
+    for( int j = 0; j < npoints_y; j++ ){
+      const double dlog = std::log10(ymax) - std::log10(ymin);
+      double rat = static_cast<double>(j) / static_cast<double>(npoints_y-1);
+      double newlog = rat * dlog + std::log10(ymin);
+      double curr_val = std::pow(10.0, newlog);
+      ypoints[j] = curr_val;
+    }
+
+    conv::PhysParamId_t dm41param = nr->PhysParamFromString("dm41sq");
+    conv::PhysParamId_t sin2param = nr->PhysParamFromString("sinsq2thMuMu");
+    for( int i = 0; i < npoints_x; i++ ) {
+      double xp = xpoints[i];
+      fp->Update(sin2param, xp);
+      for( int j = 0; j < npoints_y; j++ ) {
+	double yp = ypoints[j];
+	fp->Update(dm41param, yp);
+	VLOG("valor", pNOTICE) << "Here's statistic:"
+			       << "\n sin2(theta) = " << xp << ", dm41 = " << yp
+			       << "==> Statistic:" << likelihood->Statistic();
+      }
+    }
+
+    /*
     VLOG("valor", pNOTICE) << "Running the fitter";
     VLOG("valor", pNOTICE) << "Fit starts with the following fit parameter list: " << *fp;
     VLOG("valor", pNOTICE) << "Fit starts with statistic: " << likelihood->Statistic();
 
     fitter->DoTheFit();
     VLOG("valor", pNOTICE) << "Fit ends with statistic: " << likelihood->Statistic();
+    */
 
     //  migradmin = fitter->FitStatusCode("migrad_min");
     //  migraderr = fitter->FitStatusCode("migrad_err");

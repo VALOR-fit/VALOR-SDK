@@ -88,7 +88,7 @@ int main(int argc, char ** argv)
 
   CmdLnArgList arg;
   arg.Read(argc,argv,"$VALOR_FMWK/config/apps/tweak_pdf_N.arg:$VALOR_FMWK/config/apps/seeds.arg:$VALOR_FMWK/config/apps/oscparams.arg");
-  LOG("valor", pNOTICE) << arg;
+  VLOG("valor", pNOTICE) << arg;
 
   // Read the command line
   int ntoys               = arg.GetInt("ntoys");
@@ -131,7 +131,7 @@ int main(int argc, char ** argv)
 
   conv::NuOscDmsqScheme_t dmsq_scheme = util::DmsqSchemeFromString(arg.GetString("dmsq-scheme"));
   if(dmsq_scheme == kNuDmsqUndefined) {
-    LOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
+    VLOG("valor", pFATAL) << "Could not parse the input Dmsq scheme: [" << arg.GetString("dmsq-scheme") << "]";
     util::Die(-1);
   }
   Opt::Instance()->gOscDmsqScheme = dmsq_scheme;
@@ -218,7 +218,7 @@ int main(int argc, char ** argv)
 
     if(hypname == "eff_sterile_osc"){
         if(dm41sq == -999){//if hyp set to sterile osc and no input params set(at least dm41 should be set, should include all 12 (4x (input, fix, fix-at))
-          LOG("valor",pWARN) << " Not set input sterile oscillation parameters, using defaults of Dm41sq = 100, mixMuMu = 0, mixMuE = 1, mixEE = 0";
+          VLOG("valor",pWARN) << " Not set input sterile oscillation parameters, using defaults of Dm41sq = 100, mixMuMu = 0, mixMuE = 1, mixEE = 0";
           fp->Update(conv::kPhypDm41sq,   100);
           fp->Update(conv::kPhypMixingMuMu, 0);
           fp->Update(conv::kPhypMixingMuE,  1);
@@ -453,13 +453,13 @@ int main(int argc, char ** argv)
           //double curr_val = twk_pdf[imodel][itoy]->GetBinContent(ebin);
           if(mean){
             if(mean_val<std::numeric_limits<double>::epsilon()){
-              LOG("valor",pERROR) << " Trying to divide by a mean value of 0, reverting to nominal";
+              VLOG("valor",pERROR) << " Trying to divide by a mean value of 0, reverting to nominal";
               sumsq += TMath::Power(curr_val-nom_val,2.);
-              LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+              VLOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
             }
             else{
               sumsq += TMath::Power(curr_val-mean_val,2.);
-              LOG("valor",pINFO) << " Calculating the standard deviation using the mean";
+              VLOG("valor",pINFO) << " Calculating the standard deviation using the mean";
             }
           }
           else{
@@ -467,7 +467,7 @@ int main(int argc, char ** argv)
             //sumsqsig += TMath::Power(curr_val_sig-nom_val_sig,2.);
             //sumsqbkg += TMath::Power(curr_val_bkg-nom_val_bkg,2.);
             sumsqratio += TMath::Power(curr_ratio-nom_ratio,2.);
-            LOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
+            VLOG("valor",pINFO) << " Calculating the standard deviation using the nominal";
           }
        }//itoy
        //sig_pdf[imodel]->SetBinContent(ebin, nom_val_sig);
@@ -500,7 +500,7 @@ int main(int argc, char ** argv)
   if (output_rootfile!="-" && output_rootfile!="none") {
     output_rootfile = util::ReplaceAll(output_rootfile,"[PARAMS]",params_to_tweak);
     outfile = new TFile(output_rootfile.c_str(),"RECREATE");
-    LOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
+    VLOG("valor",pNOTICE)<<"Writing to file: "<<output_rootfile;
   }
 
   for(unsigned int imodel = 0; imodel < cm->GetNSubModels(); imodel++) {
