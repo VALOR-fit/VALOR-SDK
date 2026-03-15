@@ -189,7 +189,8 @@ bool util::IsFar(Sample_t s)
 bool util::IsCC(Sample_t s)
 {
   switch(s) {
-    case (ksUndefined      ) : return false;
+  case (ksUndefined      ) : return false;
+  default : return true;
   }
   return true;
 }
@@ -208,7 +209,8 @@ bool util::IsCCQELike(Sample_t s)
 bool util::IsNC(Sample_t s)
 {
   switch(s) {
-    case (ksUndefined      ) : return false;
+  case (ksUndefined      ) : return false;
+  default: return false;
   }
   return false;
 }
@@ -259,7 +261,7 @@ bool util::IsMuLike(Sample_t s)
 bool util::IsELike(Sample_t s)
 {
   switch (s) {
-    return false; break;
+  default: return false; break;
   }
   VLOG("Sample",pFATAL) << "Unknown sample: "<<util::AsString(s)<<" ("<<s<<")";
   util::Die(-1) ; return false;

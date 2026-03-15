@@ -20,6 +20,7 @@
 #define _valor_reaction_modes_h
 
 #include <string>
+#include <unordered_map>
 
 //FWMK
 #include "valor/Conventions/NuFlavour.h"
@@ -27,217 +28,212 @@
 namespace valor {
 namespace conv {
 
-static const int kNReacModes = 205; //excluding undefined and other
+static const int kNReacModes = 191; //excluding undefined and other
 
 typedef enum EReacMode 
 {
-   kmUndefined = -1, 
-   kmNuMuCCQE,            // numu    CC QE
-   kmNuMuCCMEC,           // numu    CC MEC
-   kmNuMuCC1piC,          // numu    CC 1 pi+/-
-   kmNuMuCC1pi0,          // numu    CC 1 pi0
-   kmNuMuCC2piC,          // numu    CC 2 pi+/-
-   kmNuMuCC2pi0,          // numu    CC 2 pi0
-   kmNuMuCCpiCpi0,        // numu    CC 1 pi0 + 1 pi+/-
-   kmNuMuCCcoh,           // numu    CC coherent
-   kmNuMuCCIMD,           // numu + e- -> mu + nue inverse muon decay (IMD) 
-   kmNuMuCCELScat,        // numu + e- -> numu + e- CC elastic scattering 
-   kmNuMuCCDIS,           // numu    CC Deep Inelastic Scattering
-   kmNuMuCCMpi,           // numu    CC multi pi (>1 pion of any charge(s))
-   kmNuMuCCmisc,          // numu    CC miscellaneous modes that require separate treatment to CC other
-   kmNuMuCCoth,           // numu    CC other
-   kmNuMuNCEL,            // numu    NC EL
-   kmNuMuNCMEC,           // numu    NC MEC
-   kmNuMuNC1piC,          // numu    NC 1 pi+/-
-   kmNuMuNC1pi0,          // numu    NC 1 pi0
-   kmNuMuNC2piC,          // numu    NC 2 pi+/-
-   kmNuMuNC2pi0,          // numu    NC 2 pi0
-   kmNuMuNCpiCpi0,        // numu    NC 1 pi0 + 1 pi+/-
-   kmNuMuNCcoh,           // numu    NC coherent
-   kmNuMuNC1Gamma,        // numu    NC 1 gamma
-   kmNuMuNCELScat,        // numu + e- -> numu + e- NC elastic scattering
-   kmNuMuNCoth,           // numu    NC other
-   kmNuMuBarCCQE,         // numubar CC QE
-   kmNuMuBarCCMEC,        // numubar CC MEC
-   kmNuMuBarCC1piC,       // numubar CC 1 pi+/-
-   kmNuMuBarCC1pi0,       // numubar CC 1 pi0
-   kmNuMuBarCC2piC,       // numubar CC 2 pi+/-
-   kmNuMuBarCC2pi0,       // numubar CC 2 pi0
-   kmNuMuBarCCpiCpi0,     // numubar CC 1 pi0 + 1 pi+/-
-   kmNuMuBarCCcoh,        // numubar CC coherent
-   kmNuMuBarCCELScat,     // numubar + e- -> numubar + e- CC elastic scattering
-   kmNuMuBarCCDIS,        // numubar CC Deep Inelastic Scattering
-   kmNuMuBarCCMpi,        // numubar CC multi pi (>1 pion of any charge(s))
-   kmNuMuBarCCmisc,       // numubar CC miscellaneous modes that require separate treatment to CC other
-   kmNuMuBarCCoth,        // numubar CC other
-   kmNuMuBarNCEL,         // numubar NC EL
-   kmNuMuBarNCMEC,        // numubar NC MEC
-   kmNuMuBarNC1piC,       // numubar NC 1 pi+/-
-   kmNuMuBarNC1pi0,       // numubar NC 1 pi0
-   kmNuMuBarNC2piC,       // numubar NC 2 pi+/-
-   kmNuMuBarNC2pi0,       // numubar NC 2 pi0
-   kmNuMuBarNCpiCpi0,     // numubar NC 1 pi0 + 1 pi+/-
-   kmNuMuBarNCcoh,        // numubar NC coherent
-   kmNuMuBarNC1Gamma,     // numubar NC 1 gamma
-   kmNuMuBarNCELScat,     // numubar + e- -> numubar + e- NC elastic scattering
-   kmNuMuBarNCoth,        // numubar NC other
-   kmNuECCQE,             // nue     CC QE
-   kmNuECCMEC,            // nue     CC MEC
-   kmNuECC1piC,           // nue     CC 1 pi+/-
-   kmNuECC1pi0,           // nue     CC 1 pi0
-   kmNuECC2piC,           // nue     CC 2 pi+/-
-   kmNuECC2pi0,           // nue     CC 2 pi0
-   kmNuECCpiCpi0,         // nue     CC 1 pi0 + 1 pi+/-
-   kmNuECCcoh,            // nue     CC coherent
-   kmNuECCDIS,            // nue     CC Deep Inelastic Scattering
-   kmNuECCMpi,            // nue     CC multi pi (>1 pion of any charge(s))
-   kmNuECCmisc,           // nue     CC miscellaneous modes that require separate treatment to CC other
-   kmNuECCoth,            // nue     CC other
-   kmNuENCEL,             // nue     NC EL
-   kmNuENCMEC,            // nue     NC MEC
-   kmNuENC1piC,           // nue     NC 1 pi+/-
-   kmNuENC1pi0,           // nue     NC 1 pi0
-   kmNuENC2piC,           // nue     NC 2 pi+/-
-   kmNuENC2pi0,           // nue     NC 2 pi0
-   kmNuENCpiCpi0,         // nue     NC 1 pi0 + 1 pi+/-
-   kmNuENCcoh,            // nue     NC coherent
-   kmNuENC1Gamma,         // nue     NC 1 gamma
-   kmNuEELScat,           // nue + e- -> nue + e- NC+CC+interference elastic scattering
-   kmNuENCoth,            // nue     NC other
-   kmNuEBarCCQE,          // nuebar  CC QE
-   kmNuEBarCCMEC,         // nuebar  CC MEC
-   kmNuEBarCC1piC,        // nuebar  CC 1 pi+/-
-   kmNuEBarCC1pi0,        // nuebar  CC 1 pi0
-   kmNuEBarCC2piC,        // nuebar  CC 2 pi+/-
-   kmNuEBarCC2pi0,        // nuebar  CC 2 pi0
-   kmNuEBarCCpiCpi0,      // nuebar  CC 1 pi0 + 1 pi+/-
-   kmNuEBarCCcoh,         // nuebar  CC coherent
-   kmNuEBarCCIMD,         // nuebar + e- -> mu + numubar (IMD)
-   kmNuEBarCCDIS,         // nuebar  CC Deep Inelastic Scattering
-   kmNuEBarCCMpi,         // nuebar  CC multi pi (>1 pion of any charge(s))
-   kmNuEBarCCmisc,        // nuebar  CC miscellaneous modes that require separate treatment to CC other
-   kmNuEBarCCoth,         // nuebar  CC other
-   kmNuEBarNCEL,          // nuebar  NC EL
-   kmNuEBarNCMEC,         // nuebar  NC MEC
-   kmNuEBarNC1piC,        // nuebar  NC 1 pi+/-
-   kmNuEBarNC1pi0,        // nuebar  NC 1 pi0
-   kmNuEBarNC2piC,        // nuebar  NC 2 pi+/-
-   kmNuEBarNC2pi0,        // nuebar  NC 2 pi0
-   kmNuEBarNCpiCpi0,      // nuebar  NC 1 pi0 + 1 pi+/-
-   kmNuEBarNCcoh,         // nuebar  NC coherent
-   kmNuEBarNC1Gamma,      // nuebar  NC 1 gamma
-   kmNuEBarELScat,        // nuebar + e- -> nuebar + e- NC+CC+interference elastic scattering
-   kmNuEBarNCoth,         // nuebar  NC other
-   //now added the same modes for the oscillated ones
-   kmNuMuToNuECCQE,       // numu to nue   CC QE
-   kmNuMuToNuECCMEC,      // numu to nue   CC MEC
-   kmNuMuToNuECC1piC,     // numu to nue   CC 1 pi+/-
-   kmNuMuToNuECC1pi0,     // numu to nue   CC 1 pi0
-   kmNuMuToNuECC2piC,     // numu to nue   CC 2 pi+/-
-   kmNuMuToNuECC2pi0,     // numu to nue   CC 2 pi0
-   kmNuMuToNuECCpiCpi0,   // numu to nue   CC 1 pi0 + 1 pi+/-
-   kmNuMuToNuECCcoh,      // numu to nue   CC coherent
-   kmNuMuToNuEELScat,     // numu to nue: nue + e- -> nue + e- NC+CC+interference elastic scattering
-   kmNuMuToNuECCDIS,      // numu to nue   CC Deep Inelastic Scattering
-   kmNuMuToNuECCMpi,      // numu to nue   CC multi pi (>1 pion of any charge(s))
-   kmNuMuToNuECCmisc,     // numu to nue   CC miscellaneous modes that require separate treatment to CC other
-   kmNuMuToNuECCoth,      // numu to nue   CC other
-   kmNuMuToNuTauCCQE,     // numu to nutau    CC QE
-   kmNuMuToNuTauCCMEC,    // numu to nutau    CC MEC
-   kmNuMuToNuTauCC1piC,   // numu to nutau    CC 1 pi+/-
-   kmNuMuToNuTauCC1pi0,   // numu to nutau    CC 1 pi0
-   kmNuMuToNuTauCC2piC,   // numu to nutau    CC 2 pi+/-
-   kmNuMuToNuTauCC2pi0,   // numu to nutau    CC 2 pi0
-   kmNuMuToNuTauCCpiCpi0, // numu to nutau    CC 1 pi0 + 1 pi+/-
-   kmNuMuToNuTauCCcoh,    // numu to nutau    CC coherent
-   kmNuMuToNuTauCCELScat, // numu to nutau: nutau + e- elastic scattering
-   kmNuMuToNuTauCCDIS,    // numu to nutau    CC Deep Inelastic Scattering
-   kmNuMuToNuTauCCMpi,    // numu to nutau    CC multi pi (>1 pion of any charge(s))
-   kmNuMuToNuTauCCmisc,   // numu to nutau    CC miscellaneous modes that require separate treatment to CC other
-   kmNuMuToNuTauCCoth,    // numu to nutau    CC other
-   kmNuEToNuMuCCQE,       // nue to numu    CC QE
-   kmNuEToNuMuCCMEC,      // nue to numu    CC MEC
-   kmNuEToNuMuCC1piC,     // nue to numu    CC 1 pi+/-
-   kmNuEToNuMuCC1pi0,     // nue to numu    CC 1 pi0
-   kmNuEToNuMuCC2piC,     // nue to numu    CC 2 pi+/-
-   kmNuEToNuMuCC2pi0,     // nue to numu    CC 2 pi0
-   kmNuEToNuMuCCpiCpi0,   // nue to numu    CC 1 pi0 + 1 pi+/-
-   kmNuEToNuMuCCcoh,      // nue to numu    CC coherent
-   kmNuEToNuMuCCIMD,      // nue to numu: numu + e- -> mu + nue inverse muon decay (IMD) 
-   kmNuEToNuMuCCELScat,   // nue to numu: numu + e- CC elastic scattering
-   kmNuEToNuMuCCDIS,      // nue to numu    CC Deep Inelastic Scattering
-   kmNuEToNuMuCCMpi,      // nue to numu    CC multi pi (>1 pion of any charge(s))
-   kmNuEToNuMuCCmisc,     // nue to numu    CC miscellaneous modes that require separate treatment to CC other
-   kmNuEToNuMuCCoth,      // nue to numu    CC other
-   kmNuEToNuTauCCQE,      // nue to nutau    CC QE
-   kmNuEToNuTauCCMEC,     // nue to nutau    CC MEC
-   kmNuEToNuTauCC1piC,    // nue to nutau    CC 1 pi+/-
-   kmNuEToNuTauCC1pi0,    // nue to nutau    CC 1 pi0
-   kmNuEToNuTauCC2piC,    // nue to nutau    CC 2 pi+/-
-   kmNuEToNuTauCC2pi0,    // nue to nutau    CC 2 pi0
-   kmNuEToNuTauCCpiCpi0,  // nue to nutau    CC 1 pi0 + 1 pi+/-
-   kmNuEToNuTauCCcoh,     // nue to nutau    CC coherent
-   kmNuEToNuTauCCELScat,  // ne to nutau: nutau + e- elastic scattering
-   kmNuEToNuTauCCDIS,     // nue to nutau    CC Deep Inelastic Scattering
-   kmNuEToNuTauCCMpi,     // nue to nutau    CC multi pi (>1 pion of any charge(s))
-   kmNuEToNuTauCCmisc,    // nue to nutau    CC miscellaneous modes that require separate treatment to CC other
-   kmNuEToNuTauCCoth,     // nue to nutau    CC other
-   kmNuMuBarToNuEBarCCQE,            // numubar to nuebar    CC QE
-   kmNuMuBarToNuEBarCCMEC,           // numubar to nuebar    CC MEC
-   kmNuMuBarToNuEBarCC1piC,          // numubar to nuebar    CC 1 pi+/-
-   kmNuMuBarToNuEBarCC1pi0,          // numubar to nuebar    CC 1 pi0
-   kmNuMuBarToNuEBarCC2piC,          // numubar to nuebar    CC 2 pi+/-
-   kmNuMuBarToNuEBarCC2pi0,          // numubar to nuebar    CC 2 pi0
-   kmNuMuBarToNuEBarCCpiCpi0,        // numubar to nuebar    CC 1 pi0 + 1 pi+/-
-   kmNuMuBarToNuEBarCCcoh,           // numubar to nuebar    CC coherent
-   kmNuMuBarToNuEBarCCIMD,           // numubar to nuebar:  nuebar + e- -> mu + numubar (IMD)
-   kmNuMuBarToNuEBarELScat,          // numubar to nuebar:  nuebar + e- -> nuebar + e- NC+CC+interference elastic scattering
-   kmNuMuBarToNuEBarCCDIS,           // numubar to nuebar    CC Deep Inelastic Scattering
-   kmNuMuBarToNuEBarCCMpi,           // numubar to nuebar    CC multi pi (>1 pion of any charge(s))
-   kmNuMuBarToNuEBarCCmisc,          // numubar to nuebar    CC miscellaneous modes that require separate treatment to CC other
-   kmNuMuBarToNuEBarCCoth,           // numubar to nuebar    CC other
-   kmNuMuBarToNuTauBarCCQE,          // numubar to nutaubar    CC QE
-   kmNuMuBarToNuTauBarCCMEC,         // numubar to nutaubar    CC MEC
-   kmNuMuBarToNuTauBarCC1piC,        // numubar to nutaubar    CC 1 pi+/-
-   kmNuMuBarToNuTauBarCC1pi0,        // numubar to nutaubar    CC 1 pi0
-   kmNuMuBarToNuTauBarCC2piC,        // numubar to nutaubar    CC 2 pi+/-
-   kmNuMuBarToNuTauBarCC2pi0,        // numubar to nutaubar    CC 2 pi0
-   kmNuMuBarToNuTauBarCCpiCpi0,      // numubar to nutaubar    CC 1 pi0 + 1 pi+/-
-   kmNuMuBarToNuTauBarCCcoh,         // numubar to nutaubar    CC coherent
-   kmNuMuBarToNuTauBarCCELScat,      // numubar to nutaubar: nutaubar + e- elastic scattering
-   kmNuMuBarToNuTauBarCCDIS,         // numubar to nutaubar    CC Deep Inelastic Scattering
-   kmNuMuBarToNuTauBarCCMpi,         // numubar to nutaubar    CC multi pi (>1 pion of any charge(s))
-   kmNuMuBarToNuTauBarCCmisc,        // numubar to nutaubar    CC miscellaneous modes that require separate treatment to CC other
-   kmNuMuBarToNuTauBarCCoth,         // numubar to nutaubar    CC other
-   kmNuEBarToNuMuBarCCQE,            // nuebar to numubar    CC QE
-   kmNuEBarToNuMuBarCCMEC,           // nuebar to numubar    CC MEC
-   kmNuEBarToNuMuBarCC1piC,          // nuebar to numubar    CC 1 pi+/-
-   kmNuEBarToNuMuBarCC1pi0,          // nuebar to numubar    CC 1 pi0
-   kmNuEBarToNuMuBarCC2piC,          // nuebar to numubar    CC 2 pi+/-
-   kmNuEBarToNuMuBarCC2pi0,          // nuebar to numubar    CC 2 pi0
-   kmNuEBarToNuMuBarCCpiCpi0,        // nuebar to numubar    CC 1 pi0 + 1 pi+/-
-   kmNuEBarToNuMuBarCCcoh,           // nuebar to numubar    CC coherent
-   kmNuEBarToNuMuBarCCELScat,        // nuebar to numubar: numubar + e- elastic scattering
-   kmNuEBarToNuMuBarCCDIS,           // nuebar to numubar    CC Deep Inelastic Scattering
-   kmNuEBarToNuMuBarCCMpi,           // nuebar to numubar    CC multi pi (>1 pion of any charge(s))
-   kmNuEBarToNuMuBarCCmisc,          // nuebar to numubar    CC miscellaneous modes that require separate treatment to CC other
-   kmNuEBarToNuMuBarCCoth,           // nuebar to numubar    CC other
-   kmNuEBarToNuTauBarCCQE,           // nuebar to nutaubar    CC QE
-   kmNuEBarToNuTauBarCCMEC,          // nuebar to nutaubar    CC MEC
-   kmNuEBarToNuTauBarCC1piC,         // nuebar to nutaubar    CC 1 pi+/-
-   kmNuEBarToNuTauBarCC1pi0,         // nuebar to nutaubar    CC 1 pi0
-   kmNuEBarToNuTauBarCC2piC,         // nuebar to nutaubar    CC 2 pi+/-
-   kmNuEBarToNuTauBarCC2pi0,         // nuebar to nutaubar    CC 2 pi0
-   kmNuEBarToNuTauBarCCpiCpi0,       // nuebar to nutaubar    CC 1 pi0 + 1 pi+/-
-   kmNuEBarToNuTauBarCCcoh,          // nuebar to nutaubar    CC coherent
-   kmNuEBarToNuTauBarCCELScat,       // nuebar to nutaubar: nutaubar + e- elastic scattering
-   kmNuEBarToNuTauBarCCDIS,          // nuebar to nutaubar    CC Deep Inelastic Scattering
-   kmNuEBarToNuTauBarCCMpi,          // nuebar to nutaubar    CC multi pi (>1 pion of any charge(s))
-   kmNuEBarToNuTauBarCCmisc,         // nuebar to nutaubar    CC miscellaneous modes that require separate treatment to CC other
-   kmNuEBarToNuTauBarCCoth,          // nuebar to nutaubar    CC other
-   kmCosmic,                         //  first non-neutrino induced - all above here will pass IsNeutrinoAny
-   kmDirt,                           // non-neutrino induced, dirt 
-   kmOther                           // other, eg contributions from interactions outside the fiducial etc
+   kmUndefined        = -999, 
+   kmNuMuCCQE         =   1,       // numu    CC QE
+   kmNuMuCCRESpPiP    =   2,       // numu    CC RES : v + p --> mu- + p + pi+
+   kmNuMuCCRESnPi0    =   3,       // numu    CC RES : v + n --> mu- + p + pi0
+   kmNuMuCCRESnPiP    =   4,       // numu    CC RES : v + n --> mu- + n + pi+
+   kmNuMuCCDIS        =   5,       // numu    CC DIS
+   kmNuMuCCCOH        =   6,       // numu    CC COH
+   kmNuMuCCMEC        =   7,       // numu    CC MEC
+   kmNuMuNCQE         =   8,       // numu    NC QE
+   kmNuMuNCRESpPi0    =   9,       // numu    NC RES : v + p --> v + p + pi0
+   kmNuMuNCRESpPiP    =  10,       // numu    NC RES : v + p --> v + n + pi+
+   kmNuMuNCRESnPi0    =  11,       // numu    NC RES : v + n --> v + n + pi0
+   kmNuMuNCRESnPiM    =  12,       // numu    NC RES : v + n --> v + p + pi-
+   kmNuMuNCDIS        =  13,       // numu    NC DIS
+   kmNuMuNCCOH        =  14,       // numu    NC COH
+   kmNuMuNCMEC        =  15,       // numu    NC MEC
+   kmNuMuBarCCQE      = - 1,       // numubar CC QE
+   kmNuMuBarCCRESnPiM = - 2,       // numubar CC RES : vb + n --> mu+ + n + pi-
+   kmNuMuBarCCRESpPi0 = - 3,       // numubar CC RES : vb + p --> mu+ + n + pi0
+   kmNuMuBarCCRESpPiM = - 4,       // numubar CC RES : vb + p --> mu+ + p + pi-
+   kmNuMuBarCCDIS     = - 5,       // numubar CC DIS
+   kmNuMuBarCCCOH     = - 6,       // numubar CC COH
+   kmNuMuBarCCMEC     = - 7,       // numubar CC MEC
+   kmNuMuBarNCQE      = - 8,       // numubar NC QE
+   kmNuMuBarNCRESpPi0 = - 9,       // numubar NC RES : vb + p --> vb + p + pi0
+   kmNuMuBarNCRESpPiP = -10,       // numubar NC RES : vb + p --> vb + n + pi+
+   kmNuMuBarNCRESnPi0 = -11,       // numubar NC RES : vb + n --> vb + n + pi0
+   kmNuMuBarNCRESnPiM = -12,       // numubar NC RES : vb + n --> vb + p + pi-
+   kmNuMuBarNCDIS     = -13,       // numubar NC DIS
+   kmNuMuBarNCCOH     = -14,       // numubar NC COH
+   kmNuMuBarNCMEC     = -15,       // numubar NC MEC
+   kmNuECCQE          =  16,       // nue    CC QE
+   kmNuECCRESpPiP     =  17,       // nue    CC RES : v + p --> e- + p + pi+
+   kmNuECCRESnPi0     =  18,       // nue    CC RES : v + n --> e- + p + pi0
+   kmNuECCRESnPiP     =  19,       // nue    CC RES : v + n --> e- + n + pi+
+   kmNuECCDIS         =  20,       // nue    CC DIS
+   kmNuECCCOH         =  21,       // nue    CC COH
+   kmNuECCMEC         =  22,       // nue    CC MEC
+   kmNuENCQE          =  23,       // nue    NC QE
+   kmNuENCRESpPi0     =  24,       // nue    NC RES : v + p --> v + p + pi0
+   kmNuENCRESpPiP     =  25,       // nue    NC RES : v + p --> v + n + pi+
+   kmNuENCRESnPi0     =  26,       // nue    NC RES : v + n --> v + n + pi0
+   kmNuENCRESnPiM     =  27,       // nue    NC RES : v + n --> v + p + pi-
+   kmNuENCDIS         =  28,       // nue    NC DIS
+   kmNuENCCOH         =  29,       // nue    NC COH
+   kmNuENCMEC         =  30,       // nue    NC MEC
+   kmNuEBarCCQE       = -16,       // nuebar CC QE
+   kmNuEBarCCRESnPiM  = -17,       // nuebar CC RES : vb + n --> e+ + n + pi-
+   kmNuEBarCCRESpPi0  = -18,       // nuebar CC RES : vb + p --> e+ + n + pi0
+   kmNuEBarCCRESpPiM  = -19,       // nuebar CC RES : vb + p --> e+ + p + pi-
+   kmNuEBarCCDIS      = -20,       // nuebar CC DIS
+   kmNuEBarCCCOH      = -21,       // nuebar CC COH
+   kmNuEBarCCMEC      = -22,       // nuebar CC MEC
+   kmNuEBarNCQE       = -23,       // nuebar NC QE
+   kmNuEBarNCRESpPi0  = -24,       // nuebar NC RES : vb + p --> vb + p + pi0
+   kmNuEBarNCRESpPiP  = -25,       // nuebar NC RES : vb + p --> vb + n + pi+
+   kmNuEBarNCRESnPi0  = -26,       // nuebar NC RES : vb + n --> vb + n + pi0
+   kmNuEBarNCRESnPiM  = -27,       // nuebar NC RES : vb + n --> vb + p + pi-
+   kmNuEBarNCDIS      = -28,       // nuebar NC DIS
+   kmNuEBarNCCOH      = -29,       // nuebar NC COH
+   kmNuEBarNCMEC      = -30,       // nuebar NC MEC
+   // For some reason, I have to add oscillated modes separately. 
+   // mu to e
+   kmNuMuToNuECCQE         =  101, // mu->e CC QE
+   kmNuMuToNuECCRESpPiP    =  102, // mu->e CC RES : v + p --> e- + p + pi+
+   kmNuMuToNuECCRESnPi0    =  103, // mu->e CC RES : v + n --> e- + p + pi0
+   kmNuMuToNuECCRESnPiP    =  104, // mu->e CC RES : v + n --> e- + n + pi+
+   kmNuMuToNuECCDIS        =  105, // mu->e CC DIS
+   kmNuMuToNuECCCOH        =  106, // mu->e CC COH
+   kmNuMuToNuECCMEC        =  107, // mu->e CC MEC
+   kmNuMuToNuENCQE         =  108, // mu->e NC QE
+   kmNuMuToNuENCRESpPi0    =  109, // mu->e NC RES : v + p --> v + p + pi0
+   kmNuMuToNuENCRESpPiP    =  110, // mu->e NC RES : v + p --> v + n + pi+
+   kmNuMuToNuENCRESnPi0    =  111, // mu->e NC RES : v + n --> v + n + pi0
+   kmNuMuToNuENCRESnPiM    =  112, // mu->e NC RES : v + n --> v + p + pi-
+   kmNuMuToNuENCDIS        =  113, // mu->e NC DIS
+   kmNuMuToNuENCCOH        =  114, // mu->e NC COH
+   kmNuMuToNuENCMEC        =  115, // mu->e NC MEC
+   // mu to tau
+   kmNuMuToNuTauCCQE         =  201, // mu->tau CC QE
+   kmNuMuToNuTauCCRESpPiP    =  202, // mu->tau CC RES : v + p --> tau- + p + pi+
+   kmNuMuToNuTauCCRESnPi0    =  203, // mu->tau CC RES : v + n --> tau- + p + pi0
+   kmNuMuToNuTauCCRESnPiP    =  204, // mu->tau CC RES : v + n --> tau- + n + pi+
+   kmNuMuToNuTauCCDIS        =  205, // mu->tau CC DIS
+   kmNuMuToNuTauCCCOH        =  206, // mu->tau CC COH
+   kmNuMuToNuTauCCMEC        =  207, // mu->tau CC MEC
+   kmNuMuToNuTauNCQE         =  208, // mu->tau NC QE
+   kmNuMuToNuTauNCRESpPi0    =  209, // mu->tau NC RES : v + p --> v + p + pi0
+   kmNuMuToNuTauNCRESpPiP    =  210, // mu->tau NC RES : v + p --> v + n + pi+
+   kmNuMuToNuTauNCRESnPi0    =  211, // mu->tau NC RES : v + n --> v + n + pi0
+   kmNuMuToNuTauNCRESnPiM    =  212, // mu->tau NC RES : v + n --> v + p + pi-
+   kmNuMuToNuTauNCDIS        =  213, // mu->tau NC DIS
+   kmNuMuToNuTauNCCOH        =  214, // mu->tau NC COH
+   kmNuMuToNuTauNCMEC        =  215, // mu->tau NC MEC
+   // mub to eb
+   kmNuMuBarToNuEBarCCQE      = -101, // mub->eb CC QE
+   kmNuMuBarToNuEBarCCRESnPiM = -102, // mub->eb CC RES : vb + n --> e+ + n + pi-
+   kmNuMuBarToNuEBarCCRESpPi0 = -103, // mub->eb CC RES : vb + p --> e+ + n + pi0
+   kmNuMuBarToNuEBarCCRESpPiM = -104, // mub->eb CC RES : vb + p --> e+ + p + pi-
+   kmNuMuBarToNuEBarCCDIS     = -105, // mub->eb CC DIS
+   kmNuMuBarToNuEBarCCCOH     = -106, // mub->eb CC COH
+   kmNuMuBarToNuEBarCCMEC     = -107, // mub->eb CC MEC
+   kmNuMuBarToNuEBarNCQE      = -108, // mub->eb NC QE
+   kmNuMuBarToNuEBarNCRESpPi0 = -109, // mub->eb NC RES : vb + p --> vb + p + pi0
+   kmNuMuBarToNuEBarNCRESpPiP = -110, // mub->eb NC RES : vb + p --> vb + n + pi+
+   kmNuMuBarToNuEBarNCRESnPi0 = -111, // mub->eb NC RES : vb + n --> vb + n + pi0
+   kmNuMuBarToNuEBarNCRESnPiM = -112, // mub->eb NC RES : vb + n --> vb + p + pi-
+   kmNuMuBarToNuEBarNCDIS     = -113, // mub->eb NC DIS
+   kmNuMuBarToNuEBarNCCOH     = -114, // mub->eb NC COH
+   kmNuMuBarToNuEBarNCMEC     = -115, // mub->eb NC MEC
+   // mub to taub
+   kmNuMuBarToNuTauBarCCQE      = -201, // mub->taub CC QE
+   kmNuMuBarToNuTauBarCCRESnPiM = -202, // mub->taub CC RES : vb + n --> e+ + n + pi-
+   kmNuMuBarToNuTauBarCCRESpPi0 = -203, // mub->taub CC RES : vb + p --> e+ + n + pi0
+   kmNuMuBarToNuTauBarCCRESpPiM = -204, // mub->taub CC RES : vb + p --> e+ + p + pi-
+   kmNuMuBarToNuTauBarCCDIS     = -205, // mub->taub CC DIS
+   kmNuMuBarToNuTauBarCCCOH     = -206, // mub->taub CC COH
+   kmNuMuBarToNuTauBarCCMEC     = -207, // mub->taub CC MEC
+   kmNuMuBarToNuTauBarNCQE      = -208, // mub->taub NC QE
+   kmNuMuBarToNuTauBarNCRESpPi0 = -209, // mub->taub NC RES : vb + p --> vb + p + pi0
+   kmNuMuBarToNuTauBarNCRESpPiP = -210, // mub->taub NC RES : vb + p --> vb + n + pi+
+   kmNuMuBarToNuTauBarNCRESnPi0 = -211, // mub->taub NC RES : vb + n --> vb + n + pi0
+   kmNuMuBarToNuTauBarNCRESnPiM = -212, // mub->taub NC RES : vb + n --> vb + p + pi-
+   kmNuMuBarToNuTauBarNCDIS     = -213, // mub->taub NC DIS
+   kmNuMuBarToNuTauBarNCCOH     = -214, // mub->taub NC COH
+   kmNuMuBarToNuTauBarNCMEC     = -215, // mub->taub NC MEC
+   // e to mu
+   kmNuEToNuMuCCQE         =  301, // e->mu CC QE
+   kmNuEToNuMuCCRESpPiP    =  302, // e->mu CC RES : v + p --> mu- + p + pi+
+   kmNuEToNuMuCCRESnPi0    =  303, // e->mu CC RES : v + n --> mu- + p + pi0
+   kmNuEToNuMuCCRESnPiP    =  304, // e->mu CC RES : v + n --> mu- + n + pi+
+   kmNuEToNuMuCCDIS        =  305, // e->mu CC DIS
+   kmNuEToNuMuCCCOH        =  306, // e->mu CC COH
+   kmNuEToNuMuCCMEC        =  307, // e->mu CC MEC
+   kmNuEToNuMuNCQE         =  308, // e->mu NC QE
+   kmNuEToNuMuNCRESpPi0    =  309, // e->mu NC RES : v + p --> v + p + pi0
+   kmNuEToNuMuNCRESpPiP    =  310, // e->mu NC RES : v + p --> v + n + pi+
+   kmNuEToNuMuNCRESnPi0    =  311, // e->mu NC RES : v + n --> v + n + pi0
+   kmNuEToNuMuNCRESnPiM    =  312, // e->mu NC RES : v + n --> v + p + pi-
+   kmNuEToNuMuNCDIS        =  313, // e->mu NC DIS
+   kmNuEToNuMuNCCOH        =  314, // e->mu NC COH
+   kmNuEToNuMuNCMEC        =  315, // e->mu NC MEC
+   // e to tau
+   kmNuEToNuTauCCQE         =  401, // e->tau CC QE
+   kmNuEToNuTauCCRESpPiP    =  402, // e->tau CC RES : v + p --> tau- + p + pi+
+   kmNuEToNuTauCCRESnPi0    =  403, // e->tau CC RES : v + n --> tau- + p + pi0
+   kmNuEToNuTauCCRESnPiP    =  404, // e->tau CC RES : v + n --> tau- + n + pi+
+   kmNuEToNuTauCCDIS        =  405, // e->tau CC DIS
+   kmNuEToNuTauCCCOH        =  406, // e->tau CC COH
+   kmNuEToNuTauCCMEC        =  407, // e->tau CC MEC
+   kmNuEToNuTauNCQE         =  408, // e->tau NC QE
+   kmNuEToNuTauNCRESpPi0    =  409, // e->tau NC RES : v + p --> v + p + pi0
+   kmNuEToNuTauNCRESpPiP    =  410, // e->tau NC RES : v + p --> v + n + pi+
+   kmNuEToNuTauNCRESnPi0    =  411, // e->tau NC RES : v + n --> v + n + pi0
+   kmNuEToNuTauNCRESnPiM    =  412, // e->tau NC RES : v + n --> v + p + pi-
+   kmNuEToNuTauNCDIS        =  413, // e->tau NC DIS
+   kmNuEToNuTauNCCOH        =  414, // e->tau NC COH
+   kmNuEToNuTauNCMEC        =  415, // e->tau NC MEC
+   // eb to mub
+   kmNuEBarToNuMuBarCCQE      = -301, // mub->eb CC QE
+   kmNuEBarToNuMuBarCCRESnPiM = -302, // mub->eb CC RES : vb + n --> mu+ + n + pi-
+   kmNuEBarToNuMuBarCCRESpPi0 = -303, // mub->eb CC RES : vb + p --> mu+ + n + pi0
+   kmNuEBarToNuMuBarCCRESpPiM = -304, // mub->eb CC RES : vb + p --> mu+ + p + pi-
+   kmNuEBarToNuMuBarCCDIS     = -305, // mub->eb CC DIS
+   kmNuEBarToNuMuBarCCCOH     = -306, // mub->eb CC COH
+   kmNuEBarToNuMuBarCCMEC     = -307, // mub->eb CC MEC
+   kmNuEBarToNuMuBarNCQE      = -308, // mub->eb NC QE
+   kmNuEBarToNuMuBarNCRESpPi0 = -309, // mub->eb NC RES : vb + p --> vb + p + pi0
+   kmNuEBarToNuMuBarNCRESpPiP = -310, // mub->eb NC RES : vb + p --> vb + n + pi+
+   kmNuEBarToNuMuBarNCRESnPi0 = -311, // mub->eb NC RES : vb + n --> vb + n + pi0
+   kmNuEBarToNuMuBarNCRESnPiM = -312, // mub->eb NC RES : vb + n --> vb + p + pi-
+   kmNuEBarToNuMuBarNCDIS     = -313, // mub->eb NC DIS
+   kmNuEBarToNuMuBarNCCOH     = -314, // mub->eb NC COH
+   kmNuEBarToNuMuBarNCMEC     = -315, // mub->eb NC MEC
+   // eb to taub
+   kmNuEBarToNuTauBarCCQE      = -401, // mub->taub CC QE
+   kmNuEBarToNuTauBarCCRESnPiM = -402, // mub->taub CC RES : vb + n --> tau+ + n + pi-
+   kmNuEBarToNuTauBarCCRESpPi0 = -403, // mub->taub CC RES : vb + p --> tau+ + n + pi0
+   kmNuEBarToNuTauBarCCRESpPiM = -404, // mub->taub CC RES : vb + p --> tau+ + p + pi-
+   kmNuEBarToNuTauBarCCDIS     = -405, // mub->taub CC DIS
+   kmNuEBarToNuTauBarCCCOH     = -406, // mub->taub CC COH
+   kmNuEBarToNuTauBarCCMEC     = -407, // mub->taub CC MEC
+   kmNuEBarToNuTauBarNCQE      = -408, // mub->taub NC QE
+   kmNuEBarToNuTauBarNCRESpPi0 = -409, // mub->taub NC RES : vb + p --> vb + p + pi0
+   kmNuEBarToNuTauBarNCRESpPiP = -410, // mub->taub NC RES : vb + p --> vb + n + pi+
+   kmNuEBarToNuTauBarNCRESnPi0 = -411, // mub->taub NC RES : vb + n --> vb + n + pi0
+   kmNuEBarToNuTauBarNCRESnPiM = -412, // mub->taub NC RES : vb + n --> vb + p + pi-
+   kmNuEBarToNuTauBarNCDIS     = -413, // mub->taub NC DIS
+   kmNuEBarToNuTauBarNCCOH     = -414, // mub->taub NC COH
+   kmNuEBarToNuTauBarNCMEC     = -415, // mub->taub NC MEC
+   // Miscellaneous modes
+   kmCohElastic      = 931,       // any coh elastic
+   kmElScat          = 932,       // any electron scattering
+   kmIMDAnh          = 933,       // any inverse muon decay annihilation
+   kmIBD             = 934,       // any inverse beta decay
+   kmGlashow         = 935,       // any Glashow resonance
+   kmAMNuGamma       = 936,       // any anomaly-mediated v+gamma
+   kmDiffractive     = 937,       // any diffractive (COH on H)
+   kmEM              = 938,       // any EM 
+   kmWeakMix         = 939,       // any weak mix
+   kmCosmic          = 940,       // cosmic
+   kmDirt            = 941,       // dirt
 } 
  ReacMode_t; 
 
@@ -245,668 +241,631 @@ typedef enum EReacMode
 // careful: now there is a difference in the nu + e elastic scattering 
 typedef enum EReacType
 {
-  kmtUndefined = -1,
-  kmtCCQE,        // CC QE
-  kmtCCMEC,       // CC MEC
-  kmtCC1piC,      // CC 1 pi+/-
-  kmtCC1pi0,      // CC 1 pi0
-  kmtCC2piC,      // CC 2 pi+/-
-  kmtCC2pi0,      // CC 2 pi0
-  kmtCCpiCpi0,    // CC 1 pi0 + 1 pi+/-
-  kmtCCcoh,       // CC coherent
-  kmtCCIMD,       // CC IMD
-  kmtCCELScat,    // CC nu + e elastic scattering (not nue)
-  kmtCCDIS,       // CC Deep Inelastic Scattering
-  kmtCCMpi,       // CC multi pi (>1 pion of any charge(s))
-  kmtCCmisc,      // CC miscellaneous modes that require separate treatment to CC other
-  kmtCCoth,       // CC other
-  kmtNCEL,        // NC EL - not used! 
-  kmtNCMEC,       // NC MEC - not used! 
-  kmtNC1piC,      // NC 1 pi+/-
-  kmtNC1pi0,      // NC 1 pi0
-  kmtNC2piC,      // NC 2 pi+/-
-  kmtNC2pi0,      // NC 2 pi0
-  kmtNCpiCpi0,    // NC 1 pi0 + 1 pi+/-
-  kmtNCcoh,       // NC coherent
-  kmtNC1Gamma,    // NC 1 gamma
-  kmtNCELScat,    // NC nu + e elastic scattering (not nue)
-  kmtNCoth,       // NC other
-  kmtELScat,      // nue + e elastic scattering (nue, NC + CC + interference) 
-  kmtCosmic,      // cosmic
-  kmtDirt,        // dirt
-  kmtOther        // misc
+  kmtUndefined   = -999,
+  kmtCCQE        =    1, // CC QE
+  kmtCCRESvpPiP  =    2, // CC RES : v  + p --> l- + p + pi+
+  kmtCCRESvnPi0  =    3, // CC RES : v  + n --> l- + p + pi0
+  kmtCCRESvnPiP  =    4, // CC RES : v  + n --> l- + n + pi+
+  kmtCCRESvbnPiM = -  2, // CC RES : vb + n --> l+ + n + pi-
+  kmtCCRESvbpPi0 = -  3, // CC RES : vb + p --> l+ + n + pi0
+  kmtCCRESvbpPiM = -  4, // CC RES : vb + p --> l+ + p + pi-
+  kmtCCDIS       =    5, // CC DIS
+  kmtCCCOH       =    6, // CC COH
+  kmtCCMEC       =    7, // CC MEC
+  kmtNCQE        =    8, // NC QE
+  kmtNCRESvpPi0  =    9, // NC RES : v + p --> v + p + pi0
+  kmtNCRESvpPiP  =   10, // NC RES : v + p --> v + n + pi+
+  kmtNCRESvnPi0  =   11, // NC RES : v + n --> v + n + pi0
+  kmtNCRESvnPiM  =   12, // NC RES : v + n --> v + p + pi-
+  kmtNCRESvbpPi0 = -  9, // NC RES : vb + p --> vb + p + pi0
+  kmtNCRESvbpPiP = - 10, // NC RES : vb + p --> vb + n + pi+
+  kmtNCRESvbnPi0 = - 11, // NC RES : vb + n --> vb + n + pi0
+  kmtNCRESvbnPiM = - 12, // NC RES : vb + n --> vb + p + pi-
+  kmtNCDIS       =   13, // NC DIS
+  kmtNCCOH       =   14, // NC COH
+  kmtNCMEC       =   15, // NC MEC
+  kmtCohElastic   =  931, // any coh elastic
+  kmtElScat       =  932, // any electron scattering
+  kmtIMDAnh      =  933, // any inverse muon decay annihilation
+  kmtIBD         =  934, // any inverse beta decay
+  kmtGlashow     =  935, // any Glashow resonance
+  kmtAMNuGamma   =  936, // any anomaly-mediated v+gamma
+  kmtDiffractive =  937, // any diffractive (COH on H)
+  kmtEM          =  938, // any EM 
+  kmtWeakMix     =  939, // any weak mix
+  kmtCosmic      =  940, // cosmic
+  kmtDirt        =  941, // dirt
 }
 ReacType_t;
 
-static const int kNReacType = 28;
-
+// again, excluding undefined
+static const int kNReacType = 33;
+ 
 // Map the reaction modes to their type
-static const ReacType_t kReacModeToType[kNReacModes] =
+static std::unordered_map<ReacMode_t, ReacType_t> kReacModeToType =
 {
-   /*   kmNuMuCCQE          */ kmtCCQE     ,
-   /*   kmNuMuCCMEC         */ kmtCCMEC    ,
-   /*   kmNuMuCC1piC        */ kmtCC1piC   ,
-   /*   kmNuMuCC1pi0        */ kmtCC1pi0   ,
-   /*   kmNuMuCC2piC        */ kmtCC2piC   ,
-   /*   kmNuMuCC2pi0        */ kmtCC2pi0   ,
-   /*   kmNuMuCCpiCpi0      */ kmtCCpiCpi0 ,
-   /*   kmNuMuCCcoh         */ kmtCCcoh    ,
-   /*   kmNuMuCCIMD         */ kmtCCIMD    ,  
-   /*   kmNuMuCCELScat      */ kmtCCELScat ,
-   /*   kmNuMuCCDIS         */ kmtCCDIS    ,
-   /*   kmNuMuCCMpi         */ kmtCCMpi    ,
-   /*   kmNuMuCCmisc        */ kmtCCmisc   ,
-   /*   kmNuMuCCoth         */ kmtCCoth    ,
-   /*   kmNuMuNCEL          */ kmtNCEL     ,
-   /*   kmNuMuNCMEC         */ kmtNCMEC    ,
-   /*   kmNuMuNC1piC        */ kmtNC1piC   ,
-   /*   kmNuMuNC1pi0        */ kmtNC1pi0   ,
-   /*   kmNuMuNC2piC        */ kmtNC2piC   ,
-   /*   kmNuMuNC2pi0        */ kmtNC2pi0   ,
-   /*   kmNuMuNCpiCpi0      */ kmtNCpiCpi0 ,
-   /*   kmNuMuNCcoh         */ kmtNCcoh    ,
-   /*   kmNuMuN1Gamma       */ kmtNC1Gamma ,
-   /*   kmNuMuNCELScat      */ kmtNCELScat ,
-   /*   kmNuMuNCoth         */ kmtNCoth    ,
-   /*   kmNuMuBarCCQE       */ kmtCCQE     ,
-   /*   kmNuMuBarCCMEC      */ kmtCCMEC    ,
-   /*   kmNuMuBarCC1piC     */ kmtCC1piC   ,
-   /*   kmNuMuBarCC1pi0     */ kmtCC1pi0   ,
-   /*   kmNuMuBarCC2piC     */ kmtCC2piC   ,
-   /*   kmNuMuBarCC2pi0     */ kmtCC2pi0   ,
-   /*   kmNuMuBarCCpiCpi0   */ kmtCCpiCpi0 ,
-   /*   kmNuMuBarCCcoh      */ kmtCCcoh    ,
-   /*   kmNuMuBarCCELScat   */ kmtCCELScat ,
-   /*   kmNuMuBarCCDIS      */ kmtCCDIS    ,
-   /*   kmNuMuBarCCMpi      */ kmtCCMpi    ,
-   /*   kmNuMuBarCCmisc     */ kmtCCmisc   ,
-   /*   kmNuMuBarCCoth      */ kmtCCoth    ,
-   /*   kmNuMuBarNCEL       */ kmtNCEL     ,
-   /*   kmNuMuBarNCMEC      */ kmtNCMEC    ,
-   /*   kmNuMuBarNC1piC     */ kmtNC1piC   ,
-   /*   kmNuMuBarNC1pi0     */ kmtNC1pi0   ,
-   /*   kmNuMuBarNC2piC     */ kmtNC2piC   ,
-   /*   kmNuMuBarNC2pi0     */ kmtNC2pi0   ,
-   /*   kmNuMuBarNCpiCpi0   */ kmtNCpiCpi0 ,
-   /*   kmNuMuBarNCcoh      */ kmtNCcoh    ,
-   /*   kmNuMuBarNC1Gamma   */ kmtNC1Gamma ,
-   /*   kmNuMuBarNCELScat   */ kmtNCELScat ,
-   /*   kmNuMuBarNCoth      */ kmtNCoth    ,
-   /*   kmNuECCQE           */ kmtCCQE     ,
-   /*   kmNuECCMEC          */ kmtCCMEC    ,
-   /*   kmNuECC1piC         */ kmtCC1piC   ,
-   /*   kmNuECC1pi0         */ kmtCC1pi0   ,
-   /*   kmNuECC2piC         */ kmtCC2piC   ,
-   /*   kmNuECC2pi0         */ kmtCC2pi0   ,
-   /*   kmNuECCpiCpi0       */ kmtCCpiCpi0 ,
-   /*   kmNuECCcoh          */ kmtCCcoh    ,
-   /*   kmNuECCDIS          */ kmtCCDIS    ,
-   /*   kmNuECCMpi          */ kmtCCMpi    ,
-   /*   kmNuECCmisc         */ kmtCCmisc   ,
-   /*   kmNuECCoth          */ kmtCCoth    ,
-   /*   kmNuENCEL           */ kmtNCEL     ,
-   /*   kmNuENCMEC          */ kmtNCMEC    ,
-   /*   kmNuENC1piC         */ kmtNC1piC   ,
-   /*   kmNuENC1pi0         */ kmtNC1pi0   ,
-   /*   kmNuENC2piC         */ kmtNC2piC   ,
-   /*   kmNuENC2pi0         */ kmtNC2pi0   ,
-   /*   kmNuENCpiCpi0       */ kmtNCpiCpi0 ,
-   /*   kmNuENCcoh          */ kmtNCcoh    ,
-   /*   kmNuENC1Gamma       */ kmtNC1Gamma ,
-   /*   kmNuEELScat         */ kmtELScat   ,
-   /*   kmNuENCoth          */ kmtNCoth    , 
-   /*   kmNuEBarCCQE        */ kmtCCQE     , 
-   /*   kmNuEBarCCMEC       */ kmtCCMEC    , 
-   /*   kmNuEBarCC1piC      */ kmtCC1piC   , 
-   /*   kmNuEBarCC1pi0      */ kmtCC1pi0   , 
-   /*   kmNuEBarCC2piC      */ kmtCC2piC   , 
-   /*   kmNuEBarCC2pi0      */ kmtCC2pi0   , 
-   /*   kmNuEBarCCpiCpi0    */ kmtCCpiCpi0 , 
-   /*   kmNuEBarCCcoh       */ kmtCCcoh    , 
-   /*   kmNuEBarCCIMD       */ kmtCCIMD    ,
-   /*   kmNuEBarCCDIS       */ kmtCCDIS    ,
-   /*   kmNuEBarCCMpi       */ kmtCCMpi    ,
-   /*   kmNuEBarCCmisc      */ kmtCCmisc   ,
-   /*   kmNuEBarCCoth       */ kmtCCoth    ,
-   /*   kmNuEBarNCEL        */ kmtNCEL     ,
-   /*   kmNuEBarNCMEC       */ kmtNCMEC    ,
-   /*   kmNuEBarNC1piC      */ kmtNC1piC   ,
-   /*   kmNuEBarNC1pi0      */ kmtNC1pi0   ,
-   /*   kmNuEBarNC2piC      */ kmtNC2piC   ,
-   /*   kmNuEBarNC2pi0      */ kmtNC2pi0   ,
-   /*   kmNuEBarNCpiCpi0    */ kmtNCpiCpi0 ,
-   /*   kmNuEBarNCcoh       */ kmtNCcoh    ,
-   /*   kmNuEBarNC1Gamma    */ kmtNC1Gamma ,
-   /*   kmNuEBarELScat      */ kmtELScat   ,
-   /*   kmNuEBarNCoth       */ kmtNCoth    ,
-   /*   kmNuMuToNuECCQE          */ kmtCCQE     ,
-   /*   kmNuMuToNuECCMEC         */ kmtCCMEC    ,
-   /*   kmNuMuToNuECC1piC        */ kmtCC1piC   ,
-   /*   kmNuMuToNuECC1pi0        */ kmtCC1pi0   ,
-   /*   kmNuMuToNuECC2piC        */ kmtCC2piC   ,
-   /*   kmNuMuToNuECC2pi0        */ kmtCC2pi0   ,
-   /*   kmNuMuToNuECCpiCpi0      */ kmtCCpiCpi0 ,
-   /*   kmNuMuToNuECCcoh         */ kmtCCcoh    ,
-   /*   kmNuMuToNuEELScat        */ kmtELScat   ,
-   /*   kmNuMuToNuECCDIS         */ kmtCCDIS    ,
-   /*   kmNuMuToNuECCMpi         */ kmtCCMpi    ,
-   /*   kmNuMuToNuECCmisc        */ kmtCCmisc   ,
-   /*   kmNuMuToNuECCoth         */ kmtCCoth    ,
-   /*   kmNuMuToNuTauCCQE        */ kmtCCQE     ,
-   /*   kmNuMuToNuTauCCMEC       */ kmtCCMEC    ,
-   /*   kmNuMuToNuTauCC1piC      */ kmtCC1piC   ,
-   /*   kmNuMuToNuTauCC1pi0      */ kmtCC1pi0   ,
-   /*   kmNuMuToNuTauCC2piC      */ kmtCC2piC   ,
-   /*   kmNuMuToNuTauCC2pi0      */ kmtCC2pi0   ,
-   /*   kmNuMuToNuTauCCpiCpi0    */ kmtCCpiCpi0 ,
-   /*   kmNuMuToNuTauCCcoh       */ kmtCCcoh    ,
-   /*   kmNuMuToNuTauELScat      */ kmtCCELScat ,
-   /*   kmNuMuToNuTauCCDIS       */ kmtCCDIS    ,
-   /*   kmNuMuToNuTauCCMpi       */ kmtCCMpi    ,
-   /*   kmNuMuToNuTauCCmisc      */ kmtCCmisc   ,
-   /*   kmNuMuToNuTauCCoth       */ kmtCCoth    ,
-   /*   kmNuEToNuMuCCQE          */ kmtCCQE     ,
-   /*   kmNuEToNuMuCCMEC         */ kmtCCMEC    ,
-   /*   kmNuEToNuMuCC1piC        */ kmtCC1piC   ,
-   /*   kmNuEToNuMuCC1pi0        */ kmtCC1pi0   ,
-   /*   kmNuEToNuMuCC2piC        */ kmtCC2piC   ,
-   /*   kmNuEToNuMuCC2pi0        */ kmtCC2pi0   ,
-   /*   kmNuEToNuMuCCpiCpi0      */ kmtCCpiCpi0 ,
-   /*   kmNuEToNuMuCCcoh         */ kmtCCcoh    ,
-   /*   kmNuEToNuMuCCIMD         */ kmtCCIMD    ,
-   /*   kmNuEToNuMuELScat        */ kmtCCELScat ,
-   /*   kmNuEToNuMuCCDIS         */ kmtCCDIS    ,
-   /*   kmNuEToNuMuCCMpi         */ kmtCCMpi    ,
-   /*   kmNuEToNuMuCCmisc        */ kmtCCmisc   ,
-   /*   kmNuEToNuMuCCoth         */ kmtCCoth    ,
-   /*   kmNuEToNuTauCCQE         */ kmtCCQE     ,
-   /*   kmNuEToNuTauCCMEC        */ kmtCCMEC    ,
-   /*   kmNuEToNuTauCC1piC       */ kmtCC1piC   ,
-   /*   kmNuEToNuTauCC1pi0       */ kmtCC1pi0   ,
-   /*   kmNuEToNuTauCC2piC       */ kmtCC2piC   ,
-   /*   kmNuEToNuTauCC2pi0       */ kmtCC2pi0   ,
-   /*   kmNuEToNuTauCCpiCpi0     */ kmtCCpiCpi0 ,
-   /*   kmNuEToNuTauCCcoh        */ kmtCCcoh    ,
-   /*   kmNuEToNuTauELScat       */ kmtCCELScat ,
-   /*   kmNuEToNuTauCCDIS        */ kmtCCDIS    ,
-   /*   kmNuEToNuTauCCMpi        */ kmtCCMpi    ,
-   /*   kmNuEToNuTauCCmisc       */ kmtCCmisc   ,
-   /*   kmNuEToNuTauCCoth        */ kmtCCoth    ,
-   /*   kmNuMuBarToNuEBarCCQE          */ kmtCCQE     ,
-   /*   kmNuMuBarToNuEBarCCMEC         */ kmtCCMEC    ,
-   /*   kmNuMuBarToNuEBarCC1piC        */ kmtCC1piC   ,
-   /*   kmNuMuBarToNuEBarCC1pi0        */ kmtCC1pi0   ,
-   /*   kmNuMuBarToNuEBarCC2piC        */ kmtCC2piC   ,
-   /*   kmNuMuBarToNuEBarCC2pi0        */ kmtCC2pi0   ,
-   /*   kmNuMuBarToNuEBarCCpiCpi0      */ kmtCCpiCpi0 ,
-   /*   kmNuMuBarToNuEBarCCcoh         */ kmtCCcoh    ,
-   /*   kmNuMuBarToNuEBarCCIMD         */ kmtCCIMD    ,
-   /*   kmNuMuBarToNuEBarELScat        */ kmtELScat   ,
-   /*   kmNuMuBarToNuEBarCCDIS         */ kmtCCDIS    ,
-   /*   kmNuMuBarToNuEBarCCMpi         */ kmtCCMpi    ,
-   /*   kmNuMuBarToNuEBarCCmisc        */ kmtCCmisc   ,
-   /*   kmNuMuBarToNuEBarCCoth         */ kmtCCoth    ,
-   /*   kmNuMuBarToNuTauBarCCQE        */ kmtCCQE     ,
-   /*   kmNuMuBarToNuTauBarCCMEC       */ kmtCCMEC    ,
-   /*   kmNuMuBarToNuTauBarCC1piC      */ kmtCC1piC   ,
-   /*   kmNuMuBarToNuTauBarCC1pi0      */ kmtCC1pi0   ,
-   /*   kmNuMuBarToNuTauBarCC2piC      */ kmtCC2piC   ,
-   /*   kmNuMuBarToNuTauBarCC2pi0      */ kmtCC2pi0   ,
-   /*   kmNuMuBarToNuTauBarCCpiCpi0    */ kmtCCpiCpi0 ,
-   /*   kmNuMuBarToNuTauBarCCcoh       */ kmtCCcoh    ,
-   /*   kmNuMuBarToNuTauBarELScat      */ kmtCCELScat ,
-   /*   kmNuMuBarToNuTauBarCCDIS       */ kmtCCDIS    ,
-   /*   kmNuMuBarToNuTauBarCCMpi       */ kmtCCMpi    ,
-   /*   kmNuMuBarToNuTauBarCCmisc      */ kmtCCmisc   ,
-   /*   kmNuMuBarToNuTauBarCCoth       */ kmtCCoth    ,
-   /*   kmNuEBarToNuMuBarCCQE          */ kmtCCQE     ,
-   /*   kmNuEBarToNuMuBarCCMEC         */ kmtCCMEC    ,
-   /*   kmNuEBarToNuMuBarCC1piC        */ kmtCC1piC   ,
-   /*   kmNuEBarToNuMuBarCC1pi0        */ kmtCC1pi0   ,
-   /*   kmNuEBarToNuMuBarCC2piC        */ kmtCC2piC   ,
-   /*   kmNuEBarToNuMuBarCC2pi0        */ kmtCC2pi0   ,
-   /*   kmNuEBarToNuMuBarCCpiCpi0      */ kmtCCpiCpi0 ,
-   /*   kmNuEBarToNuMuBarCCcoh         */ kmtCCcoh    ,
-   /*   kmNuEBarToNuMuBarELScat        */ kmtCCELScat ,
-   /*   kmNuEBarToNuMuBarCCDIS         */ kmtCCDIS    ,
-   /*   kmNuEBarToNuMuBarCCMpi         */ kmtCCMpi    ,
-   /*   kmNuEBarToNuMuBarCCmisc        */ kmtCCmisc   ,
-   /*   kmNuEBarToNuMuBarCCoth         */ kmtCCoth    ,
-   /*   kmNuEBarToNuTauBarCCQE         */ kmtCCQE     ,
-   /*   kmNuEBarToNuTauBarCCMEC        */ kmtCCMEC    ,
-   /*   kmNuEBarToNuTauBarCC1piC       */ kmtCC1piC   ,
-   /*   kmNuEBarToNuTauBarCC1pi0       */ kmtCC1pi0   ,
-   /*   kmNuEBarToNuTauBarCC2piC       */ kmtCC2piC   ,
-   /*   kmNuEBarToNuTauBarCC2pi0       */ kmtCC2pi0   ,
-   /*   kmNuEBarToNuTauBarCCpiCpi0     */ kmtCCpiCpi0 ,
-   /*   kmNuEBarToNuTauBarCCcoh        */ kmtCCcoh    ,
-   /*   kmNuEBarToNuTauBarELScat       */ kmtCCELScat ,
-   /*   kmNuEBarToNuTauBarCCDIS        */ kmtCCDIS    ,
-   /*   kmNuEBarToNuTauBarCCMpi        */ kmtCCMpi    ,
-   /*   kmNuEBarToNuTauBarCCmisc       */ kmtCCmisc   ,
-   /*   kmNuEBarToNuTauBarCCoth        */ kmtCCoth    ,
-   /*   kmCosmic                       */ kmtCosmic   ,
-   /*   kmDirt                         */ kmtDirt     ,
-// /*   kmOther             */ kmtOther 
+  { kmNuMuCCQE, kmtCCQE },
+  { kmNuMuCCRESpPiP, kmtCCRESvpPiP },
+  { kmNuMuCCRESnPi0, kmtCCRESvnPi0 },
+  { kmNuMuCCRESnPiP, kmtCCRESvnPiP },
+  { kmNuMuCCDIS, kmtCCDIS },
+  { kmNuMuCCCOH, kmtCCCOH },
+  { kmNuMuCCMEC, kmtCCMEC },
+  { kmNuMuNCQE, kmtNCQE },
+  { kmNuMuNCRESpPi0, kmtNCRESvpPi0 },
+  { kmNuMuNCRESpPiP, kmtNCRESvpPiP },
+  { kmNuMuNCRESnPi0, kmtNCRESvnPi0 },
+  { kmNuMuNCRESnPiM, kmtNCRESvnPiM },
+  { kmNuMuNCDIS, kmtNCDIS },
+  { kmNuMuNCCOH, kmtNCCOH },
+  { kmNuMuNCMEC, kmtNCMEC },
+  { kmNuMuBarCCQE, kmtCCQE },
+  { kmNuMuBarCCRESnPiM, kmtCCRESvbnPiM },
+  { kmNuMuBarCCRESpPi0, kmtCCRESvbpPi0 },
+  { kmNuMuBarCCRESpPiM, kmtCCRESvbpPiM },
+  { kmNuMuBarCCDIS, kmtCCDIS },
+  { kmNuMuBarCCCOH, kmtCCCOH },
+  { kmNuMuBarCCMEC, kmtCCMEC },
+  { kmNuMuBarNCQE, kmtNCQE },
+  { kmNuMuBarNCRESpPi0, kmtNCRESvbpPi0 },
+  { kmNuMuBarNCRESpPiP, kmtNCRESvbpPiP },
+  { kmNuMuBarNCRESnPi0, kmtNCRESvbnPi0 },
+  { kmNuMuBarNCRESnPiM, kmtNCRESvbnPiM },
+  { kmNuMuBarNCDIS, kmtNCDIS },
+  { kmNuMuBarNCCOH, kmtNCCOH },
+  { kmNuMuBarNCMEC, kmtNCMEC },
+  { kmNuECCQE, kmtCCQE },
+  { kmNuECCRESpPiP, kmtCCRESvpPiP },
+  { kmNuECCRESnPi0, kmtCCRESvnPi0 },
+  { kmNuECCRESnPiP, kmtCCRESvnPiP },
+  { kmNuECCDIS, kmtCCDIS },
+  { kmNuECCCOH, kmtCCCOH },
+  { kmNuECCMEC, kmtCCMEC },
+  { kmNuENCQE, kmtNCQE },
+  { kmNuENCRESpPi0, kmtNCRESvpPi0 },
+  { kmNuENCRESpPiP, kmtNCRESvpPiP },
+  { kmNuENCRESnPi0, kmtNCRESvnPi0 },
+  { kmNuENCRESnPiM, kmtNCRESvnPiM },
+  { kmNuENCDIS, kmtNCDIS },
+  { kmNuENCCOH, kmtNCCOH },
+  { kmNuENCMEC, kmtNCMEC },
+  { kmNuEBarCCQE, kmtCCQE },
+  { kmNuEBarCCRESnPiM, kmtCCRESvbnPiM },
+  { kmNuEBarCCRESpPi0, kmtCCRESvbpPi0 },
+  { kmNuEBarCCRESpPiM, kmtCCRESvbpPiM },
+  { kmNuEBarCCDIS, kmtCCDIS },
+  { kmNuEBarCCCOH, kmtCCCOH },
+  { kmNuEBarCCMEC, kmtCCMEC },
+  { kmNuEBarNCQE, kmtNCQE },
+  { kmNuEBarNCRESpPi0, kmtNCRESvbpPi0 },
+  { kmNuEBarNCRESpPiP, kmtNCRESvbpPiP },
+  { kmNuEBarNCRESnPi0, kmtNCRESvbnPi0 },
+  { kmNuEBarNCRESnPiM, kmtNCRESvbnPiM },
+  { kmNuEBarNCDIS, kmtNCDIS },
+  { kmNuEBarNCCOH, kmtNCCOH },
+  { kmNuEBarNCMEC, kmtNCMEC },
+  { kmNuMuToNuECCQE, kmtCCQE },
+  { kmNuMuToNuECCRESpPiP, kmtCCRESvpPiP },
+  { kmNuMuToNuECCRESnPi0, kmtCCRESvnPi0 },
+  { kmNuMuToNuECCRESnPiP, kmtCCRESvnPiP },
+  { kmNuMuToNuECCDIS, kmtCCDIS },
+  { kmNuMuToNuECCCOH, kmtCCCOH },
+  { kmNuMuToNuECCMEC, kmtCCMEC },
+  { kmNuMuToNuENCQE, kmtNCQE },
+  { kmNuMuToNuENCRESpPi0, kmtNCRESvpPi0 },
+  { kmNuMuToNuENCRESpPiP, kmtNCRESvpPiP },
+  { kmNuMuToNuENCRESnPi0, kmtNCRESvnPi0 },
+  { kmNuMuToNuENCRESnPiM, kmtNCRESvnPiM },
+  { kmNuMuToNuENCDIS, kmtNCDIS },
+  { kmNuMuToNuENCCOH, kmtNCCOH },
+  { kmNuMuToNuENCMEC, kmtNCMEC },
+  { kmNuMuToNuTauCCQE, kmtCCQE },
+  { kmNuMuToNuTauCCRESpPiP, kmtCCRESvpPiP },
+  { kmNuMuToNuTauCCRESnPi0, kmtCCRESvnPi0 },
+  { kmNuMuToNuTauCCRESnPiP, kmtCCRESvnPiP },
+  { kmNuMuToNuTauCCDIS, kmtCCDIS },
+  { kmNuMuToNuTauCCCOH, kmtCCCOH },
+  { kmNuMuToNuTauCCMEC, kmtCCMEC },
+  { kmNuMuToNuTauNCQE, kmtNCQE },
+  { kmNuMuToNuTauNCRESpPi0, kmtNCRESvpPi0 },
+  { kmNuMuToNuTauNCRESpPiP, kmtNCRESvpPiP },
+  { kmNuMuToNuTauNCRESnPi0, kmtNCRESvnPi0 },
+  { kmNuMuToNuTauNCRESnPiM, kmtNCRESvnPiM },
+  { kmNuMuToNuTauNCDIS, kmtNCDIS },
+  { kmNuMuToNuTauNCCOH, kmtNCCOH },
+  { kmNuMuToNuTauNCMEC, kmtNCMEC },
+  { kmNuMuBarToNuEBarCCQE, kmtCCQE },
+  { kmNuMuBarToNuEBarCCRESnPiM, kmtCCRESvbnPiM },
+  { kmNuMuBarToNuEBarCCRESpPi0, kmtCCRESvbpPi0 },
+  { kmNuMuBarToNuEBarCCRESpPiM, kmtCCRESvbpPiM },
+  { kmNuMuBarToNuEBarCCDIS, kmtCCDIS },
+  { kmNuMuBarToNuEBarCCCOH, kmtCCCOH },
+  { kmNuMuBarToNuEBarCCMEC, kmtCCMEC },
+  { kmNuMuBarToNuEBarNCQE, kmtNCQE },
+  { kmNuMuBarToNuEBarNCRESpPi0, kmtNCRESvbpPi0 },
+  { kmNuMuBarToNuEBarNCRESpPiP, kmtNCRESvbpPiP },
+  { kmNuMuBarToNuEBarNCRESnPi0, kmtNCRESvbnPi0 },
+  { kmNuMuBarToNuEBarNCRESnPiM, kmtNCRESvbnPiM },
+  { kmNuMuBarToNuEBarNCDIS, kmtNCDIS },
+  { kmNuMuBarToNuEBarNCCOH, kmtNCCOH },
+  { kmNuMuBarToNuEBarNCMEC, kmtNCMEC },
+  { kmNuMuBarToNuTauBarCCQE, kmtCCQE },
+  { kmNuMuBarToNuTauBarCCRESnPiM, kmtCCRESvbnPiM },
+  { kmNuMuBarToNuTauBarCCRESpPi0, kmtCCRESvbpPi0 },
+  { kmNuMuBarToNuTauBarCCRESpPiM, kmtCCRESvbpPiM },
+  { kmNuMuBarToNuTauBarCCDIS, kmtCCDIS },
+  { kmNuMuBarToNuTauBarCCCOH, kmtCCCOH },
+  { kmNuMuBarToNuTauBarCCMEC, kmtCCMEC },
+  { kmNuMuBarToNuTauBarNCQE, kmtNCQE },
+  { kmNuMuBarToNuTauBarNCRESpPi0, kmtNCRESvbpPi0 },
+  { kmNuMuBarToNuTauBarNCRESpPiP, kmtNCRESvbpPiP },
+  { kmNuMuBarToNuTauBarNCRESnPi0, kmtNCRESvbnPi0 },
+  { kmNuMuBarToNuTauBarNCRESnPiM, kmtNCRESvbnPiM },
+  { kmNuMuBarToNuTauBarNCDIS, kmtNCDIS },
+  { kmNuMuBarToNuTauBarNCCOH, kmtNCCOH },
+  { kmNuMuBarToNuTauBarNCMEC, kmtNCMEC },
+  { kmNuEToNuMuCCQE, kmtCCQE },
+  { kmNuEToNuMuCCRESpPiP, kmtCCRESvpPiP },
+  { kmNuEToNuMuCCRESnPi0, kmtCCRESvnPi0 },
+  { kmNuEToNuMuCCRESnPiP, kmtCCRESvnPiP },
+  { kmNuEToNuMuCCDIS, kmtCCDIS },
+  { kmNuEToNuMuCCCOH, kmtCCCOH },
+  { kmNuEToNuMuCCMEC, kmtCCMEC },
+  { kmNuEToNuMuNCQE, kmtNCQE },
+  { kmNuEToNuMuNCRESpPi0, kmtNCRESvpPi0 },
+  { kmNuEToNuMuNCRESpPiP, kmtNCRESvpPiP },
+  { kmNuEToNuMuNCRESnPi0, kmtNCRESvnPi0 },
+  { kmNuEToNuMuNCRESnPiM, kmtNCRESvnPiM },
+  { kmNuEToNuMuNCDIS, kmtNCDIS },
+  { kmNuEToNuMuNCCOH, kmtNCCOH },
+  { kmNuEToNuMuNCMEC, kmtNCMEC },
+  { kmNuEToNuTauCCQE, kmtCCQE },
+  { kmNuEToNuTauCCRESpPiP, kmtCCRESvpPiP },
+  { kmNuEToNuTauCCRESnPi0, kmtCCRESvnPi0 },
+  { kmNuEToNuTauCCRESnPiP, kmtCCRESvnPiP },
+  { kmNuEToNuTauCCDIS, kmtCCDIS },
+  { kmNuEToNuTauCCCOH, kmtCCCOH },
+  { kmNuEToNuTauCCMEC, kmtCCMEC },
+  { kmNuEToNuTauNCQE, kmtNCQE },
+  { kmNuEToNuTauNCRESpPi0, kmtNCRESvpPi0 },
+  { kmNuEToNuTauNCRESpPiP, kmtNCRESvpPiP },
+  { kmNuEToNuTauNCRESnPi0, kmtNCRESvnPi0 },
+  { kmNuEToNuTauNCRESnPiM, kmtNCRESvnPiM },
+  { kmNuEToNuTauNCDIS, kmtNCDIS },
+  { kmNuEToNuTauNCCOH, kmtNCCOH },
+  { kmNuEToNuTauNCMEC, kmtNCMEC },
+  { kmNuEBarToNuMuBarCCQE, kmtCCQE },
+  { kmNuEBarToNuMuBarCCRESnPiM, kmtCCRESvbnPiM },
+  { kmNuEBarToNuMuBarCCRESpPi0, kmtCCRESvbpPi0 },
+  { kmNuEBarToNuMuBarCCRESpPiM, kmtCCRESvbpPiM },
+  { kmNuEBarToNuMuBarCCDIS, kmtCCDIS },
+  { kmNuEBarToNuMuBarCCCOH, kmtCCCOH },
+  { kmNuEBarToNuMuBarCCMEC, kmtCCMEC },
+  { kmNuEBarToNuMuBarNCQE, kmtNCQE },
+  { kmNuEBarToNuMuBarNCRESpPi0, kmtNCRESvbpPi0 },
+  { kmNuEBarToNuMuBarNCRESpPiP, kmtNCRESvbpPiP },
+  { kmNuEBarToNuMuBarNCRESnPi0, kmtNCRESvbnPi0 },
+  { kmNuEBarToNuMuBarNCRESnPiM, kmtNCRESvbnPiM },
+  { kmNuEBarToNuMuBarNCDIS, kmtNCDIS },
+  { kmNuEBarToNuMuBarNCCOH, kmtNCCOH },
+  { kmNuEBarToNuMuBarNCMEC, kmtNCMEC },
+  { kmNuEBarToNuTauBarCCQE, kmtCCQE },
+  { kmNuEBarToNuTauBarCCRESnPiM, kmtCCRESvbnPiM },
+  { kmNuEBarToNuTauBarCCRESpPi0, kmtCCRESvbpPi0 },
+  { kmNuEBarToNuTauBarCCRESpPiM, kmtCCRESvbpPiM },
+  { kmNuEBarToNuTauBarCCDIS, kmtCCDIS },
+  { kmNuEBarToNuTauBarCCCOH, kmtCCCOH },
+  { kmNuEBarToNuTauBarCCMEC, kmtCCMEC },
+  { kmNuEBarToNuTauBarNCQE, kmtNCQE },
+  { kmNuEBarToNuTauBarNCRESpPi0, kmtNCRESvbpPi0 },
+  { kmNuEBarToNuTauBarNCRESpPiP, kmtNCRESvbpPiP },
+  { kmNuEBarToNuTauBarNCRESnPi0, kmtNCRESvbnPi0 },
+  { kmNuEBarToNuTauBarNCRESnPiM, kmtNCRESvbnPiM },
+  { kmNuEBarToNuTauBarNCDIS, kmtNCDIS },
+  { kmNuEBarToNuTauBarNCCOH, kmtNCCOH },
+  { kmNuEBarToNuTauBarNCMEC, kmtNCMEC },
+  { kmCohElastic, kmtCohElastic },
+  { kmElScat, kmtElScat },
+  { kmIMDAnh, kmtIMDAnh },
+  { kmIBD, kmtIBD },
+  { kmGlashow, kmtGlashow },
+  { kmAMNuGamma, kmtAMNuGamma },
+  { kmDiffractive, kmtDiffractive },
+  { kmEM, kmtEM },
+  { kmWeakMix, kmtWeakMix },
+  { kmCosmic, kmtCosmic },
+  { kmDirt, kmtDirt }
 };
 
 // Map the reaction modes to their final neutrino flavour 
-static const NuFlavour_t kReacModeToFinalFlavour[kNReacModes] =
+static std::unordered_map<ReacMode_t, NuFlavour_t> kReacModeToFinalFlavour =
 {
-   /*   kmNuMuCCQE          */ kNuMu    ,
-   /*   kmNuMuCCMEC         */ kNuMu    ,
-   /*   kmNuMuCC1piC        */ kNuMu    ,
-   /*   kmNuMuCC1pi0        */ kNuMu    ,
-   /*   kmNuMuCC2piC        */ kNuMu    ,
-   /*   kmNuMuCC2pi0        */ kNuMu    ,
-   /*   kmNuMuCCpiCpi0      */ kNuMu    ,
-   /*   kmNuMuCCcoh         */ kNuMu    ,
-   /*   kmNuMuCCIMD         */ kNuMu    ,
-   /*   kmNuMuCCELScat      */ kNuMu    ,
-   /*   kmNuMuCCDIS         */ kNuMu    ,
-   /*   kmNuMuCCMpi         */ kNuMu    ,
-   /*   kmNuMuCCmisc        */ kNuMu    ,
-   /*   kmNuMuCCoth         */ kNuMu    ,
-   /*   kmNuMuNCEL          */ kNuMu    ,
-   /*   kmNuMuNCMEC         */ kNuMu    ,
-   /*   kmNuMuNC1piC        */ kNuMu    ,
-   /*   kmNuMuNC1pi0        */ kNuMu    ,
-   /*   kmNuMuNC2piC        */ kNuMu    ,
-   /*   kmNuMuNC2pi0        */ kNuMu    ,
-   /*   kmNuMuNCpiCpi0      */ kNuMu    ,
-   /*   kmNuMuNCcoh         */ kNuMu    ,
-   /*   kmNuMuNC1Gamma      */ kNuMu    ,
-   /*   kmNuMuNCELScat      */ kNuMu    ,
-   /*   kmNuMuNCoth         */ kNuMu    ,
-   /*   kmNuMuBarCCQE       */ kNuMuBar ,
-   /*   kmNuMuBarCCMEC      */ kNuMuBar ,
-   /*   kmNuMuBarCC1piC     */ kNuMuBar ,
-   /*   kmNuMuBarCC1pi0     */ kNuMuBar ,
-   /*   kmNuMuBarCC2piC     */ kNuMuBar ,
-   /*   kmNuMuBarCC2pi0     */ kNuMuBar ,
-   /*   kmNuMuBarCCpiCpi0   */ kNuMuBar ,
-   /*   kmNuMuBarCCcoh      */ kNuMuBar ,
-   /*   kmNuMuBarCCELScat   */ kNuMuBar ,
-   /*   kmNuMuBarCCDIS      */ kNuMuBar ,
-   /*   kmNuMuBarCCMpi      */ kNuMuBar ,
-   /*   kmNuMuBarCCmisc     */ kNuMuBar ,
-   /*   kmNuMuBarCCoth      */ kNuMuBar ,
-   /*   kmNuMuBarNCEL       */ kNuMuBar ,
-   /*   kmNuMuBarNCMEC      */ kNuMuBar ,
-   /*   kmNuMuBarNC1piC     */ kNuMuBar ,
-   /*   kmNuMuBarNC1pi0     */ kNuMuBar ,
-   /*   kmNuMuBarNC2piC     */ kNuMuBar ,
-   /*   kmNuMuBarNC2pi0     */ kNuMuBar ,
-   /*   kmNuMuBarNCpiCpi0   */ kNuMuBar ,
-   /*   kmNuMuBarNCcoh      */ kNuMuBar ,
-   /*   kmNuMuBarNC1Gamma   */ kNuMuBar ,
-   /*   kmNuMuBarNCELScat   */ kNuMuBar ,
-   /*   kmNuMuBarNCoth      */ kNuMuBar ,
-   /*   kmNuECCQE           */ kNuE     ,
-   /*   kmNuECCMEC          */ kNuE     ,
-   /*   kmNuECC1piC         */ kNuE     ,
-   /*   kmNuECC1pi0         */ kNuE     ,
-   /*   kmNuECC2piC         */ kNuE     ,
-   /*   kmNuECC2pi0         */ kNuE     ,
-   /*   kmNuECCpiCpi0       */ kNuE     ,
-   /*   kmNuECCcoh          */ kNuE     ,
-   /*   kmNuECCDIS          */ kNuE     ,
-   /*   kmNuECCMpi          */ kNuE     ,
-   /*   kmNuECCmisc         */ kNuE     ,
-   /*   kmNuECCoth          */ kNuE     ,
-   /*   kmNuENCEL           */ kNuE     ,
-   /*   kmNuENCMEC          */ kNuE     ,
-   /*   kmNuENC1piC         */ kNuE     ,
-   /*   kmNuENC1pi0         */ kNuE     ,
-   /*   kmNuENC2piC         */ kNuE     ,
-   /*   kmNuENC2pi0         */ kNuE     ,
-   /*   kmNuENCpiCpi0       */ kNuE     ,
-   /*   kmNuENCcoh          */ kNuE     ,
-   /*   kmNuENC1Gamma       */ kNuE     ,
-   /*   kmNuEELScat         */ kNuE     ,
-   /*   kmNuENCoth          */ kNuE     , 
-   /*   kmNuEBarCCQE        */ kNuEBar  , 
-   /*   kmNuEBarCCMEC       */ kNuEBar  , 
-   /*   kmNuEBarCC1piC      */ kNuEBar  , 
-   /*   kmNuEBarCC1pi0      */ kNuEBar  , 
-   /*   kmNuEBarCC2piC      */ kNuEBar  , 
-   /*   kmNuEBarCC2pi0      */ kNuEBar  , 
-   /*   kmNuEBarCCpiCpi0    */ kNuEBar  , 
-   /*   kmNuEBarCCcoh       */ kNuEBar  , 
-   /*   kmNuEBarCCIMD       */ kNuEBar  ,
-   /*   kmNuEBarCCDIS       */ kNuEBar  ,
-   /*   kmNuEBarCCMpi       */ kNuEBar  ,
-   /*   kmNuEBarCCmisc      */ kNuEBar  ,
-   /*   kmNuEBarCCoth       */ kNuEBar  ,
-   /*   kmNuEBarNCEL        */ kNuEBar  ,
-   /*   kmNuEBarNCMEC       */ kNuEBar  ,
-   /*   kmNuEBarNC1piC      */ kNuEBar  ,
-   /*   kmNuEBarNC1pi0      */ kNuEBar  ,
-   /*   kmNuEBarNC2piC      */ kNuEBar  ,
-   /*   kmNuEBarNC2pi0      */ kNuEBar  ,
-   /*   kmNuEBarNCpiCpi0    */ kNuEBar  ,
-   /*   kmNuEBarNCcoh       */ kNuEBar  ,
-   /*   kmNuEBarNC1Gamma    */ kNuEBar  ,
-   /*   kmNuEBarELScat      */ kNuEBar  ,
-   /*   kmNuEBarNCoth       */ kNuEBar  ,
-   /*   kmNuMuToNuECCQE          */ kNuE    ,
-   /*   kmNuMuToNuECCMEC         */ kNuE    ,
-   /*   kmNuMuToNuECC1piC        */ kNuE    ,
-   /*   kmNuMuToNuECC1pi0        */ kNuE    ,
-   /*   kmNuMuToNuECC2piC        */ kNuE    ,
-   /*   kmNuMuToNuECC2pi0        */ kNuE    ,
-   /*   kmNuMuToNuECCpiCpi0      */ kNuE    ,
-   /*   kmNuMuToNuECCcoh         */ kNuE    ,
-   /*   kmNuMuToNuEELScat        */ kNuE    ,
-   /*   kmNuMuToNuECCDIS         */ kNuE    ,
-   /*   kmNuMuToNuECCMpi         */ kNuE    ,
-   /*   kmNuMuToNuECCmisc        */ kNuE    ,
-   /*   kmNuMuToNuECCoth         */ kNuE    ,
-   /*   kmNuMuToNuTauCCQE        */ kNuTau    ,
-   /*   kmNuMuToNuTauCCMEC       */ kNuTau    ,
-   /*   kmNuMuToNuTauCC1piC      */ kNuTau    ,
-   /*   kmNuMuToNuTauCC1pi0      */ kNuTau    ,
-   /*   kmNuMuToNuTauCC2piC      */ kNuTau    ,
-   /*   kmNuMuToNuTauCC2pi0      */ kNuTau    ,
-   /*   kmNuMuToNuTauCCpiCpi0    */ kNuTau    ,
-   /*   kmNuMuToNuTauCCcoh       */ kNuTau    ,
-   /*   kmNuMuToNuTauCCELScat    */ kNuTau    ,
-   /*   kmNuMuToNuTauCCDIS       */ kNuTau    ,
-   /*   kmNuMuToNuTauCCMpi       */ kNuTau    ,
-   /*   kmNuMuToNuTauCCmisc      */ kNuTau    ,
-   /*   kmNuMuToNuTauCCoth       */ kNuTau    ,
-   /*   kmNuEToNuMuCCQE          */ kNuMu    ,
-   /*   kmNuEToNuMuCCMEC         */ kNuMu    ,
-   /*   kmNuEToNuMuCC1piC        */ kNuMu    ,
-   /*   kmNuEToNuMuCC1pi0        */ kNuMu    ,
-   /*   kmNuEToNuMuCC2piC        */ kNuMu    ,
-   /*   kmNuEToNuMuCC2pi0        */ kNuMu    ,
-   /*   kmNuEToNuMuCCpiCpi0      */ kNuMu    ,
-   /*   kmNuEToNuMuCCcoh         */ kNuMu    ,
-   /*   kmNuEToNuMuCCIMD         */ kNuMu    ,
-   /*   kmNuEToNuMuCCELScat      */ kNuMu    ,
-   /*   kmNuEToNuMuCCDIS         */ kNuMu    ,
-   /*   kmNuEToNuMuCCMpi         */ kNuMu    ,
-   /*   kmNuEToNuMuCCmisc        */ kNuMu    ,
-   /*   kmNuEToNuMuCCoth         */ kNuMu    ,
-   /*   kmNuEToNuTauCCQE         */ kNuTau    ,
-   /*   kmNuEToNuTauCCMEC        */ kNuTau    ,
-   /*   kmNuEToNuTauCC1piC       */ kNuTau    ,
-   /*   kmNuEToNuTauCC1pi0       */ kNuTau    ,
-   /*   kmNuEToNuTauCC2piC       */ kNuTau    ,
-   /*   kmNuEToNuTauCC2pi0       */ kNuTau    ,
-   /*   kmNuEToNuTauCCpiCpi0     */ kNuTau    ,
-   /*   kmNuEToNuTauCCcoh        */ kNuTau    ,
-   /*   kmNuEToNuTauCCELScat     */ kNuTau    ,
-   /*   kmNuEToNuTauCCDIS        */ kNuTau    ,
-   /*   kmNuEToNuTauCCMpi        */ kNuTau    ,
-   /*   kmNuEToNuTauCCmisc       */ kNuTau    ,
-   /*   kmNuEToNuTauCCoth        */ kNuTau    ,
-   /*   kmNuMuBarToNuEBarCCQE          */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCCMEC         */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCC1piC        */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCC1pi0        */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCC2piC        */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCC2pi0        */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCCpiCpi0      */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCCcoh         */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCCIMD         */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarELScat        */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCCDIS         */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCCMpi         */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCCmisc        */ kNuEBar    ,
-   /*   kmNuMuBarToNuEBarCCoth         */ kNuEBar    ,
-   /*   kmNuMuBarToNuTauBarCCQE        */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCCMEC       */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCC1piC      */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCC1pi0      */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCC2piC      */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCC2pi0      */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCCpiCpi0    */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCCcoh       */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCCELScat    */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCCDIS       */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCCMpi       */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCCmisc      */ kNuTauBar    ,
-   /*   kmNuMuBarToNuTauBarCCoth       */ kNuTauBar    ,
-   /*   kmNuEBarToNuMuBarCCQE          */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCMEC         */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCC1piC        */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCC1pi0        */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCC2piC        */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCC2pi0        */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCpiCpi0      */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCcoh         */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCELScat      */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCDIS         */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCMpi         */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCmisc        */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCoth         */ kNuMuBar    ,
-   /*   kmNuEBarToNuTauBarCCQE         */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCCMEC        */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCC1piC       */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCC1pi0       */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCC2piC       */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCC2pi0       */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCCpiCpi0     */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCCcoh        */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCCELScat     */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCCDIS        */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCCMpi        */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCCmisc       */ kNuTauBar    ,
-   /*   kmNuEBarToNuTauBarCCoth        */ kNuTauBar    ,
-   /*   kmCosmic                       */ kCosmic      ,
-   /*   kmDirt                         */ kDirt        ,
-// /*   kmOther             */ kNuFlavourUndefined
+  { kmNuMuCCQE, kNuMu },
+  { kmNuMuCCRESpPiP, kNuMu },
+  { kmNuMuCCRESnPi0, kNuMu },
+  { kmNuMuCCRESnPiP, kNuMu },
+  { kmNuMuCCDIS, kNuMu },
+  { kmNuMuCCCOH, kNuMu },
+  { kmNuMuCCMEC, kNuMu },
+  { kmNuMuNCQE, kNuMu },
+  { kmNuMuNCRESpPi0, kNuMu },
+  { kmNuMuNCRESpPiP, kNuMu },
+  { kmNuMuNCRESnPi0, kNuMu },
+  { kmNuMuNCRESnPiM, kNuMu },
+  { kmNuMuNCDIS, kNuMu },
+  { kmNuMuNCCOH, kNuMu },
+  { kmNuMuNCMEC, kNuMu },
+  { kmNuMuBarCCQE, kNuMuBar },
+  { kmNuMuBarCCRESnPiM, kNuMuBar },
+  { kmNuMuBarCCRESpPi0, kNuMuBar },
+  { kmNuMuBarCCRESpPiM, kNuMuBar },
+  { kmNuMuBarCCDIS, kNuMuBar },
+  { kmNuMuBarCCCOH, kNuMuBar },
+  { kmNuMuBarCCMEC, kNuMuBar },
+  { kmNuMuBarNCQE, kNuMuBar },
+  { kmNuMuBarNCRESpPi0, kNuMuBar },
+  { kmNuMuBarNCRESpPiP, kNuMuBar },
+  { kmNuMuBarNCRESnPi0, kNuMuBar },
+  { kmNuMuBarNCRESnPiM, kNuMuBar },
+  { kmNuMuBarNCDIS, kNuMuBar },
+  { kmNuMuBarNCCOH, kNuMuBar },
+  { kmNuMuBarNCMEC, kNuMuBar },
+  { kmNuECCQE, kNuE },
+  { kmNuECCRESpPiP, kNuE },
+  { kmNuECCRESnPi0, kNuE },
+  { kmNuECCRESnPiP, kNuE },
+  { kmNuECCDIS, kNuE },
+  { kmNuECCCOH, kNuE },
+  { kmNuECCMEC, kNuE },
+  { kmNuENCQE, kNuE },
+  { kmNuENCRESpPi0, kNuE },
+  { kmNuENCRESpPiP, kNuE },
+  { kmNuENCRESnPi0, kNuE },
+  { kmNuENCRESnPiM, kNuE },
+  { kmNuENCDIS, kNuE },
+  { kmNuENCCOH, kNuE },
+  { kmNuENCMEC, kNuE },
+  { kmNuEBarCCQE, kNuEBar },
+  { kmNuEBarCCRESnPiM, kNuEBar },
+  { kmNuEBarCCRESpPi0, kNuEBar },
+  { kmNuEBarCCRESpPiM, kNuEBar },
+  { kmNuEBarCCDIS, kNuEBar },
+  { kmNuEBarCCCOH, kNuEBar },
+  { kmNuEBarCCMEC, kNuEBar },
+  { kmNuEBarNCQE, kNuEBar },
+  { kmNuEBarNCRESpPi0, kNuEBar },
+  { kmNuEBarNCRESpPiP, kNuEBar },
+  { kmNuEBarNCRESnPi0, kNuEBar },
+  { kmNuEBarNCRESnPiM, kNuEBar },
+  { kmNuEBarNCDIS, kNuEBar },
+  { kmNuEBarNCCOH, kNuEBar },
+  { kmNuEBarNCMEC, kNuEBar },
+  { kmNuMuToNuECCQE, kNuE },
+  { kmNuMuToNuECCRESpPiP, kNuE },
+  { kmNuMuToNuECCRESnPi0, kNuE },
+  { kmNuMuToNuECCRESnPiP, kNuE },
+  { kmNuMuToNuECCDIS, kNuE },
+  { kmNuMuToNuECCCOH, kNuE },
+  { kmNuMuToNuECCMEC, kNuE },
+  { kmNuMuToNuENCQE, kNuE },
+  { kmNuMuToNuENCRESpPi0, kNuE },
+  { kmNuMuToNuENCRESpPiP, kNuE },
+  { kmNuMuToNuENCRESnPi0, kNuE },
+  { kmNuMuToNuENCRESnPiM, kNuE },
+  { kmNuMuToNuENCDIS, kNuE },
+  { kmNuMuToNuENCCOH, kNuE },
+  { kmNuMuToNuENCMEC, kNuE },
+  { kmNuMuToNuTauCCQE, kNuTau },
+  { kmNuMuToNuTauCCRESpPiP, kNuTau },
+  { kmNuMuToNuTauCCRESnPi0, kNuTau },
+  { kmNuMuToNuTauCCRESnPiP, kNuTau },
+  { kmNuMuToNuTauCCDIS, kNuTau },
+  { kmNuMuToNuTauCCCOH, kNuTau },
+  { kmNuMuToNuTauCCMEC, kNuTau },
+  { kmNuMuToNuTauNCQE, kNuTau },
+  { kmNuMuToNuTauNCRESpPi0, kNuTau },
+  { kmNuMuToNuTauNCRESpPiP, kNuTau },
+  { kmNuMuToNuTauNCRESnPi0, kNuTau },
+  { kmNuMuToNuTauNCRESnPiM, kNuTau },
+  { kmNuMuToNuTauNCDIS, kNuTau },
+  { kmNuMuToNuTauNCCOH, kNuTau },
+  { kmNuMuToNuTauNCMEC, kNuTau },
+  { kmNuMuBarToNuEBarCCQE, kNuEBar },
+  { kmNuMuBarToNuEBarCCRESnPiM, kNuEBar },
+  { kmNuMuBarToNuEBarCCRESpPi0, kNuEBar },
+  { kmNuMuBarToNuEBarCCRESpPiM, kNuEBar },
+  { kmNuMuBarToNuEBarCCDIS, kNuEBar },
+  { kmNuMuBarToNuEBarCCCOH, kNuEBar },
+  { kmNuMuBarToNuEBarCCMEC, kNuEBar },
+  { kmNuMuBarToNuEBarNCQE, kNuEBar },
+  { kmNuMuBarToNuEBarNCRESpPi0, kNuEBar },
+  { kmNuMuBarToNuEBarNCRESpPiP, kNuEBar },
+  { kmNuMuBarToNuEBarNCRESnPi0, kNuEBar },
+  { kmNuMuBarToNuEBarNCRESnPiM, kNuEBar },
+  { kmNuMuBarToNuEBarNCDIS, kNuEBar },
+  { kmNuMuBarToNuEBarNCCOH, kNuEBar },
+  { kmNuMuBarToNuEBarNCMEC, kNuEBar },
+  { kmNuMuBarToNuTauBarCCQE, kNuTauBar },
+  { kmNuMuBarToNuTauBarCCRESnPiM, kNuTauBar },
+  { kmNuMuBarToNuTauBarCCRESpPi0, kNuTauBar },
+  { kmNuMuBarToNuTauBarCCRESpPiM, kNuTauBar },
+  { kmNuMuBarToNuTauBarCCDIS, kNuTauBar },
+  { kmNuMuBarToNuTauBarCCCOH, kNuTauBar },
+  { kmNuMuBarToNuTauBarCCMEC, kNuTauBar },
+  { kmNuMuBarToNuTauBarNCQE, kNuTauBar },
+  { kmNuMuBarToNuTauBarNCRESpPi0, kNuTauBar },
+  { kmNuMuBarToNuTauBarNCRESpPiP, kNuTauBar },
+  { kmNuMuBarToNuTauBarNCRESnPi0, kNuTauBar },
+  { kmNuMuBarToNuTauBarNCRESnPiM, kNuTauBar },
+  { kmNuMuBarToNuTauBarNCDIS, kNuTauBar },
+  { kmNuMuBarToNuTauBarNCCOH, kNuTauBar },
+  { kmNuMuBarToNuTauBarNCMEC, kNuTauBar },
+  { kmNuEToNuMuCCQE, kNuMu },
+  { kmNuEToNuMuCCRESpPiP, kNuMu },
+  { kmNuEToNuMuCCRESnPi0, kNuMu },
+  { kmNuEToNuMuCCRESnPiP, kNuMu },
+  { kmNuEToNuMuCCDIS, kNuMu },
+  { kmNuEToNuMuCCCOH, kNuMu },
+  { kmNuEToNuMuCCMEC, kNuMu },
+  { kmNuEToNuMuNCQE, kNuMu },
+  { kmNuEToNuMuNCRESpPi0, kNuMu },
+  { kmNuEToNuMuNCRESpPiP, kNuMu },
+  { kmNuEToNuMuNCRESnPi0, kNuMu },
+  { kmNuEToNuMuNCRESnPiM, kNuMu },
+  { kmNuEToNuMuNCDIS, kNuMu },
+  { kmNuEToNuMuNCCOH, kNuMu },
+  { kmNuEToNuMuNCMEC, kNuMu },
+  { kmNuEToNuTauCCQE, kNuTau },
+  { kmNuEToNuTauCCRESpPiP, kNuTau },
+  { kmNuEToNuTauCCRESnPi0, kNuTau },
+  { kmNuEToNuTauCCRESnPiP, kNuTau },
+  { kmNuEToNuTauCCDIS, kNuTau },
+  { kmNuEToNuTauCCCOH, kNuTau },
+  { kmNuEToNuTauCCMEC, kNuTau },
+  { kmNuEToNuTauNCQE, kNuTau },
+  { kmNuEToNuTauNCRESpPi0, kNuTau },
+  { kmNuEToNuTauNCRESpPiP, kNuTau },
+  { kmNuEToNuTauNCRESnPi0, kNuTau },
+  { kmNuEToNuTauNCRESnPiM, kNuTau },
+  { kmNuEToNuTauNCDIS, kNuTau },
+  { kmNuEToNuTauNCCOH, kNuTau },
+  { kmNuEToNuTauNCMEC, kNuTau },
+  { kmNuEBarToNuMuBarCCQE, kNuMuBar },
+  { kmNuEBarToNuMuBarCCRESnPiM, kNuMuBar },
+  { kmNuEBarToNuMuBarCCRESpPi0, kNuMuBar },
+  { kmNuEBarToNuMuBarCCRESpPiM, kNuMuBar },
+  { kmNuEBarToNuMuBarCCDIS, kNuMuBar },
+  { kmNuEBarToNuMuBarCCCOH, kNuMuBar },
+  { kmNuEBarToNuMuBarCCMEC, kNuMuBar },
+  { kmNuEBarToNuMuBarNCQE, kNuMuBar },
+  { kmNuEBarToNuMuBarNCRESpPi0, kNuMuBar },
+  { kmNuEBarToNuMuBarNCRESpPiP, kNuMuBar },
+  { kmNuEBarToNuMuBarNCRESnPi0, kNuMuBar },
+  { kmNuEBarToNuMuBarNCRESnPiM, kNuMuBar },
+  { kmNuEBarToNuMuBarNCDIS, kNuMuBar },
+  { kmNuEBarToNuMuBarNCCOH, kNuMuBar },
+  { kmNuEBarToNuMuBarNCMEC, kNuMuBar },
+  { kmNuEBarToNuTauBarCCQE, kNuTauBar },
+  { kmNuEBarToNuTauBarCCRESnPiM, kNuTauBar },
+  { kmNuEBarToNuTauBarCCRESpPi0, kNuTauBar },
+  { kmNuEBarToNuTauBarCCRESpPiM, kNuTauBar },
+  { kmNuEBarToNuTauBarCCDIS, kNuTauBar },
+  { kmNuEBarToNuTauBarCCCOH, kNuTauBar },
+  { kmNuEBarToNuTauBarCCMEC, kNuTauBar },
+  { kmNuEBarToNuTauBarNCQE, kNuTauBar },
+  { kmNuEBarToNuTauBarNCRESpPi0, kNuTauBar },
+  { kmNuEBarToNuTauBarNCRESpPiP, kNuTauBar },
+  { kmNuEBarToNuTauBarNCRESnPi0, kNuTauBar },
+  { kmNuEBarToNuTauBarNCRESnPiM, kNuTauBar },
+  { kmNuEBarToNuTauBarNCDIS, kNuTauBar },
+  { kmNuEBarToNuTauBarNCCOH, kNuTauBar },
+  { kmNuEBarToNuTauBarNCMEC, kNuTauBar },
+  { kmCohElastic, kNuFlavourUndefined },
+  { kmElScat, kNuFlavourUndefined },
+  { kmIMDAnh, kNuFlavourUndefined },
+  { kmIBD, kNuFlavourUndefined },
+  { kmGlashow, kNuFlavourUndefined },
+  { kmAMNuGamma, kNuFlavourUndefined },
+  { kmDiffractive, kNuFlavourUndefined },
+  { kmEM, kNuFlavourUndefined },
+  { kmWeakMix, kNuFlavourUndefined },
+  { kmCosmic, kCosmic },
+  { kmDirt, kDirt }
 };
 
-static const NuFlavour_t kReacModeToInitFlavour[kNReacModes] =
+static std::unordered_map<ReacMode_t, NuFlavour_t> kReacModeToInitFlavour =
 {
-   /*   kmNuMuCCQE          */ kNuMu    ,
-   /*   kmNuMuCCMEC         */ kNuMu    ,
-   /*   kmNuMuCC1piC        */ kNuMu    ,
-   /*   kmNuMuCC1pi0        */ kNuMu    ,
-   /*   kmNuMuCC2piC        */ kNuMu    ,
-   /*   kmNuMuCC2pi0        */ kNuMu    ,
-   /*   kmNuMuCCpiCpi0      */ kNuMu    ,
-   /*   kmNuMuCCcoh         */ kNuMu    ,
-   /*   kmNuMuCCIMD         */ kNuMu    ,
-   /*   kmNuMuCCELScat      */ kNuMu    ,
-   /*   kmNuMuCCDIS         */ kNuMu    ,
-   /*   kmNuMuCCMpi         */ kNuMu    ,
-   /*   kmNuMuCCmisc        */ kNuMu    ,
-   /*   kmNuMuCCoth         */ kNuMu    ,
-   /*   kmNuMuNCEL          */ kNuMu    ,
-   /*   kmNuMuNCMEC         */ kNuMu    ,
-   /*   kmNuMuNC1piC        */ kNuMu    ,
-   /*   kmNuMuNC1pi0        */ kNuMu    ,
-   /*   kmNuMuNC2piC        */ kNuMu    ,
-   /*   kmNuMuNC2pi0        */ kNuMu    ,
-   /*   kmNuMuNCpiCpi0      */ kNuMu    ,
-   /*   kmNuMuNCcoh         */ kNuMu    ,
-   /*   kmNuMuNC1Gamma      */ kNuMu    ,
-   /*   kmNuMuNCELScat      */ kNuMu    ,
-   /*   kmNuMuNCoth         */ kNuMu    ,
-   /*   kmNuMuBarCCQE       */ kNuMuBar ,
-   /*   kmNuMuBarCCMEC      */ kNuMuBar ,
-   /*   kmNuMuBarCC1piC     */ kNuMuBar ,
-   /*   kmNuMuBarCC1pi0     */ kNuMuBar ,
-   /*   kmNuMuBarCC2piC     */ kNuMuBar ,
-   /*   kmNuMuBarCC2pi0     */ kNuMuBar ,
-   /*   kmNuMuBarCCpiCpi0   */ kNuMuBar ,
-   /*   kmNuMuBarCCcoh      */ kNuMuBar ,
-   /*   kmNuMuBarCCELScat   */ kNuMuBar ,
-   /*   kmNuMuBarCCDIS      */ kNuMuBar ,
-   /*   kmNuMuBarCCMpi      */ kNuMuBar ,
-   /*   kmNuMuBarCCmisc     */ kNuMuBar ,
-   /*   kmNuMuBarCCoth      */ kNuMuBar ,
-   /*   kmNuMuBarNCEL       */ kNuMuBar ,
-   /*   kmNuMuBarNCMEC      */ kNuMuBar ,
-   /*   kmNuMuBarNC1piC     */ kNuMuBar ,
-   /*   kmNuMuBarNC1pi0     */ kNuMuBar ,
-   /*   kmNuMuBarNC2piC     */ kNuMuBar ,
-   /*   kmNuMuBarNC2pi0     */ kNuMuBar ,
-   /*   kmNuMuBarNCpiCpi0   */ kNuMuBar ,
-   /*   kmNuMuBarNCcoh      */ kNuMuBar ,
-   /*   kmNuMuBarNC1Gamma   */ kNuMuBar ,
-   /*   kmNuMuBarNCELScat   */ kNuMuBar ,
-   /*   kmNuMuBarNCoth      */ kNuMuBar ,
-   /*   kmNuECCQE           */ kNuE     ,
-   /*   kmNuECCMEC          */ kNuE     ,
-   /*   kmNuECC1piC         */ kNuE     ,
-   /*   kmNuECC1pi0         */ kNuE     ,
-   /*   kmNuECC2piC         */ kNuE     ,
-   /*   kmNuECC2pi0         */ kNuE     ,
-   /*   kmNuECCpiCpi0       */ kNuE     ,
-   /*   kmNuECCcoh          */ kNuE     ,
-   /*   kmNuECCDIS          */ kNuE     ,
-   /*   kmNuECCMpi          */ kNuE     ,
-   /*   kmNuECCmisc         */ kNuE     ,
-   /*   kmNuECCoth          */ kNuE     ,
-   /*   kmNuENCEL           */ kNuE     ,
-   /*   kmNuENCMEC          */ kNuE     ,
-   /*   kmNuENC1piC         */ kNuE     ,
-   /*   kmNuENC1pi0         */ kNuE     ,
-   /*   kmNuENC2piC         */ kNuE     ,
-   /*   kmNuENC2pi0         */ kNuE     ,
-   /*   kmNuENCpiCpi0       */ kNuE     ,
-   /*   kmNuENCcoh          */ kNuE     ,
-   /*   kmNuENC1Gamma       */ kNuE     ,
-   /*   kmNuEELScat         */ kNuE     ,
-   /*   kmNuENCoth          */ kNuE     , 
-   /*   kmNuEBarCCQE        */ kNuEBar  , 
-   /*   kmNuEBarCCMEC       */ kNuEBar  , 
-   /*   kmNuEBarCC1piC      */ kNuEBar  , 
-   /*   kmNuEBarCC1pi0      */ kNuEBar  , 
-   /*   kmNuEBarCC2piC      */ kNuEBar  , 
-   /*   kmNuEBarCC2pi0      */ kNuEBar  , 
-   /*   kmNuEBarCCpiCpi0    */ kNuEBar  , 
-   /*   kmNuEBarCCcoh       */ kNuEBar  , 
-   /*   kmNuEBarCCIMD       */ kNuEBar  ,
-   /*   kmNuEBarCCDIS       */ kNuEBar  ,
-   /*   kmNuEBarCCMpi       */ kNuEBar  ,
-   /*   kmNuEBarCCmisc      */ kNuEBar  ,
-   /*   kmNuEBarCCoth       */ kNuEBar  ,
-   /*   kmNuEBarNCEL        */ kNuEBar  ,
-   /*   kmNuEBarNCMEC       */ kNuEBar  ,
-   /*   kmNuEBarNC1piC      */ kNuEBar  ,
-   /*   kmNuEBarNC1pi0      */ kNuEBar  ,
-   /*   kmNuEBarNC2piC      */ kNuEBar  ,
-   /*   kmNuEBarNC2pi0      */ kNuEBar  ,
-   /*   kmNuEBarNCpiCpi0    */ kNuEBar  ,
-   /*   kmNuEBarNCcoh       */ kNuEBar  ,
-   /*   kmNuEBarNC1Gamma    */ kNuEBar  ,
-   /*   kmNuEBarELScat      */ kNuEBar  ,
-   /*   kmNuEBarNCoth       */ kNuEBar  ,
-   /*   kmNuMuToNuECCQE          */ kNuMu    ,
-   /*   kmNuMuToNuECCMEC         */ kNuMu    ,
-   /*   kmNuMuToNuECC1piC        */ kNuMu    ,
-   /*   kmNuMuToNuECC1pi0        */ kNuMu    ,
-   /*   kmNuMuToNuECC2piC        */ kNuMu    ,
-   /*   kmNuMuToNuECC2pi0        */ kNuMu    ,
-   /*   kmNuMuToNuECCpiCpi0      */ kNuMu    ,
-   /*   kmNuMuToNuECCcoh         */ kNuMu    ,
-   /*   kmNuMuToNuEELScat        */ kNuMu    ,
-   /*   kmNuMuToNuECCDIS         */ kNuMu    ,
-   /*   kmNuMuToNuECCMpi         */ kNuMu    ,
-   /*   kmNuMuToNuECCmisc        */ kNuMu    ,
-   /*   kmNuMuToNuECCoth         */ kNuMu    ,
-   /*   kmNuMuToNuTauCCQE        */ kNuMu    ,
-   /*   kmNuMuToNuTauCCMEC       */ kNuMu    ,
-   /*   kmNuMuToNuTauCC1piC      */ kNuMu    ,
-   /*   kmNuMuToNuTauCC1pi0      */ kNuMu    ,
-   /*   kmNuMuToNuTauCC2piC      */ kNuMu    ,
-   /*   kmNuMuToNuTauCC2pi0      */ kNuMu    ,
-   /*   kmNuMuToNuTauCCpiCpi0    */ kNuMu    ,
-   /*   kmNuMuToNuTauCCcoh       */ kNuMu    ,
-   /*   kmNuMuToNuTauCCELScat    */ kNuMu    ,
-   /*   kmNuMuToNuTauCCDIS       */ kNuMu    ,
-   /*   kmNuMuToNuTauCCMpi       */ kNuMu    ,
-   /*   kmNuMuToNuTauCCmisc      */ kNuMu    ,
-   /*   kmNuMuToNuTauCCoth       */ kNuMu    ,
-   /*   kmNuEToNuMuCCQE          */ kNuE    ,
-   /*   kmNuEToNuMuCCMEC         */ kNuE    ,
-   /*   kmNuEToNuMuCC1piC        */ kNuE    ,
-   /*   kmNuEToNuMuCC1pi0        */ kNuE    ,
-   /*   kmNuEToNuMuCC2piC        */ kNuE    ,
-   /*   kmNuEToNuMuCC2pi0        */ kNuE    ,
-   /*   kmNuEToNuMuCCpiCpi0      */ kNuE    ,
-   /*   kmNuEToNuMuCCcoh         */ kNuE    ,
-   /*   kmNuEToNuMuCCIMD         */ kNuE    ,
-   /*   kmNuEToNuMuCCELScat      */ kNuE    ,
-   /*   kmNuEToNuMuCCDIS         */ kNuE    ,
-   /*   kmNuEToNuMuCCMpi         */ kNuE    ,
-   /*   kmNuEToNuMuCCmisc        */ kNuE    ,
-   /*   kmNuEToNuMuCCoth         */ kNuE    ,
-   /*   kmNuEToNuTauCCQE         */ kNuE    ,
-   /*   kmNuEToNuTauCCMEC        */ kNuE    ,
-   /*   kmNuEToNuTauCC1piC       */ kNuE    ,
-   /*   kmNuEToNuTauCC1pi0       */ kNuE    ,
-   /*   kmNuEToNuTauCC2piC       */ kNuE    ,
-   /*   kmNuEToNuTauCC2pi0       */ kNuE    ,
-   /*   kmNuEToNuTauCCpiCpi0     */ kNuE    ,
-   /*   kmNuEToNuTauCCcoh        */ kNuE    ,
-   /*   kmNuEToNuTauCCELScat     */ kNuE    ,
-   /*   kmNuEToNuTauCCDIS        */ kNuE    ,
-   /*   kmNuEToNuTauCCMpi        */ kNuE    ,
-   /*   kmNuEToNuTauCCmisc       */ kNuE    ,
-   /*   kmNuEToNuTauCCoth        */ kNuE    ,
-   /*   kmNuMuBarToNuEBarCCQE          */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCCMEC         */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCC1piC        */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCC1pi0        */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCC2piC        */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCC2pi0        */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCCpiCpi0      */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCCcoh         */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCCIMD         */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarELScat        */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCCDIS         */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCCMpi         */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCCmisc        */ kNuMuBar    ,
-   /*   kmNuMuBarToNuEBarCCoth         */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCQE        */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCMEC       */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCC1piC      */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCC1pi0      */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCC2piC      */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCC2pi0      */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCpiCpi0    */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCcoh       */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCELScat    */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCDIS       */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCMpi       */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCmisc      */ kNuMuBar    ,
-   /*   kmNuMuBarToNuTauBarCCoth       */ kNuMuBar    ,
-   /*   kmNuEBarToNuMuBarCCQE          */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCCMEC         */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCC1piC        */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCC1pi0        */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCC2piC        */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCC2pi0        */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCCpiCpi0      */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCCcoh         */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCCELScat      */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCCDIS         */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCCMpi         */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCCmisc        */ kNuEBar    ,
-   /*   kmNuEBarToNuMuBarCCoth         */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCQE         */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCMEC        */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCC1piC       */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCC1pi0       */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCC2piC       */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCC2pi0       */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCpiCpi0     */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCcoh        */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCELScat     */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCDIS        */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCMpi        */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCmisc       */ kNuEBar    ,
-   /*   kmNuEBarToNuTauBarCCoth        */ kNuEBar    ,
-   /*   kmCosmic                       */ kCosmic    ,
-   /*   kmDirt                         */ kDirt      ,
-// /*   kmOther             */ kNuFlavourUndefined
+  { kmNuMuCCQE, kNuMu },
+  { kmNuMuCCRESpPiP, kNuMu },
+  { kmNuMuCCRESnPi0, kNuMu },
+  { kmNuMuCCRESnPiP, kNuMu },
+  { kmNuMuCCDIS, kNuMu },
+  { kmNuMuCCCOH, kNuMu },
+  { kmNuMuCCMEC, kNuMu },
+  { kmNuMuNCQE, kNuMu },
+  { kmNuMuNCRESpPi0, kNuMu },
+  { kmNuMuNCRESpPiP, kNuMu },
+  { kmNuMuNCRESnPi0, kNuMu },
+  { kmNuMuNCRESnPiM, kNuMu },
+  { kmNuMuNCDIS, kNuMu },
+  { kmNuMuNCCOH, kNuMu },
+  { kmNuMuNCMEC, kNuMu },
+  { kmNuMuBarCCQE, kNuMuBar },
+  { kmNuMuBarCCRESnPiM, kNuMuBar },
+  { kmNuMuBarCCRESpPi0, kNuMuBar },
+  { kmNuMuBarCCRESpPiM, kNuMuBar },
+  { kmNuMuBarCCDIS, kNuMuBar },
+  { kmNuMuBarCCCOH, kNuMuBar },
+  { kmNuMuBarCCMEC, kNuMuBar },
+  { kmNuMuBarNCQE, kNuMuBar },
+  { kmNuMuBarNCRESpPi0, kNuMuBar },
+  { kmNuMuBarNCRESpPiP, kNuMuBar },
+  { kmNuMuBarNCRESnPi0, kNuMuBar },
+  { kmNuMuBarNCRESnPiM, kNuMuBar },
+  { kmNuMuBarNCDIS, kNuMuBar },
+  { kmNuMuBarNCCOH, kNuMuBar },
+  { kmNuMuBarNCMEC, kNuMuBar },
+  { kmNuECCQE, kNuE },
+  { kmNuECCRESpPiP, kNuE },
+  { kmNuECCRESnPi0, kNuE },
+  { kmNuECCRESnPiP, kNuE },
+  { kmNuECCDIS, kNuE },
+  { kmNuECCCOH, kNuE },
+  { kmNuECCMEC, kNuE },
+  { kmNuENCQE, kNuE },
+  { kmNuENCRESpPi0, kNuE },
+  { kmNuENCRESpPiP, kNuE },
+  { kmNuENCRESnPi0, kNuE },
+  { kmNuENCRESnPiM, kNuE },
+  { kmNuENCDIS, kNuE },
+  { kmNuENCCOH, kNuE },
+  { kmNuENCMEC, kNuE },
+  { kmNuEBarCCQE, kNuEBar },
+  { kmNuEBarCCRESnPiM, kNuEBar },
+  { kmNuEBarCCRESpPi0, kNuEBar },
+  { kmNuEBarCCRESpPiM, kNuEBar },
+  { kmNuEBarCCDIS, kNuEBar },
+  { kmNuEBarCCCOH, kNuEBar },
+  { kmNuEBarCCMEC, kNuEBar },
+  { kmNuEBarNCQE, kNuEBar },
+  { kmNuEBarNCRESpPi0, kNuEBar },
+  { kmNuEBarNCRESpPiP, kNuEBar },
+  { kmNuEBarNCRESnPi0, kNuEBar },
+  { kmNuEBarNCRESnPiM, kNuEBar },
+  { kmNuEBarNCDIS, kNuEBar },
+  { kmNuEBarNCCOH, kNuEBar },
+  { kmNuEBarNCMEC, kNuEBar },
+  { kmNuMuToNuECCQE, kNuMu },
+  { kmNuMuToNuECCRESpPiP, kNuMu },
+  { kmNuMuToNuECCRESnPi0, kNuMu },
+  { kmNuMuToNuECCRESnPiP, kNuMu },
+  { kmNuMuToNuECCDIS, kNuMu },
+  { kmNuMuToNuECCCOH, kNuMu },
+  { kmNuMuToNuECCMEC, kNuMu },
+  { kmNuMuToNuENCQE, kNuMu },
+  { kmNuMuToNuENCRESpPi0, kNuMu },
+  { kmNuMuToNuENCRESpPiP, kNuMu },
+  { kmNuMuToNuENCRESnPi0, kNuMu },
+  { kmNuMuToNuENCRESnPiM, kNuMu },
+  { kmNuMuToNuENCDIS, kNuMu },
+  { kmNuMuToNuENCCOH, kNuMu },
+  { kmNuMuToNuENCMEC, kNuMu },
+  { kmNuMuToNuTauCCQE, kNuMu },
+  { kmNuMuToNuTauCCRESpPiP, kNuMu },
+  { kmNuMuToNuTauCCRESnPi0, kNuMu },
+  { kmNuMuToNuTauCCRESnPiP, kNuMu },
+  { kmNuMuToNuTauCCDIS, kNuMu },
+  { kmNuMuToNuTauCCCOH, kNuMu },
+  { kmNuMuToNuTauCCMEC, kNuMu },
+  { kmNuMuToNuTauNCQE, kNuMu },
+  { kmNuMuToNuTauNCRESpPi0, kNuMu },
+  { kmNuMuToNuTauNCRESpPiP, kNuMu },
+  { kmNuMuToNuTauNCRESnPi0, kNuMu },
+  { kmNuMuToNuTauNCRESnPiM, kNuMu },
+  { kmNuMuToNuTauNCDIS, kNuMu },
+  { kmNuMuToNuTauNCCOH, kNuMu },
+  { kmNuMuToNuTauNCMEC, kNuMu },
+  { kmNuMuBarToNuEBarCCQE, kNuMuBar },
+  { kmNuMuBarToNuEBarCCRESnPiM, kNuMuBar },
+  { kmNuMuBarToNuEBarCCRESpPi0, kNuMuBar },
+  { kmNuMuBarToNuEBarCCRESpPiM, kNuMuBar },
+  { kmNuMuBarToNuEBarCCDIS, kNuMuBar },
+  { kmNuMuBarToNuEBarCCCOH, kNuMuBar },
+  { kmNuMuBarToNuEBarCCMEC, kNuMuBar },
+  { kmNuMuBarToNuEBarNCQE, kNuMuBar },
+  { kmNuMuBarToNuEBarNCRESpPi0, kNuMuBar },
+  { kmNuMuBarToNuEBarNCRESpPiP, kNuMuBar },
+  { kmNuMuBarToNuEBarNCRESnPi0, kNuMuBar },
+  { kmNuMuBarToNuEBarNCRESnPiM, kNuMuBar },
+  { kmNuMuBarToNuEBarNCDIS, kNuMuBar },
+  { kmNuMuBarToNuEBarNCCOH, kNuMuBar },
+  { kmNuMuBarToNuEBarNCMEC, kNuMuBar },
+  { kmNuMuBarToNuTauBarCCQE, kNuMuBar },
+  { kmNuMuBarToNuTauBarCCRESnPiM, kNuMuBar },
+  { kmNuMuBarToNuTauBarCCRESpPi0, kNuMuBar },
+  { kmNuMuBarToNuTauBarCCRESpPiM, kNuMuBar },
+  { kmNuMuBarToNuTauBarCCDIS, kNuMuBar },
+  { kmNuMuBarToNuTauBarCCCOH, kNuMuBar },
+  { kmNuMuBarToNuTauBarCCMEC, kNuMuBar },
+  { kmNuMuBarToNuTauBarNCQE, kNuMuBar },
+  { kmNuMuBarToNuTauBarNCRESpPi0, kNuMuBar },
+  { kmNuMuBarToNuTauBarNCRESpPiP, kNuMuBar },
+  { kmNuMuBarToNuTauBarNCRESnPi0, kNuMuBar },
+  { kmNuMuBarToNuTauBarNCRESnPiM, kNuMuBar },
+  { kmNuMuBarToNuTauBarNCDIS, kNuMuBar },
+  { kmNuMuBarToNuTauBarNCCOH, kNuMuBar },
+  { kmNuMuBarToNuTauBarNCMEC, kNuMuBar },
+  { kmNuEToNuMuCCQE, kNuE },
+  { kmNuEToNuMuCCRESpPiP, kNuE },
+  { kmNuEToNuMuCCRESnPi0, kNuE },
+  { kmNuEToNuMuCCRESnPiP, kNuE },
+  { kmNuEToNuMuCCDIS, kNuE },
+  { kmNuEToNuMuCCCOH, kNuE },
+  { kmNuEToNuMuCCMEC, kNuE },
+  { kmNuEToNuMuNCQE, kNuE },
+  { kmNuEToNuMuNCRESpPi0, kNuE },
+  { kmNuEToNuMuNCRESpPiP, kNuE },
+  { kmNuEToNuMuNCRESnPi0, kNuE },
+  { kmNuEToNuMuNCRESnPiM, kNuE },
+  { kmNuEToNuMuNCDIS, kNuE },
+  { kmNuEToNuMuNCCOH, kNuE },
+  { kmNuEToNuMuNCMEC, kNuE },
+  { kmNuEToNuTauCCQE, kNuE },
+  { kmNuEToNuTauCCRESpPiP, kNuE },
+  { kmNuEToNuTauCCRESnPi0, kNuE },
+  { kmNuEToNuTauCCRESnPiP, kNuE },
+  { kmNuEToNuTauCCDIS, kNuE },
+  { kmNuEToNuTauCCCOH, kNuE },
+  { kmNuEToNuTauCCMEC, kNuE },
+  { kmNuEToNuTauNCQE, kNuE },
+  { kmNuEToNuTauNCRESpPi0, kNuE },
+  { kmNuEToNuTauNCRESpPiP, kNuE },
+  { kmNuEToNuTauNCRESnPi0, kNuE },
+  { kmNuEToNuTauNCRESnPiM, kNuE },
+  { kmNuEToNuTauNCDIS, kNuE },
+  { kmNuEToNuTauNCCOH, kNuE },
+  { kmNuEToNuTauNCMEC, kNuE },
+  { kmNuEBarToNuMuBarCCQE, kNuEBar },
+  { kmNuEBarToNuMuBarCCRESnPiM, kNuEBar },
+  { kmNuEBarToNuMuBarCCRESpPi0, kNuEBar },
+  { kmNuEBarToNuMuBarCCRESpPiM, kNuEBar },
+  { kmNuEBarToNuMuBarCCDIS, kNuEBar },
+  { kmNuEBarToNuMuBarCCCOH, kNuEBar },
+  { kmNuEBarToNuMuBarCCMEC, kNuEBar },
+  { kmNuEBarToNuMuBarNCQE, kNuEBar },
+  { kmNuEBarToNuMuBarNCRESpPi0, kNuEBar },
+  { kmNuEBarToNuMuBarNCRESpPiP, kNuEBar },
+  { kmNuEBarToNuMuBarNCRESnPi0, kNuEBar },
+  { kmNuEBarToNuMuBarNCRESnPiM, kNuEBar },
+  { kmNuEBarToNuMuBarNCDIS, kNuEBar },
+  { kmNuEBarToNuMuBarNCCOH, kNuEBar },
+  { kmNuEBarToNuMuBarNCMEC, kNuEBar },
+  { kmNuEBarToNuTauBarCCQE, kNuEBar },
+  { kmNuEBarToNuTauBarCCRESnPiM, kNuEBar },
+  { kmNuEBarToNuTauBarCCRESpPi0, kNuEBar },
+  { kmNuEBarToNuTauBarCCRESpPiM, kNuEBar },
+  { kmNuEBarToNuTauBarCCDIS, kNuEBar },
+  { kmNuEBarToNuTauBarCCCOH, kNuEBar },
+  { kmNuEBarToNuTauBarCCMEC, kNuEBar },
+  { kmNuEBarToNuTauBarNCQE, kNuEBar },
+  { kmNuEBarToNuTauBarNCRESpPi0, kNuEBar },
+  { kmNuEBarToNuTauBarNCRESpPiP, kNuEBar },
+  { kmNuEBarToNuTauBarNCRESnPi0, kNuEBar },
+  { kmNuEBarToNuTauBarNCRESnPiM, kNuEBar },
+  { kmNuEBarToNuTauBarNCDIS, kNuEBar },
+  { kmNuEBarToNuTauBarNCCOH, kNuEBar },
+  { kmNuEBarToNuTauBarNCMEC, kNuEBar },
+  { kmCohElastic, kNuFlavourUndefined },
+  { kmElScat, kNuFlavourUndefined },
+  { kmIMDAnh, kNuFlavourUndefined },
+  { kmIBD, kNuFlavourUndefined },
+  { kmGlashow, kNuFlavourUndefined },
+  { kmAMNuGamma, kNuFlavourUndefined },
+  { kmDiffractive, kNuFlavourUndefined },
+  { kmEM, kNuFlavourUndefined },
+  { kmWeakMix, kNuFlavourUndefined },
+  { kmCosmic, kCosmic },
+  { kmDirt, kDirt }
 };
 
 
