@@ -27,6 +27,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuCCRESpPiP   ): return "numuCCRESpPiP";
   case(kmNuMuCCRESnPi0   ): return "numuCCRESnPi0";
   case(kmNuMuCCRESnPiP   ): return "numuCCRESnPiP";
+  case(kmNuMuCCRESSPP    ): return "numuCCRESSPP";
   case(kmNuMuCCDIS       ): return "numuCCDIS";
   case(kmNuMuCCCOH       ): return "numuCCCOH";
   case(kmNuMuCCMEC       ): return "numuCCMEC";
@@ -35,6 +36,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuNCRESpPiP   ): return "numuNCRESpPiP";
   case(kmNuMuNCRESnPi0   ): return "numuNCRESnPi0";
   case(kmNuMuNCRESnPiM   ): return "numuNCRESnPiM";
+  case(kmNuMuNCRESSPP    ): return "numuNCRESSPP";
   case(kmNuMuNCDIS       ): return "numuNCDIS";
   case(kmNuMuNCCOH       ): return "numuNCCOH";
   case(kmNuMuNCMEC       ): return "numuNCMEC";
@@ -42,6 +44,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuBarCCRESnPiM): return "numubarCCRESnPiM";
   case(kmNuMuBarCCRESpPi0): return "numubarCCRESpPi0";
   case(kmNuMuBarCCRESpPiM): return "numubarCCRESpPiM";
+  case(kmNuMuBarCCRESSPP ): return "numubarCCRESSPP";
   case(kmNuMuBarCCDIS    ): return "numubarCCDIS";
   case(kmNuMuBarCCCOH    ): return "numubarCCCOH";
   case(kmNuMuBarCCMEC    ): return "numubarCCMEC";
@@ -50,6 +53,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuBarNCRESpPiP): return "numubarNCRESpPiP";
   case(kmNuMuBarNCRESnPi0): return "numubarNCRESnPi0";
   case(kmNuMuBarNCRESnPiM): return "numubarNCRESnPiM";
+  case(kmNuMuBarNCRESSPP ): return "numubarNCRESSPP";
   case(kmNuMuBarNCDIS    ): return "numubarNCDIS";
   case(kmNuMuBarNCCOH    ): return "numubarNCCOH";
   case(kmNuMuBarNCMEC    ): return "numubarNCMEC";
@@ -57,6 +61,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuECCRESpPiP    ): return "nueCCRESpPiP";
   case(kmNuECCRESnPi0    ): return "nueCCRESnPi0";
   case(kmNuECCRESnPiP    ): return "nueCCRESnPiP";
+  case(kmNuECCRESSPP     ): return "nueCCRESSPP";
   case(kmNuECCDIS        ): return "nueCCDIS";
   case(kmNuECCCOH        ): return "nueCCCOH";
   case(kmNuECCMEC        ): return "nueCCMEC";
@@ -65,6 +70,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuENCRESpPiP    ): return "nueNCRESpPiP";
   case(kmNuENCRESnPi0    ): return "nueNCRESnPi0";
   case(kmNuENCRESnPiM    ): return "nueNCRESnPiM";
+  case(kmNuENCRESSPP     ): return "nueNCRESSPP";
   case(kmNuENCDIS        ): return "nueNCDIS";
   case(kmNuENCCOH        ): return "nueNCCOH";
   case(kmNuENCMEC        ): return "nueNCMEC";
@@ -72,6 +78,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEBarCCRESnPiM ): return "nuebarCCRESnPiM";
   case(kmNuEBarCCRESpPi0 ): return "nuebarCCRESpPi0";
   case(kmNuEBarCCRESpPiM ): return "nuebarCCRESpPiM";
+  case(kmNuEBarCCRESSPP  ): return "nuebarCCRESSPP";
   case(kmNuEBarCCDIS     ): return "nuebarCCDIS";
   case(kmNuEBarCCCOH     ): return "nuebarCCCOH";
   case(kmNuEBarCCMEC     ): return "nuebarCCMEC";
@@ -80,6 +87,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEBarNCRESpPiP ): return "nuebarNCRESpPiP";
   case(kmNuEBarNCRESnPi0 ): return "nuebarNCRESnPi0";
   case(kmNuEBarNCRESnPiM ): return "nuebarNCRESnPiM";
+  case(kmNuEBarNCRESSPP  ): return "nuebarNCRESSPP";
   case(kmNuEBarNCDIS     ): return "nuebarNCDIS";
   case(kmNuEBarNCCOH     ): return "nuebarNCCOH";
   case(kmNuEBarNCMEC     ): return "nuebarNCMEC";
@@ -87,6 +95,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuToNuECCRESpPiP        ): return "numutonueCCRESpPiP";
   case(kmNuMuToNuECCRESnPi0        ): return "numutonueCCRESnPi0";
   case(kmNuMuToNuECCRESnPiP        ): return "numutonueCCRESnPiP";
+  case(kmNuMuToNuECCRESSPP         ): return "numutonueCCRESSPP";
   case(kmNuMuToNuECCDIS            ): return "numutonueCCDIS";
   case(kmNuMuToNuECCCOH            ): return "numutonueCCCOH";
   case(kmNuMuToNuECCMEC            ): return "numutonueCCMEC";
@@ -95,6 +104,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuToNuENCRESpPiP        ): return "numutonueNCRESpPiP";
   case(kmNuMuToNuENCRESnPi0        ): return "numutonueNCRESnPi0";
   case(kmNuMuToNuENCRESnPiM        ): return "numutonueNCRESnPiM";
+  case(kmNuMuToNuENCRESSPP         ): return "numutonueNCRESSPP";
   case(kmNuMuToNuENCDIS            ): return "numutonueNCDIS";
   case(kmNuMuToNuENCCOH            ): return "numutonueNCCOH";
   case(kmNuMuToNuENCMEC            ): return "numutonueNCMEC";
@@ -102,6 +112,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuToNuTauCCRESpPiP      ): return "numutonutauCCRESpPiP";
   case(kmNuMuToNuTauCCRESnPi0      ): return "numutonutauCCRESnPi0";
   case(kmNuMuToNuTauCCRESnPiP      ): return "numutonutauCCRESnPiP";
+  case(kmNuMuToNuTauCCRESSPP       ): return "numutonutauCCRESSPP";
   case(kmNuMuToNuTauCCDIS          ): return "numutonutauCCDIS";
   case(kmNuMuToNuTauCCCOH          ): return "numutonutauCCCOH";
   case(kmNuMuToNuTauCCMEC          ): return "numutonutauCCMEC";
@@ -110,6 +121,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuToNuTauNCRESpPiP      ): return "numutonutauNCRESpPiP";
   case(kmNuMuToNuTauNCRESnPi0      ): return "numutonutauNCRESnPi0";
   case(kmNuMuToNuTauNCRESnPiM      ): return "numutonutauNCRESnPiM";
+  case(kmNuMuToNuTauNCRESSPP       ): return "numutonutauNCRESSPP";
   case(kmNuMuToNuTauNCDIS          ): return "numutonutauNCDIS";
   case(kmNuMuToNuTauNCCOH          ): return "numutonutauNCCOH";
   case(kmNuMuToNuTauNCMEC          ): return "numutonutauNCMEC";
@@ -117,6 +129,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuBarToNuEBarCCRESnPiM  ): return "numubartonuebarCCRESnPiM";
   case(kmNuMuBarToNuEBarCCRESpPi0  ): return "numubartonuebarCCRESpPi0";
   case(kmNuMuBarToNuEBarCCRESpPiM  ): return "numubartonuebarCCRESpPiM";
+  case(kmNuMuBarToNuEBarCCRESSPP   ): return "numubartonuebarCCRESSPP";
   case(kmNuMuBarToNuEBarCCDIS      ): return "numubartonuebarCCDIS";
   case(kmNuMuBarToNuEBarCCCOH      ): return "numubartonuebarCCCOH";
   case(kmNuMuBarToNuEBarCCMEC      ): return "numubartonuebarCCMEC";
@@ -125,6 +138,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuBarToNuEBarNCRESpPiP  ): return "numubartonuebarNCRESpPiP";
   case(kmNuMuBarToNuEBarNCRESnPi0  ): return "numubartonuebarNCRESnPi0";
   case(kmNuMuBarToNuEBarNCRESnPiM  ): return "numubartonuebarNCRESnPiM";
+  case(kmNuMuBarToNuEBarNCRESSPP   ): return "numubartonuebarNCRESSPP";
   case(kmNuMuBarToNuEBarNCDIS      ): return "numubartonuebarNCDIS";
   case(kmNuMuBarToNuEBarNCCOH      ): return "numubartonuebarNCCOH";
   case(kmNuMuBarToNuEBarNCMEC      ): return "numubartonuebarNCMEC";
@@ -132,6 +146,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuBarToNuTauBarCCRESnPiM): return "numubartonutaubarCCRESnPiM";
   case(kmNuMuBarToNuTauBarCCRESpPi0): return "numubartonutaubarCCRESpPi0";
   case(kmNuMuBarToNuTauBarCCRESpPiM): return "numubartonutaubarCCRESpPiM";
+  case(kmNuMuBarToNuTauBarCCRESSPP ): return "numubartonutaubarCCRESSPP";
   case(kmNuMuBarToNuTauBarCCDIS    ): return "numubartonutaubarCCDIS";
   case(kmNuMuBarToNuTauBarCCCOH    ): return "numubartonutaubarCCCOH";
   case(kmNuMuBarToNuTauBarCCMEC    ): return "numubartonutaubarCCMEC";
@@ -140,6 +155,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuMuBarToNuTauBarNCRESpPiP): return "numubartonutaubarNCRESpPiP";
   case(kmNuMuBarToNuTauBarNCRESnPi0): return "numubartonutaubarNCRESnPi0";
   case(kmNuMuBarToNuTauBarNCRESnPiM): return "numubartonutaubarNCRESnPiM";
+  case(kmNuMuBarToNuTauBarNCRESSPP ): return "numubartonutaubarNCRESSPP";
   case(kmNuMuBarToNuTauBarNCDIS    ): return "numubartonutaubarNCDIS";
   case(kmNuMuBarToNuTauBarNCCOH    ): return "numubartonutaubarNCCOH";
   case(kmNuMuBarToNuTauBarNCMEC    ): return "numubartonutaubarNCMEC";
@@ -147,6 +163,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEToNuMuCCRESpPiP        ): return "nuetonumuCCRESpPiP";
   case(kmNuEToNuMuCCRESnPi0        ): return "nuetonumuCCRESnPi0";
   case(kmNuEToNuMuCCRESnPiP        ): return "nuetonumuCCRESnPiP";
+  case(kmNuEToNuMuCCRESSPP         ): return "nuetonumuCCRESSPP";
   case(kmNuEToNuMuCCDIS            ): return "nuetonumuCCDIS";
   case(kmNuEToNuMuCCCOH            ): return "nuetonumuCCCOH";
   case(kmNuEToNuMuCCMEC            ): return "nuetonumuCCMEC";
@@ -155,6 +172,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEToNuMuNCRESpPiP        ): return "nuetonumuNCRESpPiP";
   case(kmNuEToNuMuNCRESnPi0        ): return "nuetonumuNCRESnPi0";
   case(kmNuEToNuMuNCRESnPiM        ): return "nuetonumuNCRESnPiM";
+  case(kmNuEToNuMuNCRESSPP         ): return "nuetonumuNCRESSPP";
   case(kmNuEToNuMuNCDIS            ): return "nuetonumuNCDIS";
   case(kmNuEToNuMuNCCOH            ): return "nuetonumuNCCOH";
   case(kmNuEToNuMuNCMEC            ): return "nuetonumuNCMEC";
@@ -162,6 +180,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEToNuTauCCRESpPiP       ): return "nuetonutauCCRESpPiP";
   case(kmNuEToNuTauCCRESnPi0       ): return "nuetonutauCCRESnPi0";
   case(kmNuEToNuTauCCRESnPiP       ): return "nuetonutauCCRESnPiP";
+  case(kmNuEToNuTauCCRESSPP        ): return "nuetonutauCCRESSPP";
   case(kmNuEToNuTauCCDIS           ): return "nuetonutauCCDIS";
   case(kmNuEToNuTauCCCOH           ): return "nuetonutauCCCOH";
   case(kmNuEToNuTauCCMEC           ): return "nuetonutauCCMEC";
@@ -170,6 +189,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEToNuTauNCRESpPiP       ): return "nuetonutauNCRESpPiP";
   case(kmNuEToNuTauNCRESnPi0       ): return "nuetonutauNCRESnPi0";
   case(kmNuEToNuTauNCRESnPiM       ): return "nuetonutauNCRESnPiM";
+  case(kmNuEToNuTauNCRESSPP        ): return "nuetonutauNCRESSPP";
   case(kmNuEToNuTauNCDIS           ): return "nuetonutauNCDIS";
   case(kmNuEToNuTauNCCOH           ): return "nuetonutauNCCOH";
   case(kmNuEToNuTauNCMEC           ): return "nuetonutauNCMEC";
@@ -177,6 +197,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEBarToNuMuBarCCRESnPiM  ): return "nuebartonumubarCCRESnPiM";
   case(kmNuEBarToNuMuBarCCRESpPi0  ): return "nuebartonumubarCCRESpPi0";
   case(kmNuEBarToNuMuBarCCRESpPiM  ): return "nuebartonumubarCCRESpPiM";
+  case(kmNuEBarToNuMuBarCCRESSPP   ): return "nuebartonumubarCCRESSPP";
   case(kmNuEBarToNuMuBarCCDIS      ): return "nuebartonumubarCCDIS";
   case(kmNuEBarToNuMuBarCCCOH      ): return "nuebartonumubarCCCOH";
   case(kmNuEBarToNuMuBarCCMEC      ): return "nuebartonumubarCCMEC";
@@ -185,6 +206,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEBarToNuMuBarNCRESpPiP  ): return "nuebartonumubarNCRESpPiP";
   case(kmNuEBarToNuMuBarNCRESnPi0  ): return "nuebartonumubarNCRESnPi0";
   case(kmNuEBarToNuMuBarNCRESnPiM  ): return "nuebartonumubarNCRESnPiM";
+  case(kmNuEBarToNuMuBarNCRESSPP   ): return "nuebartonumubarNCRESSPP";
   case(kmNuEBarToNuMuBarNCDIS      ): return "nuebartonumubarNCDIS";
   case(kmNuEBarToNuMuBarNCCOH      ): return "nuebartonumubarNCCOH";
   case(kmNuEBarToNuMuBarNCMEC      ): return "nuebartonumubarNCMEC";
@@ -192,6 +214,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEBarToNuTauBarCCRESnPiM ): return "nuebartonutaubarCCRESnPiM";
   case(kmNuEBarToNuTauBarCCRESpPi0 ): return "nuebartonutaubarCCRESpPi0";
   case(kmNuEBarToNuTauBarCCRESpPiM ): return "nuebartonutaubarCCRESpPiM";
+  case(kmNuEBarToNuTauBarCCRESSPP  ): return "nuebartonutaubarCCRESSPP";
   case(kmNuEBarToNuTauBarCCDIS     ): return "nuebartonutaubarCCDIS";
   case(kmNuEBarToNuTauBarCCCOH     ): return "nuebartonutaubarCCCOH";
   case(kmNuEBarToNuTauBarCCMEC     ): return "nuebartonutaubarCCMEC";
@@ -200,6 +223,7 @@ string util::AsString(ReacMode_t m)
   case(kmNuEBarToNuTauBarNCRESpPiP ): return "nuebartonutaubarNCRESpPiP";
   case(kmNuEBarToNuTauBarNCRESnPi0 ): return "nuebartonutaubarNCRESnPi0";
   case(kmNuEBarToNuTauBarNCRESnPiM ): return "nuebartonutaubarNCRESnPiM";
+  case(kmNuEBarToNuTauBarNCRESSPP  ): return "nuebartonutaubarNCRESSPP";
   case(kmNuEBarToNuTauBarNCDIS     ): return "nuebartonutaubarNCDIS";
   case(kmNuEBarToNuTauBarNCCOH     ): return "nuebartonutaubarNCCOH";
   case(kmNuEBarToNuTauBarNCMEC     ): return "nuebartonutaubarNCMEC";
@@ -433,9 +457,11 @@ std::string util::AsString(conv::ReacType_t t)
   case(kmtCCRESvpPiP ): return "CCRESvpPiP";
   case(kmtCCRESvnPi0 ): return "CCRESvnPi0";
   case(kmtCCRESvnPiP ): return "CCRESvnPiP";
+  case(kmtCCRESvSPP  ): return "CCRESvSPP";
   case(kmtCCRESvbnPiM): return "CCRESvbnPiM";
   case(kmtCCRESvbpPi0): return "CCRESvbpPi0";
   case(kmtCCRESvbpPiM): return "CCRESvbpPiM";
+  case(kmtCCRESvbSPP ): return "CCRESvbSPP";
   case(kmtCCDIS      ): return "CCDIS";
   case(kmtCCCOH      ): return "CCCOH";
   case(kmtCCMEC      ): return "CCMEC";
@@ -444,10 +470,12 @@ std::string util::AsString(conv::ReacType_t t)
   case(kmtNCRESvpPiP ): return "NCRESvpPiP";
   case(kmtNCRESvnPi0 ): return "NCRESvnPi0";
   case(kmtNCRESvnPiM ): return "NCRESvnPiM";
+  case(kmtNCRESvSPP  ): return "NCRESvSPP";
   case(kmtNCRESvbpPi0): return "NCRESvbpPi0";
   case(kmtNCRESvbpPiP): return "NCRESvbpPiP";
   case(kmtNCRESvbnPi0): return "NCRESvbnPi0";
   case(kmtNCRESvbnPiM): return "NCRESvbnPiM";
+  case(kmtNCRESvbSPP ): return "NCRESvbSPP";
   case(kmtNCDIS      ): return "NCDIS";
   case(kmtNCCOH      ): return "NCCOH";
   case(kmtNCMEC      ): return "NCMEC";

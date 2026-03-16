@@ -1788,6 +1788,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       //util::Die(-1);return;
     }
 
+    /*
     //  ================ NOTE - HACKS ================
     if(s == ksNuMuCC2piC) {
       VLOG("HACK",pNOTICE) 
@@ -1795,6 +1796,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
         << " not considered separately. Bundle in sample: " << util::AsString(ksNearNuMuCC_Other);
       s = ksNearNuMuCC_Other;
     }
+    */
 
 #ifdef FORCE_NC_INCLUSIVE
     if(util::IsNC(s)) {

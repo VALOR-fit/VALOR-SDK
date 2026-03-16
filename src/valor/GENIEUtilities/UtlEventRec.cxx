@@ -189,6 +189,13 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
   bool is_NuEEl    = event->Summary()->ProcInfo().IsNuElectronElastic();
   bool is_IMD      = event->Summary()->ProcInfo().IsInverseMuDecay();
   bool is_IMDanh   = event->Summary()->ProcInfo().IsIMDAnnihilation();
+  bool is_RES      = event->Summary()->ProcInfo().IsResonant();
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,6,0)
+  bool is_SPP      = event->Summary()->ProcInfo().IsSinglePion();
+#else
+  bool is_SPP      = false;
+#endif 
+  bool is_DIS      = event->Summary()->ProcInfo().IsDeepInelastic();
   
 #if __GENIE_RELEASE_CODE__ >= GRELCODE(3,4,0)
   bool is_Coherent = event->Summary()->ProcInfo().IsCoherentProduction();
@@ -200,6 +207,13 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
     VLOG("UtlEventRec",pWARN)<<"Ignoring NuEEl event.";
     return conv::kmUndefined;
     }*/
+
+  // For new types that distinguish exclusive state for is_res, we'll need the struck nucleon
+  // and the outgoing primary pion's charge
+  bool is_nup = event->Summary()->InitState().IsNuP();
+  bool is_nun = event->Summary()->InitState().IsNuN();
+  bool is_nubarp = event->Summary()->InitState().IsNuBarP();
+  bool is_nubarn = event->Summary()->InitState().IsNuBarN();
   
   std::vector<int> primary_hadr_system;
   std::vector<int> final_hadr_system;
@@ -270,86 +284,195 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
   // First do exclusive modes
   if(is_numu) {
     if(is_CC) {
-      if (is_QE)       { modes.push_back(conv::kmNuMuCCQE    ); } // numu    CC QE
-      if (is_MEC)      { modes.push_back(conv::kmNuMuCCMEC   ); } // numu    CC MEC
-      if (is_1piC)     { modes.push_back(conv::kmNuMuCC1piC  ); } // numu    CC 1 pi+/-
-      if (is_1pi0)     { modes.push_back(conv::kmNuMuCC1pi0  ); } // numu    CC 1 pi0
-      if (is_2piC)     { modes.push_back(conv::kmNuMuCC2piC  ); } // numu    CC 2 pi+/-
-      if (is_2pi0)     { modes.push_back(conv::kmNuMuCC2pi0  ); } // numu    CC 2 pi0
-      if (is_1piC1pi0) { modes.push_back(conv::kmNuMuCCpiCpi0); } // numu    CC 1 pi0 + 1 pi+/-
-      if (is_Coherent) { modes.push_back(conv::kmNuMuCCcoh   ); } // numu    CC coherent
-      if (is_IMD)      { modes.push_back(conv::kmNuMuCCIMD   ); } // numu    CC IMD
+      if (is_QE)       { modes.push_back(conv::kmNuMuCCQE     ); } // numu    CC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuMuCCMEC    ); } // numu    CC MEC
+      if (is_Coherent) { modes.push_back(conv::kmNuMuCCCOH    ); } // numu    CC coherent
+      if (is_IMD)      { modes.push_back(conv::kmIMDAnh       ); } // numu    CC IMD
+      if (is_DIS)      { modes.push_back(conv::kmNuMuCCDIS    ); } // numu    CC DIS
+      if (is_SPP)      { modes.push_back(conv::kmNuMuCCRESSPP ); } // numu    CC Resonant single pi
+      if (is_RES)      {
+	if( is_nup )   { modes.push_back(conv::kmNuMuCCRESpPiP); } // v + p --> mu- + p + pi+
+	if( is_nun )   { 
+	  if( nPip == 1 && nPi0 == 0 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuCCRESnPiP); } // v + n --> mu- + n + pi+
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuCCRESnPi0); } // v + n --> mu- + p + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	else { modes.push_back( conv::kmUndefined ); } // problem
+      }
+      else { modes.push_back( conv::kmUndefined ); } // problem
     }
     if(is_NC) {
-      if (is_1piC)     { modes.push_back(conv::kmNuMuNC1piC  ); } // numu    NC 1 pi+/-
-      if (is_1pi0)     { modes.push_back(conv::kmNuMuNC1pi0  ); } // numu    NC 1 pi0
-      if (is_Coherent) { modes.push_back(conv::kmNuMuNCcoh   ); } // numu    NC coherent
+      if (is_QE)       { modes.push_back(conv::kmNuMuNCQE     ); } // numu    NC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuMuNCMEC    ); } // numu    NC MEC
+      if (is_Coherent) { modes.push_back(conv::kmNuMuNCCOH    ); } // numu    NC coherent
+      if (is_DIS)      { modes.push_back(conv::kmNuMuNCDIS    ); } // numu    NC DIS
+      if (is_SPP)      { modes.push_back(conv::kmNuMuNCRESSPP ); } // numu    NC Resonant single pi
+      if (is_RES)      {
+	if( is_nup )   { 
+	  if( nPip == 1 && nPi0 == 0 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuNCRESpPiP); } // v + p --> v + n + pi+
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuNCRESpPi0); } // v + p --> v + p + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	if( is_nun )   { 
+	  if( nPip == 0 && nPi0 == 0 && nPim == 1 ) 
+	    { modes.push_back(conv::kmNuMuNCRESnPiM); } // v + n --> v + p + pi-
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuNCRESnPi0); } // v + n --> v + n + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	else { modes.push_back( conv::kmUndefined ); } // problem
+      }
+      else { modes.push_back( conv::kmUndefined ); } // problem
     }
-    if (is_ccnuel) { modes.push_back(conv::kmNuMuCCELScat   ); } // numu + electron CC
-    if (is_ncnuel) { modes.push_back(conv::kmNuMuNCELScat   ); } // numu + electron NC
-  }
+  } // numu
 
   if(is_numubar) {
     if(is_CC) {
-      if (is_QE)       { modes.push_back(conv::kmNuMuBarCCQE    ); } // numubar CC QE
-      if (is_MEC)      { modes.push_back(conv::kmNuMuBarCCMEC   ); } // numubar CC MEC
-      if (is_1piC)     { modes.push_back(conv::kmNuMuBarCC1piC  ); } // numubar CC 1 pi+/-
-      if (is_1pi0)     { modes.push_back(conv::kmNuMuBarCC1pi0  ); } // numubar CC 1 pi0
-      if (is_2piC)     { modes.push_back(conv::kmNuMuBarCC2piC  ); } // numubar CC 2 pi+/-
-      if (is_2pi0)     { modes.push_back(conv::kmNuMuBarCC2pi0  ); } // numubar CC 2 pi0
-      if (is_1piC1pi0) { modes.push_back(conv::kmNuMuBarCCpiCpi0); } // numubar CC 1 pi0 + 1 pi+/-
-      if (is_Coherent) { modes.push_back(conv::kmNuMuBarCCcoh   ); } // numubar CC coherent
+      if (is_QE)       { modes.push_back(conv::kmNuMuBarCCQE     ); } // numu    CC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuMuBarCCMEC    ); } // numu    CC MEC
+      if (is_Coherent) { modes.push_back(conv::kmNuMuBarCCCOH    ); } // numu    CC coherent
+      if (is_DIS)      { modes.push_back(conv::kmNuMuBarCCDIS    ); } // numu    CC DIS
+      if (is_SPP)      { modes.push_back(conv::kmNuMuBarCCRESSPP ); } // numu    CC Resonant single pi
+      if (is_RES)      {
+	if( is_nun )   { modes.push_back(conv::kmNuMuBarCCRESnPiM); } // vb + n --> mu+ + n + pi-
+	if( is_nup )   { 
+	  if( nPip == 0 && nPi0 == 0 && nPim == 1 ) 
+	    { modes.push_back(conv::kmNuMuBarCCRESpPiM); } // vb + p --> mu+ + p + pi-
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuBarCCRESpPi0); } // vb + p --> mu+ + n + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	else { modes.push_back( conv::kmUndefined ); } // problem
+      }
+      else { modes.push_back( conv::kmUndefined ); } // problem
     }
     if(is_NC) {
-      if (is_1piC)     { modes.push_back(conv::kmNuMuBarNC1piC ); } // numubar NC 1 pi+/-
-      if (is_1pi0)     { modes.push_back(conv::kmNuMuBarNC1pi0 ); } // numubar NC 1 pi0
-      if (is_Coherent) { modes.push_back(conv::kmNuMuBarNCcoh  ); } // numubar NC coherent
+      if (is_QE)       { modes.push_back(conv::kmNuMuBarNCQE     ); } // numu    NC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuMuBarNCMEC    ); } // numu    NC MEC
+      if (is_Coherent) { modes.push_back(conv::kmNuMuBarNCCOH    ); } // numu    NC coherent
+      if (is_DIS)      { modes.push_back(conv::kmNuMuBarNCDIS    ); } // numu    NC DIS
+      if (is_SPP)      { modes.push_back(conv::kmNuMuBarNCRESSPP ); } // numu    NC Resonant single pi
+      if (is_RES)      {
+	if( is_nup )   { 
+	  if( nPip == 1 && nPi0 == 0 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuBarNCRESpPiP); } // vb + p --> v + n + pi+
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuBarNCRESpPi0); } // vb + p --> v + p + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	if( is_nun )   { 
+	  if( nPip == 0 && nPi0 == 0 && nPim == 1 ) 
+	    { modes.push_back(conv::kmNuMuBarNCRESnPiM); } // vb + n --> v + p + pi-
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuMuBarNCRESnPi0); } // vb + n --> v + n + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	else { modes.push_back( conv::kmUndefined ); } // problem
+      }
+      else { modes.push_back( conv::kmUndefined ); } // problem
     }
-    if (is_ccnuel) { modes.push_back(conv::kmNuMuBarCCELScat   ); } // numubar + electron CC                                                 
-    if (is_ncnuel) { modes.push_back(conv::kmNuMuBarNCELScat   ); } // numubar + electron NC    
-  }
+  } // numubar
 
-  //
   if(is_nue) {
     if(is_CC) {
-      if (is_QE)       { modes.push_back(conv::kmNuECCQE       );}     // nue     CC QE
-      if (is_MEC)      { modes.push_back(conv::kmNuECCMEC      );}     // nue     CC MEC
-      if (is_1piC)     { modes.push_back(conv::kmNuECC1piC     );}     // nue     CC 1 pi+/-
-      if (is_1pi0)     { modes.push_back(conv::kmNuECC1pi0     );}     // nue     CC 1 pi0
-      if (is_2piC)     { modes.push_back(conv::kmNuECC2piC     );}     // nue     CC 2 pi+/-
-      if (is_2pi0)     { modes.push_back(conv::kmNuECC2pi0     );}     // nue     CC 2 pi0
-      if (is_1piC1pi0) { modes.push_back(conv::kmNuECCpiCpi0   );}     // nue     CC 1 pi0 + 1 pi+/-
-      if (is_Coherent) { modes.push_back(conv::kmNuECCcoh      );}     // nue     CC coherent
+      if (is_QE)       { modes.push_back(conv::kmNuECCQE     ); } // nue    CC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuECCMEC    ); } // nue    CC MEC
+      if (is_Coherent) { modes.push_back(conv::kmNuECCCOH    ); } // nue    CC coherent
+      if (is_IMD)      { modes.push_back(conv::kmIMDAnh       ); } // nue    CC IMD
+      if (is_DIS)      { modes.push_back(conv::kmNuECCDIS    ); } // nue    CC DIS
+      if (is_SPP)      { modes.push_back(conv::kmNuECCRESSPP ); } // nue    CC Resonant single pi
+      if (is_RES)      {
+	if( is_nup )   { modes.push_back(conv::kmNuECCRESpPiP); } // v + p --> e- + p + pi+
+	if( is_nun )   { 
+	  if( nPip == 1 && nPi0 == 0 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuECCRESnPiP); } // v + n --> e- + n + pi+
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuECCRESnPi0); } // v + n --> e- + p + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	else { modes.push_back( conv::kmUndefined ); } // problem
+      }
+      else { modes.push_back( conv::kmUndefined ); } // problem
     }
     if(is_NC) {
-      if (is_1piC)     { modes.push_back(conv::kmNuENC1piC     );}     // nue     NC 1 pi+/-
-      if (is_1pi0)     { modes.push_back(conv::kmNuENC1pi0     );}     // nue     NC 1 pi0
-      if (is_Coherent) { modes.push_back(conv::kmNuENCcoh      );}     // nue     NC coherent
+      if (is_QE)       { modes.push_back(conv::kmNuENCQE     ); } // nue    NC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuENCMEC    ); } // nue    NC MEC
+      if (is_Coherent) { modes.push_back(conv::kmNuENCCOH    ); } // nue    NC coherent
+      if (is_DIS)      { modes.push_back(conv::kmNuENCDIS    ); } // nue    NC DIS
+      if (is_SPP)      { modes.push_back(conv::kmNuENCRESSPP ); } // nue    NC Resonant single pi
+      if (is_RES)      {
+	if( is_nup )   { 
+	  if( nPip == 1 && nPi0 == 0 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuENCRESpPiP); } // v + p --> v + n + pi+
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuENCRESpPi0); } // v + p --> v + p + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	if( is_nun )   { 
+	  if( nPip == 0 && nPi0 == 0 && nPim == 1 ) 
+	    { modes.push_back(conv::kmNuENCRESnPiM); } // v + n --> v + p + pi-
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuENCRESnPi0); } // v + n --> v + n + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	else { modes.push_back( conv::kmUndefined ); } // problem
+      }
+      else { modes.push_back( conv::kmUndefined ); } // problem
     }
-    if(is_NuEEl) { modes.push_back(conv::kmNuEELScat     );}     // nue + electron scattering (NC + CC + interference)
-  }
-  
-  //
+  } // nue
+
   if(is_nuebar) {
     if(is_CC) {
-      if (is_QE)       { modes.push_back(conv::kmNuEBarCCQE    );}     // nuebar  CC QE
-      if (is_MEC)      { modes.push_back(conv::kmNuEBarCCMEC   );}     // nuebar  CC MEC
-      if (is_1piC)     { modes.push_back(conv::kmNuEBarCC1piC  );}     // nuebar  CC 1 pi+/-
-      if (is_1pi0)     { modes.push_back(conv::kmNuEBarCC1pi0  );}     // nuebar  CC 1 pi0
-      if (is_2piC)     { modes.push_back(conv::kmNuEBarCC2piC  );}     // nuebar  CC 2 pi+/-
-      if (is_2pi0)     { modes.push_back(conv::kmNuEBarCC2pi0  );}     // nuebar  CC 2 pi0
-      if (is_1piC1pi0) { modes.push_back(conv::kmNuEBarCCpiCpi0);}     // nuebar  CC 1 pi0 + 1 pi+/-
-      if (is_Coherent) { modes.push_back(conv::kmNuEBarCCcoh   );}     // nuebar  CC coherent
-      if (is_IMDanh)   { modes.push_back(conv::kmNuEBarCCIMD   );}     // nuebar  CC IMD annihilation 
+      if (is_QE)       { modes.push_back(conv::kmNuEBarCCQE     ); } // nue    CC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuEBarCCMEC    ); } // nue    CC MEC
+      if (is_Coherent) { modes.push_back(conv::kmNuEBarCCCOH    ); } // nue    CC coherent
+      if (is_DIS)      { modes.push_back(conv::kmNuEBarCCDIS    ); } // nue    CC DIS
+      if (is_SPP)      { modes.push_back(conv::kmNuEBarCCRESSPP ); } // nue    CC Resonant single pi
+      if (is_RES)      {
+	if( is_nun )   { modes.push_back(conv::kmNuEBarCCRESnPiM); } // vb + n --> e+ + n + pi-
+	if( is_nup )   { 
+	  if( nPip == 0 && nPi0 == 0 && nPim == 1 ) 
+	    { modes.push_back(conv::kmNuEBarCCRESpPiM); } // vb + p --> e+ + p + pi-
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuEBarCCRESpPi0); } // vb + p --> e+ + n + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	else { modes.push_back( conv::kmUndefined ); } // problem
+      }
+      else { modes.push_back( conv::kmUndefined ); } // problem
     }
     if(is_NC) {
-      if (is_1piC)     { modes.push_back(conv::kmNuEBarNC1piC );}     // nuebar  NC 1 pi+/-
-      if (is_1pi0)     { modes.push_back(conv::kmNuEBarNC1pi0 );}     // nuebar  NC 1 pi0
-      if (is_Coherent) { modes.push_back(conv::kmNuEBarNCcoh  );}     // nuebar  NC coherent
+      if (is_QE)       { modes.push_back(conv::kmNuEBarNCQE     ); } // nue    NC QE
+      if (is_MEC)      { modes.push_back(conv::kmNuEBarNCMEC    ); } // nue    NC MEC
+      if (is_Coherent) { modes.push_back(conv::kmNuEBarNCCOH    ); } // nue    NC coherent
+      if (is_DIS)      { modes.push_back(conv::kmNuEBarNCDIS    ); } // nue    NC DIS
+      if (is_SPP)      { modes.push_back(conv::kmNuEBarNCRESSPP ); } // nue    NC Resonant single pi
+      if (is_RES)      {
+	if( is_nup )   { 
+	  if( nPip == 1 && nPi0 == 0 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuEBarNCRESpPiP); } // vb + p --> v + n + pi+
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuEBarNCRESpPi0); } // vb + p --> v + p + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	if( is_nun )   { 
+	  if( nPip == 0 && nPi0 == 0 && nPim == 1 ) 
+	    { modes.push_back(conv::kmNuEBarNCRESnPiM); } // vb + n --> v + p + pi-
+	  else if( nPip == 0 && nPi0 == 1 && nPim == 0 ) 
+	    { modes.push_back(conv::kmNuEBarNCRESnPi0); } // vb + n --> v + n + pi0
+	  else { modes.push_back( conv::kmUndefined ); } // problem
+	}
+	else { modes.push_back( conv::kmUndefined ); } // problem
+      }
+      else { modes.push_back( conv::kmUndefined ); } // problem
     }
-    if(is_NuEEl) { modes.push_back(conv::kmNuEBarELScat     );}     // nuebar + electron scattering (NC + CC + interference)
-  }
+  } // nuebar
   
+  /*
   // If we've got one exclusive mode, we did well.
   if (modes.size() == 1) {
     return modes[0];
@@ -383,6 +506,7 @@ conv::ReacMode_t valor::util::DetermineReactionMode(const genie::EventRecord * e
       <<"\nFull record: "<<*event;
       util::Die(-1);
   }
+  */
 
   return conv::kmUndefined;
 }

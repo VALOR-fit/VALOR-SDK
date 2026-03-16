@@ -30,8 +30,13 @@ const FlavApplyMask_t valor::conv::kfApplyToAllCosmic = kfApplyToAll     | kfApp
 const FlavApplyMask_t valor::conv::kfApplyToAllDirt   = kfApplyToAllCosmic     | kfApplyToDirt;
 
 // Reaction type
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllCCRES = ktApplyToCCvRES   | ktApplyToCCvbRES;
-const ReacTypeApplyMask_t valor::conv::ktApplyToAllNCRES = ktApplyToNCvRES   | ktApplyToNCvbRES;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllCCRES = ktApplyToCCRESvpPiP | ktApplyToCCRESvnPi0 |
+  ktApplyToCCRESvnPiP | ktApplyToCCRESvSPP | ktApplyToCCRESvbnPiM | ktApplyToCCRESvbpPi0 |
+  ktApplyToCCRESvbpPiM | ktApplyToCCRESvbSPP;
+const ReacTypeApplyMask_t valor::conv::ktApplyToAllNCRES = ktApplyToNCRESvnPiM | ktApplyToNCRESvnPi0 |
+  ktApplyToNCRESvpPiP | ktApplyToNCRESvnPi0 | ktApplyToNCRESvSPP | 
+  ktApplyToNCRESvbnPiM | ktApplyToNCRESvbnPi0 |
+  ktApplyToNCRESvbpPiP | ktApplyToNCRESvbnPi0 | ktApplyToNCRESvbSPP;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllRES   = ktApplyToAllCCRES | ktApplyToAllNCRES;
 const ReacTypeApplyMask_t valor::conv::ktApplyToAllCC    = ktApplyToCCQE | ktApplyToAllCCRES | 
   ktApplyToCCDIS | ktApplyToCCCOH | ktApplyToCCMEC;
@@ -244,14 +249,28 @@ void valor::util::ApplyMaskNaming::Init(void)
 
   // Reaction type mask names
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCQE         , "ccqe") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCvRES       , "ccvres") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCvbRES      , "ccvbres") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCRESvpPiP   , "ccresvppip") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCRESvnPi0   , "ccresvnpi0") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCRESvnPiP   , "ccresvnpip") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCRESvSPP    , "ccresvspp") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCRESvbnPiM   , "ccresvbnpim") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCRESvbpPi0   , "ccresvbppi0") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCRESvbpPiM   , "ccresvbppim") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCRESvbSPP    , "ccresvbspp") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCDIS        , "ccdis") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCCOH        , "cccoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToCCMEC        , "ccmec") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCQE         , "ncqe") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCvRES       , "ncvres") );
-  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCvbRES      , "ncvbres") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvpPi0   , "ncresvppi0") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvpPiP   , "ncresvppip") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvnPi0   , "ncresvnpi0") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvnPiM   , "ncresvnpim") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvSPP    , "ncresvspp") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvbpPi0   , "ncresvbppi0") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvbpPiP   , "ncresvbppip") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvbnPi0   , "ncresvbnpi0") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvbnPiM   , "ncresvbnpim") );
+  fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCRESvSPP    , "ncvresvspp") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCDIS        , "ncdis") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCCOH        , "nccoh") );
   fReacTypeMaskToName.insert( std::make_pair(ktApplyToNCMEC        , "ncmec") );
@@ -455,24 +474,28 @@ const ReacTypeApplyMask_t valor::util::ApplyToReacType(conv::ReacType_t t)
 {
   switch (t) {
   case kmtCCQE        : return ktApplyToCCQE;
-  case kmtCCRESvpPiP  : return ktApplyToCCvRES;
-  case kmtCCRESvnPi0  : return ktApplyToCCvRES;
-  case kmtCCRESvnPiP  : return ktApplyToCCvRES;
-  case kmtCCRESvbnPiM : return ktApplyToCCvbRES;
-  case kmtCCRESvbpPi0 : return ktApplyToCCvbRES;
-  case kmtCCRESvbpPiM : return ktApplyToCCvbRES;
+  case kmtCCRESvpPiP  : return ktApplyToCCRESvpPiP;
+  case kmtCCRESvnPi0  : return ktApplyToCCRESvnPi0;
+  case kmtCCRESvnPiP  : return ktApplyToCCRESvnPiP;
+  case kmtCCRESvSPP   : return ktApplyToCCRESvSPP;
+  case kmtCCRESvbnPiM : return ktApplyToCCRESvbnPiM;
+  case kmtCCRESvbpPi0 : return ktApplyToCCRESvbpPi0;
+  case kmtCCRESvbpPiM : return ktApplyToCCRESvbpPiM;
+  case kmtCCRESvbSPP  : return ktApplyToCCRESvbSPP;
   case kmtCCDIS       : return ktApplyToCCDIS;
   case kmtCCCOH       : return ktApplyToCCCOH;
   case kmtCCMEC       : return ktApplyToCCMEC;
   case kmtNCQE        : return ktApplyToNCQE;
-  case kmtNCRESvpPi0  : return ktApplyToNCvRES;
-  case kmtNCRESvpPiP  : return ktApplyToNCvRES;
-  case kmtNCRESvnPi0  : return ktApplyToNCvRES;
-  case kmtNCRESvnPiM  : return ktApplyToNCvRES;
-  case kmtNCRESvbnPi0 : return ktApplyToNCvbRES;
-  case kmtNCRESvbnPiM : return ktApplyToNCvbRES;
-  case kmtNCRESvbpPi0 : return ktApplyToNCvbRES;
-  case kmtNCRESvbpPiP : return ktApplyToNCvbRES;
+  case kmtNCRESvpPi0  : return ktApplyToNCRESvpPi0;
+  case kmtNCRESvpPiP  : return ktApplyToNCRESvpPiP;
+  case kmtNCRESvnPi0  : return ktApplyToNCRESvnPi0;
+  case kmtNCRESvnPiM  : return ktApplyToNCRESvnPiM;
+  case kmtNCRESvSPP   : return ktApplyToNCRESvSPP;
+  case kmtNCRESvbpPi0 : return ktApplyToNCRESvbpPi0;
+  case kmtNCRESvbpPiP : return ktApplyToNCRESvbpPiP;
+  case kmtNCRESvbnPi0 : return ktApplyToNCRESvbnPi0;
+  case kmtNCRESvbnPiM : return ktApplyToNCRESvbnPiM;
+  case kmtNCRESvbSPP  : return ktApplyToNCRESvbSPP;
   case kmtNCDIS       : return ktApplyToNCDIS;
   case kmtNCCOH       : return ktApplyToNCCOH;
   case kmtNCMEC       : return ktApplyToNCMEC;
