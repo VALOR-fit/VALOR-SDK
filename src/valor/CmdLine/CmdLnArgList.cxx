@@ -117,7 +117,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
 
       bool is_int       = (type == "integer");
       bool is_dbl       = (type == "double");
-      bool is_dblvec    = (type == "doublevec");
+      bool is_dblvec    = (type == "double_vector");
       bool is_str       = (type == "string");
       bool is_bln       = (type == "boolean");
       bool is_blnlst    = (type == "boolean_list");
@@ -202,6 +202,7 @@ bool CmdLnArgList::Read(int argc, const char* const* argv, string arg_spec_files
               for (const string & s : vst) {
                 v.push_back(atof(s.c_str()));
               }
+	      this->Set(argument,v);
             }
           }
         }

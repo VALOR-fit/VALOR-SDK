@@ -521,6 +521,11 @@ string Registry::GetStringDef(RgKey key, string def_opt, bool set_def)
   return GetValueOrUseDefault(this, key, def_opt, set_def);
 }
 //____________________________________________________________________________
+std::vector<double> Registry::GetDoubleVecDef(RgKey key, std::vector<double> def_opt, bool set_def) 
+{
+  return GetValueOrUseDefault(this, key, def_opt, set_def);
+}
+//____________________________________________________________________________
 RgIMapConstIter Registry::SafeFind(RgKey key) const
 {
   RgIMapConstIter entry = fRegistry.find(key);

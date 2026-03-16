@@ -132,6 +132,7 @@ public:
   RgInt    GetIntDef    (RgKey key, RgInt  def_opt, bool set_def=true);
   RgDbl    GetDoubleDef (RgKey key, RgDbl  def_opt, bool set_def=true);
   RgStr    GetStringDef (RgKey key, RgStr  def_opt, bool set_def=true);
+  RgDblVec GetDoubleVecDef(RgKey key, RgDblVec def_opt, bool set_def=true);
 
   RgIMapConstIter SafeFind  (RgKey key) const;
 
