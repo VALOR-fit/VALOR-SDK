@@ -126,9 +126,9 @@ bool CompoundFitModel::Read(util::ToyStream* stream)
    return status;
 }
 //________________________________________________________________________________________
-long CompoundFitModel::StreamSize(Option_t* opt) const
+int CompoundFitModel::StreamSize(Option_t* opt) const
 {
-  long size = 0;
+  int size = 0;
   for(std::vector<FitModelABC*>::const_iterator it = fSubModels.begin(); it != fSubModels.end(); ++it)
   {
     size += (*it)->StreamSize(opt);

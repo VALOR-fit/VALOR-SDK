@@ -238,7 +238,7 @@ string util::AsString(ReacMode_t m)
   case(kmWeakMix                   ): return "WeakMix";
   case(kmCosmic                    ): return "Cosmic";
   case(kmDirt                      ): return "Dirt";
-  default                  : return "--"; 
+  default                           : return "--"; 
   }
   return "";
 }
@@ -647,13 +647,16 @@ ReacMode_t util::ReacModeFromInt(int m)
 // Ugh.. This is awkward. Piecemeal it is.
 //             [first]                  [last]
 //  if(m >= (int)kmNuMuCCQE && m <= (int) kmOther) return (ReacMode_t)m;
-  if( ( std::abs(m) > 0 && std::abs(m) <= (int) kmNuENCMEC ) ||
-      ( std::abs(m) >= (int) kmNuMuToNuECCQE && std::abs(m) <= (int) kmNuMuToNuENCMEC ) ||
-      ( std::abs(m) >= (int) kmNuMuToNuTauCCQE && std::abs(m) <= (int) kmNuMuToNuTauNCMEC ) ||
-      ( std::abs(m) >= (int) kmNuEToNuMuCCQE && std::abs(m) <= (int) kmNuEToNuMuNCMEC ) ||
-      ( std::abs(m) >= (int) kmNuEToNuTauCCQE && std::abs(m) <= (int) kmNuEToNuTauNCMEC ) ||
-      ( m >= (int) kmCohElastic && m <= (int) kmDirt ) ) {
-    return (ReacMode_t)m;
+  std::vector<std::pair<int, int>> mode_ranges = {
+    {1,                 kmNuENCMEC}, 
+    {kmNuMuToNuECCQE,   kmNuMuToNuENCMEC},
+    {kmNuMuToNuTauCCQE, kmNuMuToNuTauNCMEC},
+    {kmNuEToNuMuCCQE,   kmNuEToNuMuNCMEC},
+    {kmNuEToNuTauCCQE,  kmNuEToNuTauNCMEC},
+    {kmCohElastic,      kmDirt}
+  };
+  for( auto const & range : mode_ranges ) {
+    if(std::abs(m) >= range.first && std::abs(m) <= range.second){ return (ReacMode_t)m;}
   }
   return kmUndefined;
 }
@@ -705,7 +708,6 @@ ReacMode_t util::NuEModeToOscNuEMode(ReacMode_t m)
 //________________________________________________________________________________________
 conv::ReacMode_t util::ReacTypeToMode (conv::ReacType_t t, conv::NuFlavour_t nu_init, conv::NuFlavour_t nu_final)
 {
-  /*
   using namespace util;
   for (int im = 0 ; im < kNReacModes ; im++) {
     conv::ReacMode_t  m       =  util::ReacModeFromInt(im);
@@ -716,7 +718,6 @@ conv::ReacMode_t util::ReacTypeToMode (conv::ReacType_t t, conv::NuFlavour_t nu_
       return m;
     }
   }
-  */
   return conv::kmUndefined;
 }
 //________________________________________________________________________________________
@@ -733,7 +734,10 @@ conv::ReacMode_t util::ReacModeFromString (std::string mode)
     {kmCohElastic,      kmDirt}
   };
   for( auto const & range : mode_ranges ) {
-    for( int i = range.first; i <= range.second; i++ ) { mode_numbers.push_back(i); mode_numbers.push_back(-i); }
+    for( int i = range.first; i <= range.second; i++ ) { 
+      mode_numbers.push_back(i); 
+      if( std::abs(i) < (int) kmCohElastic ) { mode_numbers.push_back(-i); } 
+    }
   }
   
   for (const int & i : mode_numbers) {

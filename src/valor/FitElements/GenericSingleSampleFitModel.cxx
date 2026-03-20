@@ -171,9 +171,12 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   // Get the modes
   fML = new ModeList(xml, root_node);
   fReactionModes = fML->Modes();
-  fReactionModeIndex.resize(conv::kNReacModes,-1);
-  for (size_t im = 0 ; im < fReactionModes.size(); im++) {
-    conv::ReacMode_t m = fReactionModes[im];
+  //fReactionModeIndex.resize(fReactionModes.size(),-1);
+  //for (size_t im = 0 ; im < fReactionModes.size(); im++) {
+  for( std::vector<conv::ReacMode_t>::iterator it_mod = fReactionModes.begin();
+       it_mod != fReactionModes.end(); ++it_mod ) {
+    conv::ReacMode_t m = *(it_mod);
+    int im = it_mod - fReactionModes.begin();
     fReactionModeIndex[m] = im;
   }
 
@@ -445,7 +448,7 @@ bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
         int isplreco = binid.second;
         for (unsigned int ip = 0 ; ip < fSplineParamsAppliedTo[imode].size(); ip++) {
           PhysParamId_t p = fSplineParamsAppliedTo[imode][ip];
-          Long64_t spl_as_int = reinterpret_cast<Long64_t>(util::RFL::kNoSplineRequired);
+          int64_t spl_as_int = reinterpret_cast<int64_t>(util::RFL::kNoSplineRequired);
           const Parameter & param = ParameterPool::Instance()->GetParam(p);
           if (param.GetType() == conv::kSystResponse) {
             const util::Interpolator * spl = fRFL->GetSpline(m,p,ispltrue,isplreco);
@@ -453,7 +456,7 @@ bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
               VLOG("GenericSingleSampleFitModel",pINFO) << "Got null spline.\n";
               null_warning = true;
             }
-            spl_as_int = reinterpret_cast<Long64_t>(spl);
+            spl_as_int = reinterpret_cast<int64_t>(spl);
           } // param has splines
           fRFPtr[imode]->SetEntry(spl_as_int,ireco,itrue,ip);
         }//ip
@@ -1079,10 +1082,10 @@ bool GenericSingleSampleFitModel::Write(util::ToyStream* stream)
   return true;
 }
 //________________________________________________________________________________________
-long GenericSingleSampleFitModel::StreamSize (Option_t* opt_in) const
+int GenericSingleSampleFitModel::StreamSize (Option_t* opt_in) const
 {
   string opt = (opt_in) ? opt_in : fDefVALORArrayFormat;
-  long size = 0;
+  int size = 0;
 
   if(opt.find("mct") != string::npos)
   {
@@ -1665,7 +1668,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   }
 
 
-  Long_t nev = t->GetEntries();
+  Int_t nev = t->GetEntries();
   VLOG("GenericSingleSampleFitModel",pINFO) << "Input VALOR DST has " << nev << " entries";
   
   // Get a list of all the kinematic variables we care about
@@ -1769,7 +1772,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
 
-  for(Long_t iev = 0; iev < nev; iev++) 
+  for(Int_t iev = 0; iev < nev; iev++) 
   {
     t->GetEntry(iev);
 
@@ -1792,7 +1795,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     //  ================ NOTE - HACKS ================
     if(s == ksNuMuCC2piC) {
       VLOG("HACK",pNOTICE) 
-        << "MC event: " << iev << " belongs to sample: " << util::AsString(s) 
+        << "MC event: " << iev << " beints to sample: " << util::AsString(s) 
         << " not considered separately. Bundle in sample: " << util::AsString(ksNearNuMuCC_Other);
       s = ksNearNuMuCC_Other;
     }
@@ -1801,7 +1804,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 #ifdef FORCE_NC_INCLUSIVE
     if(util::IsNC(s)) {
       VLOG("HACK",pNOTICE) 
-        << "MC event: " << iev << " belongs to NC sample: " << util::AsString(s) 
+        << "MC event: " << iev << " beints to NC sample: " << util::AsString(s) 
         << " Bundling it in sample: " << util::AsString(ksNC);
       s = ksNC;
     }
@@ -1845,7 +1848,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     //if(util::IsDirt(m)) continue; 
     //if(util::IsCosmic(m)) continue;
 
-    long imode = fReactionModeIndex[m];
+    int imode = fReactionModeIndex[m];
     if(imode==-1) {
       // For a given sample we should consider a complete list of
       // true reaction modes (otherwise there are true contributions to the
@@ -1961,8 +1964,10 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     // If we're doing SBL, save the baseline per event to calculate exact oscillation probabilities
     if (util::IsShortBaseline(fDetector)) {
       if (util::IsNeutrinoAny(m)) { // we only oscillate neutrinos
-        const double & trueE = kinematics.at(conv::kvEtrue);
-        fLoverEPerEvent.at(imode).at(true_bin).push_back(std::make_pair(baseline/trueE,this_entry));
+	if( this_entry > 0.0 ) { // only events of finite weight
+	  const double & trueE = kinematics.at(conv::kvEtrue);
+	  fLoverEPerEvent.at(imode).at(true_bin).push_back(std::make_pair(baseline/trueE,this_entry));
+	}
       }
     }
 
@@ -3022,7 +3027,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
         splbin.bin1 = ireco;
 
         double response = 1;
-        ULong64_t spl_addr = fRFPtr[imode]->GetEntry(splbin);
+        uint64_t spl_addr = fRFPtr[imode]->GetEntry(splbin);
         const util::Interpolator * spl = reinterpret_cast<util::Interpolator*>(spl_addr);
         if (spl==util::RFL::kNoSplineRequired) {
           VLOG("GenericSingleSampleFitModel",pERROR)
@@ -3389,7 +3394,7 @@ void GenericSingleSampleFitModel::ApplyPhysics(Option_t * option)
           splbin.bin1 = ireco;
 
           double response = 1;
-          ULong64_t spl_addr = fRFPtr[imode]->GetEntry(splbin);
+          uint64_t spl_addr = fRFPtr[imode]->GetEntry(splbin);
           const util::Interpolator * spl = reinterpret_cast<util::Interpolator*>(spl_addr);
           if (spl==util::RFL::kNoSplineRequired) {
             VLOG("GenericSingleSampleFitModel",pERROR)
@@ -3588,7 +3593,6 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     dm41sq       = fPhysHypothesis.CurrValue(kPhypDm41sq);
   }
 
-
   double p_numu_numu       = -1;
   double p_numu_nue        = -1;
   double p_numu_nutau      = -1;
@@ -3665,6 +3669,7 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
             sindm2 += LOverEandWeight.second*util::Calculate2FSterileSinSqDM(LOverEandWeight.first,dm41sq);
             tot_weight += LOverEandWeight.second;
           }
+	  
           sindm2 /= tot_weight;
         }
         p_numu_numu       = util::Calculate2FSterileOscMuE(conv::kPdgNuMu   , conv::kPdgNuMu   , sinsq2thmue, sinsq2thmumu, sindm2);
@@ -3717,7 +3722,10 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
         else if( util::IsNuEBarToNuMuBar(m)  ) { posc = p_nuebar_numubar;        }
         else if( util::IsNuEBarToNuTauBar(m) ) { posc = p_nuebar_nutaubar;       }
       }
+
       if(fMCTNullOb[imode]) {continue;}
+
+      assert( ! std::isnan(posc) && "The oscillation probability must be well-defined." );
 
       for(int ireco_ob = 0; ireco_ob < n_reco_bins_ob; ireco_ob++) {
         templFinOb[ireco_ob][itrue] *= posc;

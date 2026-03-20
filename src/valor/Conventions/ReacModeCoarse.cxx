@@ -148,7 +148,14 @@ string util::AsStringTex(ReacModeCoarse_t m, bool root)
 conv::ReacModeCoarse_t util::CoarseModeFromString(string coarse)
 {
   string lc_coarse = util::ToLowerCase(coarse);
-  for (int i = 0 ; i < conv::kNReacModesCoarse ; i++ ) {
+  
+  //for (int i = 0 ; i < conv::kNReacModesCoarse ; i++ ) {
+  std::vector<int> coarse_modes = {
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10,
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 20, -11, -12, -13, -14, -15, -16, -17, -18, -19, -20,
+    100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110
+  };
+  for( const int & i : coarse_modes ) {
     conv::ReacModeCoarse_t c = (conv::ReacModeCoarse_t)i;
     string this_coarse = util::ToLowerCase(util::AsString(c));
     if(lc_coarse==this_coarse && this_coarse!="--") {

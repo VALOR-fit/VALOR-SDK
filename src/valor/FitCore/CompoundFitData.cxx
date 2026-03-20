@@ -55,9 +55,9 @@ std::string CompoundFitData::CompoundName() const
   return name;
 }
 //________________________________________________________________________________________
-long CompoundFitData::StreamSize(Option_t* opt) const
+int CompoundFitData::StreamSize(Option_t* opt) const
 {
-  long size = 0;
+  int size = 0;
   for(std::vector<FitDataABC*>::const_iterator it = fSubData.begin(); it != fSubData.end(); ++it)
   {
     size += (*it)->StreamSize(opt);

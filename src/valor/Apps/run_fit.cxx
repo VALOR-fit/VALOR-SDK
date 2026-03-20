@@ -123,6 +123,8 @@ int main(int argc, char ** argv)
   bool rethrow_unphysical = arg.GetBool("rethrow-unphysical");
   int  ntoymc             = arg.GetInt("ntoymc");
   int n_threads           = arg.GetInt("nthreads");
+  int opt_npointsx        = arg.GetInt("npointsx");
+  int opt_npointsy        = arg.GetInt("npointsy");
   string hypname          = arg.GetString("physics-hypothesis");
   string fplopt           = arg.GetString("fit-param-opt");
   string fittername       = arg.GetString("fitter");
@@ -466,8 +468,8 @@ int main(int argc, char ** argv)
     // Do the fit
 
     // NOT running the statistic, just building a grid.
-    const int npoints_x = 700;
-    const int npoints_y = 700;
+    const int npoints_x = opt_npointsx;
+    const int npoints_y = opt_npointsy;
     const double xmin = 1.0e-6; const double xmax = 1.0e+0; // sin2
     const double ymin = 1.0e-4; const double ymax = 1.0e+2; // dm2
 

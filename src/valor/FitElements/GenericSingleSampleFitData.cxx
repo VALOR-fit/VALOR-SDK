@@ -374,7 +374,7 @@ bool GenericSingleSampleFitData::Read(util::ToyStream* stream)
   return true;
 }
 //________________________________________________________________________________________
-long GenericSingleSampleFitData::StreamSize(Option_t* opt_in) const
+int GenericSingleSampleFitData::StreamSize(Option_t* opt_in) const
 {
   if (!fBinning) {
     VLOG("GenericSingleSampleFitData", pERROR) << "Must call SetAssociatedModel() and SetFromModel() with FitModel "
@@ -383,7 +383,7 @@ long GenericSingleSampleFitData::StreamSize(Option_t* opt_in) const
   }
 
   string opt = (opt_in) ? opt_in : fDefVALORArrayFormat;
-  long size = 0;
+  int size = 0;
 
   assert(fDataOb);
   size += fDataOb->StreamSize();
@@ -650,6 +650,8 @@ void GenericSingleSampleFitData::Book(void)
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
 
+  assert(reco_ob && reco_sb && "Reco binning must be loaded.");
+
   fDataObNull = false;
   fDataOb     = new VALORArray(reco_ob->NBins());
   fDataSbNull = false;
@@ -751,7 +753,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
       << fName<<" - No wght branch found.";
   }
 
-  Long_t nev = t->GetEntries();
+  Int_t nev = t->GetEntries();
   VLOG("GenericSingleSampleFitData",pINFO)
     << "Input VALOR DST has " << nev << " entries";
 
@@ -763,7 +765,7 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
   const VALORBinning * reco_ob = fBinning->RecoOptBinning();
   const VALORBinning * reco_sb = fBinning->RecoSmpBinning();
 
-  for(Long_t iev = 0; iev < nev; iev++)
+  for(Int_t iev = 0; iev < nev; iev++)
   {
     t->GetEntry(iev);
 

@@ -88,7 +88,7 @@ public:
   bool          Write                    (TObjArray * collection, const char * tag = "model", Option_t * write_opt = 0);
   bool          Write                    (const char * filename,  const char * tag = "model", Option_t * write_opt = 0, Option_t * file_opt = 0);
   virtual bool  Write                    (util::ToyStream* stream);
-  virtual long  StreamSize               (Option_t * opt = 0) const;  // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
+  virtual int  StreamSize               (Option_t * opt = 0) const;  // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
   double        GetFitStatisticPenalty   (Option_t * opt = 0) const;
 
   void          SetSystConf            (CorrelatedSystematics * syst, Option_t * opt = "");
@@ -255,7 +255,7 @@ private:
   std::vector<VALORArray *>fMCTFinOb ; 
   std::vector<VALORArray *>fMCStatOb ; // MC statistics 
 
-  // We'll keep our response function pointers in a VALORArray of longs.
+  // We'll keep our response function pointers in a VALORArray of ints.
   // If we move to C++ 11, should use intptr_t instead.
   // This has an extra dimension above those  in the arrays above - parameter
   VALORArrayL * fRFPtr[conv::kNReacModes];
@@ -297,7 +297,7 @@ private:
   ModeList* fML;
   std::vector<conv::ReacMode_t> fReactionModes;
   // and a mapping from these to their index in here
-  std::vector<long> fReactionModeIndex;
+  std::unordered_map<conv::ReacMode_t, int> fReactionModeIndex;
   
   // Spline library
   util::RFL * fRFL;

@@ -27,9 +27,10 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 using namespace valor;
 
 // Simple helper function to make the vector that allows rapid translation from a mode to its entry in this object's modelist
-std::vector<long> MakeModeIndex(const std::vector<conv::ReacMode_t> & modes)
+//std::vector<long> MakeModeIndex(const std::vector<conv::ReacMode_t> & modes)
+std::unordered_map<conv::ReacMode_t, int> MakeModeIndex(std::vector<conv::ReacMode_t> modes)
 {
-  std::vector<long> mode_indices(conv::kNReacModes,-1);
+  std::unordered_map<conv::ReacMode_t, int> mode_indices;
   for (size_t im = 0 ; im < modes.size(); im++) {
     conv::ReacMode_t m = modes[im];
     mode_indices[m] = im;

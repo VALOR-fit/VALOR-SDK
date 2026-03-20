@@ -120,7 +120,9 @@ private:
   // The list of reaction modes we're using
   std::vector<conv::ReacMode_t> fReactionModes;
   // and a mapping from these to their index in here
-  std::vector<long> fReactionModeIndex;
+  // DO NOT do vectors, do maps.
+  //std::vector<long> fReactionModeIndex;
+  mutable std::unordered_map<conv::ReacMode_t, int> fReactionModeIndex;
 
   conv::Detector_t                  fDetector;
   conv::BeamConf_t                  fBeamConf;

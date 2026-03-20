@@ -3,10 +3,12 @@
 tag                                  |   string       |  optional   |   toymc
 run                                  |   integer      |  optional   |   0
 ntoymc                               |   integer      |  optional   |   1
-physics-hypothesis                   |   string       |  optional   |   3f_osc
+npointsx                             |   integer      |  optional   |   700
+npointsy                             |   integer      |  optional   |   700
+physics-hypothesis                   |   string       |  optional   |   eff_sterile_osc
 fit-param-opt                        |   string       |  optional   |   NONE
 param-values-option                  |   string       |  optional   |   randomize-all;prefit-errors
-fitter                               |   string       |  optional   |   minuit
+fitter                               |   string       |  optional   |   minuit+with_simplex_fallback
 config                               |   string       |  mandatory  |   -
 mesg-thresholds                      |   string       |  optional   |   verbosity.xml
 nthreads                             |   integer      |  optional   |   -1

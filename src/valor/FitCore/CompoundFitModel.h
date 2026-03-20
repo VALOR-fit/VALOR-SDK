@@ -44,7 +44,7 @@ public:
   virtual bool Read(util::ToyStream* stream);
 
   // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
-  virtual long StreamSize(Option_t* opt = 0) const;
+  virtual int StreamSize(Option_t* opt = 0) const;
 
   // Below are a set methods to generate model predictions for a given physics hypothesis and a set of nuisance parameters.
   // The model is first tweaked appropriately by setting systematics to particular values or by randomizing them.

@@ -44,7 +44,7 @@ public:
   virtual string CompoundName(void) const;  // Concatenates the Name() of each subdata
 
   // Get the size (in bytes) that would be used to read/write the VALORArrays from/to a binary toy file with the specified option
-  virtual long StreamSize(Option_t* opt = 0) const;
+  virtual int StreamSize(Option_t* opt = 0) const;
 
   // Read data from the input file (ROOT, XML, other)
   // Use input option as needed to specify what exactly to read from the input file.
