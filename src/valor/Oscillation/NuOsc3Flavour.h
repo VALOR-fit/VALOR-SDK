@@ -21,6 +21,9 @@
 #include <iostream>
 #include <math.h>
 #include <complex>
+#include <map>
+#include <string>
+#include <vector>
 
 #include "valor/Conventions/Constants.h"
 #include "valor/Conventions/OscChannelId.h"
@@ -124,6 +127,17 @@ public:
  // Osc_probs_out should point to a block of memory nflav*nflav
  // It fills this with an array[i][j] of P(nu_i)->P(nu_j)
  void CalcMatterOscProbAll(bool isAntineutrino, double energy, double osc_probs_out[3][3]);
+
+ // Load Earth profile from text or XML file.
+ // Text format: radius_km density_g_per_cm3 electron_fraction (one layer per line, '#' comments allowed)
+ // XML format: root with nodes radii, density, yp as numeric arrays.
+ void LoadEarthModel(const std::string & filename);
+
+ // Calculate oscillation probability through a layered Earth profile.
+ // cosZ is the neutrino zenith cosine; prod_height is the production altitude in km.
+ double CalcEarthMatterOscProb(int nu_start, int nu_end, double energy,
+                               double cosZ,
+                               double prod_height = conv::kAtmProdHeightKm);
  
  // Get members
  double GetBaseline (void) const;
@@ -142,6 +156,15 @@ private:
   };
 
  void Init(void);
+ void SetEarthModel(const std::vector<double> & radii,
+                    const std::vector<double> & density,
+                    const std::vector<double> & yp);
+ void ComputeEarthCosLimits(void);
+ void BuildEarthPath(double cosZ, double prod_height);
+ void SetDensityWithElectronFraction(double density, double yp);
+ void PropagateMatterLayerAmplitude(int nu_start, double energy,
+                                    const double initial_flavour_state[3][2],
+                                    double final_flavour_state[3][2]);
 
  valor::conv::NuMassHierarchy_t fMassHierarchy; ///< mass hierarchy
  double fBaseline; ///< baseline (km)
@@ -185,10 +208,21 @@ private:
 
  bool useEquations12;
  int nFlavourIndex;
+
+ // Earth profile containers (surface to center radii).
+ std::vector<double> fEarthRadii;
+ std::vector<double> fEarthDensity;
+ std::vector<double> fEarthYp;
+ std::map<double,double> fEarthCosLimit;
+
+ // Per-path layer data used for layered Earth propagation.
+ std::vector<double> fTraverseRhos;
+ std::vector<double> fTraverseYp;
+ std::vector<double> fTraverseDistance;
+ int fTraverseLayers;
  
 };
 
 }//end of namespace valor
 
 #endif
-

@@ -10,14 +10,18 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 //#define __show_warning__
 
 #include <cassert>
+#include <fstream>
+#include <sstream>
 
 #include <TMath.h>
+#include <TXMLEngine.h>
 
 #include "valor/Conventions/Opt.h"
 #include "valor/Conventions/PDG.h"
 #include "valor/Messenger/Messenger.h"
 #include "valor/Oscillation/NuOsc3Flavour.h"
 
+#include "valor/Utilities/UtlXML.h"
 #include "valor/Utilities/UtlSystem.h"
 
 using std::cout;
@@ -49,6 +53,12 @@ void NuOsc3Flavour::Init()
 
   // set default density 
   this->SetDensity(kCrustDensityT2K);
+
+  // Default PREM-like Earth profile, can be overridden with LoadEarthModel().
+  std::vector<double> radii   = {kEarthRadiusKm, 5701.0, 3480.0, 1220.0, 0.0};
+  std::vector<double> density = {3.3, 5.0, 11.3, 13.0, 0.0};
+  std::vector<double> yp      = {0.497, 0.497, 0.468, 0.468, 0.0};
+  this->SetEarthModel(radii, density, yp);
 }
 //________________________________________________________________________________________
 void NuOsc3Flavour::SetBaseline(double length)
@@ -64,6 +74,159 @@ void NuOsc3Flavour::SetDensity(double density)
 // take Z/A = 1/2 since most elements in Earth's crust are light 
 
   fNe = density * kNA * 0.5;
+}
+//________________________________________________________________________________________
+void NuOsc3Flavour::SetDensityWithElectronFraction(double density, double yp)
+{
+  fNe = density * kNA * yp;
+}
+//________________________________________________________________________________________
+void NuOsc3Flavour::SetEarthModel(const std::vector<double> & radii,
+                                  const std::vector<double> & density,
+                                  const std::vector<double> & yp)
+{
+  if(radii.size() < 2 || radii.size() != density.size() || radii.size() != yp.size()) {
+    cerr << "NuOsc3Flavour::SetEarthModel: invalid Earth model vector sizes" << endl;
+    util::Die(-1);
+    return;
+  }
+
+  fEarthRadii = radii;
+  fEarthDensity = density;
+  fEarthYp = yp;
+  this->ComputeEarthCosLimits();
+}
+//________________________________________________________________________________________
+void NuOsc3Flavour::ComputeEarthCosLimits(void)
+{
+  fEarthCosLimit.clear();
+
+  for(size_t i = 0; i < fEarthRadii.size(); ++i) {
+    double cos_limit = 0.0;
+    if(i != 0) {
+      const double ratio = (fEarthRadii[i] * fEarthRadii[i]) / (kEarthRadiusKm * kEarthRadiusKm);
+      cos_limit = -1.0 * sqrt(TMath::Max(0.0, 1.0 - ratio));
+    }
+    fEarthCosLimit[fEarthRadii[i]] = cos_limit;
+  }
+}
+//________________________________________________________________________________________
+void NuOsc3Flavour::BuildEarthPath(double cosZ, double prod_height)
+{
+  const double path_length = sqrt((kEarthRadiusKm + prod_height) * (kEarthRadiusKm + prod_height)
+                                 - (kEarthRadiusKm * kEarthRadiusKm) * (1.0 - cosZ * cosZ))
+                           - (kEarthRadiusKm * cosZ);
+  const double earth_length = -2.0 * cosZ * kEarthRadiusKm;
+
+  fTraverseRhos.clear();
+  fTraverseYp.clear();
+  fTraverseDistance.clear();
+  fTraverseLayers = 0;
+
+  // Initial path through air from production point to Earth entry.
+  fTraverseRhos.push_back(0.0);
+  fTraverseYp.push_back(0.0);
+  fTraverseDistance.push_back(path_length - earth_length);
+
+  if(cosZ >= 0.0) {
+    // Downward-going path does not cross the Earth.
+    fTraverseDistance[0] = path_length;
+    fTraverseLayers = 1;
+    return;
+  }
+
+  int penetrated_layers = 0;
+  for(std::map<double,double>::const_iterator it = fEarthCosLimit.begin();
+      it != fEarthCosLimit.end(); ++it) {
+    if(cosZ < it->second) penetrated_layers++;
+  }
+
+  std::vector<double> inward_distance;
+  std::vector<double> inward_rho;
+  std::vector<double> inward_yp;
+
+  for(int i = 0; i < penetrated_layers; ++i) {
+    const double r_this = fEarthRadii[i];
+    const double cross_this = 2.0 * sqrt(r_this * r_this - kEarthRadiusKm * kEarthRadiusKm * (1.0 - cosZ * cosZ));
+
+    double segment = cross_this;
+    if(i < penetrated_layers - 1) {
+      const double r_next = fEarthRadii[i + 1];
+      const double cross_next = 2.0 * sqrt(r_next * r_next - kEarthRadiusKm * kEarthRadiusKm * (1.0 - cosZ * cosZ));
+      segment = 0.5 * (cross_this - cross_next);
+    }
+
+    inward_distance.push_back(segment);
+    inward_rho.push_back(fEarthDensity[i]);
+    inward_yp.push_back(fEarthYp[i]);
+  }
+
+  // Path inward.
+  for(int i = 0; i < penetrated_layers; ++i) {
+    fTraverseDistance.push_back(inward_distance[i]);
+    fTraverseRhos.push_back(inward_rho[i]);
+    fTraverseYp.push_back(inward_yp[i]);
+  }
+
+  // Mirror back out of the Earth; the outermost shell is already represented on the way in.
+  for(int i = penetrated_layers - 2; i >= 0; --i) {
+    fTraverseDistance.push_back(inward_distance[i]);
+    fTraverseRhos.push_back(inward_rho[i]);
+    fTraverseYp.push_back(inward_yp[i]);
+  }
+
+  fTraverseLayers = (int)fTraverseDistance.size();
+}
+//________________________________________________________________________________________
+void NuOsc3Flavour::LoadEarthModel(const std::string & filename)
+{
+  std::vector<double> radii;
+  std::vector<double> density;
+  std::vector<double> yp;
+
+  const bool is_xml = filename.size() >= 4 && filename.substr(filename.size() - 4) == ".xml";
+
+  if(is_xml) {
+    TXMLEngine xml_eng;
+    XMLDocPointer_t doc = xml_eng.ParseFile(filename.c_str());
+    if(!doc) {
+      cerr << "NuOsc3Flavour::LoadEarthModel: failed to parse XML file: " << filename << endl;
+      util::Die(-1);
+      return;
+    }
+
+    XMLNodePointer_t root = xml_eng.DocGetRootElement(doc);
+    radii = util::XML2DblArray(&xml_eng, root, "radii");
+    density = util::XML2DblArray(&xml_eng, root, "density");
+    yp = util::XML2DblArray(&xml_eng, root, "yp");
+
+    xml_eng.FreeDoc(doc);
+  }
+  else {
+    std::ifstream in(filename.c_str());
+    if(!in.is_open()) {
+      cerr << "NuOsc3Flavour::LoadEarthModel: failed to open text file: " << filename << endl;
+      util::Die(-1);
+      return;
+    }
+
+    std::string line;
+    while(std::getline(in, line)) {
+      if(line.empty() || line[0] == '#') continue;
+
+      std::istringstream ss(line);
+      double r = 0.0;
+      double rho = 0.0;
+      double y = 0.0;
+      if(!(ss >> r >> rho >> y)) continue;
+
+      radii.push_back(r);
+      density.push_back(rho);
+      yp.push_back(y);
+    }
+  }
+
+  this->SetEarthModel(radii, density, yp);
 }
 //________________________________________________________________________________________
 void NuOsc3Flavour::SetMassHierarchy(NuMassHierarchy_t h)
@@ -2100,6 +2263,300 @@ double NuOsc3Flavour::CalcMatterOscProb(int nu_start, int nu_end, double energy)
  return oscProb;
 }
 //________________________________________________________________________________________
+void NuOsc3Flavour::PropagateMatterLayerAmplitude(
+  int nu_start, double energy,
+  const double initial_flavour_state[3][2],
+  double final_flavour_state[3][2])
+{
+  // The mass squared matrix has diagonal elements 0, dmsq12, dmsq13;
+  // all off-diagonal elements are zero.
+  // UMassUdagger is the product of the PMNS matrix, the mass squared matrix,
+  // and the dagger of the PMNS matrix.
+  double UMassUdagger[3][3][2];
+  for(int i=0; i<3; i++)
+  {
+    for(int j=0; j<3; j++)
+    {
+      UMassUdagger[i][j][re] = UMassUdaggerVacuum[i][j][re];
+      if( util::IsNeutrino(nu_start) )
+      {
+        UMassUdagger[i][j][im] = UMassUdaggerVacuum[i][j][im];
+      }
+      else if( util::IsAntiNeutrino(nu_start) )
+      {
+        UMassUdagger[i][j][im] = -UMassUdaggerVacuum[i][j][im];
+      }
+      else
+      {
+        UMassUdagger[i][j][im] = UMassUdaggerVacuum[i][j][im];
+      }
+    }
+  }
+
+  // Add potential due to constant density matter to first diagonal element of UMassUdagger.
+  // The factor of 1.0e9 is to convert the energy from GeV to eV.
+  if( util::IsNeutrino(nu_start) )
+  {
+    UMassUdagger[0][0][re] = UMassUdaggerVacuum[0][0][re] + 2.0*1.0e9*energy*sqrt(2.0)*kGF_SI*fNe;
+  }
+  else if( util::IsAntiNeutrino(nu_start) )
+  {
+    UMassUdagger[0][0][re] = UMassUdaggerVacuum[0][0][re] - 2.0*1.0e9*energy*sqrt(2.0)*kGF_SI*fNe;
+  }
+
+  double modUMassUdaggersq[3][3];
+  for(int i=0; i<3; i++)
+  {
+    for(int j=0; j<3; j++)
+    {
+      modUMassUdaggersq[i][j] = UMassUdagger[i][j][re] * UMassUdagger[i][j][re]
+                              + UMassUdagger[i][j][im] * UMassUdagger[i][j][im];
+    }
+  }
+
+  double c0[2];
+  c0[re] = UMassUdagger[0][0][re] * modUMassUdaggersq[1][2] + UMassUdagger[1][1][re] * modUMassUdaggersq[0][2]
+         + UMassUdagger[2][2][re] * modUMassUdaggersq[0][1]
+         - (UMassUdagger[0][0][re] * UMassUdagger[1][1][re] * UMassUdagger[2][2][re]
+         - UMassUdagger[0][0][im] * UMassUdagger[1][1][im] * UMassUdagger[2][2][re]
+         - UMassUdagger[0][0][re] * UMassUdagger[1][1][im] * UMassUdagger[2][2][im]
+         - UMassUdagger[0][0][im] * UMassUdagger[1][1][re] * UMassUdagger[2][2][im])
+         - 2.0 * (UMassUdagger[0][2][re] * UMassUdagger[0][1][re] * UMassUdagger[1][2][re]
+         + UMassUdagger[0][2][im] * UMassUdagger[0][1][im] * UMassUdagger[1][2][re]
+         - UMassUdagger[0][2][re] * UMassUdagger[0][1][im] * UMassUdagger[1][2][im]
+         + UMassUdagger[0][2][im] * UMassUdagger[0][1][re] * UMassUdagger[1][2][im]);
+  c0[im] = UMassUdagger[0][0][im] * modUMassUdaggersq[1][2] + UMassUdagger[1][1][im] * modUMassUdaggersq[0][2]
+         + UMassUdagger[2][2][im] * modUMassUdaggersq[0][1]
+         - (UMassUdagger[0][0][re] * UMassUdagger[1][1][re] * UMassUdagger[2][2][im]
+         - UMassUdagger[0][0][im] * UMassUdagger[1][1][im] * UMassUdagger[2][2][im]
+         + UMassUdagger[0][0][re] * UMassUdagger[1][1][im] * UMassUdagger[2][2][re]
+         + UMassUdagger[0][0][im] * UMassUdagger[1][1][re] * UMassUdagger[2][2][re]);
+
+  double c1[2];
+  c1[re] = UMassUdagger[0][0][re] * UMassUdagger[1][1][re] - UMassUdagger[0][0][im] * UMassUdagger[1][1][im]
+         + UMassUdagger[0][0][re] * UMassUdagger[2][2][re] - UMassUdagger[0][0][im] * UMassUdagger[2][2][im]
+         + UMassUdagger[1][1][re] * UMassUdagger[2][2][re] - UMassUdagger[1][1][im] * UMassUdagger[2][2][im]
+         - modUMassUdaggersq[0][1] - modUMassUdaggersq[0][2] - modUMassUdaggersq[1][2];
+  c1[im] = UMassUdagger[0][0][re] * UMassUdagger[1][1][im] + UMassUdagger[0][0][im] * UMassUdagger[1][1][re]
+         + UMassUdagger[0][0][re] * UMassUdagger[2][2][im] + UMassUdagger[0][0][im] * UMassUdagger[2][2][re]
+         + UMassUdagger[1][1][re] * UMassUdagger[2][2][im] + UMassUdagger[1][1][im] * UMassUdagger[2][2][re];
+
+  double c2[2];
+  c2[re] = -UMassUdagger[0][0][re] - UMassUdagger[1][1][re] - UMassUdagger[2][2][re];
+  c2[im] = -UMassUdagger[0][0][im] - UMassUdagger[1][1][im] - UMassUdagger[2][2][im];
+
+  double p = c2[re]*c2[re] - 3.0*c1[re];
+  double q = -0.5*27.0*c0[re] - c2[re]*c2[re]*c2[re] + 0.5*9.0*c2[re]*c1[re];
+  double phi = atan2(sqrt(27.0 * (0.25*c1[re]*c1[re]*(p - c1[re]) + c0[re]*(q + (27.0/4.0)*c0[re]))), q) / 3.0;
+
+  double eigenvalues[3];
+  if(dmsq23 > 0)
+  {
+    eigenvalues[0] = (sqrt(p) * 2.0 * cos(phi + 2.0*3.1415927/3.0)) / 3.0 - c2[re] / 3.0;
+    eigenvalues[1] = (sqrt(p) * 2.0 * cos(phi - 2.0*3.1415927/3.0)) / 3.0 - c2[re] / 3.0;
+    eigenvalues[2] = (sqrt(p) * 2.0 * cos(phi)) / 3.0 - c2[re] / 3.0;
+  }
+  else
+  {
+    eigenvalues[0] = (sqrt(p) * 2.0 * cos(phi - 2.0*3.1415927/3.0)) / 3.0 - c2[re] / 3.0;
+    eigenvalues[1] = (sqrt(p) * 2.0 * cos(phi)) / 3.0 - c2[re] / 3.0;
+    eigenvalues[2] = (sqrt(p) * 2.0 * cos(phi + 2.0*3.1415927/3.0)) / 3.0 - c2[re] / 3.0;
+  }
+
+  double UMassUdaggerMinusEv[3][3][2];
+  for(int i=0; i<3; i++)
+  {
+    for(int j=0; j<3; j++)
+    {
+      for(int k=0; k<2; k++)
+      {
+        UMassUdaggerMinusEv[i][j][k] = UMassUdagger[i][j][k];
+      }
+    }
+  }
+
+  double UMatter[3][3][2];
+  double normalisation;
+  double numerator1[2];
+  double numerator3[2];
+  double denominator[2];
+
+  for(int i=0; i<3; i++)
+  {
+    for(int j=0; j<3; j++) {
+      UMassUdaggerMinusEv[j][j][re] = UMassUdagger[j][j][re] - eigenvalues[i];
+    }
+
+    if(useEquations12)
+    {
+      numerator1[re] = UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[0][2][re]
+                     - UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[0][2][im]
+                     - (UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[0][1][re]
+                     - UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[0][1][im]);
+      numerator1[im] = UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[0][2][im]
+                     + UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[0][2][re]
+                     - (UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[0][1][im]
+                     + UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[0][1][re]);
+      numerator3[re] = UMassUdaggerMinusEv[0][1][re] * UMassUdaggerMinusEv[0][1][re]
+                     + UMassUdaggerMinusEv[0][1][im] * UMassUdaggerMinusEv[0][1][im]
+                     - (UMassUdaggerMinusEv[0][0][re] * UMassUdaggerMinusEv[1][1][re]
+                     - UMassUdaggerMinusEv[0][0][im] * UMassUdaggerMinusEv[1][1][im]);
+      numerator3[im] = -(UMassUdaggerMinusEv[0][0][re] * UMassUdaggerMinusEv[1][1][im]
+                     + UMassUdaggerMinusEv[0][0][im] * UMassUdaggerMinusEv[1][1][re]);
+      denominator[re] = UMassUdaggerMinusEv[0][0][re] * UMassUdaggerMinusEv[1][2][re]
+                      - UMassUdaggerMinusEv[0][0][im] * UMassUdaggerMinusEv[1][2][im]
+                      - (UMassUdaggerMinusEv[0][2][re] * UMassUdaggerMinusEv[0][1][re]
+                      + UMassUdaggerMinusEv[0][2][im] * UMassUdaggerMinusEv[0][1][im]);
+      denominator[im] = UMassUdaggerMinusEv[0][0][re] * UMassUdaggerMinusEv[1][2][im]
+                      + UMassUdaggerMinusEv[0][0][im] * UMassUdaggerMinusEv[1][2][re]
+                      - (-UMassUdaggerMinusEv[0][2][re] * UMassUdaggerMinusEv[0][1][im]
+                      + UMassUdaggerMinusEv[0][2][im] * UMassUdaggerMinusEv[0][1][re]);
+    }
+    else
+    {
+      numerator1[re] = UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[2][2][re]
+                     - UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[2][2][im]
+                     - (UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[1][2][re]
+                     + UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[1][2][im]);
+      numerator1[im] = UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[2][2][im]
+                     + UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[2][2][re];
+      numerator3[re] = UMassUdaggerMinusEv[0][1][re] * UMassUdaggerMinusEv[1][2][re]
+                     - UMassUdaggerMinusEv[0][1][im] * UMassUdaggerMinusEv[1][2][im]
+                     - (UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[0][2][re]
+                     + UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[0][2][im]);
+      numerator3[im] = -UMassUdaggerMinusEv[0][1][re] * UMassUdaggerMinusEv[1][2][im]
+                     - UMassUdaggerMinusEv[0][1][im] * UMassUdaggerMinusEv[1][2][re]
+                     - (-UMassUdaggerMinusEv[1][1][re] * UMassUdaggerMinusEv[0][2][im]
+                     + UMassUdaggerMinusEv[1][1][im] * UMassUdaggerMinusEv[0][2][re]);
+      denominator[re] = UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[0][2][re]
+                      + UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[0][2][im]
+                      - (UMassUdaggerMinusEv[2][2][re] * UMassUdaggerMinusEv[0][1][re]
+                      + UMassUdaggerMinusEv[2][2][im] * UMassUdaggerMinusEv[0][1][im]);
+      denominator[im] = -UMassUdaggerMinusEv[1][2][re] * UMassUdaggerMinusEv[0][2][im]
+                      + UMassUdaggerMinusEv[1][2][im] * UMassUdaggerMinusEv[0][2][re]
+                      - (-UMassUdaggerMinusEv[2][2][re] * UMassUdaggerMinusEv[0][1][im]
+                      + UMassUdaggerMinusEv[2][2][im] * UMassUdaggerMinusEv[0][1][re]);
+    }
+
+    const double denom_norm = denominator[re] * denominator[re] + denominator[im] * denominator[im];
+    UMatter[0][i][re] = (numerator1[re]  * denominator[re] + numerator1[im]  * denominator[im]) / denom_norm;
+    UMatter[0][i][im] = (-numerator1[re] * denominator[im] + numerator1[im]  * denominator[re]) / denom_norm;
+    UMatter[1][i][re] = 1.0;
+    UMatter[1][i][im] = 0.0;
+    UMatter[2][i][re] = (numerator3[re]  * denominator[re] + numerator3[im]  * denominator[im]) / denom_norm;
+    UMatter[2][i][im] = (-numerator3[re] * denominator[im] + numerator3[im]  * denominator[re]) / denom_norm;
+
+    normalisation = sqrt(UMatter[0][i][re] * UMatter[0][i][re] + UMatter[0][i][im] * UMatter[0][i][im]
+                       + UMatter[1][i][re] * UMatter[1][i][re] + UMatter[1][i][im] * UMatter[1][i][im]
+                       + UMatter[2][i][re] * UMatter[2][i][re] + UMatter[2][i][im] * UMatter[2][i][im]);
+    for(int k=0; k<3; k++)
+    {
+      UMatter[k][i][re] = UMatter[k][i][re] / normalisation;
+      UMatter[k][i][im] = UMatter[k][i][im] / normalisation;
+    }
+  }
+
+  double UMatterDagger[3][3][2];
+  for(int i=0; i<3; i++)
+  {
+    for(int j=0; j<3; j++)
+    {
+      UMatterDagger[i][j][re] = UMatter[j][i][re];
+      UMatterDagger[i][j][im] = -UMatter[j][i][im];
+    }
+  }
+
+  double initialMassState[3][2];
+  for(int i=0; i<3; i++)
+  {
+    initialMassState[i][re] = 0.0;
+    initialMassState[i][im] = 0.0;
+    for(int j=0; j<3; j++)
+    {
+      initialMassState[i][re] += UMatterDagger[i][j][re] * initial_flavour_state[j][re]
+                               - UMatterDagger[i][j][im] * initial_flavour_state[j][im];
+      initialMassState[i][im] += UMatterDagger[i][j][re] * initial_flavour_state[j][im]
+                               + UMatterDagger[i][j][im] * initial_flavour_state[j][re];
+    }
+  }
+
+  double finalMassState[3][2];
+  finalMassState[0][re] = initialMassState[0][re];
+  finalMassState[0][im] = initialMassState[0][im];
+  finalMassState[1][re] = initialMassState[1][re] *  cos((2.0 * kOscDimensFactor * (eigenvalues[1] - eigenvalues[0]) * fBaseline) / energy)
+                        - initialMassState[1][im] * -sin((2.0 * kOscDimensFactor * (eigenvalues[1] - eigenvalues[0]) * fBaseline) / energy);
+  finalMassState[1][im] = initialMassState[1][re] * -sin((2.0 * kOscDimensFactor * (eigenvalues[1] - eigenvalues[0]) * fBaseline) / energy)
+                        + initialMassState[1][im] *  cos((2.0 * kOscDimensFactor * (eigenvalues[1] - eigenvalues[0]) * fBaseline) / energy);
+  finalMassState[2][re] = initialMassState[2][re] *  cos((2.0 * kOscDimensFactor * (eigenvalues[2] - eigenvalues[0]) * fBaseline) / energy)
+                        - initialMassState[2][im] * -sin((2.0 * kOscDimensFactor * (eigenvalues[2] - eigenvalues[0]) * fBaseline) / energy);
+  finalMassState[2][im] = initialMassState[2][re] * -sin((2.0 * kOscDimensFactor * (eigenvalues[2] - eigenvalues[0]) * fBaseline) / energy)
+                        + initialMassState[2][im] *  cos((2.0 * kOscDimensFactor * (eigenvalues[2] - eigenvalues[0]) * fBaseline) / energy);
+
+  for(int i=0; i<3; i++)
+  {
+    final_flavour_state[i][re] = 0.0;
+    final_flavour_state[i][im] = 0.0;
+    for(int j=0; j<3; j++)
+    {
+      final_flavour_state[i][re] += UMatter[i][j][re] * finalMassState[j][re]
+                                  - UMatter[i][j][im] * finalMassState[j][im];
+      final_flavour_state[i][im] += UMatter[i][j][re] * finalMassState[j][im]
+                                  + UMatter[i][j][im] * finalMassState[j][re];
+    }
+  }
+}
+//________________________________________________________________________________________
+double NuOsc3Flavour::CalcEarthMatterOscProb(int nu_start, int nu_end, double energy,
+                                             double cosZ, double prod_height)
+{
+  OscChannelId_t osch = util::GetOscChannel(nu_start, nu_end);
+  if(osch == kOscUndefined) {
+    cerr << "NuOsc3Flavour: Not allowing (neutrino = " << nu_start << ") --> "
+         << "(neutrino = " << nu_end << ") oscillations" << endl;
+    return 0.;
+  }
+
+  this->BuildEarthPath(cosZ, prod_height);
+
+  double current_state[3][2];
+  for(int i=0; i<3; i++) {
+    current_state[i][re] = 0.0;
+    current_state[i][im] = 0.0;
+  }
+
+  if(nu_start == kPdgNuE || nu_start == kPdgNuEBar) {
+    current_state[0][re] = 1.0;
+  }
+  else if(nu_start == kPdgNuMu || nu_start == kPdgNuMuBar) {
+    current_state[1][re] = 1.0;
+  }
+  else if(nu_start == kPdgNuTau || nu_start == kPdgNuTauBar) {
+    current_state[2][re] = 1.0;
+  }
+
+  double next_state[3][2];
+  for(int ilayer = 0; ilayer < fTraverseLayers; ++ilayer) {
+    this->SetBaseline(fTraverseDistance[ilayer]);
+    this->SetDensityWithElectronFraction(fTraverseRhos[ilayer], fTraverseYp[ilayer]);
+    this->PropagateMatterLayerAmplitude(nu_start, energy, current_state, next_state);
+
+    for(int i=0; i<3; i++) {
+      current_state[i][re] = next_state[i][re];
+      current_state[i][im] = next_state[i][im];
+    }
+  }
+
+  int end_idx = -1;
+  if(nu_end == kPdgNuE || nu_end == kPdgNuEBar) end_idx = 0;
+  if(nu_end == kPdgNuMu || nu_end == kPdgNuMuBar) end_idx = 1;
+  if(nu_end == kPdgNuTau || nu_end == kPdgNuTauBar) end_idx = 2;
+
+  if(end_idx < 0) return 0.0;
+
+  return current_state[end_idx][re] * current_state[end_idx][re]
+       + current_state[end_idx][im] * current_state[end_idx][im];
+}
+//________________________________________________________________________________________
 double NuOsc3Flavour::Calc2FlavMatterOscProb(int nu_start, int nu_end, double energy, int index)
 {
   //this method calculates the oscillation probabilities in constant density matter
@@ -2841,3 +3298,4 @@ double NuOsc3Flavour::GetDensity(void) const
   return fNe;
 }
 //_________________________________________________________
+
