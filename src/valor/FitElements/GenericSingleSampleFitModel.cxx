@@ -1178,6 +1178,7 @@ void GenericSingleSampleFitModel::Init(void)
 
   fSkipOscProbApplyCheck = false;
   fSuppressOutOfBinningRangeWarning = false;
+  fUseEarthOscillation = false;  // Default to fixed baseline; enable with SetUseEarthOscillation(true)
 
   fLoverEPerEvent.clear();
 
@@ -1746,7 +1747,7 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   std::map<std::string,int> branch_n_universes;
   std::map<std::string,std::vector<float>> branch_universes;
   for (const auto & variation_name : fUniverseParametersToSave) {
-    std::cout << "Variation name: " << variation_name << std::endl;
+    VLOG("GenericSingleSampleFitModel",pDEBUG) << "Processing variation name: " << variation_name;
     std::string branch_name   = Form("variation_%s",variation_name.c_str());
     std::string branch_name_n = Form("variation_n_%s",variation_name.c_str());
     t->SetBranchStatus (branch_name_n.c_str(),1);
@@ -1773,11 +1774,11 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
   {
     t->GetEntry(iev);
 
-    //this gives floating point exception if nev<100
- /*   if(iev && iev%(nev/1000)==0) {
+    // Progress indicator for large datasets
+    if(nev >= 100 && iev && iev%(nev/100)==0) {
       double pct = (100 * (double)(iev+1)) / (double)nev;
       VLOG("GenericSingleSampleFitModel",pINFO) << "Reading "<< fName <<" MC DST: "<< TMath::Nint(pct) << "% done";
-    }*/
+    }
 
     // Get sample index
     Sample_t s = util::SampleFromInt(sample);
@@ -3633,11 +3634,35 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
       //get the true energy to calculate osc prob
       double Etrue = true_sb->BinCentre(itrue,conv::kvEtrue);
 
+      // Check if we should use Earth oscillation (only for atmospheric JUNO)
+      bool use_earth_osc = fUseEarthOscillation && (fBeam == conv::kbJUNO_Atmo);
+
       if (hypid == kHypOsc3F) {
         double p_osc    [3][3];
         double p_osc_bar[3][3];
-        fNuOsc3Flavour.CalcMatterOscProbAll(false, Etrue, p_osc    );
-        fNuOsc3Flavour.CalcMatterOscProbAll(true , Etrue, p_osc_bar);
+
+        if (use_earth_osc) {
+          // Earth oscillation: use the actual zenith angle from the bin
+          double cosZ = true_sb->BinCentre(itrue, conv::kvQ2true);
+          
+          // Calculate oscillation probabilities through Earth for all flavor channels
+          for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+              int nu_code = 12 + 2*i;  // PDG codes: 12(nue), 14(numu), 16(nutau)
+              int nu_end  = 12 + 2*j;
+              
+              // Neutrinos - CalcEarthMatterOscProb calculates through Earth layers based on cosZ
+              p_osc[i][j] = fNuOsc3Flavour.CalcEarthMatterOscProb(nu_code, nu_end, Etrue, cosZ, conv::kAtmProdHeightKm);
+              // Antineutrinos
+              p_osc_bar[i][j] = fNuOsc3Flavour.CalcEarthMatterOscProb(-(nu_code), -(nu_end), Etrue, cosZ, conv::kAtmProdHeightKm);
+            }
+          }
+        } else {
+          // Use standard fixed-baseline 3-flavor oscillation
+          fNuOsc3Flavour.CalcMatterOscProbAll(false, Etrue, p_osc    );
+          fNuOsc3Flavour.CalcMatterOscProbAll(true , Etrue, p_osc_bar);
+        }
+
         p_numu_numu       = p_osc    [1][1];
         p_numu_nue        = p_osc    [1][0];
         p_numu_nutau      = p_osc    [1][2];

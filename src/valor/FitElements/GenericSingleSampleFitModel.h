@@ -200,6 +200,11 @@ private:
   // Fill these arrays
   void BuildParamLists();
   
+  // Enable/disable Earth oscillation (baseline depends on zenith angle)
+  // If disabled, uses fixed baseline from util::Baseline()
+  void SetUseEarthOscillation(bool use_earth_osc) { fUseEarthOscillation = use_earth_osc; }
+  bool GetUseEarthOscillation() const { return fUseEarthOscillation; }
+  
   NuOsc3Flavour  fNuOsc3Flavour;
   PhysHypothesis fPhysHypothesis;
 
@@ -227,6 +232,10 @@ private:
   // Whether or not we should throw a warning message if any event read from an MC DST has kinematics
   // outside of the binning range
   bool fSuppressOutOfBinningRangeWarning;
+  
+  // Whether to use Earth oscillation (baseline depends on zenith angle) or fixed baseline
+  // Only applies to atmospheric neutrino samples (beam = kbJUNO_Atmo)
+  bool fUseEarthOscillation;
   
   // MC templates (MCT) 
   // Each template is a 2D array, with (reco,true) bins linearised in whatever kinematic space we need.
