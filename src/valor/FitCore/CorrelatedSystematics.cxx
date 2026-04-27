@@ -780,6 +780,13 @@ void CorrelatedSystematics::Tweak(
 void CorrelatedSystematics::CholeskyDecomposeMatrix(void)
 {
   VLOG("CorrelatedSystematics",pNOTICE) << "Running Cholesky decomposition of "<<this->GetName()<<" covariance matrix ";
+  
+  // Skip decomposition if there are no systematics parameters
+  if (fNSystParameters == 0) {
+    VLOG("CorrelatedSystematics",pNOTICE) << "Skipping Cholesky decomposition - no systematics parameters.";
+    return;
+  }
+  
   if (fCovMtrxChoL) {delete fCovMtrxChoL; fCovMtrxChoL = NULL;}
 #ifdef __show_cholesky_mesg_info__  
     VLOG("CorrelatedSystematics",pDEBUG) 
@@ -1044,6 +1051,12 @@ void CorrelatedSystematics::SetCovMatrix(const TMatrixD & matr)
 //________________________________________________________________________________________
 void CorrelatedSystematics::InvertMatrices()
 {
+  // Skip inversion if there are no systematics parameters
+  if (fNSystParameters == 0) {
+    VLOG("CorrelatedSystematics",pINFO) << "Skipping matrix inversion - no systematics parameters.";
+    return;
+  }
+  
   if (fCovMtrxInv    ) {delete fCovMtrxInv    ; fCovMtrxInv     = NULL;}
   if (fCovMtrxChoLInv) {delete fCovMtrxChoLInv; fCovMtrxChoLInv = NULL;}
   double det;
