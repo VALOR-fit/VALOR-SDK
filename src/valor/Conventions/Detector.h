@@ -71,8 +71,8 @@ typedef enum EDetector
   kdOnePastEnd = static_cast<int>( kdJUNO ) + 1
 } Detector_t; 
 
-// I really don't have an elegant way to count the above...
-  static const int kNDetectorsDefined = 14;
+// Keep this synchronized with enum values automatically.
+  static const int kNDetectorsDefined = static_cast<int>(kdOnePastEnd);
 
 } // conv
 

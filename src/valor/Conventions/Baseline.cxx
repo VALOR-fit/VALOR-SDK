@@ -40,10 +40,14 @@ if(b == conv::kbNuMI_FHC || b == conv::kbNuMI_RHC) {
       if (d == conv::kdINGRID ) return conv::kJPARCTgt2ND280;
   }
 
+  if(b == conv::kbJUNO_Atmo) {
+      if (d == conv::kdJUNO) return 1.0;
+  }
+
   VLOG("Baseline", pERROR)
      << "Undefined baseline for detector: " << util::AsString(d)
      << " in beam: " << util::AsString(b);
 
   return -1;
 }
-//________________________________________________________________________________________
+//___________________________________________________________________
