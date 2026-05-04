@@ -528,19 +528,33 @@ void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinn
 {
   for(auto kv_opt : opt_binning->KineVars()) {
     if(!smp_binning->Contains(kv_opt)) { continue; }
-    for(unsigned int ibin_opt = 0; ibin_opt < opt_binning->NBins(); ++ibin_opt) {
-      // Check if the bin lower edge matches
-      bool min_matches = false;
-      double bin_min_opt = opt_binning->BinMinimum(ibin_opt, kv_opt);
-      for(unsigned int ibin_smp = 0; ibin_smp < smp_binning->NBins(); ++ibin_smp) {
-        double bin_min_smp = smp_binning->BinMinimum(ibin_smp, kv_opt);
-        double bin_max_smp = smp_binning->BinMaximum(ibin_smp, kv_opt);
-        if((TMath::Abs(bin_min_smp - bin_min_opt) < conv::kASmallNum) ||
-           (TMath::Abs(bin_max_smp - bin_min_opt) < conv::kASmallNum)) {
-          min_matches = true;
-          break;
+
+    // Pre-collect all simple-binning edges for this variable once.
+    // This avoids an O(N^2) scan across all global bins for large true-space binnings.
+    std::set<double> smp_edges;
+    for(unsigned int ibin_smp = 0; ibin_smp < smp_binning->NBins(); ++ibin_smp) {
+      smp_edges.insert(smp_binning->BinMinimum(ibin_smp, kv_opt));
+      smp_edges.insert(smp_binning->BinMaximum(ibin_smp, kv_opt));
+    }
+
+    auto edge_matches = [&](double edge_val) {
+      auto it = smp_edges.lower_bound(edge_val);
+      if(it != smp_edges.end() && TMath::Abs(*it - edge_val) < conv::kASmallNum) {
+        return true;
+      }
+      if(it != smp_edges.begin()) {
+        --it;
+        if(TMath::Abs(*it - edge_val) < conv::kASmallNum) {
+          return true;
         }
       }
+      return false;
+    };
+
+    for(unsigned int ibin_opt = 0; ibin_opt < opt_binning->NBins(); ++ibin_opt) {
+      // Check if the bin lower edge matches
+      double bin_min_opt = opt_binning->BinMinimum(ibin_opt, kv_opt);
+      bool min_matches = edge_matches(bin_min_opt);
       if(!min_matches) {
         VLOG("SampleBinning",pFATAL) << "The optimised lower bin edge " << bin_min_opt
                                     << " for kinevar = " << util::AsString(kv_opt)
@@ -550,17 +564,8 @@ void SingleSampleKineBinning::CheckBinEdges(VALORBinning *opt_binning, VALORBinn
       }
 
       // Check if the bin upper edge matches
-      bool max_matches = false;
       double bin_max_opt = opt_binning->BinMaximum(ibin_opt, kv_opt);
-      for(unsigned int ibin_smp = 0; ibin_smp < smp_binning->NBins(); ++ibin_smp) {
-        double bin_min_smp = smp_binning->BinMinimum(ibin_smp, kv_opt);
-        double bin_max_smp = smp_binning->BinMaximum(ibin_smp, kv_opt);
-        if((TMath::Abs(bin_min_smp - bin_max_opt) < conv::kASmallNum) ||
-           (TMath::Abs(bin_max_smp - bin_max_opt) < conv::kASmallNum)) {
-          max_matches = true;
-          break;
-        }
-      }
+      bool max_matches = edge_matches(bin_max_opt);
       if(!max_matches) {
         VLOG("SampleBinning",pFATAL) << "The optimised upper bin edge " << bin_min_opt
                                     << " for kinevar = " << util::AsString(kv_opt)
