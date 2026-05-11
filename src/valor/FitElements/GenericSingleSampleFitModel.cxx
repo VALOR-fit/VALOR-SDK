@@ -1962,43 +1962,113 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     // Get the mode appropriate binning
     const VALORBinning * true_sb = fBinning->TrueSmpBinning(m);
 
-    // check kinematic values against built-in limits and make vectors
+    // // check kinematic values against built-in limits and make vectors
+    // std::vector<double> true_vars;
+    // std::vector<double> reco_vars;
+    // bool out_of_range = false;
+    // // in true
+    // for (conv::KineVar_t kv : true_sb->KineVars()) {
+    //   double val = kinematics.at(kv);
+    //   if (val < true_sb->Minimum(kv) || val > true_sb->Maximum(kv)) {
+    //     VLOG("GenericSingleSampleFitModel",pWARN) 
+    //       << "MC event: " << iev << " has true kinematic value outside range: "<<util::AsString(kv) << " = "<<val
+    //       << ", range used: [" << true_sb->Minimum(kv) << ", " << true_sb->Maximum(kv) << "]";
+    //     out_of_range = true;
+    //   }
+    //   true_vars.push_back(val);
+    // }
+    // // and in reco
+    // for (conv::KineVar_t kv : reco_ob->KineVars()) {
+    //   double val = kinematics.at(kv);
+    //   if (val < reco_ob->Minimum(kv) || val > reco_ob->Maximum(kv)) {
+    //     if(fSuppressOutOfBinningRangeWarning){
+    //       // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
+    //       // that they're all intrinsic nue so we don't care about them
+    //       VSLOG("GenericSingleSampleFitModel",pDEBUG)
+    //         << fName<<" > MC event: " << iev << " has reco kinematic value outside range: "<<util::AsString(kv) << " = "<<val
+    //         << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
+    //     }
+    //     else {
+    //       VSLOG("GenericSingleSampleFitModel", pWARN)
+    //         << fName << " > MC event: " << iev << " has reco kinematic value outside range: " << util::AsString(kv)
+    //         << " = " << val
+    //         << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
+    //     }
+    //     out_of_range = true;
+    //   }
+    //   reco_vars.push_back(val);
+    // }
+    // if (out_of_range) {continue;}
+
     std::vector<double> true_vars;
     std::vector<double> reco_vars;
-    bool out_of_range = false;
-    // in true
+
+    bool true_out_of_range = false;
+    bool reco_out_of_range = false;
+
+    const bool use_dummy_reco_for_juno_response =
+      fUseJunoDetectorResponse &&
+      (fJunoApplyEnergySmearing || fJunoApplyCosthSmearing);
+
+    // true variables: always enforce
     for (conv::KineVar_t kv : true_sb->KineVars()) {
       double val = kinematics.at(kv);
+
       if (val < true_sb->Minimum(kv) || val > true_sb->Maximum(kv)) {
-        VLOG("GenericSingleSampleFitModel",pWARN) 
-          << "MC event: " << iev << " has true kinematic value outside range: "<<util::AsString(kv) << " = "<<val
-          << ", range used: [" << true_sb->Minimum(kv) << ", " << true_sb->Maximum(kv) << "]";
-        out_of_range = true;
+        VLOG("GenericSingleSampleFitModel", pWARN)
+          << "MC event: " << iev
+          << " has true kinematic value outside range: "
+          << util::AsString(kv) << " = " << val
+          << ", range used: ["
+          << true_sb->Minimum(kv) << ", "
+          << true_sb->Maximum(kv) << "]";
+
+        true_out_of_range = true;
       }
+
       true_vars.push_back(val);
     }
-    // and in reco
+
+    // reco variables: enforce only when JUNO detector response is disabled
     for (conv::KineVar_t kv : reco_ob->KineVars()) {
       double val = kinematics.at(kv);
+
       if (val < reco_ob->Minimum(kv) || val > reco_ob->Maximum(kv)) {
-        if(fSuppressOutOfBinningRangeWarning){
-          // Loads of T2K events have Ereco values outside of the binning range. This is fine because studies have shown
-          // that they're all intrinsic nue so we don't care about them
-          VSLOG("GenericSingleSampleFitModel",pDEBUG)
-            << fName<<" > MC event: " << iev << " has reco kinematic value outside range: "<<util::AsString(kv) << " = "<<val
-            << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
+        reco_out_of_range = true;
+
+        if (!fUseJunoDetectorResponse) {
+          if (fSuppressOutOfBinningRangeWarning) {
+            VSLOG("GenericSingleSampleFitModel", pDEBUG)
+              << fName << " > MC event: " << iev
+              << " has reco kinematic value outside range: "
+              << util::AsString(kv) << " = " << val
+              << ", range used: ["
+              << reco_ob->Minimum(kv) << ", "
+              << reco_ob->Maximum(kv) << "]";
+          }
+          else {
+            VSLOG("GenericSingleSampleFitModel", pWARN)
+              << fName << " > MC event: " << iev
+              << " has reco kinematic value outside range: "
+              << util::AsString(kv) << " = " << val
+              << ", range used: ["
+              << reco_ob->Minimum(kv) << ", "
+              << reco_ob->Maximum(kv) << "]";
+          }
         }
-        else {
-          VSLOG("GenericSingleSampleFitModel", pWARN)
-            << fName << " > MC event: " << iev << " has reco kinematic value outside range: " << util::AsString(kv)
-            << " = " << val
-            << ", range used: [" << reco_ob->Minimum(kv) << ", " << reco_ob->Maximum(kv) << "]";
-        }
-        out_of_range = true;
       }
+
       reco_vars.push_back(val);
     }
-    if (out_of_range) {continue;}
+
+    if (true_out_of_range) {
+      continue;
+    }
+
+    if (reco_out_of_range &&
+    !use_dummy_reco_for_juno_response) {
+      continue;
+    }
 
     // Exposure for assumed data - Weight MC templates to that exposure
     double data_pot = fPOT;
@@ -2016,9 +2086,25 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
 
     // Find the appropriate bins
 
-    int true_bin    = true_sb->FindBin(true_vars);
-    int reco_bin_sb = reco_sb->FindBin(reco_vars);
-    int reco_bin_ob = reco_ob->FindBin(reco_vars);
+    // int true_bin    = true_sb->FindBin(true_vars);
+    // int reco_bin_sb = reco_sb->FindBin(reco_vars);
+    // int reco_bin_ob = reco_ob->FindBin(reco_vars);
+
+    int true_bin = true_sb->FindBin(true_vars);
+
+    int reco_bin_sb = -1;
+    int reco_bin_ob = -1;
+
+    if (use_dummy_reco_for_juno_response) {
+      // Dummy reco bin. In detector-response mode the original reco bin is only
+      // a holder; ApplyJunoSmearing() will rebuild the final reco distribution.
+      reco_bin_sb = 0;
+      reco_bin_ob = 0;
+    }
+    else {
+      reco_bin_sb = reco_sb->FindBin(reco_vars);
+      reco_bin_ob = reco_ob->FindBin(reco_vars);
+    }
 
     VLOG("GenericSingleSampleFitModel",pDEBUG) 
       << "Inserting to MC teplates --> MC event #" << iev 
