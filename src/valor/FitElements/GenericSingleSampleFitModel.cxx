@@ -16,6 +16,7 @@
 #include <set>
 #include <utility>
 #include <algorithm>
+#include <fstream>
 
 #include <TXMLEngine.h>
 #include <TFile.h>
@@ -221,6 +222,78 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
     VLOG("GenericSingleSampleFitModel",pINFO)
       << "Apply osc prob to all detectors (regardless of util::OscProbIsAppliedTo)? " << fSkipOscProbApplyCheck << " tonnes";
   }
+
+  // Enable/disable Earth oscillation (baseline depends on zenith angle) for atmospheric JUNO.
+  // When enabled, ApplyOscProb() will compute probabilities through an Earth density profile
+  // using the cos(zenith) stored in the "true" binning.
+  name = "use_earth_oscillation";
+  if(util::NodeExists(xml,root_node,name)) {
+    this->SetUseEarthOscillation(util::XML2Bool(xml,root_node,name));
+    VLOG("GenericSingleSampleFitModel",pINFO)
+      << "Use Earth oscillation for atmospheric JUNO? " << fUseEarthOscillation;
+  }
+
+  // Check whether or not to apply JUNO detector response with FC Ratio, Energy and Angle smearing
+  name = "detector_response/enabled";
+  if (util::NodeExists(xml, root_node, name)) {
+    fUseJunoDetectorResponse = util::XML2Bool(xml, root_node, name);
+  }
+
+  if (fUseJunoDetectorResponse) {
+    fJunoApplyFC =
+      util::NodeExists(xml, root_node, "detector_response/apply_fc") ?
+      util::XML2Bool(xml, root_node, "detector_response/apply_fc") : false;
+
+    fJunoApplyEnergySmearing =
+      util::NodeExists(xml, root_node, "detector_response/apply_energy_smearing") ?
+      util::XML2Bool(xml, root_node, "detector_response/apply_energy_smearing") : false;
+
+    fJunoApplyCosthSmearing =
+      util::NodeExists(xml, root_node, "detector_response/apply_costh_smearing") ?
+      util::XML2Bool(xml, root_node, "detector_response/apply_costh_smearing") : false;
+
+    fJunoApplyPID =
+      util::NodeExists(xml, root_node, "detector_response/apply_pid") ?
+      util::XML2Bool(xml, root_node, "detector_response/apply_pid") : false;
+
+    fJunoPreserveSmearingNorm =
+      util::NodeExists(xml, root_node, "detector_response/preserve_normalization") ?
+      util::XML2Bool(xml, root_node, "detector_response/preserve_normalization") : false;
+
+    fJunoSmearNSigma =
+      util::NodeExists(xml, root_node, "detector_response/smear_nsigma") ?
+      util::XML2Dbl(xml, root_node, "detector_response/smear_nsigma") : 5.0;
+
+    VLOG("GenericSingleSampleFitModel", pNOTICE)
+      << "[JUNO DETRESP] enabled=" << fUseJunoDetectorResponse
+      << ", FC=" << fJunoApplyFC
+      << ", Esmear=" << fJunoApplyEnergySmearing
+      << ", Csmear=" << fJunoApplyCosthSmearing
+      << ", PID=" << fJunoApplyPID
+      << ", nsigma=" << fJunoSmearNSigma
+      << ", preserve_norm=" << fJunoPreserveSmearingNorm;
+
+    if (fJunoApplyFC) {
+      fJunoFCCoeffDir =
+        util::NodeExists(xml, root_node, "detector_response/fc_coeff_dir") ?
+        util::XML2String(xml, root_node, "detector_response/fc_coeff_dir") : "";
+
+      fJunoFCCoeffDir = util::CompleteConfigPath(fJunoFCCoeffDir);
+
+      if (!this->LoadJunoFCCoefficients(fJunoFCCoeffDir)) {
+        VLOG("GenericSingleSampleFitModel", pFATAL)
+          << "[JUNO DETRESP] Failed to load FC coefficients from "
+          << fJunoFCCoeffDir;
+        util::Die(-1);
+        return false;
+      }
+
+      VLOG("GenericSingleSampleFitModel", pNOTICE)
+        << "[JUNO DETRESP] Loaded " << fJunoFCCoeff.size()
+        << " FC polynomial coefficients from " << fJunoFCCoeffDir;
+    }
+  }
+
   // Get assumed exposure for each beam configuration
   {
     // Optionally over-ride the POT
@@ -503,6 +576,12 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
   VLOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTFinOb integral summed over all modes = " << fMCTFinOb_tot_integral;
 
   this->ApplyOscProb(opt);      // `fin' MC templates --> `fin' MC templates
+
+  // Temporary proof test
+  if (fUseJunoDetectorResponse) {
+  this->ApplyJunoDetectorResponse(opt);
+  }
+
   this->UpdatePDFs(opt);        // `fin' MC templates --> p.d.f
 #endif //__VALOR_FMWK_PENALTY_ONLY__
 
@@ -1179,6 +1258,16 @@ void GenericSingleSampleFitModel::Init(void)
   fSkipOscProbApplyCheck = false;
   fSuppressOutOfBinningRangeWarning = false;
   fUseEarthOscillation = false;  // Default to fixed baseline; enable with SetUseEarthOscillation(true)
+
+  fUseJunoDetectorResponse = false;
+  fJunoApplyFC = false;
+  fJunoApplyEnergySmearing = false;
+  fJunoApplyCosthSmearing = false;
+  fJunoApplyPID = false;
+  fJunoPreserveSmearingNorm = false;
+  fJunoSmearNSigma = 5.0;
+  fJunoFCCoeff.clear();
+  fJunoFCCoeffDir = ""; 
 
   fLoverEPerEvent.clear();
 
@@ -4739,5 +4828,315 @@ util::ToyStream* GenericSingleSampleFitModel::InitToyStream(const string file_na
 
   return new util::ToyStream(file_name, read_or_write, typeid(this), this->Name(),
       valor_array_format, this->StreamSize());
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::ApplyJunoDetectorResponse(Option_t * /*opt*/)
+{
+  VLOG("GenericSingleSampleFitModel", pNOTICE)
+    << "[JUNO DETRESP] Applying JUNO detector response to model sample "
+    << util::AsString(fSample);
+
+  const VALORBinning * reco_ob = fBinning->RecoOptBinning();
+
+  for (size_t imode = 0; imode < fReactionModes.size(); ++imode) {
+    ReacMode_t m = fReactionModes[imode];
+
+    if (m == kmUndefined) continue;
+    if (fMCTNullOb[imode]) continue;
+    if (!fMCTFinOb[imode]) continue;
+
+    const VALORBinning * true_sb =
+      fSingleTrueBinning ? fBinning->TrueSmpBinningSingle()
+                         : fBinning->TrueSmpBinning(m);
+
+    if (fJunoApplyFC) {
+      this->ApplyJunoFCOnly(fMCTFinOb[imode], reco_ob, true_sb);
+    }
+
+    if (fJunoApplyEnergySmearing || fJunoApplyCosthSmearing) {
+      this->ApplyJunoSmearing(fMCTFinOb[imode], reco_ob, true_sb);
+    }
+  }
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::ApplyJunoFCOnly(
+    VALORArray * arr,
+    const VALORBinning * reco_binning,
+    const VALORBinning * true_binning)
+{
+  if (!arr || !reco_binning || !true_binning) return;
+
+  const int n_reco_bins = reco_binning->NBins();
+  const int n_true_bins = true_binning->NBins();
+
+  for (int itrue = 0; itrue < n_true_bins; ++itrue) {
+    std::vector<double> true_centers = true_binning->BinCentre(itrue);
+    if (true_centers.empty()) continue;
+
+    const double Etrue = true_centers[0];
+    const double fc = this->JunoFCRatio(Etrue);
+
+    for (int ireco = 0; ireco < n_reco_bins; ++ireco) {
+      const double v = arr->GetEntry(ireco, itrue);
+      arr->SetEntry(v * fc, ireco, itrue);
+    }
+  }
+}
+//________________________________________________________________________________________
+void GenericSingleSampleFitModel::ApplyJunoSmearing(
+    VALORArray * arr,
+    const VALORBinning * reco_binning,
+    const VALORBinning * true_binning)
+{
+  if (!arr || !reco_binning || !true_binning) return;
+
+  const int n_reco_bins = reco_binning->NBins();
+  const int n_true_bins = true_binning->NBins();
+
+  const std::vector<KineVar_t> & reco_vars = reco_binning->KineVars();
+  if (reco_vars.size() < 2) {
+    VLOG("GenericSingleSampleFitModel", pERROR)
+      << "[JUNO DETRESP] Reco binning has fewer than 2 variables.";
+    return;
+  }
+
+  const KineVar_t reco_E_var = reco_vars[0];
+  const KineVar_t reco_C_var = reco_vars[1];
+
+  VALORArray smeared(n_reco_bins, n_true_bins);
+  smeared.SetAll(0.0);
+
+  for (int itrue = 0; itrue < n_true_bins; ++itrue) {
+    std::vector<double> true_centers = true_binning->BinCentre(itrue);
+    if (true_centers.size() < 2) continue;
+
+    const double Etrue = true_centers[0];
+    const double Ctrue = true_centers[1];
+
+    double true_rate = 0.0;
+    for (int iold_reco = 0; iold_reco < n_reco_bins; ++iold_reco) {
+      true_rate += arr->GetEntry(iold_reco, itrue);
+    }
+
+    if (true_rate == 0.0) continue;
+
+    std::vector<double> probs(n_reco_bins, 0.0);
+
+    for (int ireco = 0; ireco < n_reco_bins; ++ireco) {
+      const double reco_E_min =
+        reco_binning->BinMinimum(ireco, reco_E_var);
+      const double reco_E_max =
+        reco_binning->BinMaximum(ireco, reco_E_var);
+
+      const double reco_C_min =
+        reco_binning->BinMinimum(ireco, reco_C_var);
+      const double reco_C_max =
+        reco_binning->BinMaximum(ireco, reco_C_var);
+
+      double pE = 0.0;
+      double pC = 0.0;
+
+      if (fJunoApplyEnergySmearing) {
+        const double sigmaE =
+          std::max(1.0e-6, this->JunoSigmaEnergy(Etrue));
+        const double meanE =
+          Etrue + this->JunoMuEnergyBias(Etrue);
+
+        if (reco_E_max < meanE - fJunoSmearNSigma * sigmaE) {
+          pE = 0.0;
+        }
+        else if (reco_E_min > meanE + fJunoSmearNSigma * sigmaE) {
+          pE = 0.0;
+        }
+        else {
+          pE = this->JunoGaussianBinProb(
+              reco_E_min, reco_E_max, meanE, sigmaE);
+        }
+      }
+      else {
+        if (Etrue >= reco_E_min && Etrue < reco_E_max) {
+          pE = 1.0;
+        }
+        if (Etrue == reco_E_max) {
+          pE = 1.0;
+        }
+      }
+
+      if (fJunoApplyCosthSmearing) {
+        const double c_clamped =
+          std::max(-1.0, std::min(1.0, Ctrue));
+
+        const double theta = std::acos(c_clamped);
+
+        const double sigma_theta_rad =
+          std::max(1.0e-6, this->JunoSigmaThetaDeg(Etrue))
+          * TMath::Pi() / 180.0;
+
+        const double sigmaC =
+          std::max(1.0e-6,
+                   std::abs(std::sin(theta)) * sigma_theta_rad);
+
+        const double meanC = c_clamped;
+
+        if (reco_C_max < meanC - fJunoSmearNSigma * sigmaC) {
+          pC = 0.0;
+        }
+        else if (reco_C_min > meanC + fJunoSmearNSigma * sigmaC) {
+          pC = 0.0;
+        }
+        else {
+          pC = this->JunoGaussianBinProb(
+              reco_C_min, reco_C_max, meanC, sigmaC);
+        }
+      }
+      else {
+        if (Ctrue >= reco_C_min && Ctrue < reco_C_max) {
+          pC = 1.0;
+        }
+        if (Ctrue == reco_C_max) {
+          pC = 1.0;
+        }
+      }
+
+      probs[ireco] = pE * pC;
+    }
+
+    double norm = 0.0;
+    if (fJunoPreserveSmearingNorm) {
+      for (int ireco = 0; ireco < n_reco_bins; ++ireco) {
+        norm += probs[ireco];
+      }
+    }
+
+    for (int ireco = 0; ireco < n_reco_bins; ++ireco) {
+      double p = probs[ireco];
+
+      if (fJunoPreserveSmearingNorm && norm > 0.0) {
+        p /= norm;
+      }
+
+      if (p <= 0.0) continue;
+
+      smeared.SetEntry(true_rate * p, ireco, itrue);
+    }
+  }
+
+  for (int itrue = 0; itrue < n_true_bins; ++itrue) {
+    for (int ireco = 0; ireco < n_reco_bins; ++ireco) {
+      arr->SetEntry(smeared.GetEntry(ireco, itrue), ireco, itrue);
+    }
+  }
+}
+//________________________________________________________________________________________
+double GenericSingleSampleFitModel::JunoGaussianBinProb(
+    double low, double high, double mean, double sigma) const
+{
+  if (sigma <= 0.0) return 0.0;
+
+  const double sqrt2 = std::sqrt(2.0);
+  const double z1 = (low  - mean) / (sqrt2 * sigma);
+  const double z2 = (high - mean) / (sqrt2 * sigma);
+
+  return 0.5 * (std::erf(z2) - std::erf(z1));
+}
+//________________________________________________________________________________________
+double GenericSingleSampleFitModel::JunoFCRatio(double Etrue) const
+{
+  double v = this->EvalJunoPoly(fJunoFCCoeff, Etrue);
+
+  if (v < 0.0) v = 0.0;
+
+  return v;
+}
+//________________________________________________________________________________________
+double GenericSingleSampleFitModel::JunoSigmaEnergy(double Etrue) const
+{
+  const double e = std::max(1.0, Etrue);
+
+  const bool is_e_like =
+    (fSample == conv::ksJUNO_FC_CC_Nue || fSample == conv::ksJUNO_FC_CC_Nuebar);
+
+  if (is_e_like) {
+    return 0.0444 + 0.003280 * std::sqrt(e) + 0.07683 / e - 0.00218 * e;
+  }
+
+  return 0.0535 + 0.005934 * std::sqrt(e) + 0.06803 / e - 0.00267 * e;
+}
+//________________________________________________________________________________________
+double GenericSingleSampleFitModel::JunoMuEnergyBias(double Etrue) const
+{
+  const double e = std::max(1.0, Etrue);
+
+  const bool is_e_like =
+    (fSample == conv::ksJUNO_FC_CC_Nue || fSample == conv::ksJUNO_FC_CC_Nuebar);
+
+  if (is_e_like) {
+    return -0.4557 + 0.235222 * std::sqrt(e) + 0.29617 / e - 0.03182 * e;
+  }
+
+  return -0.2657 + 0.160940 * std::sqrt(e) + 0.08111 / e - 0.02438 * e;
+}
+//________________________________________________________________________________________
+double GenericSingleSampleFitModel::JunoSigmaThetaDeg(double Etrue) const
+{
+  const double e = std::max(1.0, Etrue);
+  return 0.593 + 1.040 * std::sqrt(e) + 26.175 / e - 0.140 * e;
+}
+//________________________________________________________________________________________
+bool GenericSingleSampleFitModel::LoadJunoFCCoefficients(const std::string & dir)
+{
+  std::string filename;
+
+  const std::string sample = util::AsString(fSample);
+
+  if (sample.find("numu") != std::string::npos &&
+      sample.find("bar") == std::string::npos) {
+    filename = dir + "/coeffs_numu.txt";
+  }
+  else if (sample.find("nue") != std::string::npos &&
+           sample.find("bar") == std::string::npos) {
+    filename = dir + "/coeffs_nue.txt";
+  }
+  else if (sample.find("numubar") != std::string::npos) {
+    filename = dir + "/coeffs_antinumu.txt";
+  }
+  else if (sample.find("nuebar") != std::string::npos) {
+    filename = dir + "/coeffs_antinue.txt";
+  }
+  else {
+    VLOG("GenericSingleSampleFitModel", pERROR)
+      << "[JUNO DETRESP] Unknown JUNO sample for FC coefficients: "
+      << sample;
+    return false;
+  }
+
+  std::ifstream in(filename.c_str());
+  if (!in.is_open()) {
+    VLOG("GenericSingleSampleFitModel", pERROR)
+      << "[JUNO DETRESP] Cannot open FC coefficient file: " << filename;
+    return false;
+  }
+
+  fJunoFCCoeff.clear();
+
+  double x = 0.0;
+  while (in >> x) {
+    fJunoFCCoeff.push_back(x);
+  }
+
+  return !fJunoFCCoeff.empty();
+}
+//________________________________________________________________________________________
+double GenericSingleSampleFitModel::EvalJunoPoly(
+    const std::vector<double> & coeff, double x) const
+{
+  if (coeff.empty()) return 1.0;
+
+  double y = 0.0;
+  for (double a : coeff) {
+    y = y * x + a;
+  }
+
+  return y;
 }
 //________________________________________________________________________________________

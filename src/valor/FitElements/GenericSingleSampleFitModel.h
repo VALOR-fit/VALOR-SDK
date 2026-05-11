@@ -208,6 +208,37 @@ private:
   NuOsc3Flavour  fNuOsc3Flavour;
   PhysHypothesis fPhysHypothesis;
 
+  // Apply JUNO detector response with FC Ratio, Energy and Angle smearing
+  bool fUseJunoDetectorResponse;
+  bool fJunoApplyFC;
+  bool fJunoApplyEnergySmearing;
+  bool fJunoApplyCosthSmearing;
+  bool fJunoApplyPID;
+  bool fJunoPreserveSmearingNorm;
+
+  double fJunoSmearNSigma;
+
+  std::vector<double> fJunoFCCoeff; 
+  std::string fJunoFCCoeffDir;
+
+  bool LoadJunoFCCoefficients(const std::string & dir);
+  double EvalJunoPoly(const std::vector<double> & coeff, double x) const;
+
+  void ApplyJunoDetectorResponse(Option_t * opt);
+  void ApplyJunoFCOnly(VALORArray * arr, 
+                        const VALORBinning * reco_binning, 
+                        const VALORBinning * true_binning);
+  void ApplyJunoSmearing(VALORArray * arr,
+                         const VALORBinning * reco_binning,
+                         const VALORBinning * true_binning);
+
+  double JunoFCRatio(double Etrue) const;
+  double JunoSigmaEnergy(double Etrue) const;
+  double JunoMuEnergyBias(double Etrue) const;
+  double JunoSigmaThetaDeg(double Etrue) const;
+  double JunoGaussianBinProb(double low, double high,
+                             double mean, double sigma) const;
+
   // Name of this VALOR fit model (see Conventions/Names.h)
   string fName;
 
