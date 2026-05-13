@@ -17,6 +17,9 @@
 #include <utility>
 #include <algorithm>
 #include <fstream>
+#include <array>
+#include <sstream>
+#include <cstdlib>
 
 #include <TXMLEngine.h>
 #include <TFile.h>
@@ -292,6 +295,27 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
         << "[JUNO DETRESP] Loaded " << fJunoFCCoeff.size()
         << " FC polynomial coefficients from " << fJunoFCCoeffDir;
     }
+
+    if (fJunoApplyPID) {
+      fJunoPIDMatrixFile =
+        util::NodeExists(xml, root_node, "detector_response/pid_matrix_file") ?
+        util::XML2String(xml, root_node, "detector_response/pid_matrix_file") : "";
+
+      // Use raw path first if CompleteConfigPath causes trouble for data files.
+      fJunoPIDMatrixFile = util::CompleteConfigPath(fJunoPIDMatrixFile);
+
+      if (!this->LoadJunoPIDMatrix(fJunoPIDMatrixFile)) {
+        VLOG("GenericSingleSampleFitModel", pFATAL)
+          << "[JUNO PID] Failed to load PID matrix from "
+          << fJunoPIDMatrixFile;
+        util::Die(-1);
+        return false;
+      }
+
+      VLOG("GenericSingleSampleFitModel", pNOTICE)
+        << "[JUNO PID] Loaded PID matrix file: "
+        << fJunoPIDMatrixFile;
+    }
   }
 
   // Get assumed exposure for each beam configuration
@@ -543,6 +567,12 @@ bool GenericSingleSampleFitModel::FillSplines(string file, Option_t * opt)
 //________________________________________________________________________________________
 bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t * opt)
 {
+  if (!this->GeneratePrePDF(ph, opt)) return false;
+  return this->FinalizePDF(opt);
+}
+//________________________________________________________________________________________
+bool GenericSingleSampleFitModel::GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt)
+{
   // input opt: 
   // - Leave null for the fit
   // - Use "+SB" to generate finely-binned predictions too (for plotting or toy-MC generation)
@@ -577,18 +607,26 @@ bool GenericSingleSampleFitModel::Generate(const PhysHypothesis & ph, Option_t *
 
   this->ApplyOscProb(opt);      // `fin' MC templates --> `fin' MC templates
 
-  // Temporary proof test
+  // Detector response for FC Ratio and smearing
   if (fUseJunoDetectorResponse) {
   this->ApplyJunoDetectorResponse(opt);
   }
 
-  this->UpdatePDFs(opt);        // `fin' MC templates --> p.d.f
 #endif //__VALOR_FMWK_PENALTY_ONLY__
+
+  return true;
+}
+//________________________________________________________________________________________
+bool GenericSingleSampleFitModel::FinalizePDF(Option_t * opt)
+{
+  #ifndef __VALOR_FMWK_PENALTY_ONLY__
+    this->UpdatePDFs(opt);        // `fin' MC templates --> p.d.f
+  #endif
 
   // Print the final MC templates
   VLOG("GenericSingleSampleFitModel",pDEBUG)
     << "\n\nAt end of GSSFM::Generate, the fMCTFinOb integrals for sample "<<util::AsString(fBeam)<<" "<<util::AsString(fSample)<<" and each mode are:";
-  fMCTFinOb_tot_integral = 0;
+  double fMCTFinOb_tot_integral = 0;
   for(size_t imode = 0; imode < fReactionModes.size(); imode++) {
     ReacMode_t m = fReactionModes[imode];
     if(m == kmUndefined) continue;
@@ -1268,6 +1306,9 @@ void GenericSingleSampleFitModel::Init(void)
   fJunoSmearNSigma = 5.0;
   fJunoFCCoeff.clear();
   fJunoFCCoeffDir = ""; 
+
+  fJunoPIDMatrixFile = "";
+  fJunoPIDMatrices.clear();
 
   fLoverEPerEvent.clear();
 
@@ -5224,5 +5265,91 @@ double GenericSingleSampleFitModel::EvalJunoPoly(
   }
 
   return y;
+}
+//________________________________________________________________________________________
+bool GenericSingleSampleFitModel::LoadJunoPIDMatrix(
+    const std::string & filename)
+{
+  fJunoPIDMatrices.clear();
+  fJunoPIDMatrices.resize(8);
+
+  for (size_t i = 0; i < fJunoPIDMatrices.size(); ++i) {
+    fJunoPIDMatrices[i].fill(0.0);
+  }
+
+  std::ifstream in(filename.c_str());
+  if (!in.is_open()) {
+    VLOG("GenericSingleSampleFitModel", pERROR)
+      << "[JUNO PID] Cannot open PID matrix file: " << filename;
+    return false;
+  }
+
+  std::string line;
+  int n_loaded = 0;
+
+  while (std::getline(in, line)) {
+    if (line.empty()) continue;
+    if (line[0] == '#') continue;
+
+    std::stringstream ss(line);
+    std::string tok;
+    std::vector<std::string> cols;
+
+    while (std::getline(ss, tok, ',')) {
+      cols.push_back(tok);
+    }
+
+    if (cols.size() < 7) continue;
+    if (cols[0] == "group") continue;
+
+    const int group = std::atoi(cols[0].c_str());
+    const int true_label = std::atoi(cols[1].c_str());
+
+    if (group < 1 || group > 8) continue;
+    if (true_label < 0 || true_label > 4) continue;
+
+    std::array<double, 25> & mat =
+      fJunoPIDMatrices[group - 1];
+
+    for (int reco_label = 0; reco_label < 5; ++reco_label) {
+      mat[true_label * 5 + reco_label] =
+        std::atof(cols[2 + reco_label].c_str());
+    }
+
+    ++n_loaded;
+  }
+
+  if (n_loaded <= 0) {
+    VLOG("GenericSingleSampleFitModel", pERROR)
+      << "[JUNO PID] PID matrix file contained no usable rows: "
+      << filename;
+    return false;
+  }
+
+  VLOG("GenericSingleSampleFitModel", pNOTICE)
+    << "[JUNO PID] Loaded " << n_loaded
+    << " PID matrix rows from " << filename;
+
+  return true;
+}
+//________________________________________________________________________________________
+double GenericSingleSampleFitModel::JunoPIDProb(
+    int group,
+    int true_label,
+    int reco_label) const
+{
+  if (group < 0 || group >= static_cast<int>(fJunoPIDMatrices.size())) {
+    return 0.0;
+  }
+
+  if (true_label < 0 || true_label > 4) {
+    return 0.0;
+  }
+
+  if (reco_label < 0 || reco_label > 4) {
+    return 0.0;
+  }
+
+  return fJunoPIDMatrices[group][true_label * 5 + reco_label];
 }
 //________________________________________________________________________________________

@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "valor/FitCore/CorrelatedSystematics.h"
 #include "valor/FitCore/FitModelABC.h"
@@ -108,6 +109,8 @@ protected:
   CorrelatedSystematics * fSystematics;
   bool fOwnerOfSystematics;
   std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
+
+  void ApplyJunoPID();
 
 };
 

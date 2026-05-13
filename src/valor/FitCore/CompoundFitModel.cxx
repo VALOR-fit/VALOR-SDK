@@ -9,6 +9,8 @@ ChangeLog:
 //________________________________________________________________________________________
 
 #include <iostream>
+#include <map>
+#include <vector>
 
 #include "TClass.h"
 #include "TFile.h"
@@ -24,6 +26,7 @@ ChangeLog:
 #include "valor/Utilities/NameRegistry.h"
 #include "valor/VArray/VALORArray.h"
 #include "valor/FitCore/CompoundFitModel.h"
+#include "valor/FitElements/GenericSingleSampleFitModel.h"
 
 using namespace valor;
 using namespace valor::conv;
@@ -137,49 +140,182 @@ long CompoundFitModel::StreamSize(Option_t* opt) const
   return size;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Generate (const PhysHypothesis & ph, Option_t * opt)
+bool CompoundFitModel::Generate(const PhysHypothesis & ph, Option_t * opt)
 {
   bool status = true;
+
+#ifdef __VALOR_FMWK_PARALLEL__
+
+  // For now, do JUNO PID path serially.
+  // Multi-sample PID needs all four model templates before UpdatePDFs(),
+  // so avoid parallel finalization until the flow is validated.
+
+#endif
+
+  std::vector<GenericSingleSampleFitModel *> gssfm_models;
+  bool has_juno_detresp_pid = false;
+
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+       it != fSubModels.end(); ++it) {
+
+    GenericSingleSampleFitModel * gssfm =
+      dynamic_cast<GenericSingleSampleFitModel *>(*it);
+
+    if (gssfm) {
+      gssfm_models.push_back(gssfm);
+
+      if (gssfm->UseJunoDetectorResponse() &&
+          gssfm->JunoApplyPID()) {
+        has_juno_detresp_pid = true;
+      }
+    }
+  }
+
+  if (has_juno_detresp_pid) {
+
+    VLOG("CompoundFitModel", pNOTICE)
+    << "[JUNO PID] Using split GeneratePrePDF -> "
+    << "ApplyJunoPID -> FinalizePDF flow";
+
+    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+         it != fSubModels.end(); ++it) {
+
+      GenericSingleSampleFitModel * gssfm =
+        dynamic_cast<GenericSingleSampleFitModel *>(*it);
+
+      if (gssfm) {
+        status = status && gssfm->GeneratePrePDF(ph, opt);
+      }
+      else {
+        status = status && (*it)->Generate(ph, opt);
+      }
+    }
+
+    if (!status) return false;
+
+    this->ApplyJunoPID();
+
+    for (std::vector<GenericSingleSampleFitModel *>::iterator it =
+           gssfm_models.begin();
+         it != gssfm_models.end(); ++it) {
+
+      status = status && (*it)->FinalizePDF(opt);
+    }
+
+    return status;
+  }
+
+  // Original behavior when JUNO PID is disabled.
 #ifdef __VALOR_FMWK_PARALLEL__
   std::atomic_bool astat(status);
-  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+       it != fSubModels.end(); ++it) {
+
     FitModelABC & m = **it;
-    std::function<void(void)> f = [&]{astat = astat && m.Generate(ph,opt);};
+    std::function<void(void)> f =
+      [&]{ astat = astat && m.Generate(ph, opt); };
+
     util::VThreadPool::Instance()->AddTask(f);
   }
+
   util::VThreadPool::Instance()->Wait();
   status = astat;
 #else
-  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-    status = status && (*it)->Generate(ph,opt);
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+       it != fSubModels.end(); ++it) {
+
+    status = status && (*it)->Generate(ph, opt);
   }
-#endif //__VALOR_FMWK_PARALLEL__
+#endif
+
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
+// bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
+// {
+//   bool status = true;
+//   if (fSystematics) {
+//     fSystematics->UpdateFrom(fp);
+//     status = this->Generate(PhysHypothesis(fp),opt);
+//   }
+//   else {
+// #ifdef __VALOR_FMWK_PARALLEL__
+//     std::atomic_bool astat(status);
+//     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+//       FitModelABC & m = **it;
+//       std::function<void(void)> f = [&]{astat = astat && m.Generate(fp,opt);};
+//       util::VThreadPool::Instance()->AddTask(f);
+//     }
+//     util::VThreadPool::Instance()->Wait();
+//     status = astat;
+// #else
+//     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+//       status = status && (*it)->Generate(fp,opt);
+//     }
+// #endif //__VALOR_FMWK_PARALLEL__
+//   }
+//   return status;
+// }
+//________________________________________________________________________________________
+bool CompoundFitModel::Generate(const FitParamList & fp, Option_t * opt)
 {
   bool status = true;
+
   if (fSystematics) {
     fSystematics->UpdateFrom(fp);
-    status = this->Generate(PhysHypothesis(fp),opt);
   }
-  else {
+
+  bool has_juno_pid = false;
+
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+       it != fSubModels.end(); ++it) {
+
+    GenericSingleSampleFitModel * gssfm =
+      dynamic_cast<GenericSingleSampleFitModel *>(*it);
+
+    if (!gssfm) continue;
+
+    if (gssfm->UseJunoDetectorResponse() &&
+        gssfm->JunoApplyPID()) {
+      has_juno_pid = true;
+      break;
+    }
+  }
+
+  // Use the split PID-aware flow only when needed.
+  if (has_juno_pid) {
+    return this->Generate(PhysHypothesis(fp), opt);
+  }
+
+  // Otherwise preserve original behavior.
 #ifdef __VALOR_FMWK_PARALLEL__
-    std::atomic_bool astat(status);
-    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      FitModelABC & m = **it;
-      std::function<void(void)> f = [&]{astat = astat && m.Generate(fp,opt);};
-      util::VThreadPool::Instance()->AddTask(f);
-    }
-    util::VThreadPool::Instance()->Wait();
-    status = astat;
-#else
-    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      status = status && (*it)->Generate(fp,opt);
-    }
-#endif //__VALOR_FMWK_PARALLEL__
+  std::atomic_bool astat(status);
+
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+       it != fSubModels.end(); ++it) {
+
+    FitModelABC & m = **it;
+
+    std::function<void(void)> f =
+      [&]{ astat = astat && m.Generate(fp, opt); };
+
+    util::VThreadPool::Instance()->AddTask(f);
   }
+
+  util::VThreadPool::Instance()->Wait();
+  status = astat;
+
+#else
+
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+       it != fSubModels.end(); ++it) {
+
+    status = status && (*it)->Generate(fp, opt);
+  }
+
+#endif
+
   return status;
 }
 //________________________________________________________________________________________
@@ -429,5 +565,166 @@ util::ToyStream* CompoundFitModel::InitToyStream(const string file_name, const s
 
   return new util::ToyStream(file_name, read_or_write, typeid(this), this->CompoundName(),
                              valor_array_format, this->StreamSize());
+}
+//________________________________________________________________________________________
+int JunoPIDLabel(conv::Sample_t s)
+{
+  if (s == conv::ksJUNO_FC_CC_Nue)    return 0;
+  if (s == conv::ksJUNO_FC_CC_Numu)   return 1;
+  if (s == conv::ksJUNO_FC_CC_Nuebar) return 2;
+  if (s == conv::ksJUNO_FC_CC_Numubar)return 3;
+  return -1;
+}
+//________________________________________________________________________________________
+void CompoundFitModel::ApplyJunoPID()
+{
+  std::vector<GenericSingleSampleFitModel *> models;
+
+  for (FitModelABC * m : fSubModels) {
+    GenericSingleSampleFitModel * g =
+      dynamic_cast<GenericSingleSampleFitModel *>(m);
+
+    if (!g) continue;
+    if (!g->UseJunoDetectorResponse()) continue;
+    if (!g->JunoApplyPID()) continue;
+    if (JunoPIDLabel(g->Sample()) < 0) continue;
+
+    models.push_back(g);
+  }
+
+  if (models.size() != 4) {
+    VLOG("CompoundFitModel", pWARN)
+      << "[JUNO PID] Expected 4 JUNO CC samples, found "
+      << models.size() << ". Skipping.";
+    return;
+  }
+
+  const VALORBinning * reco_binning = models.front()->RecoBinning();
+  if (!reco_binning) return;
+
+  const std::vector<KineVar_t> & reco_vars = reco_binning->KineVars();
+  if (reco_vars.empty()) return;
+
+  const KineVar_t reco_E_var = reco_vars[0];
+  const int n_reco_bins = reco_binning->NBins();
+
+  auto pid_group_from_reco_energy = [](double Ereco) -> int {
+    const double e_edges[11] = {
+      1.08508435, 1.41421357, 1.84317469, 2.40224887, 3.13090217,
+      4.08057156, 5.31829591, 6.93144844, 9.03390453,
+      11.77408038, 20.0
+    };
+
+    int ebin = 9;
+    for (int i = 0; i < 10; ++i) {
+      if (Ereco < e_edges[i + 1]) {
+        ebin = i;
+        break;
+      }
+    }
+
+    if (ebin <= 2) return 0;
+    if (ebin == 3) return 1;
+    if (ebin == 4) return 2;
+    if (ebin == 5) return 3;
+    if (ebin == 6) return 4;
+    if (ebin == 7) return 5;
+    if (ebin == 8) return 6;
+    return 7;
+  };
+
+  auto holder_mode_index = [](GenericSingleSampleFitModel * g) -> int {
+    for (unsigned int i = 0; i < g->NReactionModes(); ++i) {
+      if (g->IsNullMode(i)) continue;
+      if (!g->MCTFinOb(i)) continue;
+      return static_cast<int>(i);
+    }
+    return -1;
+  };
+
+  std::map<GenericSingleSampleFitModel *, std::vector<VALORArray> > before;
+  std::map<GenericSingleSampleFitModel *, int> holder;
+
+  for (GenericSingleSampleFitModel * g : models) {
+    const int iholder = holder_mode_index(g);
+
+    if (iholder < 0) {
+      VLOG("CompoundFitModel", pWARN)
+        << "[JUNO PID] No valid holder mode for sample "
+        << util::AsString(g->Sample())
+        << ". Skipping PID.";
+      return;
+    }
+
+    holder[g] = iholder;
+
+    std::vector<VALORArray> copies;
+
+    for (unsigned int imode = 0; imode < g->NReactionModes(); ++imode) {
+      if (g->IsNullMode(imode) || !g->MCTFinOb(imode)) {
+        copies.push_back(VALORArray());
+        continue;
+      }
+
+      copies.push_back(*(g->MCTFinOb(imode)));
+      g->MCTFinOb(imode)->SetAll(0.0);
+    }
+
+    before[g] = copies;
+  }
+
+  for (GenericSingleSampleFitModel * true_model : models) {
+    const int true_label = JunoPIDLabel(true_model->Sample());
+    if (true_label < 0) continue;
+
+    for (unsigned int imode_true = 0;
+         imode_true < true_model->NReactionModes();
+         ++imode_true) {
+
+      if (true_model->IsNullMode(imode_true)) continue;
+      if (!true_model->MCTFinOb(imode_true)) continue;
+
+      const VALORArray & src = before[true_model][imode_true];
+      const int n_true_bins = src.GetSize() / n_reco_bins;
+
+      for (GenericSingleSampleFitModel * reco_model : models) {
+        const int reco_label = JunoPIDLabel(reco_model->Sample());
+        if (reco_label < 0) continue;
+
+        const int imode_reco = holder[reco_model];
+
+        VALORArray * dst =
+          reco_model->MCTFinOb(static_cast<unsigned int>(imode_reco));
+
+        if (!dst) continue;
+
+        for (int ireco = 0; ireco < n_reco_bins; ++ireco) {
+          const double e_low =
+            reco_binning->BinMinimum(ireco, reco_E_var);
+          const double e_high =
+            reco_binning->BinMaximum(ireco, reco_E_var);
+          const double Ereco = 0.5 * (e_low + e_high);
+
+          const int group = pid_group_from_reco_energy(Ereco);
+
+          const double pid =
+            true_model->JunoPIDProb(group, true_label, reco_label);
+
+          if (pid <= 0.0) continue;
+
+          for (int itrue = 0; itrue < n_true_bins; ++itrue) {
+            const double v = src.GetEntry(ireco, itrue);
+            if (v == 0.0) continue;
+
+            const double old = dst->GetEntry(ireco, itrue);
+            dst->SetEntry(old + v * pid, ireco, itrue);
+          }
+        }
+      }
+    }
+  }
+
+  VLOG("CompoundFitModel", pNOTICE)
+    << "[JUNO PID] Applied multi-sample PID using holder modes.";
 }
 //________________________________________________________________________________________

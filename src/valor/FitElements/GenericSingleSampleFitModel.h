@@ -26,6 +26,8 @@ brief      A generic implementation of the fit model for a single sample,
 
 #include <string>
 #include <utility>
+#include <array>
+#include <vector>
 
 #include <TMatrixD.h>
 #include <TObjArray.h>
@@ -142,6 +144,28 @@ public:
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
+  // Split Generate() to allow insertion of PID application
+  bool GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt);
+  bool FinalizePDF(Option_t * opt);
+
+  conv::Sample_t Sample() const { return fSample; }
+  VALORArray * MCTFinOb(unsigned int imode) { return fMCTFinOb[imode]; }
+  unsigned int NReactionModes() const { return fReactionModes.size(); }
+  conv::ReacMode_t ReactionMode(unsigned int imode) const {
+    return fReactionModes[imode];
+  }
+  bool IsNullMode(unsigned int imode) const {
+    return fMCTNullOb[imode];
+  }
+  const VALORBinning * RecoBinning() const {
+    return fBinning->RecoOptBinning();
+  }
+
+  // For PID application in FitCore/CompoundFitModel
+  bool UseJunoDetectorResponse() const { return fUseJunoDetectorResponse; }
+  bool JunoApplyPID() const { return fJunoApplyPID; }
+  double JunoPIDProb(int group, int true_label, int reco_label) const;
+
 private:
 
   void Init  (void);
@@ -238,6 +262,12 @@ private:
   double JunoSigmaThetaDeg(double Etrue) const;
   double JunoGaussianBinProb(double low, double high,
                              double mean, double sigma) const;
+
+  // Apply JUNO PID matrices
+  std::string fJunoPIDMatrixFile;
+  std::vector<std::array<double, 25> > fJunoPIDMatrices;
+
+  bool LoadJunoPIDMatrix(const std::string & filename);
 
   // Name of this VALOR fit model (see Conventions/Names.h)
   string fName;
