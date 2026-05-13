@@ -24,13 +24,18 @@
 #include <map>
 
 #include "valor/Conventions/PhysParamId.h"
+#include "valor/Conventions/Sample.h"
+#include "valor/Conventions/ReacMode.h"
 #include "valor/FitCore/PhysHypothesis.h"
 #include "valor/FitCore/PhysParamList.h"
 #include "valor/Utilities/ToyStream.h"
+#include "valor/VArray/VALORArrayT.h"
 
 class TObjArray;
 
 namespace valor {
+
+class VALORBinning;
 
 class FitModelABC
 {
@@ -92,6 +97,62 @@ public:
 
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "") = 0;
+
+  // Modes to allow JUNO PID
+  virtual bool GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt = "")
+  {
+    return this->Generate(ph, opt);
+  }
+
+  virtual bool FinalizePDF(Option_t * opt = "")
+  {
+    return true;
+  }
+
+  virtual bool UseJunoDetectorResponse() const
+  {
+    return false;
+  }
+
+  virtual bool JunoApplyPID() const
+  {
+    return false;
+  }
+
+  virtual conv::Sample_t Sample() const
+  {
+    return conv::ksUndefined;
+  }
+
+  virtual const VALORBinning * RecoBinning() const
+  {
+    return 0;
+  }
+
+  virtual unsigned int NReactionModes() const
+  {
+    return 0;
+  }
+
+  virtual conv::ReacMode_t ReactionMode(unsigned int) const
+  {
+    return conv::kmUndefined;
+  }
+
+  virtual bool IsNullMode(unsigned int) const
+  {
+    return true;
+  }
+
+  virtual VALORArray * MCTFinOb(unsigned int)
+  {
+    return 0;
+  }
+
+  virtual double JunoPIDProb(int, int, int) const
+  {
+    return 0.0;
+  }
 
 protected:
    FitModelABC();

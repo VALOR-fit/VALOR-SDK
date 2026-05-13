@@ -145,26 +145,71 @@ public:
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
   // Split Generate() to allow insertion of PID application
-  bool GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt);
-  bool FinalizePDF(Option_t * opt);
+  // bool GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt);
+  // bool FinalizePDF(Option_t * opt);
 
-  conv::Sample_t Sample() const { return fSample; }
-  VALORArray * MCTFinOb(unsigned int imode) { return fMCTFinOb[imode]; }
-  unsigned int NReactionModes() const { return fReactionModes.size(); }
-  conv::ReacMode_t ReactionMode(unsigned int imode) const {
-    return fReactionModes[imode];
-  }
-  bool IsNullMode(unsigned int imode) const {
-    return fMCTNullOb[imode];
-  }
-  const VALORBinning * RecoBinning() const {
-    return fBinning->RecoOptBinning();
-  }
+  // conv::Sample_t Sample() const { return fSample; }
+  // VALORArray * MCTFinOb(unsigned int imode) { return fMCTFinOb[imode]; }
+  // unsigned int NReactionModes() const { return fReactionModes.size(); }
+  // conv::ReacMode_t ReactionMode(unsigned int imode) const {
+  //   return fReactionModes[imode];
+  // }
+  // bool IsNullMode(unsigned int imode) const {
+  //   return fMCTNullOb[imode];
+  // }
+  // const VALORBinning * RecoBinning() const {
+  //   return fBinning->RecoOptBinning();
+  // }
 
   // For PID application in FitCore/CompoundFitModel
-  bool UseJunoDetectorResponse() const { return fUseJunoDetectorResponse; }
-  bool JunoApplyPID() const { return fJunoApplyPID; }
-  double JunoPIDProb(int group, int true_label, int reco_label) const;
+  // bool UseJunoDetectorResponse() const { return fUseJunoDetectorResponse; }
+  // bool JunoApplyPID() const { return fJunoApplyPID; }
+  // double JunoPIDProb(int group, int true_label, int reco_label) const;
+
+  bool GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt = "") override;
+  bool FinalizePDF(Option_t * opt = "") override;
+
+  bool UseJunoDetectorResponse() const override
+  {
+    return fUseJunoDetectorResponse;
+  }
+
+  bool JunoApplyPID() const override
+  {
+    return fJunoApplyPID;
+  }
+
+  conv::Sample_t Sample() const override
+  {
+    return fSample;
+  }
+
+  const VALORBinning * RecoBinning() const override
+  {
+    return fBinning ? fBinning->RecoOptBinning() : 0;
+  }
+
+  unsigned int NReactionModes() const override
+  {
+    return fReactionModes.size();
+  }
+
+  conv::ReacMode_t ReactionMode(unsigned int i) const override
+  {
+    return fReactionModes[i];
+  }
+
+  bool IsNullMode(unsigned int i) const override
+  {
+    return fMCTNullOb[i];
+  }
+
+  VALORArray * MCTFinOb(unsigned int i) override
+  {
+    return fMCTFinOb[i];
+  }
+
+  double JunoPIDProb(int group, int true_label, int reco_label) const override;
 
 private:
 
