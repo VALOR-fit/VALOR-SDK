@@ -3740,6 +3740,8 @@ void GenericSingleSampleFitModel::ApplyOscProb(Option_t * option)
     double baseline = util::Baseline(fBeam,fDetector);
     fNuOsc3Flavour.SetBaseline(baseline);
 
+    fNuOsc3Flavour.SetMassHierarchy(Opt::Instance()->gMassHierarchyAssumed);
+
     // set oscillation parameters to the oscillation probability calculation code
     double mixing12 = fPhysHypothesis.CurrValue(kPhypMixing12);
     double mixing13 = fPhysHypothesis.CurrValue(kPhypMixing13);
