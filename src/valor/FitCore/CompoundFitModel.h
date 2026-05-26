@@ -110,8 +110,6 @@ protected:
   bool fOwnerOfSystematics;
   std::string fDefVALORArrayFormat; // The default VALORArray format used to read/write toys
 
-  void ApplyJunoPID();
-
 };
 
 } // valor

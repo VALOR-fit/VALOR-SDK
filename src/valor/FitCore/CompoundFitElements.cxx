@@ -10,6 +10,8 @@ Copyright (c) 2010-2020, The VALOR group. All rights reserved
 
 #include <TXMLEngine.h>
 #include <TClass.h>
+#include <TSystem.h>
+#include <TString.h>
 
 // fmwk
 #include "valor/FitCore/CompoundFitElements.h"
@@ -344,6 +346,30 @@ void * CompoundFitElements::InstantiateUsingDictionaryRegistration(string class_
 {
   VLOG("CompoundFitElements", pDEBUG) 
      << "Getting class: " << class_name;
+
+  // Load JUNO fit library dynamically if needed
+  if (class_name.find("Juno") != std::string::npos ||
+      class_name.find("juno") != std::string::npos) {
+
+    TString libpath =
+      gSystem->ExpandPathName("$VALOR_EXPT/lib/libValorJunoFit.so");
+
+    int load_status = gSystem->Load(libpath.Data());
+
+    if (load_status < 0) {
+      VLOG("CompoundFitElements", pERROR)
+        << "Failed loading JUNO fit library: "
+        << libpath
+        << " status = " << load_status;
+    }
+    else {
+      VLOG("CompoundFitElements", pNOTICE)
+        << "Loaded JUNO fit library: "
+        << libpath
+        << " status = " << load_status;
+    }
+  }
+
   TClass * tclass = TClass::GetClass(class_name.c_str());
   if(!tclass) {
      VLOG("CompoundFitElements", pERROR) 

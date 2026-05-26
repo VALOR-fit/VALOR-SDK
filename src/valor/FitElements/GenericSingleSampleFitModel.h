@@ -32,6 +32,7 @@ brief      A generic implementation of the fit model for a single sample,
 #include <TMatrixD.h>
 #include <TObjArray.h>
 #include <TTree.h>
+#include <TXMLEngine.h>
 
 //fmwk
 #include "valor/Conventions/Detector.h"
@@ -144,10 +145,6 @@ public:
   // Initialise and return a new ToyStream object, with setting set appropriately for reading/writing using this class
   virtual util::ToyStream* InitToyStream(const string file_name, const string read_or_write = "read", string valor_array_format = "");
 
-  // Split Generate() to allow insertion of PID application
-  // bool GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt);
-  // bool FinalizePDF(Option_t * opt);
-
   // conv::Sample_t Sample() const { return fSample; }
   // VALORArray * MCTFinOb(unsigned int imode) { return fMCTFinOb[imode]; }
   // unsigned int NReactionModes() const { return fReactionModes.size(); }
@@ -161,55 +158,41 @@ public:
   //   return fBinning->RecoOptBinning();
   // }
 
-  // For PID application in FitCore/CompoundFitModel
-  // bool UseJunoDetectorResponse() const { return fUseJunoDetectorResponse; }
-  // bool JunoApplyPID() const { return fJunoApplyPID; }
-  // double JunoPIDProb(int group, int true_label, int reco_label) const;
+protected:
+  // Split Generate() to allow insertion of PID application
+  bool GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt);
+  bool FinalizePDF(Option_t * opt);
 
-  bool GeneratePrePDF(const PhysHypothesis & ph, Option_t * opt = "") override;
-  bool FinalizePDF(Option_t * opt = "") override;
+  virtual bool ReadExperimentSpecificConfig(
+      TXMLEngine* xml,
+      XMLNodePointer_t root_node);
 
-  bool UseJunoDetectorResponse() const override
+  virtual bool ApplyExperimentSpecificResponse(Option_t* opt);
+
+  std::vector<VALORArray*>& MCTFinObInternal()
   {
-    return fUseJunoDetectorResponse;
+    return fMCTFinOb;
   }
 
-  bool JunoApplyPID() const override
+  const std::vector<bool>& MCTNullObInternal() const
   {
-    return fJunoApplyPID;
+    return fMCTNullOb;
   }
 
-  conv::Sample_t Sample() const override
+  const std::vector<conv::ReacMode_t>& ReactionModesInternal() const
+  {
+    return fReactionModes;
+  }
+
+  const SingleSampleKineBinning& BinningInternal() const
+  {
+    return *fBinning;
+  }
+
+  conv::Sample_t SampleInternal() const
   {
     return fSample;
   }
-
-  const VALORBinning * RecoBinning() const override
-  {
-    return fBinning ? fBinning->RecoOptBinning() : 0;
-  }
-
-  unsigned int NReactionModes() const override
-  {
-    return fReactionModes.size();
-  }
-
-  conv::ReacMode_t ReactionMode(unsigned int i) const override
-  {
-    return fReactionModes[i];
-  }
-
-  bool IsNullMode(unsigned int i) const override
-  {
-    return fMCTNullOb[i];
-  }
-
-  VALORArray * MCTFinOb(unsigned int i) override
-  {
-    return fMCTFinOb[i];
-  }
-
-  double JunoPIDProb(int group, int true_label, int reco_label) const override;
 
 private:
 
@@ -277,43 +260,12 @@ private:
   NuOsc3Flavour  fNuOsc3Flavour;
   PhysHypothesis fPhysHypothesis;
 
-  // Apply JUNO detector response with FC Ratio, Energy and Angle smearing
-  bool fUseJunoDetectorResponse;
-  bool fJunoApplyFC;
-  bool fJunoApplyEnergySmearing;
-  bool fJunoApplyCosthSmearing;
-  bool fJunoApplyPID;
-  bool fJunoPreserveSmearingNorm;
-
-  double fJunoSmearNSigma;
-
-  std::vector<double> fJunoFCCoeff; 
-  std::string fJunoFCCoeffDir;
-
-  bool LoadJunoFCCoefficients(const std::string & dir);
-  double EvalJunoPoly(const std::vector<double> & coeff, double x) const;
-
-  void ApplyJunoDetectorResponse(Option_t * opt);
-  void ApplyJunoFCOnly(VALORArray * arr, 
-                        const VALORBinning * reco_binning, 
-                        const VALORBinning * true_binning);
-  void ApplyJunoSmearing(VALORArray * arr,
-                         const VALORBinning * reco_binning,
-                         const VALORBinning * true_binning);
-
-  double JunoFCRatio(double Etrue) const;
-  double JunoSigmaEnergy(double Etrue) const;
-  double JunoMuEnergyBias(double Etrue) const;
-  double JunoSigmaThetaDeg(double Etrue) const;
-  double JunoGaussianBinProb(double low, double high,
-                             double mean, double sigma) const;
-
-  // Apply JUNO PID matrices
-  std::string fJunoPIDMatrixFile;
-  std::vector<std::array<double, 25> > fJunoPIDMatrices;
-
-  bool LoadJunoPIDMatrix(const std::string & filename);
-
+  // // Apply JUNO detector response with FC Ratio, Energy and Angle smearing
+  // bool fUseJunoDetectorResponse;
+  // JunoDetectorResponse fJunoDetectorResponse;
+ 
+  // void ApplyJunoDetectorResponse(Option_t * opt);
+  
   // Name of this VALOR fit model (see Conventions/Names.h)
   string fName;
 

@@ -253,7 +253,10 @@ double CompoundFitData::GetFitStatistic (FitModelABC * model, const FitParamList
   double statistic = 0;
   CompoundFitModel * cfm = dynamic_cast<CompoundFitModel*>(model);
   if (!cfm) {util::Die(-1);return conv::kBadResult;}
-  model->Generate(fp,opt);
+  if (!model->Generate(fp,opt)) {
+    VLOG("CompoundFitData", pERROR) << "Model generation failed in GetFitStatistic(fp)";
+    return conv::kBadResult;
+  }
   for (unsigned int imodel = 0; imodel < fSubData.size() ; imodel++) {
     statistic += fSubData[imodel]->GetFitStatistic(cfm->GetSubModel(imodel), opt, likelihood_components);
   }

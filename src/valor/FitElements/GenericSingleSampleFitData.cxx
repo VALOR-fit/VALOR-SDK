@@ -863,6 +863,11 @@ void GenericSingleSampleFitData::FillFromDST (TTree * t)
     fDataSb->SetEntry(curr_wght_sb, reco_bin_sb);
   }//iev
 
+  std::cerr << "[DEBUG DATA] sample=" << util::AsString(fSample)
+          << " Data OB=" << fDataOb->Integral()
+          << " Data SB=" << fDataSb->Integral()
+          << std::endl;
+          
   fDataObNull = false;
   fDataSbNull = false;
 }
