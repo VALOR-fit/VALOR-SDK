@@ -169,6 +169,9 @@ protected:
 
   virtual bool ApplyExperimentSpecificResponse(Option_t* opt);
 
+  // To allow smearing when true range exceeds reco range
+  virtual bool UseDummyRecoForPreResponse() const;
+
   std::vector<VALORArray*>& MCTFinObInternal()
   {
     return fMCTFinOb;

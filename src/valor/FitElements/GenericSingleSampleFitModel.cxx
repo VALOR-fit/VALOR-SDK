@@ -206,6 +206,19 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   this->Zero();
   VLOG("GenericSingleSampleFitModel",pINFO) << "Zeroed";
 
+  /* Read experiment-specific config early.
+  This must happen before FillFromDST(), because some experiments
+  need to preserve true-space events with dummy reco bins before
+  applying a fit-time detector response. */
+  if (!this->ReadExperimentSpecificConfig(xml, root_node)) {
+    VLOG("GenericSingleSampleFitModel", pFATAL)
+      << "Failed to read experiment-specific model configuration";
+    xml->FreeDoc(xmldoc);
+    delete xml;
+    util::Die(-1);
+    return false;
+  }
+
   //------------------------
   // TODO
   // fSystematics = new CompoundCorrelatedSystematics; 
@@ -314,15 +327,15 @@ bool GenericSingleSampleFitModel::Read(string file, Option_t * opt)
   }
   VLOG("GenericSingleSampleFitModel",pDEBUG) << "fMCTTunOb integral summed over all modes = " << fMCTTunOb_tot_integral;
 
-  // Read experiment-specific config
-  if (!this->ReadExperimentSpecificConfig(xml, root_node)) {
-    VLOG("GenericSingleSampleFitModel", pFATAL)
-      << "Failed to read experiment-specific model configuration";
-    xml->FreeDoc(xmldoc);
-    delete xml;
-    util::Die(-1);
-    return false;
-  }
+  // // Read experiment-specific config
+  // if (!this->ReadExperimentSpecificConfig(xml, root_node)) {
+  //   VLOG("GenericSingleSampleFitModel", pFATAL)
+  //     << "Failed to read experiment-specific model configuration";
+  //   xml->FreeDoc(xmldoc);
+  //   delete xml;
+  //   util::Die(-1);
+  //   return false;
+  // }
 
   // Release memory
   xml->FreeDoc(xmldoc);
@@ -1975,6 +1988,9 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     bool true_out_of_range = false;
     bool reco_out_of_range = false;
 
+    const bool use_dummy_reco_for_pre_response =
+      this->UseDummyRecoForPreResponse();
+
     // const bool use_dummy_reco_for_juno_response =
     //   fUseJunoDetectorResponse &&
     //   (fJunoApplyEnergySmearing || fJunoApplyCosthSmearing);
@@ -2034,7 +2050,8 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
       continue;
     }
 
-    if (reco_out_of_range) {
+    if (reco_out_of_range && 
+      !use_dummy_reco_for_pre_response) {
       continue;
     }
 
@@ -2068,16 +2085,16 @@ void GenericSingleSampleFitModel::FillFromDST(TTree * t)
     int reco_bin_sb = -1;
     int reco_bin_ob = -1;
 
-    // if (use_dummy_reco_for_juno_response) {
-    //   // Dummy reco bin. In detector-response mode the original reco bin is only
-    //   // a holder; ApplyJunoSmearing() will rebuild the final reco distribution.
-    //   reco_bin_sb = 0;
-    //   reco_bin_ob = 0;
-    // }
-    // else {
+    if (use_dummy_reco_for_pre_response) {
+      // Temporary holder bin. The experiment-specific detector response
+      // will rebuild the final reco distribution later from true-space info.
+      reco_bin_sb = 0;
+      reco_bin_ob = 0;
+    }
+    else {
       reco_bin_sb = reco_sb->FindBin(reco_vars);
       reco_bin_ob = reco_ob->FindBin(reco_vars);
-    // }
+    }
 
     VLOG("GenericSingleSampleFitModel",pDEBUG) 
       << "Inserting to MC teplates --> MC event #" << iev 
@@ -4900,6 +4917,11 @@ bool GenericSingleSampleFitModel::ReadExperimentSpecificConfig(
 bool GenericSingleSampleFitModel::ApplyExperimentSpecificResponse(Option_t*)
 {
   return true;
+}
+//________________________________________________________________________________________
+bool GenericSingleSampleFitModel::UseDummyRecoForPreResponse() const
+{
+  return false;
 }
 //________________________________________________________________________________________
 // void GenericSingleSampleFitModel::ApplyJunoDetectorResponse(Option_t * opt)
