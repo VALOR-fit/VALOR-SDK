@@ -10,10 +10,10 @@
 
 # Setup LArSoft. This gives us modern g++, ROOT and GENIE
 # The "&&" here prevents "set -e" killing these scripts, which apparently have bad returns inside them.
-if [ -z "$SETUP_GENIE" ] ; then
-  . /cvmfs/larsoft.opensciencegrid.org/products/setup && retval="$?"
-  setup genie v3_00_06c -q e17:prof
-fi
+# if [ -z "$SETUP_GENIE" ] ; then
+#   . /cvmfs/larsoft.opensciencegrid.org/products/setup && retval="$?"
+#   setup genie v3_00_06c -q e17:prof
+# fi
 
 if [ -z "$VALOR_FMWK" ]; then
   source="$( readlink -e "${BASH_SOURCE[0]}" )"

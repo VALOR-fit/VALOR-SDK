@@ -247,6 +247,13 @@ string util::RawParamAsStringRaw(PhysParamId_t p)
     case ( kPhypMixingMuMu            ) : return "sinsq2thMuMu";       break;
     case ( kPhypMixingMuE             ) : return "sinsq2thMuE" ;       break;
 
+    // JUNO Smearing Float
+    case ( kPhypJunoEresE   ) : return "juno_eres_e";       break;
+    case ( kPhypJunoEresMu  ) : return "juno_eres_mu";       break;
+    case ( kPhypJunoEbiasE  ) : return "juno_ebias_e";       break;
+    case ( kPhypJunoEbiasMu ) : return "juno_ebias_mu";       break;
+    case ( kPhypJunoAres    ) : return "juno_ares";       break;
+
     default:
     {
     }
@@ -302,6 +309,11 @@ string util::RawParamAsStringSimple (conv::PhysParamId_t p)
     case ( kPhypMixingEE         ) : return "sinsq2thEE";
     case ( kPhypMixingMuMu       ) : return "sinsq2thMuMu";
     case ( kPhypMixingMuE        ) : return "sinsq2thMuE";
+    case ( kPhypJunoEresE   ) : return "juno_eres_e";
+    case ( kPhypJunoEresMu  ) : return "juno_eres_mu";
+    case ( kPhypJunoEbiasE  ) : return "juno_ebias_e";
+    case ( kPhypJunoEbiasMu ) : return "juno_ebias_mu";
+    case ( kPhypJunoAres    ) : return "juno_ares";
     default                        : return "--";
   }
 }
@@ -530,6 +542,13 @@ string util::RawParamAsString(PhysParamId_t p)
     case(kPhypMixingEE  ) : return "sin^2(2*theta_ee)"  ;       break;
     case(kPhypMixingMuMu) : return "sin^2(2*theta_mumu)";       break;
     case(kPhypMixingMuE ) : return "sin^2(2*theta_mue)" ;       break;
+
+    // JUNO detector-response nuisance parameters
+    case ( kPhypJunoEresE   ) : return "JUNO e-like energy resolution";  break;
+    case ( kPhypJunoEresMu  ) : return "JUNO mu-like energy resolution"; break;
+    case ( kPhypJunoEbiasE  ) : return "JUNO e-like energy bias";        break;
+    case ( kPhypJunoEbiasMu ) : return "JUNO mu-like energy bias";       break;
+    case ( kPhypJunoAres    ) : return "JUNO angular resolution";        break;
 
     default:
     {
@@ -782,6 +801,12 @@ string util::RawParamAsStringTex(PhysParamId_t p)
     case(kPhypMixingMuMu) : return "$\\sin^2(2\\theta_{\\mu\\mu})$"; break;
     case(kPhypMixingMuE ) : return "$\\sin^2(2\\theta_{\\mu e})$" ; break;
 
+    case ( kPhypJunoEresE   ) : return "$JUNO\\ E_{res}^{e}$";       break;
+    case ( kPhypJunoEresMu  ) : return "$JUNO\\ E_{res}^{\\mu}$";    break;
+    case ( kPhypJunoEbiasE  ) : return "$JUNO\\ E_{bias}^{e}$";     break;
+    case ( kPhypJunoEbiasMu ) : return "$JUNO\\ E_{bias}^{\\mu}$";  break;
+    case ( kPhypJunoAres    ) : return "$JUNO\\ \\theta_{res}$";    break;
+
     default :
       return "--";
   }
@@ -953,6 +978,12 @@ string util::RawParamAsStringRooTex(PhysParamId_t p)
     case(kPhypMixingMuMu) : return "$\\sin^2(2\\theta_{#mu#mu})$"; break;
     case(kPhypMixingMuE ) : return "$\\sin^2(2\\theta_{#mu#e})$" ; break;
 
+    case ( kPhypJunoEresE   ) : return "JUNO E_{res}^{e}";       break;
+    case ( kPhypJunoEresMu  ) : return "JUNO E_{res}^{#mu}";     break;
+    case ( kPhypJunoEbiasE  ) : return "JUNO E_{bias}^{e}";      break;
+    case ( kPhypJunoEbiasMu ) : return "JUNO E_{bias}^{#mu}";    break;
+    case ( kPhypJunoAres    ) : return "JUNO #theta_{res}";      break;
+
     default :
       return "--";
   }
@@ -1048,6 +1079,18 @@ bool util::IsNormalization(PhysParamId_t p)
 //________________________________________________________________________________________
 bool util::IsSystematic(PhysParamId_t p)
 {
+  switch (p) {
+    case kPhypJunoEresE:
+    case kPhypJunoEresMu:
+    case kPhypJunoEbiasE:
+    case kPhypJunoEbiasMu:
+    case kPhypJunoAres:
+      return true;
+
+    default:
+      break;
+  }
+  
   if(p >= kNuis000) return true;
   return false;
 }

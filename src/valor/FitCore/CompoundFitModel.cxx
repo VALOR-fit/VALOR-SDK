@@ -232,31 +232,106 @@ bool CompoundFitModel::Generate(const PhysHypothesis & ph, Option_t * opt)
   return status;
 }
 //________________________________________________________________________________________
-bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
+bool CompoundFitModel::Generate(const FitParamList & fp, Option_t * opt)
 {
   bool status = true;
+
+  // std::cerr << "[DEBUG COMPOUND MODEL] Generate(fp) entered"
+  //           << " fSystematics=" << fSystematics
+  //           << " nSubModels=" << fSubModels.size()
+  //           << " fp.Size=" << fp.Size()
+  //           << std::endl;
+
   if (fSystematics) {
+    // std::cerr << "[DEBUG COMPOUND MODEL] Updating fSystematics from fp"
+    //           << std::endl;
+
     fSystematics->UpdateFrom(fp);
-    status = this->Generate(PhysHypothesis(fp),opt);
   }
-  else {
+
 #ifdef __VALOR_FMWK_PARALLEL__
-    std::atomic_bool astat(status);
-    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      FitModelABC & m = **it;
-      std::function<void(void)> f = [&]{astat = astat && m.Generate(fp,opt);};
-      util::VThreadPool::Instance()->AddTask(f);
-    }
-    util::VThreadPool::Instance()->Wait();
-    status = astat;
-#else
-    for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
-      status = status && (*it)->Generate(fp,opt);
-    }
-#endif //__VALOR_FMWK_PARALLEL__
+  std::atomic_bool astat(status);
+
+  int imodel = 0;
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+       it != fSubModels.end(); ++it, ++imodel) {
+    FitModelABC & m = **it;
+
+    std::function<void(void)> f =
+      [&, imodel]{
+        // std::cerr << "[DEBUG COMPOUND MODEL] calling submodel Generate(fp)"
+        //           << " i=" << imodel
+        //           << " ptr=" << &m
+        //           << std::endl;
+
+        const bool ok = m.Generate(fp, opt);
+
+        // std::cerr << "[DEBUG COMPOUND MODEL] returned from submodel Generate(fp)"
+        //           << " i=" << imodel
+        //           << " ok=" << ok
+        //           << std::endl;
+
+        astat = astat && ok;
+      };
+
+    util::VThreadPool::Instance()->AddTask(f);
   }
+
+  util::VThreadPool::Instance()->Wait();
+  status = astat;
+#else
+  int imodel = 0;
+  for (std::vector<FitModelABC*>::iterator it = fSubModels.begin();
+       it != fSubModels.end(); ++it, ++imodel) {
+
+    // std::cerr << "[DEBUG COMPOUND MODEL] calling submodel Generate(fp)"
+    //           << " i=" << imodel
+    //           << " ptr=" << (*it)
+    //           << std::endl;
+
+    const bool ok = (*it)->Generate(fp, opt);
+
+    // std::cerr << "[DEBUG COMPOUND MODEL] returned from submodel Generate(fp)"
+    //           << " i=" << imodel
+    //           << " ok=" << ok
+    //           << std::endl;
+
+    status = status && ok;
+  }
+#endif
+
+  // std::cerr << "[DEBUG COMPOUND MODEL] Generate(fp) leaving"
+  //           << " status=" << status
+  //           << std::endl;
+
   return status;
 }
+//________________________________________________________________________________________
+// bool CompoundFitModel::Generate (const FitParamList & fp, Option_t * opt)
+// {
+//   bool status = true;
+//   if (fSystematics) {
+//     fSystematics->UpdateFrom(fp);
+//     status = this->Generate(PhysHypothesis(fp),opt);
+//   }
+//   else {
+// #ifdef __VALOR_FMWK_PARALLEL__
+//     std::atomic_bool astat(status);
+//     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+//       FitModelABC & m = **it;
+//       std::function<void(void)> f = [&]{astat = astat && m.Generate(fp,opt);};
+//       util::VThreadPool::Instance()->AddTask(f);
+//     }
+//     util::VThreadPool::Instance()->Wait();
+//     status = astat;
+// #else
+//     for (std::vector<FitModelABC*>::iterator it = fSubModels.begin(); it != fSubModels.end(); ++it) {
+//       status = status && (*it)->Generate(fp,opt);
+//     }
+// #endif //__VALOR_FMWK_PARALLEL__
+//   }
+//   return status;
+// }
 //________________________________________________________________________________________
 // bool CompoundFitModel::Generate(const FitParamList & fp, Option_t * opt)
 // {

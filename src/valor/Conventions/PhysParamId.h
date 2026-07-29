@@ -87,6 +87,13 @@ typedef enum EPhysParamId
    kPhypMixingMuMu,            // Effective steriles (mu-mu)
    kPhypMixingMuE,             // Effective steriles (mu-e)
 
+   // JUNO Smearing Float Parameters
+   kPhypJunoEresE,       // JUNO e-like energy resolution scale nuisance
+   kPhypJunoEresMu,      // JUNO mu-like energy resolution scale nuisance
+   kPhypJunoEbiasE,      // JUNO e-like energy bias scale nuisance
+   kPhypJunoEbiasMu,     // JUNO mu-like energy bias scale nuisance
+   kPhypJunoAres,        // JUNO angular resolution scale nuisance
+
    // Generic nuisance parameters
   kNuis000 ,
   kNuis001 ,

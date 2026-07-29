@@ -15,6 +15,7 @@
 #include <TH2D.h>
 #include <TSystem.h>
 #include <TPRegexp.h>
+#include <iostream>
 
 // fmwk
 #include "valor/Conventions/Opt.h"
@@ -529,7 +530,16 @@ int GenericSingleSampleFitData::NumOfBins(Option_t * /*opt*/) const
 double GenericSingleSampleFitData::GetFitStatistic(
     FitModelABC* model_abc, const FitParamList & fp, Option_t * opt, std::map<std::string,double> * likelihood_components)
 {
+  std::cerr << "[DEBUG SDK FITSTAT] before model_abc->Generate(fp), model ptr="
+          << model_abc
+          << std::endl;
+
   bool ok = model_abc->Generate(fp);
+
+  std::cerr << "[DEBUG SDK FITSTAT] after model_abc->Generate(fp), ok="
+          << ok
+          << std::endl;
+
   assert(ok);
 
   return this->GetFitStatistic(model_abc,opt, likelihood_components);
